@@ -1,0 +1,10 @@
+.pytest_cache
+__pycache__
+build
+dist
+genieclust/*.so
+genieclust/*.c
+genieclust/*.cpp
+genieclust/*.html
+genieclust.egg-info
+pytest/__pycache__

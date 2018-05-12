@@ -1,0 +1,4 @@
+Source: I. Kärkkäinen, P. Fränti, Dynamic local search algorithm
+for the clustering problem, Research Report A-2002-6.
+
+`labels0` come from the Authors.

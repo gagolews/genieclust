@@ -1,0 +1,3 @@
+Source: P. Fränti, O. Virmajoki, Iterative shrinking method for clustering problems, Pattern Recognition, 39(5), 2006, pp. 761-765.
+
+`labels0` come from the Authors.

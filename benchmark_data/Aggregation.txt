@@ -1,0 +1,6 @@
+Source: A. Gionis, H. Mannila, P. Tsaparas, Clustering aggregation,
+ACM Transactions on Knowledge Discovery from Data (TKDD), 2007, pp. 1-30.
+
+`labels0` come from the Authors.
+
+`0` denotes the noise class (if present).
