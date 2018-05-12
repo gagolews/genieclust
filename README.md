@@ -30,6 +30,28 @@ Package Features
 * Various plotting functions
 
 
+Installation
+============
+
+The package requires Python 3.6+ together with
+sklearn, numpy, scipy, matplotlib, and cython.
+
+
+Via `pip`:
+
+```python
+@TODO@
+```
+
+The most recent development version:
+
+```python
+git clone https://github.com/gagolews/genieclust.git
+cd genieclust
+python setup.py build_ext --inplace
+python setup.py install --user
+```
+
 Examples
 ========
 

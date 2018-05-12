@@ -66,9 +66,20 @@ cpdef np.ndarray[np.int_t, ndim=2] confusion_matrix(
     """
     Computes the confusion matrix (as a dense matrix)
 
-    Inputs:
-        * x, y -- two small-int vectors of the same lengths, representing
-            two partitions of the same set
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+    -------
+
+    C : ndarray, shape (kx, ky)
+        a confusion matrix
     """
     cpdef unsigned int n = x.shape[0], i, j, w
     if n != y.shape[0]: raise Exception("incompatible lengths")
@@ -105,10 +116,19 @@ cpdef RandResult compare_partitions(np.ndarray[intT, ndim=2] C):
        Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4)
 
 
-    Input: a confusion matrix
+    Parameters:
+    ----------
 
-    Output: a dict object with keys 'ar', 'r', 'fm', 'afm', giving
-       the scores
+    C : ndarray, shape (kx,ky)
+        a confusion matrix
+
+    Returns:
+    -------
+
+    scores : dict
+        a dictionary with keys 'ar', 'r', 'afm', 'fm', giving
+        the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
+        Fowlkes-Mallows scores, respectively.
     """
     cpdef unsigned int n = C.sum(), xc = C.shape[0], yc = C.shape[1], i, j
 
@@ -149,7 +169,19 @@ cpdef np.float64_t adjusted_rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
     See Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
-    Inputs: x, y -- vectors of `small' integers
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+
+    score : float
+        partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).ar
@@ -163,7 +195,19 @@ cpdef np.float64_t rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
     See Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
-    Inputs: x, y -- vectors of `small' integers
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+
+    score : float
+        partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).r
@@ -176,7 +220,18 @@ cpdef np.float64_t adjusted_fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
     See Eqs. (2) and (4)  in Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
-    Inputs: x, y -- vectors of `small' integers
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+
+    score : float
+        partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).afm
@@ -189,7 +244,18 @@ cpdef np.float64_t fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
     See Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
-    Inputs: x, y -- vectors of `small' integers
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+
+    score : float
+        partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).fm

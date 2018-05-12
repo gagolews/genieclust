@@ -1,7 +1,7 @@
 #cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True, language_level=3
 
 """
-Find the index of the k-th smallest element in an array
+Determine the index of the k-th smallest element in an array
 Copyright (C) 2018 Marek.Gagolewski.com
 
 This program is free software: you can redistribute it and/or modify
@@ -37,10 +37,6 @@ cpdef np.int_t argkmin(arrayT x, np.int_t k):
     where argkmin(x, 0) == argmin(x), or, more generally,
     argkmin(x, k) == np.argsort(x)[k].
 
-    Arguments:
-    * x - an 1D-array x
-    * k in {0,...,len(x)-1}, preferably small
-
     Run time: O(nk), where n == len(x). Working mem: O(k).
     Does not modify x.
 
@@ -54,6 +50,23 @@ cpdef np.int_t argkmin(arrayT x, np.int_t k):
     (ascending)  n=100000000, k=100:        0.057s           1.472s
     (descending)                           18.051s           2.662s
     (random)                                0.064s          20.269s
+
+
+    Parameters:
+    ----------
+
+    x : ndarray
+        an integer or float vector
+
+    k : int
+        an integer in {0,...,len(x)-1}, preferably small
+
+
+    Returns:
+    -------
+
+    val
+        the (k-1)-th smallest value in x
     """
     cdef np.int_t n = len(x), i, j, ret
     cdef np.int_t* idx

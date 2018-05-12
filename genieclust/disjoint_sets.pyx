@@ -28,7 +28,24 @@ from libc.math cimport fabs
 
 cdef class DisjointSets:
     """
-    Disjoint Sets over {0,1,...,n-1}
+    Disjoint Sets (Union-Find)
+
+    Represents a partition of the set {0,1,...,n-1}
+
+    Path compression for find() is implemented,
+    but the union() operation is naive (neither
+    it is union by rank nor by size),
+    see https://en.wikipedia.org/wiki/Disjoint-set_data_structure.
+    This is by design, as some other operations in the current
+    package rely on the assumption, that the parent id of each
+    element is always <= than itself.
+
+
+    Parameters:
+    ----------
+
+    n : int
+        The cardinality of the set being partitioned.
     """
     cdef np.int_t n # number of distinct elements
     cdef np.int_t k # number of subsets
@@ -54,14 +71,36 @@ cdef class DisjointSets:
 
     def __len__(self):
         """
-        returns number of subsets-1
-        a.k.a. how many calls to union() can we still perform
+        Returns the number of subsets-1,
+        a.k.a. how many calls to union() can we still perform.
+
+        Returns:
+        -------
+
+        len : int
+            A value in {0,...,n-1}.
         """
         return self.k-1
 
 
     cpdef np.int_t find(self, np.int_t x):
-        """ finds the subset id for a given x """
+        """
+        Finds the subset id for a given x.
+
+
+        Parameters:
+        ----------
+
+        x : int
+            An integer in {0,...,n-1}, representing an element to find.
+
+
+        Returns:
+        -------
+
+        parent_x : int
+            The id of the parent of x.
+        """
         if x < 0 or x >= self.n: raise Exception("elem not in {0,1,...,n-1}")
         if self.par[x] != x:
             self.par[x] = self.find(self.par[x])
@@ -69,7 +108,26 @@ cdef class DisjointSets:
 
 
     cpdef np.int_t union(self, np.int_t x, np.int_t y):
-        """ merges subsets containing given x and y  """
+        """
+        Merges the sets containing given x and y.
+        Let px be the parent id of x, and py be the parent id of y.
+        If px < py, then the new parent id of py will be set to py.
+        Otherwise, px will have py as its parent.
+
+        Parameters:
+        ----------
+
+        x, y : int
+            Integers in {0,...,n-1}, representing elements
+            of two sets to merge.
+
+
+        Returns:
+        -------
+
+        parent : int
+            The id of the parent of x or y, whichever is smaller.
+        """
         cdef np.int_t i, size1, size2
 
         x = self.find(x)
@@ -84,7 +142,15 @@ cdef class DisjointSets:
 
     cpdef np.ndarray[np.int_t] to_list(self):
         """
-        Returns a list m such that m[i] denotes the parent id of i.
+        Get parent ids of all the elements
+
+
+        Returns:
+        -------
+
+        parents : ndarray, shape (n,)
+            A list m such that m[x] denotes the (recursive) parent id of x,
+            for x=0,1,...,n.
         """
         cdef np.int_t i
         cdef np.ndarray[np.int_t] m = np.empty(self.n, dtype=np.int_)
@@ -95,9 +161,16 @@ cdef class DisjointSets:
 
     cpdef np.ndarray[np.int_t] to_list_normalized(self):
         """
-        Returns a list m such that m[i] denotes the normalized parent id of i.
-        The resulting values are in {0,1,...,k-1}, where k is the current
-        number of subsets.
+        Get the normalized elements' membership information.
+
+
+        Returns:
+        -------
+
+        set_ids : ndarray, shape (n,)
+            A list m such that m[x] denotes the normalized parent id of x.
+            The resulting values are in {0,1,...,k-1}, where k is the current
+            number of subsets in the partition.
         """
         cdef np.int_t i, j
         cdef np.ndarray[np.int_t] m = np.empty(self.n, dtype=np.int_)
@@ -117,6 +190,15 @@ cdef class DisjointSets:
         """
         Returns a list of lists representing the current partition.
         This is a slow operation. Do you really need this?
+
+
+        Returns:
+        -------
+
+        partition : list of lists
+            A list of length k, where k is the current number
+            of sets in a partition. Each list element is a list
+            with values in {0,...,n-1}
         """
         cdef np.int_t i
         cdef list tou, out
