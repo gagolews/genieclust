@@ -83,7 +83,7 @@ Examples
 ========
 
 * [The Genie Algorithm - basic use](example_genie.ipynb)
-* [The HDBSCAN* Algorithm - with and without the Genie correction](example_hdbscab.ipynb)
+* [The HDBSCAN* Algorithm - without and with the Genie correction](example_hdbscan.ipynb)
 
 
 License
