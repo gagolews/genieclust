@@ -23,18 +23,28 @@ import numpy as np
 
 def plot_scatter(X, labels, **kwargs):
     """
-    Draws a scatter plot
+    Draws a scatter plot.
 
+    Unlike `matplitlib.pyplot.scatter()`
     `labels == i` is always drawn in the same way, no matter the `max(labels)`.
 
-    Arguments:
-    * X - a two-column matrix giving the X and Y coordinates of the points
-    * labels - vector of non-negative integer labels corresponding
-       to each point in X
+
+    Parameters:
+    ----------
+
+    X : ndarray, shape (n, 2)
+        A two-column matrix giving the X and Y coordinates of the points.
+
+    labels : ndarray, shape (n,)
+        A vector of integer labels corresponding to each point in X,
+        giving its plot style.
+
+    **kwargs : Collection properties
+        Further arguments to `matplotlib.pyplot.scatter()`.
     """
     col = ["k", "r", "g", "b", "c", "m", "y"]+list(plt.cm.get_cmap("tab10").colors)
     mrk = ["o", "v", "^", "s", "P", "*", "<", ">"]
-    for i in np.unique(labels):
+    for i in np.unique(labels)+1: # -1 is black, 0 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
             c=col[i % len(col)], marker=mrk[i % len(mrk)], **kwargs)
 
@@ -47,9 +57,19 @@ def plot_segments(X, pairs, **kwargs):
 
     Calls `matplotlib.pyplot.plot()` once => it's fast.
 
-    Arguments:
-    * X - a two-column matrix giving the X and Y coordinates of the points
-    * pairs - a two-column integer matrix
+
+    Parameters:
+    ----------
+
+    X : ndarray, shape (n, 2)
+        A two-column matrix giving the X and Y coordinates of the points.
+
+    pairs : ndarray, shape (m, 2)
+        A two-column matrix, giving the pairs of indexes
+        defining the line segments.
+
+    **kwargs : Collection properties
+        Further arguments to `matplotlib.pyplot.plot()`.
     """
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()

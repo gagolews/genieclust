@@ -31,8 +31,8 @@ include "mst.pyx"
 
 cdef class GiniDisjointSets(DisjointSets):
     """
-    Disjoint sets over {0,1,...,n-1}
-    that allow for efficiently computing the Normalized Gini index for the
+    Augmented disjoint sets (Union-Find) over {0,1,...,n-1}
+    Allow to compute the normalized Gini index for the
     subset sizes distribution, i.e.,
     $$
         G(x_1,\dots,x_k) = \frac{
@@ -45,6 +45,13 @@ cdef class GiniDisjointSets(DisjointSets):
     For a use case, see: Gagolewski M., Bartoszuk M., Cena A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
+
+    Parameters:
+    ----------
+
+    n : int
+        The cardinality of the set being partitioned.
     """
     cdef np.int_t* cnt      # cnt[find(x)] is the size of the relevant subset
     cdef np.int_t* tab      # tab[i] gives the number of subsets of size i
@@ -95,15 +102,32 @@ cdef class GiniDisjointSets(DisjointSets):
 
     cpdef np.int_t union(self, np.int_t x, np.int_t y):
         """
-        merges subsets containing given x and y;
-        Update time: pessimistically m, m - number of subsets,
-        i.e., O(sqrt(n)).
+        Merges the sets containing given x and y.
+        Let px be the parent id of x, and py be the parent id of y.
+        If px < py, then the new parent id of py will be set to py.
+        Otherwise, px will have py as its parent.
+
+        Update time: pessimistically O(sqrt(n)).
+
+        Parameters:
+        ----------
+
+        x, y : int
+            Integers in {0,...,n-1}, representing elements
+            of two sets to merge.
+
+
+        Returns:
+        -------
+
+        parent : int
+            The id of the parent of x or y, whichever is smaller.
         """
         cdef np.int_t i, size1, size2, v, w
 
         x = self.find(x)
         y = self.find(y)
-        if self.k == 1: raise Exception("no more subsets to unite")
+        if self.k == 1: raise Exception("no more subsets to merge")
         if x == y: raise Exception("find(x) == find(y)")
         if y < x: x,y = y,x
         self.par[y] = x
@@ -183,15 +207,38 @@ cdef class GiniDisjointSets(DisjointSets):
 
     cpdef np.int_t get_count(self, np.int_t x):
         """
-        Get the size of the subset with x in it.
+        Get the size of the set with x in it.
+
+        Run time: the cost of finding the parent of x.
+
+
+        Parameters:
+        ----------
+
+        x : int
+            An integer in {0,...,n-1}, representing an element to find.
+
+
+        Returns:
+        -------
+
+        count : int
+            The size of the set including x.
         """
         return self.cnt[self.find(x)]
 
 
     cpdef np.ndarray[np.int_t] get_counts(self):
         """
-        Get vector with subset sizes.
+        Generate a list of set sizes.
         The vector is ordered nondecreasingly.
+
+
+        Returns:
+        -------
+
+        counts : ndarray
+             Gives the cardinality of each set in the partition.
         """
         cdef np.int_t i = 0, j
         cdef np.ndarray[np.int_t] out = np.empty(self.k, dtype=np.int_)
@@ -216,19 +263,38 @@ cdef class GiniDisjointSets(DisjointSets):
     cpdef np.double_t get_gini(self):
         """
         Get the Gini index for inequity of subset size distribution
+
+        Run time: O(1), as the Gini index is updated during a call
+        to self.union().
+
+
+        Returns:
+        -------
+
+        g : float
+            The Gini index of self.get_counts()
         """
         return self.gini
 
 
     cpdef np.int_t get_smallest_count(self):
         """
-        Get the size of the smallest subset.
+        Get the size of the smallest set.
+
+        Run time: O(1)
+
+
+        Returns:
+        -------
+
+        size : float
+            The cardinality of the smallest set in the current partition.
         """
         return self.tab_head
 
 
     def __repr__(self):
-        """elf.tab[
+        """
         Calls self.to_lists()
         """
         return "GiniDisjointSets("+repr(self.to_lists())+")"
@@ -242,7 +308,20 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
-    [This is a new, O(n sqrt(n))-time algorithm]
+    A new hierarchical clustering linkage criterion: the Genie algorithm
+    links two clusters in such a way that a chosen economic inequity measure
+    (here, the Gini index) of the cluster sizes does not increase drastically
+    above a given threshold. Benchmarks indicate a high practical
+    usefulness of the introduced method: it most often outperforms
+    the Ward or average linkage, k-means, spectral clustering,
+    DBSCAN, Birch, and others in terms of the clustering
+    quality while retaining the single linkage speed,
+
+
+    This is a new implementation of an O(n sqrt(n))-time algorithm
+    (provided that the MST /minimum spanning tree of the
+    pairwise distance graph/ has already been computed).
+
 
     Parameters:
     ----------
@@ -283,7 +362,28 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
 
     cpdef np.ndarray[np.int_t] fit_predict(self, np.double_t[:,:] X, y=None):
         """
-        @TODO@ manual
+        Compute a k-partition and return the predicted labels.
+
+        @TODO@: do not compute the whole distance matrix.
+        The current version requires O(n**2) memory.
+
+
+        Parameters:
+        ----------
+
+        X : ndarray, shape (n,d)
+            A matrix defining n points in a d-dimensional vector space.
+
+        y : None
+            Ignored.
+
+
+        Returns:
+        -------
+
+        labels_ : ndarray, shape (n,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
         """
         self.fit(X)
         return self.labels_
@@ -291,7 +391,31 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
 
     cpdef np.ndarray[np.int_t] fit_predict_from_mst(self, tuple mst):
         """
-        @TODO@ manual
+        Compute a k-partition based on a precomputed MST
+        and return the predicted labels.
+
+
+        The MST may, for example, be determined as follows:
+
+        mst = genieclust.mst.MST_pair(
+            scipy.spatial.distance.squareform(
+                scipy.spatial.distance.pdist(X, "euclidean")),
+        )
+
+
+        Parameters:
+        ----------
+
+        mst : tuple
+            See genieclust.mst.MST_pair()
+
+
+        Returns:
+        -------
+
+        labels_ : ndarray, shape (n,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
         """
         self.fit_from_mst(mst)
         return self.labels_
@@ -299,7 +423,20 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
 
     cpdef fit(self, np.double_t[:,:] X, y=None):
         """
-        @TODO@ manual
+        Compute a k-partition.
+
+        @TODO@: do not compute the whole distance matrix.
+        The current version requires O(n**2) memory.
+
+
+        Parameters:
+        ----------
+
+        X : ndarray, shape (n,d)
+            A matrix defining n points in a d-dimensional vector space.
+
+        y : None
+            Ignored.
         """
         # Yup, computing the whole distance matrix here
         # @TODO@: change this
@@ -312,7 +449,21 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
 
     cpdef fit_from_mst(self, tuple mst):
         """
-        @TODO@ manual
+        Compute a k-partition based on a precomputed MST.
+
+        The MST may, for example, be determined as follows:
+
+        mst = genieclust.mst.MST_pair(
+            scipy.spatial.distance.squareform(
+                scipy.spatial.distance.pdist(X, "euclidean")),
+
+
+
+        Parameters:
+        ----------
+
+        mst : tuple
+            See genieclust.mst.MST_pair()
         """
         cdef np.int_t n, i, curidx, m, i1, i2, lastm, lastidx, previdx
 

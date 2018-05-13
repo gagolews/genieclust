@@ -53,16 +53,21 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
 
 cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     """
-    A Prim-like algorithm for determining the MST
-    based on a pre-computed pairwise n*n distance matrix
+    A Prim-like algorithm for determining a minimum spanning tree (MST)
+    based on a precomputed pairwise n*n distance matrix
     (defining edge weights of the complete undirected loop-free graph
     with vertices set {0,1,...n-1}), where
     D[i,j] = D[j,i] denotes the distance between point i and j.
 
-    Returns an (n-1)*2 matrix I such that {I[i,0], I[i,1]} gives the
-    ith MST edge, I[i,0] < I[i,1].
+
+    @TODO@: write a version of the algorithm that computes
+    the pairwise distances (for a range of metrics) on the flight,
+    so that the memory use is better than O(n**2). Also,
+    use OpenMP to parallelize the inner loop.
+
 
     References:
+    ----------
 
     M. Gagolewski, M. Bartoszuk, A. Cena,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
@@ -73,6 +78,21 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
 
     R. Prim, Shortest connection networks and some generalizations,
     Bell Syst. Tech. J. 36 (1957) 1389–1401.
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n,n)
+
+
+    Returns:
+    -------
+
+    I : ndarray, shape (n,2)
+        An (n-1)*2 matrix I such that {I[i,0], I[i,1]}
+        gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
+
     """
     cdef np.int_t n = D.shape[0] # D is a square matrix
     cdef np.int_t i, j
@@ -111,8 +131,23 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
 
 cpdef tuple MST_pair(np.double_t[:,:] D):
     """
-    MST: Return a pair (indices_matrix, corresponding distances);
-    the results are ordered w.r.t. the distances (and then the 1st, 2nd index)
+    Computes a minimum spanning tree of a given pairwise distance matrix,
+    see MST().
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n,n)
+
+
+    Returns:
+    -------
+
+    pair : tuple
+         A pair (indices_matrix, corresponding distances);
+         the results are ordered w.r.t. the distances
+         (and then the 1st, and the the 2nd index)
     """
     cdef np.ndarray[np.int_t,ndim=2] mst_i = MST(D)
     cdef np.int_t n = mst_i.shape[0], i

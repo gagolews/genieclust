@@ -71,6 +71,23 @@ cpdef np.float64_t gini(np.ndarray[T] x, bint is_sorted=False):
         },
     $$
     where $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
+
+
+    Parameters:
+    ----------
+
+    x : ndarray, shape (n,)
+        Input vector.
+
+    is_sorted : bool
+        Indicates if x is sorted increasingly.
+
+
+    Returns:
+    -------
+
+    index : float
+        The value of the inequity index, a number in [0,1].
     """
 
     if not is_sorted: x = np.sort(x)
@@ -98,6 +115,23 @@ cpdef np.float64_t bonferroni(np.ndarray[T] x, bint is_sorted=False):
     where $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
 
     Time complexity: $O(n)$ for sorted data.
+
+
+    Parameters:
+    ----------
+
+    x : ndarray, shape (n,)
+        Input vector.
+
+    is_sorted : bool
+        Indicates if x is sorted increasingly.
+
+
+    Returns:
+    -------
+
+    index : float
+        The value of the inequity index, a number in [0,1].
     """
 
     if not is_sorted: x = np.sort(x)
