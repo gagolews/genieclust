@@ -64,6 +64,8 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     the pairwise distances (for a range of metrics) on the flight,
     so that the memory use is better than O(n**2). Also,
     use OpenMP to parallelize the inner loop.
+    However, we will still need function to compute an MST based
+    on the HDBSCAN*'s mutual reachability distance.
 
 
     References:

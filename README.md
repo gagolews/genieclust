@@ -82,9 +82,8 @@ python setup.py install --user
 Examples
 ========
 
-```python
-# @TODO@
-```
+* [The Genie Algorithm - basic use](example_genie.ipynb)
+* [The HDBSCAN* Algorithm - with and without the Genie correction](example_hdbscab.ipynb)
 
 
 License

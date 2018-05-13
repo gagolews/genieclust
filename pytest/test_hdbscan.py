@@ -44,7 +44,7 @@ def test_hdbscan():
 
             for k in [2, 3, 5]:
                 mst = MST_pair(D1)
-                cl = HDBSCAN(mst, k)
+                cl = HDBSCAN(k).fit_predict_from_mst(mst)+1
                 assert max(cl) == k
                 print(np.unique(cl, return_counts=True))
 

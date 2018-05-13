@@ -23,33 +23,38 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
 import numpy as np
 from libc.math cimport fabs
+#from sklearn.base import BaseEstimator, ClusterMixin
+import scipy.spatial.distance
 
 include "disjoint_sets.pyx"
 include "argkmin.pyx"
-
+include "mst.pyx"
 
 
 cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndarray[np.int_t] cl):
     """
-    Given a k-partition (with noise points included),
+    A noisy k-partition post-processing:
+    given a k-partition (with noise points included),
     merges all noise points with their nearest
     clusters.
+
 
     Parameters:
     ----------
 
     mst : tuple
-        A tuple as returned by MST_pair().
+        See genieclust.mst.MST_pair().
 
-    cl : mdarray, shape (n_samples,)
+    cl : ndarray, shape (n_samples,)
         An integer vector c with c[i] denoting the cluster id
         (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
         Class -1 denotes the `noise' cluster.
 
+
     Returns:
     -------
 
-    cl : mdarray, shape (n_samples,)
+    cl : ndarray, shape (n_samples,)
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
@@ -71,7 +76,7 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndar
 cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
     """
     Given a pairwise distance matrix,
-    computes the so-called mutual reachability distance w.r.t. a smoothing
+    computes the mutual reachability distance w.r.t. a smoothing
     factor M >= 2. Note that for M <= 2 the mutual reachability distance
     is equivalent to the original distance measure.
 
@@ -92,17 +97,17 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
     ----------
 
     D : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix
+        A pairwise n*n distance matrix.
 
     M : int
-        A smoothing factor >= 2
+        A smoothing factor >= 2.
 
 
     Returns:
     -------
 
     R : ndarray, shape (n_samples,n_samples)
-        A new distance matrix D'
+        A new distance matrix, giving the mutual reachability distance w.r.t. M.
     """
     cdef np.int_t n = D.shape[0], i, j
     cdef np.double_t v
@@ -138,18 +143,20 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
     set {0,...,n-1}, return an array d with d[i] denoting
     the degree of the i-th vertex. For instance, d[i]==1 marks a leaf node.
 
+
     Parameters:
     ----------
 
     I : ndarray
-        a 2-column matrix with elements in {0, ..., n-1},
-        where n = I.shape[0]+1
+        A 2-column matrix with elements in {0, ..., n-1},
+        where n = I.shape[0]+1.
+
 
     Returns:
     -------
 
     d : ndarray, shape(n,)
-        An integer array of length I.shape[0]+1
+        An integer array of length I.shape[0]+1.
     """
     cdef np.int_t n = I.shape[0]+1, i
     cdef np.ndarray[np.int_t] d = np.zeros(n, dtype=np.int_)
@@ -164,19 +171,28 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
     return d
 
 
-cpdef np.ndarray[np.int_t] HDBSCAN(tuple mst, np.int_t k):
+
+
+cdef class HDBSCAN(): # (BaseEstimator, ClusterMixin):
     """
-    The HDBSCAN* Clustering Algorithm
+    An implementation of the HDBSCAN* Clustering Algorithm,
+    that yields a specific number of clusters, and hence
+    is not dependent on the original DBSCAN's somehow magical
+    parameter eps.
+
+    @TODO@: The current implementation runs in O(n**2) and
+    uses O(n**2) memory.
+
 
     See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
     estimates for data clustering, visualization, and outlier detection,
     ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
+    doi:10.1145/2733381.
 
     Basically this is the single linkage algorithm that marks all
-    MST leaves as noise points. The algorithm finds exactly k clusters.
+    leaves in the corresponding minimum spanning tree as noise points.
     The mutual_reachability_distance() function returns a pairwise distance
-    matrix that enables to take the `smoothing factor' into account.
+    matrix that enables to take the smoothing factor M into account.
 
     Note that for smoothing factor M == 1, you should use the ordinary
     single linkage algorithm, i.e., mark no points as noise.
@@ -186,63 +202,201 @@ cpdef np.ndarray[np.int_t] HDBSCAN(tuple mst, np.int_t k):
     to be very large. For instance, "cluster boundary points"
     can be merged back with the nearest clusters.
 
-    Another option is just to merge all `noise points' with their
-    nearest clusters, see `merge_leaves_with_nearest_clusters()`.
-    This yields a classical k-partition of a data set (with no notion
+    Another option is just to merge all noise points with their
+    nearest clusters, see merge_leaves_with_nearest_clusters().
+    This yields a classical n_clusters-partition of a data set (with no notion
     of noise).
 
 
-    Example call:
+    Parameters:
+    ----------
 
-    >>> HDBSCAN(MST_pair(
-        mutual_reachability_distance(
-            scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X)),
-            M
-        )), k)
+    n_clusters : int, default=2
+        Number of clusters the data is split into.
 
-    Arguments:
-    * mst - a tuple as returned by MST_pair()
-    * k - the number of clusters to find
+    M : int, default=4
+        Smoothing factor.
 
-    Returns:
-    * An integer vector c with c[i] denoting the cluster id (in {0, 1, ..., k})
-      of the i-th object. Class 0 denotes the `noise' cluster.
+    metric : str or function, default="euclidean"
+        See scipy.spatial.distance.pdist()
+
+
+    Attributes:
+    --------
+
+    labels_ : ndarray, shape (n_samples,)
+        Cluster labels for each point in the dataset given to fit():
+        an integer vector c with c[i] denoting the cluster id
+        (in {0, ..., n_clusters-1}) of the i-th object.
+        -1 denotes that a noise point.
     """
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-    cdef np.int_t n = mst_i.shape[0]+1, i, i1, i2
-    cdef np.int_t num_leaves = 0, first_leaf = -1, first_leaf_cluster_id
-    cdef np.ndarray[np.int_t] ret
-    cdef DisjointSets ds = DisjointSets(n)
-    cdef np.ndarray[np.int_t] deg = get_tree_node_degrees(mst_i)
 
-    for i in range(n):
-        # get the number of leaves, id of the first leaf,
-        # and construct the "noise cluster"
-        if deg[i] == 1:
-            num_leaves += 1
-            if num_leaves == 1:
-                first_leaf = i
-            else:
-                ds.union(first_leaf, i)
-    assert num_leaves >= 2
+    cdef np.int_t n_clusters
+    cdef np.int_t M
+    cdef str metric
+    cdef object labels_
 
-    for i in range(n-1):
-        i1, i2 = mst_i[i,0], mst_i[i,1]
-        if deg[i1] == 1 or deg[i2] == 1:
-            # a leaf -> ignore
-            continue
+    def __cinit__(self,
+                  np.int_t n_clusters=2,
+                  np.int_t M=4,
+                  metric="euclidean"):
+        self.n_clusters = n_clusters
+        self.M = M
+        self.metric = metric
+        self.labels_ = None
 
-        ds.union(i1, i2)
-        if len(ds) == k:
-            break
-    else:
-        raise Exception("The requested number of clusters is too large \
-            with this many noise points")
 
-    ret = ds.to_list_normalized()
-    first_leaf_cluster_id = ret[first_leaf]
-    for i in range(n):
-        if   ret[i] == first_leaf_cluster_id: ret[i]  = 0
-        elif ret[i] >  first_leaf_cluster_id: ret[i] -= 1
+    cpdef np.ndarray[np.int_t] fit_predict(self, np.double_t[:,:] X, y=None):
+        """
+        Compute a k-partition and return the predicted labels.
 
-    return ret
+        @TODO@: do not compute the whole distance matrix.
+        The current version requires O(n**2) memory.
+
+
+        Parameters:
+        ----------
+
+        X : ndarray, shape (n,d)
+            A matrix defining n points in a d-dimensional vector space.
+
+        y : None
+            Ignored.
+
+
+        Returns:
+        -------
+
+        labels_ : ndarray, shape (n,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
+        """
+        self.fit(X)
+        return self.labels_
+
+
+    cpdef np.ndarray[np.int_t] fit_predict_from_mst(self, tuple mst):
+        """
+        Compute a k-partition based on a precomputed MST
+        (w.r.t. the mutual reachability distance)
+        and return the predicted labels.
+
+        This method ignores self.M and self.metric.
+
+
+        The MST may, for example, be determined as follows:
+
+        mst = genieclust.mst.MST_pair(
+            mutual_reachability_distance(
+                scipy.spatial.distance.squareform(
+                    scipy.spatial.distance.pdist(X, metric)),
+                M)
+        )
+
+
+        Parameters:
+        ----------
+
+        mst : tuple
+            See genieclust.mst.MST_pair()
+
+
+        Returns:
+        -------
+
+        labels_ : ndarray, shape (n,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
+        """
+        self.fit_from_mst(mst)
+        return self.labels_
+
+
+    cpdef fit(self, np.double_t[:,:] X, y=None):
+        """
+        Compute a k-partition.
+
+        @TODO@: do not compute the whole distance matrix.
+        The current version requires O(n**2) memory.
+
+
+        Parameters:
+        ----------
+
+        X : ndarray, shape (n,d)
+            A matrix defining n points in a d-dimensional vector space.
+
+        y : None
+            Ignored.
+        """
+        mst = MST_pair(
+            mutual_reachability_distance(
+                scipy.spatial.distance.squareform(
+                    scipy.spatial.distance.pdist(X, self.metric)),
+                self.M)
+        )
+        self.fit_from_mst(mst)
+
+
+    cpdef fit_from_mst(self, tuple mst):
+        """
+        Compute a k-partition based on a precomputed MST.
+
+        This method ignores self.M and self.metric.
+
+
+        The MST may, for example, be determined as follows:
+
+        mst = genieclust.mst.MST_pair(
+            mutual_reachability_distance(
+                scipy.spatial.distance.squareform(
+                    scipy.spatial.distance.pdist(X, metric)),
+                M)
+        )
+
+
+        Parameters:
+        ----------
+
+        mst : tuple
+            See genieclust.mst.MST_pair()
+        """
+
+        cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
+        cdef np.int_t n = mst_i.shape[0]+1, i, i1, i2
+        cdef np.int_t num_leaves = 0, first_leaf = -1, first_leaf_cluster_id
+        cdef np.ndarray[np.int_t] ret
+        cdef DisjointSets ds = DisjointSets(n)
+        cdef np.ndarray[np.int_t] deg = get_tree_node_degrees(mst_i)
+
+        for i in range(n):
+            # get the number of leaves, id of the first leaf,
+            # and construct the "noise cluster"
+            if deg[i] == 1:
+                num_leaves += 1
+                if num_leaves == 1:
+                    first_leaf = i
+                else:
+                    ds.union(first_leaf, i)
+        assert num_leaves >= 2
+
+        for i in range(n-1):
+            i1, i2 = mst_i[i,0], mst_i[i,1]
+            if deg[i1] == 1 or deg[i2] == 1:
+                # a leaf -> ignore
+                continue
+
+            ds.union(i1, i2)
+            if len(ds) == self.n_clusters:
+                break
+        else:
+            raise Exception("The requested number of clusters is too large \
+                with this many noise points")
+
+        ret = ds.to_list_normalized()
+        first_leaf_cluster_id = ret[first_leaf]
+        for i in range(n):
+            if   ret[i] == first_leaf_cluster_id: ret[i]  = 0
+            elif ret[i] >  first_leaf_cluster_id: ret[i] -= 1
+
+        self.labels_ = ret

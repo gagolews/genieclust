@@ -8,3 +8,4 @@ genieclust/*.cpp
 genieclust/*.html
 genieclust.egg-info
 pytest/__pycache__
+.ipynb_checkpoints

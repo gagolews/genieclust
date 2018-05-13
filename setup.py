@@ -70,7 +70,7 @@ setup(
           "matplotlib",
           "sklearn"
       ],
-    #download_url="https://www.github.com/gagolews/genieclust",
+    download_url="https://github.com/gagolews/genieclust",
     url="http://www.gagolewski.com/",
     cmdclass=cmdclass,
     ext_modules=ext_modules

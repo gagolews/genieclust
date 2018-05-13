@@ -394,6 +394,8 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
         Compute a k-partition based on a precomputed MST
         and return the predicted labels.
 
+        This method ignores self.metric.
+
 
         The MST may, for example, be determined as follows:
 
@@ -438,8 +440,6 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
         y : None
             Ignored.
         """
-        # Yup, computing the whole distance matrix here
-        # @TODO@: change this
         mst = MST_pair(
             scipy.spatial.distance.squareform(
                 scipy.spatial.distance.pdist(X, self.metric)),
@@ -450,6 +450,9 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
     cpdef fit_from_mst(self, tuple mst):
         """
         Compute a k-partition based on a precomputed MST.
+
+        This method ignores self.metric.
+
 
         The MST may, for example, be determined as follows:
 
