@@ -1,4 +1,9 @@
-#cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True, language_level=3
+# cython: boundscheck=False
+# cython: cdivision=True
+# cython: nonecheck=False
+# cython: wraparound=False
+# cython: language_level=3
+
 
 """
 Determine the index of the k-th smallest element in an array
@@ -31,19 +36,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
-
-cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-cimport numpy as np
-import numpy as np
-from libc.math cimport fabs
-import warnings
-
-
-ctypedef fused arrayT:
-    np.ndarray[np.double_t]
-    np.ndarray[np.int_t]
-
 
 cpdef np.int_t argkmin(arrayT x, np.int_t k):
     """

@@ -1,4 +1,9 @@
-#cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True, language_level=3
+# cython: boundscheck=False
+# cython: cdivision=True
+# cython: nonecheck=False
+# cython: wraparound=False
+# cython: language_level=3
+
 
 """
 Minimum Spanning Tree Algorithm
@@ -33,17 +38,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cimport numpy as np
-import numpy as np
 cimport cython
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
+cimport numpy as np
+import numpy as np
+from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
+import scipy.spatial.distance
+import warnings
+
+
 
 
 cdef extern from "stdlib.h":
     ctypedef void const_void "const void"
     void qsort(void *base, int num, int size,
                 int(*compar)(const_void*, const_void*)) nogil
+
 
 
 cdef struct MST_triple:

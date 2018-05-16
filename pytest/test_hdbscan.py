@@ -2,6 +2,7 @@ import numpy as np
 from genieclust.hdbscan import *
 from genieclust.inequity import*
 from genieclust.mst import *
+from genieclust.internal import mutual_reachability_distance
 import time
 import gc
 

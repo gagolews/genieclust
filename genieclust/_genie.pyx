@@ -1,7 +1,12 @@
-#cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True, language_level=3
+# cython: boundscheck=False
+# cython: cdivision=True
+# cython: nonecheck=False
+# cython: wraparound=False
+# cython: language_level=3
+
 
 """
-The Genie Clustering Algorithm
+The Genie Clustering Algorithm (internal functions)
 
 Copyright (C) 2018 Marek.Gagolewski.com
 All rights reserved.
@@ -32,16 +37,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-cimport numpy as np
-import numpy as np
-from libc.math cimport fabs
-#from sklearn.base import BaseEstimator, ClusterMixin
-import scipy.spatial.distance
-
-include "disjoint_sets.pyx"
-include "mst.pyx"
 
 cdef class GiniDisjointSets(DisjointSets):
     """
@@ -314,8 +309,14 @@ cdef class GiniDisjointSets(DisjointSets):
         return "GiniDisjointSets("+repr(self.to_lists())+")"
 
 
-cdef class Genie(): # (BaseEstimator, ClusterMixin):
+
+
+cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
+                     np.int_t n_clusters=2,
+                     np.double_t gini_threshold=0.3):
     """
+    Compute a k-partition based on a precomputed MST.
+
     The Genie Clustering Algorithm
 
     Gagolewski M., Bartoszuk M., Cena A.,
@@ -329,16 +330,27 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
     usefulness of the introduced method: it most often outperforms
     the Ward or average linkage, k-means, spectral clustering,
     DBSCAN, Birch, and others in terms of the clustering
-    quality while retaining the single linkage speed,
+    quality while retaining the single linkage speed.
 
 
-    This is a new implementation of an O(n sqrt(n))-time algorithm
-    (provided that the MST /minimum spanning tree of the
-    pairwise distance graph/ has already been computed).
+    This is a new implementation of an O(n sqrt(n))-time algorithm.
+
+    This method ignores self.metric.
+
+
+    The MST may, for example, be determined as follows:
+
+    mst = genieclust.mst.MST_pair(
+        scipy.spatial.distance.squareform(
+            scipy.spatial.distance.pdist(X, "euclidean")),
+
 
 
     Parameters:
     ----------
+
+    mst : tuple
+        See genieclust.mst.MST_pair()
 
     n_clusters : int, default=2
         Number of clusters the data is split into.
@@ -346,197 +358,69 @@ cdef class Genie(): # (BaseEstimator, ClusterMixin):
     gini_threshold : float, default=0.3
         The threshold for the Genie correction
 
-    metric : str or function, default="euclidean"
-        See scipy.spatial.distance.pdist()
 
+    Returns:
+    -------
 
-    Attributes:
-    --------
-
-    labels_ : ndarray, shape (n_samples,)
-        Cluster labels for each point in the dataset given to fit():
-        an integer vector c with c[i] denoting the cluster id
-        (in {0, ..., n_clusters-1}) of the i-th object.
+    labels_ : ndarray, shape (n,)
+        Predicted labels, representing a partition of X.
+        labels_[i] gives the cluster id of the i-th input point.
     """
+    cdef np.int_t n, i, curidx, m, i1, i2, lastm, lastidx, previdx
 
-    cdef np.int_t n_clusters
-    cdef np.double_t gini_threshold
-    cdef str metric
-    cdef object labels_
+    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
+    #cdef np.ndarray[np.double_t] mst_d = mst[1] -- not needed
+    n = mst_i.shape[0]+1
 
-    def __cinit__(self,
-                  np.int_t n_clusters=2,
-                  np.double_t gini_threshold=0.3,
-                  metric="euclidean"):
-        self.n_clusters = n_clusters
-        self.gini_threshold = gini_threshold
-        self.metric = metric
-        self.labels_ = None
+    cdef np.int_t* next_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
+    cdef np.int_t* prev_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
+    for i in range(n-1):
+        next_edge[i] = i+1
+        prev_edge[i] = i-1
 
+    cdef GiniDisjointSets ds = GiniDisjointSets(n)
 
-    cpdef np.ndarray[np.int_t] fit_predict(self, np.double_t[:,:] X, y=None):
-        """
-        Compute a k-partition and return the predicted labels.
+    curidx = 0
+    lastidx = 0
+    lastm = 0
+    for i in range(n-n_clusters):
+        if ds.get_gini() > gini_threshold:
+            m = ds.get_smallest_count()
+            if m != lastm or lastidx < curidx:
+                lastidx = curidx
+            #assert lastidx < n-1
+            #assert lastidx >= 0
 
-        @TODO@: do not compute the whole distance matrix.
-        The current version requires O(n**2) memory.
-
-
-        Parameters:
-        ----------
-
-        X : ndarray, shape (n,d)
-            A matrix defining n points in a d-dimensional vector space.
-
-        y : None
-            Ignored.
-
-
-        Returns:
-        -------
-
-        labels_ : ndarray, shape (n,)
-            Predicted labels, representing a partition of X.
-            labels_[i] gives the cluster id of the i-th input point.
-        """
-        self.fit(X)
-        return self.labels_
-
-
-    cpdef np.ndarray[np.int_t] fit_predict_from_mst(self, tuple mst):
-        """
-        Compute a k-partition based on a precomputed MST
-        and return the predicted labels.
-
-        This method ignores self.metric.
-
-
-        The MST may, for example, be determined as follows:
-
-        mst = genieclust.mst.MST_pair(
-            scipy.spatial.distance.squareform(
-                scipy.spatial.distance.pdist(X, "euclidean")),
-        )
-
-
-        Parameters:
-        ----------
-
-        mst : tuple
-            See genieclust.mst.MST_pair()
-
-
-        Returns:
-        -------
-
-        labels_ : ndarray, shape (n,)
-            Predicted labels, representing a partition of X.
-            labels_[i] gives the cluster id of the i-th input point.
-        """
-        self.fit_from_mst(mst)
-        return self.labels_
-
-
-    cpdef fit(self, np.double_t[:,:] X, y=None):
-        """
-        Compute a k-partition.
-
-        @TODO@: do not compute the whole distance matrix.
-        The current version requires O(n**2) memory.
-
-
-        Parameters:
-        ----------
-
-        X : ndarray, shape (n,d)
-            A matrix defining n points in a d-dimensional vector space.
-
-        y : None
-            Ignored.
-        """
-        mst = MST_pair(
-            scipy.spatial.distance.squareform(
-                scipy.spatial.distance.pdist(X, self.metric)),
-        )
-        self.fit_from_mst(mst)
-
-
-    cpdef fit_from_mst(self, tuple mst):
-        """
-        Compute a k-partition based on a precomputed MST.
-
-        This method ignores self.metric.
-
-
-        The MST may, for example, be determined as follows:
-
-        mst = genieclust.mst.MST_pair(
-            scipy.spatial.distance.squareform(
-                scipy.spatial.distance.pdist(X, "euclidean")),
-
-
-
-        Parameters:
-        ----------
-
-        mst : tuple
-            See genieclust.mst.MST_pair()
-        """
-        cdef np.int_t n, i, curidx, m, i1, i2, lastm, lastidx, previdx
-
-        cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-        #cdef np.ndarray[np.double_t] mst_d = mst[1] -- not needed
-        n = mst_i.shape[0]+1
-
-        cdef np.int_t* next_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
-        cdef np.int_t* prev_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
-        for i in range(n-1):
-            next_edge[i] = i+1
-            prev_edge[i] = i-1
-
-        cdef GiniDisjointSets ds = GiniDisjointSets(n)
-
-        curidx = 0
-        lastidx = 0
-        lastm = 0
-        for i in range(n-self.n_clusters):
-            if ds.get_gini() > self.gini_threshold:
-                m = ds.get_smallest_count()
-                if m != lastm or lastidx < curidx:
-                    lastidx = curidx
+            while ds.get_count(mst_i[lastidx,0]) != m and ds.get_count(mst_i[lastidx,1]) != m:
+                lastidx = next_edge[lastidx]
                 #assert lastidx < n-1
                 #assert lastidx >= 0
 
-                while ds.get_count(mst_i[lastidx,0]) != m and ds.get_count(mst_i[lastidx,1]) != m:
-                    lastidx = next_edge[lastidx]
-                    #assert lastidx < n-1
-                    #assert lastidx >= 0
+            i1, i2 = mst_i[lastidx,0], mst_i[lastidx,1]
 
-                i1, i2 = mst_i[lastidx,0], mst_i[lastidx,1]
-
-                if lastidx == curidx:
-                    curidx = next_edge[curidx]
-                    lastidx = curidx
-                else:
-                    previdx = prev_edge[lastidx]
-                    lastidx = next_edge[lastidx]
-                    #assert previdx < lastidx
-                    #assert previdx >= 0
-                    #assert lastidx < n
-                    next_edge[previdx] = lastidx
-                    prev_edge[lastidx] = previdx
-                lastm = m
-
-
-            else: # single linkage-like
-                i1, i2 = mst_i[curidx,0], mst_i[curidx,1]
+            if lastidx == curidx:
                 curidx = next_edge[curidx]
+                lastidx = curidx
+            else:
+                previdx = prev_edge[lastidx]
+                lastidx = next_edge[lastidx]
+                #assert previdx < lastidx
+                #assert previdx >= 0
+                #assert lastidx < n
+                next_edge[previdx] = lastidx
+                prev_edge[lastidx] = previdx
+            lastm = m
 
 
-            ds.union(i1, i2)
+        else: # single linkage-like
+            i1, i2 = mst_i[curidx,0], mst_i[curidx,1]
+            curidx = next_edge[curidx]
 
 
-        PyMem_Free(prev_edge)
-        PyMem_Free(next_edge)
+        ds.union(i1, i2)
 
-        self.labels_ = ds.to_list_normalized()
+
+    PyMem_Free(prev_edge)
+    PyMem_Free(next_edge)
+
+    return ds.to_list_normalized()

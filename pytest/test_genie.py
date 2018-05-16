@@ -2,6 +2,7 @@ import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import*
 from genieclust.mst import *
+from genieclust.internal import GiniDisjointSets
 import time
 import gc
 

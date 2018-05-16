@@ -1,4 +1,9 @@
-#cython: boundscheck=False, wraparound=False, nonecheck=False, cdivision=True, language_level=3
+# cython: boundscheck=False
+# cython: cdivision=True
+# cython: nonecheck=False
+# cython: wraparound=False
+# cython: language_level=3
+
 
 """
 Adjusted- and Nonadjusted Rand Score, as well as
@@ -38,16 +43,40 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+
+cimport cython
+from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
 import numpy as np
-cimport cython
 from libc.math cimport fabs, sqrt
+from numpy.math cimport INFINITY
+import scipy.spatial.distance
+import warnings
+
 
 
 ctypedef fused intT:
     np.int64_t
     np.int32_t
     np.int_t
+
+ctypedef fused T:
+    np.float64_t
+    np.float32_t
+    np.int64_t
+    np.int32_t
+    np.int_t
+    np.double_t
+
+ctypedef fused arrayT:
+    np.ndarray[np.double_t]
+    np.ndarray[np.int_t]
+
+cdef T square(T x):
+    return x*x
+
+
+
 
 cdef struct RandResult:
     np.float64_t ar

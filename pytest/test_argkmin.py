@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from genieclust.argkmin import *
+from genieclust.internal import argkmin
 
 
 # np.random.seed(123)

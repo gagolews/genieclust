@@ -26,11 +26,8 @@ class sdist(_sdist):
     def run(self):
         # make sure the distributed .pyx files are up-to-date
         from Cython.Build import cythonize
-        cythonize(["genieclust/argkmin.pyx"])
+        cythonize(["genieclust/internal.pyx"])
         cythonize(["genieclust/compare_partitions.pyx"])
-        cythonize(["genieclust/disjoint_sets.pyx"])
-        cythonize(["genieclust/genie.pyx"])
-        cythonize(["genieclust/hdbscan.pyx"])
         cythonize(["genieclust/inequity.pyx"])
         cythonize(["genieclust/mst.pyx"])
         _sdist.run(self)
@@ -42,13 +39,10 @@ ext_modules = [ ]
 
 
 ext_modules += [
-    Extension("genieclust.inequity", [ "genieclust/inequity.pyx" ]),
+    Extension("genieclust.internal", [ "genieclust/internal.pyx" ]),
     Extension("genieclust.compare_partitions", [ "genieclust/compare_partitions.pyx" ]),
-    Extension("genieclust.disjoint_sets", [ "genieclust/disjoint_sets.pyx" ]),
-    Extension("genieclust.mst", [ "genieclust/mst.pyx" ]),
-    Extension("genieclust.genie", [ "genieclust/genie.pyx" ]),
-    Extension("genieclust.hdbscan", [ "genieclust/hdbscan.pyx" ]),
-    Extension("genieclust.argkmin", [ "genieclust/argkmin.pyx" ]),
+    Extension("genieclust.inequity", [ "genieclust/inequity.pyx" ]),
+    Extension("genieclust.mst", [ "genieclust/mst.pyx" ])
 ]
 cmdclass.update({ 'build_ext': build_ext })
 
