@@ -233,3 +233,14 @@ class HDBSCAN(BaseEstimator, ClusterMixin):
         """
         self.labels_ = internal.hdbscan_from_mst(MST,
             self.n_clusters)
+
+
+    def __repr__(self):
+        """
+        Return repr(self).
+        """
+        return "HDBSCAN(n_clusters=%r, M=%r, metric=%r)" % (
+            self.n_clusters,
+            self.M,
+            self.metric
+        )

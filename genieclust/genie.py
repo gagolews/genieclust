@@ -215,3 +215,14 @@ class Genie(BaseEstimator, ClusterMixin):
         """
         self.labels_ = internal.genie_from_mst(MST,
             self.n_clusters, self.gini_threshold)
+
+
+    def __repr__(self):
+        """
+        Return repr(self).
+        """
+        return "Genie(n_clusters=%r, gini_threshold=%r, metric=%r)" % (
+            self.n_clusters,
+            self.gini_threshold,
+            self.metric
+        )
