@@ -20,6 +20,7 @@ from setuptools import setup
 from distutils.extension import Extension
 from distutils.command.sdist import sdist as _sdist
 from Cython.Distutils import build_ext
+import numpy as np
 
 
 class sdist(_sdist):
@@ -39,10 +40,18 @@ ext_modules = [ ]
 
 
 ext_modules += [
-    Extension("genieclust.internal", [ "genieclust/internal.pyx" ]),
-    Extension("genieclust.compare_partitions", [ "genieclust/compare_partitions.pyx" ]),
-    Extension("genieclust.inequity", [ "genieclust/inequity.pyx" ]),
-    Extension("genieclust.mst", [ "genieclust/mst.pyx" ])
+    Extension("genieclust.internal",
+                ["genieclust/internal.pyx"],
+                include_dirs=[np.get_include()]),
+    Extension("genieclust.compare_partitions",
+                ["genieclust/compare_partitions.pyx"],
+                include_dirs=[np.get_include()]),
+    Extension("genieclust.inequity",
+                ["genieclust/inequity.pyx"],
+                include_dirs=[np.get_include()]),
+    Extension("genieclust.mst",
+                ["genieclust/mst.pyx"],
+                include_dirs=[np.get_include()])
 ]
 cmdclass.update({ 'build_ext': build_ext })
 

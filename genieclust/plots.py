@@ -56,9 +56,9 @@ def plot_scatter(X, labels, **kwargs):
     """
     col = ["k", "r", "g", "b", "c", "m", "y"]+list(plt.cm.get_cmap("tab10").colors)
     mrk = ["o", "v", "^", "s", "P", "*", "<", ">"]
-    for i in np.unique(labels)+1: # -1 is black, 0 is red, etc.
+    for i in np.unique(labels): # -1 is black, 0 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
-            c=col[i % len(col)], marker=mrk[i % len(mrk)], **kwargs)
+            c=col[(i+1) % len(col)], marker=mrk[(i+1) % len(mrk)], **kwargs)
 
 
 def plot_segments(X, pairs, **kwargs):
