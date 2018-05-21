@@ -40,9 +40,9 @@ from . import mst
 
 class Genie(BaseEstimator, ClusterMixin):
     """
-    The Genie Clustering Algorithm
+    The Genie+ Clustering Algorithm with noise point detection
 
-    Gagolewski M., Bartoszuk M., Cena A.,
+    Based on: Gagolewski M., Bartoszuk M., Cena A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
@@ -54,7 +54,6 @@ class Genie(BaseEstimator, ClusterMixin):
     the Ward or average linkage, k-means, spectral clustering,
     DBSCAN, Birch, and others in terms of the clustering
     quality while retaining the single linkage speed.
-
 
     This is a new implementation of an O(n sqrt(n))-time algorithm
     (provided that the MST /minimum spanning tree of the

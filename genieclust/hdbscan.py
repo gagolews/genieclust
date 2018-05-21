@@ -42,7 +42,7 @@ from . import mst
 
 class HDBSCAN(BaseEstimator, ClusterMixin):
     """
-    An implementation of the HDBSCAN* Clustering Algorithm,
+    A toy implementation of the HDBSCAN* Clustering Algorithm,
     that yields a specific number of clusters, and hence
     is not dependent on the original DBSCAN's somehow magical
     parameter eps.
@@ -61,6 +61,11 @@ class HDBSCAN(BaseEstimator, ClusterMixin):
     The genieclust.internal.mutual_reachability_distance() function returns
     a pairwise distance matrix that enables to take the smoothing
     factor M into account.
+
+    Unlike the implementation in the HDBSCAN package for Python,
+    no robustifying mods are applied to the single linkage procedure here
+    (like the min_cluster_size requirement, cluster "stability" measurement, etc.).
+    This is by design.
 
     Note that for smoothing factor M == 1, you should use the ordinary
     single linkage algorithm, i.e., mark no points as noise.
