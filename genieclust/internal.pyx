@@ -766,107 +766,6 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
 
 
 
-cpdef np.ndarray[np.int_t] hdbscan_from_mst(tuple mst, np.int_t n_clusters):
-    """
-    An implementation of the HDBSCAN* Clustering Algorithm,
-    that yields a specific number of clusters, and hence
-    is not dependent on the original DBSCAN's somehow magical
-    parameter eps.
-
-    Expected run-time of this procedure (based on a precomputed MST
-    with edges ordered w.r.t. increasing weights) is O(n).
-
-    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi:10.1145/2733381.
-
-    Basically this is the single linkage algorithm that marks all
-    leaves in the corresponding minimum spanning tree as noise points.
-    Normally we construct the MST w.r.t. the mutual reachability distance,
-    see genieclust.internal.mutual_reachability_distance(),
-    see the HDBSCAN class for more details.
-
-    The MST may, for example, be determined as follows:
-
-    mst = genieclust.mst.MST_pair(
-        genieclust.internal.mutual_reachability_distance(
-            scipy.spatial.distance.squareform(
-                scipy.spatial.distance.pdist(X, metric)),
-            M)
-    )
-
-    The authors of the original manuscript suggest some post-processing
-    of the results, as in practice the number of noise points tends
-    to be very large. For instance, "cluster boundary points"
-    can be merged back with the nearest clusters.
-
-    Another option is just to merge all noise points with their
-    nearest clusters, see genieclust.internal.merge_leaves_with_nearest_clusters().
-    This yields a classical n_clusters-partition of a data set (with no notion
-    of noise).
-
-
-    Parameters:
-    ----------
-
-    mst : tuple
-        See genieclust.mst.MST_pair()
-
-    n_clusters : int, default=2
-        Number of clusters the data is split into.
-
-
-    Returns:
-    -------
-
-    labels_ : ndarray, shape (n,)
-        Predicted labels, representing a partition of X.
-        labels_[i] gives the cluster id of the i-th input point.
-        -1 denotes the noise cluster.
-    """
-
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-    cdef np.int_t n = mst_i.shape[0]+1, i, i1, i2
-    cdef np.int_t num_leaves = 0, first_leaf = -1, first_leaf_cluster_id
-    cdef np.ndarray[np.int_t] ret
-    cdef DisjointSets ds = DisjointSets(n)
-    cdef np.ndarray[np.int_t] deg = get_tree_node_degrees(mst_i)
-
-    for i in range(n):
-        # get the number of leaves, id of the first leaf,
-        # and construct the "noise cluster"
-        if deg[i] == 1:
-            num_leaves += 1
-            if num_leaves == 1:
-                first_leaf = i
-            else:
-                ds.union(first_leaf, i)
-    assert num_leaves >= 2
-
-    for i in range(n-1):
-        i1, i2 = mst_i[i,0], mst_i[i,1]
-        if deg[i1] == 1 or deg[i2] == 1:
-            # a leaf -> ignore
-            continue
-
-        ds.union(i1, i2)
-        if len(ds) == n_clusters:
-            break
-    else:
-        raise Exception("The requested number of clusters is too large \
-            with this many noise points")
-
-    ret = ds.to_list_normalized()
-    first_leaf_cluster_id = ret[first_leaf]
-    for i in range(n):
-        if   ret[i] == first_leaf_cluster_id: ret[i]  = -1 # mark as noise
-        elif ret[i] >  first_leaf_cluster_id: ret[i] -=  1 # get rid of...
-                                # the noise cluster from the resulting partition
-
-    return ret
-
-
 #############################################################################
 # The Genie Clustering Algorithm (internal)
 #############################################################################
@@ -936,7 +835,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
         If noise_leaves==True, then label -1 denotes a noise point.
     """
     cdef np.int_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
-    cdef noise_count = 0
+    cdef noise_count
     cdef np.ndarray[np.int_t] res
     cdef np.int_t* next_edge
     cdef np.int_t* prev_edge
@@ -950,6 +849,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     denoise_index     = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
     denoise_index_rev = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
     # Create the non-noise points' translation table (for GiniDisjointSets)
+    noise_count = 0
     if noise_leaves:
         j = 0
         for i in range(n):
@@ -993,10 +893,10 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
                     prev_edge[i] = lastidx
                 lastidx = i
 
-        lastidx = -1
         next_edge[lastidx] = n
+        lastidx = curidx # first non-leaf
     else:
-        curidx = 0
+        curidx  = 0
         lastidx = 0
         for i in range(n-1):
             next_edge[i] = i+1
@@ -1010,13 +910,12 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
             m = ds.get_smallest_count()
             if m != lastm or lastidx < curidx:
                 lastidx = curidx
-            #assert lastidx < n-1
-            #assert lastidx >= 0
+            assert 0 <= lastidx < n-1
 
-            while ds.get_count(mst_i[lastidx,0]) != m and ds.get_count(mst_i[lastidx,1]) != m:
+            while ds.get_count(denoise_index_rev[mst_i[lastidx,0]]) != m and \
+                  ds.get_count(denoise_index_rev[mst_i[lastidx,1]]) != m:
                 lastidx = next_edge[lastidx]
-                #assert lastidx < n-1
-                #assert lastidx >= 0
+                assert 0 <= lastidx < n-1
 
             i1, i2 = mst_i[lastidx,0], mst_i[lastidx,1]
 
@@ -1026,18 +925,17 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
             else:
                 previdx = prev_edge[lastidx]
                 lastidx = next_edge[lastidx]
-                #assert previdx < lastidx
-                #assert previdx >= 0
-                #assert lastidx < n
+                assert 0 <= previdx < lastidx < n
                 next_edge[previdx] = lastidx
                 prev_edge[lastidx] = previdx
             lastm = m
 
         else: # single linkage-like
+            assert 0 <= curidx < n-1
             i1, i2 = mst_i[curidx,0], mst_i[curidx,1]
             curidx = next_edge[curidx]
 
-        ds.union(denoise_index[i1], denoise_index[i2])
+        ds.union(denoise_index_rev[i1], denoise_index_rev[i2])
 
 
 
@@ -1048,7 +946,8 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     for i in range(n):
         if denoise_index_rev[i] >= 0:
             # a non-noise point
-            j = ds.find(denoise_index_rev[i])
+            j = denoise_index[ds.find(denoise_index_rev[i])]
+            assert 0 <= j < n
             if res_cluster_id[j] < 0:
                 res_cluster_id[j] = c
                 c += 1

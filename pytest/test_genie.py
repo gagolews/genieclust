@@ -1,6 +1,7 @@
 import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import*
+from genieclust.compare_partitions import*
 from genieclust.mst import *
 from genieclust.internal import GiniDisjointSets
 import time
@@ -40,33 +41,44 @@ rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
 def test_genie():
-    for dataset in ["unbalance", "s1", "pathbased", "a1", "Aggregation", "WUT_Smile"]: #, "bigger"
-        for g in [0.01, 0.1, 0.3, 0.5, 1.0]:
-            gc.collect()
-            if dataset == "bigger":
-                np.random.seed(123)
-                n = 25000
-                X = np.random.normal(size=(n,2))
-                labels = np.random.choice(np.r_[1,2], n)
-            else:
-                X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
-                labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype='int')
-            label_counts = np.unique(labels,return_counts=True)[1]
-            k = len(label_counts)
-            D = scipy.spatial.distance.pdist(X)
-            D = scipy.spatial.distance.squareform(D)
+    for dataset in ["pathbased", "s1", "a1", "Aggregation", "WUT_Smile", "unbalance"]: #, "bigger"
+        if dataset == "bigger":
+            np.random.seed(123)
+            n = 25000
+            X = np.random.normal(size=(n,2))
+            labels = np.random.choice(np.r_[1,2], n)
+        else:
+            X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype='int')
+        label_counts = np.unique(labels,return_counts=True)[1]
+        k = len(label_counts)
 
-            t0 = time.time()
-            M = MST_pair(D)
-            res1 = Genie(k, g).fit_predict_from_mst(M)+1
-            print("%-20s g=%.2f\t t_py=%.3f" % (dataset, g, time.time()-t0), end="\t")
+        for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
+            gc.collect()
+
+            #D = scipy.spatial.distance.pdist(X)
+            #D = scipy.spatial.distance.squareform(D)
+
+            print("%-20s g=%.2f"%(dataset,g), end="\t")
+
+            #t0 = time.time()
+            res1 = Genie(k, g).fit_predict(X)+1
+
+            assert len(np.unique(res1)) == k
+            #print("%-20s g=%.2f\t t_py=%.3f" % (dataset, g, time.time()-t0), end="\t")
 
             D = stats.dist(X)
-            t0 = time.time()
+            #t0 = time.time()
             res2 = stats.cutree(genie.hclust2(D, thresholdGini=g), k)
-            print("t_r=%.3f" % (time.time()-t0))
-            res2 = np.array(res2)
-            assert np.all(res1 == res2)
+            #print("t_r=%.3f" % (time.time()-t0))
+            res2 = np.array(res2, np.int_)
+            assert len(np.unique(res2)) == k
+
+            ari = adjusted_rand_score(res1, res2)
+            print("%g" % ari)
+            assert ari>1.0-1e-12
+
+            res1, res2, D = None, None, None
 
 
 if __name__ == "__main__":

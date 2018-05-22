@@ -1,5 +1,5 @@
 import numpy as np
-from genieclust.hdbscan import *
+from genieclust.genie import *
 from genieclust.inequity import*
 from genieclust.mst import *
 from genieclust.internal import mutual_reachability_distance
@@ -24,7 +24,7 @@ import numpy as np
 path = "benchmark_data"
 
 def test_hdbscan():
-    for dataset in ["s1", "Aggregation", "WUT_Smile", "unbalance", "pathbased", "a1"]:
+    for dataset in ["jain", "pathbased", "s1", "Aggregation", "WUT_Smile", "unbalance", "a1"]:
         X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
         labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype='int')
         label_counts = np.unique(labels,return_counts=True)[1]
@@ -43,11 +43,11 @@ def test_hdbscan():
             dist = np.mean((D1 - D2)**2)
             assert dist < 1e-12
 
-            for k in [2, 3, 5]:
-                mst = MST_pair(D1)
-                cl = HDBSCAN(k).fit_predict_from_mst(mst)+1
-                assert max(cl) == k
-                print(np.unique(cl, return_counts=True))
+            for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
+                for k in [2, 3, 5]:
+                    cl = Genie(k, gini_threshold=g, M=M).fit_predict(X)
+                    assert max(cl) == k-1
+                    print(np.unique(cl, return_counts=True))
 
             D1 = None
             D2 = None

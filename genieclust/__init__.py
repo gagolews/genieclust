@@ -8,5 +8,4 @@ from . import inequity
 from . import compare_partitions
 from . import mst
 from . import genie
-from . import hdbscan
 from . import plots
