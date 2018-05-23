@@ -46,8 +46,8 @@ see R package [`genie`](https://cran.r-project.org/package=genie).
 Package Features
 ================
 
-* The Genie algorithm (with a scikit-learn-like interface)
-* The HDBSCAN* algorithm (with a scikit-learn-like interface)
+* The Genie+ algorithm (using a `scikit-learn`-like interface),
+together with a robustified version of HDBSCAN*
 * DisjointSets data structure (with extensions)
 * Various inequity measures (the Gini index, the Bonferroni index, etc.)
 * Functions to compute partition similarity measures
@@ -61,7 +61,8 @@ Installation
 ============
 
 The package requires Python 3.6+ together with
-sklearn, numpy, scipy, matplotlib, and cython.
+`sklearn`, `numpy`, `scipy`, and `matplotlib`.
+Developed with Cython.
 
 
 Via `pip`:
@@ -82,8 +83,8 @@ python setup.py install --user
 Examples
 ========
 
-* [The Genie Algorithm - basic use](example_genie.ipynb)
-* [The HDBSCAN* Algorithm - without and with the Genie correction](example_hdbscan.ipynb)
+* [The Genie Algorithm - basic use](example_genie_basic.ipynb)
+* [The Genie Algorithm with Noise Points Detection](example_genie_hdbscan.ipynb)
 
 
 License
