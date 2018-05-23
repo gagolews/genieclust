@@ -1,8 +1,8 @@
-Genieclust Python Package (**under development**)
+genieclust Python Package (**under development**)
 =========================
 
-The *Genie*  clustering algorithm
----------------------------------
+The *Genie*+  Clustering Algorithm
+----------------------------------
 
 Author: [Marek Gagolewski](http://www.gagolewski.com)
 
@@ -36,10 +36,9 @@ doi:[10.1016/j.ins.2016.05.003](http://dx.doi.org/10.1016/j.ins.2016.05.003)
 
 
 
-This is a new, O(n*sqrt(n)) implementation of the algorithm
-(given a pre-computed minimum spanning tree).
-For the original version,
-see R package [`genie`](https://cran.r-project.org/package=genie).
+This is a new, faster and even more robust implementation
+of the original algorithm available on CRAN,
+see R package [`genie`](http://www.gagolewski.com/software/genie/).
 
 
 
@@ -61,14 +60,13 @@ Installation
 ============
 
 The package requires Python 3.6+ together with
-`sklearn`, `numpy`, `scipy`, and `matplotlib`.
-Developed with Cython.
+`sklearn`, `numpy`, `scipy`, `matplotlib`, and `cython`.
 
 
-Via `pip`:
+Via `pip` - see [PyPI](https://pypi.org/project/genieclust/):
 
 ```python
-# @TODO@ - not yet on PyPI
+pip install genieclust # or pip install genieclust --user
 ```
 
 The most recent development version:
@@ -83,8 +81,8 @@ python setup.py install --user
 Examples
 ========
 
-* [The Genie Algorithm - basic use](example_genie_basic.ipynb)
-* [The Genie Algorithm with Noise Points Detection](example_genie_hdbscan.ipynb)
+* [The Genie Algorithm - basic use](https://github.com/gagolews/genieclust/blob/master/example_genie_basic.ipynb)
+* [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/example_genie_hdbscan.ipynb)
 
 
 License

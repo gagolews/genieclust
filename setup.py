@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 
-from setuptools import setup
+import setuptools
 from distutils.extension import Extension
 from distutils.command.sdist import sdist as _sdist
 from Cython.Distutils import build_ext
@@ -57,15 +57,20 @@ cmdclass.update({ 'build_ext': build_ext })
 
 
 
-setup(
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
     name="genieclust",
-    version="1.0",
-    description="The Genie Clustering Algorithm Suite",
+    version="0.1.a2",
+    description="The Genie+ Clustering Algorithm",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Marek Gagolewski",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
     maintainer_email="marek@gagolewski.com",
-    license="GNU GPL v3 or later",
+    license="BSD-3-Clause",
     install_requires=[
           "numpy",
           "scipy",
@@ -74,7 +79,15 @@ setup(
           "sklearn"
       ],
     download_url="https://github.com/gagolews/genieclust",
-    url="http://www.gagolewski.com/",
+    url="http://www.gagolewski.com/software/",
+    packages=setuptools.find_packages(),
+    classifiers=(
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: BSD License",
+        "Operating System :: OS Independent",
+        "Development Status :: 3 - Alpha",
+        "Topic :: Scientific/Engineering",
+    ),
     cmdclass=cmdclass,
     ext_modules=ext_modules
 )
