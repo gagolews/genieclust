@@ -1,11 +1,12 @@
-# XXXcythonXXX: XXboundscheck=False
-# XXXcythonXXX: XXcdivision=True
-# XXXcythonXXX: XXnonecheck=False
-# XXXcythonXXX: XXwraparound=False
-# XXXcythonXXX: XXlanguage_level=3
+# cython: boundscheck=False
+# cython: cdivision=True
+# cython: nonecheck=False
+# cython: wraparound=False
+# cython: language_level=3
+
 
 """
-The Genie clustering algorithm (with extras)
+The Genie+ clustering algorithm (with extras)
 Copyright (C) 2018 Marek.Gagolewski.com
 All rights reserved.
 
@@ -767,7 +768,7 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
 
 
 #############################################################################
-# The Genie Clustering Algorithm (internal)
+# The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
 cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
@@ -777,7 +778,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     """
     Compute a k-partition based on a precomputed MST.
 
-    The Genie Clustering Algorithm (with extensions)
+    The Genie+ Clustering Algorithm (with extensions)
 
     Gagolewski M., Bartoszuk M., Cena A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
@@ -871,7 +872,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
         PyMem_Free(denoise_index)
         PyMem_Free(denoise_index_rev)
         raise Exception("The requested number of clusters is too large \
-            with this many noise points")
+            with this many detected noise points")
 
     # When the Genie correction is on, some MST edges will be chosen
     # in a non-consecutive order. An array-based skiplist will speed up
@@ -893,7 +894,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
                     prev_edge[i] = lastidx
                 lastidx = i
 
-        next_edge[lastidx] = n
+        next_edge[lastidx] = n-1
         lastidx = curidx # first non-leaf
     else:
         curidx  = 0
@@ -919,13 +920,16 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
 
             i1, i2 = mst_i[lastidx,0], mst_i[lastidx,1]
 
+            assert lastidx >= curidx
             if lastidx == curidx:
                 curidx = next_edge[curidx]
                 lastidx = curidx
             else:
                 previdx = prev_edge[lastidx]
                 lastidx = next_edge[lastidx]
-                assert 0 <= previdx < lastidx < n
+                assert 0 <= previdx
+                assert previdx < lastidx
+                assert lastidx < n
                 next_edge[previdx] = lastidx
                 prev_edge[lastidx] = previdx
             lastm = m
