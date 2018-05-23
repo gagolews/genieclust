@@ -65,7 +65,7 @@ The package requires Python 3.6+ together with
 
 Via `pip` - see [PyPI](https://pypi.org/project/genieclust/):
 
-```python
+```bash
 pip install genieclust # or pip install genieclust --user
 ```
 

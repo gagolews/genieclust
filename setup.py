@@ -62,7 +62,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="0.1.a2",
+    version="0.1.a3",
     description="The Genie+ Clustering Algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
