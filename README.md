@@ -59,13 +59,14 @@ together with a robustified version of HDBSCAN*
 Installation
 ============
 
-The package requires Python 3.6+ together with
-`sklearn`, `numpy`, `scipy`, `matplotlib`, and `cython`.
+The package requires Python 3.6+ together with `cython`
+as well as `numpy`, `scipy`, `matplotlib`, and `sklearn`.
 
 
 Via `pip` - see [PyPI](https://pypi.org/project/genieclust/):
 
 ```bash
+conda install pip      # if using conda
 pip install genieclust # or pip install genieclust --user
 ```
 

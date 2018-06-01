@@ -78,15 +78,17 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
 
 cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     """
-    A Prim-like algorithm for determining a minimum spanning tree (MST)
-    based on a precomputed pairwise n*n distance matrix
-    (defining edge weights of the complete undirected loop-free graph
-    with vertices set {0,1,...n-1}), where
+    A Jarník (Prim/Dijkstra)-like algorithm for determining
+    a minimum spanning tree (MST) based on a precomputed pairwise
+    n*n distance matrix (defining edge weights of the complete undirected
+    loop-free graph with vertices set {0,1,...n-1}), where
     D[i,j] = D[j,i] denotes the distance between point i and j.
+
+    Note that there may be multiple minimum trees spanning a given vertex set.
 
 
     @TODO@: write a version of the algorithm that computes
-    the pairwise distances (for a range of metrics) on the flight,
+    the pairwise distances (for a range of metrics) on the fly,
     so that the memory use is better than O(n**2). Also,
     use OpenMP to parallelize the inner loop.
     However, we will still need function to compute an MST based
@@ -99,6 +101,9 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     M. Gagolewski, M. Bartoszuk, A. Cena,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363 (2016) 8–23.
+
+    V. Jarník, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
     C.F. Olson, Parallel algorithms for hierarchical clustering,
     Parallel Comput. 21 (1995) 1313–1325.

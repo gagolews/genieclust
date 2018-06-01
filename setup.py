@@ -25,7 +25,6 @@ import numpy as np
 
 class sdist(_sdist):
     def run(self):
-        # make sure the distributed .pyx files are up-to-date
         from Cython.Build import cythonize
         cythonize(["genieclust/internal.pyx"])
         cythonize(["genieclust/compare_partitions.pyx"])

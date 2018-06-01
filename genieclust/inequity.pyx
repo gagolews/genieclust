@@ -69,7 +69,6 @@ cdef T square(T x):
     return x*x
 
 
-0
 
 cpdef np.float64_t gini(np.ndarray[T] x, bint is_sorted=False):
     """
