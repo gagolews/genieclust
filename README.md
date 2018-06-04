@@ -51,8 +51,6 @@ together with a robustified version of HDBSCAN*
 * Various inequity measures (the Gini index, the Bonferroni index, etc.)
 * Functions to compute partition similarity measures
 (the Rand, adjusted Rand, Fowlkes-Mallows, and adjusted Fowlkes-Mallows index)
-* An implementation of the Prim algorithm to compute the minimum spanning tree
-(@TODO@ parallelized, requiring O(n**2) time and O(n) memory)
 * Various plotting functions
 
 
