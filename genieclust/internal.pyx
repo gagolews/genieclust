@@ -668,14 +668,68 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndar
     return cl
 
 
+cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
+    """
+    Given a pairwise distance matrix, computes the "core distance", i.e.,
+    the distance of each point to its M-th nearest neighbor.
+    Note that M==1 always yields all the distances equal to 0.0.
+    The core distances are needed when computing the mutual reachability
+    distance in the HDBSCAN* algorithm.
+
+    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
+    estimates for data clustering, visualization, and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
+    doi: 10.1145/2733381.
+
+    The input distance matrix for a given point cloud X may be computed,
+    e.g., via a call to
+    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+
+    M : int
+        A smoothing factor >= 1.
+
+
+    Returns:
+    -------
+
+    Dcore : ndarray, shape (n_samples,)
+        Dcore[i] gives the distance between the i-th point and its M-th nearest
+        neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
+    """
+    cdef np.int_t n = D.shape[0], i, j
+    cdef np.double_t v
+    cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double_)
+    cdef np.ndarray[np.double_t] row
+
+    if M < 1: raise Exception("M < 2")
+    if D.shape[1] != n: raise Exception("not a square matrix")
+    if M >= n: raise Exception("M >= matrix size")
+
+    if M == 1: return Dcore
+
+    for i in range(n):
+        row = D[i,:]
+        j = argkmin(row, M-1)
+        Dcore[i] = D[i, j]
+
+    return Dcore
+
+
 cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
     """
     Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. a smoothing
-    factor M >= 2. Note that for M <= 2 the mutual reachability distance
+    factor M >= 1. Note that for M <= 2 the mutual reachability distance
     is equivalent to the original distance measure.
 
-    M == 1 is disallowed here, as in such a case the HDBSCAN* algorithm
+    Note that M == 1 should not be used, as in such a case the HDBSCAN* algorithm
     reduces to the single linkage clustering.
 
     See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
@@ -695,7 +749,7 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
         A pairwise n*n distance matrix.
 
     M : int
-        A smoothing factor >= 2.
+        A smoothing factor >= 1.
 
 
     Returns:
@@ -706,28 +760,22 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
     """
     cdef np.int_t n = D.shape[0], i, j
     cdef np.double_t v
-    cdef np.double_t* Dcore
     cdef np.ndarray[np.double_t] row
+    cdef np.ndarray[np.double_t] Dcore
 
-    if M < 2: raise Exception("M < 2")
+    if M < 1: raise Exception("M < 1")
     if D.shape[1] != n: raise Exception("not a square matrix")
-    if M >= n: raise Exception("M >= matrix size")
 
     cdef np.ndarray[np.double_t,ndim=2] R = D.copy()
     if M > 2:
-        Dcore = <np.double_t*>PyMem_Malloc(n*sizeof(np.double_t))
-        for i in range(n):
-            row = D[i,:]
-            j = argkmin(row, M-1)
-            Dcore[i] = D[i, j]
+        Dcore = core_distance(D, M)
+
         for i in range(0, n-1):
             for j in range(i+1, n):
                 v = D[i, j]
                 if v < Dcore[i]: v = Dcore[i]
                 if v < Dcore[j]: v = Dcore[j]
                 R[i, j] = R[j, i] = v
-
-        PyMem_Free(Dcore)
 
     return R
 
