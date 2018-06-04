@@ -626,7 +626,66 @@ cdef class GiniDisjointSets(DisjointSets):
 #############################################################################
 
 
-cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndarray[np.int_t] cl):
+cpdef np.ndarray[np.int_t] merge_boundary_points(
+            tuple mst,
+            np.ndarray[np.int_t] cl,
+            np.ndarray[np.double_t,ndim=2] D,
+            np.ndarray[np.double_t] Dcore):
+    """
+    A noisy k-partition post-processing:
+    given a k-partition (with noise points included),
+    merges all "boundary" noise points with their nearest
+    "core" points.
+
+
+    Parameters:
+    ----------
+
+    mst : tuple
+        See genieclust.internal.MST_wrt_mutual_reachability_distance()
+
+    cl : ndarray, shape (n_samples,)
+        An integer vector c with c[i] denoting the cluster id
+        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
+        Class -1 denotes the `noise' cluster.
+
+    D : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+
+    Dcore : ndarray, shape (n_samples,)
+        The core distance, see genieclust.internal.core_distance()
+
+
+    Returns:
+    -------
+
+    cl : ndarray, shape (n_samples,)
+        A new integer vector c with c[i] denoting the cluster
+        id (in {-1, 0, ..., k-1}) of the i-th object.
+    """
+    cdef np.ndarray[np.int_t] cl2 = cl.copy()
+    cdef np.int_t n = cl.shape[0], i, j0, j1
+    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
+    assert mst_i.shape[0] + 1 == n
+
+    for i in range(n-1):
+        assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
+        if cl[mst_i[i,0]] < 0:
+            j0, j1 = mst_i[i,0],  mst_i[i,1]
+        elif cl[mst_i[i,1]] < 0:
+            j0, j1 = mst_i[i,1],  mst_i[i,0]
+        else:
+            continue
+
+        if D[j1, j0] <= Dcore[j1]:
+            cl2[j0] = cl[j1]
+
+    return cl2
+
+
+cpdef np.ndarray[np.int_t] merge_leaves_with_nearest_clusters(
+            tuple mst,
+            np.ndarray[np.int_t] cl):
     """
     A noisy k-partition post-processing:
     given a k-partition (with noise points included),
@@ -638,7 +697,7 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndar
     ----------
 
     mst : tuple
-        See genieclust.mst.MST_pair().
+        See genieclust.internal.MST_wrt_mutual_reachability_distance().
 
     cl : ndarray, shape (n_samples,)
         An integer vector c with c[i] denoting the cluster id
@@ -653,19 +712,19 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_closets_clusters(tuple mst, np.ndar
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
-    cl = cl.copy()
-    cpdef np.int_t n = cl.shape[0], i, j
+    cdef np.ndarray[np.int_t] cl2 = cl.copy()
+    cdef np.int_t n = cl.shape[0], i
     cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
     assert mst_i.shape[0] + 1 == n
 
     for i in range(n-1):
         assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
         if cl[mst_i[i,0]] < 0:
-            cl[mst_i[i,0]] = cl[mst_i[i,1]]
+            cl2[mst_i[i,0]] = cl[mst_i[i,1]]
         elif cl[mst_i[i,1]] < 0:
-            cl[mst_i[i,1]] = cl[mst_i[i,0]]
+            cl2[mst_i[i,1]] = cl[mst_i[i,0]]
 
-    return cl
+    return cl2
 
 
 cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
@@ -705,7 +764,7 @@ cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np
     """
     cdef np.int_t n = D.shape[0], i, j
     cdef np.double_t v
-    cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double_)
+    cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double)
     cdef np.ndarray[np.double_t] row
 
     if M < 1: raise Exception("M < 2")
@@ -815,6 +874,151 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
 
 
 
+cdef extern from "stdlib.h":
+    ctypedef void const_void "const void"
+    void qsort(void *base, int num, int size,
+                int(*compar)(const_void*, const_void*)) nogil
+
+
+
+cdef struct MST_triple:
+    np.int_t i1
+    np.int_t i2
+    np.double_t w
+
+
+cdef int MST_triple_comparer(const_void* _a, const_void* _b):
+    cdef MST_triple a = (<MST_triple*>_a)[0]
+    cdef MST_triple b = (<MST_triple*>_b)[0]
+    if a.w < b.w:
+        return -1
+    elif a.w > b.w:
+        return 1
+    elif a.i1 != b.i1:
+        return a.i1-b.i1
+    else:
+        return a.i2-b.i2
+
+
+cpdef tuple MST_wrt_mutual_reachability_distance(np.double_t[:,:] D, np.double_t[:] Dcore):
+    """
+    A Jarník (Prim/Dijkstra)-like algorithm for determining
+    a minimum spanning tree (MST) based on a precomputed pairwise
+    n*n mutual reachability distance matrix DM, where
+    DM[i,j] = max{D[i,j], Dcore[i], Dcore[j]} denotes the (augmented)
+    distance between point i and j.
+
+    Note that there may be multiple minimum trees spanning a given vertex set.
+
+    @TODO@: write a version of the algorithm that computes
+    the pairwise distances (for a range of metrics) on the fly,
+    so that the memory use is better than O(n**2). Also,
+    use OpenMP to parallelize the inner loop.
+    However, we will still need function to compute an MST based
+    on the HDBSCAN*'s mutual reachability distance.
+
+
+    References:
+    ----------
+
+    R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
+    estimates for data clustering, visualization, and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
+    doi: 10.1145/2733381.
+
+    M. Gagolewski, M. Bartoszuk, A. Cena,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363 (2016) 8–23.
+
+    V. Jarník, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+
+    C.F. Olson, Parallel algorithms for hierarchical clustering,
+    Parallel Comput. 21 (1995) 1313–1325.
+
+    R. Prim, Shortest connection networks and some generalizations,
+    Bell Syst. Tech. J. 36 (1957) 1389–1401.
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+
+    Dcore : ndarray, shape (n_samples,)
+        The core distance, see genieclust.internal.core_distance()
+
+
+    Returns:
+    -------
+
+    pair : tuple
+         A pair (indices_matrix, corresponding distances);
+         the results are ordered w.r.t. the distances
+         (and then the 1st, and then the 2nd index)
+         The indices_matrix is an (n-1)*2 matrix I such that {I[i,0], I[i,1]}
+         gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
+    """
+
+    cdef np.int_t n = D.shape[0] # D is a square matrix
+    cdef np.int_t i, j
+    cdef np.double_t curd
+    cpdef MST_triple* d = <MST_triple*>PyMem_Malloc(n * sizeof(MST_triple))
+
+
+    cpdef np.double_t* Dnn = <np.double_t*> PyMem_Malloc(n * sizeof(np.double_t))
+    cpdef np.int_t*    Fnn = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
+    cpdef np.int_t*    M   = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
+    for i in range(n):
+        Dnn[i] = INFINITY
+        Fnn[i] = 0xffffffff
+        M[i] = i
+
+    cdef np.int_t lastj = 0, bestj, bestjpos
+    for i in range(n-1):
+        # M[1], ... M[n-i-1] - points not yet in the MST
+        bestjpos = bestj = 0
+        for j in range(1, n-i):
+            curd = D[lastj, M[j]]
+            if curd < Dcore[lastj]: curd = Dcore[lastj]
+            if curd < Dcore[M[j]]: curd = Dcore[M[j]]
+
+            if curd < Dnn[M[j]]:
+                Dnn[M[j]] = curd
+                Fnn[M[j]] = lastj
+            if Dnn[M[j]] < Dnn[bestj]:        # D[0] == INFTY
+                bestj = M[j]
+                bestjpos = j
+        M[bestjpos] = M[n-i-1] # never visit bestj again
+        lastj = bestj          # start from bestj next time
+        # and an edge to MST:
+        d[i].i1, d[i].i2 = (Fnn[bestj], bestj) if Fnn[bestj]<bestj else (bestj, Fnn[bestj])
+        d[i].w = Dnn[bestj]
+
+    PyMem_Free(Fnn)
+    PyMem_Free(Dnn)
+    PyMem_Free(M)
+
+
+
+
+    qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
+
+    cdef np.ndarray[np.int_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.int_)
+    for i in range(n-1):
+        mst_i[i,0] = d[i].i1
+        mst_i[i,1] = d[i].i2
+
+    cdef np.ndarray[np.double_t] mst_d = np.empty(n-1, dtype=np.double)
+    for i in range(n-1):
+        mst_d[i]   = d[i].w
+
+    PyMem_Free(d)
+
+    return mst_i, mst_d
+
+
 #############################################################################
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
@@ -849,10 +1053,6 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
 
     The MST may, for example, be determined as follows:
 
-    mst = genieclust.mst.MST_pair(
-        scipy.spatial.distance.squareform(
-            scipy.spatial.distance.pdist(X, "euclidean")),
-
 
     If gini_threshold==1.0 and noise_leaves==False, then basically this
     is the single linkage algorithm. Set gini_threshold==1.0 and
@@ -864,7 +1064,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     ----------
 
     mst : tuple
-        See genieclust.mst.MST_pair()
+        See genieclust.internal.MST_wrt_mutual_reachability_distance()
 
     n_clusters : int, default=2
         Number of clusters the data is split into.

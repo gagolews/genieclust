@@ -36,7 +36,7 @@ import warnings
 from sklearn.base import BaseEstimator, ClusterMixin
 
 from . import internal
-from . import mst
+
 
 class Genie(BaseEstimator, ClusterMixin):
     """
@@ -77,12 +77,6 @@ class Genie(BaseEstimator, ClusterMixin):
     is not dependent on the original DBSCAN's somehow magical
     parameter eps or the HDBSCAN Python package's min_cluster_size one.
 
-    If M>1, some points may be marked as noise. If some postprocessing
-    is required, you may wish to merge all noise points with their
-    nearest clusters, see genieclust.internal.merge_leaves_with_nearest_clusters().
-    This will yield a classical n_clusters-partition of a data set
-    (with no notion of noise).
-
 
     Parameters:
     ----------
@@ -96,6 +90,11 @@ class Genie(BaseEstimator, ClusterMixin):
     M : int, default=1
         Smoothing factor. M=1 gives the original Genie algorithm,
         which mark no points as noise.
+
+    postprocess : str, one of "boundary" [default], "none", "all"
+        In effect only if M>1. By default, only "boundary" points are merged with
+        their nearest "core" points. To force a classical n_clusters-partition
+        of a data set (with no notion of noise), choose "all".
 
     metric : str or function, default="euclidean"
         See scipy.spatial.distance.pdist()
@@ -115,6 +114,7 @@ class Genie(BaseEstimator, ClusterMixin):
                   n_clusters=2,
                   gini_threshold=0.3,
                   M=1,
+                  postprocess="boundary",
                   metric="euclidean"):
 
         n_clusters = int(n_clusters)
@@ -126,12 +126,19 @@ class Genie(BaseEstimator, ClusterMixin):
             raise Exception("gini_threshold not in [0,1]")
         if M < 1:
             raise Exception("M must be >= 1")
+        assert postprocess in ("boundary", "none", "all")
 
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
         self.metric = metric
         self.M = M
         self.labels_ = None
+
+        self.postprocess = postprocess
+
+        self._Dcore = None  # core distances
+        self._D = None      # pairwise distance matrix (original)
+        self._mst = None    # MST w.r.t. mutual reachability distance
 
 
     def fit_predict(self, X, y=None):
@@ -180,25 +187,32 @@ class Genie(BaseEstimator, ClusterMixin):
         y : None
             Ignored.
         """
-        D = scipy.spatial.distance.squareform(
+        self._D = scipy.spatial.distance.squareform(
             scipy.spatial.distance.pdist(X, self.metric)
         )
 
-        if self.M > 2:
-            D = internal.mutual_reachability_distance(D, self.M)
+        self._Dcore = internal.core_distance(self._D, self.M)
 
-        MST = mst.MST_pair(D)
-        self.labels_ = internal.genie_from_mst(MST,
+        self._mst = internal.MST_wrt_mutual_reachability_distance(self._D, self._Dcore)
+
+        self.labels_ = internal.genie_from_mst(self._mst,
             self.n_clusters, self.gini_threshold, self.M>1)
+
+        if self.postprocess == "boundary":
+            self.labels_ = internal.merge_boundary_points(self._mst,
+                self.labels_, self._D, self._Dcore)
+        elif self.postprocess == "all":
+            self.labels_ = internal.merge_leaves_with_nearest_clusters(self._mst, self.labels_)
 
 
     def __repr__(self):
         """
         Return repr(self).
         """
-        return "Genie(n_clusters=%r, gini_threshold=%r, M=%r, metric=%r)" % (
+        return "Genie(n_clusters=%r, gini_threshold=%r, M=%r, postprocess=%r, metric=%r)" % (
             self.n_clusters,
             self.gini_threshold,
             self.M,
+            self.postprocess,
             self.metric
         )

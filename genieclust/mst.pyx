@@ -44,7 +44,6 @@ cimport numpy as np
 import numpy as np
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
-import scipy.spatial.distance
 import warnings
 
 
@@ -87,14 +86,6 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     Note that there may be multiple minimum trees spanning a given vertex set.
 
 
-    @TODO@: write a version of the algorithm that computes
-    the pairwise distances (for a range of metrics) on the fly,
-    so that the memory use is better than O(n**2). Also,
-    use OpenMP to parallelize the inner loop.
-    However, we will still need function to compute an MST based
-    on the HDBSCAN*'s mutual reachability distance.
-
-
     References:
     ----------
 
@@ -121,7 +112,7 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     Returns:
     -------
 
-    I : ndarray, shape (n,2)
+    I : ndarray, shape (n-1,2)
         An (n-1)*2 matrix I such that {I[i,0], I[i,1]}
         gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
 
@@ -182,23 +173,23 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
          (and then the 1st, and the the 2nd index)
     """
     cdef np.ndarray[np.int_t,ndim=2] mst_i = MST(D)
-    cdef np.int_t n = mst_i.shape[0], i
-    cpdef MST_triple* d = <MST_triple*>PyMem_Malloc(n * sizeof(MST_triple))
-    for i in range(n):
+    cdef np.int_t n = mst_i.shape[0]-1, i
+    cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
+    for i in range(n-1):
         d[i].i1 = mst_i[i,0]
         d[i].i2 = mst_i[i,1]
 
-    for i in range(n):
+    for i in range(n-1):
         d[i].w  = D[d[i].i1, d[i].i2]
 
-    qsort(<void*>(d), n, sizeof(MST_triple), MST_triple_comparer)
+    qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
 
-    for i in range(n):
+    for i in range(n-1):
         mst_i[i,0] = d[i].i1
         mst_i[i,1] = d[i].i2
 
-    cdef np.ndarray[np.double_t] mst_d = np.empty(n, dtype=np.double)
-    for i in range(n):
+    cdef np.ndarray[np.double_t] mst_d = np.empty(n-1, dtype=np.double)
+    for i in range(n-1):
         mst_d[i]   = d[i].w
 
     PyMem_Free(d)
