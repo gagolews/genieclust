@@ -33,6 +33,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import matplotlib.pyplot as plt
 import numpy as np
 
+# module globals:
+col = ["k", "r", "g", "b", "c", "m", "y"]+\
+    list(plt.cm.get_cmap("tab10").colors)+\
+    list(plt.cm.get_cmap("tab20").colors)+\
+    list(plt.cm.get_cmap("tab20b").colors)+\
+    list(plt.cm.get_cmap("tab20c").colors)
+
+mrk = ["o", "v", "s", "^", "P", "*", "<", ">"]
+
+
 def plot_scatter(X, labels, **kwargs):
     """
     Draws a scatter plot.
@@ -54,14 +64,12 @@ def plot_scatter(X, labels, **kwargs):
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter()`.
     """
-    col = ["k", "r", "g", "b", "c", "m", "y"]+list(plt.cm.get_cmap("tab10").colors)
-    mrk = ["o", "v", "^", "s", "P", "*", "<", ">"]
-    for i in np.unique(labels): # -1 is black, 0 is red, etc.
+    for i in np.unique(labels): # 0 is black, 1 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
-            c=col[(i+1) % len(col)], marker=mrk[(i+1) % len(mrk)], **kwargs)
+            c=col[(i) % len(col)], marker=mrk[(i) % len(mrk)], **kwargs)
 
 
-def plot_segments(X, pairs, **kwargs):
+def plot_segments(X, pairs, style="k-", **kwargs):
     """
     Draws a set of disjoint line segments given by
     (X[pairs[i,0],0], X[pairs[i,0],1])--(X[pairs[i,1],0], X[pairs[i,1],1]),
@@ -85,4 +93,4 @@ def plot_segments(X, pairs, **kwargs):
     """
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()
-    plt.plot(xcoords, ycoords, "k-", **kwargs)
+    plt.plot(xcoords, ycoords, style, **kwargs)
