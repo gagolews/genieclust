@@ -6,7 +6,7 @@
 
 
 """
-Minimum Spanning Tree Algorithm
+The Prim-Jarník Minimum Spanning Tree Algorithm for Complete Undirected Graphs
 
 Copyright (C) 2018 Marek.Gagolewski.com
 All rights reserved.
@@ -78,12 +78,10 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
 cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a minimum spanning tree (MST) based on a precomputed pairwise
-    n*n distance matrix (defining edge weights of the complete undirected
-    loop-free graph with vertices set {0,1,...n-1}), where
-    D[i,j] = D[j,i] denotes the distance between point i and j.
+    a(*) minimum spanning tree (MST) of a complete undirected graph
+    with weights given by a symmetric n*n matrix.
 
-    Note that there may be multiple minimum trees spanning a given vertex set.
+    (*) Note that there might be multiple minimum trees spanning a given graph.
 
 
     References:
@@ -107,6 +105,8 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     ----------
 
     D : ndarray, shape (n,n)
+        Edges' weights.
+        It is assumed that D[i,j] == D[j,i] for all i != j.
 
 
     Returns:
@@ -114,7 +114,7 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
 
     I : ndarray, shape (n-1,2)
         An (n-1)*2 matrix I such that {I[i,0], I[i,1]}
-        gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
+        defines the i-th edge of the resulting MST, I[i,0] < I[i,1].
 
     """
     cdef np.int_t n = D.shape[0] # D is a square matrix
@@ -141,7 +141,7 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
                 bestj = M[j]
                 bestjpos = j
         M[bestjpos] = M[n-i-1] # never visit bestj again
-        lastj = bestj       # start from bestj next time
+        lastj = bestj          # next time, start from bestj
         # and an edge to MST:
         I[i,0], I[i,1] = (Fnn[bestj], bestj) if Fnn[bestj]<bestj else (bestj, Fnn[bestj])
 
@@ -154,8 +154,8 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
 
 cpdef tuple MST_pair(np.double_t[:,:] D):
     """
-    Computes a minimum spanning tree of a given pairwise distance matrix,
-    see MST().
+    Computes a minimum spanning tree of a complete undirected graph,
+    see MST(), and orders its edges w.r.t. increasing weights.
 
 
     Parameters:
@@ -168,12 +168,13 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
     -------
 
     pair : tuple
-         A pair (indices_matrix, corresponding distances);
-         the results are ordered w.r.t. the distances
-         (and then the 1st, and the the 2nd index)
+         A pair (indices_matrix, corresponding weights);
+         the results are ordered w.r.t. the weights
+         (and then the 1st, and the the 2nd index);
+         indices_matrix -- see MST()
     """
     cdef np.ndarray[np.int_t,ndim=2] mst_i = MST(D)
-    cdef np.int_t n = mst_i.shape[0]-1, i
+    cdef np.int_t n = mst_i.shape[0]+1, i
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
     for i in range(n-1):
         d[i].i1 = mst_i[i,0]
