@@ -26,8 +26,12 @@
 
     * implement Ania's and Adreas' linkage criteria
 
-
 * genieclust 0.XX (under development)
+
+    * ....
+
+
+* genieclust 0.1a3 (unreleased)
 
     * `Genie` gained a new parameter: `postprocess`, which
     allows for merging boundary points with their nearest core points

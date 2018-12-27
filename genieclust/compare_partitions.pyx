@@ -6,7 +6,7 @@
 
 
 """
-Adjusted- and Nonadjusted Rand Score, as well as
+Adjusted- and Nonadjusted Rand Score,
 Adjusted- and Nonadjusted Fowlkes-Mallows Score
 (for vectors of `small' ints)
 
