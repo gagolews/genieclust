@@ -1,4 +1,4 @@
-genieclust Python Package (**under development**)
+genieclust Python Package
 =========================
 
 The *Genie*+  Clustering Algorithm
