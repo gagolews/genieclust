@@ -33,6 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # module globals:
 col = ["k", "r", "g", "b", "c", "m", "y"]+\
     list(plt.cm.get_cmap("tab10").colors)+\
@@ -40,15 +41,16 @@ col = ["k", "r", "g", "b", "c", "m", "y"]+\
     list(plt.cm.get_cmap("tab20b").colors)+\
     list(plt.cm.get_cmap("tab20c").colors)
 
-mrk = ["o", "v", "s", "^", "P", "*", "<", ">"]
+mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
 
 def plot_scatter(X, labels, **kwargs):
     """
     Draws a scatter plot.
 
-    Unlike `matplitlib.pyplot.scatter()`
-    `labels == i` is always drawn in the same way, no matter the `max(labels)`.
+    Unlike in `matplitlib.pyplot.scatter()`, all points in `X`
+    corresponding to `labels == i` are always drawn in the same way, 
+    no matter the `max(labels)`.
 
 
     Parameters:
@@ -64,9 +66,12 @@ def plot_scatter(X, labels, **kwargs):
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter()`.
     """
+    assert X.shape[1] == 2
+    assert X.shape[0] == labels.shape[0]
     for i in np.unique(labels): # 0 is black, 1 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
             c=col[(i) % len(col)], marker=mrk[(i) % len(mrk)], **kwargs)
+
 
 
 def plot_segments(X, pairs, style="k-", **kwargs):
@@ -91,6 +96,9 @@ def plot_segments(X, pairs, style="k-", **kwargs):
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.plot()`.
     """
+    assert X.shape[1] == 2
+    assert pairs.shape[1] == 2
+    
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()
     plt.plot(xcoords, ycoords, style, **kwargs)
