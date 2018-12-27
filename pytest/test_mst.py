@@ -1,34 +1,49 @@
-#import networkx as nx
-#import numpy as np
+import numpy as np
+from genieclust.mst import *
+from genieclust.mst2 import *
+import time
+import gc
+import sklearn.neighbors
+import scipy.spatial.distance
 
-#def test_MST_list(mst, D):
-    #G = nx.Graph()
-    #for i in range(D.shape[0]-1):
-        #for j in range(i+1, D.shape[0]):
-            #G.add_edge(i, j, weight=D[i, j])
 
-    #mst_test = []
-    #G = nx.minimum_spanning_tree(G)
-    #for e in G.edges():
-        #i, j = e
-        #if i > j: i, j = j,i
-        #mst_test.append( (i, j, D[i, j]) )
-    #mst_test.sort(key=lambda e: e[2])
+def check_MST(X):
+    n = X.shape[0]
+    n_neighbors = n-1
+    kwargs = dict(algorithm='auto')
+    nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, **kwargs)
+    nn.fit(X)
+    dist, ind = nn.kneighbors()
+    mst_i, mst_d = MST_pair2(dist, ind)
 
-    #for i in range(len(mst)):
-        #if mst[i][0] != mst_test[i][0] or mst[i][1] != mst_test[i][1]:
-            #assert mst[i][2] == mst_test[i][2]
-            ##print(i, mst[i], mst_test[i])
+    dist_complete = scipy.spatial.distance.pdist(X)
+    dist_complete = scipy.spatial.distance.squareform(dist_complete)
+    mst_i2, mst_d2 = MST_pair(dist_complete)
 
-    #if not sum([m[2] for m in mst]) == sum([m[2] for m in mst_test]):
-        #return False
+    assert np.all(mst_i == mst_i2)
+    assert np.allclose(mst_d, mst_d2)
+    return True
 
-    #if not len(np.unique([m[0] for m in mst]+[m[1] for m in mst])) == len(mst)+1:
-        #return False
 
-    #G = nx.Graph()
-    #for i,j,_ in mst: G.add_edge(i, j)
-    #if not nx.is_connected(G):
-        #return False
 
-    #return True
+
+def test_MST():
+    path = "benchmark_data"
+    for dataset in ["pathbased", "s1", "a1", "Aggregation", "WUT_Smile", "unbalance"]: #, "bigger"
+        if dataset == "bigger":
+            np.random.seed(123)
+            n = 25000
+            X = np.random.normal(size=(n,2))
+        else:
+            X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+
+        # center X + scale (NOT: standardize!)
+        X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+        X += np.random.normal(0, 0.0001, X.shape)
+
+        print(dataset)
+        check_MST(X)
+
+
+if __name__ == "__main__":
+    test_MST()

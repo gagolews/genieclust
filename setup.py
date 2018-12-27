@@ -30,6 +30,7 @@ class sdist(_sdist):
         cythonize(["genieclust/compare_partitions.pyx"])
         cythonize(["genieclust/inequity.pyx"])
         cythonize(["genieclust/mst.pyx"])
+        cythonize(["genieclust/mst2.pyx"])
         _sdist.run(self)
 
 cmdclass = {}
@@ -50,6 +51,9 @@ ext_modules += [
                 include_dirs=[np.get_include()]),
     Extension("genieclust.mst",
                 ["genieclust/mst.pyx"],
+                include_dirs=[np.get_include()]),
+    Extension("genieclust.mst2",
+                ["genieclust/mst2.pyx"],
                 include_dirs=[np.get_include()])
 ]
 cmdclass.update({ 'build_ext': build_ext })

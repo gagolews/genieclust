@@ -7,5 +7,6 @@ from . import internal
 from . import inequity
 from . import compare_partitions
 from . import mst
+from . import mst2
 from . import genie
 from . import plots

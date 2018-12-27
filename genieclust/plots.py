@@ -31,15 +31,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import matplotlib.pyplot as plt
+import matplotlib.colors
 import numpy as np
 
 
 # module globals:
 col = ["k", "r", "g", "b", "c", "m", "y"]+\
-    list(plt.cm.get_cmap("tab10").colors)+\
-    list(plt.cm.get_cmap("tab20").colors)+\
-    list(plt.cm.get_cmap("tab20b").colors)+\
-    list(plt.cm.get_cmap("tab20c").colors)
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab10").colors]+\
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20").colors]+\
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20b").colors]+\
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20c").colors]
 
 mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
@@ -49,7 +50,7 @@ def plot_scatter(X, labels, **kwargs):
     Draws a scatter plot.
 
     Unlike in `matplitlib.pyplot.scatter()`, all points in `X`
-    corresponding to `labels == i` are always drawn in the same way, 
+    corresponding to `labels == i` are always drawn in the same way,
     no matter the `max(labels)`.
 
 
@@ -98,7 +99,7 @@ def plot_segments(X, pairs, style="k-", **kwargs):
     """
     assert X.shape[1] == 2
     assert pairs.shape[1] == 2
-    
+
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()
     plt.plot(xcoords, ycoords, style, **kwargs)
