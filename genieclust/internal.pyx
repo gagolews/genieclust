@@ -114,8 +114,8 @@ cpdef np.int_t argkmin(arrayT x, np.int_t k):
     """
     cdef np.int_t n = len(x), i, j, ret
     cdef np.int_t* idx
-    if k < 0:  raise Exception("k < 0")
-    if k >= n: raise Exception("k >= n")
+    if k < 0:  raise ValueError("k < 0")
+    if k >= n: raise ValueError("k >= n")
 
     k += 1
     idx = <np.int_t*>PyMem_Malloc(k*sizeof(np.int_t))
@@ -172,7 +172,7 @@ cdef class DisjointSets:
     cdef np.int_t* par
 
     def __cinit__(self, np.int_t n):
-        if n <= 0: raise Exception("n <= 0")
+        if n <= 0: raise ValueError("n <= 0")
         cdef np.int_t i
 
         self.n = n
@@ -221,7 +221,7 @@ cdef class DisjointSets:
         parent_x : int
             The id of the parent of x.
         """
-        if x < 0 or x >= self.n: raise Exception("elem not in {0,1,...,n-1}")
+        if x < 0 or x >= self.n: raise ValueError("elem not in {0,1,...,n-1}")
         if self.par[x] != x:
             self.par[x] = self.find(self.par[x])
         return self.par[x]
@@ -248,11 +248,10 @@ cdef class DisjointSets:
         parent : int
             The id of the parent of x or y, whichever is smaller.
         """
-        cdef np.int_t i, size1, size2
 
         x = self.find(x)
         y = self.find(y)
-        if x == y: raise Exception("find(x) == find(y)")
+        if x == y: raise ValueError("find(x) == find(y)")
         if y < x: x,y = y,x
 
         self.par[y] = x
@@ -446,8 +445,8 @@ cdef class GiniDisjointSets(DisjointSets):
 
         x = self.find(x)
         y = self.find(y)
-        if self.k == 1: raise Exception("no more subsets to merge")
-        if x == y: raise Exception("find(x) == find(y)")
+        if self.k == 1: raise RuntimeError("no more subsets to merge")
+        if x == y: raise ValueError("find(x) == find(y)")
         if y < x: x,y = y,x
         self.par[y] = x
         self.k -= 1
@@ -768,9 +767,9 @@ cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np
     cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double)
     cdef np.ndarray[np.double_t] row
 
-    if M < 1: raise Exception("M < 2")
-    if D.shape[1] != n: raise Exception("not a square matrix")
-    if M >= n: raise Exception("M >= matrix size")
+    if M < 1: raise ValueError("M < 2")
+    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if M >= n: raise ValueError("M >= matrix size")
 
     if M == 1: return Dcore
 
@@ -823,8 +822,8 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
     cdef np.ndarray[np.double_t] row
     cdef np.ndarray[np.double_t] Dcore
 
-    if M < 1: raise Exception("M < 1")
-    if D.shape[1] != n: raise Exception("not a square matrix")
+    if M < 1: raise ValueError("M < 1")
+    if D.shape[1] != n: raise ValueError("not a square matrix")
 
     cdef np.ndarray[np.double_t,ndim=2] R = D.copy()
     if M > 2:
@@ -865,10 +864,10 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
     cdef np.ndarray[np.int_t] d = np.zeros(n, dtype=np.int_)
     for i in range(n-1):
         if I[i,0] < 0 or I[i,0] >= n:
-            raise Exception("Detected an element not in {0, ..., n-1}")
+            raise ValueError("Detected an element not in {0, ..., n-1}")
         d[I[i,0]] += 1
         if I[i,1] < 0 or I[i,1] >= n:
-            raise Exception("Detected an element not in {0, ..., n-1}")
+            raise ValueError("Detected an element not in {0, ..., n-1}")
         d[I[i,1]] += 1
 
     return d
@@ -1120,7 +1119,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     if n-noise_count-n_clusters <= 0:
         PyMem_Free(denoise_index)
         PyMem_Free(denoise_index_rev)
-        raise Exception("The requested number of clusters is too large \
+        raise RuntimeError("The requested number of clusters is too large \
             with this many detected noise points")
 
     # When the Genie correction is on, some MST edges will be chosen

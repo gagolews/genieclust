@@ -118,7 +118,8 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
         defines the i-th edge of the resulting MST, I[i,0] < I[i,1].
 
     """
-    assert D.shape[0] == D.shape[1]
+    if not D.shape[0] == D.shape[1]:
+        raise ValueError("D must be a square matrix")
     cdef np.int_t n = D.shape[0] # D is a square matrix
     cdef np.int_t i, j
     cdef np.ndarray[np.int_t,ndim=2] I = np.empty((n-1, 2), dtype=np.int_)
@@ -175,7 +176,8 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
          (and then the 1st, and the the 2nd index);
          indices_matrix -- see MST()
     """
-    assert D.shape[0] == D.shape[1]
+    if not D.shape[0] == D.shape[1]:
+        raise ValueError("D must be a square matrix")
     cdef np.ndarray[np.int_t,ndim=2] mst_i = MST(D)
     cdef np.int_t n = mst_i.shape[0]+1, i
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
@@ -199,25 +201,3 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
     PyMem_Free(d)
 
     return mst_i, mst_d
-
-
-#def MST_pair_old(D):
-    #"""
-    #MST: Return a pair (indices_matrix, corresponding distances);
-    #the results are ordered w.r.t. the distances
-    #"""
-    #cdef object mst_i = MST(D)
-    #cdef object mst_d = D[mst_i[:,0], mst_i[:,1]]
-    #mst_o = np.argsort(mst_i[:,0]) # sort w.r.t. first index
-    #mst_i, mst_d = mst_i[mst_o,:], mst_d[mst_o]
-    #mst_o = np.argsort(mst_d, kind="mergesort") # sort w.r.t. dist (stable)
-    #return mst_i[mst_o,:], mst_d[mst_o]
-
-
-#cpdef list MST_list(np.double_t[:,:] D):
-    #"""
-    #MST: Return a list (index1, index2, D[index1,index2];
-    #the results are ordered w.r.t. the distances
-    #"""
-    #mst_i, mst_d = MST_pair(D)
-    #return [ (mst_i[i,0], mst_i[i,1], mst_d[i]) for i in range(len(mst_i)) ]

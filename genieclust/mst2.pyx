@@ -47,12 +47,39 @@ from numpy.math cimport INFINITY
 import warnings
 from . import internal
 
-
+from . cimport disjoint_sets
 
 
 cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
-    assert dist.shape[0] == ind.shape[0]
-    assert dist.shape[1] == ind.shape[1]
+    """
+    Computes a minimum spanning tree of an undirected graph
+    with all edges of the same degree n_neighbors,
+    and orders its edges w.r.t. increasing weights.
+
+    In case of an unconnected graph, an exception is raised.
+
+
+    Parameters:
+    ----------
+
+    dist : ndarray, shape (n,n_neighbors)
+        dist[i,:] is sorted increasingly for all i,
+        dist[i,j] gives the weight of the edge {i, ind[i,j]}
+
+    ind : ndarray, shape (n,n_neighbors)
+        edge definition, interpreted as {i, ind[i,j]}
+
+    Returns:
+    -------
+
+    pair : tuple
+         A pair (indices_matrix, corresponding weights);
+         the results are ordered w.r.t. the weights
+         (and then the 1st, and the the 2nd index)
+    """
+    if not (dist.shape[0] == ind.shape[0]
+            and dist.shape[1] == ind.shape[1]):
+        raise ValueError("shapes of dist and ind must match")
     cdef np.int_t n = dist.shape[0]
     cdef np.int_t n_neighbors = dist.shape[1]
 
@@ -66,11 +93,11 @@ cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
     cdef np.int_t u, v
     cdef np.double_t d
 
-    ds = internal.DisjointSets(n)
+    cdef disjoint_sets.DisjointSets ds = disjoint_sets.DisjointSets(n)
 
     while mst_edge_cur < n-1:
         if arg_dist_cur >= arg_dist.shape[0]:
-            raise Exception("graph is not connected. increase n_neighbors")
+            raise RuntimeError("graph is not connected. increase n_neighbors")
 
         u = arg_dist[arg_dist_cur]//n_neighbors
         v = ind[u, nn_used[u]]
@@ -85,7 +112,8 @@ cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
         mst_i[mst_edge_cur,0] = u
         mst_i[mst_edge_cur,1] = v
         mst_d[mst_edge_cur]   = d
-        ds.union(u, v)
+
+        ds.merge(u, v)
         mst_edge_cur += 1
 
     return mst_i, mst_d

@@ -67,8 +67,9 @@ def plot_scatter(X, labels, **kwargs):
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter()`.
     """
-    assert X.shape[1] == 2
-    assert X.shape[0] == labels.shape[0]
+    if not X.shape[1] == 2: raise ValueError("X must have 2 columns")
+    if not X.shape[0] == labels.shape[0]:
+        raise ValueError("incorrect number of labels")
     for i in np.unique(labels): # 0 is black, 1 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
             c=col[(i) % len(col)], marker=mrk[(i) % len(mrk)], **kwargs)
@@ -97,8 +98,8 @@ def plot_segments(X, pairs, style="k-", **kwargs):
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.plot()`.
     """
-    assert X.shape[1] == 2
-    assert pairs.shape[1] == 2
+    if not X.shape[1] == 2: raise ValueError("X must have 2 columns")
+    if not pairs.shape[1] == 2: raise ValueError("pairs must have 2 columns")
 
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()
