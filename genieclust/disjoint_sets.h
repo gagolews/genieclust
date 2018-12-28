@@ -48,29 +48,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <exception>
 #include <algorithm>
-
+#include <vector>
 
 class DisjointSets {
 
 protected:
     int n;    // number of distinct elements
     int k;    // number of subsets
-    int* par; // par[i] - id of the parent of the i-th element
+    std::vector<int> par; // par[i] - id of the parent of the i-th element
 
 public:
-    DisjointSets(int n) {
+    DisjointSets(int n) :
+        par(n)
+    {
         if (n < 0) throw std::domain_error("n < 0");
 
         this->n = n;
         this->k = n;
-        if (n > 0) {
-            this->par = new int[n];
-            for (int i=0; i<n; ++i)
-                this->par[i] = i;
-        }
-        else {
-            this->par = NULL;
-        }
+        for (int i=0; i<n; ++i)
+            this->par[i] = i;
     }
 
 
@@ -78,41 +74,6 @@ public:
        A nullary constructor allows Cython to alocate the instances on the stack.
     */
     DisjointSets() : DisjointSets(0) { }
-
-    DisjointSets(const DisjointSets& ds) {
-        this->n = ds.n;
-        this->k = ds.k;
-        if (ds.n > 0) {
-            this->par = new int[ds.n];
-            for (int i=0; i<ds.n; ++i)
-                this->par[i] = ds.par[i];
-        }
-        else {
-            this->par = NULL;
-        }
-    }
-
-    DisjointSets& operator=(const DisjointSets& ds) {
-        this->n = ds.n;
-        this->k = ds.k;
-        if (ds.n > 0) {
-            this->par = new int[ds.n];
-            for (int i=0; i<ds.n; ++i)
-                this->par[i] = ds.par[i];
-        }
-        else {
-            this->par = NULL;
-        }
-        return *this;
-    }
-
-
-    virtual ~DisjointSets() {
-        if (this->par) {
-            delete [] this->par;
-            this->par = NULL;
-        }
-    }
 
     int get_k() const { return this->k; }
 

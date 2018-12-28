@@ -33,8 +33,8 @@
 
 * genieclust 0.1a3 (unreleased)
 
-    * `Genie` gained a new parameter: `postprocess`, which
-    allows for merging boundary points with their nearest core points
+    * the `Genie` class constructor gained a new parameter: `postprocess`,
+    which allows for merging boundary points with their nearest core points
     (in effect for smoothing parameters M>1).
 
 

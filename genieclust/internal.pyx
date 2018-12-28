@@ -349,9 +349,9 @@ cdef class DisjointSets:
 
 cdef class GiniDisjointSets(DisjointSets):
     """
-    Augmented disjoint sets (Union-Find) over {0,1,...,n-1}
+    Augmented disjoint sets (Union-Find) over {0,1,...,n-1}.
     Allow to compute the normalized Gini index for the
-    subset sizes distribution, i.e.,
+    distribution of subset sizes, i.e.,
     $$
         G(x_1,\dots,x_k) = \frac{
         \sum_{i=1}^{n-1} \sum_{j=i+1}^n |x_i-x_j|

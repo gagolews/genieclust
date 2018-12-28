@@ -48,6 +48,7 @@ import warnings
 from . cimport disjoint_sets
 
 
+
 cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
     """
     Computes a minimum spanning tree of an M-Nearest Neighbor Graph
