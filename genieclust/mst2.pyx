@@ -7,7 +7,7 @@
 
 
 """
-Kruskal's Minimum Spanning Tree Algorithm for Complete Undirected Graphs
+Kruskal's Minimum Spanning Tree Algorithm for M-Nearest Neighbor Graphs
 
 Copyright (C) 2018 Marek.Gagolewski.com
 All rights reserved.
@@ -45,16 +45,13 @@ cimport numpy as np
 import numpy as np
 from numpy.math cimport INFINITY
 import warnings
-from . import internal
-
 from . cimport disjoint_sets
 
 
 cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
     """
-    Computes a minimum spanning tree of an undirected graph
-    with all edges of the same degree n_neighbors,
-    and orders its edges w.r.t. increasing weights.
+    Computes a minimum spanning tree of an M-Nearest Neighbor Graph
+    using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
     In case of an unconnected graph, an exception is raised.
 
