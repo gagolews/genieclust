@@ -26,11 +26,11 @@ import numpy as np
 class sdist(_sdist):
     def run(self):
         from Cython.Build import cythonize
-        cythonize(["genieclust/internal.pyx"])
-        cythonize(["genieclust/compare_partitions.pyx"])
-        cythonize(["genieclust/inequity.pyx"])
-        cythonize(["genieclust/mst.pyx"])
-        cythonize(["genieclust/mst2.pyx"])
+        cythonize(["genieclust/internal.pyx"], language="c++")
+        cythonize(["genieclust/compare_partitions.pyx"], language="c++")
+        cythonize(["genieclust/inequity.pyx"], language="c++")
+        cythonize(["genieclust/mst.pyx"], language="c++")
+        cythonize(["genieclust/mst2.pyx"], language="c++")
         _sdist.run(self)
 
 cmdclass = {}
@@ -39,22 +39,23 @@ cmdclass["sdist"] = sdist
 ext_modules = [ ]
 
 
+ext_kwargs = dict(include_dirs=[np.get_include()], language="c++")
 ext_modules += [
     Extension("genieclust.internal",
                 ["genieclust/internal.pyx"],
-                include_dirs=[np.get_include()]),
+                **ext_kwargs),
     Extension("genieclust.compare_partitions",
                 ["genieclust/compare_partitions.pyx"],
-                include_dirs=[np.get_include()]),
+                **ext_kwargs),
     Extension("genieclust.inequity",
                 ["genieclust/inequity.pyx"],
-                include_dirs=[np.get_include()]),
+                **ext_kwargs),
     Extension("genieclust.mst",
                 ["genieclust/mst.pyx"],
-                include_dirs=[np.get_include()]),
+                **ext_kwargs),
     Extension("genieclust.mst2",
                 ["genieclust/mst2.pyx"],
-                include_dirs=[np.get_include()])
+                **ext_kwargs)
 ]
 cmdclass.update({ 'build_ext': build_ext })
 
@@ -84,13 +85,13 @@ setuptools.setup(
     download_url="https://github.com/gagolews/genieclust",
     url="http://www.gagolewski.com/software/",
     packages=setuptools.find_packages(),
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
         "Development Status :: 3 - Alpha",
         "Topic :: Scientific/Engineering",
-    ),
+    ],
     cmdclass=cmdclass,
     ext_modules=ext_modules
 )

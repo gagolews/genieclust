@@ -1,3 +1,4 @@
+# distutils: language=c++
 # cython: boundscheck=False
 # cython: cdivision=True
 # cython: nonecheck=False
