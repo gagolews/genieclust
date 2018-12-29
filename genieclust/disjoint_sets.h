@@ -99,7 +99,7 @@ public:
         If px < py, then the new parent id of py will be set to py.
         Otherwise, px will have py as its parent.
     */
-    int merge(int x, int y) { // well, union is a reserved C++ keyword :)
+    virtual int merge(int x, int y) { // well, union is a reserved C++ keyword :)
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
         if (x == y) throw std::invalid_argument("find(x) == find(y)");

@@ -28,12 +28,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+cimport numpy as np
 
-cdef extern from "disjoint_sets.h":
-    cdef cppclass DisjointSets:
-        DisjointSets() except +
-        DisjointSets(int) except +
-        int get_k()
-        int get_n()
-        int find(int)
-        int merge(int, int)
+cdef extern from "argfuns.h":
+    void argsort[T](np.uint_t* ret, T* data, np.uint_t n, bint stable)
+    np.uint_t argkmin[T](T* data, np.uint_t n, np.uint_t k, np.uint_t* buf)

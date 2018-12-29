@@ -45,14 +45,22 @@ cimport numpy as np
 import numpy as np
 from numpy.math cimport INFINITY
 import warnings
+
+from libcpp.vector cimport vector
 from . cimport disjoint_sets
+from . cimport argfuns
 
 
 
-cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
+
+
+cpdef tuple MST_pair2(np.double_t[:,::1] dist, np.int_t[:,::1] ind): # [:,::1]==c_contiguous
     """
     Computes a minimum spanning tree of an M-Nearest Neighbor Graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+
+    Note that in general, an MST of the M-Nearest Neighbor Graph
+    might not be the MST of the complete Pairwise Distances Graph.
 
     In case of an unconnected graph, an exception is raised.
 
@@ -60,11 +68,11 @@ cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
     Parameters:
     ----------
 
-    dist : ndarray, shape (n,n_neighbors)
+    dist : a c_contiguous ndarray, shape (n,M)
         dist[i,:] is sorted increasingly for all i,
         dist[i,j] gives the weight of the edge {i, ind[i,j]}
 
-    ind : ndarray, shape (n,n_neighbors)
+    ind : a c_contiguous ndarray, shape (n,M)
         edge definition, interpreted as {i, ind[i,j]}
 
     Returns:
@@ -78,24 +86,32 @@ cpdef tuple MST_pair2(np.double_t[:,:] dist, np.int_t[:,:] ind):
     if not (dist.shape[0] == ind.shape[0]
             and dist.shape[1] == ind.shape[1]):
         raise ValueError("shapes of dist and ind must match")
-    cdef np.int_t n = dist.shape[0]
-    cdef np.int_t n_neighbors = dist.shape[1]
+    #if not dist.data.c_contiguous:
+        #raise ValueError("dist must be a c_contiguous array")
+    #if not ind.data.c_contiguous:
+        #raise ValueError("ind must be a c_contiguous array")
 
-    cdef np.int_t[:] arg_dist = np.argsort(dist, axis=None)
-    cdef np.int_t[:] nn_used = np.zeros(n, dtype=np.int_)
-    cdef np.int_t arg_dist_cur = 0
-    cdef np.int_t mst_edge_cur = 0
+    cdef np.uint_t n = dist.shape[0]
+    cdef np.uint_t n_neighbors = dist.shape[1]
+    cdef np.uint_t nm = n*n_neighbors
+
+    cdef vector[np.uint_t] nn_used = vector[np.uint_t](n, 0)
+    cdef vector[np.uint_t] arg_dist = vector[np.uint_t](nm)
+    argfuns.argsort(arg_dist.data(), &dist[0,0], nm, False)
+
+    cdef np.uint_t arg_dist_cur = 0
+    cdef np.uint_t mst_edge_cur = 0
     cdef np.ndarray[np.int_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.int_)
     cdef np.ndarray[np.double_t]     mst_d = np.empty(n-1, dtype=np.float_)
 
-    cdef np.int_t u, v
+    cdef np.uint_t u, v
     cdef np.double_t d
 
     cdef disjoint_sets.DisjointSets ds = disjoint_sets.DisjointSets(n)
 
     while mst_edge_cur < n-1:
-        if arg_dist_cur >= arg_dist.shape[0]:
-            raise RuntimeError("graph is not connected. increase n_neighbors")
+        if arg_dist_cur >= nm:
+            raise RuntimeError("the graph is not connected. increase n_neighbors")
 
         u = arg_dist[arg_dist_cur]//n_neighbors
         v = ind[u, nn_used[u]]

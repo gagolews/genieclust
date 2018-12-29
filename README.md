@@ -73,8 +73,7 @@ The most recent development version:
 ```bash
 git clone https://github.com/gagolews/genieclust.git
 cd genieclust
-python setup.py build_ext --inplace
-python setup.py install --user
+python setup.py build_ext --inplace && python setup.py install --user
 ```
 
 Examples

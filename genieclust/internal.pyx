@@ -45,7 +45,7 @@ from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
 import scipy.spatial.distance
 import warnings
-
+from . cimport argfuns
 
 
 ctypedef fused intT:
@@ -54,7 +54,6 @@ ctypedef fused intT:
     np.int_t
 
 ctypedef fused T:
-    np.float64_t
     np.float32_t
     np.int64_t
     np.int32_t
@@ -69,17 +68,33 @@ cdef T square(T x):
     return x*x
 
 
+#############################################################################
+# Determine the ordering permutation
+#############################################################################
+
+
+cpdef np.ndarray[np.uint_t] __argsort(T[::1] x, bint stable=True):
+    """
+    Finds the(*) ordering permutation of a given c_contiguous array x
+
+    (*) if stable==True, otherwise it's *an* ordering permutation
+    """
+    cdef np.uint_t n = x.shape[0]
+    cdef np.ndarray[np.uint_t] ret = np.empty(n, dtype=np.uint)
+    argfuns.argsort(&ret[0], &x[0], n, stable)
+    return ret
+
 
 #############################################################################
 # Determine the index of the k-th smallest element in an array
 #############################################################################
 
 
-cpdef np.int_t argkmin(arrayT x, np.int_t k):
+cpdef np.int_t __argkmin(T[::1] x, np.int_t k):
     """
     Returns the index of the (k-1)-th smallest value in an array x,
-    where argkmin(x, 0) == argmin(x), or, more generally,
-    argkmin(x, k) == np.argsort(x)[k].
+    where __argkmin(x, 0) == argmin(x), or, more generally,
+    __argkmin(x, k) == np.argsort(x)[k].
 
     Run time: O(nk), where n == len(x). Working mem: O(k).
     Does not modify x.
@@ -87,13 +102,17 @@ cpdef np.int_t argkmin(arrayT x, np.int_t k):
     In practice, very fast for small k and randomly ordered
     or almost sorted (increasingly) data.
 
-    Example timings:                 argkmin(x, k) np.argsort(x)[k]
-    (ascending)  n=100000000, k=  5:        0.058s           1.448s
-    (descending)                            0.572s           2.651s
-    (random)                                0.064s          20.049s
-    (ascending)  n=100000000, k=100:        0.057s           1.472s
-    (descending)                           18.051s           2.662s
-    (random)                                0.064s          20.269s
+    Example timings:               __argkmin(x, k) np.argsort(x)[k]
+    (ascending)  n= 100000000, k=   1:      0.060s       4.388s
+    (descending)                            0.168s       7.329s
+    (random)                                0.073s      26.673s
+    (ascending)  n= 100000000, k=   5:      0.060s       4.403s
+    (descending)                            0.505s       7.414s
+    (random)                                0.072s      26.447s
+    (ascending)  n= 100000000, k= 100:      0.061s       4.390s
+    (descending)                            8.007s       7.639s
+    (random)                                0.075s      27.299s
+
 
 
     Parameters:
@@ -112,32 +131,9 @@ cpdef np.int_t argkmin(arrayT x, np.int_t k):
     val
         the (k-1)-th smallest value in x
     """
-    cdef np.int_t n = len(x), i, j, ret
-    cdef np.int_t* idx
-    if k < 0:  raise ValueError("k < 0")
-    if k >= n: raise ValueError("k >= n")
+    cdef np.uint_t n = x.shape[0]
+    return argfuns.argkmin(&x[0], n, k, <np.uint_t*>0)
 
-    k += 1
-    idx = <np.int_t*>PyMem_Malloc(k*sizeof(np.int_t))
-    for i in range(0, k):
-        j = i
-        idx[i] = i
-        while j > 0 and x[idx[j]] < x[idx[j-1]]:
-            idx[j], idx[j-1] = idx[j-1], idx[j] # KISS
-            j -= 1
-
-    for i in range(k, n):
-        if x[idx[k-1]] <= x[i]:
-            continue
-        j = k-1
-        idx[k-1] = i
-        while j > 0 and x[idx[j]] < x[idx[j-1]]:
-            idx[j], idx[j-1] = idx[j-1], idx[j] # KISS
-            j -= 1
-
-    ret = idx[k-1]
-    PyMem_Free(idx)
-    return ret
 
 
 
@@ -664,7 +660,8 @@ cpdef np.ndarray[np.int_t] merge_boundary_points(
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[np.int_t] cl2 = cl.copy()
-    cdef np.int_t n = cl.shape[0], i, j0, j1
+    cdef np.uint_t n = cl.shape[0], i
+    cdef np.int_t j0, j1
     cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
     assert mst_i.shape[0] + 1 == n
 
@@ -727,7 +724,7 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_nearest_clusters(
     return cl2
 
 
-cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
+cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np.uint_t M):
     """
     Given a pairwise distance matrix, computes the "core distance", i.e.,
     the distance of each point to its M-th nearest neighbor.
@@ -762,12 +759,12 @@ cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np
         Dcore[i] gives the distance between the i-th point and its M-th nearest
         neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
     """
-    cdef np.int_t n = D.shape[0], i, j
+    cdef np.uint_t n = D.shape[0], i, j
     cdef np.double_t v
     cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double)
-    cdef np.ndarray[np.double_t] row
+    cdef np.double_t[::1] row
 
-    if M < 1: raise ValueError("M < 2")
+    if M < 1: raise ValueError("M < 1")
     if D.shape[1] != n: raise ValueError("not a square matrix")
     if M >= n: raise ValueError("M >= matrix size")
 
@@ -775,7 +772,7 @@ cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np
 
     for i in range(n):
         row = D[i,:]
-        j = argkmin(row, M-1)
+        j = __argkmin(row, M-1)
         Dcore[i] = D[i, j]
 
     return Dcore
