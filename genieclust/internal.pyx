@@ -8,7 +8,8 @@
 
 """
 The Genie+ clustering algorithm (with extras)
-Copyright (C) 2018 Marek.Gagolewski.com
+
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -38,31 +39,38 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
-import numpy as np
+
+from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
+
+from . cimport argfuns
+from . cimport disjoint_sets
+from . cimport gini_disjoint_sets
+from libcpp.vector cimport vector
+ctypedef unsigned long long ulonglong
+
+
+import numpy as np
 import scipy.spatial.distance
 import warnings
-from . cimport argfuns
+
+
 
 
 ctypedef fused intT:
-    np.int64_t
-    np.int32_t
-    np.int_t
+    int
+    long
+    ulonglong
 
 ctypedef fused T:
-    np.float32_t
-    np.int64_t
-    np.int32_t
-    np.int_t
-    np.double_t
+    int
+    long
+    ulonglong
+    float
+    double
 
-ctypedef fused arrayT:
-    np.ndarray[np.double_t]
-    np.ndarray[np.int_t]
 
 cdef T square(T x):
     return x*x
@@ -73,14 +81,31 @@ cdef T square(T x):
 #############################################################################
 
 
-cpdef np.ndarray[np.uint_t] __argsort(T[::1] x, bint stable=True):
+cpdef np.ndarray[ulonglong] __argsort(T[::1] x, bint stable=True):
     """
-    Finds the(*) ordering permutation of a given c_contiguous array x
+    Finds the(*) ordering permutation of a c_contiguous array x
 
     (*) if stable==True, otherwise it's *an* ordering permutation
+
+
+    Parameters:
+    ----------
+
+    x : c_contiguous 1d array
+        an integer or float vector
+
+    stable : bool
+        should a stable (a bit slower) sorting algorithm be used?
+
+
+    Returns:
+    -------
+
+    ndarray:
+        The ordering permutation.
     """
-    cdef np.uint_t n = x.shape[0]
-    cdef np.ndarray[np.uint_t] ret = np.empty(n, dtype=np.uint)
+    cdef ulonglong n = x.shape[0]
+    cdef np.ndarray[ulonglong] ret = np.empty(n, dtype=np.ulonglong)
     argfuns.argsort(&ret[0], &x[0], n, stable)
     return ret
 
@@ -90,14 +115,13 @@ cpdef np.ndarray[np.uint_t] __argsort(T[::1] x, bint stable=True):
 #############################################################################
 
 
-cpdef np.int_t __argkmin(T[::1] x, np.int_t k):
+cpdef ulonglong __argkmin(T[::1] x, ulonglong k):
     """
     Returns the index of the (k-1)-th smallest value in an array x,
     where __argkmin(x, 0) == argmin(x), or, more generally,
     __argkmin(x, k) == np.argsort(x)[k].
 
     Run time: O(nk), where n == len(x). Working mem: O(k).
-    Does not modify x.
 
     In practice, very fast for small k and randomly ordered
     or almost sorted (increasingly) data.
@@ -118,7 +142,7 @@ cpdef np.int_t __argkmin(T[::1] x, np.int_t k):
     Parameters:
     ----------
 
-    x : ndarray
+    x : c_contiguous 1d array
         an integer or float vector
 
     k : int
@@ -128,11 +152,11 @@ cpdef np.int_t __argkmin(T[::1] x, np.int_t k):
     Returns:
     -------
 
-    val
+    value:
         the (k-1)-th smallest value in x
     """
-    cdef np.uint_t n = x.shape[0]
-    return argfuns.argkmin(&x[0], n, k, <np.uint_t*>0)
+    cdef ulonglong n = x.shape[0]
+    return argfuns.argkmin(&x[0], n, k, <ulonglong*>0)
 
 
 
@@ -153,37 +177,20 @@ cdef class DisjointSets:
     it is union by rank nor by size),
     see https://en.wikipedia.org/wiki/Disjoint-set_data_structure.
     This is by design, as some other operations in the current
-    package rely on the assumption, that the parent id of each
+    package rely on the assumption that the parent id of each
     element is always <= than itself.
 
 
     Parameters:
     ----------
 
-    n : int
-        The cardinality of the set being partitioned.
+    n : ulonglong
+        The cardinality of the set whose partitions are generated.
     """
-    cdef np.int_t n # number of distinct elements
-    cdef np.int_t k # number of subsets
-    cdef np.int_t* par
+    cdef disjoint_sets.DisjointSets ds
 
-    def __cinit__(self, np.int_t n):
-        if n <= 0: raise ValueError("n <= 0")
-        cdef np.int_t i
-
-        self.n = n
-        self.k = n
-
-        self.par = <np.int_t*>PyMem_Malloc(self.n*sizeof(np.int_t))
-        for i in range(self.n):
-            self.par[i] = i
-
-
-    def __dealloc__(self):
-        if self.par != NULL:
-            PyMem_Free(self.par)
-            self.par = <np.int_t*>NULL
-
+    def __cinit__(self, ulonglong n):
+        self.ds = disjoint_sets.DisjointSets(n)
 
     def __len__(self):
         """
@@ -193,13 +200,27 @@ cdef class DisjointSets:
         Returns:
         -------
 
-        len : int
+        len : ulonglong
             A value in {0,...,n-1}.
         """
-        return self.k-1
+        return self.ds.get_k()-1
 
 
-    cpdef np.int_t find(self, np.int_t x):
+    cpdef ulonglong get_n(self):
+        """
+        Returns the number of elements in the set being partitioned.
+        """
+        return self.ds.get_n()
+
+
+    cpdef ulonglong get_k(self):
+        """
+        Returns the current number of subsets.
+        """
+        return self.ds.get_k()
+
+
+    cpdef ulonglong find(self, ulonglong x):
         """
         Finds the subset id for a given x.
 
@@ -207,33 +228,34 @@ cdef class DisjointSets:
         Parameters:
         ----------
 
-        x : int
+        x : ulonglong
             An integer in {0,...,n-1}, representing an element to find.
 
 
         Returns:
         -------
 
-        parent_x : int
+        parent_x : ulonglong
             The id of the parent of x.
         """
-        if x < 0 or x >= self.n: raise ValueError("elem not in {0,1,...,n-1}")
-        if self.par[x] != x:
-            self.par[x] = self.find(self.par[x])
-        return self.par[x]
+        return self.ds.find(x)
 
 
-    cpdef np.int_t union(self, np.int_t x, np.int_t y):
+    cpdef ulonglong union(self, ulonglong x, ulonglong y):
         """
         Merges the sets containing given x and y.
+
         Let px be the parent id of x, and py be the parent id of y.
         If px < py, then the new parent id of py will be set to py.
         Otherwise, px will have py as its parent.
 
+        If x and y are already members of the same subset, 
+        an exception is thrown.
+
         Parameters:
         ----------
 
-        x, y : int
+        x, y : ulonglong
             Integers in {0,...,n-1}, representing elements
             of two sets to merge.
 
@@ -241,21 +263,14 @@ cdef class DisjointSets:
         Returns:
         -------
 
-        parent : int
+        parent : ulonglong
             The id of the parent of x or y, whichever is smaller.
         """
 
-        x = self.find(x)
-        y = self.find(y)
-        if x == y: raise ValueError("find(x) == find(y)")
-        if y < x: x,y = y,x
-
-        self.par[y] = x
-        self.k -= 1
-        return x
+        return self.ds.merge(x, y)
 
 
-    cpdef np.ndarray[np.int_t] to_list(self):
+    cpdef np.ndarray[ulonglong] to_list(self):
         """
         Get parent ids of all the elements
 
@@ -267,14 +282,14 @@ cdef class DisjointSets:
             A list m such that m[x] denotes the (recursive) parent id of x,
             for x=0,1,...,n.
         """
-        cdef np.int_t i
-        cdef np.ndarray[np.int_t] m = np.empty(self.n, dtype=np.int_)
-        for i in range(self.n):
-            m[i] = self.find(i)
+        cdef ulonglong i
+        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        for i in range(self.ds.get_n()):
+            m[i] = self.ds.find(i)
         return m
 
 
-    cpdef np.ndarray[np.int_t] to_list_normalized(self):
+    cpdef np.ndarray[ulonglong] to_list_normalized(self):
         """
         Get the normalized elements' membership information.
 
@@ -287,17 +302,16 @@ cdef class DisjointSets:
             The resulting values are in {0,1,...,k-1}, where k is the current
             number of subsets in the partition.
         """
-        cdef np.int_t i, j
-        cdef np.ndarray[np.int_t] m = np.empty(self.n, dtype=np.int_)
-        cdef np.ndarray[np.int_t] v = np.empty(self.n, dtype=np.int_)
-        for i in range(self.n): v[i] = -1
-        cdef np.int_t c = 0
-        for i in range(self.n):
-            j = self.find(i)
-            if v[j] < 0:
+        cdef ulonglong i, j
+        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        cdef np.ndarray[ulonglong] v = np.zeros(self.ds.get_n(), dtype=np.ulonglong)
+        cdef ulonglong c = 1
+        for i in range(self.ds.get_n()):
+            j = self.ds.find(i)
+            if v[j] == 0:
                 v[j] = c
                 c += 1
-            m[i] = v[j]
+            m[i] = v[j]-1
         return m
 
 
@@ -315,15 +329,15 @@ cdef class DisjointSets:
             of sets in a partition. Each list element is a list
             with values in {0,...,n-1}
         """
-        cdef np.int_t i
+        cdef ulonglong i
         cdef list tou, out
 
-        tou = [ [] for i in range(self.n) ]
-        for i in range(self.n):
-            tou[self.find(i)].append(i)
+        tou = [ [] for i in range(self.ds.get_n()) ]
+        for i in range(self.ds.get_n()):
+            tou[self.ds.find(i)].append(i)
 
         out = []
-        for i in range(self.n):
+        for i in range(self.ds.get_n()):
             if tou[i]: out.append(tou[i])
 
         return out
@@ -343,10 +357,10 @@ cdef class DisjointSets:
 
 
 
-cdef class GiniDisjointSets(DisjointSets):
+cdef class GiniDisjointSets():
     """
     Augmented disjoint sets (Union-Find) over {0,1,...,n-1}.
-    Allow to compute the normalized Gini index for the
+    The class allows to compute the normalized Gini index of the
     distribution of subset sizes, i.e.,
     $$
         G(x_1,\dots,x_k) = \frac{
@@ -364,64 +378,104 @@ cdef class GiniDisjointSets(DisjointSets):
     Parameters:
     ----------
 
-    n : int
-        The cardinality of the set being partitioned.
+    n : ulonglong
+        The cardinality of the set whose partitions are generated.
     """
-    cdef np.int_t* cnt      # cnt[find(x)] is the size of the relevant subset
-    cdef np.int_t* tab      # tab[i] gives the number of subsets of size i
-    cdef np.int_t* tab_next # an array-based...
-    cdef np.int_t* tab_prev # ...doubly-linked list...
-    cdef np.int_t  tab_head # ...for quickly accessing and iterating thru...
-    cdef np.int_t  tab_tail # ...self.tab data
-    cdef np.double_t gini   # the Gini index of the current subset sizes
+    cdef gini_disjoint_sets.GiniDisjointSets ds
 
-    def __cinit__(self, np.int_t n):
-        # Cython manual: "the __cinit__() method of the base type
-        # is automatically called before your __cinit__() method is called"
-        cdef np.int_t i
+    def __cinit__(self, ulonglong n):
+        self.ds = gini_disjoint_sets.GiniDisjointSets(n)
 
-        self.cnt = <np.int_t*>PyMem_Malloc(self.n*sizeof(np.int_t))
-        for i in range(self.n):
-            self.cnt[i] = 1
+    def __len__(self):
+        """
+        Returns the number of subsets-1,
+        a.k.a. how many calls to union() can we still perform.
 
-        self.tab = <np.int_t*>PyMem_Malloc((self.n+1)*sizeof(np.int_t))
-        for i in range(0, self.n+1):
-            self.tab[i] = 0
-        self.tab[1] = self.n
+        Returns:
+        -------
 
-        self.tab_next = <np.int_t*>PyMem_Malloc((self.n+1)*sizeof(np.int_t))
-        self.tab_prev = <np.int_t*>PyMem_Malloc((self.n+1)*sizeof(np.int_t))
-        self.tab_head = 1
-        self.tab_tail = 1
+        len : ulonglong
+            A value in {0,...,n-1}.
+        """
+        return self.ds.get_k()-1
 
-        self.gini = 0.0 # = gini([1,1,...,1])
+    
+    cpdef ulonglong get_n(self):
+        """
+        Returns the number of elements in the set being partitioned.
+        """
+        return self.ds.get_n()
 
 
-    def __dealloc__(self):
-        if self.cnt != NULL:
-            PyMem_Free(self.cnt)
-            self.cnt = <np.int_t*>NULL
-        if self.tab != NULL:
-            PyMem_Free(self.tab)
-            self.tab = <np.int_t*>NULL
-        if self.tab_prev != NULL:
-            PyMem_Free(self.tab_prev)
-            self.tab_prev = <np.int_t*>NULL
-        if self.tab_next != NULL:
-            PyMem_Free(self.tab_next)
-            self.tab_next = <np.int_t*>NULL
-        # Cython manual: "The __dealloc__() method of the superclass
-        # will always be called, even if it is overridden."
+    cpdef ulonglong get_k(self):
+        """
+        Returns the current number of subsets.
+        """
+        return self.ds.get_k()
 
 
-    cpdef np.int_t union(self, np.int_t x, np.int_t y):
+    cpdef double get_gini(self):
+        """
+        Returns the Gini index of the distribution of subsets' sizes.
+
+        Run time: O(1), as the Gini index is updated during a call
+        to union().
+        """
+        return self.ds.get_gini()
+
+
+    cpdef ulonglong get_count(self, ulonglong x):
+        """
+        Returns the size of the subset containing x.
+
+        Run time: the cost of find(x)
+        """
+        return self.ds.get_count(x)
+
+
+    cpdef ulonglong get_smallest_count(self):
+        """
+        Returns the size of the smallest subset. 
+
+        Run time: O(1)
+        """
+        return self.ds.get_smallest_count()
+
+
+    cpdef ulonglong find(self, ulonglong x):
+        """
+        Finds the subset id for a given x.
+
+
+        Parameters:
+        ----------
+
+        x : int
+            An integer in {0,...,n-1}, representing an element to find.
+
+
+        Returns:
+        -------
+
+        parent_x : int
+            The id of the parent of x.
+        """
+        return self.ds.find(x)
+
+
+    cpdef ulonglong union(self, ulonglong x, ulonglong y):
         """
         Merges the sets containing given x and y.
+
         Let px be the parent id of x, and py be the parent id of y.
         If px < py, then the new parent id of py will be set to py.
         Otherwise, px will have py as its parent.
 
+        If x and y are already members of the same subset, 
+        an exception is thrown.
+
         Update time: pessimistically O(sqrt(n)).
+
 
         Parameters:
         ----------
@@ -437,174 +491,95 @@ cdef class GiniDisjointSets(DisjointSets):
         parent : int
             The id of the parent of x or y, whichever is smaller.
         """
-        cdef np.int_t i, size1, size2, v, w
 
-        x = self.find(x)
-        y = self.find(y)
-        if self.k == 1: raise RuntimeError("no more subsets to merge")
-        if x == y: raise ValueError("find(x) == find(y)")
-        if y < x: x,y = y,x
-        self.par[y] = x
-        self.k -= 1
-
-        size1 = self.cnt[x]
-        size2 = self.cnt[y]
-
-#        self.gini *= self.n*(self.k-1.0)
-#
-#        for i in range(self.n):
-#            if i == self.par[i]:
-#                self.gini -= fabs(self.cnt[i]-size1)
-#                self.gini -= fabs(self.cnt[i]-size2)
-#                self.gini += fabs(self.cnt[i]-size1-size2)
-#
-#        self.gini += fabs(size2-size1)
-#        self.gini -= fabs(size2-size1-size2)
-#        self.gini -= fabs(size1-size1-size2)
-#        self.gini /= <np.double_t>(self.n*(self.k-2.0))
+        return self.ds.merge(x, y)
 
 
-        self.cnt[x] += self.cnt[y]
-        self.cnt[y] = 0
-
-        self.tab[size1] -= 1
-        self.tab[size2] -= 1
-        self.tab[size1+size2] += 1
-
-        if self.tab_tail < size1+size2: # new tail
-            self.tab_prev[size1+size2] = self.tab_tail
-            self.tab_next[self.tab_tail] = size1+size2
-            self.tab_tail = size1+size2
-        elif self.tab[size1+size2] == 1: # new elem in the 'middle'
-            w = self.tab_tail
-            while w > size1+size2: w = self.tab_prev[w]
-            v = self.tab_next[w]
-            self.tab_next[w] = size1+size2
-            self.tab_prev[v] = size1+size2
-            self.tab_next[size1+size2] = v
-            self.tab_prev[size1+size2] = w
-
-        if size2 < size1: size1, size2 = size2, size1
-        if self.tab[size1] == 0:
-            if self.tab_head == size1:
-                self.tab_head = self.tab_next[self.tab_head]
-            else: # remove in the 'middle'
-                self.tab_next[self.tab_prev[size1]] = self.tab_next[size1]
-                self.tab_prev[self.tab_next[size1]] = self.tab_prev[size1]
-
-        if self.tab[size2] == 0 and size1 != size2: # i.e., size2>size1
-            if self.tab_head == size2:
-                self.tab_head = self.tab_next[self.tab_head]
-            else: # remove in the 'middle'
-                self.tab_next[self.tab_prev[size2]] = self.tab_next[size2]
-                self.tab_prev[self.tab_next[size2]] = self.tab_prev[size2]
-
-        if self.tab[self.tab_head] <= 0: raise Exception("ASSERT FAIL: self.tab[self.tab_head] > 0")
-        if self.tab[self.tab_tail] <= 0: raise Exception("ASSERT FAIL: self.tab[self.tab_tail] > 0")
-
-        self.gini = 0.0
-        if self.tab_head != self.tab_tail:
-            v = self.tab_head
-            i = 0
-            while v != self.tab_tail:
-                w = v
-                v = self.tab_next[v]
-                i += self.tab[w]
-                # delta_i = (v-w)
-                self.gini += (v-w)*i*(self.k-i)
-            self.gini /= <np.double_t>(self.n*(self.k-1.0))
-            if self.gini > 1.0: self.gini = 1.0 # account for round-off errors
-            if self.gini < 0.0: self.gini = 0.0
-
-        return x
-
-
-    cpdef np.int_t get_count(self, np.int_t x):
+    cpdef np.ndarray[ulonglong] to_list(self):
         """
-        Get the size of the set with x in it.
-
-        Run time: the cost of finding the parent of x.
-
-
-        Parameters:
-        ----------
-
-        x : int
-            An integer in {0,...,n-1}, representing an element to find.
+        Get parent ids of all the elements
 
 
         Returns:
         -------
 
-        count : int
-            The size of the set including x.
+        parents : ndarray, shape (n,)
+            A list m such that m[x] denotes the (recursive) parent id of x,
+            for x=0,1,...,n.
         """
-        return self.cnt[self.find(x)]
+        cdef ulonglong i
+        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        for i in range(self.ds.get_n()):
+            m[i] = self.ds.find(i)
+        return m
 
 
-    cpdef np.ndarray[np.int_t] get_counts(self):
+    cpdef np.ndarray[ulonglong] to_list_normalized(self):
         """
-        Generate a list of set sizes.
-        The vector is ordered nondecreasingly.
+        Get the normalized elements' membership information.
 
 
         Returns:
         -------
 
-        counts : ndarray
-             Gives the cardinality of each set in the partition.
+        set_ids : ndarray, shape (n,)
+            A list m such that m[x] denotes the normalized parent id of x.
+            The resulting values are in {0,1,...,k-1}, where k is the current
+            number of subsets in the partition.
         """
-        cdef np.int_t i = 0, j
-        cdef np.ndarray[np.int_t] out = np.empty(self.k, dtype=np.int_)
-        v = self.tab_head
-        while True:
-            for j in range(self.tab[v]):
-                out[i] = v
-                i += 1
-            if v == self.tab_tail: break
-            else: v = self.tab_next[v]
+        cdef ulonglong i, j
+        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        cdef np.ndarray[ulonglong] v = np.zeros(self.ds.get_n(), dtype=np.ulonglong)
+        cdef ulonglong c = 1
+        for i in range(self.ds.get_n()):
+            j = self.ds.find(i)
+            if v[j] == 0:
+                v[j] = c
+                c += 1
+            m[i] = v[j]-1
+        return m
+
+
+    def to_lists(self):
+        """
+        Returns a list of lists representing the current partition.
+        This is a slow operation. Do you really need this?
+
+        Returns:
+        -------
+
+        partition : list of lists
+            A list of length k, where k is the current number
+            of sets in a partition. Each list element is a list
+            with values in {0,...,n-1}
+        """
+        cdef ulonglong i
+        cdef list tou, out
+
+        tou = [ [] for i in range(self.ds.get_n()) ]
+        for i in range(self.ds.get_n()):
+            tou[self.ds.find(i)].append(i)
+
+        out = []
+        for i in range(self.ds.get_n()):
+            if tou[i]: out.append(tou[i])
+
         return out
 
 
-#    cpdef np.ndarray[np.int_t] get_parents(self):
-#        """
-#        Get vector with all elements v s.t. v == find(v)
-#        """
-#        pass
-#    # if we ever need this, an array-based doubly-linked list of pars should be added
-
-
-    cpdef np.double_t get_gini(self):
+    def get_counts(self):
         """
-        Get the Gini index for inequity of subset size distribution
+        Generates an array of subsets' sizes.
+        The resulting vector is ordered nondecreasingly.
 
-        Run time: O(1), as the Gini index is updated during a call
-        to self.union().
-
-
-        Returns:
-        -------
-
-        g : float
-            The Gini index of self.get_counts()
+        Run time: O(k), where k is the current number of subsets.
         """
-        return self.gini
-
-
-    cpdef np.int_t get_smallest_count(self):
-        """
-        Get the size of the smallest set.
-
-        Run time: O(1)
-
-
-        Returns:
-        -------
-
-        size : float
-            The cardinality of the smallest set in the current partition.
-        """
-        return self.tab_head
+        cdef vector[ulonglong] counts = self.ds.get_counts()
+        cdef ulonglong k = counts.size(), i
+        cdef np.ndarray[ulonglong] out = np.empty(k, dtype=np.ulonglong)
+        for i in range(k):
+            out[i] = counts[i]
+        return out
 
 
     def __repr__(self):
@@ -724,7 +699,7 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_nearest_clusters(
     return cl2
 
 
-cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np.uint_t M):
+cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ulonglong M):
     """
     Given a pairwise distance matrix, computes the "core distance", i.e.,
     the distance of each point to its M-th nearest neighbor.
@@ -759,10 +734,10 @@ cpdef np.ndarray[np.double_t] core_distance(np.ndarray[np.double_t,ndim=2] D, np
         Dcore[i] gives the distance between the i-th point and its M-th nearest
         neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
     """
-    cdef np.uint_t n = D.shape[0], i, j
-    cdef np.double_t v
-    cdef np.ndarray[np.double_t] Dcore = np.zeros(n, np.double)
-    cdef np.double_t[::1] row
+    cdef ulonglong n = D.shape[0], i, j
+    cdef double v
+    cdef np.ndarray[double] Dcore = np.zeros(n, np.double)
+    cdef double[::1] row
 
     if M < 1: raise ValueError("M < 1")
     if D.shape[1] != n: raise ValueError("not a square matrix")

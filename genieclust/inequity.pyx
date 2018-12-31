@@ -46,32 +46,22 @@ from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
 import scipy.spatial.distance
 import warnings
+ctypedef unsigned long long ulonglong
 
-
-
-ctypedef fused intT:
-    np.int64_t
-    np.int32_t
-    np.int_t
 
 ctypedef fused T:
-    np.float64_t
-    np.float32_t
-    np.int64_t
-    np.int32_t
-    np.int_t
-    np.double_t
-
-ctypedef fused arrayT:
-    np.ndarray[np.double_t]
-    np.ndarray[np.int_t]
+    int
+    long
+    ulonglong
+    float
+    double
 
 cdef T square(T x):
     return x*x
 
 
 
-cpdef np.float64_t gini(np.ndarray[T] x, bint is_sorted=False):
+cpdef double gini(T[:] x, bint is_sorted=False):
     """
     The Normalized Gini index:
 
@@ -107,14 +97,14 @@ cpdef np.float64_t gini(np.ndarray[T] x, bint is_sorted=False):
     Returns:
     -------
 
-    index : float
+    index : double
         The value of the inequity index, a number in [0,1].
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef unsigned int n = x.shape[0]
-    cdef np.float64_t s = 0.0, t = 0.0
-    cdef unsigned int i
+    cdef ulonglong n = x.shape[0]
+    cdef double s = 0.0, t = 0.0
+    cdef ulonglong i
 
     for i in range(1,n+1):
         t += x[n-i]
@@ -123,7 +113,7 @@ cpdef np.float64_t gini(np.ndarray[T] x, bint is_sorted=False):
     return s/(n-1.0)/t
 
 
-cpdef np.float64_t bonferroni(np.ndarray[T] x, bint is_sorted=False):
+cpdef double bonferroni(T[:] x, bint is_sorted=False):
     """
     The Normalized Bonferroni index:
     $$
@@ -151,14 +141,14 @@ cpdef np.float64_t bonferroni(np.ndarray[T] x, bint is_sorted=False):
     Returns:
     -------
 
-    index : float
+    index : double
         The value of the inequity index, a number in [0,1].
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef unsigned int n = x.shape[0]
-    cdef np.float64_t s = 0.0, t = 0.0, c = 0.0
-    cdef unsigned int i
+    cdef ulonglong n = x.shape[0]
+    cdef double s = 0.0, t = 0.0, c = 0.0
+    cdef ulonglong i
 
     for i in range(1,n+1):
         c += n/<np.float64_t>(n-i+1.0)

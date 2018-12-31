@@ -1,5 +1,7 @@
 """
-Copyright (C) 2018 Marek.Gagolewski.com
+Provides access to the argsort() and argkmin() functions.
+
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -28,8 +30,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-cimport numpy as np
+ctypedef unsigned long long ulonglong
+
 
 cdef extern from "argfuns.h":
-    void argsort[T](np.uint_t* ret, T* data, np.uint_t n, bint stable)
-    np.uint_t argkmin[T](T* data, np.uint_t n, np.uint_t k, np.uint_t* buf)
+    void argsort[T](ulonglong* ret, T* x, ulonglong n, bint stable)
+    ulonglong argkmin[T](T* x, ulonglong n, ulonglong k, ulonglong* buf)

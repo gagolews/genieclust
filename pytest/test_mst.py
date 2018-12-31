@@ -29,7 +29,7 @@ def check_MST(X, **kwargs):
 
 def test_MST():
     path = "benchmark_data"
-    for dataset in ["pathbased", "s1", "a1", "Aggregation", "WUT_Smile", "unbalance", "h2mg_1024_50"]:
+    for dataset in ["pathbased", "s1", "h2mg_1024_50"]:
         X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
 
         # center X + scale (NOT: standardize!)

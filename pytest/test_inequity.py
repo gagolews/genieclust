@@ -21,7 +21,7 @@ def test_inequity():
         return n  * (1.0- s / np.sum(x)) / (n-1)
 
 
-    for n in [2, 3, 5, 10, 25, 50, 100, 250, 500, 1000]:
+    for n in [2, 5, 100]:
         for i in range(10):
             if i == 0:
                 x = np.r_[[1]*n]

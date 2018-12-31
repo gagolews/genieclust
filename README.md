@@ -43,19 +43,23 @@ see R package [`genie`](http://www.gagolewski.com/software/genie/).
 
 
 Package Features
-================
+----------------
 
 * The Genie+ algorithm (using a `scikit-learn`-like interface),
-together with a robustified version of HDBSCAN*
+  together with a robustified version of HDBSCAN*
+
 * DisjointSets data structure (with extensions)
+
 * Various inequity measures (the Gini index, the Bonferroni index, etc.)
-* Functions to compute partition similarity measures
-(the Rand, adjusted Rand, Fowlkes-Mallows, and adjusted Fowlkes-Mallows index)
+
+* Functions to compute partition similarity measures  
+  (the Rand, adjusted Rand, Fowlkes-Mallows, and adjusted Fowlkes-Mallows index)
+
 * Various plotting functions
 
 
 Installation
-============
+------------
 
 The package requires Python 3.6+ together with `cython`
 as well as `numpy`, `scipy`, `matplotlib`, and `sklearn`.
@@ -77,14 +81,15 @@ python setup.py build_ext --inplace && python setup.py install --user
 ```
 
 Examples
-========
+--------
 
 * [The Genie Algorithm - basic use](https://github.com/gagolews/genieclust/blob/master/example_genie_basic.ipynb)
+
 * [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/example_genie_hdbscan.ipynb)
 
 
 License
-=======
+-------
 
 This package is licensed under the BSD 3-Clause "New" or "Revised" License.
 

@@ -3,11 +3,9 @@
 
 * to do:
 
-    * make Disjoint sets serializable: implement the
-    `__setstate__(self, state)` and `__getstate__(self)` methods.
-
-    * make GiniDisjoint sets serializable: implement the
-    `__setstate__(self, state)` and `__getstate__(self)` methods.
+    * [INTERNAL] [VERY LOW PRIORITY] make DisjointSets and GiniDisjointSets
+    serializable: implement the `__setstate__(self, state)` and 
+    `__getstate__(self)` methods.
 
     * use `sklearn.neighbors.NearestNeighbors` to determine the M-th NNs
     when computing the mutual reachability distance a.k.a. the "core distance",
@@ -34,10 +32,10 @@
 
     * implement Ania's and Adreas' linkage criteria
 
+
 * genieclust 0.XX (under development)
 
-    * [INTERNAL]
-    ....refactored DisjointSets and GiniDisjointSets as C++ classes...
+    * [INTERNAL] refactored DisjointSets and GiniDisjointSets as C++ classes.
 
     * [BUGFIX] MST_pair() did not return all weights of the MST edges.
 

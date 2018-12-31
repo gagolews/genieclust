@@ -1,34 +1,10 @@
 import numpy as np
 from genieclust.genie import *
-from genieclust.inequity import*
-from genieclust.compare_partitions import*
+from genieclust.inequity import *
+from genieclust.compare_partitions import *
 from genieclust.mst import *
-from genieclust.internal import GiniDisjointSets
 import time
 import gc
-
-#np.random.seed(123)
-def test_GiniDisjointSets():
-    for n in [5, 10, 25, 100, 250, 1000, 10000]:
-        d = GiniDisjointSets(n)
-        assert all([i==d.find(i) for i in range(n)])
-
-        for k in range(int(np.random.randint(0, n-2, 1))):
-            i,j = np.random.randint(0, n, 2)
-            if d.find(i) == d.find(j): continue
-            d.union(i, j)
-            g1 = d.get_gini()
-            c1 = d.get_counts()
-            #c1 = sorted(c1)
-            #c2 = sorted([len(x) for x in d.to_lists()])
-            #assert(c1 == c2)
-            assert min(c1) == d.get_smallest_count()
-            g2 = gini(np.array(c1), True)
-            assert abs(g1-g2)<1e-9
-
-
-
-
 
 
 import scipy.spatial.distance
@@ -82,6 +58,4 @@ def test_genie():
 
 
 if __name__ == "__main__":
-    test_GiniDisjointSets()
     test_genie()
-

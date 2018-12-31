@@ -24,7 +24,7 @@ import numpy as np
 path = "benchmark_data"
 
 def test_hdbscan():
-    for dataset in ["jain", "pathbased", "s1", "Aggregation", "WUT_Smile", "unbalance", "a1"]:
+    for dataset in ["jain", "pathbased"]:#, "s1", "Aggregation", "WUT_Smile", "unbalance", "a1"]:
         X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
         labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype='int')
         label_counts = np.unique(labels,return_counts=True)[1]

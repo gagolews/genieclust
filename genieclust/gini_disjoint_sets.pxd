@@ -1,5 +1,5 @@
 """
-cppclass DisjointSets
+cppclass GiniDisjointSets
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -30,14 +30,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+from libcpp.vector cimport vector
+
 ctypedef unsigned long long ulonglong
 
-
-cdef extern from "disjoint_sets.h":
-    cdef cppclass DisjointSets:
-        DisjointSets() except +
-        DisjointSets(ulonglong) except +
+cdef extern from "gini_disjoint_sets.h":
+    cdef cppclass GiniDisjointSets:
+        GiniDisjointSets() except +
+        GiniDisjointSets(ulonglong) except +
         ulonglong get_k()
         ulonglong get_n()
         ulonglong find(ulonglong)
         ulonglong merge(ulonglong, ulonglong)
+        double get_gini()
+        ulonglong get_smallest_count()
+        ulonglong get_count(ulonglong)
+        vector[ulonglong] get_counts()
