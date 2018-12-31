@@ -9,7 +9,7 @@
 """
 The Prim-Jarník Minimum Spanning Tree Algorithm for Complete Undirected Graphs
 
-Copyright (C) 2018 Marek.Gagolewski.com
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -45,9 +45,12 @@ cimport numpy as np
 import numpy as np
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
+from libcpp.vector cimport vector
+from . cimport disjoint_sets
+from . cimport argfuns
 import warnings
 
-
+ctypedef unsigned long long ulonglong
 
 
 cdef extern from "stdlib.h":
@@ -58,9 +61,9 @@ cdef extern from "stdlib.h":
 
 
 cdef struct MST_triple:
-    np.int_t i1
-    np.int_t i2
-    np.double_t w
+    ulonglong i1
+    ulonglong i2
+    double w
 
 
 cdef int MST_triple_comparer(const_void* _a, const_void* _b):
@@ -76,7 +79,7 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
         return a.i2-b.i2
 
 
-cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
+cpdef np.ndarray[ulonglong,ndim=2] MST(double[:,:] D):
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
@@ -120,19 +123,19 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     """
     if not D.shape[0] == D.shape[1]:
         raise ValueError("D must be a square matrix")
-    cdef np.int_t n = D.shape[0] # D is a square matrix
-    cdef np.int_t i, j
-    cdef np.ndarray[np.int_t,ndim=2] I = np.empty((n-1, 2), dtype=np.int_)
+    cdef ulonglong n = D.shape[0] # D is a square matrix
+    cdef ulonglong i, j
+    cdef np.ndarray[ulonglong,ndim=2] I = np.empty((n-1, 2), dtype=np.ulonglong)
 
-    cpdef np.double_t* Dnn = <np.double_t*> PyMem_Malloc(n * sizeof(np.double_t))
-    cpdef np.int_t*    Fnn = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
-    cpdef np.int_t*    M   = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
+    cpdef double*     Dnn = <double*> PyMem_Malloc(n * sizeof(double))
+    cpdef ulonglong*  Fnn = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
+    cpdef ulonglong*  M   = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
     for i in range(n):
         Dnn[i] = INFINITY
-        Fnn[i] = 0xffffffff
+        #Fnn[i] = 0xffffffff
         M[i] = i
 
-    cdef np.int_t lastj = 0, bestj, bestjpos
+    cdef ulonglong lastj = 0, bestj, bestjpos
     for i in range(n-1):
         # M[1], ... M[n-i-1] - points not yet in the MST
         bestjpos = bestj = 0
@@ -155,7 +158,7 @@ cpdef np.ndarray[np.int_t,ndim=2] MST(np.double_t[:,:] D):
     return I
 
 
-cpdef tuple MST_pair(np.double_t[:,:] D):
+cpdef tuple MST_pair(double[:,:] D):
     """
     Computes a minimum spanning tree of a complete undirected graph,
     see MST(), and orders its edges w.r.t. increasing weights.
@@ -178,8 +181,8 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
     """
     if not D.shape[0] == D.shape[1]:
         raise ValueError("D must be a square matrix")
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = MST(D)
-    cdef np.int_t n = mst_i.shape[0]+1, i
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = MST(D)
+    cdef ulonglong n = mst_i.shape[0]+1, i
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
     for i in range(n-1):
         d[i].i1 = mst_i[i,0]
@@ -194,10 +197,92 @@ cpdef tuple MST_pair(np.double_t[:,:] D):
         mst_i[i,0] = d[i].i1
         mst_i[i,1] = d[i].i2
 
-    cdef np.ndarray[np.double_t] mst_d = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[double] mst_d = np.empty(n-1, dtype=np.double)
     for i in range(n-1):
         mst_d[i]   = d[i].w
 
     PyMem_Free(d)
 
     return mst_i, mst_d
+
+
+
+
+cpdef tuple MST_nn_pair(double[:,::1] dist, ulonglong[:,::1] ind): # [:,::1]==c_contiguous
+    """
+    Computes a minimum spanning tree of an M-Nearest Neighbor Graph
+    using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+
+    Note that in general, an MST of the M-Nearest Neighbor Graph
+    might not be the MST of the complete Pairwise Distances Graph.
+
+    In case of an unconnected graph, an exception is raised.
+
+
+    Parameters:
+    ----------
+
+    dist : a c_contiguous ndarray, shape (n,M)
+        dist[i,:] is sorted increasingly for all i,
+        dist[i,j] gives the weight of the edge {i, ind[i,j]}
+
+    ind : a c_contiguous ndarray, shape (n,M)
+        edge definition, interpreted as {i, ind[i,j]}
+
+    Returns:
+    -------
+
+    pair : tuple
+         A pair (indices_matrix, corresponding weights);
+         the results are ordered w.r.t. the weights
+         (and then the 1st, and the the 2nd index)
+    """
+    if not (dist.shape[0] == ind.shape[0]
+            and dist.shape[1] == ind.shape[1]):
+        raise ValueError("shapes of dist and ind must match")
+    #if not dist.data.c_contiguous:
+        #raise ValueError("dist must be a c_contiguous array")
+    #if not ind.data.c_contiguous:
+        #raise ValueError("ind must be a c_contiguous array")
+
+    cdef ulonglong n = dist.shape[0]
+    cdef ulonglong n_neighbors = dist.shape[1]
+    cdef ulonglong nm = n*n_neighbors
+
+    cdef vector[ulonglong] nn_used  = vector[ulonglong](n, 0)
+    cdef vector[ulonglong] arg_dist = vector[ulonglong](nm)
+    argfuns.argsort(arg_dist.data(), &dist[0,0], nm, False)
+
+    cdef ulonglong arg_dist_cur = 0
+    cdef ulonglong mst_edge_cur = 0
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.ulonglong)
+    cdef np.ndarray[double]           mst_d = np.empty(n-1, dtype=np.double)
+
+    cdef ulonglong u, v
+    cdef double d
+
+    cdef disjoint_sets.DisjointSets ds = disjoint_sets.DisjointSets(n)
+
+    while mst_edge_cur < n-1:
+        if arg_dist_cur >= nm:
+            raise RuntimeError("the graph is not connected. increase n_neighbors")
+
+        u = arg_dist[arg_dist_cur]//n_neighbors
+        v = ind[u, nn_used[u]]
+        d = dist[u, nn_used[u]]
+        nn_used[u] += 1
+        arg_dist_cur += 1
+
+        if ds.find(u) == ds.find(v):
+            continue
+
+        if u > v: u, v = v, u
+        mst_i[mst_edge_cur,0] = u
+        mst_i[mst_edge_cur,1] = v
+        mst_d[mst_edge_cur]   = d
+
+        ds.merge(u, v)
+        mst_edge_cur += 1
+
+    return mst_i, mst_d
+

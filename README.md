@@ -94,7 +94,7 @@ License
 This package is licensed under the BSD 3-Clause "New" or "Revised" License.
 
 ```
-Copyright (C) 2018 Marek.Gagolewski.com
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,

@@ -15,7 +15,7 @@ See Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
-Copyright (C) 2018 Marek.Gagolewski.com
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -54,45 +54,41 @@ from numpy.math cimport INFINITY
 import scipy.spatial.distance
 import warnings
 
+ctypedef unsigned long long ulonglong
 
 
 ctypedef fused intT:
-    np.int64_t
-    np.int32_t
-    np.int_t
-
-ctypedef fused T:
-    np.float64_t
-    np.float32_t
-    np.int64_t
-    np.int32_t
-    np.int_t
-    np.double_t
-
-ctypedef fused arrayT:
-    np.ndarray[np.double_t]
-    np.ndarray[np.int_t]
-
-cdef T square(T x):
-    return x*x
-
+    int
+    long
+    ulonglong
 
 
 
 cdef struct RandResult:
-    np.float64_t ar
-    np.float64_t r
-    np.float64_t fm
-    np.float64_t afm
+    double ar
+    double r
+    double fm
+    double afm
 
 
-cpdef np.ndarray[np.int_t, ndim=2] normalize_confusion_matrix(
-    np.ndarray[np.int_t, ndim=2] C):
+cpdef intT[:,:] normalize_confusion_matrix(intT[:,:] C):
     """
     Applies pivoting to a given confusion matrix.
+
+    Parameters:
+    ----------
+
+    C : ndarray, shape (kx,ky)
+        a confusion matrix
+
+    
+    Returns:
+    -------
+
+    C_normalized: ndarray, shape(kx,ky)
     """
     C = C.copy()
-    cpdef unsigned int xc = C.shape[0], yc = C.shape[1], i, j, w
+    cpdef ulonglong xc = C.shape[0], yc = C.shape[1], i, j, w
 
     for i in range(xc-1):
         w = i
@@ -104,8 +100,7 @@ cpdef np.ndarray[np.int_t, ndim=2] normalize_confusion_matrix(
     return C
 
 
-cpdef np.ndarray[np.int_t, ndim=2] confusion_matrix(
-    np.ndarray[intT] x, np.ndarray[intT] y):
+cpdef ulonglong[:,:] confusion_matrix(intT[:] x, intT[:] y):
     """
     Computes the confusion matrix (as a dense matrix)
 
@@ -124,10 +119,11 @@ cpdef np.ndarray[np.int_t, ndim=2] confusion_matrix(
     C : ndarray, shape (kx, ky)
         a confusion matrix
     """
-    cpdef unsigned int n = x.shape[0], i, j, w
-    if n != y.shape[0]: raise Exception("incompatible lengths")
+    cpdef ulonglong n = x.shape[0], i
+    if n != <ulonglong>y.shape[0]: raise ValueError("incompatible lengths")
 
-    cpdef intT xmin = x[0], ymin = y[0], xmax = x[0], ymax = y[0]
+    cpdef intT xmin = x[0], ymin = y[0]
+    cpdef intT xmax = x[0], ymax = y[0]
     for i in range(1, n):
         if   x[i] < xmin: xmin = x[i]
         elif x[i] > xmax: xmax = x[i]
@@ -135,22 +131,22 @@ cpdef np.ndarray[np.int_t, ndim=2] confusion_matrix(
         if   y[i] < ymin: ymin = y[i]
         elif y[i] > ymax: ymax = y[i]
 
-    cpdef unsigned int xc = <unsigned int>(xmax-xmin+1)
-    cpdef unsigned int yc = <unsigned int>(ymax-ymin+1)
+    cpdef ulonglong xc = <ulonglong>(xmax-xmin+1)
+    cpdef ulonglong yc = <ulonglong>(ymax-ymin+1)
 
     # if xc == yc == 1 or xc == yc == 0 or xc == yc == n: return 1.0
 
-    if xc*yc > <unsigned int>(10000):
-        raise Exception("max_size of the confusion matrix exceeded")
+    if xc*yc > <ulonglong>(10000):
+        raise ValueError("max_size of the confusion matrix exceeded")
 
-    cdef np.ndarray[np.int_t, ndim=2] C = np.zeros((xc, yc), dtype=np.int_)
+    cdef ulonglong[:,:] C = np.zeros((xc, yc), dtype=np.ulonglong)
     for i in range(n):
         C[x[i]-xmin, y[i]-ymin] += 1
 
     return C
 
 
-cpdef RandResult compare_partitions(np.ndarray[intT, ndim=2] C):
+cpdef RandResult compare_partitions(intT[:,:] C):
     """
     Computes the adjusted and nonadjusted Rand- and FM scores
     based on a given confusion matrix.
@@ -173,10 +169,14 @@ cpdef RandResult compare_partitions(np.ndarray[intT, ndim=2] C):
         the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
         Fowlkes-Mallows scores, respectively.
     """
-    cpdef unsigned int n = C.sum(), xc = C.shape[0], yc = C.shape[1], i, j
+    cpdef ulonglong xc = C.shape[0], yc = C.shape[1], i, j
+    cpdef ulonglong n = 0
+    for i in range(xc):
+        for j in range(yc):
+            n += C[i, j]
 
-    cpdef np.double_t sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0
-    cpdef np.double_t t, prod_comb, mean_comb, e_fm
+    cpdef double sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0
+    cpdef double t, prod_comb, mean_comb, e_fm
     for i in range(xc):
         t = 0.0
         for j in range(yc):
@@ -205,7 +205,30 @@ cpdef RandResult compare_partitions(np.ndarray[intT, ndim=2] C):
     return res
 
 
-cpdef np.float64_t adjusted_rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
+cpdef RandResult compare_partitions2(intT[:] x, intT[:] y):
+    """
+    Calls compare_partitions(confusion_matrix(x, y)).
+
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+    Returns:
+    -------
+
+    scores : dict
+        a dictionary with keys 'ar', 'r', 'afm', 'fm', giving
+        the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
+        Fowlkes-Mallows scores, respectively.
+    """
+    return compare_partitions(confusion_matrix(x, y))
+
+
+cpdef double adjusted_rand_score(intT[:] x, intT[:] y):
     """
     The Rand index adjusted for chance.
 
@@ -222,15 +245,16 @@ cpdef np.float64_t adjusted_rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
 
 
     Returns:
+    -------
 
-    score : float
+    score : double
         partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).ar
 
 
-cpdef np.float64_t rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
+cpdef double rand_score(intT[:] x, intT[:] y):
     """
     The original Rand index (not adjusted for chance),
     yielding the `probability' of agreement between the two partitions
@@ -248,15 +272,16 @@ cpdef np.float64_t rand_score(np.ndarray[intT] x, np.ndarray[intT] y):
 
 
     Returns:
+    -------
 
-    score : float
+    score : double
         partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).r
 
 
-cpdef np.float64_t adjusted_fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
+cpdef double adjusted_fm_score(intT[:] x, intT[:] y):
     """
     The Fowlkes-Mallows index adjusted for chance,
 
@@ -273,14 +298,14 @@ cpdef np.float64_t adjusted_fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
 
     Returns:
 
-    score : float
+    score : double
         partition similarity measure
     """
 
     return compare_partitions(confusion_matrix(x, y)).afm
 
 
-cpdef np.float64_t fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
+cpdef double fm_score(intT[:] x, intT[:] y):
     """
     The original Fowlkes-Mallows index (not adjusted for chance)
 
@@ -296,8 +321,9 @@ cpdef np.float64_t fm_score(np.ndarray[intT] x, np.ndarray[intT] y):
 
 
     Returns:
+    -------
 
-    score : float
+    score : double
         partition similarity measure
     """
 

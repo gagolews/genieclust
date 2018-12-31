@@ -4,7 +4,7 @@
 * to do:
 
     * [INTERNAL] [VERY LOW PRIORITY] make DisjointSets and GiniDisjointSets
-    serializable: implement the `__setstate__(self, state)` and 
+    serializable: implement the `__setstate__(self, state)` and
     `__getstate__(self)` methods.
 
     * use `sklearn.neighbors.NearestNeighbors` to determine the M-th NNs
@@ -23,8 +23,8 @@
     compute the distances on the fly (perhaps taking into account the core dist)
 
         > [how to handle different distances, say, we can support
-        “euclidean”, “l1”, “l2”, “manhattan”, “cosine”, or ‘precomputed’
-        just like sklearn.cluster.AgglomerativeClustering does]?
+        > “euclidean”, “l1”, “l2”, “manhattan”, “cosine”, or ‘precomputed’
+        > just like `sklearn.cluster.AgglomerativeClustering` does]?
         > [add support for the "connectivity" matrix]
 
     * output full cluster hierarchy - see the Z matrix in

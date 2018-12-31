@@ -597,11 +597,11 @@ cdef class GiniDisjointSets():
 #############################################################################
 
 
-cpdef np.ndarray[np.int_t] merge_boundary_points(
+cpdef np.ndarray[long] merge_boundary_points(
             tuple mst,
-            np.ndarray[np.int_t] cl,
-            np.ndarray[np.double_t,ndim=2] D,
-            np.ndarray[np.double_t] Dcore):
+            np.ndarray[long] cl,
+            np.ndarray[double,ndim=2] D,
+            np.ndarray[double] Dcore):
     """
     A noisy k-partition post-processing:
     given a k-partition (with noise points included),
@@ -634,11 +634,11 @@ cpdef np.ndarray[np.int_t] merge_boundary_points(
         A new integer vector c with c[i] denoting the cluster
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[np.int_t] cl2 = cl.copy()
-    cdef np.uint_t n = cl.shape[0], i
-    cdef np.int_t j0, j1
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-    assert mst_i.shape[0] + 1 == n
+    cdef np.ndarray[long] cl2 = cl.copy()
+    cdef ulonglong n = cl.shape[0], i
+    cdef int j0, j1
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
+    assert <ulonglong>(mst_i.shape[0] + 1) == n
 
     for i in range(n-1):
         assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
@@ -655,9 +655,9 @@ cpdef np.ndarray[np.int_t] merge_boundary_points(
     return cl2
 
 
-cpdef np.ndarray[np.int_t] merge_leaves_with_nearest_clusters(
+cpdef np.ndarray[long] merge_leaves_with_nearest_clusters(
             tuple mst,
-            np.ndarray[np.int_t] cl):
+            np.ndarray[int] cl):
     """
     A noisy k-partition post-processing:
     given a k-partition (with noise points included),
@@ -684,10 +684,10 @@ cpdef np.ndarray[np.int_t] merge_leaves_with_nearest_clusters(
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[np.int_t] cl2 = cl.copy()
-    cdef np.int_t n = cl.shape[0], i
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-    assert mst_i.shape[0] + 1 == n
+    cdef np.ndarray[long] cl2 = cl.copy()
+    cdef ulonglong n = cl.shape[0], i
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
+    assert <ulonglong>(mst_i.shape[0] + 1) == n
 
     for i in range(n-1):
         assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
@@ -740,7 +740,7 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ulonglong M)
     cdef double[::1] row
 
     if M < 1: raise ValueError("M < 1")
-    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if <ulonglong>(D.shape[1]) != n: raise ValueError("not a square matrix")
     if M >= n: raise ValueError("M >= matrix size")
 
     if M == 1: return Dcore
@@ -753,7 +753,7 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ulonglong M)
     return Dcore
 
 
-cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.double_t,ndim=2] D, np.int_t M):
+cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(np.ndarray[double,ndim=2] D, ulonglong M):
     """
     Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. a smoothing
@@ -789,15 +789,15 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
     R : ndarray, shape (n_samples,n_samples)
         A new distance matrix, giving the mutual reachability distance w.r.t. M.
     """
-    cdef np.int_t n = D.shape[0], i, j
-    cdef np.double_t v
-    cdef np.ndarray[np.double_t] row
-    cdef np.ndarray[np.double_t] Dcore
+    cdef ulonglong n = D.shape[0], i, j
+    cdef double v
+    cdef np.ndarray[double] row
+    cdef np.ndarray[double] Dcore
 
     if M < 1: raise ValueError("M < 1")
-    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if <ulonglong>(D.shape[1]) != n: raise ValueError("not a square matrix")
 
-    cdef np.ndarray[np.double_t,ndim=2] R = D.copy()
+    cdef np.ndarray[double,ndim=2] R = D.copy()
     if M > 2:
         Dcore = core_distance(D, M)
 
@@ -811,7 +811,7 @@ cpdef np.ndarray[np.double_t,ndim=2] mutual_reachability_distance(np.ndarray[np.
     return R
 
 
-cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
+cpdef np.ndarray[ulonglong] get_tree_node_degrees(np.ndarray[ulonglong,ndim=2] I):
     """
     Given an adjacency list I representing an undirected tree with vertex
     set {0,...,n-1}, return an array d with d[i] denoting
@@ -832,8 +832,8 @@ cpdef np.ndarray[np.int_t] get_tree_node_degrees(np.ndarray[np.int_t,ndim=2] I):
     d : ndarray, shape(n,)
         An integer array of length I.shape[0]+1.
     """
-    cdef np.int_t n = I.shape[0]+1, i
-    cdef np.ndarray[np.int_t] d = np.zeros(n, dtype=np.int_)
+    cdef ulonglong n = I.shape[0]+1, i
+    cdef np.ndarray[ulonglong] d = np.zeros(n, dtype=np.ulonglong)
     for i in range(n-1):
         if I[i,0] < 0 or I[i,0] >= n:
             raise ValueError("Detected an element not in {0, ..., n-1}")
@@ -854,9 +854,9 @@ cdef extern from "stdlib.h":
 
 
 cdef struct MST_triple:
-    np.int_t i1
-    np.int_t i2
-    np.double_t w
+    ulonglong i1
+    ulonglong i2
+    double w
 
 
 cdef int MST_triple_comparer(const_void* _a, const_void* _b):
@@ -872,7 +872,7 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
         return a.i2-b.i2
 
 
-cpdef tuple MST_wrt_mutual_reachability_distance(np.double_t[:,:] D, np.double_t[:] Dcore):
+cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore):
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a minimum spanning tree (MST) based on a precomputed pairwise
@@ -933,21 +933,21 @@ cpdef tuple MST_wrt_mutual_reachability_distance(np.double_t[:,:] D, np.double_t
          gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
     """
 
-    cdef np.int_t n = D.shape[0] # D is a square matrix
-    cdef np.int_t i, j
-    cdef np.double_t curd
+    cdef ulonglong n = D.shape[0] # D is a square matrix
+    cdef ulonglong i, j
+    cdef double curd
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc(n * sizeof(MST_triple))
 
 
-    cpdef np.double_t* Dnn = <np.double_t*> PyMem_Malloc(n * sizeof(np.double_t))
-    cpdef np.int_t*    Fnn = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
-    cpdef np.int_t*    M   = <np.int_t*> PyMem_Malloc(n * sizeof(np.int_t))
+    cpdef double*    Dnn = <double*> PyMem_Malloc(n * sizeof(double))
+    cpdef ulonglong* Fnn = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
+    cpdef ulonglong* M   = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
     for i in range(n):
         Dnn[i] = INFINITY
-        Fnn[i] = 0xffffffff
+        #Fnn[i] = 0xffffffff
         M[i] = i
 
-    cdef np.int_t lastj = 0, bestj, bestjpos
+    cdef ulonglong lastj = 0, bestj, bestjpos
     for i in range(n-1):
         # M[1], ... M[n-i-1] - points not yet in the MST
         bestjpos = bestj = 0
@@ -977,12 +977,12 @@ cpdef tuple MST_wrt_mutual_reachability_distance(np.double_t[:,:] D, np.double_t
 
     qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
 
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.int_)
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.ulonglong)
     for i in range(n-1):
         mst_i[i,0] = d[i].i1
         mst_i[i,1] = d[i].i2
 
-    cdef np.ndarray[np.double_t] mst_d = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[double] mst_d = np.empty(n-1, dtype=np.double)
     for i in range(n-1):
         mst_d[i]   = d[i].w
 
@@ -995,9 +995,9 @@ cpdef tuple MST_wrt_mutual_reachability_distance(np.double_t[:,:] D, np.double_t
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
-cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
-                     np.int_t n_clusters=2,
-                     np.double_t gini_threshold=0.3,
+cpdef np.ndarray[long] genie_from_mst(tuple mst,
+                     ulonglong n_clusters=2,
+                     double gini_threshold=0.3,
                      bint noise_leaves=False):
     """
     Compute a k-partition based on a precomputed MST.
@@ -1057,14 +1057,14 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
     """
     cdef np.int_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
     cdef noise_count
-    cdef np.ndarray[np.int_t] res
+    cdef np.ndarray[long] res
     cdef np.int_t* next_edge
     cdef np.int_t* prev_edge
     cdef np.int_t* denoise_index
     cdef np.int_t* denoise_index_rev
     cdef np.int_t* res_cluster_id
-    cdef np.ndarray[np.int_t,ndim=2] mst_i = mst[0]
-    cdef np.ndarray[np.int_t] deg = get_tree_node_degrees(mst_i)
+    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
+    cdef np.ndarray[ulonglong] deg = get_tree_node_degrees(mst_i)
     n = mst_i.shape[0]+1
 
     denoise_index     = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
@@ -1163,7 +1163,7 @@ cpdef np.ndarray[np.int_t] genie_from_mst(tuple mst,
 
 
 
-    res = np.empty(n, dtype=np.int_)
+    res = np.empty(n, dtype=np.long)
     res_cluster_id = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
     for i in range(n): res_cluster_id[i] = -1
     cdef np.int_t c = 0

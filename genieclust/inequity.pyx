@@ -9,7 +9,7 @@
 """
 Economic Inequity (Inequality) Measures
 
-Copyright (C) 2018 Marek.Gagolewski.com
+Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -46,6 +46,8 @@ from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
 import scipy.spatial.distance
 import warnings
+
+
 ctypedef unsigned long long ulonglong
 
 
@@ -82,6 +84,8 @@ cpdef double gini(T[:] x, bint is_sorted=False):
         },
     $$
     where $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
+
+    Time complexity: $O(n)$ for sorted data.
 
 
     Parameters:
@@ -151,7 +155,7 @@ cpdef double bonferroni(T[:] x, bint is_sorted=False):
     cdef ulonglong i
 
     for i in range(1,n+1):
-        c += n/<np.float64_t>(n-i+1.0)
+        c += n/<double>(n-i+1.0)
         t += x[n-i]
         s += (n-c)*x[n-i]
 
