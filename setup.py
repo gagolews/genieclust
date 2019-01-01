@@ -40,6 +40,9 @@ class sdist(_sdist):
     def run(self):
         from Cython.Build import cythonize
         cythonize(["genieclust/internal.pyx"], language="c++")
+        cythonize(["genieclust/argfuns.pyx"], language="c++")
+        cythonize(["genieclust/disjoint_sets.pyx"], language="c++")
+        cythonize(["genieclust/gini_disjoint_sets.pyx"], language="c++")
         cythonize(["genieclust/compare_partitions.pyx"], language="c++")
         cythonize(["genieclust/inequity.pyx"], language="c++")
         cythonize(["genieclust/mst.pyx"], language="c++")
@@ -55,6 +58,15 @@ ext_kwargs = dict(include_dirs=[np.get_include()], language="c++")
 ext_modules += [
     Extension("genieclust.internal",
                 ["genieclust/internal.pyx"],
+                **ext_kwargs),
+    Extension("genieclust.argfuns",
+                ["genieclust/argfuns.pyx"],
+                **ext_kwargs),
+    Extension("genieclust.disjoint_sets",
+                ["genieclust/disjoint_sets.pyx"],
+                **ext_kwargs),
+    Extension("genieclust.gini_disjoint_sets",
+                ["genieclust/gini_disjoint_sets.pyx"],
                 **ext_kwargs),
     Extension("genieclust.compare_partitions",
                 ["genieclust/compare_partitions.pyx"],

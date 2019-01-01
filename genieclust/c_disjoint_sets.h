@@ -1,9 +1,9 @@
-/*  class DisjointSets
+/*  class CDisjointSets
  *
  *  Copyright (C) 2018-2019 Marek.Gagolewski.com
  *  All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
  *
  *  1. Redistributions of source code must retain the above copyright notice,
@@ -21,18 +21,18 @@
  *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  *  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  *  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
-#ifndef __disjoint_sets_h
-#define __disjoint_sets_h
+#ifndef __c_disjoint_sets_h
+#define __c_disjoint_sets_h
 
 #include <stdexcept>
 #include <algorithm>
@@ -55,22 +55,22 @@ typedef unsigned long long ulonglong;
  *   package rely on the assumption that the parent id of each
  *   element is always <= than itself.
  */
-class DisjointSets {
+class CDisjointSets {
 
 protected:
     ulonglong n;                //!< number of distinct elements
     ulonglong k;                //!< number of subsets
-    std::vector<ulonglong> par; /*!< par[i] is the id of the parent 
+    std::vector<ulonglong> par; /*!< par[i] is the id of the parent
                                  *   of the i-th element
                                  */
 
 public:
     /*!  Starts with a "weak" partition {  {0}, {1}, ..., {n-1}  },
      *   i.e., n singletons.
-     * 
+     *
      *   @param n number of elements, n>=0.
      */
-    DisjointSets(ulonglong n) :
+    CDisjointSets(ulonglong n) :
         par(n)
     {
         // if (n < 0) throw std::domain_error("n < 0");
@@ -84,7 +84,7 @@ public:
     /*! A nullary constructor allows Cython to allocate
      *  the instances on the stack. Do not use otherwise.
     */
-    DisjointSets() : DisjointSets(0) { }
+    CDisjointSets() : CDisjointSets(0) { }
 
 
     /*! Returns the current number of sets in the partition.
@@ -117,11 +117,11 @@ public:
      *   If px < py, then the new parent id of py will be set to py.
      *   Otherwise, px will have py as its parent.
      *
-     *   If x and y are already members of the same subset, 
+     *   If x and y are already members of the same subset,
      *   an exception is thrown.
      *
      *   @return the id of the parent of x or y, whichever is smaller.
-     * 
+     *
      *   @param x a value in {0,...,n-1}
      *   @param y a value in {0,...,n-1}
      */

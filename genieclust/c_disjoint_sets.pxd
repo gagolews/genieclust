@@ -1,5 +1,5 @@
 """
-cppclass DisjointSets
+cppclass CDisjointSets
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -33,10 +33,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ctypedef unsigned long long ulonglong
 
 
-cdef extern from "disjoint_sets.h":
-    cdef cppclass DisjointSets:
-        DisjointSets() except +
-        DisjointSets(ulonglong) except +
+cdef extern from "c_disjoint_sets.h":
+    cdef cppclass CDisjointSets:
+        CDisjointSets() except +
+        CDisjointSets(ulonglong) except +
         ulonglong get_k()
         ulonglong get_n()
         ulonglong find(ulonglong)

@@ -6,7 +6,7 @@
  *  Copyright (C) 2018-2019 Marek.Gagolewski.com
  *  All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
  *
  *  1. Redistributions of source code must retain the above copyright notice,
@@ -24,11 +24,11 @@
  *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  *  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  *  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
@@ -66,17 +66,17 @@ struct __argsort_comparer {
  *  ret will be overwritten.
  *
  *  (*) or THE stable one, if stable=true, which is the default.
- * 
+ *
  *  We call permutation o stable, whenever i<j and x[i]==x[j]
  *  implies that o[i]<o[j].
- * 
+ *
  *  @param ret return array
  *  @param x array to order
  *  @param n size of ret and x
  *  @param stable use a stable sorting algorithm? (slower)
  */
 template<class T>
-void argsort(ulonglong* ret, const T* x, ulonglong n, bool stable=true) {
+void Cargsort(ulonglong* ret, const T* x, ulonglong n, bool stable=true) {
     if (n <= 0) throw std::domain_error("n <= 0");
 
     for (ulonglong i=0; i<n; ++i)
@@ -104,14 +104,14 @@ void argsort(ulonglong* ret, const T* x, ulonglong n, bool stable=true) {
  *
  *
  *  If buf is not NULL, it must be of length at least k+1.
- * 
+ *
  *  @param x data
  *  @param n length of x
  *  @param k value in {0,...,n-1}, preferably small
  *  @param buf optional working buffer of size >= k+1, will be overwritten
  */
 template<class T>
-ulonglong argkmin(const T* x, ulonglong n, ulonglong k, ulonglong* buf=NULL) {
+ulonglong Cargkmin(const T* x, ulonglong n, ulonglong k, ulonglong* buf=NULL) {
     ulonglong* idx;
 
     if (n <= 0)   throw std::domain_error("n <= 0");

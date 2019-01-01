@@ -2,7 +2,6 @@ import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import *
 from genieclust.compare_partitions import *
-from genieclust.mst import *
 import time
 import gc
 

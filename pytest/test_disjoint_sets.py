@@ -1,7 +1,7 @@
 import numpy as np
 from genieclust.inequity import *
-from genieclust.internal import DisjointSets
-from genieclust.internal import GiniDisjointSets
+from genieclust.disjoint_sets import DisjointSets
+from genieclust.gini_disjoint_sets import GiniDisjointSets
 import time
 import gc
 
@@ -37,12 +37,12 @@ def test_GiniDisjointSets():
             c1 = d.get_counts()
             assert np.sum(c1) == d.get_n()
             assert min(c1) == d.get_smallest_count()
-            
+
             # c2 = np.sort([len(x) for x in d.to_lists()])
             # c1 = np.sort(c1)
             # assert np.all(c1 == c2)
 
-            
+
             g1 = d.get_gini()
             g2 = gini(np.array(c1), True)
             assert np.allclose(g1, g2)

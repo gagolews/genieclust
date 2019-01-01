@@ -3,7 +3,7 @@
  *  Copyright (C) 2018-2019 Marek.Gagolewski.com
  *  All rights reserved.
  *
- *  Redistribution and use in source and binary forms, with or without 
+ *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions are met:
  *
  *  1. Redistributions of source code must retain the above copyright notice,
@@ -21,11 +21,11 @@
  *  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
  *  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  *  PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
- *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, 
- *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, 
+ *  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ *  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
  *  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
- *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE 
+ *  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
  *  OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
@@ -33,17 +33,17 @@
 
 
 
-#ifndef __gini_disjoint_sets_h
-#define __gini_disjoint_sets_h
+#ifndef __c_gini_disjoint_sets_h
+#define __c_gini_disjoint_sets_h
 
-#include "disjoint_sets.h"
+#include "c_disjoint_sets.h"
 
 
 /*! "Augmented" Disjoint Sets (Union-Find) Data Structure
  *
  *  A class to represent partitions of the set {0,1,...,n-1} for any n.
  *
- *  The class allows to compute the normalized Gini index of the distribution 
+ *  The class allows to compute the normalized Gini index of the distribution
  *  of subset sizes, i.e.,
  *  \[
  *   G(x_1,\dots,x_k) = \frac{
@@ -52,21 +52,21 @@
  *   (n-1) \sum_{i=1}^n x_i
  *   }.
  *  \]
- * 
- *  The merge() operation, which also recomputes the Gini index, 
+ *
+ *  The merge() operation, which also recomputes the Gini index,
  *  has O(sqrt n) time complexity.
  *
  *  For a use case, see: Gagolewski M., Bartoszuk M., Cena A.,
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *  Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
  */
-class GiniDisjointSets : public DisjointSets{
+class CGiniDisjointSets : public CDisjointSets{
 
 protected:
     std::vector<ulonglong> cnt;  //!< cnt[find(x)] is the size of the relevant subset
 
     std::vector<ulonglong> tab;  /*!< tab[i] gives the number of subsets of size i
-                                  * (it's a pretty sparse array 
+                                  * (it's a pretty sparse array
                                   * - at most sqrt(n) elements are non-zero)
                                   */
 
@@ -81,11 +81,11 @@ protected:
 public:
     /*! Starts with a "weak" partition {  {0}, {1}, ..., {n-1}  },
      *  i.e., n singletons.
-     * 
+     *
      *  @param n number of elements, n>=0.
      */
-    GiniDisjointSets(ulonglong n) :
-        DisjointSets(n),
+    CGiniDisjointSets(ulonglong n) :
+        CDisjointSets(n),
         cnt(n, 1),   // each cluster is of size 1
         tab(n+1, 0),
         tab_next(n+1),
@@ -101,7 +101,7 @@ public:
     /*! A nullary constructor allows Cython to allocate
      *  the instances on the stack.  Do not use otherwise.
     */
-    GiniDisjointSets() : GiniDisjointSets(0) { }
+    CGiniDisjointSets() : CGiniDisjointSets(0) { }
 
 
     /*! Returns the Gini index of the distribution of subsets' sizes.
@@ -112,7 +112,7 @@ public:
     double get_gini() const { return this->gini; }
 
 
-    /*! Returns the size of the smallest subset. 
+    /*! Returns the size of the smallest subset.
      *
      *  Run time: O(1).
      */
@@ -135,11 +135,11 @@ public:
      *  If px < py, then the new parent id of py will be set to py.
      *  Otherwise, px will have py as its parent.
      *
-     *  If x and y are already members of the same subset, 
+     *  If x and y are already members of the same subset,
      *  an exception is thrown.
      *
      *  @return the id of the parent of x or y, whichever is smaller.
-     * 
+     *
      *  @param x a value in {0,...,n-1}
      *  @param y a value in {0,...,n-1}
      *
@@ -241,7 +241,7 @@ public:
 
     /*! Generates an array of subsets' sizes.
      *  The resulting vector is ordered nondecreasingly.
-     * 
+     *
      *  Run time: O(k), where k is the current number of subsets.
      */
     std::vector<ulonglong> get_counts() {

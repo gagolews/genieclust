@@ -1,15 +1,14 @@
 import numpy as np
 import time
-from genieclust.internal import __argkmin
-from genieclust.internal import __argsort
+from genieclust.argfuns import *
 
 # np.random.seed(123)
 def test_argsort():
-    for n in [1, 100_000]:
+    for n in [1, 10, 1_000_000]:
 
         x = np.arange(n)
         t0 = time.time()
-        y1a = __argsort(x, False)
+        y1a = argsort(x, False)
         print("(ascending)  n=%18d: %10.3fs" % (n, time.time()-t0), end="\t")
         t0 = time.time()
         y2a = np.argsort(x)
@@ -18,7 +17,7 @@ def test_argsort():
 
         x = np.arange(n)[::-1].copy()
         t0 = time.time()
-        y1b = __argsort(x, False)
+        y1b = argsort(x, False)
         print("(descending)                       %10.3fs" % (time.time()-t0,), end="\t")
         t0 = time.time()
         y2b = np.argsort(x)
@@ -27,7 +26,7 @@ def test_argsort():
 
         x = np.round(np.random.rand(n), 5)
         t0 = time.time()
-        y1c = __argsort(x, True)
+        y1c = argsort(x, True)
         print("(random-stable)                    %10.3fs" % (time.time()-t0,), end="\t")
         t0 = time.time()
         y2c = np.argsort(x, kind="mergesort")
@@ -36,11 +35,11 @@ def test_argsort():
 
 
 def test_argkmin():
-    for n in [1, 5, 100_000]:
+    for n in [1, 5, 1_000_000]:
         for k in [k for k in [0, 1, 2, 4, 10, 25, 50, 100] if k < n]:
             x = np.arange(n)
             t0 = time.time()
-            y1a = __argkmin(x, k)
+            y1a = argkmin(x, k)
             print("(ascending)  n=%10d, k=%4d: %10.3fs" % (n, k, time.time()-t0), end="\t")
             t0 = time.time()
             y2a = np.argsort(x, kind='mergesort')[k]
@@ -49,7 +48,7 @@ def test_argkmin():
 
             x = np.arange(n)[::-1].copy()
             t0 = time.time()
-            y1b = __argkmin(x, k)
+            y1b = argkmin(x, k)
             print("(descending)                       %10.3fs" % (time.time()-t0,), end="\t")
             t0 = time.time()
             y2b = np.argsort(x, kind='mergesort')[k]
@@ -58,7 +57,7 @@ def test_argkmin():
 
             x = np.round(np.random.rand(n), 5)
             t0 = time.time()
-            y1c = __argkmin(x, k)
+            y1c = argkmin(x, k)
             print("(random)                           %10.3fs" % (time.time()-t0,), end="\t")
             t0 = time.time()
             y2c = np.argsort(x, kind='mergesort')[k]

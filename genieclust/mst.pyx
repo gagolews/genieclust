@@ -46,8 +46,8 @@ import numpy as np
 from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
 from libcpp.vector cimport vector
-from . cimport disjoint_sets
-from . cimport argfuns
+from . cimport c_disjoint_sets
+from . cimport c_argfuns
 import warnings
 
 ctypedef unsigned long long ulonglong
@@ -251,7 +251,7 @@ cpdef tuple MST_nn_pair(double[:,::1] dist, ulonglong[:,::1] ind): # [:,::1]==c_
 
     cdef vector[ulonglong] nn_used  = vector[ulonglong](n, 0)
     cdef vector[ulonglong] arg_dist = vector[ulonglong](nm)
-    argfuns.argsort(arg_dist.data(), &dist[0,0], nm, False)
+    c_argfuns.Cargsort(arg_dist.data(), &dist[0,0], nm, False)
 
     cdef ulonglong arg_dist_cur = 0
     cdef ulonglong mst_edge_cur = 0
@@ -261,7 +261,7 @@ cpdef tuple MST_nn_pair(double[:,::1] dist, ulonglong[:,::1] ind): # [:,::1]==c_
     cdef ulonglong u, v
     cdef double d
 
-    cdef disjoint_sets.DisjointSets ds = disjoint_sets.DisjointSets(n)
+    cdef c_disjoint_sets.CDisjointSets ds = c_disjoint_sets.CDisjointSets(n)
 
     while mst_edge_cur < n-1:
         if arg_dist_cur >= nm:

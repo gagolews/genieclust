@@ -1,5 +1,5 @@
 """
-Provides access to the argsort() and argkmin() functions.
+cppclass CGiniDisjointSets
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -30,9 +30,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
+from libcpp.vector cimport vector
+
 ctypedef unsigned long long ulonglong
 
-
-cdef extern from "argfuns.h":
-    void argsort[T](ulonglong* ret, T* x, ulonglong n, bint stable)
-    ulonglong argkmin[T](T* x, ulonglong n, ulonglong k, ulonglong* buf)
+cdef extern from "c_gini_disjoint_sets.h":
+    cdef cppclass CGiniDisjointSets:
+        CGiniDisjointSets() except +
+        CGiniDisjointSets(ulonglong) except +
+        ulonglong get_k()
+        ulonglong get_n()
+        ulonglong find(ulonglong)
+        ulonglong merge(ulonglong, ulonglong)
+        double get_gini()
+        ulonglong get_smallest_count()
+        ulonglong get_count(ulonglong)
+        vector[ulonglong] get_counts()
