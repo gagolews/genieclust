@@ -71,9 +71,11 @@ cdef struct RandResult:
     double afm
 
 
-cpdef intT[:,:] normalize_confusion_matrix(intT[:,:] C):
+cpdef np.ndarray[ulonglong,ndim=2] normalize_confusion_matrix(ulonglong[:,:] C):
     """
     Applies pivoting to a given confusion matrix.
+    Nice if C actually summarizes clustering results,
+    where actual labels do not matter.
 
     Parameters:
     ----------
@@ -81,28 +83,76 @@ cpdef intT[:,:] normalize_confusion_matrix(intT[:,:] C):
     C : ndarray, shape (kx,ky)
         a confusion matrix
 
-    
+
     Returns:
     -------
 
     C_normalized: ndarray, shape(kx,ky)
     """
-    C = C.copy()
-    cpdef ulonglong xc = C.shape[0], yc = C.shape[1], i, j, w
+    cdef np.ndarray[ulonglong,ndim=2] C2 = np.array(C, dtype=np.ulonglong)
+    cdef ulonglong xc = <ulonglong>C2.shape[0], yc = <ulonglong>C2.shape[1]
+    cdef ulonglong i, j, w
 
     for i in range(xc-1):
         w = i
         for j in range(i+1, yc): # find w = argmax C[i,w], w=i,i+1,...yc-1
-            if C[i,w] < C[i,j]: w = j
+            if C2[i,w] < C2[i,j]: w = j
         for j in range(xc): # swap columns i and w
-            C[j,i], C[j,w] = C[j,w], C[j,i]
+            C2[j,i], C2[j,w] = C2[j,w], C2[j,i]
+
+    return C2
+
+
+cpdef np.ndarray[ulonglong,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
+    """
+    Computes the confusion matrix (as a dense matrix)
+
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths
+
+
+    Returns:
+    -------
+
+    C : ndarray, shape (kx, ky)
+        a confusion matrix
+    """
+    cdef ulonglong n = <ulonglong>x.shape[0], i
+    if n != <ulonglong>y.shape[0]: raise ValueError("incompatible lengths")
+
+    cdef intT xmin = x[0], ymin = y[0]
+    cdef intT xmax = x[0], ymax = y[0]
+    for i in range(1, n):
+        if   x[i] < xmin: xmin = x[i]
+        elif x[i] > xmax: xmax = x[i]
+
+        if   y[i] < ymin: ymin = y[i]
+        elif y[i] > ymax: ymax = y[i]
+
+    cdef ulonglong xc = <ulonglong>(xmax-xmin+1)
+    cdef ulonglong yc = <ulonglong>(ymax-ymin+1)
+
+    # if xc == yc == 1 or xc == yc == 0 or xc == yc == n: return 1.0
+
+    if xc*yc > <ulonglong>(10000):
+        raise ValueError("max_size of the confusion matrix exceeded")
+
+    cdef np.ndarray[ulonglong,ndim=2] C = np.zeros((xc, yc), dtype=np.ulonglong)
+    for i in range(n):
+        C[x[i]-xmin, y[i]-ymin] += 1
 
     return C
 
 
-cpdef ulonglong[:,:] confusion_matrix(intT[:] x, intT[:] y):
+cpdef np.ndarray[ulonglong,ndim=2] normalized_confusion_matrix(intT[:] x, intT[:] y):
     """
-    Computes the confusion matrix (as a dense matrix)
+    Computes the confusion matrix between x and y
+    and applies pivoting. Nice for summarizing clustering results,
+    where actual labels do not matter.
 
 
     Parameters:
@@ -119,34 +169,12 @@ cpdef ulonglong[:,:] confusion_matrix(intT[:] x, intT[:] y):
     C : ndarray, shape (kx, ky)
         a confusion matrix
     """
-    cpdef ulonglong n = x.shape[0], i
-    if n != <ulonglong>y.shape[0]: raise ValueError("incompatible lengths")
-
-    cpdef intT xmin = x[0], ymin = y[0]
-    cpdef intT xmax = x[0], ymax = y[0]
-    for i in range(1, n):
-        if   x[i] < xmin: xmin = x[i]
-        elif x[i] > xmax: xmax = x[i]
-
-        if   y[i] < ymin: ymin = y[i]
-        elif y[i] > ymax: ymax = y[i]
-
-    cpdef ulonglong xc = <ulonglong>(xmax-xmin+1)
-    cpdef ulonglong yc = <ulonglong>(ymax-ymin+1)
-
-    # if xc == yc == 1 or xc == yc == 0 or xc == yc == n: return 1.0
-
-    if xc*yc > <ulonglong>(10000):
-        raise ValueError("max_size of the confusion matrix exceeded")
-
-    cdef ulonglong[:,:] C = np.zeros((xc, yc), dtype=np.ulonglong)
-    for i in range(n):
-        C[x[i]-xmin, y[i]-ymin] += 1
-
-    return C
+    cdef np.ndarray[ulonglong,ndim=2] C = confusion_matrix(x, y)
+    return normalize_confusion_matrix(C)
 
 
-cpdef RandResult compare_partitions(intT[:,:] C):
+
+cpdef RandResult compare_partitions(ulonglong[:,:] C):
     """
     Computes the adjusted and nonadjusted Rand- and FM scores
     based on a given confusion matrix.
@@ -169,14 +197,14 @@ cpdef RandResult compare_partitions(intT[:,:] C):
         the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
         Fowlkes-Mallows scores, respectively.
     """
-    cpdef ulonglong xc = C.shape[0], yc = C.shape[1], i, j
-    cpdef ulonglong n = 0
+    cdef ulonglong xc = <ulonglong>C.shape[0], yc = <ulonglong>C.shape[1], i, j
+    cdef ulonglong n = 0
     for i in range(xc):
         for j in range(yc):
             n += C[i, j]
 
-    cpdef double sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0
-    cpdef double t, prod_comb, mean_comb, e_fm
+    cdef double sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0
+    cdef double t, prod_comb, mean_comb, e_fm
     for i in range(xc):
         t = 0.0
         for j in range(yc):

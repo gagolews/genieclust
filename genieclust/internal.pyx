@@ -249,7 +249,7 @@ cdef class DisjointSets:
         If px < py, then the new parent id of py will be set to py.
         Otherwise, px will have py as its parent.
 
-        If x and y are already members of the same subset, 
+        If x and y are already members of the same subset,
         an exception is thrown.
 
         Parameters:
@@ -399,7 +399,7 @@ cdef class GiniDisjointSets():
         """
         return self.ds.get_k()-1
 
-    
+
     cpdef ulonglong get_n(self):
         """
         Returns the number of elements in the set being partitioned.
@@ -435,7 +435,7 @@ cdef class GiniDisjointSets():
 
     cpdef ulonglong get_smallest_count(self):
         """
-        Returns the size of the smallest subset. 
+        Returns the size of the smallest subset.
 
         Run time: O(1)
         """
@@ -471,7 +471,7 @@ cdef class GiniDisjointSets():
         If px < py, then the new parent id of py will be set to py.
         Otherwise, px will have py as its parent.
 
-        If x and y are already members of the same subset, 
+        If x and y are already members of the same subset,
         an exception is thrown.
 
         Update time: pessimistically O(sqrt(n)).
@@ -597,9 +597,9 @@ cdef class GiniDisjointSets():
 #############################################################################
 
 
-cpdef np.ndarray[long] merge_boundary_points(
+cpdef np.ndarray[int] merge_boundary_points(
             tuple mst,
-            np.ndarray[long] cl,
+            np.ndarray[int] cl,
             np.ndarray[double,ndim=2] D,
             np.ndarray[double] Dcore):
     """
@@ -634,7 +634,7 @@ cpdef np.ndarray[long] merge_boundary_points(
         A new integer vector c with c[i] denoting the cluster
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[long] cl2 = cl.copy()
+    cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ulonglong n = cl.shape[0], i
     cdef int j0, j1
     cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
@@ -655,7 +655,7 @@ cpdef np.ndarray[long] merge_boundary_points(
     return cl2
 
 
-cpdef np.ndarray[long] merge_leaves_with_nearest_clusters(
+cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
             tuple mst,
             np.ndarray[int] cl):
     """
@@ -684,7 +684,7 @@ cpdef np.ndarray[long] merge_leaves_with_nearest_clusters(
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[long] cl2 = cl.copy()
+    cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ulonglong n = cl.shape[0], i
     cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
     assert <ulonglong>(mst_i.shape[0] + 1) == n
@@ -995,7 +995,7 @@ cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore)
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
-cpdef np.ndarray[long] genie_from_mst(tuple mst,
+cpdef np.ndarray[int] genie_from_mst(tuple mst,
                      ulonglong n_clusters=2,
                      double gini_threshold=0.3,
                      bint noise_leaves=False):
@@ -1056,13 +1056,12 @@ cpdef np.ndarray[long] genie_from_mst(tuple mst,
         If noise_leaves==True, then label -1 denotes a noise point.
     """
     cdef np.int_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
-    cdef noise_count
-    cdef np.ndarray[long] res
+    cdef ulonglong noise_count
     cdef np.int_t* next_edge
     cdef np.int_t* prev_edge
     cdef np.int_t* denoise_index
     cdef np.int_t* denoise_index_rev
-    cdef np.int_t* res_cluster_id
+
     cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
     cdef np.ndarray[ulonglong] deg = get_tree_node_degrees(mst_i)
     n = mst_i.shape[0]+1
@@ -1163,10 +1162,11 @@ cpdef np.ndarray[long] genie_from_mst(tuple mst,
 
 
 
-    res = np.empty(n, dtype=np.long)
-    res_cluster_id = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
+
+    cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
+    cdef int* res_cluster_id = <int*>PyMem_Malloc(n*sizeof(int))
     for i in range(n): res_cluster_id[i] = -1
-    cdef np.int_t c = 0
+    cdef int c = 0
     for i in range(n):
         if denoise_index_rev[i] >= 0:
             # a non-noise point

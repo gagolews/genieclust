@@ -25,7 +25,7 @@ def test_genie():
             labels = np.random.choice(np.r_[1,2], n)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
-            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype='int')
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intc)
         label_counts = np.unique(labels,return_counts=True)[1]
         k = len(label_counts)
 
@@ -47,7 +47,7 @@ def test_genie():
             #t0 = time.time()
             res2 = stats.cutree(genie.hclust2(D, thresholdGini=g), k)
             #print("t_r=%.3f" % (time.time()-t0))
-            res2 = np.array(res2, np.int_)
+            res2 = np.array(res2, np.intc)
             assert len(np.unique(res2)) == k
 
             ari = adjusted_rand_score(res1, res2)
