@@ -32,17 +32,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from libcpp.vector cimport vector
 
-ctypedef unsigned long long ulonglong
-
 cdef extern from "c_gini_disjoint_sets.h":
     cdef cppclass CGiniDisjointSets:
         CGiniDisjointSets() except +
-        CGiniDisjointSets(ulonglong) except +
-        ulonglong get_k()
-        ulonglong get_n()
-        ulonglong find(ulonglong)
-        ulonglong merge(ulonglong, ulonglong)
+        CGiniDisjointSets(ssize_t) except +
+        ssize_t get_k()
+        ssize_t get_n()
+        ssize_t find(ssize_t)
+        ssize_t merge(ssize_t, ssize_t)
         double get_gini()
-        ulonglong get_smallest_count()
-        ulonglong get_count(ulonglong)
-        vector[ulonglong] get_counts()
+        ssize_t get_smallest_count()
+        ssize_t get_count(ssize_t)
+        vector[ssize_t] get_counts()

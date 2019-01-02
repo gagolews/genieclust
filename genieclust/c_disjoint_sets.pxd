@@ -30,14 +30,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-ctypedef unsigned long long ulonglong
-
 
 cdef extern from "c_disjoint_sets.h":
     cdef cppclass CDisjointSets:
         CDisjointSets() except +
-        CDisjointSets(ulonglong) except +
-        ulonglong get_k()
-        ulonglong get_n()
-        ulonglong find(ulonglong)
-        ulonglong merge(ulonglong, ulonglong)
+        CDisjointSets(ssize_t) except +
+        ssize_t get_k()
+        ssize_t get_n()
+        ssize_t find(ssize_t)
+        ssize_t merge(ssize_t, ssize_t)

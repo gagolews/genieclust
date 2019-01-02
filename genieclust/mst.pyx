@@ -50,8 +50,6 @@ from . cimport c_disjoint_sets
 from . cimport c_argfuns
 import warnings
 
-ctypedef unsigned long long ulonglong
-
 
 cdef extern from "stdlib.h":
     ctypedef void const_void "const void"
@@ -61,8 +59,8 @@ cdef extern from "stdlib.h":
 
 
 cdef struct MST_triple:
-    ulonglong i1
-    ulonglong i2
+    ssize_t i1
+    ssize_t i2
     double w
 
 
@@ -79,7 +77,7 @@ cdef int MST_triple_comparer(const_void* _a, const_void* _b):
         return a.i2-b.i2
 
 
-cpdef np.ndarray[ulonglong,ndim=2] MST(double[:,:] D):
+cpdef np.ndarray[ssize_t,ndim=2] MST(double[:,:] D):
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
@@ -123,19 +121,19 @@ cpdef np.ndarray[ulonglong,ndim=2] MST(double[:,:] D):
     """
     if not D.shape[0] == D.shape[1]:
         raise ValueError("D must be a square matrix")
-    cdef ulonglong n = D.shape[0] # D is a square matrix
-    cdef ulonglong i, j
-    cdef np.ndarray[ulonglong,ndim=2] I = np.empty((n-1, 2), dtype=np.ulonglong)
+    cdef ssize_t n = D.shape[0] # D is a square matrix
+    cdef ssize_t i, j
+    cdef np.ndarray[ssize_t,ndim=2] I = np.empty((n-1, 2), dtype=np.intp)
 
-    cpdef double*     Dnn = <double*> PyMem_Malloc(n * sizeof(double))
-    cpdef ulonglong*  Fnn = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
-    cpdef ulonglong*  M   = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
+    cpdef double*   Dnn = <double*> PyMem_Malloc(n * sizeof(double))
+    cpdef ssize_t*  Fnn = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
+    cpdef ssize_t*  M   = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
     for i in range(n):
         Dnn[i] = INFINITY
         #Fnn[i] = 0xffffffff
         M[i] = i
 
-    cdef ulonglong lastj = 0, bestj, bestjpos
+    cdef ssize_t lastj = 0, bestj, bestjpos
     for i in range(n-1):
         # M[1], ... M[n-i-1] - points not yet in the MST
         bestjpos = bestj = 0
@@ -181,8 +179,8 @@ cpdef tuple MST_pair(double[:,:] D):
     """
     if not D.shape[0] == D.shape[1]:
         raise ValueError("D must be a square matrix")
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = MST(D)
-    cdef ulonglong n = mst_i.shape[0]+1, i
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = MST(D)
+    cdef ssize_t n = mst_i.shape[0]+1, i
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
     for i in range(n-1):
         d[i].i1 = mst_i[i,0]
@@ -208,7 +206,7 @@ cpdef tuple MST_pair(double[:,:] D):
 
 
 
-cpdef tuple MST_nn_pair(double[:,::1] dist, ulonglong[:,::1] ind): # [:,::1]==c_contiguous
+cpdef tuple MST_nn_pair(double[:,::1] dist, ssize_t[:,::1] ind): # [:,::1]==c_contiguous
     """
     Computes a minimum spanning tree of an M-Nearest Neighbor Graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
@@ -245,20 +243,20 @@ cpdef tuple MST_nn_pair(double[:,::1] dist, ulonglong[:,::1] ind): # [:,::1]==c_
     #if not ind.data.c_contiguous:
         #raise ValueError("ind must be a c_contiguous array")
 
-    cdef ulonglong n = dist.shape[0]
-    cdef ulonglong n_neighbors = dist.shape[1]
-    cdef ulonglong nm = n*n_neighbors
+    cdef ssize_t n = dist.shape[0]
+    cdef ssize_t n_neighbors = dist.shape[1]
+    cdef ssize_t nm = n*n_neighbors
 
-    cdef vector[ulonglong] nn_used  = vector[ulonglong](n, 0)
-    cdef vector[ulonglong] arg_dist = vector[ulonglong](nm)
+    cdef vector[ssize_t] nn_used  = vector[ssize_t](n, 0)
+    cdef vector[ssize_t] arg_dist = vector[ssize_t](nm)
     c_argfuns.Cargsort(arg_dist.data(), &dist[0,0], nm, False)
 
-    cdef ulonglong arg_dist_cur = 0
-    cdef ulonglong mst_edge_cur = 0
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.ulonglong)
-    cdef np.ndarray[double]           mst_d = np.empty(n-1, dtype=np.double)
+    cdef ssize_t arg_dist_cur = 0
+    cdef ssize_t mst_edge_cur = 0
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
 
-    cdef ulonglong u, v
+    cdef ssize_t u, v
     cdef double d
 
     cdef c_disjoint_sets.CDisjointSets ds = c_disjoint_sets.CDisjointSets(n)

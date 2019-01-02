@@ -8,7 +8,7 @@
 
 
 """
-Provides access to the argsort() and argkmin() functions.
+Provides access to the Cargsort() and Cargkmin() functions.
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -39,9 +39,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-ctypedef unsigned long long ulonglong
-
 
 cdef extern from "c_argfuns.h":
-    void Cargsort[T](ulonglong* ret, T* x, ulonglong n, bint stable)
-    ulonglong Cargkmin[T](T* x, ulonglong n, ulonglong k, ulonglong* buf)
+    void Cargsort[T](ssize_t* ret, T* x, ssize_t n, bint stable)
+    ssize_t Cargkmin[T](T* x, ssize_t n, ssize_t k, ssize_t* buf)

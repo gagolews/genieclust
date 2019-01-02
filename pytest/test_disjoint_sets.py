@@ -13,7 +13,8 @@ def test_DisjointSets():
         assert all([i==d.find(i) for i in range(n)])
 
         for k in range(int(np.random.randint(0, n-2, 1))):
-            i,j = np.random.randint(0, n, 2)
+            i = np.random.randint(0, n)
+            j = np.random.randint(0, n)
             if d.find(i) == d.find(j): continue
             d.union(i, j)
             assert d.find(i) == d.find(j)
@@ -29,7 +30,8 @@ def test_GiniDisjointSets():
         assert all([i==d.find(i) for i in range(n)])
 
         for k in range(int(np.random.randint(0, n-2, 1))):
-            i,j = np.random.randint(0, n, 2)
+            i = np.random.randint(0, n)
+            j = np.random.randint(0, n)
             if d.find(i) == d.find(j): continue
             d.union(i, j)
             assert d.find(i) == d.find(j)

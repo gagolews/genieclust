@@ -45,7 +45,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from . cimport c_gini_disjoint_sets
 import numpy as np
 cimport numpy as np
-ctypedef unsigned long long ulonglong
 from libcpp.vector cimport vector
 
 
@@ -71,12 +70,12 @@ cdef class GiniDisjointSets():
     Parameters:
     ----------
 
-    n : ulonglong
+    n : ssize_t
         The cardinality of the set whose partitions are generated.
     """
     cdef c_gini_disjoint_sets.CGiniDisjointSets ds
 
-    def __cinit__(self, ulonglong n):
+    def __cinit__(self, ssize_t n):
         self.ds = c_gini_disjoint_sets.CGiniDisjointSets(n)
 
     def __len__(self):
@@ -87,20 +86,20 @@ cdef class GiniDisjointSets():
         Returns:
         -------
 
-        len : ulonglong
+        len : ssize_t
             A value in {0,...,n-1}.
         """
         return self.ds.get_k()-1
 
 
-    cpdef ulonglong get_n(self):
+    cpdef ssize_t get_n(self):
         """
         Returns the number of elements in the set being partitioned.
         """
         return self.ds.get_n()
 
 
-    cpdef ulonglong get_k(self):
+    cpdef ssize_t get_k(self):
         """
         Returns the current number of subsets.
         """
@@ -117,7 +116,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_gini()
 
 
-    cpdef ulonglong get_count(self, ulonglong x):
+    cpdef ssize_t get_count(self, ssize_t x):
         """
         Returns the size of the subset containing x.
 
@@ -126,7 +125,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_count(x)
 
 
-    cpdef ulonglong get_smallest_count(self):
+    cpdef ssize_t get_smallest_count(self):
         """
         Returns the size of the smallest subset.
 
@@ -135,7 +134,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_smallest_count()
 
 
-    cpdef ulonglong find(self, ulonglong x):
+    cpdef ssize_t find(self, ssize_t x):
         """
         Finds the subset id for a given x.
 
@@ -156,7 +155,7 @@ cdef class GiniDisjointSets():
         return self.ds.find(x)
 
 
-    cpdef ulonglong union(self, ulonglong x, ulonglong y):
+    cpdef ssize_t union(self, ssize_t x, ssize_t y):
         """
         Merges the sets containing given x and y.
 
@@ -188,7 +187,7 @@ cdef class GiniDisjointSets():
         return self.ds.merge(x, y)
 
 
-    cpdef np.ndarray[ulonglong] to_list(self):
+    cpdef np.ndarray[ssize_t] to_list(self):
         """
         Get parent ids of all the elements
 
@@ -200,14 +199,14 @@ cdef class GiniDisjointSets():
             A list m such that m[x] denotes the (recursive) parent id of x,
             for x=0,1,...,n.
         """
-        cdef ulonglong i
-        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        cdef ssize_t i
+        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
         for i in range(self.ds.get_n()):
             m[i] = self.ds.find(i)
         return m
 
 
-    cpdef np.ndarray[ulonglong] to_list_normalized(self):
+    cpdef np.ndarray[ssize_t] to_list_normalized(self):
         """
         Get the normalized elements' membership information.
 
@@ -220,10 +219,10 @@ cdef class GiniDisjointSets():
             The resulting values are in {0,1,...,k-1}, where k is the current
             number of subsets in the partition.
         """
-        cdef ulonglong i, j
-        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
-        cdef np.ndarray[ulonglong] v = np.zeros(self.ds.get_n(), dtype=np.ulonglong)
-        cdef ulonglong c = 1
+        cdef ssize_t i, j
+        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef np.ndarray[ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
+        cdef ssize_t c = 1
         for i in range(self.ds.get_n()):
             j = self.ds.find(i)
             if v[j] == 0:
@@ -246,7 +245,7 @@ cdef class GiniDisjointSets():
             of sets in a partition. Each list element is a list
             with values in {0,...,n-1}
         """
-        cdef ulonglong i
+        cdef ssize_t i
         cdef list tou, out
 
         tou = [ [] for i in range(self.ds.get_n()) ]
@@ -267,9 +266,9 @@ cdef class GiniDisjointSets():
 
         Run time: O(k), where k is the current number of subsets.
         """
-        cdef vector[ulonglong] counts = self.ds.get_counts()
-        cdef ulonglong k = counts.size(), i
-        cdef np.ndarray[ulonglong] out = np.empty(k, dtype=np.ulonglong)
+        cdef vector[ssize_t] counts = self.ds.get_counts()
+        cdef ssize_t k = counts.size(), i
+        cdef np.ndarray[ssize_t] out = np.empty(k, dtype=np.intp)
         for i in range(k):
             out[i] = counts[i]
         return out

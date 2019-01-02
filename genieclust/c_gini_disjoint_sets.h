@@ -1,4 +1,4 @@
-/*  class GiniDisjointSets
+/*  class CGiniDisjointSets
  *
  *  Copyright (C) 2018-2019 Marek.Gagolewski.com
  *  All rights reserved.
@@ -63,17 +63,17 @@
 class CGiniDisjointSets : public CDisjointSets{
 
 protected:
-    std::vector<ulonglong> cnt;  //!< cnt[find(x)] is the size of the relevant subset
+    std::vector<ssize_t> cnt;  //!< cnt[find(x)] is the size of the relevant subset
 
-    std::vector<ulonglong> tab;  /*!< tab[i] gives the number of subsets of size i
-                                  * (it's a pretty sparse array
-                                  * - at most sqrt(n) elements are non-zero)
-                                  */
+    std::vector<ssize_t> tab;  /*!< tab[i] gives the number of subsets of size i
+                                * (it's a pretty sparse array
+                                * - at most sqrt(n) elements are non-zero)
+                                */
 
-    std::vector<ulonglong> tab_next; //!< an array-based...
-    std::vector<ulonglong> tab_prev; //!< ...doubly-linked list...
-    ulonglong  tab_head; //!< ...for quickly accessing and iterating over...
-    ulonglong  tab_tail; //!< ...this->tab data
+    std::vector<ssize_t> tab_next; //!< an array-based...
+    std::vector<ssize_t> tab_prev; //!< ...doubly-linked list...
+    ssize_t  tab_head; //!< ...for quickly accessing and iterating over...
+    ssize_t  tab_tail; //!< ...this->tab data
 
     double gini;   //!< the Gini index of the current subset sizes
 
@@ -84,7 +84,7 @@ public:
      *
      *  @param n number of elements, n>=0.
      */
-    CGiniDisjointSets(ulonglong n) :
+    CGiniDisjointSets(ssize_t n) :
         CDisjointSets(n),
         cnt(n, 1),   // each cluster is of size 1
         tab(n+1, 0),
@@ -116,14 +116,14 @@ public:
      *
      *  Run time: O(1).
      */
-    ulonglong get_smallest_count() const { return this->tab_head; }
+    ssize_t get_smallest_count() const { return this->tab_head; }
 
 
     /*! Returns the size of the subset containing x.
      *
      * Run time: the cost of find(x)
      */
-    ulonglong get_count(ulonglong x) {
+    ssize_t get_count(ssize_t x) {
         x = this->find(x);
         return this->cnt[x];
     }
@@ -145,7 +145,7 @@ public:
      *
      *  Update time: pessimistically O(sqrt(n)).
      */
-    virtual ulonglong merge(ulonglong x, ulonglong y) { // well, union is a reserved C++ keyword :)
+    virtual ssize_t merge(ssize_t x, ssize_t y) { // well, union is a reserved C++ keyword :)
 
         // the ordinary DisjointSet's merge:
         x = this->find(x); // includes a range check for x
@@ -157,9 +157,9 @@ public:
         this->k -= 1;     // decreaset the subset count
 
         // update the counts
-        ulonglong size1 = this->cnt[x];
-        ulonglong size2 = this->cnt[y];
-        ulonglong size12 = size1+size2;
+        ssize_t size1 = this->cnt[x];
+        ssize_t size2 = this->cnt[y];
+        ssize_t size12 = size1+size2;
         this->cnt[x] += this->cnt[y]; // cluster x has more elements now
         this->cnt[y] = 0;             // cluster y, well, cleaning up
 
@@ -176,11 +176,11 @@ public:
             this->tab_tail = size12;
         }
         else if (this->tab[size12] == 1) { // new elem in the 'middle'
-            ulonglong w = this->tab_tail;
+            ssize_t w = this->tab_tail;
             while (w > size12) {
                 w = this->tab_prev[w];
             }
-            ulonglong v = this->tab_next[w];
+            ssize_t v = this->tab_next[w];
             this->tab_next[w] = size12;
             this->tab_prev[v] = size12;
             this->tab_next[size12] = v;
@@ -221,8 +221,8 @@ public:
         // based on a formula given in @TODO:derive the formula nicely@
         this->gini = 0.0;
         if (this->tab_head != this->tab_tail) { // otherwise all clusters are of identical sizes
-            ulonglong v = this->tab_head, w;
-            ulonglong i = 0;
+            ssize_t v = this->tab_head, w;
+            ssize_t i = 0;
             while (v != this->tab_tail) {
                 w = v;                 // previous v
                 v = this->tab_next[v]; // next v
@@ -244,13 +244,13 @@ public:
      *
      *  Run time: O(k), where k is the current number of subsets.
      */
-    std::vector<ulonglong> get_counts() {
-        ulonglong i = 0;
-        std::vector<ulonglong> out(this->k);
-        ulonglong v = this->tab_head;
+    std::vector<ssize_t> get_counts() {
+        ssize_t i = 0;
+        std::vector<ssize_t> out(this->k);
+        ssize_t v = this->tab_head;
         while (true) {
             // add this->tab[v] times v
-            for (ulonglong j=0; j<this->tab[v]; ++j) {
+            for (ssize_t j=0; j<this->tab[v]; ++j) {
                 if (i >= k) throw std::out_of_range("ASSERT1 FAIL in get_counts()");
                 out[i++] = v;
             }

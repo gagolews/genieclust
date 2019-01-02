@@ -58,17 +58,16 @@ import scipy.spatial.distance
 import warnings
 
 
-ctypedef unsigned long long ulonglong
 
 ctypedef fused intT:
     int
     long
-    ulonglong
+    long long
 
 ctypedef fused T:
     int
     long
-    ulonglong
+    long long
     float
     double
 
@@ -121,22 +120,22 @@ cpdef np.ndarray[int] merge_boundary_points(
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
-    cdef ulonglong n = cl.shape[0], i
-    cdef int j0, j1
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
-    assert <ulonglong>(mst_i.shape[0] + 1) == n
+    cdef ssize_t n = cl2.shape[0], i
+    cdef ssize_t j0, j1
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
+    assert (mst_i.shape[0] + 1) == n
 
     for i in range(n-1):
-        assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
-        if cl[mst_i[i,0]] < 0:
+        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
+        if cl2[mst_i[i,0]] < 0:
             j0, j1 = mst_i[i,0],  mst_i[i,1]
-        elif cl[mst_i[i,1]] < 0:
+        elif cl2[mst_i[i,1]] < 0:
             j0, j1 = mst_i[i,1],  mst_i[i,0]
         else:
             continue
 
         if D[j1, j0] <= Dcore[j1]:
-            cl2[j0] = cl[j1]
+            cl2[j0] = cl2[j1]
 
     return cl2
 
@@ -171,21 +170,21 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
         id (in {0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
-    cdef ulonglong n = cl.shape[0], i
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
-    assert <ulonglong>(mst_i.shape[0] + 1) == n
+    cdef ssize_t n = cl2.shape[0], i
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
+    assert (mst_i.shape[0] + 1) == n
 
     for i in range(n-1):
-        assert cl[mst_i[i,0]] >= 0 or cl[mst_i[i,1]] >= 0
-        if cl[mst_i[i,0]] < 0:
-            cl2[mst_i[i,0]] = cl[mst_i[i,1]]
-        elif cl[mst_i[i,1]] < 0:
-            cl2[mst_i[i,1]] = cl[mst_i[i,0]]
+        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
+        if cl2[mst_i[i,0]] < 0:
+            cl2[mst_i[i,0]] = cl2[mst_i[i,1]]
+        elif cl2[mst_i[i,1]] < 0:
+            cl2[mst_i[i,1]] = cl2[mst_i[i,0]]
 
     return cl2
 
 
-cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ulonglong M):
+cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
     """
     Given a pairwise distance matrix, computes the "core distance", i.e.,
     the distance of each point to its M-th nearest neighbor.
@@ -220,26 +219,30 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ulonglong M)
         Dcore[i] gives the distance between the i-th point and its M-th nearest
         neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
     """
-    cdef ulonglong n = D.shape[0], i, j
+    cdef ssize_t n = D.shape[0], i, j
     cdef double v
     cdef np.ndarray[double] Dcore = np.zeros(n, np.double)
     cdef double[::1] row
 
     if M < 1: raise ValueError("M < 1")
-    if <ulonglong>(D.shape[1]) != n: raise ValueError("not a square matrix")
+    if D.shape[1] != n: raise ValueError("not a square matrix")
     if M >= n: raise ValueError("M >= matrix size")
 
     if M == 1: return Dcore
 
+    cdef vector[ssize_t] buf = vector[ssize_t](M)
     for i in range(n):
         row = D[i,:]
-        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, <ulonglong*>0)
+        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
         Dcore[i] = D[i, j]
 
     return Dcore
 
 
-cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(np.ndarray[double,ndim=2] D, ulonglong M):
+cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
+        np.ndarray[double,ndim=2] D,
+        ssize_t M
+):
     """
     Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. a smoothing
@@ -275,18 +278,14 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(np.ndarray[double,n
     R : ndarray, shape (n_samples,n_samples)
         A new distance matrix, giving the mutual reachability distance w.r.t. M.
     """
-    cdef ulonglong n = D.shape[0], i, j
+    cdef ssize_t n = D.shape[0], i, j
     cdef double v
-    cdef np.ndarray[double] row
-    cdef np.ndarray[double] Dcore
-
     if M < 1: raise ValueError("M < 1")
-    if <ulonglong>(D.shape[1]) != n: raise ValueError("not a square matrix")
+    if D.shape[1] != n: raise ValueError("not a square matrix")
 
-    cdef np.ndarray[double,ndim=2] R = D.copy()
+    cdef np.ndarray[double,ndim=2] R = np.array(D, dtype=np.double)
+    cdef np.ndarray[double] Dcore = core_distance(D, M)
     if M > 2:
-        Dcore = core_distance(D, M)
-
         for i in range(0, n-1):
             for j in range(i+1, n):
                 v = D[i, j]
@@ -297,7 +296,7 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(np.ndarray[double,n
     return R
 
 
-cpdef np.ndarray[ulonglong] get_tree_node_degrees(np.ndarray[ulonglong,ndim=2] I):
+cpdef np.ndarray[ssize_t] get_tree_node_degrees(np.ndarray[ssize_t,ndim=2] I):
     """
     Given an adjacency list I representing an undirected tree with vertex
     set {0,...,n-1}, return an array d with d[i] denoting
@@ -318,8 +317,8 @@ cpdef np.ndarray[ulonglong] get_tree_node_degrees(np.ndarray[ulonglong,ndim=2] I
     d : ndarray, shape(n,)
         An integer array of length I.shape[0]+1.
     """
-    cdef ulonglong n = I.shape[0]+1, i
-    cdef np.ndarray[ulonglong] d = np.zeros(n, dtype=np.ulonglong)
+    cdef ssize_t n = I.shape[0]+1, i
+    cdef np.ndarray[ssize_t] d = np.zeros(n, dtype=np.intp)
     for i in range(n-1):
         if I[i,0] < 0 or I[i,0] >= n:
             raise ValueError("Detected an element not in {0, ..., n-1}")
@@ -340,8 +339,8 @@ cdef extern from "stdlib.h":
 
 
 cdef struct MST_triple:
-    ulonglong i1
-    ulonglong i2
+    ssize_t i1
+    ssize_t i2
     double w
 
 
@@ -419,21 +418,21 @@ cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore)
          gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
     """
 
-    cdef ulonglong n = D.shape[0] # D is a square matrix
-    cdef ulonglong i, j
+    cdef ssize_t n = D.shape[0] # D is a square matrix
+    cdef ssize_t i, j
     cdef double curd
     cpdef MST_triple* d = <MST_triple*>PyMem_Malloc(n * sizeof(MST_triple))
 
 
-    cpdef double*    Dnn = <double*> PyMem_Malloc(n * sizeof(double))
-    cpdef ulonglong* Fnn = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
-    cpdef ulonglong* M   = <ulonglong*> PyMem_Malloc(n * sizeof(ulonglong))
+    cpdef double*  Dnn = <double*> PyMem_Malloc(n * sizeof(double))
+    cpdef ssize_t* Fnn = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
+    cpdef ssize_t* M   = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
     for i in range(n):
         Dnn[i] = INFINITY
         #Fnn[i] = 0xffffffff
         M[i] = i
 
-    cdef ulonglong lastj = 0, bestj, bestjpos
+    cdef ssize_t lastj = 0, bestj, bestjpos
     for i in range(n-1):
         # M[1], ... M[n-i-1] - points not yet in the MST
         bestjpos = bestj = 0
@@ -463,7 +462,7 @@ cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore)
 
     qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
 
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.ulonglong)
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
     for i in range(n-1):
         mst_i[i,0] = d[i].i1
         mst_i[i,1] = d[i].i2
@@ -482,7 +481,7 @@ cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore)
 #############################################################################
 
 cpdef np.ndarray[int] genie_from_mst(tuple mst,
-                     ulonglong n_clusters=2,
+                     ssize_t n_clusters=2,
                      double gini_threshold=0.3,
                      bint noise_leaves=False):
     """
@@ -541,19 +540,17 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
         labels_[i] gives the cluster id of the i-th input point.
         If noise_leaves==True, then label -1 denotes a noise point.
     """
-    cdef np.int_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
-    cdef ulonglong noise_count
-    cdef np.int_t* next_edge
-    cdef np.int_t* prev_edge
-    cdef np.int_t* denoise_index
-    cdef np.int_t* denoise_index_rev
+    cdef ssize_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
+    cdef ssize_t noise_count
 
-    cdef np.ndarray[ulonglong,ndim=2] mst_i = mst[0]
-    cdef np.ndarray[ulonglong] deg = get_tree_node_degrees(mst_i)
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
+    cdef np.ndarray[ssize_t] deg = get_tree_node_degrees(mst_i)
     n = mst_i.shape[0]+1
 
-    denoise_index     = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
-    denoise_index_rev = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
+    cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)
+    cdef vector[ssize_t] denoise_index_rev = vector[ssize_t](n)
+
+
     # Create the non-noise points' translation table (for GiniDisjointSets)
     noise_count = 0
     if noise_leaves:
@@ -574,16 +571,14 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
             denoise_index_rev[i] = i
 
     if n-noise_count-n_clusters <= 0:
-        PyMem_Free(denoise_index)
-        PyMem_Free(denoise_index_rev)
         raise RuntimeError("The requested number of clusters is too large \
             with this many detected noise points")
 
     # When the Genie correction is on, some MST edges will be chosen
     # in a non-consecutive order. An array-based skiplist will speed up
     # searching within the not-yet-consumed edges.
-    next_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
-    prev_edge = <np.int_t*>PyMem_Malloc(n*sizeof(np.int_t))
+    cdef vector[ssize_t] next_edge = vector[ssize_t](n)
+    cdef vector[ssize_t] prev_edge = vector[ssize_t](n)
     if noise_leaves:
         curidx = -1
         lastidx = -1
@@ -651,7 +646,7 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
 
 
     cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
-    cdef int* res_cluster_id = <int*>PyMem_Malloc(n*sizeof(int))
+    cdef vector[int] res_cluster_id = vector[int](n)
     for i in range(n): res_cluster_id[i] = -1
     cdef int c = 0
     for i in range(n):
@@ -666,11 +661,4 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
         else:
             res[i] = -1
 
-    PyMem_Free(res_cluster_id)
-    PyMem_Free(denoise_index)
-    PyMem_Free(denoise_index_rev)
-    PyMem_Free(prev_edge)
-    PyMem_Free(next_edge)
-
     return res
-

@@ -44,20 +44,17 @@ cimport numpy as np
 import numpy as np
 from . cimport c_argfuns
 
-
-ctypedef unsigned long long ulonglong
-
 ctypedef fused T:
     int
     long
-    ulonglong
+    long long
     float
     double
 
 
 
 
-cpdef np.ndarray[ulonglong] argsort(T[::1] x, bint stable=True):
+cpdef np.ndarray[ssize_t] argsort(T[::1] x, bint stable=True):
     """
     Finds the(*) ordering permutation of a c_contiguous array x
 
@@ -80,15 +77,15 @@ cpdef np.ndarray[ulonglong] argsort(T[::1] x, bint stable=True):
     ndarray:
         The ordering permutation.
     """
-    cdef ulonglong n = x.shape[0]
-    cdef np.ndarray[ulonglong] ret = np.empty(n, dtype=np.ulonglong)
+    cdef ssize_t n = x.shape[0]
+    cdef np.ndarray[ssize_t] ret = np.empty(n, dtype=np.intp)
     c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
     return ret
 
 
 
 
-cpdef ulonglong argkmin(T[::1] x, ulonglong k):
+cpdef ssize_t argkmin(T[::1] x, ssize_t k):
     """
     Returns the index of the (k-1)-th smallest value in an array x,
     where argkmin(x, 0) == argmin(x), or, more generally,
@@ -128,5 +125,5 @@ cpdef ulonglong argkmin(T[::1] x, ulonglong k):
     value:
         the (k-1)-th smallest value in x
     """
-    cdef ulonglong n = x.shape[0]
-    return c_argfuns.Cargkmin(&x[0], n, k, <ulonglong*>0)
+    cdef ssize_t n = x.shape[0]
+    return c_argfuns.Cargkmin(&x[0], n, k, <ssize_t*>0)

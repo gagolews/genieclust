@@ -48,13 +48,10 @@ import scipy.spatial.distance
 import warnings
 
 
-ctypedef unsigned long long ulonglong
-
-
 ctypedef fused T:
     int
     long
-    ulonglong
+    long long
     float
     double
 
@@ -106,9 +103,9 @@ cpdef double gini(T[:] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef ulonglong n = x.shape[0]
+    cdef ssize_t n = x.shape[0]
     cdef double s = 0.0, t = 0.0
-    cdef ulonglong i
+    cdef ssize_t i
 
     for i in range(1,n+1):
         t += x[n-i]
@@ -150,9 +147,9 @@ cpdef double bonferroni(T[:] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef ulonglong n = x.shape[0]
+    cdef ssize_t n = x.shape[0]
     cdef double s = 0.0, t = 0.0, c = 0.0
-    cdef ulonglong i
+    cdef ssize_t i
 
     for i in range(1,n+1):
         c += n/<double>(n-i+1.0)

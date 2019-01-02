@@ -34,14 +34,11 @@
  */
 
 
-#ifndef __argsort_h
-#define __argsort_h
+#ifndef __c_argsort_h
+#define __c_argsort_h
 
 #include <stdexcept>
 #include <algorithm>
-
-
-typedef unsigned long long ulonglong;
 
 
 
@@ -53,7 +50,7 @@ template<class T>
 struct __argsort_comparer {
     const T* x;
     __argsort_comparer(const T* x) { this->x = x; }
-    bool operator()(ulonglong i, ulonglong j) const {
+    bool operator()(ssize_t i, ssize_t j) const {
         return this->x[i] <  this->x[j] ||
               (this->x[i] == this->x[j] && i < j);
     }
@@ -76,10 +73,11 @@ struct __argsort_comparer {
  *  @param stable use a stable sorting algorithm? (slower)
  */
 template<class T>
-void Cargsort(ulonglong* ret, const T* x, ulonglong n, bool stable=true) {
+void Cargsort(ssize_t* ret, const T* x, ssize_t n, bool stable=true)
+{
     if (n <= 0) throw std::domain_error("n <= 0");
 
-    for (ulonglong i=0; i<n; ++i)
+    for (ssize_t i=0; i<n; ++i)
         ret[i] = i;
 
     if (stable)
@@ -111,18 +109,19 @@ void Cargsort(ulonglong* ret, const T* x, ulonglong n, bool stable=true) {
  *  @param buf optional working buffer of size >= k+1, will be overwritten
  */
 template<class T>
-ulonglong Cargkmin(const T* x, ulonglong n, ulonglong k, ulonglong* buf=NULL) {
-    ulonglong* idx;
+ssize_t Cargkmin(const T* x, ssize_t n, ssize_t k, ssize_t* buf=NULL)
+{
+    ssize_t* idx;
 
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
     k += 1;
-    if (!buf) idx = new ulonglong[k];
+    if (!buf) idx = new ssize_t[k];
     else      idx = buf;
 
-    for (ulonglong i=0; i<k; ++i) {
-        ulonglong j = i;
+    for (ssize_t i=0; i<k; ++i) {
+        ssize_t j = i;
         idx[i] = i;
         while (j > 0 && x[i] < x[idx[j-1]]) {
             idx[j] = idx[j-1];
@@ -131,10 +130,10 @@ ulonglong Cargkmin(const T* x, ulonglong n, ulonglong k, ulonglong* buf=NULL) {
         idx[j] = i;
     }
 
-    for (ulonglong i=k; i<n; ++i) {
+    for (ssize_t i=k; i<n; ++i) {
         if (x[idx[k-1]] <= x[i])
             continue;
-        ulonglong j = k-1;
+        ssize_t j = k-1;
         idx[k-1] = i;
         while (j > 0 && x[i] < x[idx[j-1]]) {
             idx[j] = idx[j-1];
@@ -144,7 +143,7 @@ ulonglong Cargkmin(const T* x, ulonglong n, ulonglong k, ulonglong* buf=NULL) {
     }
 
 
-    ulonglong ret = idx[k-1];
+    ssize_t ret = idx[k-1];
 
     if (!buf) delete [] idx;
 

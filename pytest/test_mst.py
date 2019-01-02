@@ -12,7 +12,6 @@ def check_MST(X, **kwargs):
     nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, **kwargs)
     nn.fit(X)
     dist, ind = nn.kneighbors()
-    ind = ind.astype(np.ulonglong)
     mst_i, mst_d = MST_nn_pair(dist, ind)
 
     dist_complete = scipy.spatial.distance.pdist(X)

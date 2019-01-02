@@ -46,7 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 from . cimport c_disjoint_sets
 import numpy as np
 cimport numpy as np
-ctypedef unsigned long long ulonglong
 from libcpp.vector cimport vector
 
 
@@ -68,12 +67,12 @@ cdef class DisjointSets:
     Parameters:
     ----------
 
-    n : ulonglong
+    n : ssize_t
         The cardinality of the set whose partitions are generated.
     """
     cdef c_disjoint_sets.CDisjointSets ds
 
-    def __cinit__(self, ulonglong n):
+    def __cinit__(self, ssize_t n):
         self.ds = c_disjoint_sets.CDisjointSets(n)
 
     def __len__(self):
@@ -84,27 +83,27 @@ cdef class DisjointSets:
         Returns:
         -------
 
-        len : ulonglong
+        len : ssize_t
             A value in {0,...,n-1}.
         """
         return self.ds.get_k()-1
 
 
-    cpdef ulonglong get_n(self):
+    cpdef ssize_t get_n(self):
         """
         Returns the number of elements in the set being partitioned.
         """
         return self.ds.get_n()
 
 
-    cpdef ulonglong get_k(self):
+    cpdef ssize_t get_k(self):
         """
         Returns the current number of subsets.
         """
         return self.ds.get_k()
 
 
-    cpdef ulonglong find(self, ulonglong x):
+    cpdef ssize_t find(self, ssize_t x):
         """
         Finds the subset id for a given x.
 
@@ -112,20 +111,20 @@ cdef class DisjointSets:
         Parameters:
         ----------
 
-        x : ulonglong
+        x : ssize_t
             An integer in {0,...,n-1}, representing an element to find.
 
 
         Returns:
         -------
 
-        parent_x : ulonglong
+        parent_x : ssize_t
             The id of the parent of x.
         """
         return self.ds.find(x)
 
 
-    cpdef ulonglong union(self, ulonglong x, ulonglong y):
+    cpdef ssize_t union(self, ssize_t x, ssize_t y):
         """
         Merges the sets containing given x and y.
 
@@ -139,7 +138,7 @@ cdef class DisjointSets:
         Parameters:
         ----------
 
-        x, y : ulonglong
+        x, y : ssize_t
             Integers in {0,...,n-1}, representing elements
             of two sets to merge.
 
@@ -147,14 +146,14 @@ cdef class DisjointSets:
         Returns:
         -------
 
-        parent : ulonglong
+        parent : ssize_t
             The id of the parent of x or y, whichever is smaller.
         """
 
         return self.ds.merge(x, y)
 
 
-    cpdef np.ndarray[ulonglong] to_list(self):
+    cpdef np.ndarray[ssize_t] to_list(self):
         """
         Get parent ids of all the elements
 
@@ -166,14 +165,14 @@ cdef class DisjointSets:
             A list m such that m[x] denotes the (recursive) parent id of x,
             for x=0,1,...,n.
         """
-        cdef ulonglong i
-        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
+        cdef ssize_t i
+        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
         for i in range(self.ds.get_n()):
             m[i] = self.ds.find(i)
         return m
 
 
-    cpdef np.ndarray[ulonglong] to_list_normalized(self):
+    cpdef np.ndarray[ssize_t] to_list_normalized(self):
         """
         Get the normalized elements' membership information.
 
@@ -186,10 +185,10 @@ cdef class DisjointSets:
             The resulting values are in {0,1,...,k-1}, where k is the current
             number of subsets in the partition.
         """
-        cdef ulonglong i, j
-        cdef np.ndarray[ulonglong] m = np.empty(self.ds.get_n(), dtype=np.ulonglong)
-        cdef np.ndarray[ulonglong] v = np.zeros(self.ds.get_n(), dtype=np.ulonglong)
-        cdef ulonglong c = 1
+        cdef ssize_t i, j
+        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef np.ndarray[ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
+        cdef ssize_t c = 1
         for i in range(self.ds.get_n()):
             j = self.ds.find(i)
             if v[j] == 0:
@@ -213,7 +212,7 @@ cdef class DisjointSets:
             of sets in a partition. Each list element is a list
             with values in {0,...,n-1}
         """
-        cdef ulonglong i
+        cdef ssize_t i
         cdef list tou, out
 
         tou = [ [] for i in range(self.ds.get_n()) ]
