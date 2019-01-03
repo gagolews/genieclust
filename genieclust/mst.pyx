@@ -7,7 +7,9 @@
 
 
 """
-The Prim-Jarník Minimum Spanning Tree Algorithm for Complete Undirected Graphs
+Minimum Spanning Tree Algorithms:
+a. Prim-Jarník's for Complete Undirected Graphs,
+b. Kruskal's for k-NN graphs.
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -40,44 +42,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
+from . cimport c_mst
 import numpy as np
-from libc.math cimport fabs, sqrt
-from numpy.math cimport INFINITY
-from libcpp.vector cimport vector
-from . cimport c_disjoint_sets
-from . cimport c_argfuns
-import warnings
 
 
-cdef extern from "stdlib.h":
-    ctypedef void const_void "const void"
-    void qsort(void *base, int num, int size,
-                int(*compar)(const_void*, const_void*)) nogil
-
-
-
-cdef struct MST_triple:
-    ssize_t i1
-    ssize_t i2
-    double w
-
-
-cdef int MST_triple_comparer(const_void* _a, const_void* _b):
-    cdef MST_triple a = (<MST_triple*>_a)[0]
-    cdef MST_triple b = (<MST_triple*>_b)[0]
-    if a.w < b.w:
-        return -1
-    elif a.w > b.w:
-        return 1
-    elif a.i1 != b.i1:
-        return a.i1-b.i1
-    else:
-        return a.i2-b.i2
-
-
-cpdef np.ndarray[ssize_t,ndim=2] MST(double[:,:] D):
+cpdef tuple mst_complete(double[:,::1] dist): # [:,::1]==c_contiguous
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
@@ -106,112 +76,39 @@ cpdef np.ndarray[ssize_t,ndim=2] MST(double[:,:] D):
     Parameters:
     ----------
 
-    D : ndarray, shape (n,n)
-        Edges' weights.
-        It is assumed that D[i,j] == D[j,i] for all i != j.
-
-
-    Returns:
-    -------
-
-    I : ndarray, shape (n-1,2)
-        An (n-1)*2 matrix I such that {I[i,0], I[i,1]}
-        defines the i-th edge of the resulting MST, I[i,0] < I[i,1].
-
-    """
-    if not D.shape[0] == D.shape[1]:
-        raise ValueError("D must be a square matrix")
-    cdef ssize_t n = D.shape[0] # D is a square matrix
-    cdef ssize_t i, j
-    cdef np.ndarray[ssize_t,ndim=2] I = np.empty((n-1, 2), dtype=np.intp)
-
-    cpdef double*   Dnn = <double*> PyMem_Malloc(n * sizeof(double))
-    cpdef ssize_t*  Fnn = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
-    cpdef ssize_t*  M   = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
-    for i in range(n):
-        Dnn[i] = INFINITY
-        #Fnn[i] = 0xffffffff
-        M[i] = i
-
-    cdef ssize_t lastj = 0, bestj, bestjpos
-    for i in range(n-1):
-        # M[1], ... M[n-i-1] - points not yet in the MST
-        bestjpos = bestj = 0
-        for j in range(1, n-i):
-            if D[lastj, M[j]] < Dnn[M[j]]:
-                Dnn[M[j]] = D[lastj, M[j]]
-                Fnn[M[j]] = lastj
-            if Dnn[M[j]] < Dnn[bestj]:        # D[0] == INFTY
-                bestj = M[j]
-                bestjpos = j
-        M[bestjpos] = M[n-i-1] # never visit bestj again
-        lastj = bestj          # next time, start from bestj
-        # and an edge to MST:
-        I[i,0], I[i,1] = (Fnn[bestj], bestj) if Fnn[bestj]<bestj else (bestj, Fnn[bestj])
-
-    PyMem_Free(Fnn)
-    PyMem_Free(Dnn)
-    PyMem_Free(M)
-
-    return I
-
-
-cpdef tuple MST_pair(double[:,:] D):
-    """
-    Computes a minimum spanning tree of a complete undirected graph,
-    see MST(), and orders its edges w.r.t. increasing weights.
-
-
-    Parameters:
-    ----------
-
-    D : ndarray, shape (n,n)
+    dist : c_contiguous ndarray, shape (n,n)
 
 
     Returns:
     -------
 
     pair : tuple
-         A pair (indices_matrix, corresponding weights);
-         the results are ordered w.r.t. the weights
-         (and then the 1st, and the the 2nd index);
-         indices_matrix -- see MST()
+        A pair (indices_matrix, corresponding weights) giving
+        the n-1 MST edges.
+        The results are ordered w.r.t. increasing weights.
+        (and then the 1st, and the the 2nd index).
     """
-    if not D.shape[0] == D.shape[1]:
+    if not dist.shape[0] == dist.shape[1]:
         raise ValueError("D must be a square matrix")
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = MST(D)
-    cdef ssize_t n = mst_i.shape[0]+1, i
-    cpdef MST_triple* d = <MST_triple*>PyMem_Malloc((n-1) * sizeof(MST_triple))
-    for i in range(n-1):
-        d[i].i1 = mst_i[i,0]
-        d[i].i2 = mst_i[i,1]
 
-    for i in range(n-1):
-        d[i].w  = D[d[i].i1, d[i].i2]
+    cdef ssize_t n = dist.shape[0]
 
-    qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
 
-    for i in range(n-1):
-        mst_i[i,0] = d[i].i1
-        mst_i[i,1] = d[i].i2
-
-    cdef np.ndarray[double] mst_d = np.empty(n-1, dtype=np.double)
-    for i in range(n-1):
-        mst_d[i]   = d[i].w
-
-    PyMem_Free(d)
+    c_mst.Cmst_complete(&dist[0,0], n, &mst_d[0], &mst_i[0,0])
 
     return mst_i, mst_d
 
 
 
 
-cpdef tuple MST_nn_pair(double[:,::1] dist, ssize_t[:,::1] ind): # [:,::1]==c_contiguous
+cpdef tuple mst_nn(double[:,::1] dist, ssize_t[:,::1] ind, stop_disconnected=True):
     """
-    Computes a minimum spanning tree of an M-Nearest Neighbor Graph
+    Computes a minimum spanning tree of a k-Nearest Neighbor Graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
-    Note that in general, an MST of the M-Nearest Neighbor Graph
+    Note that in general, an MST of the k-Nearest Neighbor Graph
     might not be the MST of the complete Pairwise Distances Graph.
 
     In case of an unconnected graph, an exception is raised.
@@ -220,67 +117,43 @@ cpdef tuple MST_nn_pair(double[:,::1] dist, ssize_t[:,::1] ind): # [:,::1]==c_co
     Parameters:
     ----------
 
-    dist : a c_contiguous ndarray, shape (n,M)
+    dist : a c_contiguous ndarray, shape (n,k)
         dist[i,:] is sorted increasingly for all i,
         dist[i,j] gives the weight of the edge {i, ind[i,j]}
 
-    ind : a c_contiguous ndarray, shape (n,M)
+    ind : a c_contiguous ndarray, shape (n,k)
         edge definition, interpreted as {i, ind[i,j]}
+
+    stop_disconnected : bool
+        raise exception if given graph is not connected
+
 
     Returns:
     -------
 
     pair : tuple
-         A pair (indices_matrix, corresponding weights);
-         the results are ordered w.r.t. the weights
-         (and then the 1st, and the the 2nd index)
+        A pair (indices_matrix, corresponding weights);
+        the results are ordered w.r.t. the weights
+        (and then the 1st, and the the 2nd index).
+        If stop_disconnected is False, then the weights of the
+        last c-1 edges are set to infinity and the corresponding indices
+        are set to -1, where c is the number of connected components
+        in the resulting minimum spanning forest.
     """
-    if not (dist.shape[0] == ind.shape[0]
-            and dist.shape[1] == ind.shape[1]):
+    if not (dist.shape[0] == ind.shape[0] and
+            dist.shape[1] == ind.shape[1]):
         raise ValueError("shapes of dist and ind must match")
-    #if not dist.data.c_contiguous:
-        #raise ValueError("dist must be a c_contiguous array")
-    #if not ind.data.c_contiguous:
-        #raise ValueError("ind must be a c_contiguous array")
 
     cdef ssize_t n = dist.shape[0]
-    cdef ssize_t n_neighbors = dist.shape[1]
-    cdef ssize_t nm = n*n_neighbors
+    cdef ssize_t k = dist.shape[1]
 
-    cdef vector[ssize_t] nn_used  = vector[ssize_t](n, 0)
-    cdef vector[ssize_t] arg_dist = vector[ssize_t](nm)
-    c_argfuns.Cargsort(arg_dist.data(), &dist[0,0], nm, False)
-
-    cdef ssize_t arg_dist_cur = 0
-    cdef ssize_t mst_edge_cur = 0
     cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
 
-    cdef ssize_t u, v
-    cdef double d
+    cdef ssize_t n_edges = c_mst.Cmst_nn(&dist[0,0], &ind[0,0], n, k,
+             &mst_d[0], &mst_i[0,0])
 
-    cdef c_disjoint_sets.CDisjointSets ds = c_disjoint_sets.CDisjointSets(n)
-
-    while mst_edge_cur < n-1:
-        if arg_dist_cur >= nm:
-            raise RuntimeError("the graph is not connected. increase n_neighbors")
-
-        u = arg_dist[arg_dist_cur]//n_neighbors
-        v = ind[u, nn_used[u]]
-        d = dist[u, nn_used[u]]
-        nn_used[u] += 1
-        arg_dist_cur += 1
-
-        if ds.find(u) == ds.find(v):
-            continue
-
-        if u > v: u, v = v, u
-        mst_i[mst_edge_cur,0] = u
-        mst_i[mst_edge_cur,1] = v
-        mst_d[mst_edge_cur]   = d
-
-        ds.merge(u, v)
-        mst_edge_cur += 1
+    if stop_disconnected and n_edges < n-1:
+        raise ValueError("graph is disconnected")
 
     return mst_i, mst_d
-

@@ -6,17 +6,17 @@ import sklearn.neighbors
 import scipy.spatial.distance
 
 
-def check_MST(X, **kwargs):
+def mst_check(X, **kwargs):
     n = X.shape[0]
     n_neighbors = n-1
     nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, **kwargs)
     nn.fit(X)
     dist, ind = nn.kneighbors()
-    mst_i, mst_d = MST_nn_pair(dist, ind)
+    mst_i, mst_d = mst_nn(dist, ind)
 
     dist_complete = scipy.spatial.distance.pdist(X)
     dist_complete = scipy.spatial.distance.squareform(dist_complete)
-    mst_i2, mst_d2 = MST_pair(dist_complete)
+    mst_i2, mst_d2 = mst_complete(dist_complete)
 
     assert np.allclose(mst_d.sum(), mst_d2.sum())
     assert np.all(mst_i == mst_i2)
@@ -36,7 +36,7 @@ def test_MST():
         X += np.random.normal(0, 0.0001, X.shape)
 
         print(dataset)
-        check_MST(X, algorithm='auto')
+        mst_check(X, algorithm='auto')
 
 
 if __name__ == "__main__":
