@@ -40,10 +40,13 @@
 #include <algorithm>
 #include <stdexcept>
 #include <limits>
+#include <cmath>
 #include "c_argfuns.h"
 #include "c_disjoint_sets.h"
 
 #define DOUBLE_INFTY (std::numeric_limits<double>::infinity())
+
+inline double square(double x) { return x*x; }
 
 
 /*! Computes a minimum spanning tree of a k-Nearest Neighbor Graph
@@ -151,9 +154,103 @@ struct CMstTriple {
 };
 
 
+
+
+
+
+/*! A class to "compute" the distances from the i-th point
+ *  to all n points based on a pre-computed n*n symmetric,
+ *  complete pairwise matrix.
+ */
+struct CDistanceCompletePrecomputed {
+    const double* dist;
+    ssize_t n;
+
+    /*!
+     * @param dist n*n c_contiguous array
+     * @param n number of points
+     */
+    CDistanceCompletePrecomputed(const double* dist, ssize_t n) {
+        this->n = n;
+        this->dist = dist;
+    }
+
+    CDistanceCompletePrecomputed()
+        : CDistanceCompletePrecomputed(NULL, 0) { }
+
+    /*!
+     * @param i point index, 0<=i<n
+     * @param M ignored
+     * @param k ignored
+     * @return distances from the i-th point to all points (with ret[i] == 0.0)
+     */
+    const double* operator()(ssize_t i, const ssize_t* Mm, ssize_t k) const {
+        return &this->dist[i*n]; // the i-th row of dist
+    }
+};
+
+
+
+
+
+/*! A class to "compute" the Euclidean distances from the i-th point
+ *  to all given k points.
+ */
+struct CDistanceEuclidean {
+    const double* X;
+    ssize_t n;
+    ssize_t d;
+    //bool squared;
+    std::vector<double> buf;
+
+    /*!
+     * @param X n*d c_contiguous array
+     * @param n number of points
+     * @param d dimensionality
+     */
+    CDistanceEuclidean(const double* X, ssize_t n,
+        ssize_t d/*, bool squared=false*/)
+            : buf(n)
+    {
+        this->n = n;
+        this->d = d;
+        this->X = X;
+        //this->squared = squared;
+    }
+
+    CDistanceEuclidean()
+        : CDistanceEuclidean(NULL, 0, 0, false) { }
+
+    /*!
+     * @param i point index, 0<=i<n
+     * @param M indices
+     * @param k length of M
+     * @return distances from the i-th point to M[0], .., M[k-1],
+     *         with ret[M[j]]=d(i, M[j]);
+     *         the user is not the owner of ret;
+     *         the function is not thread-safe
+     */
+    const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        for (ssize_t j=0; j<k; ++j) {
+            ssize_t w = M[j];
+            // if (w < 0 || w >= n)
+            //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
+            buf[w] = 0.0;
+            for (ssize_t u=0; u<d; ++u)
+                buf[w] += square(X[d*i+u]-X[d*w+u]);
+            //if (!squared)
+            buf[w] = sqrt(buf[w]);
+        }
+        return buf.data();
+    }
+};
+
+
 /*! A Jarník (Prim/Dijkstra)-like algorithm for determining
  *  a(*) minimum spanning tree (MST) of a complete undirected graph
- *  with weights given by a symmetric n*n matrix.
+ *  with weights given by, e.g., a symmetric n*n matrix.
+ *
+ *  However, the distances can be computed on the fly, so that O(n) memory is used.
  *
  *  (*) Note that there might be multiple minimum trees spanning a given graph.
  *
@@ -175,8 +272,8 @@ struct CMstTriple {
  *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
  *
  *
- * @param dist a c_contiguous (symmetric-what a waste!) array, shape (n,n),
- *        dist[i,j] gives the weight of the (undirected) edge {i, j}
+ * @param dist a callable object such that <double*>dist(j, <double*>buf) returns
+ *        distances from j to every other n distances
  * @param n number of nodes
  * @param mst_d [out] vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order
@@ -184,21 +281,30 @@ struct CMstTriple {
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
  */
-void Cmst_complete(const double* dist, ssize_t n, double* mst_d, ssize_t* mst_i)
+template<class Distance>
+void Cmst_complete(Distance dist, ssize_t n, double* mst_d, ssize_t* mst_i)
 {
     std::vector<double>  Dnn(n, DOUBLE_INFTY);
     std::vector<ssize_t> Fnn(n);
     std::vector<ssize_t> M(n);
     std::vector<CMstTriple> res(n-1);
+
     for (ssize_t i=0; i<n; ++i) M[i] = i;
 
     ssize_t lastj = 0, bestj, bestjpos;
     for (ssize_t i=0; i<n-1; ++i) {
         // M[1], ... M[n-i-1] - points not yet in the MST
+
+        // compute the distances from lastj (on the fly)
+        // dist_from_lastj[j] == d(lastj, j)
+        const double* dist_from_lastj = dist(lastj, M.data()+1, n-i-1);
+
         bestjpos = bestj = 0;
         for (ssize_t j=1; j<n-i; ++j) {
-            if (dist[n*lastj+M[j]] < Dnn[M[j]]) {
-                Dnn[M[j]] = dist[n*lastj+M[j]];
+            // double curdist = dist[n*lastj+M[j]]; // d(lastj, M[j])
+            double curdist = dist_from_lastj[M[j]];
+            if (curdist < Dnn[M[j]]) {
+                Dnn[M[j]] = curdist;
                 Fnn[M[j]] = lastj;
             }
             if (Dnn[M[j]] < Dnn[bestj]) {        // D[0] == INFTY

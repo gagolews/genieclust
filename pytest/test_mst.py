@@ -1,26 +1,43 @@
 import numpy as np
-from genieclust.mst import *
+import genieclust.mst
 import time
 import gc
 import sklearn.neighbors
 import scipy.spatial.distance
-
+import gc
 
 def mst_check(X, **kwargs):
     n = X.shape[0]
+    d = X.shape[1]
     n_neighbors = n-1
+
+    t0 = time.time()
+    dist_complete = scipy.spatial.distance.pdist(X)
+    dist_complete = scipy.spatial.distance.squareform(dist_complete)
+    mst_i, mst_d = genieclust.mst.mst_complete(dist_complete)
+    print("    precomputed      %10.3fs" % (time.time()-t0,))
+
+
+    t0 = time.time()
     nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, **kwargs)
     nn.fit(X)
     dist, ind = nn.kneighbors()
-    mst_i, mst_d = mst_nn(dist, ind)
+    mst_i1, mst_d1 = genieclust.mst.mst_nn(dist, ind)
+    print("    NearestNeighbors %10.3fs" % (time.time()-t0,))
 
-    dist_complete = scipy.spatial.distance.pdist(X)
-    dist_complete = scipy.spatial.distance.squareform(dist_complete)
-    mst_i2, mst_d2 = mst_complete(dist_complete)
+    assert np.allclose(mst_d.sum(), mst_d1.sum())
+    assert np.all(mst_i == mst_i1)
+    assert np.allclose(mst_d, mst_d1)
+
+
+    t0 = time.time()
+    mst_i2, mst_d2 = genieclust.mst.mst_from_distance(X, "euclidean")
+    print("    from_distance    %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d2.sum())
     assert np.all(mst_i == mst_i2)
     assert np.allclose(mst_d, mst_d2)
+
     return True
 
 
@@ -30,6 +47,7 @@ def test_MST():
     path = "benchmark_data"
     for dataset in ["pathbased", "s1", "h2mg_1024_50"]:
         X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+        #X =  np.random.rand(10_000, 1_000)
 
         # center X + scale (NOT: standardize!)
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
@@ -37,7 +55,7 @@ def test_MST():
 
         print(dataset)
         mst_check(X, algorithm='auto')
-
+        gc.collect()
 
 if __name__ == "__main__":
     test_MST()

@@ -27,6 +27,10 @@
         > just like `sklearn.cluster.AgglomerativeClustering` does]?
         > [add support for the "connectivity" matrix]
 
+    * add support for sparse input matrices
+
+    * add support for connectivity matrices
+
     * output full cluster hierarchy - see the Z matrix in
     `scipy.cluster.hierarchy.linkage`
 
