@@ -45,6 +45,9 @@ cimport cython
 cimport numpy as np
 from . cimport c_mst
 import numpy as np
+cimport libc.math
+
+
 
 
 cpdef tuple mst_complete(double[:,::1] dist): # [:,::1]==c_contiguous
@@ -92,13 +95,100 @@ cpdef tuple mst_complete(double[:,::1] dist): # [:,::1]==c_contiguous
         raise ValueError("D must be a square matrix")
 
     cdef ssize_t n = dist.shape[0]
-
     cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
 
-    c_mst.Cmst_complete(&dist[0,0], n, &mst_d[0], &mst_i[0,0])
+    cdef c_mst.CDistanceCompletePrecomputed dist_complete = \
+        c_mst.CDistanceCompletePrecomputed(&dist[0,0], n)
+
+    c_mst.Cmst_complete(<c_mst.CDistance*>(&dist_complete), n, &mst_d[0], &mst_i[0,0])
 
     return mst_i, mst_d
+
+
+
+cpdef tuple mst_from_distance(double[:,::1] X,
+        metric="euclidean", metric_params=None):
+    """
+    A Jarník (Prim/Dijkstra)-like algorithm for determining
+    a(*) minimum spanning tree (MST) of X with respect to a given metric
+    (distance). Distances are computed on the fly.
+    Memory use: O(n).
+
+
+    References:
+    ----------
+
+    M. Gagolewski, M. Bartoszuk, A. Cena,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363 (2016) 8–23.
+
+    V. Jarník, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+
+    C.F. Olson, Parallel algorithms for hierarchical clustering,
+    Parallel Comput. 21 (1995) 1313–1325.
+
+    R. Prim, Shortest connection networks and some generalizations,
+    Bell Syst. Tech. J. 36 (1957) 1389–1401.
+
+
+    Parameters:
+    ----------
+
+    X : c_contiguous ndarray, shape (n,d)
+        n data points
+
+    metric : string
+        one of `"euclidean"` (a.k.a. `"l2"`),
+        `"sqeuclidean"`,
+        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
+        `"cosine"`.
+        More metrics/distances might be supported in future versions.
+
+    metric_params : dict, optional (default=None)
+        Additional keyword arguments for the metric function,
+        currently ignored.
+
+
+    Returns:
+    -------
+
+    pair : tuple
+        A pair (indices_matrix, corresponding weights) giving
+        the n-1 MST edges.
+        The results are ordered w.r.t. increasing weights.
+        (and then the 1st, and the the 2nd index).
+    """
+    cdef ssize_t n = X.shape[0]
+    cdef ssize_t d = X.shape[1]
+    cdef ssize_t i
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
+
+    cdef c_mst.CDistance* dist
+
+    if metric in ("euclidean", "l2", "sqeuclidean"):
+        # MST w.r.t. L2^2 == MST w.r.t. L2
+        dist = <c_mst.CDistance*>new c_mst.CDistanceSquaredEuclidean(&X[0,0], n, d)
+        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
+        if metric != "sqeuclidean":
+            for i in range(n-1):
+                mst_d[i] = libc.math.sqrt(mst_d[i])
+        del dist
+    elif metric in ("manhattan", "cityblock", "l1"):
+        dist = <c_mst.CDistance*>new c_mst.CDistanceManhattan(&X[0,0], n, d)
+        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
+        del dist
+    elif metric in ("cosine",):
+        dist = <c_mst.CDistance*>new c_mst.CDistanceCosine(&X[0,0], n, d)
+        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
+        del dist
+    else:
+        raise NotImplementedError("given `metric` is not supported")
+
+    return mst_i, mst_d
+
 
 
 

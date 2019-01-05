@@ -42,9 +42,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cdef extern from "c_mst.h":
 
-    cdef cppclass CDistanceEuclidean:
-        CDistanceEuclidean()
-        CDistanceEuclidean(double* X, ssize_t n, ssize_t d)
+    cdef cppclass CDistance:
+        pass
+
+    cdef cppclass CDistanceSquaredEuclidean:
+        CDistanceSquaredEuclidean()
+        CDistanceSquaredEuclidean(double* X, ssize_t n, ssize_t d)
+
+    cdef cppclass CDistanceManhattan:
+        CDistanceManhattan()
+        CDistanceManhattan(double* X, ssize_t n, ssize_t d)
+
+    cdef cppclass CDistanceCosine:
+        CDistanceCosine()
+        CDistanceCosine(double* X, ssize_t n, ssize_t d)
 
     cdef cppclass CDistanceCompletePrecomputed:
         CDistanceCompletePrecomputed()
@@ -53,5 +64,5 @@ cdef extern from "c_mst.h":
     ssize_t Cmst_nn(double* dist, ssize_t* ind, ssize_t n, ssize_t k,
              double* mst_d, ssize_t* mst_i)
 
-    void Cmst_complete[Distance](Distance dist, ssize_t n,
+    void Cmst_complete(CDistance* dist, ssize_t n,
              double* mst_d, ssize_t* mst_i)

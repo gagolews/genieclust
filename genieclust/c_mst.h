@@ -43,10 +43,49 @@
 #include <cmath>
 #include "c_argfuns.h"
 #include "c_disjoint_sets.h"
+#include "c_distance.h"
+
 
 #define DOUBLE_INFTY (std::numeric_limits<double>::infinity())
 
-inline double square(double x) { return x*x; }
+
+
+/*! Comparer used to sort MST edges w.r.t. increasing weights
+ */
+struct CMstTriple {
+    CMstTriple() {}
+
+    CMstTriple(ssize_t i1, ssize_t i2, double d) {
+        this->d = d;
+        if (i1 < i2) {
+            this->i1 = i1;
+            this->i2 = i2;
+        }
+        else {
+            this->i1 = i2;
+            this->i2 = i1;
+        }
+    }
+
+    bool operator<(const CMstTriple& other) const {
+        if (d == other.d) {
+            if (i1 == other.i1)
+                return i2 < other.i2;
+            else
+                return i1 < other.i1;
+        }
+        else
+            return d < other.d;
+    }
+
+    ssize_t i1;
+    ssize_t i2;
+    double d;
+};
+
+
+
+
 
 
 /*! Computes a minimum spanning tree of a k-Nearest Neighbor Graph
@@ -78,7 +117,7 @@ ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
 
     // determine the ordering permutation of dist
     std::vector<ssize_t> arg_dist(nk);
-    Cargsort(arg_dist.data(), dist, nk, false);
+    Cargsort(arg_dist.data(), dist, nk, true); // stable sort
 
     ssize_t arg_dist_cur = 0;
     ssize_t mst_edge_cur = 0;
@@ -120,130 +159,7 @@ ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
 }
 
 
-/*! Comparer used to sort MST edges w.r.t. increasing weights
- */
-struct CMstTriple {
-    CMstTriple() {}
 
-    CMstTriple(ssize_t i1, ssize_t i2, double d) {
-        this->d = d;
-        if (i1 < i2) {
-            this->i1 = i1;
-            this->i2 = i2;
-        }
-        else {
-            this->i1 = i2;
-            this->i2 = i1;
-        }
-    }
-
-    bool operator<(const CMstTriple& other) const {
-        if (d == other.d) {
-            if (i1 == other.i1)
-                return i2 < other.i2;
-            else
-                return i1 < other.i1;
-        }
-        else
-            return d < other.d;
-    }
-
-    ssize_t i1;
-    ssize_t i2;
-    double d;
-};
-
-
-
-
-
-
-/*! A class to "compute" the distances from the i-th point
- *  to all n points based on a pre-computed n*n symmetric,
- *  complete pairwise matrix.
- */
-struct CDistanceCompletePrecomputed {
-    const double* dist;
-    ssize_t n;
-
-    /*!
-     * @param dist n*n c_contiguous array
-     * @param n number of points
-     */
-    CDistanceCompletePrecomputed(const double* dist, ssize_t n) {
-        this->n = n;
-        this->dist = dist;
-    }
-
-    CDistanceCompletePrecomputed()
-        : CDistanceCompletePrecomputed(NULL, 0) { }
-
-    /*!
-     * @param i point index, 0<=i<n
-     * @param M ignored
-     * @param k ignored
-     * @return distances from the i-th point to all points (with ret[i] == 0.0)
-     */
-    const double* operator()(ssize_t i, const ssize_t* Mm, ssize_t k) const {
-        return &this->dist[i*n]; // the i-th row of dist
-    }
-};
-
-
-
-
-
-/*! A class to "compute" the Euclidean distances from the i-th point
- *  to all given k points.
- */
-struct CDistanceEuclidean {
-    const double* X;
-    ssize_t n;
-    ssize_t d;
-    //bool squared;
-    std::vector<double> buf;
-
-    /*!
-     * @param X n*d c_contiguous array
-     * @param n number of points
-     * @param d dimensionality
-     */
-    CDistanceEuclidean(const double* X, ssize_t n,
-        ssize_t d/*, bool squared=false*/)
-            : buf(n)
-    {
-        this->n = n;
-        this->d = d;
-        this->X = X;
-        //this->squared = squared;
-    }
-
-    CDistanceEuclidean()
-        : CDistanceEuclidean(NULL, 0, 0, false) { }
-
-    /*!
-     * @param i point index, 0<=i<n
-     * @param M indices
-     * @param k length of M
-     * @return distances from the i-th point to M[0], .., M[k-1],
-     *         with ret[M[j]]=d(i, M[j]);
-     *         the user is not the owner of ret;
-     *         the function is not thread-safe
-     */
-    const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
-            // if (w < 0 || w >= n)
-            //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
-            buf[w] = 0.0;
-            for (ssize_t u=0; u<d; ++u)
-                buf[w] += square(X[d*i+u]-X[d*w+u]);
-            //if (!squared)
-            buf[w] = sqrt(buf[w]);
-        }
-        return buf.data();
-    }
-};
 
 
 /*! A Jarník (Prim/Dijkstra)-like algorithm for determining
@@ -272,17 +188,18 @@ struct CDistanceEuclidean {
  *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
  *
  *
- * @param dist a callable object such that <double*>dist(j, <double*>buf) returns
- *        distances from j to every other n distances
- * @param n number of nodes
+ * @param dist a callable CDistance object such that a call to
+ *        <double*>dist(j, <ssize_t*>M, ssize_t k) returns an n-ary array
+ *        with the distances from the j-th point to k points whose indices
+ *        are given in array M
+ * @param n number of points
  * @param mst_d [out] vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order
  * @param mst_i [out] vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
  */
-template<class Distance>
-void Cmst_complete(Distance dist, ssize_t n, double* mst_d, ssize_t* mst_i)
+void Cmst_complete(CDistance* dist, ssize_t n, double* mst_d, ssize_t* mst_i)
 {
     std::vector<double>  Dnn(n, DOUBLE_INFTY);
     std::vector<ssize_t> Fnn(n);
@@ -297,7 +214,7 @@ void Cmst_complete(Distance dist, ssize_t n, double* mst_d, ssize_t* mst_i)
 
         // compute the distances from lastj (on the fly)
         // dist_from_lastj[j] == d(lastj, j)
-        const double* dist_from_lastj = dist(lastj, M.data()+1, n-i-1);
+        const double* dist_from_lastj = (*dist)(lastj, M.data()+1, n-i-1);
 
         bestjpos = bestj = 0;
         for (ssize_t j=1; j<n-i; ++j) {
