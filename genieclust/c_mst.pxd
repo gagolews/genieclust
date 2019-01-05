@@ -45,9 +45,13 @@ cdef extern from "c_mst.h":
     cdef cppclass CDistance:
         pass
 
-    cdef cppclass CDistanceSquaredEuclidean:
-        CDistanceSquaredEuclidean()
-        CDistanceSquaredEuclidean(double* X, ssize_t n, ssize_t d)
+    cdef cppclass CDistanceMutualReachability:
+        CDistanceMutualReachability()
+        CDistanceMutualReachability(const double* d_core, ssize_t n, CDistance* d_pairwise)
+
+    cdef cppclass CDistanceEuclidean:
+        CDistanceEuclidean()
+        CDistanceEuclidean(double* X, ssize_t n, ssize_t d)
 
     cdef cppclass CDistanceManhattan:
         CDistanceManhattan()

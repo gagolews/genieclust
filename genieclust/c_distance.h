@@ -90,10 +90,10 @@ struct CDistanceCompletePrecomputed : public CDistance {
 
 
 
-/*! A class to compute the squared Euclidean distances from the i-th point
+/*! A class to compute the Euclidean distances from the i-th point
  *  to all given k points.
  */
-struct CDistanceSquaredEuclidean : public CDistance  {
+struct CDistanceEuclidean : public CDistance  {
     const double* X;
     ssize_t n;
     ssize_t d;
@@ -105,7 +105,7 @@ struct CDistanceSquaredEuclidean : public CDistance  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceSquaredEuclidean(const double* X, ssize_t n, ssize_t d)
+    CDistanceEuclidean(const double* X, ssize_t n, ssize_t d)
             : buf(n)//, sqnorm(n)
     {
         this->n = n;
@@ -122,8 +122,8 @@ struct CDistanceSquaredEuclidean : public CDistance  {
         // }
     }
 
-    CDistanceSquaredEuclidean()
-        : CDistanceSquaredEuclidean(NULL, 0, 0) { }
+    CDistanceEuclidean()
+        : CDistanceEuclidean(NULL, 0, 0) { }
 
     virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
         for (ssize_t j=0; j<k; ++j) {
@@ -141,6 +141,8 @@ struct CDistanceSquaredEuclidean : public CDistance  {
             //     buf[w] -= X[d*i+u]*X[d*w+u];
             // }
             // buf[w] = 2.0*buf[w]+sqnorm[i]+sqnorm[w];
+
+            buf[w] = sqrt(buf[w]);
         }
         return buf.data();
     }
@@ -244,5 +246,47 @@ struct CDistanceCosine : public CDistance  {
     }
 };
 
+
+
+/*! A class to compute the "mutual reachability" (Campello et al., 2015)
+ *  distances from the i-th point to all given k points based on the "core"
+ *  distances and a CDistance class instance.
+ *
+ *  References:
+ *  ==========
+ *
+ *  [1] R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
+ *  estimates for data clustering, visualization, and outlier detection,
+ *  ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
+ *  doi: 10.1145/2733381.
+*
+ */
+struct CDistanceMutualReachability : public CDistance  {
+    const double* d_core;
+    ssize_t n;
+    CDistance* d_pairwise;
+    std::vector<double> buf;
+
+    CDistanceMutualReachability(const double* d_core, ssize_t n, CDistance* d_pairwise)
+            : buf(n) {
+        this->d_core = d_core;
+        this->n = n;
+        this->d_pairwise = d_pairwise;
+    }
+
+    CDistanceMutualReachability() : CDistanceMutualReachability(NULL, 0, NULL) { }
+
+    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        const double* d = (*d_pairwise)(i, M, k);
+        for (ssize_t j=0; j<k; ++j)  {
+            // buf[w] = max{d[w],d_core[i],d_core[w]}
+            ssize_t w = M[j];
+            buf[w] = d[w];
+            if (d_core[i] > buf[w]) buf[w] = d_core[i];
+            if (d_core[w] > buf[w]) buf[w] = d_core[w];
+        }
+        return buf.data();
+    }
+};
 
 #endif

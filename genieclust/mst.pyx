@@ -137,18 +137,17 @@ cpdef tuple mst_from_distance(double[:,::1] X,
     ----------
 
     X : c_contiguous ndarray, shape (n,d)
-        n data points
+        n data points in a feature space of dimensionality d.
 
     metric : string
         one of `"euclidean"` (a.k.a. `"l2"`),
-        `"sqeuclidean"`,
         `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
         `"cosine"`.
         More metrics/distances might be supported in future versions.
 
     metric_params : dict, optional (default=None)
-        Additional keyword arguments for the metric function,
-        currently ignored.
+        Additional keyword arguments for the metric function, including:
+        * `d_core` - core distances for computing the mutual reachability distance
 
 
     Returns:
@@ -165,27 +164,28 @@ cpdef tuple mst_from_distance(double[:,::1] X,
     cdef ssize_t i
     cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
+    cdef double[::1] d_core
+    cdef c_mst.CDistance* dist = NULL
+    cdef c_mst.CDistance* dist2 = NULL
 
-    cdef c_mst.CDistance* dist
-
-    if metric in ("euclidean", "l2", "sqeuclidean"):
-        # MST w.r.t. L2^2 == MST w.r.t. L2
-        dist = <c_mst.CDistance*>new c_mst.CDistanceSquaredEuclidean(&X[0,0], n, d)
-        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
-        if metric != "sqeuclidean":
-            for i in range(n-1):
-                mst_d[i] = libc.math.sqrt(mst_d[i])
-        del dist
+    if metric in ("euclidean", "l2"):
+        dist = <c_mst.CDistance*>new c_mst.CDistanceEuclidean(&X[0,0], n, d)
     elif metric in ("manhattan", "cityblock", "l1"):
         dist = <c_mst.CDistance*>new c_mst.CDistanceManhattan(&X[0,0], n, d)
-        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
-        del dist
     elif metric in ("cosine",):
         dist = <c_mst.CDistance*>new c_mst.CDistanceCosine(&X[0,0], n, d)
-        c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
-        del dist
     else:
-        raise NotImplementedError("given `metric` is not supported")
+        raise NotImplementedError("given `metric` is not supported (yet)")
+
+    if metric_params is not None and "d_core" in metric_params:
+        d_core = metric_params["d_core"]
+        dist2 = dist # must be deleted separately
+        dist  = <c_mst.CDistance*>new c_mst.CDistanceMutualReachability(&d_core[0], n, dist2)
+
+    c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
+
+    if dist:  del dist
+    if dist2: del dist2
 
     return mst_i, mst_d
 
