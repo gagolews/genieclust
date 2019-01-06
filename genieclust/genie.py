@@ -36,6 +36,9 @@ import warnings
 from sklearn.base import BaseEstimator, ClusterMixin
 import math
 from . import internal
+from . import mst
+import sklearn.neighbors
+
 
 
 class Genie(BaseEstimator, ClusterMixin):
@@ -110,7 +113,7 @@ class Genie(BaseEstimator, ClusterMixin):
 
     nn_params: dict, optional (default=None)
         Arguments to the sklearn.neighbors.NearestNeighbors class
-        constructor, e.g., the metric to use (default=Euclidean).
+        constructor, e.g., the metric to use (default='euclidean').
 
 
     Attributes:
@@ -129,7 +132,7 @@ class Genie(BaseEstimator, ClusterMixin):
             M=1,
             n_neighbors=-1,
             postprocess="boundary",
-            exact=False,
+            exact=True,
             nn_params=None
         ):
         self.n_clusters = n_clusters
@@ -175,7 +178,8 @@ class Genie(BaseEstimator, ClusterMixin):
         self
         """
         n = X.shape[0]
-        d = X.shape[0]
+        #d = X.shape[0]
+
         if cache:
             raise NotImplementedError("cache not implemented yet")
 
@@ -187,6 +191,11 @@ class Genie(BaseEstimator, ClusterMixin):
         else:
             cur_state["nn_params"] = self.nn_params
 
+        cur_state["metric"] = cur_state["nn_params"].get("metric", "euclidean")
+        cur_state["metric_params"] = cur_state["nn_params"].get("metric_params", None)
+        if cur_state["metric_params"] is None:
+            cur_state["metric_params"] = dict()
+
         cur_state["n_clusters"] = int(self.n_clusters)
         if cur_state["n_clusters"] <= 1:
             raise ValueError("n_clusters must be > 1")
@@ -197,7 +206,7 @@ class Genie(BaseEstimator, ClusterMixin):
 
         cur_state["M"] = int(self.M)
         if not 1 <= cur_state["M"] <= n:
-            raise ValueError("M must be in [1, n_features]")
+            raise ValueError("M must be in [1, n_samples]")
 
         cur_state["postprocess"] = self.postprocess
         if cur_state["postprocess"] not in ("boundary", "none", "all"):
@@ -209,36 +218,45 @@ class Genie(BaseEstimator, ClusterMixin):
 
         cur_state["exact"] = int(self.exact)
 
-        # 1. exact and M == 1
-        #   -> just mst_from_distance
-        # 2. exact and M > 1
-        #   -> sklearn for nn_dist, nn_ind,
-        #      get d_core,
-        #      mst_from_distance w.r.t. d_core
-        # 3. approximate and M == 1
-
-        actual_n_neighbors = cur_state["n_neighbors"]
-        if actual_n_neighbors < 0:
-            actual_n_neighbors = min(256, int(math.ceil(math.sqrt(n))))
-            actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-            actual_n_neighbors = min(n-1, actual_n_neighbors)
-#????
 
 
+        nn_dist       = None
+        nn_ind        = None
+        spanning_tree = None
+        if not cur_state["exact"]:
+            raise NotImplementedError("not exact method not implemented yet")
+            # actual_n_neighbors = cur_state["n_neighbors"]
+            # if actual_n_neighbors < 0:
+            #     actual_n_neighbors = min(256, int(math.ceil(math.sqrt(n))))
+            #     actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
+            #     actual_n_neighbors = min(n-1, actual_n_neighbors)
 
-        nn_dist
-        nn_ind
-        self._D = scipy.spatial.distance.squareform(
-            scipy.spatial.distance.pdist(X, self.metric)
-        )
+        else: # cur_state["exact"]
+            if cur_state["M"] == 1:
+                # the original Genie algorithm
 
-        self._Dcore = internal.core_distance(self._D, self.M)
+                # 1. Use Prim's algorithm to determine the MST
+                #  w.r.t. the distances computed on the fly
 
-        self._mst = internal.MST_wrt_mutual_reachability_distance(self._D, self._Dcore)
+                spanning_tree = mst.mst_from_distance(X,
+                    metric=cur_state["metric"], metric_params=cur_state["metric_params"])
+            else:
+                # Genie+HDBSCAN
 
+                # 1. Use sklearn to determine d_core distance
+                nn = sklearn.neighbors.NearestNeighbors(n_neighbors=cur_state["M"]-1, **cur_state["nn_params"])
+                nn_dist, nn_ind = nn.fit(X).kneighbors()
+                d_core = nn_dist[:,cur_state["M"]-2].astype(np.double, order="C")
+
+                # 2. Use Prim's algorithm to determine the MST
+                #  w.r.t. the distances computed on the fly
+                spanning_tree = mst.mst_from_distance(X,
+                    metric=cur_state["metric"],
+                    metric_params=dict(**cur_state["metric_params"], d_core=d_core)
+                )
 
         # apply the Genie+ algorithm
-        labels = internal.genie_from_mst(mst,
+        labels = internal.genie_from_mst(spanning_tree,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"]>1))
@@ -246,54 +264,57 @@ class Genie(BaseEstimator, ClusterMixin):
         # postprocess labels, if requested to do so
         if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
             pass
-        if cur_state["postprocess"] == "boundary":
-            labels = internal.merge_boundary_points(labels,
-                labels, self._D, d_core) #########################################################################
+        elif cur_state["postprocess"] == "boundary":
+            labels = internal.merge_boundary_points(spanning_tree, labels, nn_ind, cur_state["M"])
         elif cur_state["postprocess"] == "all":
-            labels = internal.merge_leaves_with_nearest_clusters(mst, labels)
-
-
-        # save state
-        self.__last_state    = cur_state
-
-        self.__last_X        = X
-        self.__last_mst      = mst
-        self.__last_nn_dist  = nn_dist
-        self.__last_nn_ind   = nn_ind
+            labels = internal.merge_leaves_with_nearest_clusters(spanning_tree, labels)
 
         self.labels_ = labels
+
+        # # save state
+        # self.__last_state    = cur_state
+
+        # self.__last_X        = X
+        # self.__last_mst      = mst
+        # self.__last_nn_dist  = nn_dist
+        # self.__last_nn_ind   = nn_ind
+
+
 
         return self
 
 
     # not needed - inherited from ClusterMixin
-    # def fit_predict(self, X, y=None):
-    #     """
-    #     Compute a k-partition and return the predicted labels.
-    #
-    #     @TODO@: do not compute the whole distance matrix.
-    #     The current version requires O(n**2) memory.
-    #
-    #
-    #     Parameters:
-    #     ----------
-    #
-    #     X : ndarray, shape (n,d)
-    #         A matrix defining n points in a d-dimensional vector space.
-    #
-    #     y : None
-    #         Ignored.
-    #
-    #
-    #     Returns:
-    #     -------
-    #
-    #     labels_ : ndarray, shape (n,)
-    #         Predicted labels, representing a partition of X.
-    #         labels_[i] gives the cluster id of the i-th input point.
-    #     """
-    #     self.fit(X)
-    #     return self.labels_
+    def fit_predict(self, X, y=None, cache=False):
+        """
+        Compute a k-partition and return the predicted labels,
+        see fit().
+
+
+        Parameters:
+        ----------
+
+        X : ndarray
+            see fit()
+
+        y : None
+            see fit()
+
+        cache : bool
+            see fit()
+
+
+
+        Returns:
+        -------
+
+        labels_ : ndarray, shape (n_samples,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
+            negative labels_ correspond to noise points.
+        """
+        self.fit(X)
+        return self.labels_
 
 
     # not needed - inherited from BaseEstimator

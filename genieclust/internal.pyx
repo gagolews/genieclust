@@ -191,8 +191,8 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
 cpdef np.ndarray[int] merge_boundary_points(
             tuple mst,
             np.ndarray[int] cl,
-            np.ndarray[double,ndim=2] dist,
-            np.ndarray[double] d_core):
+            np.ndarray[ssize_t,ndim=2] nn_ind,
+            int M):
     """
     A noisy k-partition post-processing:
     given a k-partition (with noise points included),
@@ -211,11 +211,12 @@ cpdef np.ndarray[int] merge_boundary_points(
         (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
         Class -1 denotes the `noise' cluster.
 
-    dist : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
+    nn_ind : ndarray, shape (n_samples,n_neighbors)
+        nn_ind[i,:] gives the indexes of the i'th point's
+        nearest neighbors.
 
-    d_core : ndarray, shape (n_samples,)
-        The core distance, see genieclust.internal.core_distance()
+    M : int
+        smoothing factor, M>=2
 
 
     Returns:
@@ -226,10 +227,14 @@ cpdef np.ndarray[int] merge_boundary_points(
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
-    cdef ssize_t n = cl2.shape[0], i
+    cdef ssize_t n = cl2.shape[0], i, j
     cdef ssize_t j0, j1
     cdef np.ndarray[ssize_t,ndim=2] mst_ind = mst[1]
-    assert (mst_ind.shape[0] + 1) == n
+
+    if not (mst_ind.shape[0] + 1) == n or not nn_ind.shape[0] == n:
+        raise ValueError("arrays' shapes do not match")
+    if M < 2 or M-2 >= nn_ind.shape[1]:
+        raise ValueError("incorrect M")
 
     for i in range(n-1):
         assert cl2[mst_ind[i,0]] >= 0 or cl2[mst_ind[i,1]] >= 0
@@ -240,8 +245,16 @@ cpdef np.ndarray[int] merge_boundary_points(
         else:
             continue
 
-        if dist[j1, j0] <= d_core[j1]:
-            cl2[j0] = cl2[j1]
+        assert cl2[j0] <  0  # j0 is marked as a noise point
+        assert cl2[j1] >= 0  # j1 is a core point
+        # j0 is a boundary point if j0 is among j1's M-1 nearest neighbors
+        #if dist[j1, j0] <= d_core[j1]:
+        #    cl2[j0] = cl2[j1]
+
+        cl2[j0] = -1
+        for j in range(M-1):
+            if nn_ind[j1,j] == j0:
+                cl2[j0] = cl2[j1]
 
     return cl2
 
@@ -411,7 +424,7 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
 
     if not 1 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
-    if not n == mst_d.shape[0]:
+    if not n-1 == mst_d.shape[0]:
         raise ValueError("ill-defined MST")
     if not 0 <= gini_threshold <= 1:
         raise ValueError("incorrect gini_threshold")
@@ -510,7 +523,6 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
             curidx = next_edge[curidx]
 
         ds.merge(denoise_index_rev[i1], denoise_index_rev[i2])
-
 
 
 

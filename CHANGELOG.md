@@ -29,6 +29,8 @@
   serializable: implement the `__setstate__(self, state)` and
   `__getstate__(self)` methods.
 
+  * Add genieclust.plots.abline()
+
 * genieclust 0.XX (under development)
 
   * The full distance matrix is not required now for computing an exact MST -
