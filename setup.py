@@ -92,9 +92,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marek Gagolewski",
-    author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
-    maintainer_email="marek@gagolewski.com",
     license="BSD-3-Clause",
     install_requires=[
           "numpy",
@@ -104,8 +102,9 @@ setuptools.setup(
           "sklearn"
       ],
     download_url="https://github.com/gagolews/genieclust",
-    url="http://www.gagolewski.com/software/",
+    url="http://www.gagolewski.com/software/genie/",
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",

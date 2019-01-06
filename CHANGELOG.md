@@ -3,55 +3,59 @@
 
 * to do:
 
-    * [INTERNAL] [VERY LOW PRIORITY] make DisjointSets and GiniDisjointSets
-    serializable: implement the `__setstate__(self, state)` and
-    `__getstate__(self)` methods.
+  * allow approximate nearest neighbors, e.g.,
+  http://www.cs.ubc.ca/research/flann/
+  https://github.com/facebookresearch/faiss or
+  https://github.com/spotify/annoy
+  https://github.com/nmslib/nmslib  [NN-descent...]
+  https://github.com/nmslib/hnswlib ;
+  some will also enable sparse input data (e.g., for text mining applications)
 
-    * use `sklearn.neighbors.NearestNeighbors` to determine the M-th NNs
-    when computing the mutual reachability distance a.k.a. the "core distance",
-    see core_distance()
+  * Rewrite `genie_from_mst` in C++.
 
-    * allow approximate nearest neighbors, e.g.,
-    http://www.cs.ubc.ca/research/flann/
-    https://github.com/facebookresearch/faiss or
-    https://github.com/spotify/annoy
-    https://github.com/nmslib/nmslib  [NN-descent...]
-    https://github.com/nmslib/hnswlib ;
-    some will also enable sparse input data (e.g., for text mining applications)
+  * Add support for other `scipy.spatial` distances when computing
+  an exact MST, in particular, the weighted Euclidean metric.
 
-    * do not require the full distance matrix when computing MST_pair;
-    compute the distances on the fly (perhaps taking into account the core dist)
+  * Add support for sparse input matrices
 
-        > [how to handle different distances, say, we can support
-        > “euclidean”, “l1”, “l2”, “manhattan”, “cosine”, or ‘precomputed’
-        > just like `sklearn.cluster.AgglomerativeClustering` does]?
-        > [add support for the "connectivity" matrix]
+  * Add support for connectivity matrices
 
-    * add support for sparse input matrices
+  * Output full cluster hierarchy - see the Z matrix in
+  `scipy.cluster.hierarchy.linkage`
 
-    * add support for connectivity matrices
+  * Implement Ania's and Adreas' linkage criteria
 
-    * output full cluster hierarchy - see the Z matrix in
-    `scipy.cluster.hierarchy.linkage`
-
-    * implement Ania's and Adreas' linkage criteria
-
+  * [INTERNAL] [VERY LOW PRIORITY] make DisjointSets and GiniDisjointSets
+  serializable: implement the `__setstate__(self, state)` and
+  `__getstate__(self)` methods.
 
 * genieclust 0.XX (under development)
 
-    * [INTERNAL] refactored DisjointSets and GiniDisjointSets as C++ classes.
+  * The full distance matrix is not required now for computing an exact MST -
+  the distances are computed on the fly; this is currently supported
+  for `"euclidean"`, `"cityblock"`, and `"cosine"` distances.
+  This saves a lot of memory ($O(n)$ instead of $O(n^2)$) and so genieclust
+  can solve much larger problems now.
 
-    * [BUGFIX] MST_pair() did not return all weights of the MST edges.
+  * `sklearn.neighbors.NearestNeighbors` are used to determine few first NNs
+  when computing the mutual reachability distance a.k.a. the "core distance",
+  see core_distance()
 
+  * [INTERNAL] Most of the code was rewritten in C++, in particular
+  the `DisjointSets` and `GiniDisjointSets` classes, so that:
+  a) they can be used in other projects,
+  b) genieclust can be easily made available in other
+  environments in the future.
 
+  * [BUGFIX] Internal function MST_pair() did not return all weights
+  of the MST edges.
 
 * genieclust 0.1a3 (unreleased)
 
-    * The `Genie` class constructor has a new parameter: `postprocess`,
-    which allows for merging boundary points with their nearest core points
-    (in effect for smoothing parameters M>1).
-
+  * The `Genie` class constructor has a new parameter: `postprocess`,
+  which allows for merging boundary points with their nearest core points
+  (in effect for smoothing parameters M>1).
 
 * genieclust 0.1a2 (2018-05-23)
 
-    * Initial PyPI release.
+  * Initial PyPI release.

@@ -1,3 +1,5 @@
 include README.md
 include LICENSE
 include CHANGELOG.md
+include genieclust/c_*.h
+include genieclust/c_*.pxd

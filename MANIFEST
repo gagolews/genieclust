@@ -11,3 +11,4 @@ genieclust/inequity.pyx
 genieclust/internal.pyx
 genieclust/mst.pyx
 genieclust/plots.py
+

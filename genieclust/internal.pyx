@@ -42,20 +42,15 @@ cimport cython
 cimport numpy as np
 
 from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-from libc.math cimport fabs, sqrt
 from numpy.math cimport INFINITY
 
 from . cimport c_argfuns
 from . cimport c_gini_disjoint_sets
-
+# from . cimport c_mst
 
 from libcpp.vector cimport vector
 
-
-
 import numpy as np
-import scipy.spatial.distance
-import warnings
 
 
 
@@ -72,21 +67,131 @@ ctypedef fused T:
     double
 
 
-cdef T square(T x):
-    return x*x
+# type convention:
+# 1. cluster labels == int (int32, np.intc)
+# 2. points == double
+# 3. indexes == ssize_t (Py_ssize_t, np.intp)
+
+
+#############################################################################
+# HDBSCAN* Clustering Algorithm - auxiliary functions (for testing)
+#############################################################################
+
+
+cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
+    """
+    Given a pairwise distance matrix, computes the "core distance", i.e.,
+    the distance of each point to its M-th nearest neighbor.
+    Note that M==1 always yields all the distances equal to 0.0.
+    The core distances are needed when computing the mutual reachability
+    distance in the HDBSCAN* algorithm.
+
+    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
+    estimates for data clustering, visualization, and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
+    doi: 10.1145/2733381.
+
+    The input distance matrix for a given point cloud X may be computed,
+    e.g., via a call to
+    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+
+    M : int
+        A smoothing factor >= 1.
+
+
+    Returns:
+    -------
+
+    d_core : ndarray, shape (n_samples,)
+        d_core[i] gives the distance between the i-th point and its M-th nearest
+        neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
+    """
+    cdef ssize_t n = D.shape[0], i, j
+    cdef double v
+    cdef np.ndarray[double] d_core = np.zeros(n, np.double)
+    cdef double[::1] row
+
+    if M < 1: raise ValueError("M < 1")
+    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if M >= n: raise ValueError("M >= matrix size")
+
+    if M == 1: return d_core # zeros
+
+    cdef vector[ssize_t] buf = vector[ssize_t](M)
+    for i in range(n):
+        row = D[i,:]
+        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
+        d_core[i] = D[i, j]
+
+    return d_core
+
+
+cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
+        np.ndarray[double,ndim=2] D,
+        np.ndarray[double] d_core):
+    """
+    Given a pairwise distance matrix,
+    computes the mutual reachability distance w.r.t. the given
+    core distance vector, see core_distance().
+
+    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
+    estimates for data clustering, visualization, and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
+    doi: 10.1145/2733381.
+
+    The input distance matrix for a given point cloud X
+    may be computed, e.g., via a call to
+    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
+
+
+    Parameters:
+    ----------
+
+    D : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+
+    d_core : ndarray, shape (n_samples,)
+        See core_distance().
+
+
+    Returns:
+    -------
+
+    R : ndarray, shape (n_samples,n_samples)
+        A new distance matrix, giving the mutual reachability distance w.r.t. M.
+    """
+    cdef ssize_t n = D.shape[0], i, j
+    cdef double v
+    if D.shape[1] != n: raise ValueError("not a square matrix")
+
+    cdef np.ndarray[double,ndim=2] R = np.array(D, dtype=np.double)
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            v = D[i, j]
+            if v < d_core[i]: v = d_core[i]
+            if v < d_core[j]: v = d_core[j]
+            R[i, j] = R[j, i] = v
+
+    return R
 
 
 
 #############################################################################
-# HDBSCAN* Clustering Algorithm - auxiliary functions
+##### Noisy k-partition post-processing #####################################
 #############################################################################
-
 
 cpdef np.ndarray[int] merge_boundary_points(
             tuple mst,
             np.ndarray[int] cl,
             np.ndarray[double,ndim=2] D,
-            np.ndarray[double] Dcore):
+            np.ndarray[double] d_core):
     """
     A noisy k-partition post-processing:
     given a k-partition (with noise points included),
@@ -108,7 +213,7 @@ cpdef np.ndarray[int] merge_boundary_points(
     D : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
 
-    Dcore : ndarray, shape (n_samples,)
+    d_core : ndarray, shape (n_samples,)
         The core distance, see genieclust.internal.core_distance()
 
 
@@ -134,7 +239,7 @@ cpdef np.ndarray[int] merge_boundary_points(
         else:
             continue
 
-        if D[j1, j0] <= Dcore[j1]:
+        if D[j1, j0] <= d_core[j1]:
             cl2[j0] = cl2[j1]
 
     return cl2
@@ -184,122 +289,14 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
     return cl2
 
 
-cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
+#############################################################################
+#############################################################################
+#############################################################################
+
+cpdef np.ndarray[ssize_t] get_graph_node_degrees(np.ndarray[ssize_t,ndim=2] I, ssize_t n):
     """
-    Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its M-th nearest neighbor.
-    Note that M==1 always yields all the distances equal to 0.0.
-    The core distances are needed when computing the mutual reachability
-    distance in the HDBSCAN* algorithm.
-
-    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
-
-    The input distance matrix for a given point cloud X may be computed,
-    e.g., via a call to
-    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
-
-
-    Parameters:
-    ----------
-
-    D : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-
-    M : int
-        A smoothing factor >= 1.
-
-
-    Returns:
-    -------
-
-    Dcore : ndarray, shape (n_samples,)
-        Dcore[i] gives the distance between the i-th point and its M-th nearest
-        neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
-    """
-    cdef ssize_t n = D.shape[0], i, j
-    cdef double v
-    cdef np.ndarray[double] Dcore = np.zeros(n, np.double)
-    cdef double[::1] row
-
-    if M < 1: raise ValueError("M < 1")
-    if D.shape[1] != n: raise ValueError("not a square matrix")
-    if M >= n: raise ValueError("M >= matrix size")
-
-    if M == 1: return Dcore
-
-    cdef vector[ssize_t] buf = vector[ssize_t](M)
-    for i in range(n):
-        row = D[i,:]
-        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
-        Dcore[i] = D[i, j]
-
-    return Dcore
-
-
-cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
-        np.ndarray[double,ndim=2] D,
-        ssize_t M
-):
-    """
-    Given a pairwise distance matrix,
-    computes the mutual reachability distance w.r.t. a smoothing
-    factor M >= 1. Note that for M <= 2 the mutual reachability distance
-    is equivalent to the original distance measure.
-
-    Note that M == 1 should not be used, as in such a case the HDBSCAN* algorithm
-    reduces to the single linkage clustering.
-
-    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
-
-    The input distance matrix for a given point cloud X
-    may be computed, e.g., via a call to
-    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
-
-
-    Parameters:
-    ----------
-
-    D : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-
-    M : int
-        A smoothing factor >= 1.
-
-
-    Returns:
-    -------
-
-    R : ndarray, shape (n_samples,n_samples)
-        A new distance matrix, giving the mutual reachability distance w.r.t. M.
-    """
-    cdef ssize_t n = D.shape[0], i, j
-    cdef double v
-    if M < 1: raise ValueError("M < 1")
-    if D.shape[1] != n: raise ValueError("not a square matrix")
-
-    cdef np.ndarray[double,ndim=2] R = np.array(D, dtype=np.double)
-    cdef np.ndarray[double] Dcore = core_distance(D, M)
-    if M > 2:
-        for i in range(0, n-1):
-            for j in range(i+1, n):
-                v = D[i, j]
-                if v < Dcore[i]: v = Dcore[i]
-                if v < Dcore[j]: v = Dcore[j]
-                R[i, j] = R[j, i] = v
-
-    return R
-
-
-cpdef np.ndarray[ssize_t] get_tree_node_degrees(np.ndarray[ssize_t,ndim=2] I):
-    """
-    Given an adjacency list I representing an undirected tree with vertex
-    set {0,...,n-1}, return an array d with d[i] denoting
+    Given an adjacency list I representing an undirected simple graph over
+    vertex set {0,...,n-1}, return an array d with d[i] denoting
     the degree of the i-th vertex. For instance, d[i]==1 marks a leaf node.
 
 
@@ -307,173 +304,34 @@ cpdef np.ndarray[ssize_t] get_tree_node_degrees(np.ndarray[ssize_t,ndim=2] I):
     ----------
 
     I : ndarray
-        A 2-column matrix with elements in {0, ..., n-1},
-        where n = I.shape[0]+1.
+        A 2-column matrix such that {I[i,0], I[i,1]} represents
+        and undirected edges. Negative indexes are ignored.
 
+    n : size
+        Number of vertices.
 
     Returns:
     -------
 
     d : ndarray, shape(n,)
-        An integer array of length I.shape[0]+1.
+        An integer array of length n.
     """
-    cdef ssize_t n = I.shape[0]+1, i
+    cdef ssize_t m = I.shape[0], i
     cdef np.ndarray[ssize_t] d = np.zeros(n, dtype=np.intp)
-    for i in range(n-1):
-        if I[i,0] < 0 or I[i,0] >= n:
+    for i in range(m):
+        if I[i,0] < 0  or I[i,1] < 0:
+            continue # represents a no-edge → ignore
+        if I[i,0] >= n or I[i,1] >= n:
             raise ValueError("Detected an element not in {0, ..., n-1}")
+        if I[i,0] == I[i,1]:
+            raise ValueError("Loops are not allowed")
+
         d[I[i,0]] += 1
-        if I[i,1] < 0 or I[i,1] >= n:
-            raise ValueError("Detected an element not in {0, ..., n-1}")
         d[I[i,1]] += 1
 
     return d
 
 
-
-cdef extern from "stdlib.h":
-    ctypedef void const_void "const void"
-    void qsort(void *base, int num, int size,
-                int(*compar)(const_void*, const_void*)) nogil
-
-
-
-cdef struct MST_triple:
-    ssize_t i1
-    ssize_t i2
-    double w
-
-
-cdef int MST_triple_comparer(const_void* _a, const_void* _b):
-    cdef MST_triple a = (<MST_triple*>_a)[0]
-    cdef MST_triple b = (<MST_triple*>_b)[0]
-    if a.w < b.w:
-        return -1
-    elif a.w > b.w:
-        return 1
-    elif a.i1 != b.i1:
-        return a.i1-b.i1
-    else:
-        return a.i2-b.i2
-
-
-cpdef tuple MST_wrt_mutual_reachability_distance(double[:,:] D, double[:] Dcore):
-    """
-    A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a minimum spanning tree (MST) based on a precomputed pairwise
-    n*n mutual reachability distance matrix DM, where
-    DM[i,j] = max{D[i,j], Dcore[i], Dcore[j]} denotes the (augmented)
-    distance between point i and j.
-
-    Note that there may be multiple minimum trees spanning a given vertex set.
-
-    @TODO@: write a version of the algorithm that computes
-    the pairwise distances (for a range of metrics) on the fly,
-    so that the memory use is better than O(n**2). Also,
-    use OpenMP to parallelize the inner loop.
-    However, we will still need function to compute an MST based
-    on the HDBSCAN*'s mutual reachability distance.
-
-
-    References:
-    ----------
-
-    R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
-
-    M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
-
-    V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
-
-    C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
-
-    R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
-
-
-    Parameters:
-    ----------
-
-    D : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-
-    Dcore : ndarray, shape (n_samples,)
-        The core distance, see genieclust.internal.core_distance()
-
-
-    Returns:
-    -------
-
-    pair : tuple
-         A pair (indices_matrix, corresponding distances);
-         the results are ordered w.r.t. the distances
-         (and then the 1st, and then the 2nd index)
-         The indices_matrix is an (n-1)*2 matrix I such that {I[i,0], I[i,1]}
-         gives the i-th edge of the resulting MST, I[i,0] < I[i,1].
-    """
-
-    cdef ssize_t n = D.shape[0] # D is a square matrix
-    cdef ssize_t i, j
-    cdef double curd
-    cpdef MST_triple* d = <MST_triple*>PyMem_Malloc(n * sizeof(MST_triple))
-
-
-    cpdef double*  Dnn = <double*> PyMem_Malloc(n * sizeof(double))
-    cpdef ssize_t* Fnn = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
-    cpdef ssize_t* M   = <ssize_t*> PyMem_Malloc(n * sizeof(ssize_t))
-    for i in range(n):
-        Dnn[i] = INFINITY
-        #Fnn[i] = 0xffffffff
-        M[i] = i
-
-    cdef ssize_t lastj = 0, bestj, bestjpos
-    for i in range(n-1):
-        # M[1], ... M[n-i-1] - points not yet in the MST
-        bestjpos = bestj = 0
-        for j in range(1, n-i):
-            curd = D[lastj, M[j]]
-            if curd < Dcore[lastj]: curd = Dcore[lastj]
-            if curd < Dcore[M[j]]: curd = Dcore[M[j]]
-
-            if curd < Dnn[M[j]]:
-                Dnn[M[j]] = curd
-                Fnn[M[j]] = lastj
-            if Dnn[M[j]] < Dnn[bestj]:        # D[0] == INFTY
-                bestj = M[j]
-                bestjpos = j
-        M[bestjpos] = M[n-i-1] # never visit bestj again
-        lastj = bestj          # start from bestj next time
-        # and an edge to MST:
-        d[i].i1, d[i].i2 = (Fnn[bestj], bestj) if Fnn[bestj]<bestj else (bestj, Fnn[bestj])
-        d[i].w = Dnn[bestj]
-
-    PyMem_Free(Fnn)
-    PyMem_Free(Dnn)
-    PyMem_Free(M)
-
-
-
-
-    qsort(<void*>(d), n-1, sizeof(MST_triple), MST_triple_comparer)
-
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
-    for i in range(n-1):
-        mst_i[i,0] = d[i].i1
-        mst_i[i,1] = d[i].i2
-
-    cdef np.ndarray[double] mst_d = np.empty(n-1, dtype=np.double)
-    for i in range(n-1):
-        mst_d[i]   = d[i].w
-
-    PyMem_Free(d)
-
-    return mst_i, mst_d
 
 
 #############################################################################
@@ -521,7 +379,8 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
     ----------
 
     mst : tuple
-        See genieclust.internal.MST_wrt_mutual_reachability_distance()
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        see genieclust.mst.
 
     n_clusters : int, default=2
         Number of clusters the data is split into.
@@ -544,8 +403,9 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
     cdef ssize_t noise_count
 
     cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
-    cdef np.ndarray[ssize_t] deg = get_tree_node_degrees(mst_i)
     n = mst_i.shape[0]+1
+    cdef np.ndarray[ssize_t] deg = get_graph_node_degrees(mst_i, n)
+
 
     cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)
     cdef vector[ssize_t] denoise_index_rev = vector[ssize_t](n)

@@ -281,9 +281,12 @@ struct CDistanceMutualReachability : public CDistance  {
         for (ssize_t j=0; j<k; ++j)  {
             // buf[w] = max{d[w],d_core[i],d_core[w]}
             ssize_t w = M[j];
-            buf[w] = d[w];
-            if (d_core[i] > buf[w]) buf[w] = d_core[i];
-            if (d_core[w] > buf[w]) buf[w] = d_core[w];
+            if (w == i) buf[w] = 0.0;
+            else {
+                buf[w] = d[w];
+                if (d_core[i] > buf[w]) buf[w] = d_core[i];
+                if (d_core[w] > buf[w]) buf[w] = d_core[w];
+            }
         }
         return buf.data();
     }
