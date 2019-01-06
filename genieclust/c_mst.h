@@ -50,9 +50,14 @@
 
 
 
-/*! Comparer used to sort MST edges w.r.t. increasing weights
+/*! Represents an undirected edge in a weighted graph.
+ *  Main purpose: a comparer used to sort MST edges w.r.t. increasing weights
  */
 struct CMstTriple {
+    ssize_t i1; //!< first  vertex defining an edge
+    ssize_t i2; //!< second vertex defining an edge
+    double d;   //!< edge weight
+
     CMstTriple() {}
 
     CMstTriple(ssize_t i1, ssize_t i2, double d) {
@@ -77,10 +82,6 @@ struct CMstTriple {
         else
             return d < other.d;
     }
-
-    ssize_t i1;
-    ssize_t i2;
-    double d;
 };
 
 
@@ -88,10 +89,10 @@ struct CMstTriple {
 
 
 
-/*! Computes a minimum spanning tree of a k-Nearest Neighbor Graph
+/*! Computes a minimum spanning tree of a (<=k)-nearest neighbor graph
  *  using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
  *
- *  Note that in general, an MST of the M-Nearest Neighbor Graph
+ *  Note that, in general, an MST of the (<=k)-nearest neighbor graph
  *  might not be the MST of the complete Pairwise Distances Graph.
  *
  * @param dist   a c_contiguous array, shape (n,k),
@@ -100,16 +101,17 @@ struct CMstTriple {
  *        (undirected) edge definition, interpreted as {i, ind[i,j]}
  * @param n number of nodes
  * @param k minimal degree of all the nodes
- * @param mst_d [out] vector of length n-1, gives weights of the
+ * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order
- * @param mst_i [out] vector of length 2*(n-1), representing
+ * @param mst_ind [out] c_contiguous vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
  *
  * @return number of edges in the minimal spanning forest
  */
-ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
-             double* mst_d, ssize_t* mst_i)
+ssize_t Cmst_from_nn(const double* dist, const ssize_t* ind,
+    ssize_t n, ssize_t k,
+    double* mst_dist, ssize_t* mst_ind)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
@@ -127,9 +129,9 @@ ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
         if (arg_dist_cur >= nk) {
             ssize_t ret = mst_edge_cur;
             while (mst_edge_cur < n-1) {
-                mst_i[2*mst_edge_cur+0] = -1;
-                mst_i[2*mst_edge_cur+1] = -1;
-                mst_d[mst_edge_cur]   = DOUBLE_INFTY;
+                mst_ind[2*mst_edge_cur+0] = -1;
+                mst_ind[2*mst_edge_cur+1] = -1;
+                mst_dist[mst_edge_cur]    = DOUBLE_INFTY;
                 mst_edge_cur++;
             }
             return ret;
@@ -147,9 +149,9 @@ ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
             continue;
 
         if (u > v) std::swap(u, v);
-        mst_i[2*mst_edge_cur+0] = u;
-        mst_i[2*mst_edge_cur+1] = v;
-        mst_d[mst_edge_cur]   = d;
+        mst_ind[2*mst_edge_cur+0] = u;
+        mst_ind[2*mst_edge_cur+1] = v;
+        mst_dist[mst_edge_cur]    = d;
 
         ds.merge(u, v);
         mst_edge_cur++;
@@ -199,7 +201,8 @@ ssize_t Cmst_nn(const double* dist, const ssize_t* ind, ssize_t n, ssize_t k,
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
  */
-void Cmst_complete(CDistance* dist, ssize_t n, double* mst_d, ssize_t* mst_i)
+void Cmst_from_complete(CDistance* dist, ssize_t n,
+    double* mst_dist, ssize_t* mst_ind)
 {
     std::vector<double>  Dnn(n, DOUBLE_INFTY);
     std::vector<ssize_t> Fnn(n);
@@ -240,9 +243,9 @@ void Cmst_complete(CDistance* dist, ssize_t n, double* mst_d, ssize_t* mst_i)
     std::sort(res.begin(), res.end());
 
     for (ssize_t i=0; i<n-1; ++i) {
-        mst_d[i] = res[i].d;
-        mst_i[2*i+0] = res[i].i1; // i1 < i2
-        mst_i[2*i+1] = res[i].i2;
+        mst_dist[i]    = res[i].d;
+        mst_ind[2*i+0] = res[i].i1; // i1 < i2
+        mst_ind[2*i+1] = res[i].i2;
     }
 }
 

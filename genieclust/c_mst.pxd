@@ -45,28 +45,29 @@ cdef extern from "c_mst.h":
     cdef cppclass CDistance:
         pass
 
-    cdef cppclass CDistanceMutualReachability:
+    cdef cppclass CDistanceMutualReachability: # inherits from CDistance
         CDistanceMutualReachability()
         CDistanceMutualReachability(const double* d_core, ssize_t n, CDistance* d_pairwise)
 
-    cdef cppclass CDistanceEuclidean:
+    cdef cppclass CDistanceEuclidean: # inherits from CDistance
         CDistanceEuclidean()
         CDistanceEuclidean(double* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceManhattan:
+    cdef cppclass CDistanceManhattan: # inherits from CDistance
         CDistanceManhattan()
         CDistanceManhattan(double* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceCosine:
+    cdef cppclass CDistanceCosine: # inherits from CDistance
         CDistanceCosine()
         CDistanceCosine(double* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceCompletePrecomputed:
+    cdef cppclass CDistanceCompletePrecomputed: # inherits from CDistance
         CDistanceCompletePrecomputed()
         CDistanceCompletePrecomputed(double* d, ssize_t n)
 
-    ssize_t Cmst_nn(double* dist, ssize_t* ind, ssize_t n, ssize_t k,
-             double* mst_d, ssize_t* mst_i)
 
-    void Cmst_complete(CDistance* dist, ssize_t n,
-             double* mst_d, ssize_t* mst_i)
+    ssize_t Cmst_from_nn(double* dist, ssize_t* ind, ssize_t n, ssize_t k,
+             double* mst_dist, ssize_t* mst_ind)
+
+    void Cmst_from_complete(CDistance* dist, ssize_t n,
+             double* mst_dist, ssize_t* mst_ind)

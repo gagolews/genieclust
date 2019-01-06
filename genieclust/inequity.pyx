@@ -52,6 +52,7 @@ ctypedef fused T:
     int
     long
     long long
+    ssize_t
     float
     double
 

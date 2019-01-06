@@ -15,7 +15,7 @@ def mst_check(X, metric='euclidean', **kwargs):
     t0 = time.time()
     dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
     dist_complete = scipy.spatial.distance.squareform(dist_complete)
-    mst_i, mst_d = genieclust.mst.mst_complete(dist_complete)
+    mst_d, mst_i = genieclust.mst.mst_from_complete(dist_complete)
     print("    precomputed      %10.3fs" % (time.time()-t0,))
 
 
@@ -23,7 +23,7 @@ def mst_check(X, metric='euclidean', **kwargs):
     nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, metric=metric, **kwargs)
     nn.fit(X)
     dist, ind = nn.kneighbors()
-    mst_i1, mst_d1 = genieclust.mst.mst_nn(dist, ind)
+    mst_d1, mst_i1 = genieclust.mst.mst_from_nn(dist, ind)
     print("    NearestNeighbors %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d1.sum())
@@ -32,7 +32,7 @@ def mst_check(X, metric='euclidean', **kwargs):
 
 
     t0 = time.time()
-    mst_i2, mst_d2 = genieclust.mst.mst_from_distance(X, metric=metric)
+    mst_d2, mst_i2 = genieclust.mst.mst_from_distance(X, metric=metric)
     print("    from_distance    %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d2.sum())
@@ -54,11 +54,11 @@ def mst_mutreach_check(X, metric='euclidean'):
 
         t0 = time.time()
         d_mutreach = genieclust.internal.mutual_reachability_distance(D, d_core)
-        mst_i1, mst_d1 = genieclust.mst.mst_complete(d_mutreach)
+        mst_d1, mst_i1 = genieclust.mst.mst_from_complete(d_mutreach)
         print("    mutreach1-D %10.3fs" % (time.time()-t0,))
 
         t0 = time.time()
-        mst_i2, mst_d2 = genieclust.mst.mst_from_distance(X, metric=metric,
+        mst_d2, mst_i2 = genieclust.mst.mst_from_distance(X, metric=metric,
             metric_params=dict(d_core=d_core))
         print("    mutreach2   %10.3fs" % (time.time()-t0,))
 

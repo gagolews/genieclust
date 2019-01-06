@@ -71,6 +71,7 @@ ctypedef fused T:
 # 1. cluster labels == int (int32, np.intc)
 # 2. points == double
 # 3. indexes == ssize_t (Py_ssize_t, np.intp)
+# 4. integer params to cpdef functions -- int
 
 
 #############################################################################
@@ -78,7 +79,7 @@ ctypedef fused T:
 #############################################################################
 
 
-cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
+cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] dist, int M):
     """
     Given a pairwise distance matrix, computes the "core distance", i.e.,
     the distance of each point to its M-th nearest neighbor.
@@ -99,7 +100,7 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
     Parameters:
     ----------
 
-    D : ndarray, shape (n_samples,n_samples)
+    dist : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
 
     M : int
@@ -113,33 +114,33 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] D, ssize_t M):
         d_core[i] gives the distance between the i-th point and its M-th nearest
         neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
     """
-    cdef ssize_t n = D.shape[0], i, j
+    cdef ssize_t n = dist.shape[0], i, j
     cdef double v
     cdef np.ndarray[double] d_core = np.zeros(n, np.double)
     cdef double[::1] row
 
     if M < 1: raise ValueError("M < 1")
-    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
     if M >= n: raise ValueError("M >= matrix size")
 
     if M == 1: return d_core # zeros
 
     cdef vector[ssize_t] buf = vector[ssize_t](M)
     for i in range(n):
-        row = D[i,:]
+        row = dist[i,:]
         j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
-        d_core[i] = D[i, j]
+        d_core[i] = dist[i, j]
 
     return d_core
 
 
 cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
-        np.ndarray[double,ndim=2] D,
+        np.ndarray[double,ndim=2] dist,
         np.ndarray[double] d_core):
     """
     Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. the given
-    core distance vector, see core_distance().
+    core distance vector, see genieclust.internal.core_distance().
 
     See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
     estimates for data clustering, visualization, and outlier detection,
@@ -154,27 +155,27 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
     Parameters:
     ----------
 
-    D : ndarray, shape (n_samples,n_samples)
+    dist : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
 
     d_core : ndarray, shape (n_samples,)
-        See core_distance().
+        See genieclust.internal.core_distance().
 
 
     Returns:
     -------
 
     R : ndarray, shape (n_samples,n_samples)
-        A new distance matrix, giving the mutual reachability distance w.r.t. M.
+        A new distance matrix, giving the mutual reachability distance.
     """
-    cdef ssize_t n = D.shape[0], i, j
+    cdef ssize_t n = dist.shape[0], i, j
     cdef double v
-    if D.shape[1] != n: raise ValueError("not a square matrix")
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
 
-    cdef np.ndarray[double,ndim=2] R = np.array(D, dtype=np.double)
+    cdef np.ndarray[double,ndim=2] R = np.array(dist, dtype=np.double)
     for i in range(0, n-1):
         for j in range(i+1, n):
-            v = D[i, j]
+            v = dist[i, j]
             if v < d_core[i]: v = d_core[i]
             if v < d_core[j]: v = d_core[j]
             R[i, j] = R[j, i] = v
@@ -190,7 +191,7 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
 cpdef np.ndarray[int] merge_boundary_points(
             tuple mst,
             np.ndarray[int] cl,
-            np.ndarray[double,ndim=2] D,
+            np.ndarray[double,ndim=2] dist,
             np.ndarray[double] d_core):
     """
     A noisy k-partition post-processing:
@@ -203,14 +204,14 @@ cpdef np.ndarray[int] merge_boundary_points(
     ----------
 
     mst : tuple
-        See genieclust.internal.MST_wrt_mutual_reachability_distance()
+        See genieclust.mst.mst_from_distance()
 
     cl : ndarray, shape (n_samples,)
         An integer vector c with c[i] denoting the cluster id
         (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
         Class -1 denotes the `noise' cluster.
 
-    D : ndarray, shape (n_samples,n_samples)
+    dist : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
 
     d_core : ndarray, shape (n_samples,)
@@ -220,26 +221,26 @@ cpdef np.ndarray[int] merge_boundary_points(
     Returns:
     -------
 
-    cl : ndarray, shape (n_samples,)
+    c : ndarray, shape (n_samples,)
         A new integer vector c with c[i] denoting the cluster
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ssize_t n = cl2.shape[0], i
     cdef ssize_t j0, j1
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
-    assert (mst_i.shape[0] + 1) == n
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind = mst[1]
+    assert (mst_ind.shape[0] + 1) == n
 
     for i in range(n-1):
-        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
-        if cl2[mst_i[i,0]] < 0:
-            j0, j1 = mst_i[i,0],  mst_i[i,1]
-        elif cl2[mst_i[i,1]] < 0:
-            j0, j1 = mst_i[i,1],  mst_i[i,0]
+        assert cl2[mst_ind[i,0]] >= 0 or cl2[mst_ind[i,1]] >= 0
+        if cl2[mst_ind[i,0]] < 0:
+            j0, j1 = mst_ind[i,0],  mst_ind[i,1]
+        elif cl2[mst_ind[i,1]] < 0:
+            j0, j1 = mst_ind[i,1],  mst_ind[i,0]
         else:
             continue
 
-        if D[j1, j0] <= d_core[j1]:
+        if dist[j1, j0] <= d_core[j1]:
             cl2[j0] = cl2[j1]
 
     return cl2
@@ -270,21 +271,21 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
     Returns:
     -------
 
-    cl : ndarray, shape (n_samples,)
+    c : ndarray, shape (n_samples,)
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ssize_t n = cl2.shape[0], i
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
-    assert (mst_i.shape[0] + 1) == n
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind = mst[1]
+    assert (mst_ind.shape[0] + 1) == n
 
     for i in range(n-1):
-        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
-        if cl2[mst_i[i,0]] < 0:
-            cl2[mst_i[i,0]] = cl2[mst_i[i,1]]
-        elif cl2[mst_i[i,1]] < 0:
-            cl2[mst_i[i,1]] = cl2[mst_i[i,0]]
+        assert cl2[mst_ind[i,0]] >= 0 or cl2[mst_ind[i,1]] >= 0
+        if cl2[mst_ind[i,0]] < 0:
+            cl2[mst_ind[i,0]] = cl2[mst_ind[i,1]]
+        elif cl2[mst_ind[i,1]] < 0:
+            cl2[mst_ind[i,1]] = cl2[mst_ind[i,0]]
 
     return cl2
 
@@ -293,43 +294,44 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
 #############################################################################
 #############################################################################
 
-cpdef np.ndarray[ssize_t] get_graph_node_degrees(np.ndarray[ssize_t,ndim=2] I, ssize_t n):
+cpdef np.ndarray[ssize_t] get_graph_node_degrees(np.ndarray[ssize_t,ndim=2] ind, int n):
     """
-    Given an adjacency list I representing an undirected simple graph over
-    vertex set {0,...,n-1}, return an array d with d[i] denoting
-    the degree of the i-th vertex. For instance, d[i]==1 marks a leaf node.
+    Given an adjacency list representing an undirected simple graph over
+    vertex set {0,...,n-1}, return an array deg with deg[i] denoting
+    the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
 
 
     Parameters:
     ----------
 
-    I : ndarray
-        A 2-column matrix such that {I[i,0], I[i,1]} represents
-        and undirected edges. Negative indexes are ignored.
+    ind : ndarray, shape (m,2)
+        A 2-column matrix such that {ind[i,0], ind[i,1]} represents
+        undirected edges. Negative indexes are ignored.
 
-    n : size
+    n : int
         Number of vertices.
 
     Returns:
     -------
 
-    d : ndarray, shape(n,)
+    deg : ndarray, shape(n,)
         An integer array of length n.
     """
-    cdef ssize_t m = I.shape[0], i
-    cdef np.ndarray[ssize_t] d = np.zeros(n, dtype=np.intp)
-    for i in range(m):
-        if I[i,0] < 0  or I[i,1] < 0:
+    cdef ssize_t num_edges = ind.shape[0], i
+    assert ind.shape[1] == 2
+    cdef np.ndarray[ssize_t] deg = np.zeros(n, dtype=np.intp)
+    for i in range(num_edges):
+        if ind[i,0] < 0  or ind[i,1] < 0:
             continue # represents a no-edge → ignore
-        if I[i,0] >= n or I[i,1] >= n:
+        if ind[i,0] >= n or ind[i,1] >= n:
             raise ValueError("Detected an element not in {0, ..., n-1}")
-        if I[i,0] == I[i,1]:
-            raise ValueError("Loops are not allowed")
+        if ind[i,0] == ind[i,1]:
+            raise ValueError("Self-loops are not allowed")
 
-        d[I[i,0]] += 1
-        d[I[i,1]] += 1
+        deg[ind[i,0]] += 1
+        deg[ind[i,1]] += 1
 
-    return d
+    return deg
 
 
 
@@ -402,10 +404,17 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
     cdef ssize_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
     cdef ssize_t noise_count
 
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[0]
+    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[1]
+    cdef np.ndarray[double] mst_d = mst[0]
     n = mst_i.shape[0]+1
     cdef np.ndarray[ssize_t] deg = get_graph_node_degrees(mst_i, n)
 
+    if not 1 <= n_clusters <= n:
+        raise ValueError("incorrect n_clusters")
+    if not n == mst_d.shape[0]:
+        raise ValueError("ill-defined MST")
+    if not 0 <= gini_threshold <= 1:
+        raise ValueError("incorrect gini_threshold")
 
     cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)
     cdef vector[ssize_t] denoise_index_rev = vector[ssize_t](n)

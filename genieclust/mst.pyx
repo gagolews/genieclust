@@ -50,7 +50,7 @@ cimport libc.math
 
 
 
-cpdef tuple mst_complete(double[:,::1] dist): # [:,::1]==c_contiguous
+cpdef tuple mst_from_complete(double[:,::1] dist): # [:,::1]==c_contiguous
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
@@ -86,29 +86,35 @@ cpdef tuple mst_complete(double[:,::1] dist): # [:,::1]==c_contiguous
     -------
 
     pair : tuple
-        A pair (indices_matrix, corresponding weights) giving
-        the n-1 MST edges.
-        The results are ordered w.r.t. increasing weights.
+        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
+          a) the (n-1)-ary array mst_dist is such that
+          mst_dist[i] gives the weight of the i-th edge;
+          b) mst_ind is a matrix with n-1 rows and 2 columns,
+          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+
+        The results are ordered w.r.t. nondecreasing weights.
         (and then the 1st, and the the 2nd index).
+        For each i, it holds mst[i,0]<mst[i,1].
     """
     if not dist.shape[0] == dist.shape[1]:
         raise ValueError("D must be a square matrix")
 
     cdef ssize_t n = dist.shape[0]
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
 
     cdef c_mst.CDistanceCompletePrecomputed dist_complete = \
         c_mst.CDistanceCompletePrecomputed(&dist[0,0], n)
 
-    c_mst.Cmst_complete(<c_mst.CDistance*>(&dist_complete), n, &mst_d[0], &mst_i[0,0])
+    c_mst.Cmst_from_complete(<c_mst.CDistance*>(&dist_complete),
+        n, &mst_dist[0], &mst_ind[0,0])
 
-    return mst_i, mst_d
+    return mst_dist, mst_ind
 
 
 
 cpdef tuple mst_from_distance(double[:,::1] X,
-        metric="euclidean", metric_params=None):
+       str metric="euclidean", metric_params=None):
     """
     A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
@@ -154,77 +160,96 @@ cpdef tuple mst_from_distance(double[:,::1] X,
     -------
 
     pair : tuple
-        A pair (indices_matrix, corresponding weights) giving
-        the n-1 MST edges.
-        The results are ordered w.r.t. increasing weights.
+        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
+          a) the (n-1)-ary array mst_dist is such that
+          mst_dist[i] gives the weight of the i-th edge;
+          b) mst_ind is a matrix with n-1 rows and 2 columns,
+          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+
+        The results are ordered w.r.t. nondecreasing weights.
         (and then the 1st, and the the 2nd index).
+        For each i, it holds mst[i,0]<mst[i,1].
     """
     cdef ssize_t n = X.shape[0]
     cdef ssize_t d = X.shape[1]
     cdef ssize_t i
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
     cdef double[::1] d_core
     cdef c_mst.CDistance* dist = NULL
     cdef c_mst.CDistance* dist2 = NULL
+    cdef dict metric_params_dict
 
-    if metric in ("euclidean", "l2"):
+    if metric == "euclidean" or metric == "l2":
         dist = <c_mst.CDistance*>new c_mst.CDistanceEuclidean(&X[0,0], n, d)
-    elif metric in ("manhattan", "cityblock", "l1"):
+    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         dist = <c_mst.CDistance*>new c_mst.CDistanceManhattan(&X[0,0], n, d)
-    elif metric in ("cosine",):
+    elif metric == "cosine":
         dist = <c_mst.CDistance*>new c_mst.CDistanceCosine(&X[0,0], n, d)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 
-    if metric_params is not None and "d_core" in metric_params:
-        d_core = metric_params["d_core"]
-        dist2 = dist # must be deleted separately
-        dist  = <c_mst.CDistance*>new c_mst.CDistanceMutualReachability(&d_core[0], n, dist2)
+    if metric_params is not None:
+        metric_params_dict = metric_params
+        if "d_core" in metric_params_dict:
+            d_core = metric_params_dict["d_core"]
+            dist2 = dist # must be deleted separately
+            dist  = <c_mst.CDistance*>new c_mst.CDistanceMutualReachability(&d_core[0], n, dist2)
 
-    c_mst.Cmst_complete(dist, n, &mst_d[0], &mst_i[0,0])
+    c_mst.Cmst_from_complete(dist, n, &mst_dist[0], &mst_ind[0,0])
 
     if dist:  del dist
     if dist2: del dist2
 
-    return mst_i, mst_d
+    return mst_dist, mst_ind
 
 
 
 
 
-cpdef tuple mst_nn(double[:,::1] dist, ssize_t[:,::1] ind, stop_disconnected=True):
+cpdef tuple mst_from_nn(double[:,::1] dist, ssize_t[:,::1] ind,
+        bint stop_disconnected=True):
     """
-    Computes a minimum spanning tree of a k-Nearest Neighbor Graph
+    Computes a minimum spanning tree(*) of a (<=k)-nearest neighbor graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
-    Note that in general, an MST of the k-Nearest Neighbor Graph
-    might not be the MST of the complete Pairwise Distances Graph.
+    Note that in general, the sum of weights in an MST of the (<=k)-nearest
+    neighbor graph might be greater than the sum of weights in a minimum
+    spanning tree of the complete pairwise distances graph.
 
-    In case of an unconnected graph, an exception is raised.
+    (*) or forest, if the input graph is unconnected. However,
+    if stop_disconnected is True, an exception is raised when there is
+    no tree spanning a given (<=k)-nn graph.
 
 
     Parameters:
     ----------
 
     dist : a c_contiguous ndarray, shape (n,k)
-        dist[i,:] is sorted increasingly for all i,
+        dist[i,:] is sorted nondecreasingly for all i,
         dist[i,j] gives the weight of the edge {i, ind[i,j]}
 
     ind : a c_contiguous ndarray, shape (n,k)
         edge definition, interpreted as {i, ind[i,j]}
 
     stop_disconnected : bool
-        raise exception if given graph is not connected
+        raise an exception if the input graph is not connected
 
 
     Returns:
     -------
 
     pair : tuple
-        A pair (indices_matrix, corresponding weights);
-        the results are ordered w.r.t. the weights
+        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
+          a) the (n-1)-ary array mst_dist is such that
+          mst_dist[i] gives the weight of the i-th edge;
+          b) mst_ind is a matrix with n-1 rows and 2 columns,
+          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+
+        The results are ordered w.r.t. nondecreasing weights.
         (and then the 1st, and the the 2nd index).
+        For each i, it holds mst[i,0]<mst[i,1].
+
         If stop_disconnected is False, then the weights of the
         last c-1 edges are set to infinity and the corresponding indices
         are set to -1, where c is the number of connected components
@@ -237,13 +262,13 @@ cpdef tuple mst_nn(double[:,::1] dist, ssize_t[:,::1] ind, stop_disconnected=Tru
     cdef ssize_t n = dist.shape[0]
     cdef ssize_t k = dist.shape[1]
 
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_d = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
 
-    cdef ssize_t n_edges = c_mst.Cmst_nn(&dist[0,0], &ind[0,0], n, k,
-             &mst_d[0], &mst_i[0,0])
+    cdef ssize_t n_edges = c_mst.Cmst_from_nn(&dist[0,0], &ind[0,0], n, k,
+             &mst_dist[0], &mst_ind[0,0])
 
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
 
-    return mst_i, mst_d
+    return mst_dist, mst_ind

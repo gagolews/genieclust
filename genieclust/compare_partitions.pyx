@@ -58,6 +58,7 @@ ctypedef fused intT:
     int
     long
     long long
+    ssize_t
 
 
 

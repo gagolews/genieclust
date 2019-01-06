@@ -48,6 +48,7 @@ ctypedef fused T:
     int
     long
     long long
+    ssize_t
     float
     double
 
@@ -85,7 +86,7 @@ cpdef np.ndarray[ssize_t] argsort(T[::1] x, bint stable=True):
 
 
 
-cpdef ssize_t argkmin(T[::1] x, ssize_t k):
+cpdef ssize_t argkmin(T[::1] x, int k):
     """
     Returns the index of the (k-1)-th smallest value in an array x,
     where argkmin(x, 0) == argmin(x), or, more generally,
