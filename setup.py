@@ -54,7 +54,14 @@ cmdclass["sdist"] = sdist
 ext_modules = [ ]
 
 
-ext_kwargs = dict(include_dirs=[np.get_include()], language="c++")
+print(build_ext)
+
+ext_kwargs = dict(
+    include_dirs=[np.get_include()],
+    language="c++",
+    extra_compile_args=['-fopenmp'],
+    extra_link_args=['-fopenmp']
+)
 ext_modules += [
     Extension("genieclust.internal",
                 ["genieclust/internal.pyx"],
