@@ -6,8 +6,7 @@
 # cython: language_level=3
 
 
-"""
-The Genie+ clustering algorithm (with extras)
+"""The Genie+ clustering algorithm (with extras)
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -53,23 +52,13 @@ from libcpp.vector cimport vector
 import numpy as np
 
 
-
-ctypedef fused intT:
-    int
-    long
-    long long
-
-ctypedef fused T:
-    int
-    long
-    long long
+ctypedef fused floatT:
     float
     double
 
-
 # type convention:
 # 1. cluster labels == int (int32, np.intc)
-# 2. points == double
+# 2. points == double/float
 # 3. indexes == ssize_t (Py_ssize_t, np.intp)
 # 4. integer params to cpdef functions -- int
 
@@ -79,9 +68,8 @@ ctypedef fused T:
 #############################################################################
 
 
-cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] dist, int M):
-    """
-    Given a pairwise distance matrix, computes the "core distance", i.e.,
+cpdef np.ndarray[floatT] core_distance(np.ndarray[floatT,ndim=2] dist, int M):
+    """Given a pairwise distance matrix, computes the "core distance", i.e.,
     the distance of each point to its M-th nearest neighbor.
     Note that M==1 always yields all the distances equal to 0.0.
     The core distances are needed when computing the mutual reachability
@@ -97,17 +85,16 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] dist, int M):
     `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
 
 
-    Parameters:
+    Parameters
     ----------
 
     dist : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
-
     M : int
         A smoothing factor >= 1.
 
 
-    Returns:
+    Returns
     -------
 
     d_core : ndarray, shape (n_samples,)
@@ -115,9 +102,10 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] dist, int M):
         neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
     """
     cdef ssize_t n = dist.shape[0], i, j
-    cdef double v
-    cdef np.ndarray[double] d_core = np.zeros(n, np.double)
-    cdef double[::1] row
+    cdef floatT v
+    cdef np.ndarray[floatT] d_core = np.zeros(n,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef floatT[::1] row
 
     if M < 1: raise ValueError("M < 1")
     if dist.shape[1] != n: raise ValueError("not a square matrix")
@@ -134,11 +122,10 @@ cpdef np.ndarray[double] core_distance(np.ndarray[double,ndim=2] dist, int M):
     return d_core
 
 
-cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
-        np.ndarray[double,ndim=2] dist,
-        np.ndarray[double] d_core):
-    """
-    Given a pairwise distance matrix,
+cpdef np.ndarray[floatT,ndim=2] mutual_reachability_distance(
+        np.ndarray[floatT,ndim=2] dist,
+        np.ndarray[floatT] d_core):
+    """Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. the given
     core distance vector, see genieclust.internal.core_distance().
 
@@ -152,27 +139,27 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
     `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
 
 
-    Parameters:
+    Parameters
     ----------
 
     dist : ndarray, shape (n_samples,n_samples)
         A pairwise n*n distance matrix.
-
     d_core : ndarray, shape (n_samples,)
         See genieclust.internal.core_distance().
 
 
-    Returns:
+    Returns
     -------
 
     R : ndarray, shape (n_samples,n_samples)
         A new distance matrix, giving the mutual reachability distance.
     """
     cdef ssize_t n = dist.shape[0], i, j
-    cdef double v
+    cdef floatT v
     if dist.shape[1] != n: raise ValueError("not a square matrix")
 
-    cdef np.ndarray[double,ndim=2] R = np.array(dist, dtype=np.double)
+    cdef np.ndarray[floatT,ndim=2] R = np.array(dist,
+        dtype=np.float32 if floatT is float else np.float64)
     for i in range(0, n-1):
         for j in range(i+1, n):
             v = dist[i, j]
@@ -189,37 +176,34 @@ cpdef np.ndarray[double,ndim=2] mutual_reachability_distance(
 #############################################################################
 
 cpdef np.ndarray[int] merge_boundary_points(
-            tuple mst,
-            np.ndarray[int] cl,
-            np.ndarray[ssize_t,ndim=2] nn_ind,
-            int M):
-    """
-    A noisy k-partition post-processing:
+        np.ndarray[floatT] mst_d,
+        np.ndarray[ssize_t,ndim=2] mst_i,
+        np.ndarray[int] cl,
+        np.ndarray[ssize_t,ndim=2] nn_i,
+        int M):
+    """A noisy k-partition post-processing:
     given a k-partition (with noise points included),
     merges all "boundary" noise points with their nearest
     "core" points.
 
 
-    Parameters:
+    Parameters
     ----------
 
-    mst : tuple
+    mst_d, mst_i : ndarray
         See genieclust.mst.mst_from_distance()
-
     cl : ndarray, shape (n_samples,)
         An integer vector c with c[i] denoting the cluster id
         (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
         Class -1 denotes the `noise' cluster.
-
-    nn_ind : ndarray, shape (n_samples,n_neighbors)
+    nn_i : ndarray, shape (n_samples,n_neighbors)
         nn_ind[i,:] gives the indexes of the i'th point's
         nearest neighbors.
-
     M : int
         smoothing factor, M>=2
 
 
-    Returns:
+    Returns
     -------
 
     c : ndarray, shape (n_samples,)
@@ -229,19 +213,18 @@ cpdef np.ndarray[int] merge_boundary_points(
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ssize_t n = cl2.shape[0], i, j
     cdef ssize_t j0, j1
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind = mst[1]
 
-    if not (mst_ind.shape[0] + 1) == n or not nn_ind.shape[0] == n:
+    if not (mst_i.shape[0] + 1) == n or not nn_i.shape[0] == n:
         raise ValueError("arrays' shapes do not match")
-    if M < 2 or M-2 >= nn_ind.shape[1]:
+    if M < 2 or M-2 >= nn_i.shape[1]:
         raise ValueError("incorrect M")
 
     for i in range(n-1):
-        assert cl2[mst_ind[i,0]] >= 0 or cl2[mst_ind[i,1]] >= 0
-        if cl2[mst_ind[i,0]] < 0:
-            j0, j1 = mst_ind[i,0],  mst_ind[i,1]
-        elif cl2[mst_ind[i,1]] < 0:
-            j0, j1 = mst_ind[i,1],  mst_ind[i,0]
+        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
+        if cl2[mst_i[i,0]] < 0:
+            j0, j1 = mst_i[i,0],  mst_i[i,1]
+        elif cl2[mst_i[i,1]] < 0:
+            j0, j1 = mst_i[i,1],  mst_i[i,0]
         else:
             continue
 
@@ -253,35 +236,34 @@ cpdef np.ndarray[int] merge_boundary_points(
 
         cl2[j0] = -1
         for j in range(M-1):
-            if nn_ind[j1,j] == j0:
+            if nn_i[j1,j] == j0:
                 cl2[j0] = cl2[j1]
 
     return cl2
 
 
 cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
-            tuple mst,
-            np.ndarray[int] cl):
-    """
-    A noisy k-partition post-processing:
+        np.ndarray[floatT] mst_d,
+        np.ndarray[ssize_t,ndim=2] mst_i,
+        np.ndarray[int] cl):
+    """A noisy k-partition post-processing:
     given a k-partition (with noise points included),
     merges all noise points with their nearest
     clusters.
 
 
-    Parameters:
+    Parameters
     ----------
 
-    mst : tuple
+    mst_d, mst_i : ndarray
         See genieclust.internal.MST_wrt_mutual_reachability_distance().
-
     cl : ndarray, shape (n_samples,)
         An integer vector c with c[i] denoting the cluster id
         (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
         Class -1 denotes the `noise' cluster.
 
 
-    Returns:
+    Returns
     -------
 
     c : ndarray, shape (n_samples,)
@@ -290,15 +272,14 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
     """
     cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
     cdef ssize_t n = cl2.shape[0], i
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind = mst[1]
-    assert (mst_ind.shape[0] + 1) == n
+    assert (mst_i.shape[0] + 1) == n
 
     for i in range(n-1):
-        assert cl2[mst_ind[i,0]] >= 0 or cl2[mst_ind[i,1]] >= 0
-        if cl2[mst_ind[i,0]] < 0:
-            cl2[mst_ind[i,0]] = cl2[mst_ind[i,1]]
-        elif cl2[mst_ind[i,1]] < 0:
-            cl2[mst_ind[i,1]] = cl2[mst_ind[i,0]]
+        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
+        if cl2[mst_i[i,0]] < 0:
+            cl2[mst_i[i,0]] = cl2[mst_i[i,1]]
+        elif cl2[mst_i[i,1]] < 0:
+            cl2[mst_i[i,1]] = cl2[mst_i[i,0]]
 
     return cl2
 
@@ -307,24 +288,25 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
 #############################################################################
 #############################################################################
 
-cpdef np.ndarray[ssize_t] get_graph_node_degrees(np.ndarray[ssize_t,ndim=2] ind, int n):
-    """
-    Given an adjacency list representing an undirected simple graph over
+cpdef np.ndarray[ssize_t] get_graph_node_degrees(
+        np.ndarray[ssize_t,ndim=2] ind,
+        int n):
+    """Given an adjacency list representing an undirected simple graph over
     vertex set {0,...,n-1}, return an array deg with deg[i] denoting
     the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
 
 
-    Parameters:
+    Parameters
     ----------
 
     ind : ndarray, shape (m,2)
         A 2-column matrix such that {ind[i,0], ind[i,1]} represents
         undirected edges. Negative indexes are ignored.
-
     n : int
         Number of vertices.
 
-    Returns:
+
+    Returns
     -------
 
     deg : ndarray, shape(n,)
@@ -353,12 +335,13 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(np.ndarray[ssize_t,ndim=2] ind,
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
-cpdef np.ndarray[int] genie_from_mst(tuple mst,
-                     ssize_t n_clusters=2,
-                     double gini_threshold=0.3,
-                     bint noise_leaves=False):
-    """
-    Compute a k-partition based on a precomputed MST.
+cpdef np.ndarray[int] genie_from_mst(
+        np.ndarray[floatT] mst_d,
+        np.ndarray[ssize_t,ndim=2] mst_i,
+        ssize_t n_clusters=2,
+        double gini_threshold=0.3,
+        bint noise_leaves=False):
+    """Compute a k-partition based on a precomputed MST.
 
     The Genie+ Clustering Algorithm (with extensions)
 
@@ -390,23 +373,21 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
     the MST is computed w.r.t. the mutual reachability distance).
 
 
-    Parameters:
+    Parameters
     ----------
 
-    mst : tuple
+    mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
-
     n_clusters : int, default=2
         Number of clusters the data is split into.
-
     gini_threshold : float, default=0.3
         The threshold for the Genie correction
-
     noise_leaves : bool
         Mark leaves as noise
 
-    Returns:
+
+    Returns
     -------
 
     labels_ : ndarray, shape (n,)
@@ -416,9 +397,6 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
     """
     cdef ssize_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
     cdef ssize_t noise_count
-
-    cdef np.ndarray[ssize_t,ndim=2] mst_i = mst[1]
-    cdef np.ndarray[double] mst_d = mst[0]
     n = mst_i.shape[0]+1
     cdef np.ndarray[ssize_t] deg = get_graph_node_degrees(mst_i, n)
 
@@ -426,7 +404,7 @@ cpdef np.ndarray[int] genie_from_mst(tuple mst,
         raise ValueError("incorrect n_clusters")
     if not n-1 == mst_d.shape[0]:
         raise ValueError("ill-defined MST")
-    if not 0 <= gini_threshold <= 1:
+    if not 0.0 <= gini_threshold <= 1.0:
         raise ValueError("incorrect gini_threshold")
 
     cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)

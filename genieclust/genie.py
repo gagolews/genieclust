@@ -1,5 +1,4 @@
-"""
-The Genie+ Clustering Algorithm
+"""The Genie+ Clustering Algorithm
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -31,19 +30,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 import numpy as np
-import scipy.spatial.distance
-import warnings
-from sklearn.base import BaseEstimator, ClusterMixin
-import math
 from . import internal
 from . import mst
+import scipy.spatial.distance
+from sklearn.base import BaseEstimator, ClusterMixin
 import sklearn.neighbors
+import warnings
+import math
+
+# @TODO: delme
+import time
+
+#
+try:
+    import faiss
+except ImportError:
+    pass
 
 
 
 class Genie(BaseEstimator, ClusterMixin):
-    """
-    The Genie+ Clustering Algorithm with optional smoothing and
+    """The Genie+ Clustering Algorithm with optional smoothing and
     noise point detection (for M>1)
 
     Based on: Gagolewski M., Bartoszuk M., Cena A.,
@@ -77,47 +84,41 @@ class Genie(BaseEstimator, ClusterMixin):
     `eps` parameter or the HDBSCAN Python package's `min_cluster_size` one.
 
 
-    Parameters:
+    Parameters
     ----------
 
     n_clusters : int, default=2
         Number of clusters to detect.
-
     gini_threshold : float in [0,1], default=0.3
         The threshold for the Genie correction, i.e.,
         the Gini index of the cluster size distribution.
         Threshold of 1.0 disables the correction.
         Low thresholds highly penalize the formation of small clusters.
-
     M : int, default=1
         Smoothing factor. M=1 gives the original Genie algorithm.
-
     n_neighbors : int, default=-1
         Number of nearest neighbors to compute for each data point.
         n_neighbors < 0 picks the default one, typically several dozen,
         but no less than M. Note that the algorithm's memory
         consumption is proportional to n_samples*n_neighbors.
-
     postprocess : str, one of "boundary" [default], "none", "all"
         Effective only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points. To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
-
     exact : bool, default=False
         If False, the minimum spanning tree shall be approximated
         based on the nearest neighbors graph. Finding nearest neighbors
         in low dimensional spaces is usually fast. Otherwise,
         the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of O(n_samples*n_samples*n_features).
-
     nn_params: dict, optional (default=None)
         Arguments to the sklearn.neighbors.NearestNeighbors class
         constructor, e.g., the metric to use (default='euclidean').
 
 
-    Attributes:
-    -----------
+    Attributes
+    ----------
 
     labels_ : ndarray, shape (n_samples,)
         Detected cluster labels for each point in the dataset given to fit():
@@ -152,28 +153,25 @@ class Genie(BaseEstimator, ClusterMixin):
 
 
     def fit(self, X, y=None, cache=False):
-        """
-        Perform clustering on X.
+        """Perform clustering on X.
         The resulting partition shall be given by self.labels_.
 
 
-        Parameters:
+        Parameters
         ----------
 
         X : ndarray, shape (n_samples, n_features)
             A matrix defining n_samples points in
             a n_features-dimensional vector space.
-
         y : None
             Ignored.
-
         cache : bool, default=True
             Store auxiliary results to speed up further calls
             to fit() on the same data matrix, but with different params.
 
 
-        Returns:
-        --------
+        Returns
+        -------
 
         self
         """
@@ -216,20 +214,45 @@ class Genie(BaseEstimator, ClusterMixin):
         if 0 <= cur_state["n_neighbors"] < max(1, cur_state["M"]-1):
             raise ValueError("n_neighbors should be >= M-1")
 
-        cur_state["exact"] = int(self.exact)
-
+        cur_state["exact"] = bool(self.exact)
 
 
         nn_dist       = None
         nn_ind        = None
         spanning_tree = None
         if not cur_state["exact"]:
-            raise NotImplementedError("not exact method not implemented yet")
-            # actual_n_neighbors = cur_state["n_neighbors"]
-            # if actual_n_neighbors < 0:
-            #     actual_n_neighbors = min(256, int(math.ceil(math.sqrt(n))))
-            #     actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-            #     actual_n_neighbors = min(n-1, actual_n_neighbors)
+            #raise NotImplementedError("approximate method not implemented yet")
+
+            actual_n_neighbors = cur_state["n_neighbors"]
+            if actual_n_neighbors < 0:
+                actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n))))
+                actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
+                actual_n_neighbors = min(n-1, actual_n_neighbors)
+
+            # t0 = time.time()
+            #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=actual_n_neighbors, **cur_state["nn_params"])
+            #nn_dist, nn_ind = nn.fit(X).kneighbors()
+            # print("T=%.3f" % (time.time()-t0), end="\t")
+
+            # FAISS - `euclidean` and `cosine` only!
+            X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
+            # center X + scale (NOT: standardize!)
+            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+
+            nn = faiss.IndexFlatL2(X.shape[1])
+            nn.add(X)
+            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
+            nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
+            # @TODO: check if nn_ind[i,0]==i
+            nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
+
+            if cur_state["M"] > 1:
+                # d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+                raise NotImplementedError("approximate method not implemented yet")
+
+            # t0 = time.time()
+            mst_dist, mst_ind = mst.mst_from_nn(nn_dist, nn_ind, stop_disconnected=True)
+            # print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]
             if cur_state["M"] == 1:
@@ -238,25 +261,34 @@ class Genie(BaseEstimator, ClusterMixin):
                 # 1. Use Prim's algorithm to determine the MST
                 #  w.r.t. the distances computed on the fly
 
-                spanning_tree = mst.mst_from_distance(X,
-                    metric=cur_state["metric"], metric_params=cur_state["metric_params"])
+                # t0 = time.time()
+                X = X.astype(np.float32, order="C", copy=False) # warning if sparse!!
+                # center X + scale (NOT: standardize!)
+                X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+
+                mst_dist, mst_ind = mst.mst_from_distance(X,
+                    metric=cur_state["metric"],
+                    metric_params=cur_state["metric_params"])
+                # print("T=%.3f" % (time.time()-t0), end="\t")
             else:
                 # Genie+HDBSCAN
 
                 # 1. Use sklearn to determine d_core distance
-                nn = sklearn.neighbors.NearestNeighbors(n_neighbors=cur_state["M"]-1, **cur_state["nn_params"])
+                nn = sklearn.neighbors.NearestNeighbors(
+                    n_neighbors=cur_state["M"]-1, **cur_state["nn_params"])
                 nn_dist, nn_ind = nn.fit(X).kneighbors()
-                d_core = nn_dist[:,cur_state["M"]-2].astype(np.double, order="C")
+                d_core = nn_dist[:,cur_state["M"]-2].astype(nn_dist.dtype, order="C")
 
                 # 2. Use Prim's algorithm to determine the MST
                 #  w.r.t. the distances computed on the fly
-                spanning_tree = mst.mst_from_distance(X,
+                mst_dist, mst_ind = mst.mst_from_distance(X,
                     metric=cur_state["metric"],
-                    metric_params=dict(**cur_state["metric_params"], d_core=d_core)
+                    metric_params=dict(**cur_state["metric_params"],
+                    d_core=d_core)
                 )
 
         # apply the Genie+ algorithm
-        labels = internal.genie_from_mst(spanning_tree,
+        labels = internal.genie_from_mst(mst_dist, mst_ind,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"]>1))
@@ -265,9 +297,9 @@ class Genie(BaseEstimator, ClusterMixin):
         if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
             pass
         elif cur_state["postprocess"] == "boundary":
-            labels = internal.merge_boundary_points(spanning_tree, labels, nn_ind, cur_state["M"])
+            labels = internal.merge_boundary_points(mst_dist, mst_ind, labels, nn_ind, cur_state["M"])
         elif cur_state["postprocess"] == "all":
-            labels = internal.merge_leaves_with_nearest_clusters(spanning_tree, labels)
+            labels = internal.merge_leaves_with_nearest_clusters(mst_dist, mst_ind, labels)
 
         self.labels_ = labels
 
@@ -286,26 +318,23 @@ class Genie(BaseEstimator, ClusterMixin):
 
     # not needed - inherited from ClusterMixin
     def fit_predict(self, X, y=None, cache=False):
-        """
-        Compute a k-partition and return the predicted labels,
+        """Compute a k-partition and return the predicted labels,
         see fit().
 
 
-        Parameters:
+        Parameters
         ----------
 
         X : ndarray
             see fit()
-
         y : None
             see fit()
-
         cache : bool
             see fit()
 
 
 
-        Returns:
+        Returns
         -------
 
         labels_ : ndarray, shape (n_samples,)

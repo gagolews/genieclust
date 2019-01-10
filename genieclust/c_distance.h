@@ -38,11 +38,20 @@
 #include <cmath>
 
 
-inline double square(double x) { return x*x; }
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+
+
+template<class T>
+inline T square(T x) { return x*x; }
 
 
 
 /*! Abstract base class for all distances */
+template<class T>
 struct CDistance {
     virtual ~CDistance() {}
 
@@ -55,7 +64,7 @@ struct CDistance {
      *         the user does not own ret;
      *         the function is not thread-safe
      */
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) = 0;
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) = 0;
 };
 
 
@@ -64,8 +73,9 @@ struct CDistance {
  *  to all n points based on a pre-computed n*n symmetric,
  *  complete pairwise matrix.
  */
-struct CDistanceCompletePrecomputed : public CDistance {
-    const double* dist;
+template<class T>
+struct CDistanceCompletePrecomputed : public CDistance<T> {
+    const T* dist;
     ssize_t n;
 
     /*!
@@ -73,7 +83,7 @@ struct CDistanceCompletePrecomputed : public CDistance {
      *    the i-th and the j-th point, the matrix is symmetric
      * @param n number of points
      */
-    CDistanceCompletePrecomputed(const double* dist, ssize_t n) {
+    CDistanceCompletePrecomputed(const T* dist, ssize_t n) {
         this->n = n;
         this->dist = dist;
     }
@@ -81,7 +91,7 @@ struct CDistanceCompletePrecomputed : public CDistance {
     CDistanceCompletePrecomputed()
         : CDistanceCompletePrecomputed(NULL, 0) { }
 
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
         return &this->dist[i*n]; // the i-th row of dist
     }
 };
@@ -93,58 +103,71 @@ struct CDistanceCompletePrecomputed : public CDistance {
 /*! A class to compute the Euclidean distances from the i-th point
  *  to all given k points.
  */
-struct CDistanceEuclidean : public CDistance  {
-    const double* X;
+template<class T>
+struct CDistanceEuclidean : public CDistance<T>  {
+    const T* X;
     ssize_t n;
     ssize_t d;
-    std::vector<double> buf;
-    // std::vector<double> sqnorm;
+    std::vector<T> buf;
+    // std::vector<T> sqnorm;
 
     /*!
      * @param X n*d c_contiguous array
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceEuclidean(const double* X, ssize_t n, ssize_t d)
+    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d)
             : buf(n)//, sqnorm(n)
     {
         this->n = n;
         this->d = d;
         this->X = X;
 
-        // ssize_t cur = 0;
-        // for (ssize_t i=0; i<n; ++i) {
-        //     sqnorm[i] = 0.0;
-        //     for (ssize_t u=0; u<d; ++u) {
-        //         sqnorm[i] += X[cur]*X[cur];
-        //         cur++;
-        //     }
-        // }
+//         T* __sqnorm = sqnorm.data();
+// #ifdef _OPENMP
+//         #pragma omp parallel for schedule(static)
+// #endif
+//         for (ssize_t i=0; i<n; ++i) {
+//             __sqnorm[i] = 0.0;
+//             for (ssize_t u=0; u<d; ++u) {
+//                 __sqnorm[i] += X[d*i+u]*X[d*i+u];
+//             }
+//         }
     }
 
     CDistanceEuclidean()
         : CDistanceEuclidean(NULL, 0, 0) { }
 
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        T* __buf = buf.data();
+        // T* __sqnorm = sqnorm.data();
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+#endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
             // if (w < 0 || w >= n)
             //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
-            buf[w] = 0.0;
+            __buf[w] = 0.0;
 
+            const T* x = X+d*i;
+            const T* y = X+d*w;
             for (ssize_t u=0; u<d; ++u) {
-                buf[w] += square(X[d*i+u]-X[d*w+u]);
+                __buf[w] += (*x-*y)*(*x-*y);
+                ++x; ++y;
             }
 
             // // did you know that (x-y)**2 = x**2 + y**2 - 2*x*y ?
+            // const T* x = X+d*i;
+            // const T* y = X+d*w;
             // for (ssize_t u=0; u<d; ++u) {
-            //     buf[w] -= X[d*i+u]*X[d*w+u];
+            //     __buf[w] -= (*(x++))*(*(y++));
             // }
-            // buf[w] = 2.0*buf[w]+sqnorm[i]+sqnorm[w];
+            // __buf[w] = 2.0*__buf[w]+__sqnorm[i]+__sqnorm[w];
 
-            buf[w] = sqrt(buf[w]);
+            __buf[w] = sqrt(__buf[w]);
         }
-        return buf.data();
+        return __buf;
     }
 };
 
@@ -153,18 +176,19 @@ struct CDistanceEuclidean : public CDistance  {
 /*! A class to compute the CDistanceManhattan distances from the i-th point
  *  to all given k points.
  */
-struct CDistanceManhattan : public CDistance  {
-    const double* X;
+template<class T>
+struct CDistanceManhattan : public CDistance<T>  {
+    const T* X;
     ssize_t n;
     ssize_t d;
-    std::vector<double> buf;
+    std::vector<T> buf;
 
     /*!
      * @param X n*d c_contiguous array
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceManhattan(const double* X, ssize_t n, ssize_t d)
+    CDistanceManhattan(const T* X, ssize_t n, ssize_t d)
             : buf(n)
     {
         this->n = n;
@@ -175,18 +199,22 @@ struct CDistanceManhattan : public CDistance  {
     CDistanceManhattan()
         : CDistanceManhattan(NULL, 0, 0) { }
 
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        T* __buf = buf.data();
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+#endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
             // if (w < 0 || w >= n)
             //     throw std::ruantime_error("ASSERT FAIL: CDistanceManhattan");
-            buf[w] = 0.0;
+            __buf[w] = 0.0;
 
             for (ssize_t u=0; u<d; ++u) {
-                buf[w] += fabs(X[d*i+u]-X[d*w+u]);
+                __buf[w] += fabs(X[d*i+u]-X[d*w+u]);
             }
         }
-        return buf.data();
+        return __buf;
     }
 };
 
@@ -195,54 +223,62 @@ struct CDistanceManhattan : public CDistance  {
 /*! A class to compute the cosine distances from the i-th point
  *  to all given k points.
  */
-struct CDistanceCosine : public CDistance  {
-    const double* X;
+template<class T>
+struct CDistanceCosine : public CDistance<T>  {
+    const T* X;
     ssize_t n;
     ssize_t d;
-    std::vector<double> buf;
-    std::vector<double> norm;
+    std::vector<T> buf;
+    std::vector<T> norm;
 
     /*!
      * @param X n*d c_contiguous array
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceCosine(const double* X, ssize_t n, ssize_t d)
+    CDistanceCosine(const T* X, ssize_t n, ssize_t d)
             : buf(n), norm(n)
     {
         this->n = n;
         this->d = d;
         this->X = X;
 
-        ssize_t cur = 0;
+        T* __norm = norm.data();
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+#endif
         for (ssize_t i=0; i<n; ++i) {
-            norm[i] = 0.0;
+            __norm[i] = 0.0;
             for (ssize_t u=0; u<d; ++u) {
-                norm[i] += X[cur]*X[cur];
-                cur++;
+                __norm[i] += X[d*i+u]*X[d*i+u];
             }
-            norm[i] = sqrt(norm[i]);
+            __norm[i] = sqrt(__norm[i]);
         }
     }
 
     CDistanceCosine()
         : CDistanceCosine(NULL, 0, 0) { }
 
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        T*  __buf = buf.data();
+        T* __norm = norm.data();
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+#endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
             // if (w < 0 || w >= n)
             //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
-            buf[w] = 0.0;
+            __buf[w] = 0.0;
 
             for (ssize_t u=0; u<d; ++u) {
-                buf[w] -= X[d*i+u]*X[d*w+u];
+                __buf[w] -= X[d*i+u]*X[d*w+u];
             }
-            buf[w] /= norm[i];
-            buf[w] /= norm[w];
-            buf[w] += 1.0;
+            __buf[w] /= __norm[i];
+            __buf[w] /= __norm[w];
+            __buf[w] += 1.0;
         }
-        return buf.data();
+        return __buf;
     }
 };
 
@@ -259,15 +295,16 @@ struct CDistanceCosine : public CDistance  {
  *  estimates for data clustering, visualization, and outlier detection,
  *  ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
  *  doi: 10.1145/2733381.
-*
+ *
  */
-struct CDistanceMutualReachability : public CDistance  {
-    const double* d_core;
+template<class T>
+struct CDistanceMutualReachability : public CDistance<T>  {
+    const T* d_core;
     ssize_t n;
-    CDistance* d_pairwise;
-    std::vector<double> buf;
+    CDistance<T>* d_pairwise;
+    std::vector<T> buf;
 
-    CDistanceMutualReachability(const double* d_core, ssize_t n, CDistance* d_pairwise)
+    CDistanceMutualReachability(const T* d_core, ssize_t n, CDistance<T>* d_pairwise)
             : buf(n) {
         this->d_core = d_core;
         this->n = n;
@@ -276,8 +313,8 @@ struct CDistanceMutualReachability : public CDistance  {
 
     CDistanceMutualReachability() : CDistanceMutualReachability(NULL, 0, NULL) { }
 
-    virtual const double* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
-        const double* d = (*d_pairwise)(i, M, k);
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        const T* d = (*d_pairwise)(i, M, k);
         for (ssize_t j=0; j<k; ++j)  {
             // buf[w] = max{d[w],d_core[i],d_core[w]}
             ssize_t w = M[j];

@@ -6,10 +6,9 @@
 # cython: language_level=3
 
 
-"""
-Minimum Spanning Tree Algorithms:
-a. Prim-Jarník's for Complete Undirected Graphs,
-b. Kruskal's for k-NN graphs.
+"""Minimum Spanning Tree Algorithms:
+(a) Prim-Jarník's for Complete Undirected Graphs,
+(b) Kruskal's for k-NN graphs.
 
 Copyright (C) 2018-2019 Marek.Gagolewski.com
 All rights reserved.
@@ -41,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
+
 cimport cython
 cimport numpy as np
 from . cimport c_mst
@@ -48,11 +48,13 @@ import numpy as np
 cimport libc.math
 
 
+ctypedef fused floatT:
+    float
+    double
 
 
-cpdef tuple mst_from_complete(double[:,::1] dist): # [:,::1]==c_contiguous
-    """
-    A Jarník (Prim/Dijkstra)-like algorithm for determining
+cpdef tuple mst_from_complete(floatT[:,::1] dist): # [:,::1]==c_contiguous
+    """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
     with weights given by a symmetric n*n matrix.
 
@@ -62,27 +64,27 @@ cpdef tuple mst_from_complete(double[:,::1] dist): # [:,::1]==c_contiguous
     References:
     ----------
 
-    M. Gagolewski, M. Bartoszuk, A. Cena,
+    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363 (2016) 8–23.
 
-    V. Jarník, O jistém problému minimálním,
+    [2] V. Jarník, O jistém problému minimálním,
     Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    C.F. Olson, Parallel algorithms for hierarchical clustering,
+    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
     Parallel Comput. 21 (1995) 1313–1325.
 
-    R. Prim, Shortest connection networks and some generalizations,
+    [4] R. Prim, Shortest connection networks and some generalizations,
     Bell Syst. Tech. J. 36 (1957) 1389–1401.
 
 
-    Parameters:
+    Parameters
     ----------
 
     dist : c_contiguous ndarray, shape (n,n)
 
 
-    Returns:
+    Returns
     -------
 
     pair : tuple
@@ -101,62 +103,61 @@ cpdef tuple mst_from_complete(double[:,::1] dist): # [:,::1]==c_contiguous
 
     cdef ssize_t n = dist.shape[0]
     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
 
-    cdef c_mst.CDistanceCompletePrecomputed dist_complete = \
-        c_mst.CDistanceCompletePrecomputed(&dist[0,0], n)
+    cdef c_mst.CDistanceCompletePrecomputed[floatT] dist_complete = \
+        c_mst.CDistanceCompletePrecomputed[floatT](&dist[0,0], n)
 
-    c_mst.Cmst_from_complete(<c_mst.CDistance*>(&dist_complete),
+    c_mst.Cmst_from_complete(<c_mst.CDistance[floatT]*>(&dist_complete),
         n, &mst_dist[0], &mst_ind[0,0])
 
     return mst_dist, mst_ind
 
 
 
-cpdef tuple mst_from_distance(double[:,::1] X,
+
+cpdef tuple mst_from_distance(floatT[:,::1] X,
        str metric="euclidean", metric_params=None):
-    """
-    A Jarník (Prim/Dijkstra)-like algorithm for determining
+    """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
     Memory use: O(n).
 
 
-    References:
+    References
     ----------
 
-    M. Gagolewski, M. Bartoszuk, A. Cena,
+    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363 (2016) 8–23.
 
-    V. Jarník, O jistém problému minimálním,
+    [2] V. Jarník, O jistém problému minimálním,
     Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    C.F. Olson, Parallel algorithms for hierarchical clustering,
+    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
     Parallel Comput. 21 (1995) 1313–1325.
 
-    R. Prim, Shortest connection networks and some generalizations,
+    [4] R. Prim, Shortest connection networks and some generalizations,
     Bell Syst. Tech. J. 36 (1957) 1389–1401.
 
 
-    Parameters:
+    Parameters
     ----------
 
     X : c_contiguous ndarray, shape (n,d)
         n data points in a feature space of dimensionality d.
-
     metric : string
         one of `"euclidean"` (a.k.a. `"l2"`),
         `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
         `"cosine"`.
         More metrics/distances might be supported in future versions.
-
     metric_params : dict, optional (default=None)
         Additional keyword arguments for the metric function, including:
         * `d_core` - core distances for computing the mutual reachability distance
 
 
-    Returns:
+    Returns
     -------
 
     pair : tuple
@@ -174,18 +175,19 @@ cpdef tuple mst_from_distance(double[:,::1] X,
     cdef ssize_t d = X.shape[1]
     cdef ssize_t i
     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
-    cdef double[::1] d_core
-    cdef c_mst.CDistance* dist = NULL
-    cdef c_mst.CDistance* dist2 = NULL
+    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef floatT[::1] d_core
+    cdef c_mst.CDistance[floatT]* dist = NULL
+    cdef c_mst.CDistance[floatT]* dist2 = NULL
     cdef dict metric_params_dict
 
     if metric == "euclidean" or metric == "l2":
-        dist = <c_mst.CDistance*>new c_mst.CDistanceEuclidean(&X[0,0], n, d)
+        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        dist = <c_mst.CDistance*>new c_mst.CDistanceManhattan(&X[0,0], n, d)
+        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine":
-        dist = <c_mst.CDistance*>new c_mst.CDistanceCosine(&X[0,0], n, d)
+        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 
@@ -194,7 +196,7 @@ cpdef tuple mst_from_distance(double[:,::1] X,
         if "d_core" in metric_params_dict:
             d_core = metric_params_dict["d_core"]
             dist2 = dist # must be deleted separately
-            dist  = <c_mst.CDistance*>new c_mst.CDistanceMutualReachability(&d_core[0], n, dist2)
+            dist  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, dist2)
 
     c_mst.Cmst_from_complete(dist, n, &mst_dist[0], &mst_ind[0,0])
 
@@ -207,10 +209,9 @@ cpdef tuple mst_from_distance(double[:,::1] X,
 
 
 
-cpdef tuple mst_from_nn(double[:,::1] dist, ssize_t[:,::1] ind,
+cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         bint stop_disconnected=True):
-    """
-    Computes a minimum spanning tree(*) of a (<=k)-nearest neighbor graph
+    """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbor graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
     Note that in general, the sum of weights in an MST of the (<=k)-nearest
@@ -222,16 +223,14 @@ cpdef tuple mst_from_nn(double[:,::1] dist, ssize_t[:,::1] ind,
     no tree spanning a given (<=k)-nn graph.
 
 
-    Parameters:
+    Parameters
     ----------
 
     dist : a c_contiguous ndarray, shape (n,k)
         dist[i,:] is sorted nondecreasingly for all i,
         dist[i,j] gives the weight of the edge {i, ind[i,j]}
-
     ind : a c_contiguous ndarray, shape (n,k)
         edge definition, interpreted as {i, ind[i,j]}
-
     stop_disconnected : bool
         raise an exception if the input graph is not connected
 
@@ -247,8 +246,8 @@ cpdef tuple mst_from_nn(double[:,::1] dist, ssize_t[:,::1] ind,
           where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
 
         The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
-        For each i, it holds mst[i,0]<mst[i,1].
+          (and then the 1st, and the the 2nd index).
+          For each i, it holds mst[i,0]<mst[i,1].
 
         If stop_disconnected is False, then the weights of the
         last c-1 edges are set to infinity and the corresponding indices
@@ -263,12 +262,17 @@ cpdef tuple mst_from_nn(double[:,::1] dist, ssize_t[:,::1] ind,
     cdef ssize_t k = dist.shape[1]
 
     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[double]         mst_dist = np.empty(n-1, dtype=np.double)
+    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+
+    cdef int maybe_inexact
 
     cdef ssize_t n_edges = c_mst.Cmst_from_nn(&dist[0,0], &ind[0,0], n, k,
-             &mst_dist[0], &mst_ind[0,0])
+             &mst_dist[0], &mst_ind[0,0], &maybe_inexact)
 
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
+
+    # @TODO use maybe_inexact ...
 
     return mst_dist, mst_ind

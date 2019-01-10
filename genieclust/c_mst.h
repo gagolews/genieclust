@@ -40,29 +40,32 @@
 #include <algorithm>
 #include <stdexcept>
 #include <limits>
+#include <queue>
+#include <deque>
 #include <cmath>
 #include "c_argfuns.h"
 #include "c_disjoint_sets.h"
 #include "c_distance.h"
 
 
-#define DOUBLE_INFTY (std::numeric_limits<double>::infinity())
+#define INFTY (std::numeric_limits<float>::infinity())
 
 
 
 /*! Represents an undirected edge in a weighted graph.
- *  Main purpose: a comparer used to sort MST edges w.r.t. increasing weights
+ *  Main purpose: a comparer used to sort MST edges w.r.t. decreasing weights
  */
+template <class T>
 struct CMstTriple {
     ssize_t i1; //!< first  vertex defining an edge
     ssize_t i2; //!< second vertex defining an edge
-    double d;   //!< edge weight
+    T d;        //!< edge weight
 
     CMstTriple() {}
 
-    CMstTriple(ssize_t i1, ssize_t i2, double d) {
+    CMstTriple(ssize_t i1, ssize_t i2, T d, bool order) {
         this->d = d;
-        if (i1 < i2) {
+        if (!order || (i1 < i2)) {
             this->i1 = i1;
             this->i2 = i2;
         }
@@ -72,15 +75,15 @@ struct CMstTriple {
         }
     }
 
-    bool operator<(const CMstTriple& other) const {
+    bool operator<(const CMstTriple<T>& other) const {
         if (d == other.d) {
             if (i1 == other.i1)
-                return i2 < other.i2;
+                return i2 > other.i2;
             else
-                return i1 < other.i1;
+                return i1 > other.i1;
         }
         else
-            return d < other.d;
+            return d > other.d;
     }
 };
 
@@ -109,41 +112,69 @@ struct CMstTriple {
  *
  * @return number of edges in the minimal spanning forest
  */
-ssize_t Cmst_from_nn(const double* dist, const ssize_t* ind,
+template <class T>
+ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
     ssize_t n, ssize_t k,
-    double* mst_dist, ssize_t* mst_ind)
+    T* mst_dist, ssize_t* mst_ind, int* maybe_inexact)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     ssize_t nk = n*k;
 
     // determine the ordering permutation of dist
+    // we're using O(nk) memory anyway
     std::vector<ssize_t> arg_dist(nk);
     Cargsort(arg_dist.data(), dist, nk, true); // stable sort
+    std::vector<ssize_t> nn_used(n, 0);
+
+    // slower than arg_dist:
+    // std::priority_queue< CMstTriple<T>, std::deque< CMstTriple<T> > > pq;
+    // for (ssize_t i=0; i<n; ++i) {
+    //     pq.push(CMstTriple<T>(i, ind[k*i+0], dist[k*i+0], false));
+    // }
+    // std::vector<ssize_t> nn_used(n, 1);
+
+
+
 
     ssize_t arg_dist_cur = 0;
     ssize_t mst_edge_cur = 0;
-    std::vector<ssize_t> nn_used(n, 0);
+    *maybe_inexact = 0;
     CDisjointSets ds(n);
     while (mst_edge_cur < n-1) {
-        if (arg_dist_cur >= nk) {
+        if (arg_dist_cur == nk /*pq.empty()*/) {
+            // The input graph is not connected
             ssize_t ret = mst_edge_cur;
             while (mst_edge_cur < n-1) {
                 mst_ind[2*mst_edge_cur+0] = -1;
                 mst_ind[2*mst_edge_cur+1] = -1;
-                mst_dist[mst_edge_cur]    = DOUBLE_INFTY;
+                mst_dist[mst_edge_cur]    = INFTY;
                 mst_edge_cur++;
             }
             return ret;
         }
 
+        //ssize_t u = pq.top().i1;
+        //ssize_t v = pq.top().i2;
+        //T d = pq.top().d;
+
         ssize_t u = arg_dist[arg_dist_cur]/k; // u is the asg_dist_cur-th edge
         if (nn_used[u] >= k || u < 0 || u >= n)
-            throw std::logic_error("ASSERT FAIL in Cmst_nn");
+            throw std::logic_error("ASSERT FAIL in Cmst_from_nn");
         ssize_t v = ind[k*u+nn_used[u]];      // v is its nn_used[u]-th NN
-        double d = dist[k*u+nn_used[u]];
-        nn_used[u]++;                         // mark u's NN as used
+        T d = dist[k*u+nn_used[u]];
         arg_dist_cur++;
+
+        //pq.pop();
+
+        //if (nn_used[u] < k) {
+        //    pq.push(CMstTriple<T>(u, ind[k*u+nn_used[u]], dist[k*u+nn_used[u]], false));
+        //    nn_used[u]++;                         // mark u's NN as used
+        //}
+        //else
+        //    *maybe_inexact = 1; // we've run out of elems
+        nn_used[u]++;
+        if (nn_used[u] == k) *maybe_inexact = 1;
 
         if (ds.find(u) == ds.find(v))
             continue;
@@ -152,6 +183,9 @@ ssize_t Cmst_from_nn(const double* dist, const ssize_t* ind,
         mst_ind[2*mst_edge_cur+0] = u;
         mst_ind[2*mst_edge_cur+1] = v;
         mst_dist[mst_edge_cur]    = d;
+
+        if (mst_edge_cur > 0 && mst_dist[mst_edge_cur] < mst_dist[mst_edge_cur-1])
+            throw std::logic_error("ASSERT FAIL in Cmst_from_nn");
 
         ds.merge(u, v);
         mst_edge_cur++;
@@ -191,7 +225,7 @@ ssize_t Cmst_from_nn(const double* dist, const ssize_t* ind,
  *
  *
  * @param dist a callable CDistance object such that a call to
- *        <double*>dist(j, <ssize_t*>M, ssize_t k) returns an n-ary array
+ *        <T*>dist(j, <ssize_t*>M, ssize_t k) returns an n-ary array
  *        with the distances from the j-th point to k points whose indices
  *        are given in array M
  * @param n number of points
@@ -201,13 +235,14 @@ ssize_t Cmst_from_nn(const double* dist, const ssize_t* ind,
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
  */
-void Cmst_from_complete(CDistance* dist, ssize_t n,
-    double* mst_dist, ssize_t* mst_ind)
+template <class T>
+void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
+    T* mst_dist, ssize_t* mst_ind)
 {
-    std::vector<double>  Dnn(n, DOUBLE_INFTY);
+    std::vector<T>  Dnn(n, INFTY);
     std::vector<ssize_t> Fnn(n);
     std::vector<ssize_t> M(n);
-    std::vector<CMstTriple> res(n-1);
+    std::vector< CMstTriple<T> > res(n-1);
 
     for (ssize_t i=0; i<n; ++i) M[i] = i;
 
@@ -217,18 +252,19 @@ void Cmst_from_complete(CDistance* dist, ssize_t n,
 
         // compute the distances from lastj (on the fly)
         // dist_from_lastj[j] == d(lastj, j)
-        const double* dist_from_lastj = (*dist)(lastj, M.data()+1, n-i-1);
+        const T* dist_from_lastj = (*dist)(lastj, M.data()+1, n-i-1);
 
         bestjpos = bestj = 0;
         for (ssize_t j=1; j<n-i; ++j) {
-            // double curdist = dist[n*lastj+M[j]]; // d(lastj, M[j])
-            double curdist = dist_from_lastj[M[j]];
-            if (curdist < Dnn[M[j]]) {
-                Dnn[M[j]] = curdist;
-                Fnn[M[j]] = lastj;
+            // T curdist = dist[n*lastj+M_j]; // d(lastj, M_j)
+            ssize_t M_j = M[j];
+            T curdist = dist_from_lastj[M_j];
+            if (curdist < Dnn[M_j]) {
+                Dnn[M_j] = curdist;
+                Fnn[M_j] = lastj;
             }
-            if (Dnn[M[j]] < Dnn[bestj]) {        // D[0] == INFTY
-                bestj = M[j];
+            if (Dnn[M_j] < Dnn[bestj]) {        // D[0] == INFTY
+                bestj = M_j;
                 bestjpos = j;
             }
         }
@@ -237,15 +273,15 @@ void Cmst_from_complete(CDistance* dist, ssize_t n,
         lastj = bestj;          // next time, start from bestj
 
         // and an edge to MST: (smaller index first)
-        res[i] = CMstTriple(Fnn[bestj], bestj, Dnn[bestj]);
+        res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);
     }
 
     std::sort(res.begin(), res.end());
 
     for (ssize_t i=0; i<n-1; ++i) {
-        mst_dist[i]    = res[i].d;
-        mst_ind[2*i+0] = res[i].i1; // i1 < i2
-        mst_ind[2*i+1] = res[i].i2;
+        mst_dist[i]    = res[n-i-2].d;
+        mst_ind[2*i+0] = res[n-i-2].i1; // i1 < i2
+        mst_ind[2*i+1] = res[n-i-2].i2;
     }
 }
 

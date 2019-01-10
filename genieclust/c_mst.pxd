@@ -42,32 +42,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cdef extern from "c_mst.h":
 
-    cdef cppclass CDistance:
+    cdef cppclass CDistance[T]:
         pass
 
-    cdef cppclass CDistanceMutualReachability: # inherits from CDistance
+    cdef cppclass CDistanceMutualReachability[T]: # inherits from CDistance
         CDistanceMutualReachability()
-        CDistanceMutualReachability(const double* d_core, ssize_t n, CDistance* d_pairwise)
+        CDistanceMutualReachability(const T* d_core, ssize_t n, CDistance[T]* d_pairwise)
 
-    cdef cppclass CDistanceEuclidean: # inherits from CDistance
+    cdef cppclass CDistanceEuclidean[T]: # inherits from CDistance
         CDistanceEuclidean()
-        CDistanceEuclidean(double* X, ssize_t n, ssize_t d)
+        CDistanceEuclidean(T* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceManhattan: # inherits from CDistance
+    cdef cppclass CDistanceManhattan[T]: # inherits from CDistance
         CDistanceManhattan()
-        CDistanceManhattan(double* X, ssize_t n, ssize_t d)
+        CDistanceManhattan(T* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceCosine: # inherits from CDistance
+    cdef cppclass CDistanceCosine[T]: # inherits from CDistance
         CDistanceCosine()
-        CDistanceCosine(double* X, ssize_t n, ssize_t d)
+        CDistanceCosine(T* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceCompletePrecomputed: # inherits from CDistance
+    cdef cppclass CDistanceCompletePrecomputed[T]: # inherits from CDistance
         CDistanceCompletePrecomputed()
-        CDistanceCompletePrecomputed(double* d, ssize_t n)
+        CDistanceCompletePrecomputed(T* d, ssize_t n)
 
 
-    ssize_t Cmst_from_nn(double* dist, ssize_t* ind, ssize_t n, ssize_t k,
-             double* mst_dist, ssize_t* mst_ind)
+    ssize_t Cmst_from_nn[T](T* dist, ssize_t* ind, ssize_t n, ssize_t k,
+             T* mst_dist, ssize_t* mst_ind, int* maybe_inexact)
 
-    void Cmst_from_complete(CDistance* dist, ssize_t n,
-             double* mst_dist, ssize_t* mst_ind)
+    void Cmst_from_complete[T](CDistance[T]* dist, ssize_t n,
+             T* mst_dist, ssize_t* mst_ind)

@@ -49,6 +49,8 @@
   b) genieclust can be easily made available in other
   environments in the future.
 
+  * [INTERNAL] Use OpenMP for distance computations.
+
   * [BUGFIX] Internal function MST_pair() did not return all weights
   of the MST edges.
 
