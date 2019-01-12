@@ -384,7 +384,8 @@ cpdef np.ndarray[int] genie_from_mst(
     gini_threshold : float, default=0.3
         The threshold for the Genie correction
     noise_leaves : bool
-        Mark leaves as noise
+        Mark leaves as noise;
+        Prevents forming singleton-clusters.
 
 
     Returns
@@ -410,8 +411,13 @@ cpdef np.ndarray[int] genie_from_mst(
     cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)
     cdef vector[ssize_t] denoise_index_rev = vector[ssize_t](n)
 
+    for i in range(1, n-1):
+        if not mst_d[i] >= mst_d[i-1]:
+            raise ValueError("mst_d unsorted")
+
 
     # Create the non-noise points' translation table (for GiniDisjointSets)
+    # Also count the number of noise points
     noise_count = 0
     if noise_leaves:
         j = 0
@@ -440,6 +446,7 @@ cpdef np.ndarray[int] genie_from_mst(
     cdef vector[ssize_t] next_edge = vector[ssize_t](n)
     cdef vector[ssize_t] prev_edge = vector[ssize_t](n)
     if noise_leaves:
+        # start with a list that skips all edges that lead to noise points
         curidx = -1
         lastidx = -1
         for i in range(n-1):
@@ -457,11 +464,13 @@ cpdef np.ndarray[int] genie_from_mst(
         next_edge[lastidx] = n-1
         lastidx = curidx # first non-leaf
     else:
+        # no noise leaves
         curidx  = 0
         lastidx = 0
         for i in range(n-1):
             next_edge[i] = i+1
             prev_edge[i] = i-1
+
 
     cdef c_gini_disjoint_sets.CGiniDisjointSets ds = \
         c_gini_disjoint_sets.CGiniDisjointSets(n-noise_count)
