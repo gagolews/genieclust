@@ -355,8 +355,6 @@ cpdef np.ndarray[int] genie_from_mst(
     if the Genie algorithm is applied on the MST with respect to
     the HDBSCAN-like mutual reachability distance.
 
-    The MST may, for example, be determined as follows:
-
 
     If gini_threshold==1.0 and noise_leaves==False, then basically this
     is the single linkage algorithm. Set gini_threshold==1.0 and
@@ -400,5 +398,64 @@ cpdef np.ndarray[int] genie_from_mst(
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
     g.apply_genie(n_clusters, gini_threshold, &res[0])
+
+    return res
+
+
+#############################################################################
+# The Genie+Cena (GC) Clustering Algorithm (experimental, under construction)
+#############################################################################
+
+cpdef np.ndarray[int] genie_cena_from_mst(
+        floatT[::1] mst_d,
+        ssize_t[:,::1] mst_i,
+        ssize_t n_clusters=2,
+        double[::1] gini_thresholds=None,
+        bint noise_leaves=False):
+    """Compute a k-partition based on a precomputed MST.
+
+    The Genie+Cena Clustering Algorithm (experimental edition)
+
+    @TODO: add reference
+
+    @TODO: describe
+
+    Parameters
+    ----------
+
+    mst_d, mst_i : ndarray
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        see genieclust.mst.
+    n_clusters : int, default=2
+        Number of clusters the data is split into.
+    gini_thresholds : ndarray or None for the default
+        @TODO: describe
+    noise_leaves : bool
+        Mark leaves as noise;
+        Prevents forming singleton-clusters.
+
+
+    Returns
+    -------
+
+    labels_ : ndarray, shape (n,)
+        Predicted labels, representing a partition of X.
+        labels_[i] gives the cluster id of the i-th input point.
+        If noise_leaves==True, then label -1 denotes a noise point.
+    """
+    cdef ssize_t n = mst_i.shape[0]+1
+
+    if not 1 <= n_clusters <= n:
+        raise ValueError("incorrect n_clusters")
+    if not n-1 == mst_d.shape[0]:
+        raise ValueError("ill-defined MST")
+
+    if gini_thresholds is None:
+        gini_thresholds = np.r_[0.3, 0.5, 0.7]
+
+    cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
+    cdef c_genie.CGenie[floatT] g
+    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+    g.apply_cena(n_clusters, &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
 
     return res

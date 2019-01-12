@@ -11,8 +11,6 @@
   https://github.com/nmslib/hnswlib ;
   some will also enable sparse input data (e.g., for text mining applications)
 
-  * Rewrite `genie_from_mst` in C++.
-
   * Add support for other `scipy.spatial` distances when computing
   an exact MST, in particular, the weighted Euclidean metric.
 
@@ -36,8 +34,8 @@
   * The full distance matrix is not required now for computing an exact MST -
   the distances are computed on the fly; this is currently supported
   for `"euclidean"`, `"cityblock"`, and `"cosine"` distances.
-  This saves a lot of memory ($O(n)$ instead of $O(n^2)$) and so genieclust
-  can solve much larger problems now.
+  The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$)
+  and so genieclust can solve much larger problems now.
 
   * `sklearn.neighbors.NearestNeighbors`, `faiss`, or other search data
   structures are used to determine few first NNs when computing the mutual

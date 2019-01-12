@@ -59,8 +59,9 @@ print(build_ext)
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
-    extra_compile_args=['-fopenmp'],
-    extra_link_args=['-fopenmp']
+    # For Microsoft Visual C++ compiler, use '/openmp' instead of '-fopenmp'
+    extra_compile_args=['-fopenmp'], # @TODO this is not platform-agnostic
+    extra_link_args=['-fopenmp']     # @TODO this is not platform-agnostic
 )
 ext_modules += [
     Extension("genieclust.internal",

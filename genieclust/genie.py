@@ -243,7 +243,7 @@ class Genie(BaseEstimator, ClusterMixin):
             nn.add(X)
             nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
             nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
-            # @TODO: check if nn_ind[i,0]==i
+            assert np.all(nn_ind[:,0]==np.arange(n))
             nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
 
             if cur_state["M"] > 1:

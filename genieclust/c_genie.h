@@ -37,7 +37,9 @@
 #include <stdexcept>
 #include <algorithm>
 #include <vector>
+#include <deque>
 #include "c_gini_disjoint_sets.h"
+#include <cassert>
 
 
 /*! Compute the degree of each vertex in an undirected graph
@@ -195,7 +197,7 @@ protected:
                 i1 = mst_i[2*lastidx+0];
                 i2 = mst_i[2*lastidx+1];
 
-                //assert lastidx >= curidx
+                assert(lastidx >= curidx);
                 if (lastidx == curidx) {
                     curidx = next_edge[curidx];
                     lastidx = curidx;
@@ -204,9 +206,9 @@ protected:
                     ssize_t previdx;
                     previdx = prev_edge[lastidx];
                     lastidx = next_edge[lastidx];
-                    //assert 0 <= previdx
-                    //assert previdx < lastidx
-                    //assert lastidx < n
+                    assert(0 <= previdx);
+                    assert(previdx < lastidx);
+                    assert(lastidx < n);
                     next_edge[previdx] = lastidx;
                     prev_edge[lastidx] = previdx;
                 }
@@ -305,9 +307,85 @@ public:
      * @param gini_threshold the Gini index threshold
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_genie(ssize_t n_clusters, double gini_threshold, int* res) {
+    void apply_genie(ssize_t n_clusters, double gini_threshold, int* res)
+    {
         skiplist_init();
         do_genie(n_clusters, gini_threshold);
+        get_labels(res);
+    }
+
+
+    /*! Run the GC (Genie+Cena) algorithm
+     *
+     * @param n_clusters number of clusters to find
+     * @param gini_thresholds array of size n_thresholds
+     * @param n_thresholds size of gini_thresholds
+     * @param res [out] array of length n, will give cluster labels
+     */
+    void apply_cena(ssize_t n_clusters, double* gini_thresholds,
+                    ssize_t n_thresholds, int* res)
+    {
+
+        // we need to run the Genie+ algorithm with different Gini index
+        // thresholds and determine the intersection of all the resulting
+        // partitions; for this, we need the union of the set of MST edges that
+        // were left "unmerged"
+        std::vector<ssize_t> unused_edges;
+        for (ssize_t i=0; i<n_thresholds; ++i) {
+            double gini_threshold = gini_thresholds[i];
+            skiplist_init();
+            do_genie(n_clusters, gini_threshold);
+
+            // start where do_genie finished
+            ssize_t curidx2 = curidx;
+            while (curidx2 < n-1) {
+                unused_edges.push_back(curidx2);
+                curidx2 = next_edge[curidx2];
+            }
+        }
+
+        // let unused_edges = sort(unique(unused_edges))
+        unused_edges.push_back(n-1); // sentinel
+        std::sort(unused_edges.begin(), unused_edges.end());
+        // sorted, but some might not be unique, so let's remove dups
+        ssize_t k = 0;
+        for (ssize_t i=1; i<(ssize_t)unused_edges.size(); ++i) {
+            if (unused_edges[i] != unused_edges[k]) {
+                k++;
+                unused_edges[k] = unused_edges[i];
+            }
+        }
+        unused_edges.resize(k+1);
+
+
+        // note that unused_edges do not include noise edges
+
+        // first generate ds representing the intersection of the partitions
+        ds = CGiniDisjointSets(n-noise_count);
+        ssize_t cur_unused_edges = 0;
+        for (ssize_t i=0; i<n-1; ++i) {
+            ssize_t i1 = mst_i[2*i+0];
+            ssize_t i2 = mst_i[2*i+1];
+            if (noise_leaves && (deg[i1] == 1 || deg[i2] == 1)) {
+                // noise edge, ignore
+                continue;
+            }
+
+            assert(i<=unused_edges[cur_unused_edges]);
+
+            if (unused_edges[cur_unused_edges] == i) {
+                // ignore current edge and advance to the next unused edge,
+                // ignoring duplicates
+                cur_unused_edges++;
+                continue; // skip this edge
+            }
+
+            ds.merge(denoise_index_rev[i1], denoise_index_rev[i2]);
+        }
+
+        // @TODO next create the skiplist
+        // ......................................................................................................
+
         get_labels(res);
     }
 };
