@@ -45,6 +45,7 @@ from numpy.math cimport INFINITY
 
 from . cimport c_argfuns
 from . cimport c_gini_disjoint_sets
+from . cimport c_genie
 # from . cimport c_mst
 
 from libcpp.vector cimport vector
@@ -288,9 +289,7 @@ cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
 #############################################################################
 #############################################################################
 
-cpdef np.ndarray[ssize_t] get_graph_node_degrees(
-        np.ndarray[ssize_t,ndim=2] ind,
-        int n):
+cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, int n):
     """Given an adjacency list representing an undirected simple graph over
     vertex set {0,...,n-1}, return an array deg with deg[i] denoting
     the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
@@ -301,7 +300,7 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(
 
     ind : ndarray, shape (m,2)
         A 2-column matrix such that {ind[i,0], ind[i,1]} represents
-        undirected edges. Negative indexes are ignored.
+        one of m undirected edges. Negative indexes are ignored.
     n : int
         Number of vertices.
 
@@ -312,19 +311,11 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(
     deg : ndarray, shape(n,)
         An integer array of length n.
     """
-    cdef ssize_t num_edges = ind.shape[0], i
+    cdef ssize_t num_edges = ind.shape[0]
     assert ind.shape[1] == 2
-    cdef np.ndarray[ssize_t] deg = np.zeros(n, dtype=np.intp)
-    for i in range(num_edges):
-        if ind[i,0] < 0  or ind[i,1] < 0:
-            continue # represents a no-edge → ignore
-        if ind[i,0] >= n or ind[i,1] >= n:
-            raise ValueError("Detected an element not in {0, ..., n-1}")
-        if ind[i,0] == ind[i,1]:
-            raise ValueError("Self-loops are not allowed")
+    cdef np.ndarray[ssize_t] deg = np.empty(n, dtype=np.intp)
 
-        deg[ind[i,0]] += 1
-        deg[ind[i,1]] += 1
+    c_genie.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
 
     return deg
 
@@ -336,8 +327,8 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(
 #############################################################################
 
 cpdef np.ndarray[int] genie_from_mst(
-        np.ndarray[floatT] mst_d,
-        np.ndarray[ssize_t,ndim=2] mst_i,
+        floatT[::1] mst_d,
+        ssize_t[:,::1] mst_i,
         ssize_t n_clusters=2,
         double gini_threshold=0.3,
         bint noise_leaves=False):
@@ -396,10 +387,7 @@ cpdef np.ndarray[int] genie_from_mst(
         labels_[i] gives the cluster id of the i-th input point.
         If noise_leaves==True, then label -1 denotes a noise point.
     """
-    cdef ssize_t n, i, j, curidx, m, i1, i2, lastm, lastidx, previdx
-    cdef ssize_t noise_count
-    n = mst_i.shape[0]+1
-    cdef np.ndarray[ssize_t] deg = get_graph_node_degrees(mst_i, n)
+    cdef ssize_t n = mst_i.shape[0]+1
 
     if not 1 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
@@ -408,125 +396,9 @@ cpdef np.ndarray[int] genie_from_mst(
     if not 0.0 <= gini_threshold <= 1.0:
         raise ValueError("incorrect gini_threshold")
 
-    cdef vector[ssize_t] denoise_index     = vector[ssize_t](n)
-    cdef vector[ssize_t] denoise_index_rev = vector[ssize_t](n)
-
-    for i in range(1, n-1):
-        if not mst_d[i] >= mst_d[i-1]:
-            raise ValueError("mst_d unsorted")
-
-
-    # Create the non-noise points' translation table (for GiniDisjointSets)
-    # Also count the number of noise points
-    noise_count = 0
-    if noise_leaves:
-        j = 0
-        for i in range(n):
-            if deg[i] == 1: # a leaf
-                noise_count += 1
-                denoise_index_rev[i] = -1
-            else:           # a non-leaf
-                denoise_index[j] = i
-                denoise_index_rev[i] = j
-                j += 1
-        assert noise_count >= 2
-        assert j + noise_count == n
-    else:
-        for i in range(n):
-            denoise_index[i]     = i
-            denoise_index_rev[i] = i
-
-    if n-noise_count-n_clusters <= 0:
-        raise RuntimeError("The requested number of clusters is too large \
-            with this many detected noise points")
-
-    # When the Genie correction is on, some MST edges will be chosen
-    # in a non-consecutive order. An array-based skiplist will speed up
-    # searching within the not-yet-consumed edges.
-    cdef vector[ssize_t] next_edge = vector[ssize_t](n)
-    cdef vector[ssize_t] prev_edge = vector[ssize_t](n)
-    if noise_leaves:
-        # start with a list that skips all edges that lead to noise points
-        curidx = -1
-        lastidx = -1
-        for i in range(n-1):
-            i1, i2 = mst_i[i,0], mst_i[i,1]
-            if deg[i1] > 1 and deg[i2] > 1:
-                # a non-leaf:
-                if curidx < 0:
-                    curidx = i # the first non-leaf edge
-                    prev_edge[i] = -1
-                else:
-                    next_edge[lastidx] = i
-                    prev_edge[i] = lastidx
-                lastidx = i
-
-        next_edge[lastidx] = n-1
-        lastidx = curidx # first non-leaf
-    else:
-        # no noise leaves
-        curidx  = 0
-        lastidx = 0
-        for i in range(n-1):
-            next_edge[i] = i+1
-            prev_edge[i] = i-1
-
-
-    cdef c_gini_disjoint_sets.CGiniDisjointSets ds = \
-        c_gini_disjoint_sets.CGiniDisjointSets(n-noise_count)
-
-    lastm = 0 # last minimal cluster size
-    for i in range(n-noise_count-n_clusters):
-        if ds.get_gini() > gini_threshold:
-            m = ds.get_smallest_count()
-            if m != lastm or lastidx < curidx:
-                lastidx = curidx
-            assert 0 <= lastidx < n-1
-
-            while ds.get_count(denoise_index_rev[mst_i[lastidx,0]]) != m and \
-                  ds.get_count(denoise_index_rev[mst_i[lastidx,1]]) != m:
-                lastidx = next_edge[lastidx]
-                assert 0 <= lastidx < n-1
-
-            i1, i2 = mst_i[lastidx,0], mst_i[lastidx,1]
-
-            assert lastidx >= curidx
-            if lastidx == curidx:
-                curidx = next_edge[curidx]
-                lastidx = curidx
-            else:
-                previdx = prev_edge[lastidx]
-                lastidx = next_edge[lastidx]
-                assert 0 <= previdx
-                assert previdx < lastidx
-                assert lastidx < n
-                next_edge[previdx] = lastidx
-                prev_edge[lastidx] = previdx
-            lastm = m
-
-        else: # single linkage-like
-            assert 0 <= curidx < n-1
-            i1, i2 = mst_i[curidx,0], mst_i[curidx,1]
-            curidx = next_edge[curidx]
-
-        ds.merge(denoise_index_rev[i1], denoise_index_rev[i2])
-
-
-
     cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
-    cdef vector[int] res_cluster_id = vector[int](n)
-    for i in range(n): res_cluster_id[i] = -1
-    cdef int c = 0
-    for i in range(n):
-        if denoise_index_rev[i] >= 0:
-            # a non-noise point
-            j = denoise_index[ds.find(denoise_index_rev[i])]
-            assert 0 <= j < n
-            if res_cluster_id[j] < 0:
-                res_cluster_id[j] = c
-                c += 1
-            res[i] = res_cluster_id[j]
-        else:
-            res[i] = -1
+    cdef c_genie.CGenie[floatT] g
+    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+    g.apply_genie(n_clusters, gini_threshold, &res[0])
 
     return res

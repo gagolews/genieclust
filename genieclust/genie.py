@@ -237,7 +237,7 @@ class Genie(BaseEstimator, ClusterMixin):
             # FAISS - `euclidean` and `cosine` only!
             X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
             # center X + scale (NOT: standardize!)
-            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
 
             nn = faiss.IndexFlatL2(X.shape[1])
             nn.add(X)
@@ -264,7 +264,7 @@ class Genie(BaseEstimator, ClusterMixin):
                 # t0 = time.time()
                 X = X.astype(np.float32, order="C", copy=False) # warning if sparse!!
                 # center X + scale (NOT: standardize!)
-                X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+                X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
 
                 mst_dist, mst_ind = mst.mst_from_distance(X,
                     metric=cur_state["metric"],

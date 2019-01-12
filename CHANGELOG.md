@@ -39,15 +39,15 @@
   This saves a lot of memory ($O(n)$ instead of $O(n^2)$) and so genieclust
   can solve much larger problems now.
 
-  * `sklearn.neighbors.NearestNeighbors` are used to determine few first NNs
-  when computing the mutual reachability distance a.k.a. the "core distance",
-  see core_distance()
+  * `sklearn.neighbors.NearestNeighbors`, `faiss`, or other search data
+  structures are used to determine few first NNs when computing the mutual
+  reachability distance a.k.a. the "core distance".
 
   * [INTERNAL] Most of the code was rewritten in C++, in particular
   the `DisjointSets` and `GiniDisjointSets` classes, so that:
   a) they can be used in other projects,
-  b) genieclust can be easily made available in other
-  environments in the future.
+  b) genieclust can be easily made available for other environments
+  in the future.
 
   * [INTERNAL] Use OpenMP for distance computations.
 
