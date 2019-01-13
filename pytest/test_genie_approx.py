@@ -24,10 +24,9 @@ def test_genie(metric='euclidean'):
             labels = np.random.choice(np.r_[1,2], n)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
-            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intc)
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intc)-1
 
-        label_counts = np.unique(labels,return_counts=True)[1]
-        k = len(label_counts)
+        k = len(np.unique(labels[labels>=0]))
         # center X + scale (NOT: standardize!)
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)

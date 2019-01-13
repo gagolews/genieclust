@@ -48,7 +48,9 @@
 #include "c_distance.h"
 
 
+#ifndef INFTY
 #define INFTY (std::numeric_limits<float>::infinity())
+#endif
 
 
 

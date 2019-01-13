@@ -60,7 +60,7 @@ ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
     # For Microsoft Visual C++ compiler, use '/openmp' instead of '-fopenmp'
-    extra_compile_args=['-fopenmp'], # @TODO this is not platform-agnostic
+    extra_compile_args=['-fopenmp', '-UNDEBUG'], # @TODO this is not platform-agnostic
     extra_link_args=['-fopenmp']     # @TODO this is not platform-agnostic
 )
 ext_modules += [

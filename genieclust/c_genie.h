@@ -40,14 +40,16 @@
 #include <deque>
 #include "c_gini_disjoint_sets.h"
 #include <cassert>
+#include <cmath>
+
 
 
 /*! Compute the degree of each vertex in an undirected graph
  * over vertex set {0,...,n-1}
  *
- * Edges with ind[2*i+0]<0 or ind[2*i+1]<0 are purposedly ignored
+ * Edges with ind[2*i+0]<0 or ind[2*i+1]<0 are purposely ignored
  *
- * @param ind array of size nind*2, giving the edges' definition
+ * @param ind array of size num_edges*2, giving the edges' definition
  * @param num_edges number of edges
  * @param n number of vertices
  * @param deg [out] array of size n
@@ -123,8 +125,6 @@ protected:
     ssize_t curidx;
     ssize_t lastidx;
 
-    CGiniDisjointSets ds;
-
 
     /*! Initializes curidx, lastidx, next_edge, and prev_edge */
     void skiplist_init() {
@@ -164,14 +164,12 @@ protected:
     }
 
 
-    void do_genie(ssize_t n_clusters, double gini_threshold)
+    void do_genie(CGiniDisjointSets* ds, ssize_t n_clusters, double gini_threshold)
     {
         if (n-noise_count-n_clusters <= 0) {
             throw std::runtime_error("The requested number of clusters is too large \
                 with this many detected noise points");
         }
-
-        ds = CGiniDisjointSets(n-noise_count);
 
         ssize_t lastm = 0; // last minimal cluster size
         for (ssize_t i=0; i<n-noise_count-n_clusters; ++i) {
@@ -180,15 +178,15 @@ protected:
             ssize_t i1;
             ssize_t i2;
 
-            if (ds.get_gini() > gini_threshold) {
+            if (ds->get_gini() > gini_threshold) {
                 // the Genie correction for inequity of cluster sizes
-                ssize_t m = ds.get_smallest_count();
+                ssize_t m = ds->get_smallest_count();
                 if (m != lastm || lastidx < curidx)
                     lastidx = curidx;
                 //assert 0 <= lastidx < n-1
 
-                while (ds.get_count(denoise_index_rev[mst_i[2*lastidx+0]]) != m
-                    && ds.get_count(denoise_index_rev[mst_i[2*lastidx+1]]) != m)
+                while (ds->get_count(denoise_index_rev[mst_i[2*lastidx+0]]) != m
+                    && ds->get_count(denoise_index_rev[mst_i[2*lastidx+1]]) != m)
                 {
                     lastidx = next_edge[lastidx];
                     //assert 0 <= lastidx < n-1
@@ -221,21 +219,22 @@ protected:
                 curidx = next_edge[curidx];
             }
 
-            ds.merge(denoise_index_rev[i1], denoise_index_rev[i2]);
+            ds->merge(denoise_index_rev[i1], denoise_index_rev[i2]);
         }
     }
 
     /*! Propagate res with clustering results
      *
+     * @param ds disjoint sets representing the partition
      * @param res [out] array of length n
      */
-    void get_labels(int* res) {
+    void get_labels(CDisjointSets* ds, int* res) {
         std::vector<int> res_cluster_id(n, -1);
         int c = 0;
         for (ssize_t i=0; i<n; ++i) {
             if (denoise_index_rev[i] >= 0) {
                 // a non-noise point
-                ssize_t j = denoise_index[ds.find(denoise_index_rev[i])];
+                ssize_t j = denoise_index[ds->find(denoise_index_rev[i])];
                 // assert 0 <= j < n
                 if (res_cluster_id[j] < 0) {
                     res_cluster_id[j] = c;
@@ -310,22 +309,24 @@ public:
     void apply_genie(ssize_t n_clusters, double gini_threshold, int* res)
     {
         skiplist_init();
-        do_genie(n_clusters, gini_threshold);
-        get_labels(res);
+        CGiniDisjointSets ds(n-noise_count);
+        do_genie(&ds, n_clusters, gini_threshold);
+        get_labels(&ds, res);
     }
 
 
-    /*! Run the GC (Genie+Cena) algorithm
+    /*! Run the GIC (Genie+Information Criterion) algorithm
+     *  by Anna Cena
      *
+     * @param n_features number of features
      * @param n_clusters number of clusters to find
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_cena(ssize_t n_clusters, double* gini_thresholds,
+    void apply_gic(ssize_t n_features, ssize_t n_clusters, double* gini_thresholds,
                     ssize_t n_thresholds, int* res)
     {
-
         // we need to run the Genie+ algorithm with different Gini index
         // thresholds and determine the intersection of all the resulting
         // partitions; for this, we need the union of the set of MST edges that
@@ -334,7 +335,8 @@ public:
         for (ssize_t i=0; i<n_thresholds; ++i) {
             double gini_threshold = gini_thresholds[i];
             skiplist_init();
-            do_genie(n_clusters, gini_threshold);
+            CGiniDisjointSets ds(n-noise_count);
+            do_genie(&ds, n_clusters, gini_threshold);
 
             // start where do_genie finished
             ssize_t curidx2 = curidx;
@@ -360,9 +362,13 @@ public:
 
         // note that unused_edges do not include noise edges
 
+
         // first generate ds representing the intersection of the partitions
-        ds = CGiniDisjointSets(n-noise_count);
+        CDisjointSets ds(n-noise_count);
         ssize_t cur_unused_edges = 0;
+        std::vector<ssize_t> cluster_sizes(n, 1);
+        std::vector<T> cluster_d_sums(n, (T)0.0);
+        //double ic = 0.0;
         for (ssize_t i=0; i<n-1; ++i) {
             ssize_t i1 = mst_i[2*i+0];
             ssize_t i2 = mst_i[2*i+1];
@@ -380,13 +386,102 @@ public:
                 continue; // skip this edge
             }
 
-            ds.merge(denoise_index_rev[i1], denoise_index_rev[i2]);
+            i1 = ds.find(denoise_index_rev[i1]);
+            i2 = ds.find(denoise_index_rev[i2]);
+            if (i1 > i2) std::swap(i1, i2);
+            ds.merge(i1, i2);
+            // new parent node is i1
+            cluster_sizes[i1]  += cluster_sizes[i2];
+            cluster_d_sums[i1] += cluster_d_sums[i2]+mst_d[i];
+            cluster_sizes[i2] = 0;
+            cluster_d_sums[i2] = INFTY;
+
+            //ic += log(mst_d[i]);
         }
 
-        // @TODO next create the skiplist
-        // ......................................................................................................
+        /*  The objective function to MINIMIZE is
+            sum_{i in ds.parents()} cluster_sizes[i] * (
+                n_features     * log cluster_sizes[i]
+              -(n_features-1)  * log cluster_d_sums[i]
+            )
+        */
 
-        get_labels(res);
+        assert(unused_edges[unused_edges.size()-1] == n-1); // sentinel
+        ssize_t num_unused_edges = unused_edges.size()-1; // ignore sentinel
+        assert(num_unused_edges+1 == ds.get_k());
+
+        // printf("cur_k=%d\n", ds.get_k());
+        // for (ssize_t j=0; j<num_unused_edges; ++j) {
+        //     ssize_t i = unused_edges[j];
+        //     ssize_t i1 = mst_i[2*i+0];
+        //     ssize_t i2 = mst_i[2*i+1];
+        //     printf("   %4d: {%4d, %4d} (%d, %d)→(%d, %d)\n", i, i1, i2,
+        //             denoise_index_rev[i1], denoise_index_rev[i2],
+        //             ds.find(denoise_index_rev[i1]), ds.find(denoise_index_rev[i2]));
+        // }
+        // printf("\n");
+
+        while (ds.get_k() != n_clusters) {
+            ssize_t min_which = -1;
+            double  min_obj = INFTY;
+            for (ssize_t j=0; j<num_unused_edges; ++j) {
+                ssize_t i = unused_edges[j];
+                ssize_t i1 = mst_i[2*i+0];
+                ssize_t i2 = mst_i[2*i+1];
+                i1 = ds.find(denoise_index_rev[i1]);
+                i2 = ds.find(denoise_index_rev[i2]);
+                if (i1 > i2) std::swap(i1, i2);
+
+                assert(i1 != i2);
+
+                // singletons will be merged first
+                if (cluster_d_sums[i1] < 1e-12 || cluster_d_sums[i2] < 1e-12) {
+                    min_which = j;
+                    break;
+                }
+
+                // compute difference in obj
+                double cur_obj = (cluster_sizes[i1]+cluster_sizes[i2])*(
+                    n_features*log(cluster_d_sums[i1]+cluster_d_sums[i2]+mst_d[i])
+                  -(n_features-1)*log(cluster_sizes[i1]+cluster_sizes[i2])
+                );
+                cur_obj -= cluster_sizes[i1]*(
+                    n_features*log(cluster_d_sums[i1])
+                  -(n_features-1)*log(cluster_sizes[i1])
+                );
+                cur_obj -= cluster_sizes[i2]*(
+                    n_features*log(cluster_d_sums[i2])
+                  -(n_features-1)*log(cluster_sizes[i2])
+                );
+
+                assert(isfinite(cur_obj));
+                if (cur_obj < min_obj) {
+                    min_obj = cur_obj;
+                    min_which = j;
+                }
+            }
+
+            assert(min_which >= 0 && min_which < num_unused_edges);
+            ssize_t i = unused_edges[min_which];
+            ssize_t i1 = mst_i[2*i+0];
+            ssize_t i2 = mst_i[2*i+1];
+            i1 = ds.find(denoise_index_rev[i1]);
+            i2 = ds.find(denoise_index_rev[i2]);
+            if (i1 > i2) std::swap(i1, i2);
+
+            ds.merge(i1, i2);
+            // new parent node is i1
+
+            cluster_sizes[i1]  += cluster_sizes[i2];
+            cluster_d_sums[i1] += cluster_d_sums[i2]+mst_d[i];
+            cluster_sizes[i2] = 0;
+            cluster_d_sums[i2] = INFTY;
+
+            unused_edges[min_which] = unused_edges[num_unused_edges-1];
+            num_unused_edges--;
+        }
+
+        get_labels(&ds, res);
     }
 };
 

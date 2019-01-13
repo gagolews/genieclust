@@ -112,6 +112,12 @@ class Genie(BaseEstimator, ClusterMixin):
         in low dimensional spaces is usually fast. Otherwise,
         the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of O(n_samples*n_samples*n_features).
+    allow_cast_float32 : bool, default=True
+        Allow casting input data to float32 (for efficiency reasons, however,
+        increases total memory usage). Note that some nearest neighbor search
+        methods require float32 data anyway.  This also normalizes
+        the input coordinates so that the method is guaranteed to be translation
+        and scale invariant.
     nn_params: dict, optional (default=None)
         Arguments to the sklearn.neighbors.NearestNeighbors class
         constructor, e.g., the metric to use (default='euclidean').
@@ -134,6 +140,7 @@ class Genie(BaseEstimator, ClusterMixin):
             n_neighbors=-1,
             postprocess="boundary",
             exact=True,
+            allow_cast_float32=True,
             nn_params=None
         ):
         self.n_clusters = n_clusters
@@ -142,6 +149,7 @@ class Genie(BaseEstimator, ClusterMixin):
         self.n_neighbors = n_neighbors
         self.postprocess = postprocess
         self.exact = exact
+        self.allow_cast_float32 = allow_cast_float32
         self.nn_params = nn_params
 
         self.labels_ = None
@@ -215,13 +223,18 @@ class Genie(BaseEstimator, ClusterMixin):
             raise ValueError("n_neighbors should be >= M-1")
 
         cur_state["exact"] = bool(self.exact)
+        cur_state["allow_cast_float32"] = bool(self.allow_cast_float32)
 
+        if cur_state["allow_cast_float32"]:
+            X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
+            # center X + scale (NOT: standardize!)
+            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
 
         nn_dist       = None
         nn_ind        = None
         spanning_tree = None
         if not cur_state["exact"]:
-            #raise NotImplementedError("approximate method not implemented yet")
+            raise NotImplementedError("approximate method not implemented yet")
 
             actual_n_neighbors = cur_state["n_neighbors"]
             if actual_n_neighbors < 0:
@@ -235,15 +248,21 @@ class Genie(BaseEstimator, ClusterMixin):
             # print("T=%.3f" % (time.time()-t0), end="\t")
 
             # FAISS - `euclidean` and `cosine` only!
-            X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
-            # center X + scale (NOT: standardize!)
-            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
+
+
+
 
             nn = faiss.IndexFlatL2(X.shape[1])
             nn.add(X)
             nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
+
+            nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n)))
+            print(nn_bad_where)
+            print(nn_ind[nn_bad_where,:5])
+            print(X[nn_bad_where,:])
+            assert nn_bad_where.shape[0] == 0
+
             nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
-            assert np.all(nn_ind[:,0]==np.arange(n))
             nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
 
             if cur_state["M"] > 1:
@@ -262,9 +281,6 @@ class Genie(BaseEstimator, ClusterMixin):
                 #  w.r.t. the distances computed on the fly
 
                 # t0 = time.time()
-                X = X.astype(np.float32, order="C", copy=False) # warning if sparse!!
-                # center X + scale (NOT: standardize!)
-                X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
 
                 mst_dist, mst_ind = mst.mst_from_distance(X,
                     metric=cur_state["metric"],
