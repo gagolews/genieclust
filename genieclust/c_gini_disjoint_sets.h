@@ -94,7 +94,7 @@ public:
         this->tab[1] = n;   // there are n clusters of size 1
         this->tab_head = 1; // the smallest cluster is of size 1
         this->tab_tail = 1; // the largest cluster is of size 1
-        this->gini = 0.0;   // perfectly balanced cluster size distribution
+        this->gini = 0.0;   // a perfectly balanced cluster size distribution
     }
 
 

@@ -195,6 +195,3 @@ cpdef double bonferroni(T[:] x, bint is_sorted=False):
 #    vmax <- sum(1/(2:n))
 #    (sum(sapply(1:length(x), function(i) mean(x[1:i])))/sum(x)-1)/vmax
 # }
-
-
-

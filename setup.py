@@ -31,66 +31,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import setuptools
 from distutils.extension import Extension
-from distutils.command.sdist import sdist as _sdist
+from distutils.command.sdist import sdist
 from Cython.Distutils import build_ext
 import numpy as np
 
 
-class sdist(_sdist):
+cython_modules = {
+    "genieclust.internal":              ["genieclust/internal.pyx"],
+    "genieclust.argfuns":               ["genieclust/argfuns.pyx"],
+    "genieclust.disjoint_sets":         ["genieclust/disjoint_sets.pyx"],
+    "genieclust.gini_disjoint_sets":    ["genieclust/gini_disjoint_sets.pyx"],
+    "genieclust.compare_partitions":    ["genieclust/compare_partitions.pyx"],
+    "genieclust.inequity":              ["genieclust/inequity.pyx"],
+    "genieclust.mst":                   ["genieclust/mst.pyx"]
+}
+
+
+class genieclust_sdist(sdist):
     def run(self):
         from Cython.Build import cythonize
-        cythonize(["genieclust/internal.pyx"], language="c++")
-        cythonize(["genieclust/argfuns.pyx"], language="c++")
-        cythonize(["genieclust/disjoint_sets.pyx"], language="c++")
-        cythonize(["genieclust/gini_disjoint_sets.pyx"], language="c++")
-        cythonize(["genieclust/compare_partitions.pyx"], language="c++")
-        cythonize(["genieclust/inequity.pyx"], language="c++")
-        cythonize(["genieclust/mst.pyx"], language="c++")
-        _sdist.run(self)
-
-cmdclass = {}
-cmdclass["sdist"] = sdist
-
-ext_modules = [ ]
+        for pyx_files in cython_modules.values():
+            cythonize(pyx_files)
+        sdist.run(self)
 
 
-print(build_ext)
+class genieclust_build_ext(build_ext):
+    def build_extensions(self):
+        c = self.compiler.compiler_type
+
+        # @TODO once n_jobs params are added
+        # if c == "msvc":
+        #     for e in self.extensions:
+        #         e.extra_compile_args += "/openmp"
+        # elif c == "mingw32":
+        #     for e in self.extensions:
+        #         e.extra_compile_args += "-fopenmp"
+        #         e.extra_link_args += "-fopenmp"
+        # elif c == "unix":
+        #     # Well... gcc/clang has -fopenmp,
+        #     # icc has -openmp, oracle has -xopenmp, etc.
+        #     # The user should specify CXXFLAGS and LDFLAGS herself, I think.
+        #     pass
+
+        build_ext.build_extensions(self)
+
 
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
-    language="c++",
-    # For Microsoft Visual C++ compiler, use '/openmp' instead of '-fopenmp'
-    extra_compile_args=['-fopenmp', '-UNDEBUG'], # @TODO this is not platform-agnostic
-    extra_link_args=['-fopenmp']     # @TODO this is not platform-agnostic
+    language="c++"
 )
-ext_modules += [
-    Extension("genieclust.internal",
-                ["genieclust/internal.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.argfuns",
-                ["genieclust/argfuns.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.disjoint_sets",
-                ["genieclust/disjoint_sets.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.gini_disjoint_sets",
-                ["genieclust/gini_disjoint_sets.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.compare_partitions",
-                ["genieclust/compare_partitions.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.inequity",
-                ["genieclust/inequity.pyx"],
-                **ext_kwargs),
-    Extension("genieclust.mst",
-                ["genieclust/mst.pyx"],
-                **ext_kwargs)
-]
-cmdclass.update({ 'build_ext': build_ext })
 
 
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -98,8 +91,9 @@ setuptools.setup(
     version="0.1a4",
     description="The Genie+ Clustering Algorithm",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     author="Marek Gagolewski",
+    author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
     license="BSD-3-Clause",
     install_requires=[
@@ -111,6 +105,11 @@ setuptools.setup(
       ],
     download_url="https://github.com/gagolews/genieclust",
     url="http://www.gagolewski.com/software/genie/",
+    project_urls={
+        "Bug Tracker":   "https://github.com/gagolews/genieclust/issues",
+        "Documentation": "https://github.com/gagolews/genieclust",
+        "Source Code":   "https://github.com/gagolews/genieclust",
+    },
     packages=setuptools.find_packages(),
     include_package_data=True,
     classifiers=[
@@ -120,6 +119,12 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Topic :: Scientific/Engineering",
     ],
-    cmdclass=cmdclass,
-    ext_modules=ext_modules
+    cmdclass={
+        "sdist": genieclust_sdist,
+        "build_ext": genieclust_build_ext
+    },
+    ext_modules=[
+        Extension(module, pyx_files, **ext_kwargs)
+        for module, pyx_files in cython_modules.items()
+    ]
 )

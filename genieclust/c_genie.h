@@ -249,6 +249,51 @@ protected:
         }
     }
 
+    /*! Run the Genie+ algorithm with different Gini index
+     *  thresholds and determine the intersection of all the resulting
+     *  partitions; for this, we need the union of the set of MST edges that
+     *  were left "unmerged"
+     *
+     * @param n_clusters number of clusters to look for in Genie run
+     * @param gini_thresholds array of floats in [0,1]
+     * @param n_threshold size of gini_thresholds
+     *
+     * @return indexes of MST edges that were left unused by at least
+     * one Genie algorithm run; this gives the intersection of partitions.
+     */
+    std::vector<ssize_t> get_intersection_of_genies(ssize_t n_clusters,
+        double* gini_thresholds, ssize_t n_thresholds)
+    {
+        std::vector<ssize_t> unused_edges;
+        for (ssize_t i=0; i<n_thresholds; ++i) {
+            double gini_threshold = gini_thresholds[i];
+            skiplist_init();
+            CGiniDisjointSets ds(n-noise_count);
+            do_genie(&ds, n_clusters, gini_threshold);
+
+            // start where do_genie finished
+            ssize_t curidx2 = curidx;
+            while (curidx2 < n-1) {
+                unused_edges.push_back(curidx2);
+                curidx2 = next_edge[curidx2];
+            }
+        }
+
+        // let unused_edges = sort(unique(unused_edges))
+        unused_edges.push_back(n-1); // sentinel
+        std::sort(unused_edges.begin(), unused_edges.end());
+        // sorted, but some might not be unique, so let's remove dups
+        ssize_t k = 0;
+        for (ssize_t i=1; i<(ssize_t)unused_edges.size(); ++i) {
+            if (unused_edges[i] != unused_edges[k]) {
+                k++;
+                unused_edges[k] = unused_edges[i];
+            }
+        }
+        unused_edges.resize(k+1);
+        return unused_edges;
+    }
+
 
 public:
     CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves)
@@ -318,48 +363,36 @@ public:
     /*! Run the GIC (Genie+Information Criterion) algorithm
      *  by Anna Cena
      *
+     * References
+     * ==========
+     *
+     * [1] Cena A., Adaptive hierarchical clustering algorithms based on
+     * data aggregation methods, PhD Thesis, Systems Research Institute,
+     * Polish Academy of Sciences 2018.
+     *
+     * [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+     * Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
+     *
+     *
      * @param n_features number of features
      * @param n_clusters number of clusters to find
+     * @param add_clusters number of additional clusters to work
+     *     with internally
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_gic(ssize_t n_features, ssize_t n_clusters, double* gini_thresholds,
+    void apply_gic(ssize_t n_features, ssize_t n_clusters,
+                    ssize_t add_clusters,
+                    double* gini_thresholds,
                     ssize_t n_thresholds, int* res)
     {
-        // we need to run the Genie+ algorithm with different Gini index
-        // thresholds and determine the intersection of all the resulting
-        // partitions; for this, we need the union of the set of MST edges that
-        // were left "unmerged"
-        std::vector<ssize_t> unused_edges;
-        for (ssize_t i=0; i<n_thresholds; ++i) {
-            double gini_threshold = gini_thresholds[i];
-            skiplist_init();
-            CGiniDisjointSets ds(n-noise_count);
-            do_genie(&ds, n_clusters, gini_threshold);
+        assert(add_clusters>=0);
+        assert(n_clusters>=1);
+        assert(n_thresholds>0);
 
-            // start where do_genie finished
-            ssize_t curidx2 = curidx;
-            while (curidx2 < n-1) {
-                unused_edges.push_back(curidx2);
-                curidx2 = next_edge[curidx2];
-            }
-        }
-
-        // let unused_edges = sort(unique(unused_edges))
-        unused_edges.push_back(n-1); // sentinel
-        std::sort(unused_edges.begin(), unused_edges.end());
-        // sorted, but some might not be unique, so let's remove dups
-        ssize_t k = 0;
-        for (ssize_t i=1; i<(ssize_t)unused_edges.size(); ++i) {
-            if (unused_edges[i] != unused_edges[k]) {
-                k++;
-                unused_edges[k] = unused_edges[i];
-            }
-        }
-        unused_edges.resize(k+1);
-
-
+        std::vector<ssize_t> unused_edges = get_intersection_of_genies(
+                n_clusters+add_clusters, gini_thresholds, n_thresholds);
         // note that unused_edges do not include noise edges
 
 
@@ -368,7 +401,6 @@ public:
         ssize_t cur_unused_edges = 0;
         std::vector<ssize_t> cluster_sizes(n, 1);
         std::vector<T> cluster_d_sums(n, (T)0.0);
-        //double ic = 0.0;
         for (ssize_t i=0; i<n-1; ++i) {
             ssize_t i1 = mst_i[2*i+0];
             ssize_t i2 = mst_i[2*i+1];
@@ -380,10 +412,9 @@ public:
             assert(i<=unused_edges[cur_unused_edges]);
 
             if (unused_edges[cur_unused_edges] == i) {
-                // ignore current edge and advance to the next unused edge,
-                // ignoring duplicates
+                // ignore current edge and advance to the next unused edge
                 cur_unused_edges++;
-                continue; // skip this edge
+                continue;
             }
 
             i1 = ds.find(denoise_index_rev[i1]);
@@ -393,10 +424,8 @@ public:
             // new parent node is i1
             cluster_sizes[i1]  += cluster_sizes[i2];
             cluster_d_sums[i1] += cluster_d_sums[i2]+mst_d[i];
-            cluster_sizes[i2] = 0;
-            cluster_d_sums[i2] = INFTY;
-
-            //ic += log(mst_d[i]);
+            cluster_sizes[i2]   = 0;
+            cluster_d_sums[i2]  = INFTY;
         }
 
         /*  The objective function to MINIMIZE is
@@ -409,17 +438,6 @@ public:
         assert(unused_edges[unused_edges.size()-1] == n-1); // sentinel
         ssize_t num_unused_edges = unused_edges.size()-1; // ignore sentinel
         assert(num_unused_edges+1 == ds.get_k());
-
-        // printf("cur_k=%d\n", ds.get_k());
-        // for (ssize_t j=0; j<num_unused_edges; ++j) {
-        //     ssize_t i = unused_edges[j];
-        //     ssize_t i1 = mst_i[2*i+0];
-        //     ssize_t i2 = mst_i[2*i+1];
-        //     printf("   %4d: {%4d, %4d} (%d, %d)→(%d, %d)\n", i, i1, i2,
-        //             denoise_index_rev[i1], denoise_index_rev[i2],
-        //             ds.find(denoise_index_rev[i1]), ds.find(denoise_index_rev[i2]));
-        // }
-        // printf("\n");
 
         while (ds.get_k() != n_clusters) {
             ssize_t min_which = -1;

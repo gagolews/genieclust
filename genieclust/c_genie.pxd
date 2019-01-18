@@ -49,4 +49,5 @@ cdef extern from "c_genie.h":
         CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves) except +
         void apply_genie(ssize_t n_clusters, double gini_threshold, int* res)
         void apply_gic(ssize_t n_features, ssize_t n_clusters,
-            double* gini_thresholds, ssize_t n_thresholds, int* res)
+            ssize_t add_clusters, double* gini_thresholds,
+            ssize_t n_thresholds, int* res)

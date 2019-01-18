@@ -412,6 +412,7 @@ cpdef np.ndarray[int] gic_from_mst(
         ssize_t[:,::1] mst_i,
         ssize_t n_features,
         ssize_t n_clusters=2,
+        ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
         bint noise_leaves=False):
     """Compute a k-partition based on a precomputed MST.
@@ -420,9 +421,19 @@ cpdef np.ndarray[int] gic_from_mst(
     Clustering Algorithm (experimental edition)
     by Anna Cena
 
-    @TODO: add reference
-
     @TODO: describe
+
+
+    References
+    ==========
+
+    [1] Cena A., Adaptive hierarchical clustering algorithms based on
+    data aggregation methods, PhD Thesis, Systems Research Institute,
+    Polish Academy of Sciences 2018.
+
+    [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+    Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
+
 
     Parameters
     ----------
@@ -434,6 +445,8 @@ cpdef np.ndarray[int] gic_from_mst(
         number of features in the data set
     n_clusters : int, default=2
         Number of clusters the data is split into.
+    add_clusters: int, default=0
+        Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
         @TODO: describe
     noise_leaves : bool
@@ -462,6 +475,7 @@ cpdef np.ndarray[int] gic_from_mst(
     cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
-    g.apply_gic(n_features, n_clusters, &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
+    g.apply_gic(n_features, n_clusters, add_clusters,
+        &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
 
     return res
