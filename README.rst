@@ -99,6 +99,13 @@ The most recent development version:
     python setup.py install --user
 
 
+@TODO: OpenMP support...:
+
+.. code-block:: bash
+
+    CPPFLAGS="-UNDEBUG -fopenmp" LDFLAGS="-fopenmp" python setup.py install --user
+
+
 
 
 License
