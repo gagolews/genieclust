@@ -36,7 +36,7 @@ def test_gic():
         mst_d, mst_i = genieclust.mst.mst_from_distance(X)
 
         print("%-20s n=%7d d=%4d"%(dataset,X.shape[0],X.shape[1]))
-        for g in [ np.r_[0.1],  np.r_[0.2],  np.r_[0.3], np.r_[0.4], np.r_[0.5], np.r_[0.6], np.r_[0.7], np.arange(1, 8)/10]:
+        for g in [ np.r_[0.1],  np.r_[0.2],  np.r_[0.3], np.r_[0.4], np.r_[0.5], np.r_[0.6], np.r_[0.7], np.arange(1, 8)/10, np.empty(0)]:
             print(g, end="\t")
             gc.collect()
 

@@ -403,7 +403,7 @@ cpdef np.ndarray[int] genie_from_mst(
 
 
 #############################################################################
-# The Genie+Information Criterion (GIC) Clustering Algorithm
+# The Genie+Information Criterion (G+IC) Clustering Algorithm
 # (experimental, under construction)
 #############################################################################
 
@@ -415,9 +415,9 @@ cpdef np.ndarray[int] gic_from_mst(
         ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
         bint noise_leaves=False):
-    """Compute a k-partition based on a precomputed MST.
+    """Compute a k-partition based on a pre-computed MST.
 
-    The Genie+Information Criterion (GIC)
+    The Genie+Information Criterion (G+IC)
     Clustering Algorithm (experimental edition)
     by Anna Cena
 
@@ -442,14 +442,16 @@ cpdef np.ndarray[int] gic_from_mst(
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
     n_features : double
-        number of features in the data set [can be fractional if you know
-        what you're doing]
+        number of features in the data set
+        [can be fractional if you know what you're doing]
     n_clusters : int, default=2
         Number of clusters the data is split into.
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
         @TODO: describe
+        if of length 0, add_clusters is ignored and the procedure
+        starts from a weak clustering (all are singletons) == Agglomerative-IC (ICA)
     noise_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.

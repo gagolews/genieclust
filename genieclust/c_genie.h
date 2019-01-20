@@ -256,15 +256,37 @@ protected:
      *
      * @param n_clusters number of clusters to look for in Genie run
      * @param gini_thresholds array of floats in [0,1]
-     * @param n_threshold size of gini_thresholds
+     * @param n_thresholds size of gini_thresholds
      *
      * @return indexes of MST edges that were left unused by at least
      * one Genie algorithm run; this gives the intersection of partitions.
+     *
+     * If n_thresholds is 0 or requested n_clusters is too large,
+     * all non-noise edges are set as unused.
      */
     std::vector<ssize_t> get_intersection_of_genies(ssize_t n_clusters,
         double* gini_thresholds, ssize_t n_thresholds)
     {
         std::vector<ssize_t> unused_edges;
+        if (n_thresholds <= 0 || n_clusters >= n-noise_count) {
+            // all edges unused -> will start from n singletons
+            if (!noise_leaves) {
+                unused_edges.resize(n-1);
+                for (ssize_t i=0; i<n-1; ++i)
+                    unused_edges[i] = i;
+            }
+            else {
+                for (ssize_t i=0; i<n-1; ++i) {
+                    ssize_t i1 = mst_i[2*i+0];
+                    ssize_t i2 = mst_i[2*i+1];
+                    if (deg[i1] > 1 && deg[i2] > 1)
+                        unused_edges.push_back(i);
+                }
+            }
+            unused_edges.push_back(n-1);  // sentinel
+            return unused_edges;
+        }
+
         for (ssize_t i=0; i<n_thresholds; ++i) {
             double gini_threshold = gini_thresholds[i];
             skiplist_init();
@@ -391,18 +413,19 @@ public:
     {
         assert(add_clusters>=0);
         assert(n_clusters>=1);
-        assert(n_thresholds>0);
+        assert(n_thresholds>=0);
 
         std::vector<ssize_t> unused_edges = get_intersection_of_genies(
-                n_clusters+add_clusters, gini_thresholds, n_thresholds);
+                n_clusters+add_clusters, gini_thresholds, n_thresholds
+        );
         // note that unused_edges do not include noise edges
 
 
         // first generate ds representing the intersection of the partitions
         CDisjointSets ds(n-noise_count);
         ssize_t cur_unused_edges = 0;
-        std::vector<ssize_t> cluster_sizes(n, 1);
-        std::vector<T> cluster_d_sums(n, (T)0.0);
+        std::vector<ssize_t> cluster_sizes(n-noise_count, 1);
+        std::vector<T> cluster_d_sums(n-noise_count, (T)0.0);
         for (ssize_t i=0; i<n-1; ++i) {
             ssize_t i1 = mst_i[2*i+0];
             ssize_t i2 = mst_i[2*i+1];
@@ -474,7 +497,7 @@ public:
                   -(n_features-1.0)*log(cluster_sizes[i2])
                 );
 
-                assert(isfinite(cur_obj));
+                assert(std::isfinite(cur_obj));
                 if (cur_obj < min_obj) {
                     min_obj = cur_obj;
                     min_which = j;
