@@ -374,18 +374,20 @@ public:
      * Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
      *
      *
-     * @param n_features number of features
      * @param n_clusters number of clusters to find
      * @param add_clusters number of additional clusters to work
      *     with internally
+     * @param n_features number of features (can be fractional)
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_gic(ssize_t n_features, ssize_t n_clusters,
-                    ssize_t add_clusters,
-                    double* gini_thresholds,
-                    ssize_t n_thresholds, int* res)
+    void apply_gic(ssize_t n_clusters,
+                   ssize_t add_clusters,
+                   double n_features,
+                   double* gini_thresholds,
+                   ssize_t n_thresholds,
+                   int* res)
     {
         assert(add_clusters>=0);
         assert(n_clusters>=1);
@@ -461,15 +463,15 @@ public:
                 // compute difference in obj
                 double cur_obj = (cluster_sizes[i1]+cluster_sizes[i2])*(
                     n_features*log(cluster_d_sums[i1]+cluster_d_sums[i2]+mst_d[i])
-                  -(n_features-1)*log(cluster_sizes[i1]+cluster_sizes[i2])
+                  -(n_features-1.0)*log(cluster_sizes[i1]+cluster_sizes[i2])
                 );
                 cur_obj -= cluster_sizes[i1]*(
                     n_features*log(cluster_d_sums[i1])
-                  -(n_features-1)*log(cluster_sizes[i1])
+                  -(n_features-1.0)*log(cluster_sizes[i1])
                 );
                 cur_obj -= cluster_sizes[i2]*(
                     n_features*log(cluster_d_sums[i2])
-                  -(n_features-1)*log(cluster_sizes[i2])
+                  -(n_features-1.0)*log(cluster_sizes[i2])
                 );
 
                 assert(isfinite(cur_obj));

@@ -410,7 +410,7 @@ cpdef np.ndarray[int] genie_from_mst(
 cpdef np.ndarray[int] gic_from_mst(
         floatT[::1] mst_d,
         ssize_t[:,::1] mst_i,
-        ssize_t n_features,
+        double n_features,
         ssize_t n_clusters=2,
         ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
@@ -441,8 +441,9 @@ cpdef np.ndarray[int] gic_from_mst(
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
-    n_features : int
-        number of features in the data set
+    n_features : double
+        number of features in the data set [can be fractional if you know
+        what you're doing]
     n_clusters : int, default=2
         Number of clusters the data is split into.
     add_clusters: int, default=0
@@ -475,7 +476,7 @@ cpdef np.ndarray[int] gic_from_mst(
     cdef np.ndarray[int] res = np.empty(n, dtype=np.intc)
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
-    g.apply_gic(n_features, n_clusters, add_clusters,
+    g.apply_gic(n_clusters, add_clusters, n_features,
         &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
 
     return res
