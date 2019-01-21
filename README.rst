@@ -50,8 +50,8 @@ and the paper:
 Package Features
 ================
 
-* The Genie+ algorithm (using a `scikit-learn`-like interface),
-  together with a robustified version of HDBSCAN*
+* The Genie+ algorithm (with a `scikit-learn`-like interface),
+  together with @TODO: a robustified version of HDBSCAN*, IcA, GC, GIc, ...
 
 * DisjointSets data structure (with extensions)
 
@@ -78,9 +78,16 @@ Examples
 Installation
 ============
 
+
+    *This package is in its alpha-stage (development is Linux-only).*
+
+
 The package requires Python 3.6+ together with ``cython``
 as well as ``numpy``, ``scipy``, ``matplotlib``, and ``sklearn``.
 
+@TODO: Windows builds
+
+@TODO: OS X builds
 
 Via ``pip`` - see `PyPI <https://pypi.org/project/genieclust/>`_:
 
