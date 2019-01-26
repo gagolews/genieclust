@@ -402,6 +402,7 @@ cpdef np.ndarray[int] genie_from_mst(
     return res
 
 
+
 #############################################################################
 # The Genie+Information Criterion (G+IC) Clustering Algorithm
 # (experimental, under construction)

@@ -187,6 +187,7 @@ cdef class GiniDisjointSets():
         return self.ds.merge(x, y)
 
 
+
     cpdef np.ndarray[ssize_t] to_list(self):
         """
         Get parent ids of all the elements

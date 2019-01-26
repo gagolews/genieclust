@@ -382,6 +382,7 @@ public:
     }
 
 
+
     /*! Run the GIC (Genie+Information Criterion) algorithm
      *  by Anna Cena
      *

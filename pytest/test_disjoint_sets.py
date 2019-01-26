@@ -5,9 +5,10 @@ from genieclust.gini_disjoint_sets import GiniDisjointSets
 import time
 import gc
 
-#np.random.seed(123)
+np.random.seed(666)
 
 def test_DisjointSets():
+    print("test_DisjointSets")
     for n in [5, 10, 25, 100, 250, 1000, 10000]:
         d = DisjointSets(n)
         assert all([i==d.find(i) for i in range(n)])
@@ -25,6 +26,7 @@ def test_DisjointSets():
 
 
 def test_GiniDisjointSets():
+    print("test_GiniDisjointSets")
     for n in [5, 10, 25, 100, 250, 1000, 10000]:
         d = GiniDisjointSets(n)
         assert all([i==d.find(i) for i in range(n)])
@@ -35,10 +37,10 @@ def test_GiniDisjointSets():
             if d.find(i) == d.find(j): continue
             d.union(i, j)
             assert d.find(i) == d.find(j)
-
             c1 = d.get_counts()
             assert np.sum(c1) == d.get_n()
             assert min(c1) == d.get_smallest_count()
+
 
             # c2 = np.sort([len(x) for x in d.to_lists()])
             # c1 = np.sort(c1)

@@ -37,6 +37,8 @@
 #define __c_gini_disjoint_sets_h
 
 #include "c_disjoint_sets.h"
+#include "c_int_dict.h"
+
 
 
 /*! "Augmented" Disjoint Sets (Union-Find) Data Structure
@@ -65,15 +67,9 @@ class CGiniDisjointSets : public CDisjointSets{
 protected:
     std::vector<ssize_t> cnt;  //!< cnt[find(x)] is the size of the relevant subset
 
-    std::vector<ssize_t> tab;  /*!< tab[i] gives the number of subsets of size i
-                                * (it's a pretty sparse array
-                                * - at most sqrt(n) elements are non-zero)
-                                */
-
-    std::vector<ssize_t> tab_next; //!< an array-based...
-    std::vector<ssize_t> tab_prev; //!< ...doubly-linked list...
-    ssize_t  tab_head; //!< ...for quickly accessing and iterating over...
-    ssize_t  tab_tail; //!< ...this->tab data
+    CIntDict<ssize_t> number_of_size; /*!< number_of_size[i] gives the number
+        * of subsets of size i (there are at most sqrt(n) possible
+        * non-zero elements) */
 
     double gini;   //!< the Gini index of the current subset sizes
 
@@ -86,15 +82,11 @@ public:
      */
     CGiniDisjointSets(ssize_t n) :
         CDisjointSets(n),
-        cnt(n, 1),   // each cluster is of size 1
-        tab(n+1, 0),
-        tab_next(n+1),
-        tab_prev(n+1)
+        cnt(n, 1),           // each cluster is of size 1
+        number_of_size(n+1)
     {
-        this->tab[1] = n;   // there are n clusters of size 1
-        this->tab_head = 1; // the smallest cluster is of size 1
-        this->tab_tail = 1; // the largest cluster is of size 1
-        this->gini = 0.0;   // a perfectly balanced cluster size distribution
+        if (n>0) number_of_size[1] = n; // there are n clusters of size 1
+        gini = 0.0;   // a perfectly balanced cluster size distribution
     }
 
 
@@ -116,7 +108,9 @@ public:
      *
      *  Run time: O(1).
      */
-    ssize_t get_smallest_count() const { return this->tab_head; }
+    ssize_t get_smallest_count() const {
+        return number_of_size.get_key_min(); /*this->tab_head;*/
+    }
 
 
     /*! Returns the size of the subset containing x.
@@ -145,8 +139,8 @@ public:
      *
      *  Update time: pessimistically O(sqrt(n)).
      */
-    virtual ssize_t merge(ssize_t x, ssize_t y) { // well, union is a reserved C++ keyword :)
-
+    virtual ssize_t merge(ssize_t x, ssize_t y)
+    { // well, union is a reserved C++ keyword :)
         // the ordinary DisjointSet's merge:
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
@@ -154,7 +148,7 @@ public:
         if (y < x) std::swap(x, y);
 
         this->par[y] = x; // update the parent of y
-        this->k -= 1;     // decreaset the subset count
+        this->k -= 1;     // decrease the subset count
 
         // update the counts
         ssize_t size1 = this->cnt[x];
@@ -163,75 +157,40 @@ public:
         this->cnt[x] += this->cnt[y]; // cluster x has more elements now
         this->cnt[y] = 0;             // cluster y, well, cleaning up
 
-        this->tab[size1]  -= 1; // one cluster of size1 is no more
-        this->tab[size2]  -= 1; // one cluster of size2 is an ex-cluster
-        this->tab[size12] += 1; // long live cluster of size1+2
-
-
-        // update the doubly-linked list for accessing non-zero elems in this->tab
-        // first, the element corresponding to size12
-        if (this->tab_tail < size12) { // new tail
-            this->tab_prev[size12] = this->tab_tail;
-            this->tab_next[this->tab_tail] = size12;
-            this->tab_tail = size12;
-        }
-        else if (this->tab[size12] == 1) { // new elem in the 'middle'
-            ssize_t w = this->tab_tail;
-            while (w > size12) {
-                w = this->tab_prev[w];
-            }
-            ssize_t v = this->tab_next[w];
-            this->tab_next[w] = size12;
-            this->tab_prev[v] = size12;
-            this->tab_next[size12] = v;
-            this->tab_prev[size12] = w;
-        }
-        // else element already existed
-
+        //assert(number_of_size.at(size1)>0);
+        number_of_size[size1]  -= 1; // one cluster of size1 is no more
+        //assert(number_of_size.at(size2)>0);
+        number_of_size[size2]  -= 1; // one cluster of size2 is an ex-cluster
 
         // get rid of size1 and size2, if necessary
         if (size2 < size1) std::swap(size1, size2);
-        if (this->tab[size1] == 0) {
-            if (this->tab_head == size1) {
-                this->tab_head = this->tab_next[this->tab_head];
-            }
-            else { // remove in the 'middle'
-                this->tab_next[this->tab_prev[size1]] = this->tab_next[size1];
-                this->tab_prev[this->tab_next[size1]] = this->tab_prev[size1];
-            }
-        }
 
-        if (this->tab[size2] == 0 && size1 != size2) { // i.e., size2>size1
-            if (this->tab_head == size2) {
-                this->tab_head = this->tab_next[this->tab_head];
-            }
-            else { // remove in the 'middle'
-                this->tab_next[this->tab_prev[size2]] = this->tab_next[size2];
-                this->tab_prev[this->tab_next[size2]] = this->tab_prev[size2];
-            }
-        }
+        if (number_of_size.at(size1) <= 0)
+            number_of_size.erase(size1);  // fast
 
-        if (this->tab[this->tab_head] <= 0)
-            throw std::out_of_range("ASSERT FAIL: this->tab[this->tab_head] > 0");
-        if (this->tab[this->tab_tail] <= 0)
-            throw std::out_of_range("ASSERT FAIL: this->tab[this->tab_tail] > 0");
+        if (size1 != size2 && number_of_size.at(size2) <= 0)
+            number_of_size.erase(size2);  // fast
 
+        if (number_of_size.count(size12) == 0)
+            number_of_size[size12] = 1;   // might be O(sqrt(n))
+        else
+            number_of_size[size12] += 1; // long live cluster of size1+2
 
         // re-compute the normalized Gini index
         // based on a formula given in @TODO:derive the formula nicely@
-        this->gini = 0.0;
-        if (this->tab_head != this->tab_tail) { // otherwise all clusters are of identical sizes
-            ssize_t v = this->tab_head, w;
+        gini = 0.0;
+        if (number_of_size.size() > 1) { // otherwise all clusters are of identical sizes
+            ssize_t v = number_of_size.get_key_min();
             ssize_t i = 0;
-            while (v != this->tab_tail) {
-                w = v;                 // previous v
-                v = this->tab_next[v]; // next v
-                i += this->tab[w];     // cumulative counts
-                this->gini += ((double)v-w)*i*((double)this->k-i);
+            while (v != number_of_size.get_key_max()) {
+                ssize_t w = v;                       // previous v
+                v = number_of_size.get_key_next(v);  // next v
+                i += number_of_size[w];              // cumulative counts
+                gini += ((double)v-w)*i*((double)k-i);
             }
-            this->gini /= (double)(this->n*(this->k-1.0)); // this is the normalized Gini index
-            if (this->gini > 1.0) this->gini = 1.0; // account for round-off errors
-            if (this->gini < 0.0) this->gini = 0.0;
+            gini /= (double)(n*(k-1.0)); // this is the normalized Gini index
+            if (gini > 1.0) gini = 1.0; // account for round-off errors
+            if (gini < 0.0) gini = 0.0;
         }
 
         // all done
@@ -246,20 +205,17 @@ public:
      */
     std::vector<ssize_t> get_counts() {
         ssize_t i = 0;
-        std::vector<ssize_t> out(this->k);
-        ssize_t v = this->tab_head;
-        while (true) {
+        std::vector<ssize_t> out(k);
+        for (CIntDict<ssize_t>::iterator it = number_of_size.begin();
+             it != number_of_size.end(); ++it)
+        {
             // add this->tab[v] times v
-            for (ssize_t j=0; j<this->tab[v]; ++j) {
+            for (ssize_t j=0; j<number_of_size[*it]; ++j) {
                 if (i >= k) throw std::out_of_range("ASSERT1 FAIL in get_counts()");
-                out[i++] = v;
+                out[i++] = *it;
             }
-            if (v == this->tab_tail) {
-                if (i < k) throw std::out_of_range("ASSERT2 FAIL in get_counts()");
-                return out;
-            }
-            v = this->tab_next[v];
         }
+        return out;
     }
 
 };

@@ -91,7 +91,7 @@ struct CDistanceCompletePrecomputed : public CDistance<T> {
     CDistanceCompletePrecomputed()
         : CDistanceCompletePrecomputed(NULL, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(ssize_t i, const ssize_t* /*M*/, ssize_t /*k*/) {
         return &this->dist[i*n]; // the i-th row of dist
     }
 };
