@@ -33,23 +33,24 @@ import setuptools
 from distutils.extension import Extension
 from distutils.command.sdist import sdist
 from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 import numpy as np
-
+import os.path
+import glob
 
 cython_modules = {
-    "genieclust.internal":              ["genieclust/internal.pyx"],
-    "genieclust.argfuns":               ["genieclust/argfuns.pyx"],
-    "genieclust.disjoint_sets":         ["genieclust/disjoint_sets.pyx"],
-    "genieclust.gini_disjoint_sets":    ["genieclust/gini_disjoint_sets.pyx"],
-    "genieclust.compare_partitions":    ["genieclust/compare_partitions.pyx"],
-    "genieclust.inequity":              ["genieclust/inequity.pyx"],
-    "genieclust.mst":                   ["genieclust/mst.pyx"]
+    "genieclust.internal":           [os.path.join("genieclust", "internal.pyx")],
+    "genieclust.argfuns":            [os.path.join("genieclust", "argfuns.pyx")],
+    "genieclust.disjoint_sets":      [os.path.join("genieclust", "disjoint_sets.pyx")],
+    "genieclust.gini_disjoint_sets": [os.path.join("genieclust", "gini_disjoint_sets.pyx")],
+    "genieclust.compare_partitions": [os.path.join("genieclust", "compare_partitions.pyx")],
+    "genieclust.inequity":           [os.path.join("genieclust", "inequity.pyx")],
+    "genieclust.mst":                [os.path.join("genieclust", "mst.pyx")]
 }
 
 
 class genieclust_sdist(sdist):
     def run(self):
-        from Cython.Build import cythonize
         for pyx_files in cython_modules.values():
             cythonize(pyx_files)
         sdist.run(self)
@@ -78,7 +79,9 @@ class genieclust_build_ext(build_ext):
 
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
-    language="c++"
+    language="c++",
+    depends=glob.glob(os.path.join("genieclust", "*.h"))+
+            glob.glob(os.path.join("genieclust", "*.pxd"))
 )
 
 
