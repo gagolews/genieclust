@@ -234,7 +234,7 @@ class Genie(BaseEstimator, ClusterMixin):
         nn_ind        = None
         spanning_tree = None
         if not cur_state["exact"]:
-            raise NotImplementedError("approximate method not implemented yet")
+            #raise NotImplementedError("approximate method not implemented yet")
 
             actual_n_neighbors = cur_state["n_neighbors"]
             if actual_n_neighbors < 0:
@@ -256,11 +256,12 @@ class Genie(BaseEstimator, ClusterMixin):
             nn.add(X)
             nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
 
-            nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n)))
-            print(nn_bad_where)
-            print(nn_ind[nn_bad_where,:5])
-            print(X[nn_bad_where,:])
-            assert nn_bad_where.shape[0] == 0
+            # @TODO:::::
+            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n)))[0]
+            #print(nn_bad_where)
+            #print(nn_ind[nn_bad_where,:5])
+            #print(X[nn_bad_where,:])
+            #assert nn_bad_where.shape[0] == 0
 
             nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
             nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")

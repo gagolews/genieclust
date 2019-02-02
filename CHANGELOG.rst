@@ -32,11 +32,11 @@
 
 * genieclust 0.XX (under development)
 
-  * The full distance matrix is not required now for computing an exact MST -
+  * The full distance matrix is now not required for computing an exact MST -
     the distances are computed on the fly; this is currently supported
     for `"euclidean"`, `"cityblock"`, and `"cosine"` distances.
-    The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$)
-    and so genieclust can solve much larger problems now.
+    The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$) -
+    genieclust can solve much larger problems now.
 
   * `sklearn.neighbors.NearestNeighbors`, `faiss`, or other search data
     structures are used to determine few first NNs when computing the mutual

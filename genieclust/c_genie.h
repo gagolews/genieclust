@@ -38,10 +38,11 @@
 #include <algorithm>
 #include <vector>
 #include <deque>
-#include "c_gini_disjoint_sets.h"
 #include <cassert>
 #include <cmath>
 
+#include "c_gini_disjoint_sets.h"
+#include "c_int_dict.h"
 
 
 /*! Compute the degree of each vertex in an undirected graph
@@ -115,62 +116,30 @@ protected:
     std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
 
 
-    // When the Genie correction is on, some MST edges will be chosen
-    // in non-consecutive order. An array-based skiplist will speed up
-    // searching within the not-yet-consumed edges.
-    // Also, if there are noise points, then the skiplist allows the algorithm
-    // to naturally ignore edges that connect the leaves.
-    std::vector<ssize_t> next_edge; //<! skip-list of non-yet-visited edges...
-    std::vector<ssize_t> prev_edge; //<! ...a doubly linked list it is.
-    ssize_t curidx;
-    ssize_t lastidx;
-
-
-    /*! Initializes curidx, lastidx, next_edge, and prev_edge */
-    void skiplist_init() {
-        if (noise_leaves) {
-            // start with a list that skips all edges that lead to noise points
-            curidx = -1;
-            lastidx = -1;
-            for (ssize_t i=0; i<n-1; ++i) {
-                ssize_t i1 = mst_i[2*i+0];
-                ssize_t i2 = mst_i[2*i+1];
-                if (deg[i1] > 1 && deg[i2] > 1) {
-                    // no-leaves, i.e., 2 non-noise points
-                    if (curidx < 0) {
-                        curidx = i; // the first non-leaf edge
-                        prev_edge[i] = -1;
-                    }
-                    else {
-                        next_edge[lastidx] = i;
-                        prev_edge[i] = lastidx;
-                    }
-                    lastidx = i;
-                }
-            }
-
-            next_edge[lastidx] = n-1;
-            lastidx = curidx; // first non-leaf
-        }
-        else {
-            // no noise leaves
-            curidx  = 0;
-            lastidx = 0;
-            for (ssize_t i=0; i<n-1; ++i) {
-                next_edge[i] = i+1;
-                prev_edge[i] = i-1;
-            }
+    /*! When the Genie correction is on, some MST edges will be chosen
+     * in non-consecutive order. An array-based skiplist will speed up
+     * searching within the not-yet-consumed edges. Also, if there are
+     * noise points, then the skiplist allows the algorithm
+     * to naturally ignore edges that connect the leaves. */
+    void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {
+        // start with a list that skips all edges that lead to noise points
+        mst_skiplist->clear();
+        for (ssize_t i=0; i<n-1; ++i) {
+            if (!noise_leaves || (deg[mst_i[i*2+0]]>1 && deg[mst_i[i*2+1]]>1))
+                    (*mst_skiplist)[i] = i;
         }
     }
 
 
-    void do_genie(CGiniDisjointSets* ds, ssize_t n_clusters, double gini_threshold)
+    void do_genie(CGiniDisjointSets* ds, CIntDict<ssize_t>* mst_skiplist,
+        ssize_t n_clusters, double gini_threshold)
     {
         if (n-noise_count-n_clusters <= 0) {
-            throw std::runtime_error("The requested number of clusters is too large \
-                with this many detected noise points");
+            throw std::runtime_error("The requested number of clusters \
+                is too large with this many detected noise points");
         }
 
+        ssize_t lastidx = mst_skiplist->get_key_min();
         ssize_t lastm = 0; // last minimal cluster size
         for (ssize_t i=0; i<n-noise_count-n_clusters; ++i) {
 
@@ -181,42 +150,32 @@ protected:
             if (ds->get_gini() > gini_threshold) {
                 // the Genie correction for inequity of cluster sizes
                 ssize_t m = ds->get_smallest_count();
-                if (m != lastm || lastidx < curidx)
-                    lastidx = curidx;
-                //assert 0 <= lastidx < n-1
+                if (m != lastm || lastidx < mst_skiplist->get_key_min()) {
+                    // need to start from the beginning of the MST skiplist
+                    lastidx = mst_skiplist->get_key_min();
+                }
+                // else reuse lastidx
 
+                // find the MST edge connecting a cluster of the smallest size
+                // with another one
                 while (ds->get_count(denoise_index_rev[mst_i[2*lastidx+0]]) != m
                     && ds->get_count(denoise_index_rev[mst_i[2*lastidx+1]]) != m)
                 {
-                    lastidx = next_edge[lastidx];
-                    //assert 0 <= lastidx < n-1
+                    lastidx = mst_skiplist->get_key_next(lastidx);
+                    assert(lastidx < n-1);
                 }
 
                 i1 = mst_i[2*lastidx+0];
                 i2 = mst_i[2*lastidx+1];
-
-                assert(lastidx >= curidx);
-                if (lastidx == curidx) {
-                    curidx = next_edge[curidx];
-                    lastidx = curidx;
-                }
-                else {
-                    ssize_t previdx;
-                    previdx = prev_edge[lastidx];
-                    lastidx = next_edge[lastidx];
-                    assert(0 <= previdx);
-                    assert(previdx < lastidx);
-                    assert(lastidx < n);
-                    next_edge[previdx] = lastidx;
-                    prev_edge[lastidx] = previdx;
-                }
+                ssize_t delme = lastidx;
+                lastidx = mst_skiplist->get_key_next(lastidx);
+                mst_skiplist->erase(delme); // O(1)
                 lastm = m;
             }
             else { // single linkage-like
-                // assert 0 <= curidx < n-1
+                ssize_t curidx = mst_skiplist->pop_key_min();
                 i1 = mst_i[2*curidx+0];
                 i2 = mst_i[2*curidx+1];
-                curidx = next_edge[curidx];
             }
 
             ds->merge(denoise_index_rev[i1], denoise_index_rev[i2]);
@@ -285,20 +244,19 @@ protected:
             }
             unused_edges.push_back(n-1);  // sentinel
             return unused_edges;
+            // EOF.
         }
 
         for (ssize_t i=0; i<n_thresholds; ++i) {
             double gini_threshold = gini_thresholds[i];
-            skiplist_init();
             CGiniDisjointSets ds(n-noise_count);
-            do_genie(&ds, n_clusters, gini_threshold);
+            CIntDict<ssize_t> mst_skiplist(n-1);
+            mst_skiplist_init(&mst_skiplist);
+            do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold);
 
-            // start where do_genie finished
-            ssize_t curidx2 = curidx;
-            while (curidx2 < n-1) {
-                unused_edges.push_back(curidx2);
-                curidx2 = next_edge[curidx2];
-            }
+            // start where do_genie concluded
+            while (!mst_skiplist.empty())
+                unused_edges.push_back(mst_skiplist.pop_key_min());
         }
 
         // let unused_edges = sort(unique(unused_edges))
@@ -319,8 +277,7 @@ protected:
 
 public:
     CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves)
-        : deg(n), denoise_index(n), denoise_index_rev(n),
-        next_edge(n), prev_edge(n)
+        : deg(n), denoise_index(n), denoise_index_rev(n)
     {
         this->mst_d = mst_d;
         this->mst_i = mst_i;
@@ -375,9 +332,10 @@ public:
      */
     void apply_genie(ssize_t n_clusters, double gini_threshold, int* res)
     {
-        skiplist_init();
         CGiniDisjointSets ds(n-noise_count);
-        do_genie(&ds, n_clusters, gini_threshold);
+        CIntDict<ssize_t> mst_skiplist(n-1);
+        mst_skiplist_init(&mst_skiplist);
+        do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold);
         get_labels(&ds, res);
     }
 

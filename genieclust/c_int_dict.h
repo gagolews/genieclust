@@ -260,12 +260,12 @@ public:
         }
         else if (i == tab_head) {
             // that was the least element
-            tab_head = tab_next[i];
+            tab_head = tab_next[tab_head];
             tab_prev[tab_head] = -1;
         }
         else if (i == tab_tail) {
             // that was the largest one
-            tab_tail = tab_prev[i];
+            tab_tail = tab_prev[tab_tail];
             tab_next[tab_tail] = n;
         }
         else {
@@ -288,6 +288,18 @@ public:
     ssize_t get_key_max() const { return tab_tail; }
     ssize_t get_key_next(ssize_t i) const { return tab_next[i]; }
     ssize_t get_key_prev(ssize_t i) const { return tab_prev[i]; }
+
+    ssize_t pop_key_min() {
+        ssize_t ret = tab_head;
+        erase(ret);
+        return ret;
+    }
+
+    ssize_t pop_key_max() {
+        ssize_t ret = tab_tail;
+        erase(ret);
+        return ret;
+    }
 
 
 
