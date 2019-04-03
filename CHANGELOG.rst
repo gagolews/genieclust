@@ -15,6 +15,8 @@
   * Add support for other `scipy.spatial` distances when computing
     an exact MST, in particular, the weighted Euclidean metric.
 
+  * Add support for distance matrices
+
   * Add support for sparse input matrices
 
   * Add support for connectivity matrices
