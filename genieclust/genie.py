@@ -294,7 +294,7 @@ class Genie(BaseEstimator, ClusterMixin):
                 nn = sklearn.neighbors.NearestNeighbors(
                     n_neighbors=cur_state["M"]-1, **cur_state["nn_params"])
                 nn_dist, nn_ind = nn.fit(X).kneighbors()
-                d_core = nn_dist[:,cur_state["M"]-2].astype(nn_dist.dtype, order="C")
+                d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
 
                 # 2. Use Prim's algorithm to determine the MST
                 #  w.r.t. the distances computed on the fly
