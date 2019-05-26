@@ -328,7 +328,8 @@ class Genie(BaseEstimator, ClusterMixin):
         # self.__last_nn_dist  = nn_dist
         # self.__last_nn_ind   = nn_ind
 
-
+        self._mst_dist = mst_dist
+        self._mst_ind  = mst_ind
 
         return self
 
