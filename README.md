@@ -79,8 +79,7 @@ Installation
 The package requires Python 3.6+ together with `cython` as well as
 `numpy`, `scipy`, `matplotlib` and `sklearn`.
 
-Optional dependencies: `rpy2`, `faiss`
-(e.g., `conda install faiss-cpu -c pytorch`).
+Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`).
 
 **TODO**: Windows builds
 
@@ -89,8 +88,7 @@ Optional dependencies: `rpy2`, `faiss`
 Via `pip` - see [PyPI](https://pypi.org/project/genieclust/):
 
 ```bash
-conda install pip      # if using conda
-pip install genieclust # or pip install genieclust --user
+pip3 install genieclust # or pip3 install genieclust --user
 ```
 
 
@@ -99,7 +97,7 @@ The most recent development version:
 ```bash
 git clone https://github.com/gagolews/genieclust.git
 cd genieclust
-python setup.py install --user
+python3 setup.py install --user
 ```
 
 
@@ -107,7 +105,7 @@ python setup.py install --user
 **TODO**: OpenMP support...:
 
 ```bash
-CPPFLAGS="-UNDEBUG -fopenmp" LDFLAGS="-fopenmp" python setup.py install --user
+CPPFLAGS="-UNDEBUG -fopenmp" LDFLAGS="-fopenmp" python3 setup.py install --user
 ```
 
 
