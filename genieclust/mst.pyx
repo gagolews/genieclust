@@ -10,7 +10,7 @@
 (a) Prim-Jarník's for Complete Undirected Graphs,
 (b) Kruskal's for k-NN graphs.
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -211,11 +211,11 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
 
 cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         bint stop_disconnected=True):
-    """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbor graph
+    """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbour graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
     Note that in general, the sum of weights in an MST of the (<=k)-nearest
-    neighbor graph might be greater than the sum of weights in a minimum
+    neighbour graph might be greater than the sum of weights in a minimum
     spanning tree of the complete pairwise distances graph.
 
     (*) or forest, if the input graph is unconnected. However,
@@ -273,6 +273,6 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
 
-    # @TODO use maybe_inexact ...
+    # TODO use maybe_inexact ...
 
     return mst_dist, mst_ind

@@ -1,6 +1,6 @@
 /*  class CGiniDisjointSets
  *
- *  Copyright (C) 2018-2019 Marek.Gagolewski.com
+ *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -177,7 +177,7 @@ public:
             number_of_size[size12] += 1; // long live cluster of size1+2
 
         // re-compute the normalized Gini index
-        // based on a formula given in @TODO:derive the formula nicely@
+        // based on a formula given in TODO:derive the formula nicely
         gini = 0.0;
         if (number_of_size.size() > 1) { // otherwise all clusters are of identical sizes
             ssize_t v = number_of_size.get_key_min();
@@ -188,7 +188,7 @@ public:
                 i += number_of_size[w];              // cumulative counts
                 gini += ((double)v-w)*i*((double)k-i);
             }
-            gini /= (double)(n*(k-1.0)); // this is the normalized Gini index
+            gini /= (double)(n*(k-1.0)); // this is the normalised Gini index
             if (gini > 1.0) gini = 1.0; // account for round-off errors
             if (gini < 0.0) gini = 0.0;
         }

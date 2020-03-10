@@ -15,7 +15,7 @@ See Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -72,7 +72,7 @@ cdef struct RandResult:
 cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:,:] C):
     """
     Applies pivoting to a given confusion matrix.
-    Nice if C actually summarizes clustering results,
+    Nice if C actually summarises clustering results,
     where actual labels do not matter.
 
     Parameters:
@@ -149,7 +149,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
 cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(intT[:] x, intT[:] y):
     """
     Computes the confusion matrix between x and y
-    and applies pivoting. Nice for summarizing clustering results,
+    and applies pivoting. Nice for summarising clustering results,
     where actual labels do not matter.
 
 

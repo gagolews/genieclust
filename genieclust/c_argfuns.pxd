@@ -10,7 +10,7 @@
 """
 Provides access to the Cargsort() and Cargkmin() functions.
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -40,6 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cdef extern from "c_argfuns.h":
+cdef extern from "../src/c_argfuns.h":
     void Cargsort[T](ssize_t* ret, T* x, ssize_t n, bint stable)
     ssize_t Cargkmin[T](T* x, ssize_t n, ssize_t k, ssize_t* buf)

@@ -1,5 +1,5 @@
-include README.rst
+include README.md
 include LICENSE
-include CHANGELOG.rst
-include genieclust/c_*.h
+include CHANGELOG.md
+include src/c_*.h
 include genieclust/c_*.pxd

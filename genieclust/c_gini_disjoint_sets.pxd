@@ -1,7 +1,7 @@
 """
 cppclass CGiniDisjointSets
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -32,7 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from libcpp.vector cimport vector
 
-cdef extern from "c_gini_disjoint_sets.h":
+cdef extern from "../src/c_gini_disjoint_sets.h":
     cdef cppclass CGiniDisjointSets:
         CGiniDisjointSets() except +
         CGiniDisjointSets(ssize_t) except +

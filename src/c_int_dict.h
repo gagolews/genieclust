@@ -1,6 +1,6 @@
 /*  class CIntDict
  *
- *  Copyright (C) 2018-2019 Marek.Gagolewski.com
+ *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -222,7 +222,7 @@ public:
             else {
                 // insert in the "middle"
                 // slow op
-                // @TODO skip list, etc. ??
+                // TODO skip list, etc. ??
                 ssize_t elem_before_i = tab_head;
                 while (tab_next[elem_before_i] < i)
                     elem_before_i = tab_next[elem_before_i];
@@ -340,24 +340,24 @@ public:
 
 
 
-    // @TODO /go ahead, write it, make a pull request/
+    // TODO /go ahead, write it, make a pull request/
     //Returns an iterator pointing to the element in the container
     // that has the greatest key
     // reverse_iterator rbegin()
 
-    // @TODO /go ahead, write it, make a pull request/
+    // TODO /go ahead, write it, make a pull request/
     //Returns an iterator pointing to the past-the-beginning element
     // reverse_iterator rend()
 
-    // @TODO /go ahead, write it, make a pull request/
+    // TODO /go ahead, write it, make a pull request/
     // cbegin, cend, crbegin, crend()
 
-    // @TODO /go ahead, write it, make a pull request/
+    // TODO /go ahead, write it, make a pull request/
     // Returns an iterator to an element with given key or returns an iterator to end() if not exists
     //      iterator find ( const key_type& k );
     //const_iterator find ( const key_type& k ) const;
 
-    // @TODO /go ahead, write it, make a pull request/
+    // TODO /go ahead, write it, make a pull request/
     // Removes  a single element from the  container
     //iterator erase ( const_iterator position ); //by position (1)
 

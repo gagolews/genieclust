@@ -12,7 +12,7 @@
 #############################################################################
 
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -174,14 +174,14 @@ cdef class DisjointSets:
 
     cpdef np.ndarray[ssize_t] to_list_normalized(self):
         """
-        Get the normalized elements' membership information.
+        Get the normalised elements' membership information.
 
 
         Returns:
         -------
 
         set_ids : ndarray, shape (n,)
-            A list m such that m[x] denotes the normalized parent id of x.
+            A list m such that m[x] denotes the normalised parent id of x.
             The resulting values are in {0,1,...,k-1}, where k is the current
             number of subsets in the partition.
         """

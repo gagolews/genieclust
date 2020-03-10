@@ -1,6 +1,6 @@
 """The Genie+ Clustering Algorithm
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -93,11 +93,11 @@ class Genie(BaseEstimator, ClusterMixin):
         The threshold for the Genie correction, i.e.,
         the Gini index of the cluster size distribution.
         Threshold of 1.0 disables the correction.
-        Low thresholds highly penalize the formation of small clusters.
+        Low thresholds highly penalise the formation of small clusters.
     M : int, default=1
         Smoothing factor. M=1 gives the original Genie algorithm.
     n_neighbors : int, default=-1
-        Number of nearest neighbors to compute for each data point.
+        Number of nearest neighbours to compute for each data point.
         n_neighbors < 0 picks the default one, typically several dozen,
         but no less than M. Note that the algorithm's memory
         consumption is proportional to n_samples*n_neighbors.
@@ -108,14 +108,14 @@ class Genie(BaseEstimator, ClusterMixin):
         choose "all".
     exact : bool, default=False
         If False, the minimum spanning tree shall be approximated
-        based on the nearest neighbors graph. Finding nearest neighbors
+        based on the nearest neighbours graph. Finding nearest neighbours
         in low dimensional spaces is usually fast. Otherwise,
         the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of O(n_samples*n_samples*n_features).
     allow_cast_float32 : bool, default=True
         Allow casting input data to float32 (for efficiency reasons, however,
-        increases total memory usage). Note that some nearest neighbor search
-        methods require float32 data anyway.  This also normalizes
+        increases total memory usage). Note that some nearest neighbour search
+        methods require float32 data anyway.  This also normalises
         the input coordinates so that the method is guaranteed to be translation
         and scale invariant.
     nn_params: dict, optional (default=None)
@@ -130,7 +130,7 @@ class Genie(BaseEstimator, ClusterMixin):
         Detected cluster labels for each point in the dataset given to fit():
         an integer vector c with c[i] denoting the cluster id
         (in {0, ..., n_clusters-1}) of the i-th object.
-        If M>1, noise points are labeled -1.
+        If M>1, noise points are labelled -1.
     """
 
     def __init__(self,

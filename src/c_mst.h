@@ -2,7 +2,7 @@
  *  a. Prim-Jarník's for Complete Undirected Graphs,
  *  b. Kruskal's for k-NN graphs.
  *
- *  Copyright (C) 2018-2019 Marek.Gagolewski.com
+ *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -94,10 +94,10 @@ struct CMstTriple {
 
 
 
-/*! Computes a minimum spanning tree of a (<=k)-nearest neighbor graph
+/*! Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
  *  using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
  *
- *  Note that, in general, an MST of the (<=k)-nearest neighbor graph
+ *  Note that, in general, an MST of the (<=k)-nearest neighbour graph
  *  might not be the MST of the complete Pairwise Distances Graph.
  *
  * @param dist   a c_contiguous array, shape (n,k),
@@ -110,7 +110,7 @@ struct CMstTriple {
  *        resulting MST edges in nondecreasing order
  * @param mst_ind [out] c_contiguous vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
- *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
+ *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
  *
  * @return number of edges in the minimal spanning forest
  */
@@ -222,7 +222,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
  *  C.F. Olson, Parallel algorithms for hierarchical clustering,
  *  Parallel Comput. 21 (1995) 1313–1325.
  *
- *  R. Prim, Shortest connection networks and some generalizations,
+ *  R. Prim, Shortest connection networks and some generalisations,
  *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
  *
  *

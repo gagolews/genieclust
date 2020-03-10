@@ -1,6 +1,6 @@
 """
-Genieclust Python Package
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Genieclust Package
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -80,13 +80,13 @@ class genieclust_build_ext(build_ext):
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
-    depends=glob.glob(os.path.join("genieclust", "*.h"))+
+    depends=glob.glob(os.path.join("src", "*.h"))+
             glob.glob(os.path.join("genieclust", "*.pxd"))
 )
 
 
 
-with open("README.rst", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -94,7 +94,7 @@ setuptools.setup(
     version="0.1a4",
     description="The Genie+ Clustering Algorithm",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     author="Marek Gagolewski",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",

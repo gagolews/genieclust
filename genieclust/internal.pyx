@@ -8,7 +8,7 @@
 
 """The Genie+ clustering algorithm (with extras)
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -71,7 +71,7 @@ ctypedef fused floatT:
 
 cpdef np.ndarray[floatT] core_distance(np.ndarray[floatT,ndim=2] dist, int M):
     """Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its M-th nearest neighbor.
+    the distance of each point to its M-th nearest neighbour.
     Note that M==1 always yields all the distances equal to 0.0.
     The core distances are needed when computing the mutual reachability
     distance in the HDBSCAN* algorithm.
@@ -422,7 +422,7 @@ cpdef np.ndarray[int] gic_from_mst(
     Clustering Algorithm (experimental edition)
     by Anna Cena
 
-    @TODO: describe
+    TODO: describe
 
 
     References
@@ -450,7 +450,7 @@ cpdef np.ndarray[int] gic_from_mst(
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
-        @TODO: describe
+        TODO: describe
         if of length 0, add_clusters is ignored and the procedure
         starts from a weak clustering (all are singletons) == Agglomerative-IC (ICA)
     noise_leaves : bool

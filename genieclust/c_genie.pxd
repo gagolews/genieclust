@@ -10,7 +10,7 @@
 """
 Provides access to the CGenie class.
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cdef extern from "c_genie.h":
+cdef extern from "../src/c_genie.h":
     cdef void Cget_graph_node_degrees(ssize_t* ind, ssize_t num_edges,
             ssize_t n, ssize_t* deg)
 

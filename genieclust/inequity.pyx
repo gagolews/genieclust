@@ -9,7 +9,7 @@
 """
 Economic Inequity (Inequality) Measures
 
-Copyright (C) 2018-2019 Marek.Gagolewski.com
+Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -63,7 +63,7 @@ cdef T square(T x):
 
 cpdef double gini(T[:] x, bint is_sorted=False):
     """
-    The Normalized Gini index:
+    The Normalised Gini index:
 
     $$
         G(x_1,\dots,x_n) = \frac{
@@ -117,7 +117,7 @@ cpdef double gini(T[:] x, bint is_sorted=False):
 
 cpdef double bonferroni(T[:] x, bint is_sorted=False):
     """
-    The Normalized Bonferroni index:
+    The Normalised Bonferroni index:
     $$
         B(x_1,\dots,x_n) = \frac{
         \sum_{i=1}^{n}  \left( n-\sum_{j=1}^i \frac{n}{n-j+1} \right) x_{\sigma(n-i+1)}
