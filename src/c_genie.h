@@ -48,7 +48,7 @@
 /*! Compute the degree of each vertex in an undirected graph
  * over vertex set {0,...,n-1}
  *
- * Edges with ind[2*i+0]<0 or ind[2*i+1]<0 are purposely ignored
+ * Edges with ind[2*i+0] < 0 or ind[2*i+1] < 0 are purposely ignored
  *
  * @param ind array of size num_edges*2, giving the edges' definition
  * @param num_edges number of edges
@@ -412,7 +412,7 @@ public:
             cluster_d_sums[i2]  = INFTY;
         }
 
-        /*  The objective function to MINIMIZE is
+        /*  The objective function to MINIMISE is
             sum_{i in ds.parents()} cluster_sizes[i] * (
                 n_features     * log cluster_sizes[i]
               -(n_features-1)  * log cluster_d_sums[i]

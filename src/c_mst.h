@@ -94,11 +94,11 @@ struct CMstTriple {
 
 
 
-/*! Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
+/*! Computes a minimum spanning forest of a (<=k)-nearest neighbour graph
  *  using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
  *
  *  Note that, in general, an MST of the (<=k)-nearest neighbour graph
- *  might not be the MST of the complete Pairwise Distances Graph.
+ *  might not be equal to the MST of the complete Pairwise Distances Graph.
  *
  * @param dist   a c_contiguous array, shape (n,k),
  *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
@@ -107,10 +107,17 @@ struct CMstTriple {
  * @param n number of nodes
  * @param k minimal degree of all the nodes
  * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
- *        resulting MST edges in nondecreasing order
+ *        resulting MST edges in nondecreasing order;
+ *        refer to the function's return value for the actual number
+ *        of edges generated
  * @param mst_ind [out] c_contiguous vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
- *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
+ *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j;
+ *        refer to the function's return value for the actual number
+ *        of edges generated
+ * @param maybe_inexact [out] 1 indicates that k should be increased to
+ * guarantee that the resulting tree would be the same if a complete
+ * pairwise distance graph was given.
  *
  * @return number of edges in the minimal spanning forest
  */
@@ -145,7 +152,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
     CDisjointSets ds(n);
     while (mst_edge_cur < n-1) {
         if (arg_dist_cur == nk /*pq.empty()*/) {
-            // The input graph is not connected
+            // The input graph is not connected (we have a forest)
             ssize_t ret = mst_edge_cur;
             while (mst_edge_cur < n-1) {
                 mst_ind[2*mst_edge_cur+0] = -1;
@@ -235,7 +242,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
  *        resulting MST edges in nondecreasing order
  * @param mst_i [out] vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
- *        corresponding to mst_d, with mst_i[j,0]<mst_i[j,1] for all j
+ *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
  */
 template <class T>
 void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
@@ -278,6 +285,7 @@ void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
         res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);
     }
 
+    // sort the resulting MST edges in nondecreasing order w.r.t. d
     std::sort(res.begin(), res.end());
 
     for (ssize_t i=0; i<n-1; ++i) {

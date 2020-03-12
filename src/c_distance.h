@@ -71,7 +71,7 @@ struct CDistance {
 
 /*! A class to "compute" the distances from the i-th point
  *  to all n points based on a pre-computed n*n symmetric,
- *  complete pairwise matrix.
+ *  complete pairwise distance c_contiguous matrix.
  */
 template<class T>
 struct CDistanceCompletePrecomputed : public CDistance<T> {
@@ -108,6 +108,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
     const T* X;
     ssize_t n;
     ssize_t d;
+    bool squared;
     std::vector<T> buf;
     // std::vector<T> sqnorm;
 
@@ -116,12 +117,13 @@ struct CDistanceEuclidean : public CDistance<T>  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d)
+    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d, bool squared=false)
             : buf(n)//, sqnorm(n)
     {
         this->n = n;
         this->d = d;
         this->X = X;
+        this->squared = squared;
 
 //         T* __sqnorm = sqnorm.data();
 // #ifdef _OPENMP
@@ -150,11 +152,15 @@ struct CDistanceEuclidean : public CDistance<T>  {
             //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
             __buf[w] = 0.0;
 
-            const T* x = X+d*i;
-            const T* y = X+d*w;
+//             const T* x = X+d*i;
+//             const T* y = X+d*w;
+//             for (ssize_t u=0; u<d; ++u) {
+//                 __buf[w] += (*x-*y)*(*x-*y);
+//                 ++x; ++y;
+//             }
+
             for (ssize_t u=0; u<d; ++u) {
-                __buf[w] += (*x-*y)*(*x-*y);
-                ++x; ++y;
+                __buf[w] += square(X[d*i+u]-X[d*w+u]);
             }
 
             // // did you know that (x-y)**2 = x**2 + y**2 - 2*x*y ?
@@ -165,7 +171,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
             // }
             // __buf[w] = 2.0*__buf[w]+__sqnorm[i]+__sqnorm[w];
 
-            __buf[w] = sqrt(__buf[w]);
+            if (!squared) __buf[w] = sqrt(__buf[w]);
         }
         return __buf;
     }
@@ -207,7 +213,7 @@ struct CDistanceManhattan : public CDistance<T>  {
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
             // if (w < 0 || w >= n)
-            //     throw std::ruantime_error("ASSERT FAIL: CDistanceManhattan");
+            //     throw std::runtime_error("ASSERT FAIL: CDistanceManhattan");
             __buf[w] = 0.0;
 
             for (ssize_t u=0; u<d; ++u) {

@@ -45,7 +45,7 @@
  *
  *  A class to represent partitions of the set {0,1,...,n-1} for any n.
  *
- *  The class allows to compute the normalized Gini index of the distribution
+ *  The class allows to compute the normalised Gini index of the distribution
  *  of subset sizes, i.e.,
  *  \[
  *   G(x_1,\dots,x_k) = \frac{
@@ -129,7 +129,7 @@ public:
      *  If px < py, then the new parent id of py will be set to py.
      *  Otherwise, px will have py as its parent.
      *
-     *  If x and y are already members of the same subset,
+     *  If x and y are members of the same subset,
      *  an exception is thrown.
      *
      *  @return the id of the parent of x or y, whichever is smaller.
@@ -177,7 +177,7 @@ public:
             number_of_size[size12] += 1; // long live cluster of size1+2
 
         // re-compute the normalized Gini index
-        // based on a formula given in TODO:derive the formula nicely
+        // based on a formula given in [TODO:derive the formula nicely]
         gini = 0.0;
         if (number_of_size.size() > 1) { // otherwise all clusters are of identical sizes
             ssize_t v = number_of_size.get_key_min();
