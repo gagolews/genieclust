@@ -100,7 +100,7 @@ cpdef np.ndarray[floatT] core_distance(np.ndarray[floatT,ndim=2] dist, int M):
 
     d_core : ndarray, shape (n_samples,)
         d_core[i] gives the distance between the i-th point and its M-th nearest
-        neighbor. The i-th point's 1st nearest neighbor is the i-th point itself.
+        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
     """
     cdef ssize_t n = dist.shape[0], i, j
     cdef floatT v

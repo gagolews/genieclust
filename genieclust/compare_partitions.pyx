@@ -45,14 +45,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
 import numpy as np
-from libc.math cimport fabs, sqrt
-from numpy.math cimport INFINITY
-import scipy.spatial.distance
-import warnings
+from . cimport c_compare_partitions
+
 
 ctypedef fused intT:
     int
@@ -61,15 +57,7 @@ ctypedef fused intT:
     ssize_t
 
 
-
-cdef struct RandResult:
-    double ar
-    double r
-    double fm
-    double afm
-
-
-cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:,:] C):
+cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     """
     Applies pivoting to a given confusion matrix.
     Nice if C actually summarises clustering results,
@@ -79,7 +67,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:,:] C):
     ----------
 
     C : ndarray, shape (kx,ky)
-        a confusion matrix
+        a c_contiguous confusion matrix
 
 
     Returns:
@@ -87,18 +75,12 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:,:] C):
 
     C_normalized: ndarray, shape(kx,ky)
     """
-    cdef np.ndarray[ssize_t,ndim=2] C2 = np.array(C, dtype=np.intp)
-    cdef ssize_t xc = C2.shape[0], yc = C2.shape[1]
-    cdef ssize_t i, j, w
+    cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(C, dtype=np.intp)
+    cdef ssize_t xc = C_normalized.shape[0]
+    cdef ssize_t yc = C_normalized.shape[1]
+    c_compare_partitions.Capply_pivoting(&C_normalized[0,0], xc, yc)
+    return C_normalized
 
-    for i in range(xc-1):
-        w = i
-        for j in range(i+1, yc): # find w = argmax C[i,w], w=i,i+1,...yc-1
-            if C2[i,w] < C2[i,j]: w = j
-        for j in range(xc): # swap columns i and w
-            C2[j,i], C2[j,w] = C2[j,w], C2[j,i]
-
-    return C2
 
 
 cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
@@ -119,31 +101,27 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
     C : ndarray, shape (kx, ky)
         a confusion matrix
     """
-    cdef ssize_t n = x.shape[0], i
+    cdef ssize_t n = x.shape[0]
     if n != y.shape[0]: raise ValueError("incompatible lengths")
+    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 10000
 
-    cdef intT xmin = x[0], ymin = y[0]
-    cdef intT xmax = x[0], ymax = y[0]
-    for i in range(1, n):
-        if   x[i] < xmin: xmin = x[i]
-        elif x[i] > xmax: xmax = x[i]
-
-        if   y[i] < ymin: ymin = y[i]
-        elif y[i] > ymax: ymax = y[i]
-
+    cdef np.ndarray[ssize_t] _x = np.array(x, dtype=np.intp)
+    cdef ssize_t xmin, xmax
+    c_compare_partitions.Cminmax(<ssize_t*>(&_x[0]), n, <ssize_t*>(&xmin), <ssize_t*>(&xmax))
     cdef ssize_t xc = (xmax-xmin+1)
+
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef ssize_t ymin, ymax
+    c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
     cdef ssize_t yc = (ymax-ymin+1)
 
-    # if xc == yc == 1 or xc == yc == 0 or xc == yc == n: return 1.0
+    if xc*yc > CONFUSION_MATRIX_MAXSIZE:
+        raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
-    if xc*yc > 10000:
-        raise ValueError("max_size of the confusion matrix exceeded")
-
-    cdef np.ndarray[ssize_t,ndim=2] C = np.zeros((xc, yc), dtype=np.intp)
-    for i in range(n):
-        C[x[i]-xmin, y[i]-ymin] += 1
-
+    cdef np.ndarray[ssize_t,ndim=2] C = np.empty((xc, yc), dtype=np.intp)
+    c_compare_partitions.Ccontingency_table(&C[0,0], xc, yc, xmin, ymin, &_x[0], &_y[0], n)
     return C
+
 
 
 cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(intT[:] x, intT[:] y):
@@ -172,7 +150,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(intT[:] x, intT[:] 
 
 
 
-cpdef RandResult compare_partitions(ssize_t[:,:] C):
+cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:,::1] C):
     """
     Computes the adjusted and nonadjusted Rand- and FM scores
     based on a given confusion matrix.
@@ -195,43 +173,12 @@ cpdef RandResult compare_partitions(ssize_t[:,:] C):
         the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
         Fowlkes-Mallows scores, respectively.
     """
-    cdef ssize_t xc = C.shape[0], yc = C.shape[1], i, j
-    cdef ssize_t n = 0
-    for i in range(xc):
-        for j in range(yc):
-            n += C[i, j]
-
-    cdef double sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0
-    cdef double t, prod_comb, mean_comb, e_fm
-    for i in range(xc):
-        t = 0.0
-        for j in range(yc):
-            t += C[i, j]
-            sum_comb += C[i, j]*(C[i, j]-1.0)*0.5
-        sum_comb_x += t*(t-1.0)*0.5 # comb2(t)
-
-    for j in range(yc):
-        t = 0.0
-        for i in range(xc):
-            t += C[i, j]
-        sum_comb_y += t*(t-1.0)*0.5 # comb2(t)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions(&C[0,0], xc, yc)
 
 
-    prod_comb = (sum_comb_x*sum_comb_y)/n/(n-1.0)*2.0 # expected sum_comb,
-                                        # see Eq.(2) in (Hubert, Arabie, 1985)
-    mean_comb = (sum_comb_x+sum_comb_y)*0.5
-    e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y) # expected FM (variant)
-
-    cdef RandResult res
-    res.ar  = (sum_comb-prod_comb)/(mean_comb-prod_comb)
-    res.r   = 1.0 + (2.0*sum_comb - (sum_comb_x+sum_comb_y))/n/(n-1.0)*2.0
-    res.fm  = sum_comb/sqrt(sum_comb_x*sum_comb_y)
-    res.afm = (res.fm - e_fm)/(1.0 - e_fm) # Eq.(4) in (Hubert, Arabie, 1985)
-
-    return res
-
-
-cpdef RandResult compare_partitions2(intT[:] x, intT[:] y):
+cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(intT[:] x, intT[:] y):
     """
     Calls compare_partitions(confusion_matrix(x, y)).
 
