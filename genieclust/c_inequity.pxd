@@ -8,8 +8,7 @@
 
 
 """
-Provides access to the Ccontingency_table(), Capply_pivoting()
-and Ccompare_partitions() functions.
+Provides access to Inequity (Inequality) Measuress.
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -41,19 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cdef extern from "../src/c_compare_partitions.h":
-    cdef struct CComparePartitionsResult:
-        double ar
-        double r
-        double fm
-        double afm
-
-    void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
-
-    void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
-        ssize_t xmin, ssize_t ymin,
-        ssize_t* x, ssize_t* y, ssize_t n)
-
-    void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc)
-
-    CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize_t yc)
+cdef extern from "../src/c_inequity.h":
+    double Cgini_sorted[T](const T* x, ssize_t n)
+    double Cbonferroni_sorted[T](const T* x, ssize_t n)

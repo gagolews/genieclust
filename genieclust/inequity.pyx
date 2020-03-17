@@ -39,14 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
 cimport numpy as np
 import numpy as np
-from libc.math cimport fabs, sqrt
-from numpy.math cimport INFINITY
-import scipy.spatial.distance
-import warnings
-
+from . cimport c_inequity
 
 ctypedef fused T:
     int
@@ -104,15 +99,8 @@ cpdef double gini(T[:] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef ssize_t n = x.shape[0]
-    cdef double s = 0.0, t = 0.0
-    cdef ssize_t i
+    return c_inequity.Cgini_sorted(&x[0], x.shape[0])
 
-    for i in range(1,n+1):
-        t += x[n-i]
-        s += (n-2.0*i+1.0)*x[n-i]
-
-    return s/(n-1.0)/t
 
 
 cpdef double bonferroni(T[:] x, bint is_sorted=False):
@@ -148,50 +136,4 @@ cpdef double bonferroni(T[:] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    cdef ssize_t n = x.shape[0]
-    cdef double s = 0.0, t = 0.0, c = 0.0
-    cdef ssize_t i
-
-    for i in range(1,n+1):
-        c += n/<double>(n-i+1.0)
-        t += x[n-i]
-        s += (n-c)*x[n-i]
-
-    return s/(n-1.0)/t
-
-
-#cpdef np.float64_t coefvar(np.ndarray[T] x, bint is_sorted=False):
-    #"""
-    #Coefficient of variation
-
-        #$$
-        #C(x_1,\dots,x_n) = \sqrt{\frac{
-        #\sum_{i=1}^{n-1} \sum_{j=i+1}^n (x_i-x_j)^2
-        #}{
-        #(n-1) \sum_{i=1}^n x_i^2
-        #}}.
-        #$$
-
-    #Is this an inequity measures BTW?
-    #"""
-
-    ## sorting is not necessary
-    #cdef unsigned int n = len(x)
-    #cdef np.float64_t s = 0.0, t = square(x[0])
-    #cdef unsigned int i, j
-
-    #for i in range(n-1):
-        #t += square(x[i+1])
-        #for j in range(i+1, n):
-            #s += square(x[i]-x[j])
-
-    #return cmath.sqrt(s/(n-1.0)/t)
-
-
-# cpdef np.float64_t vergottini(np.ndarray[T] x, bint is_sorted=False):
-# "de Vergottini index
-#    x <- sort(x, decreasing=TRUE)
-#    n <- length(x)
-#    vmax <- sum(1/(2:n))
-#    (sum(sapply(1:length(x), function(i) mean(x[1:i])))/sum(x)-1)/vmax
-# }
+    return c_inequity.Cbonferroni_sorted(&x[0], x.shape[0])

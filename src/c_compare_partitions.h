@@ -64,7 +64,7 @@ inline double Ccomb2(double t)
  * @param xmax [out] the maximum of x
  */
 template<class T>
-void Cminmax(T* x, ssize_t n, T* xmin, T* xmax)
+void Cminmax(const T* x, ssize_t n, T* xmin, T* xmax)
 {
     *xmin = x[0];
     *xmax = x[0];
@@ -93,6 +93,8 @@ struct CComparePartitionsResult {
  *
  *  This comes in handy whenever C actually summarises the results generated
  *  by clustering algorithms, where actual label values do not matter.
+ *
+ *
  *
  * @param C [in/out] a c_contiguous confusion matrix of size xc*yc
  * @param xc number of rows in C
@@ -155,7 +157,7 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
  *
  * @return The computed scores.
  */
-CComparePartitionsResult Ccompare_partitions(ssize_t* C, ssize_t xc, ssize_t yc)
+CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize_t yc)
 {
     ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
