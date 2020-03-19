@@ -102,7 +102,7 @@ void Cmerge_boundary_points(
 
         //c[u] = -1; // it's negative anyway
         for (ssize_t j=0; j<M-1; ++j) {
-            if (nn[v*num_edges+j] == u) {
+            if (nn[v*num_neighbours+j] == u) {
                 // yes, it's a boundary point
                 c[u] = c[v];
                 break;

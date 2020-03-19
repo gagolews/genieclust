@@ -50,13 +50,6 @@ import numpy as np
 from . cimport c_compare_partitions
 
 
-ctypedef fused intT:
-    int
-    long
-    long long
-    ssize_t
-
-
 cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     """
     Applies pivoting to a given confusion matrix.
@@ -83,7 +76,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
 
 
 
-cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
+cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     """
     Computes the confusion matrix (as a dense matrix)
 
@@ -101,20 +94,19 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
     C : ndarray, shape (kx, ky)
         a confusion matrix
     """
-    cdef ssize_t n = x.shape[0]
-    if n != y.shape[0]: raise ValueError("incompatible lengths")
-    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 10000
-
     cdef np.ndarray[ssize_t] _x = np.array(x, dtype=np.intp)
+    cdef ssize_t n = _x.shape[0]
     cdef ssize_t xmin, xmax
     c_compare_partitions.Cminmax(<ssize_t*>(&_x[0]), n, <ssize_t*>(&xmin), <ssize_t*>(&xmax))
     cdef ssize_t xc = (xmax-xmin+1)
 
     cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+    if n != y.shape[0]: raise ValueError("incompatible lengths")
     cdef ssize_t ymin, ymax
     c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
     cdef ssize_t yc = (ymax-ymin+1)
 
+    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 10000
     if xc*yc > CONFUSION_MATRIX_MAXSIZE:
         raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
@@ -124,7 +116,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(intT[:] x, intT[:] y):
 
 
 
-cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(intT[:] x, intT[:] y):
+cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     """
     Computes the confusion matrix between x and y
     and applies pivoting. Nice for summarising clustering results,
@@ -178,7 +170,7 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:
     return c_compare_partitions.Ccompare_partitions(&C[0,0], xc, yc)
 
 
-cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(intT[:] x, intT[:] y):
+cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(x, y):
     """
     Calls compare_partitions(confusion_matrix(x, y)).
 
@@ -201,7 +193,7 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(intT[:] 
     return compare_partitions(confusion_matrix(x, y))
 
 
-cpdef double adjusted_rand_score(intT[:] x, intT[:] y):
+cpdef double adjusted_rand_score(x, y):
     """
     The Rand index adjusted for chance.
 
@@ -227,7 +219,7 @@ cpdef double adjusted_rand_score(intT[:] x, intT[:] y):
     return compare_partitions(confusion_matrix(x, y)).ar
 
 
-cpdef double rand_score(intT[:] x, intT[:] y):
+cpdef double rand_score(x, y):
     """
     The original Rand index (not adjusted for chance),
     yielding the `probability' of agreement between the two partitions
@@ -254,7 +246,7 @@ cpdef double rand_score(intT[:] x, intT[:] y):
     return compare_partitions(confusion_matrix(x, y)).r
 
 
-cpdef double adjusted_fm_score(intT[:] x, intT[:] y):
+cpdef double adjusted_fm_score(x, y):
     """
     The Fowlkes-Mallows index adjusted for chance,
 
@@ -278,7 +270,7 @@ cpdef double adjusted_fm_score(intT[:] x, intT[:] y):
     return compare_partitions(confusion_matrix(x, y)).afm
 
 
-cpdef double fm_score(intT[:] x, intT[:] y):
+cpdef double fm_score(x, y):
     """
     The original Fowlkes-Mallows index (not adjusted for chance)
 

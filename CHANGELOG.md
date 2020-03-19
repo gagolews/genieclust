@@ -1,37 +1,6 @@
 `genieclust` package CHANGELOG
 ==============================
 
-## TODO:
-
--   Allow approximate nearest neighbours, e.g.,
-    <http://www.cs.ubc.ca/research/flann/>
-    <https://github.com/facebookresearch/faiss> or
-    <https://github.com/spotify/annoy>
-    <https://github.com/nmslib/nmslib> [NN-descent...]
-    <https://github.com/nmslib/hnswlib> ; some will also enable
-    sparse input data (e.g., for text mining applications)
-
--   Add support for other `scipy.spatial` distances when
-    computing an exact MST, in particular, the weighted Euclidean
-    metric.
-
--   Add support for distance matrices
-
--   Add support for sparse input matrices
-
--   Add support for connectivity matrices
-
--   Output full cluster hierarchy -- see the Z matrix in
-    `scipy.cluster.hierarchy.linkage`
-
--   Implement Ania's and Adreas' linkage criteria
-
--   [INTERNAL] [VERY LOW PRIORITY] make DisjointSets and
-    GiniDisjointSets serializable: implement the
-    `__setstate__(self, state)` and
-    `__getstate__(self)` methods.
-
--   Add `genieclust.plots.abline()`
 
 
 ## genieclust 0.XX (under development)

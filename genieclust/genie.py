@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 import numpy as np
 from . import internal
 from . import mst
+from . import postprocess
 import scipy.spatial.distance
 from sklearn.base import BaseEstimator, ClusterMixin
 import sklearn.neighbors

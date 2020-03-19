@@ -89,7 +89,7 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
-cpdef np.ndarray[int] genie_from_mst(
+cpdef np.ndarray[ssize_t] genie_from_mst(
         floatT[::1] mst_d,
         ssize_t[:,::1] mst_i,
         ssize_t n_clusters=2,
@@ -171,7 +171,7 @@ cpdef np.ndarray[int] genie_from_mst(
 # (experimental, under construction)
 #############################################################################
 
-cpdef np.ndarray[int] gic_from_mst(
+cpdef np.ndarray[ssize_t] gic_from_mst(
         floatT[::1] mst_d,
         ssize_t[:,::1] mst_i,
         double n_features,

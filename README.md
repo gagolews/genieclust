@@ -65,8 +65,8 @@ Package Features
 Examples
 --------
 
--   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/example_genie_basic.ipynb)
--   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/example_genie_hdbscan.ipynb)
+-   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/notebooks/example_genie_basic.ipynb)
+-   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/notebooks/example_noisy.ipynb)
 
 
 
