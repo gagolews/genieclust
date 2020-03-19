@@ -27,7 +27,9 @@ def test_compare_partitions():
             assert adjusted_fm_score(x, y)>1.0-1e-9
             assert fm_score(x, y)>1.0-1e-9
 
-            # @TODO@: more tests...
+            # TODO: more tests...
+
+
 
 if __name__ == "__main__":
     test_compare_partitions()

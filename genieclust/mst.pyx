@@ -46,7 +46,7 @@ cimport numpy as np
 from . cimport c_mst
 import numpy as np
 cimport libc.math
-
+from libcpp cimport bool
 
 ctypedef fused floatT:
     float
@@ -210,7 +210,8 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
 
 
 cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
-        bint stop_disconnected=True):
+        bint stop_disconnected=True,
+        bint stop_inexact=False):
     """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbour graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
@@ -265,7 +266,7 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
-    cdef int maybe_inexact
+    cdef bool maybe_inexact
 
     cdef ssize_t n_edges = c_mst.Cmst_from_nn(&dist[0,0], &ind[0,0], n, k,
              &mst_dist[0], &mst_ind[0,0], &maybe_inexact)
@@ -273,6 +274,7 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
 
-    # TODO use maybe_inexact ...
+    if stop_inexact and maybe_inexact:
+        raise ValueError("MST maybe inexact")
 
     return mst_dist, mst_ind

@@ -2,7 +2,7 @@ import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import*
 from genieclust.mst import *
-from genieclust.internal import mutual_reachability_distance, core_distance
+from genieclust.deprecated import mutual_reachability_distance, core_distance
 import time
 import gc
 
@@ -52,6 +52,12 @@ def test_hdbscan():
             D1 = None
             D2 = None
 
+
+# Note that CDistanceMutualReachability is tested in test_mst.py
+
+
+
+
 if __name__ == "__main__":
-    print("@TODO: these tests are far from complete...")
+    print("TODO: add more tests!!!!") # TODO
     test_hdbscan()

@@ -38,11 +38,14 @@ import numpy as np
 import os.path
 import glob
 
+
 cython_modules = {
     "genieclust.internal":
         [os.path.join("genieclust", "internal.pyx")],
     "genieclust.postprocess":
         [os.path.join("genieclust", "postprocess.pyx")],
+    "genieclust.deprecated":
+        [os.path.join("genieclust", "deprecated.pyx")],
     "genieclust.argfuns":
         [os.path.join("genieclust", "argfuns.pyx")],
     "genieclust.disjoint_sets":

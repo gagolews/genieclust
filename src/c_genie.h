@@ -189,9 +189,9 @@ protected:
      * @param ds disjoint sets representing the partition
      * @param res [out] array of length n
      */
-    void get_labels(CDisjointSets* ds, int* res) {
-        std::vector<int> res_cluster_id(n, -1);
-        int c = 0;
+    void get_labels(CDisjointSets* ds, ssize_t* res) {
+        std::vector<ssize_t> res_cluster_id(n, -1);
+        ssize_t c = 0;
         for (ssize_t i=0; i<n; ++i) {
             if (denoise_index_rev[i] >= 0) {
                 // a non-noise point
@@ -332,7 +332,7 @@ public:
      * @param gini_threshold the Gini index threshold
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_genie(ssize_t n_clusters, double gini_threshold, int* res)
+    void apply_genie(ssize_t n_clusters, double gini_threshold, ssize_t* res)
     {
         CGiniDisjointSets ds(n-noise_count);
         CIntDict<ssize_t> mst_skiplist(n-1);
@@ -370,7 +370,7 @@ public:
                    double n_features,
                    double* gini_thresholds,
                    ssize_t n_thresholds,
-                   int* res)
+                   ssize_t* res)
     {
         assert(add_clusters>=0);
         assert(n_clusters>=1);

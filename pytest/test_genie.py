@@ -24,7 +24,7 @@ def test_genie(metric='euclidean'):
             labels = np.random.choice(np.r_[1,2], n)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
-            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intc)-1
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 
         k = len(np.unique(labels[labels>=0]))
 
@@ -51,7 +51,7 @@ def test_genie(metric='euclidean'):
             res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
             t12 = time.time()
             print("t_r=%.3f" % (t12-t02), end="\t")
-            res2 = np.array(res2, np.intc)
+            res2 = np.array(res2, np.intp)
             assert len(np.unique(res2)) == k
 
             ari = adjusted_rand_score(res1, res2)

@@ -271,7 +271,7 @@ class Genie(BaseEstimator, ClusterMixin):
                 raise NotImplementedError("approximate method not implemented yet")
 
             # t0 = time.time()
-            mst_dist, mst_ind = mst.mst_from_nn(nn_dist, nn_ind, stop_disconnected=True)
+            mst_dist, mst_ind = mst.mst_from_nn(nn_dist, nn_ind, stop_disconnected=True, stop_inexact=False)
             # print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]

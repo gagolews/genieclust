@@ -115,7 +115,7 @@ struct CMstTriple {
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j;
  *        refer to the function's return value for the actual number
  *        of edges generated
- * @param maybe_inexact [out] 1 indicates that k should be increased to
+ * @param maybe_inexact [out] true indicates that k should be increased to
  * guarantee that the resulting tree would be the same if a complete
  * pairwise distance graph was given.
  *
@@ -124,7 +124,7 @@ struct CMstTriple {
 template <class T>
 ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
     ssize_t n, ssize_t k,
-    T* mst_dist, ssize_t* mst_ind, int* maybe_inexact)
+    T* mst_dist, ssize_t* mst_ind, bool* maybe_inexact)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
@@ -148,7 +148,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
 
     ssize_t arg_dist_cur = 0;
     ssize_t mst_edge_cur = 0;
-    *maybe_inexact = 0;
+    *maybe_inexact = false;
     CDisjointSets ds(n);
     while (mst_edge_cur < n-1) {
         if (arg_dist_cur == nk /*pq.empty()*/) {
@@ -181,9 +181,9 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
         //    nn_used[u]++;                         // mark u's NN as used
         //}
         //else
-        //    *maybe_inexact = 1; // we've run out of elems
+        //    *maybe_inexact = true; // we've run out of elems
         nn_used[u]++;
-        if (nn_used[u] == k) *maybe_inexact = 1;
+        if (nn_used[u] == k) *maybe_inexact = true;
 
         if (ds.find(u) == ds.find(v))
             continue;
