@@ -39,13 +39,22 @@ import os.path
 import glob
 
 cython_modules = {
-    "genieclust.internal":           [os.path.join("genieclust", "internal.pyx")],
-    "genieclust.argfuns":            [os.path.join("genieclust", "argfuns.pyx")],
-    "genieclust.disjoint_sets":      [os.path.join("genieclust", "disjoint_sets.pyx")],
-    "genieclust.gini_disjoint_sets": [os.path.join("genieclust", "gini_disjoint_sets.pyx")],
-    "genieclust.compare_partitions": [os.path.join("genieclust", "compare_partitions.pyx")],
-    "genieclust.inequity":           [os.path.join("genieclust", "inequity.pyx")],
-    "genieclust.mst":                [os.path.join("genieclust", "mst.pyx")]
+    "genieclust.internal":
+        [os.path.join("genieclust", "internal.pyx")],
+    "genieclust.postprocess":
+        [os.path.join("genieclust", "postprocess.pyx")],
+    "genieclust.argfuns":
+        [os.path.join("genieclust", "argfuns.pyx")],
+    "genieclust.disjoint_sets":
+        [os.path.join("genieclust", "disjoint_sets.pyx")],
+    "genieclust.gini_disjoint_sets":
+        [os.path.join("genieclust", "gini_disjoint_sets.pyx")],
+    "genieclust.compare_partitions":
+        [os.path.join("genieclust", "compare_partitions.pyx")],
+    "genieclust.inequity":
+        [os.path.join("genieclust", "inequity.pyx")],
+    "genieclust.mst":
+        [os.path.join("genieclust", "mst.pyx")]
 }
 
 
@@ -107,7 +116,7 @@ setuptools.setup(
           "sklearn"
       ],
     download_url="https://github.com/gagolews/genieclust",
-    url="http://www.gagolewski.com/software/genie/",
+    url="http://www.gagolewski.com/software/genieclust/",
     project_urls={
         "Bug Tracker":   "https://github.com/gagolews/genieclust/issues",
         "Documentation": "https://github.com/gagolews/genieclust",

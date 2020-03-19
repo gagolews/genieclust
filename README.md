@@ -150,15 +150,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 References
 ----------
 
-Cena A., Gagolewski M.,
-Genie+OWA: Robustifying Hierarchical Clustering with OWA-based Linkages,
-*Information Sciences*, 2020,
-in press. doi:10.1016/j.ins.2020.02.025
-
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 *Information Sciences* **363**, 2016, pp. 8-23.
 doi:10.1016/j.ins.2016.05.003
+
+Cena A., Gagolewski M.,
+Genie+OWA: Robustifying Hierarchical Clustering with OWA-based Linkages,
+*Information Sciences*, 2020,
+in press. doi:10.1016/j.ins.2020.02.025
 
 Cena A.,
 Adaptive hierarchical clustering algorithms based on data aggregation methods,

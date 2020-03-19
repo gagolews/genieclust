@@ -1,4 +1,4 @@
-/*  Various distances.
+/*  Various distances (Euclidean, mutual reachability distance, ...)
  *
  *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.
@@ -320,8 +320,11 @@ struct CDistanceMutualReachability : public CDistance<T>  {
     CDistanceMutualReachability() : CDistanceMutualReachability(NULL, 0, NULL) { }
 
     virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        // pragma omp parallel for inside::
         const T* d = (*d_pairwise)(i, M, k);
-        for (ssize_t j=0; j<k; ++j)  {
+
+        // NO pragma omp parallel for -- should be fast, no need for OMP?
+        for (ssize_t j=0; j<k; ++j)  { //
             // buf[w] = max{d[w],d_core[i],d_core[w]}
             ssize_t w = M[j];
             if (w == i) buf[w] = 0.0;

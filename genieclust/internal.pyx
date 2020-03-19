@@ -39,29 +39,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cimport cython
 cimport numpy as np
-
-from cpython.mem cimport PyMem_Malloc, PyMem_Realloc, PyMem_Free
-from numpy.math cimport INFINITY
+import numpy as np
 
 from . cimport c_argfuns
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
-# from . cimport c_mst
+
+
+
+
 
 from libcpp.vector cimport vector
-
-import numpy as np
-
 
 ctypedef fused floatT:
     float
     double
 
-# type convention:
-# 1. cluster labels == int (int32, np.intc)
-# 2. points == double/float
-# 3. indexes == ssize_t (Py_ssize_t, np.intp)
-# 4. integer params to cpdef functions -- int
 
 
 #############################################################################
@@ -171,118 +164,6 @@ cpdef np.ndarray[floatT,ndim=2] mutual_reachability_distance(
     return R
 
 
-
-#############################################################################
-##### Noisy k-partition post-processing #####################################
-#############################################################################
-
-cpdef np.ndarray[int] merge_boundary_points(
-        np.ndarray[floatT] mst_d,
-        np.ndarray[ssize_t,ndim=2] mst_i,
-        np.ndarray[int] cl,
-        np.ndarray[ssize_t,ndim=2] nn_i,
-        int M):
-    """A noisy k-partition post-processing:
-    given a k-partition (with noise points included),
-    merges all "boundary" noise points with their nearest
-    "core" points.
-
-
-    Parameters
-    ----------
-
-    mst_d, mst_i : ndarray
-        See genieclust.mst.mst_from_distance()
-    cl : ndarray, shape (n_samples,)
-        An integer vector c with c[i] denoting the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
-    nn_i : ndarray, shape (n_samples,n_neighbors)
-        nn_ind[i,:] gives the indexes of the i'th point's
-        nearest neighbors.
-    M : int
-        smoothing factor, M>=2
-
-
-    Returns
-    -------
-
-    c : ndarray, shape (n_samples,)
-        A new integer vector c with c[i] denoting the cluster
-        id (in {-1, 0, ..., k-1}) of the i-th object.
-    """
-    cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
-    cdef ssize_t n = cl2.shape[0], i, j
-    cdef ssize_t j0, j1
-
-    if not (mst_i.shape[0] + 1) == n or not nn_i.shape[0] == n:
-        raise ValueError("arrays' shapes do not match")
-    if M < 2 or M-2 >= nn_i.shape[1]:
-        raise ValueError("incorrect M")
-
-    for i in range(n-1):
-        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
-        if cl2[mst_i[i,0]] < 0:
-            j0, j1 = mst_i[i,0],  mst_i[i,1]
-        elif cl2[mst_i[i,1]] < 0:
-            j0, j1 = mst_i[i,1],  mst_i[i,0]
-        else:
-            continue
-
-        assert cl2[j0] <  0  # j0 is marked as a noise point
-        assert cl2[j1] >= 0  # j1 is a core point
-        # j0 is a boundary point if j0 is among j1's M-1 nearest neighbors
-        #if dist[j1, j0] <= d_core[j1]:
-        #    cl2[j0] = cl2[j1]
-
-        cl2[j0] = -1
-        for j in range(M-1):
-            if nn_i[j1,j] == j0:
-                cl2[j0] = cl2[j1]
-
-    return cl2
-
-
-cpdef np.ndarray[int] merge_leaves_with_nearest_clusters(
-        np.ndarray[floatT] mst_d,
-        np.ndarray[ssize_t,ndim=2] mst_i,
-        np.ndarray[int] cl):
-    """A noisy k-partition post-processing:
-    given a k-partition (with noise points included),
-    merges all noise points with their nearest
-    clusters.
-
-
-    Parameters
-    ----------
-
-    mst_d, mst_i : ndarray
-        See genieclust.internal.MST_wrt_mutual_reachability_distance().
-    cl : ndarray, shape (n_samples,)
-        An integer vector c with c[i] denoting the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
-
-
-    Returns
-    -------
-
-    c : ndarray, shape (n_samples,)
-        A new integer vector c with c[i] denoting the cluster
-        id (in {0, ..., k-1}) of the i-th object.
-    """
-    cdef np.ndarray[int] cl2 = np.array(cl, dtype=np.intc)
-    cdef ssize_t n = cl2.shape[0], i
-    assert (mst_i.shape[0] + 1) == n
-
-    for i in range(n-1):
-        assert cl2[mst_i[i,0]] >= 0 or cl2[mst_i[i,1]] >= 0
-        if cl2[mst_i[i,0]] < 0:
-            cl2[mst_i[i,0]] = cl2[mst_i[i,1]]
-        elif cl2[mst_i[i,1]] < 0:
-            cl2[mst_i[i,1]] = cl2[mst_i[i,0]]
-
-    return cl2
 
 
 #############################################################################

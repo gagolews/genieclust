@@ -48,12 +48,14 @@
 /*! Compute the degree of each vertex in an undirected graph
  * over vertex set {0,...,n-1}
  *
- * Edges with ind[2*i+0] < 0 or ind[2*i+1] < 0 are purposely ignored
- *
- * @param ind array of size num_edges*2, giving the edges' definition
- * @param num_edges number of edges
+ * @param ind c_contiguous matrix of size num_edges*2,
+ *     where {ind[i,0], ind[i,1]} is the i-th edge
+ *     with ind[i,j] < n.
+ *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored.
+ * @param num_edges number of edges (rows in ind)
  * @param n number of vertices
- * @param deg [out] array of size n
+ * @param deg [out] array of size n, where
+ *     deg[i] will give the degree of the i-th vertex.
  */
 void Cget_graph_node_degrees(
     const ssize_t* ind,
@@ -70,7 +72,7 @@ void Cget_graph_node_degrees(
         if (u<0 || v<0)
             continue; // represents a no-edge → ignore
         if (u>=n || v>=n)
-            throw std::domain_error("Detected an element not in {0, ..., n-1}");
+            throw std::domain_error("All elements must be <= n");
         if (u == v)
             throw std::domain_error("Self-loops are not allowed");
 

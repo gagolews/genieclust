@@ -102,7 +102,7 @@ class Genie(BaseEstimator, ClusterMixin):
         but no less than M. Note that the algorithm's memory
         consumption is proportional to n_samples*n_neighbors.
     postprocess : str, one of "boundary" [default], "none", "all"
-        Effective only if M>1. By default, only "boundary" points are merged
+        In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points. To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
@@ -314,9 +314,9 @@ class Genie(BaseEstimator, ClusterMixin):
         if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
             pass
         elif cur_state["postprocess"] == "boundary":
-            labels = internal.merge_boundary_points(mst_dist, mst_ind, labels, nn_ind, cur_state["M"])
+            labels = postprocess.merge_boundary_points(mst_ind, labels, nn_ind, cur_state["M"])
         elif cur_state["postprocess"] == "all":
-            labels = internal.merge_leaves_with_nearest_clusters(mst_dist, mst_ind, labels)
+            labels = postprocess.merge_noise_points(mst_ind, labels)
 
         self.labels_ = labels
 

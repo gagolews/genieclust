@@ -261,6 +261,7 @@ void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
 
         // compute the distances from lastj (on the fly)
         // dist_from_lastj[j] == d(lastj, j)
+        // pragma omp parallel for inside::
         const T* dist_from_lastj = (*dist)(lastj, M.data()+1, n-i-1);
 
         bestjpos = bestj = 0;

@@ -48,6 +48,10 @@
     determine few first NNs when computing the mutual reachability
     distance a.k.a. the "core distance".
 
+-   [DEPRECATED] `internal.core_distance` and
+    `internal.merge_boundary_points` are now available via
+    `deprecated.*`.
+
 -   [INTERNAL] Most of the code was rewritten in C++, in
     particular the `DisjointSets` and
     `GiniDisjointSets` classes, so that:
