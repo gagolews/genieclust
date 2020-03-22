@@ -1,7 +1,7 @@
 import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import*
-from genieclust.mst import *
+from genieclust.internal import *
 from genieclust.deprecated import mutual_reachability_distance, core_distance
 import time
 import gc

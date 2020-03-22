@@ -31,8 +31,8 @@
  */
 
 
-#ifndef __c_argsort_h
-#define __c_argsort_h
+#ifndef __c_postprocess_h
+#define __c_postprocess_h
 
 #include <stdexcept>
 #include <algorithm>

@@ -31,8 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
 from . import internal
-from . import mst
-from . import postprocess
 import scipy.spatial.distance
 from sklearn.base import BaseEstimator, ClusterMixin
 import sklearn.neighbors
@@ -272,7 +270,7 @@ class Genie(BaseEstimator, ClusterMixin):
                 raise NotImplementedError("approximate method not implemented yet")
 
             # t0 = time.time()
-            mst_dist, mst_ind = mst.mst_from_nn(nn_dist, nn_ind, stop_disconnected=True, stop_inexact=False)
+            mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind, stop_disconnected=True, stop_inexact=False)
             # print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]
@@ -284,7 +282,7 @@ class Genie(BaseEstimator, ClusterMixin):
 
                 # t0 = time.time()
 
-                mst_dist, mst_ind = mst.mst_from_distance(X,
+                mst_dist, mst_ind = internal.mst_from_distance(X,
                     metric=cur_state["metric"],
                     metric_params=cur_state["metric_params"])
                 # print("T=%.3f" % (time.time()-t0), end="\t")
@@ -299,7 +297,7 @@ class Genie(BaseEstimator, ClusterMixin):
 
                 # 2. Use Prim's algorithm to determine the MST
                 #  w.r.t. the distances computed on the fly
-                mst_dist, mst_ind = mst.mst_from_distance(X,
+                mst_dist, mst_ind = internal.mst_from_distance(X,
                     metric=cur_state["metric"],
                     metric_params=dict(**cur_state["metric_params"],
                     d_core=d_core)
@@ -315,9 +313,9 @@ class Genie(BaseEstimator, ClusterMixin):
         if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
             pass
         elif cur_state["postprocess"] == "boundary":
-            labels = postprocess.merge_boundary_points(mst_ind, labels, nn_ind, cur_state["M"])
+            labels = internal.merge_boundary_points(mst_ind, labels, nn_ind, cur_state["M"])
         elif cur_state["postprocess"] == "all":
-            labels = postprocess.merge_noise_points(mst_ind, labels)
+            labels = internal.merge_noise_points(mst_ind, labels)
 
         self.labels_ = labels
 

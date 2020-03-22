@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from genieclust.argfuns import *
+from genieclust.internal import *
 
 # np.random.seed(123)
 def test_argsort():

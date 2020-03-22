@@ -1,7 +1,7 @@
 import numpy as np
 from genieclust.inequity import *
-from genieclust.disjoint_sets import DisjointSets
-from genieclust.gini_disjoint_sets import GiniDisjointSets
+from genieclust.internal import DisjointSets
+from genieclust.internal import GiniDisjointSets
 import time
 import gc
 

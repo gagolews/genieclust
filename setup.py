@@ -40,24 +40,15 @@ import glob
 
 
 cython_modules = {
-    "genieclust.internal":
-        [os.path.join("genieclust", "internal.pyx")],
-    "genieclust.postprocess":
-        [os.path.join("genieclust", "postprocess.pyx")],
-    "genieclust.deprecated":
-        [os.path.join("genieclust", "deprecated.pyx")],
-    "genieclust.argfuns":
-        [os.path.join("genieclust", "argfuns.pyx")],
-    "genieclust.disjoint_sets":
-        [os.path.join("genieclust", "disjoint_sets.pyx")],
-    "genieclust.gini_disjoint_sets":
-        [os.path.join("genieclust", "gini_disjoint_sets.pyx")],
-    "genieclust.compare_partitions":
-        [os.path.join("genieclust", "compare_partitions.pyx")],
-    "genieclust.inequity":
-        [os.path.join("genieclust", "inequity.pyx")],
-    "genieclust.mst":
-        [os.path.join("genieclust", "mst.pyx")]
+    "genieclust.internal": [
+        os.path.join("genieclust", "internal.pyx")
+    ],
+    "genieclust.compare_partitions": [
+        os.path.join("genieclust", "compare_partitions.pyx")
+    ],
+    "genieclust.inequity": [
+        os.path.join("genieclust", "inequity.pyx")
+    ]
 }
 
 

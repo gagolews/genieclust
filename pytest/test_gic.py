@@ -2,7 +2,6 @@ import numpy as np
 from genieclust.genie import *
 from genieclust.inequity import *
 from genieclust.compare_partitions import *
-import genieclust.mst
 import genieclust.internal
 import time
 import gc
@@ -33,7 +32,7 @@ def test_gic():
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)
 
-        mst_d, mst_i = genieclust.mst.mst_from_distance(X)
+        mst_d, mst_i = genieclust.internal.mst_from_distance(X)
 
         print("%-20s n=%7d d=%4d"%(dataset,X.shape[0],X.shape[1]))
         for g in [ np.r_[0.1],  np.r_[0.2],  np.r_[0.3], np.r_[0.4], np.r_[0.5], np.r_[0.6], np.r_[0.7], np.arange(1, 8)/10, np.empty(0)]:
