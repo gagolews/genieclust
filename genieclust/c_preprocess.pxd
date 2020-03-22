@@ -8,7 +8,7 @@
 
 
 """
-Provides access to the CGenie class.
+Graph pre-processing and other functions
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -40,11 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
 
-cdef extern from "../src/c_genie.h":
-    cdef cppclass CGenie[T]:
-        CGenie() except +
-        CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves) except +
-        void apply_genie(ssize_t n_clusters, double gini_threshold, ssize_t* res)
-        void apply_gic(ssize_t n_clusters, ssize_t add_clusters,
-            double n_features,
-            double* gini_thresholds, ssize_t n_thresholds, ssize_t* res)
+cdef extern from "../src/c_preprocess.h":
+    cdef void Cget_graph_node_degrees(ssize_t* ind, ssize_t num_edges,
+            ssize_t n, ssize_t* deg)

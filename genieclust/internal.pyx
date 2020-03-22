@@ -69,6 +69,7 @@ ctypedef fused floatT:
 
 from . cimport c_argfuns
 from . cimport c_mst
+from . cimport c_preprocess
 from . cimport c_postprocess
 from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
@@ -432,7 +433,7 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
     assert ind.shape[1] == 2
     cdef np.ndarray[ssize_t] deg = np.empty(n, dtype=np.intp)
 
-    c_genie.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
+    c_preprocess.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
 
     return deg
 
