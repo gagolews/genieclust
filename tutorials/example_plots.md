@@ -1,13 +1,14 @@
 
 
-# [Genieclust](https://github.com/gagolews/genieclust) Tutorial
+---
+title: "Genieclust Tutorial"
+subtitle: "Additional Plotting Functions in `genieclust.plots`"
+author: "Marek Gagolewski"
+---
 
-## Additional Plotting Functions in `genieclust.plots`
 
 > **It is a draft version of the tutorial distributed
 > in the hope that it will be useful.**
-
-Author: [Marek Gagolewski](http://www.gagolewski.com)
 
 The genieclust package introduces some `matplotlib`-based plotting
 functions that I was missing (but are present in R's `graphics`).
@@ -48,12 +49,10 @@ labels_true = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 n_clusters = len(np.unique(labels_true))-(np.min(labels_true)==-1)
 # do not count the "noise" cluster (if present) as a separate entity
 
-# Center and scale (proportionally in all the axes) all the points.
+# Centre and scale (proportionally in all the axes) all the points.
 # Note: this is NOT a standardization of all the variables.
 X = (X-np.mean(X))/np.std(X, ddof=1)
 ```
-
-
 
 
 # `genieclust.plots.plot_scatter()`
@@ -69,7 +68,7 @@ to each point in X, giving its plot style
 
 
 ```python
-genieclust.plots.plot_scatter(X, labels_true)
+genieclust.plots.plot_scatter(X, 1-labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 ```
@@ -78,7 +77,7 @@ plt.axis("equal")
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-5](figures-example_plots/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-5](example_plots-figures/unnamed-chunk-5-1.png)
 
 
 
@@ -111,8 +110,7 @@ plt.axis('off')
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-6](figures-example_plots/unnamed-chunk-6-1.png)
-
+![plot of chunk unnamed-chunk-6](example_plots-figures/unnamed-chunk-6-1.png)
 
 
 
@@ -159,5 +157,4 @@ plt.axis("equal")
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-8](figures-example_plots/unnamed-chunk-8-1.png)
-
+![plot of chunk unnamed-chunk-8](example_plots-figures/unnamed-chunk-8-1.png)

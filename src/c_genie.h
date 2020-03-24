@@ -69,7 +69,7 @@
  *   if the Genie algorithm is applied on the MST with respect to
  *   the HDBSCAN-like mutual reachability distance.
  *
- *   Note that the input graph can be disconnected (spanning forest,
+ *   Note that the input graph might be disconnected (spanning forest,
  *   but here we will call it MST anyway) - it must be acyclic though.
  *
  *
@@ -95,9 +95,13 @@ protected:
     std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
 
 
+// TODO: mst_i[] < 0 !!!!!!!!!!!!!!!!!!!!!
+// TODO:    separate GIc subclass ???
+
+
     /*! When the Genie correction is on, some MST edges will be chosen
      * in non-consecutive order. An array-based skiplist will speed up
-     * searching within the not-yet-consumed edges. Also, if there are
+     * searching within the to-be-consumed edges. Also, if there are
      * noise points, then the skiplist allows the algorithm
      * to naturally ignore edges that connect the leaves. */
     void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {

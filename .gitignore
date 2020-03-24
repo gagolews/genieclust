@@ -11,3 +11,4 @@ genieclust/*.html
 genieclust.egg-info
 pytest/__pycache__
 .ipynb_checkpoints
+*.Rmd-tmp-*
