@@ -71,12 +71,12 @@ Package Features
 
 
 
-Examples
---------
+Examples and Tutorials
+----------------------
 
--   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/notebooks/example_genie_basic.ipynb)
--   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/notebooks/example_noisy.ipynb)
--   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/notebooks/example_plots.ipynb)
+-   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
+-   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
+-   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/example_plots.md)
 
 
 
