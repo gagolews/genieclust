@@ -58,10 +58,10 @@ def plot_scatter(X, labels, **kwargs):
     ----------
 
     X : ndarray, shape (n, 2)
-        A two-column matrix giving the X and Y coordinates of the points.
+        A two-column matrix giving the x and y coordinates of the points.
 
     labels : ndarray, shape (n,)
-        A vector of integer labels corresponding to each point in X,
+        A vector of integer labels corresponding to each point in `X`,
         giving its plot style.
 
     **kwargs : Collection properties
@@ -94,6 +94,8 @@ def plot_segments(X, pairs, style="k-", **kwargs):
     pairs : ndarray, shape (m, 2)
         A two-column matrix, giving the pairs of indices
         defining the line segments.
+
+    style: see `matplotlib.pyplot.plot()`
 
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.plot()`.

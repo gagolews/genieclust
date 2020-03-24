@@ -4,9 +4,17 @@
 
 
 The *Genie*++ Hierarchical Clustering Algorithm
-----------------------------------------------
+-----------------------------------------------
+
+> **Genie outputs meaningful partitions and is fast even for larger data sets.**
+
+
 
 Author: [Marek Gagolewski](https://www.gagolewski.com)
+
+Co-authors/contributors:
+[Anna Cena](https://cena.rexamine.com)
+[Maciej Bartoszuk](https://bartoszuk.rexamine.com)
 
 The time needed to apply a hierarchical clustering algorithm is most
 often dominated by the number of computations of a pairwise
@@ -14,8 +22,8 @@ dissimilarity measure. Such a constraint, for larger data sets, puts at
 a disadvantage the use of all the classical linkage criteria but the
 single linkage one. However, it is known that the single linkage
 clustering algorithm is very sensitive to outliers, produces highly
-skewed dendrograms, and therefore usually does not reflect the true
-underlying data structure -unless the clusters are well-separated.
+skewed dendrograms and therefore usually does not reflect the true
+underlying data structure -- unless the clusters are well-separated.
 
 To overcome its limitations, we proposed a new hierarchical clustering
 linkage criterion called Genie. Namely, our algorithm links two clusters
@@ -23,11 +31,10 @@ in such a way that a chosen economic inequity measure (here, the Gini
 index) of the cluster sizes does not increase drastically above a given
 threshold.
 
-Benchmarks indicate a high practical usefulness of the introduced
-method: it most often outperforms the Ward or average linkage, k-means,
-spectral clustering, DBSCAN, Birch, and others in terms of the
-clustering quality while retaining the single linkage speed. The
-algorithm is easily parallelisable and thus may be run on multiple
+The algorithm most often outperforms the Ward or average linkage, k-means,
+spectral clustering, DBSCAN, Birch and others in terms of the
+clustering quality on benchmark data while retaining the single linkage speed.
+The algorithm is easily parallelisable and thus may be run on multiple
 threads to speed up its execution further on. Its memory overhead is
 small: there is no need to precompute the complete distance matrix to
 perform the computations in order to obtain a desired clustering.
@@ -40,6 +47,8 @@ original algorithm available on CRAN, see R package
 > outlier-resistant hierarchical clustering algorithm, *Information
 > Sciences* **363**, 2016, pp. 8-23.
 > [doi:10.1016/j.ins.2016.05.003](http://dx.doi.org/10.1016/j.ins.2016.05.003).
+
+
 
 
 Package Features
