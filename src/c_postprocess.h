@@ -55,7 +55,7 @@
  *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored.
  *  @param num_edges number of rows in ind (edges)
  *  @param nn c_contiguous matrix of size n*num_neighbours;
- *     nn[i,:] gives the indexes of the i-th point's
+ *     nn[i,:] gives the indices of the i-th point's
  *      nearest neighbours.
  *  @param num_neighbours number of columns in nn
  *  @param M smoothing factor, 2 <= M < num_neighbours

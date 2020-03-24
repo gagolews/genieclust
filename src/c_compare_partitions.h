@@ -78,7 +78,7 @@ void Cminmax(const T* x, ssize_t n, T* xmin, T* xmax)
 
 
 /*!
- * Stores AR and FM indexes as well as their normalised versions.
+ * Stores AR and FM indices as well as their normalised versions.
  */
 struct CComparePartitionsResult {
     double ar;

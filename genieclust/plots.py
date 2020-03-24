@@ -92,7 +92,7 @@ def plot_segments(X, pairs, style="k-", **kwargs):
         A two-column matrix giving the X and Y coordinates of the points.
 
     pairs : ndarray, shape (m, 2)
-        A two-column matrix, giving the pairs of indexes
+        A two-column matrix, giving the pairs of indices
         defining the line segments.
 
     **kwargs : Collection properties

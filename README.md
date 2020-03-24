@@ -3,7 +3,7 @@
 
 
 
-The *Genie*+ Hierarchical Clustering Algorithm
+The *Genie*++ Hierarchical Clustering Algorithm
 ----------------------------------------------
 
 Author: [Marek Gagolewski](https://www.gagolewski.com)
@@ -45,19 +45,19 @@ original algorithm available on CRAN, see R package
 Package Features
 ----------------
 
--   The Genie+ hierarchical clustering algorithm (with a scikit-learn-like
+-   The Genie++ hierarchical clustering algorithm (with a scikit-learn-like
     interface), together with **TODO**: a robustified version of
     HDBSCAN\*, IcA, GC, GIc, ...
 
 -   `DisjointSets` (union-find) data structure (with extensions)
 
--   Various inequity measures (the Gini index, the Bonferroni index,
+-   Inequity measures (the Gini index, the Bonferroni index
     etc.)
 
--   Functions to compute partition similarity measures (the Rand,
-    adjusted Rand, Fowlkes-Mallows, and adjusted Fowlkes-Mallows index)
+-   Functions to compare partitions (the Rand,
+    adjusted Rand, Fowlkes-Mallows and adjusted Fowlkes-Mallows indices)
 
--   Various plotting functions
+-   Plotting functions
 
 
 
@@ -67,7 +67,7 @@ Examples
 
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/notebooks/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/notebooks/example_noisy.ipynb)
-
+-   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/notebooks/example_plots.ipynb)
 
 
 

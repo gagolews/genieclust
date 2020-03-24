@@ -50,32 +50,41 @@
 
 
 
-/*!  The Genie+ Clustering Algorithm
+/*!  The Genie++ Hierarchical Clustering Algorithm
+ *
+ *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
+ *   in such a way that a chosen economic inequity measure
+ *   (here, the Gini index) of the cluster sizes does not increase drastically
+ *   above a given threshold. The method most often outperforms
+ *   the Ward or average linkage, k-means, spectral clustering,
+ *   DBSCAN, Birch and others in terms of the clustering
+ *   quality on benchmark data while retaining the speed of the single
+ *   linkage algorithm.
+ *
+ *   This is a re-implementation of the original (Gagolewski et al., 2016)
+ *   algorithm. First of all, given a pre-computed minimum spanning tree (MST),
+ *   it only requires amortised O(n sqrt(n))-time.
+ *   Additionally, MST leaves can be
+ *   marked as noise points (if `noise_leaves==True`). This is useful,
+ *   if the Genie algorithm is applied on the MST with respect to
+ *   the HDBSCAN-like mutual reachability distance.
+ *
+ *   Note that the input graph can be disconnected (spanning forest,
+ *   but here we will call it MST anyway) - it must be acyclic though.
+ *
+ *
+ *   References
+ *   ===========
  *
  *   Gagolewski M., Bartoszuk M., Cena A.,
  *   Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *   Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
- *
- *   A new hierarchical clustering linkage criterion: the Genie algorithm
- *   links two clusters in such a way that a chosen economic inequity measure
- *   (here, the Gini index) of the cluster sizes does not increase drastically
- *   above a given threshold. Benchmarks indicate a high practical
- *   usefulness of the introduced method: it most often outperforms
- *   the Ward or average linkage, k-means, spectral clustering,
- *   DBSCAN, Birch, and others in terms of the clustering
- *   quality while retaining the single linkage speed.
- *
- *   This is a new implementation of the O(n sqrt(n))-time version
- *   of the original algorithm. Additionally, MST leaves can be
- *   marked as noise points (if `noise_leaves==True`). This is useful,
- *   if the Genie algorithm is applied on the MST with respect to
- *   the HDBSCAN-like mutual reachability distance.
  */
 template <class T>
 class CGenie {
 protected:
-    T* mst_d;         //<! n-1 weights
-    ssize_t* mst_i;   //<! n-1 edges of the MST (given by (n-1)*2 indices)
+    ssize_t* mst_i;   //<! n-1 edges of the MST (given by c_contiguous (n-1)*2 indices)
+    T* mst_d;         //<! n-1 edge weights
     ssize_t n;        //<! number of points
     bool noise_leaves;//<! mark leaves as noise points?
 
@@ -90,7 +99,7 @@ protected:
      * in non-consecutive order. An array-based skiplist will speed up
      * searching within the not-yet-consumed edges. Also, if there are
      * noise points, then the skiplist allows the algorithm
-     * to naturally ignore edges that connect the leaves. */
+     * to naturally ignore edges that connect the leaves. */
     void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {
         // start with a list that skips all edges that lead to noise points
         mst_skiplist->clear();

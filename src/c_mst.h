@@ -109,15 +109,14 @@ struct CMstTriple {
  * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order;
  *        refer to the function's return value for the actual number
- *        of edges generated
- * @param mst_ind [out] c_contiguous vector of length 2*(n-1), representing
- *        a c_contiguous array of shape (n-1,2), defining the edges
- *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j;
+ *        of edges generated (if this is < n-1, the object is padded with INFTY)
+ * @param mst_ind [out] c_contiguous matrix of size (n-1)*2, defining the edges
+ *        corresponding to mst_d, with mst_i[j,0] <= mst_i[j,1] for all j;
  *        refer to the function's return value for the actual number
- *        of edges generated
+ *        of edges generated (if this is < n-1, the object is padded with -1)
  * @param maybe_inexact [out] true indicates that k should be increased to
- * guarantee that the resulting tree would be the same if a complete
- * pairwise distance graph was given.
+ *        guarantee that the resulting tree would be the same if a complete
+ *        pairwise distance graph was given.
  *
  * @return number of edges in the minimal spanning forest
  */
