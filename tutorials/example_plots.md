@@ -78,7 +78,7 @@ plt.axis("equal")
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-5](/home/gagolews/Python/genieclust/notebooks/figures-example_plots/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-5](figures-example_plots/unnamed-chunk-5-1.png)
 
 
 
@@ -111,7 +111,7 @@ plt.axis('off')
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-6](/home/gagolews/Python/genieclust/notebooks/figures-example_plots/unnamed-chunk-6-1.png)
+![plot of chunk unnamed-chunk-6](figures-example_plots/unnamed-chunk-6-1.png)
 
 
 
@@ -159,5 +159,5 @@ plt.axis("equal")
 plt.show()
 ```
 
-![plot of chunk unnamed-chunk-8](/home/gagolews/Python/genieclust/notebooks/figures-example_plots/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](figures-example_plots/unnamed-chunk-8-1.png)
 
