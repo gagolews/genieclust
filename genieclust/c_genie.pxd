@@ -8,7 +8,7 @@
 
 
 """
-Provides access to the CGenie class.
+Provides access to the CGenie and CGIc classes.
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -45,6 +45,10 @@ cdef extern from "../src/c_genie.h":
         CGenie() except +
         CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves) except +
         void apply_genie(ssize_t n_clusters, double gini_threshold, ssize_t* res)
+
+    cdef cppclass CGIc[T]:
+        CGIc() except +
+        CGIc(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves) except +
         void apply_gic(ssize_t n_clusters, ssize_t add_clusters,
             double n_features,
             double* gini_thresholds, ssize_t n_thresholds, ssize_t* res)

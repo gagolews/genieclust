@@ -988,11 +988,10 @@ cpdef np.ndarray[ssize_t] genie_from_mst(
     A new hierarchical clustering linkage criterion: the Genie algorithm
     links two clusters in such a way that a chosen economic inequity measure
     (here, the Gini index) of the cluster sizes does not increase drastically
-    above a given threshold. Benchmarks indicate a high practical
-    usefulness of the introduced method: it most often outperforms
+    above a given threshold. The introduced method most often outperforms
     the Ward or average linkage, k-means, spectral clustering,
     DBSCAN, Birch, and others in terms of the clustering
-    quality while retaining the single linkage speed.
+    quality on benchmark data while retaining the single linkage speed.
 
     This is a new implementation of the O(n sqrt(n))-time version
     of the original algorithm. Additionally, MST leaves can be
@@ -1001,9 +1000,9 @@ cpdef np.ndarray[ssize_t] genie_from_mst(
     the HDBSCAN-like mutual reachability distance.
 
 
-    If gini_threshold==1.0 and noise_leaves==False, then basically this
-    is the single linkage algorithm. Set gini_threshold==1.0 and
-    noise_leaves==True to get a HDBSCAN-like behavior (and make sure
+    gini_threshold==1.0 and noise_leaves==False, gives the single linkage
+    algorithm. Set gini_threshold==1.0 and noise_leaves==True to get
+    a HDBSCAN-like behaviour (and make sure
     the MST is computed w.r.t. the mutual reachability distance).
 
 
@@ -1064,13 +1063,13 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
         ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
         bint noise_leaves=False):
-    """Compute a k-partition based on a pre-computed MST.
+    """GIc (Genie+Information Criterion) Hierarchical Clustering Algorithm
 
-    The Genie+Information Criterion (G+IC)
-    Clustering Algorithm (experimental edition)
-    by Anna Cena
+    Compute a k-partition based on a pre-computed MST.
 
-    TODO: describe
+
+    GIc has been proposed by Anna Cena in [1] and was inspired
+    by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
 
 
     References
@@ -1082,6 +1081,11 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
 
     [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
     Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
+
+    [3] Gagolewski M., Bartoszuk M., Cena A.,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
 
 
     Parameters
@@ -1125,8 +1129,8 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
         gini_thresholds = np.r_[0.3, 0.5, 0.7]
 
     cdef np.ndarray[ssize_t] res = np.empty(n, dtype=np.intp)
-    cdef c_genie.CGenie[floatT] g
-    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+    cdef c_genie.CGIc[floatT] g
+    g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
     g.apply_gic(n_clusters, add_clusters, n_features,
         &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
 
