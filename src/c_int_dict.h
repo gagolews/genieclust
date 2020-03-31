@@ -34,7 +34,7 @@
 #ifndef __c_int_dict_h
 #define __c_int_dict_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 #include <vector>
 #include <iterator>
@@ -208,7 +208,7 @@ public:
             else if (i < tab_head) {
                 // new head
                 tab_next[i] = tab_head;
-                assert(tab_prev[i] == -1);
+                GENIECLUST_ASSERT(tab_prev[i] == -1);
                 tab_prev[tab_head] = i;
                 tab_head = i;
             }
@@ -216,7 +216,7 @@ public:
                 // new tail
                 tab_next[tab_tail] = i;
                 tab_prev[i] = tab_tail;
-                assert(tab_next[i] == n);
+                GENIECLUST_ASSERT(tab_next[i] == n);
                 tab_tail = i;
             }
             else {
@@ -228,7 +228,7 @@ public:
                     elem_before_i = tab_next[elem_before_i];
 
                 ssize_t elem_after_i = tab_next[elem_before_i];
-                assert(tab_prev[elem_after_i] == elem_before_i);
+                GENIECLUST_ASSERT(tab_prev[elem_after_i] == elem_before_i);
                 tab_next[i] = elem_after_i;
                 tab_prev[i] = elem_before_i;
                 tab_next[elem_before_i] = i;

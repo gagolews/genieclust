@@ -37,7 +37,7 @@
 #ifndef __c_argsort_h
 #define __c_argsort_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 
 

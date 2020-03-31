@@ -34,14 +34,11 @@
 #ifndef __c_disjoint_sets_h
 #define __c_disjoint_sets_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 #include <vector>
 
 
-#ifndef INFTY
-#define INFTY (std::numeric_limits<float>::infinity())
-#endif
 
 
 /*! Disjoint Sets (Union-Find) Data Structure

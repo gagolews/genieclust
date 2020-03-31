@@ -36,10 +36,9 @@
 #ifndef __c_mst_h
 #define __c_mst_h
 
+#include "c_common.h"
 #include <vector>
 #include <algorithm>
-#include <stdexcept>
-#include <limits>
 #include <queue>
 #include <deque>
 #include <cmath>
@@ -48,9 +47,7 @@
 #include "c_distance.h"
 
 
-#ifndef INFTY
-#define INFTY (std::numeric_limits<float>::infinity())
-#endif
+
 
 
 
@@ -166,9 +163,8 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
         //ssize_t v = pq.top().i2;
         //T d = pq.top().d;
 
-        ssize_t u = arg_dist[arg_dist_cur]/k; // u is the asg_dist_cur-th edge
-        if (nn_used[u] >= k || u < 0 || u >= n)
-            throw std::logic_error("ASSERT FAIL in Cmst_from_nn");
+        ssize_t u = arg_dist[arg_dist_cur]/k; // u is the arg_dist_cur-th edge
+        GENIECLUST_ASSERT(nn_used[u] < k && u >= 0 && u < n);
         ssize_t v = ind[k*u+nn_used[u]];      // v is its nn_used[u]-th NN
         T d = dist[k*u+nn_used[u]];
         arg_dist_cur++;
@@ -192,8 +188,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
         mst_ind[2*mst_edge_cur+1] = v;
         mst_dist[mst_edge_cur]    = d;
 
-        if (mst_edge_cur > 0 && mst_dist[mst_edge_cur] < mst_dist[mst_edge_cur-1])
-            throw std::logic_error("ASSERT FAIL in Cmst_from_nn");
+        GENIECLUST_ASSERT(mst_edge_cur == 0 || mst_dist[mst_edge_cur] >= mst_dist[mst_edge_cur-1]);
 
         ds.merge(u, v);
         mst_edge_cur++;

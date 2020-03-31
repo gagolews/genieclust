@@ -34,7 +34,7 @@
 #ifndef __c_postprocess_h
 #define __c_postprocess_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 
 
@@ -94,8 +94,8 @@ void Cmerge_boundary_points(
         if (c[v] < 0)
             std::swap(u, v);
 
-        // assert cl2[u] <  0  # u is marked as a noise point
-        // assert cl2[v] >= 0  # v is a core point
+        // GENIECLUST_ASSERT(cl2[u] <  0);  # u is marked as a noise point
+        // GENIECLUST_ASSERT(cl2[v] >= 0);  # v is a core point
 
         // a noise point is not necessarily a boundary point:
         // u is a boundary point if u is amongst v's M-1 nearest neighbours

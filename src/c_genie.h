@@ -34,11 +34,10 @@
 #ifndef __c_genie_h
 #define __c_genie_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 #include <vector>
 #include <deque>
-#include <cassert>
 #include <cmath>
 
 #include "c_gini_disjoint_sets.h"
@@ -68,11 +67,6 @@ protected:
     //TODO height(n-1)
 
 
-
-// TODO: mst_i[] < 0 !!!!!!!!!!!!!!!!!!!!!
-
-
-
     /*! When the Genie correction is on, some MST edges will be chosen
      * in non-consecutive order. An array-based skiplist will speed up
      * searching within the to-be-consumed edges. Also, if there are
@@ -82,10 +76,9 @@ protected:
         // start with a list that skips all edges that lead to noise points
         mst_skiplist->clear();
         for (ssize_t i=0; i<n-1; ++i) {
-            if (mst_i[i*2+0] >= n || mst_i[i*2+1] >= n)
-                throw std::logic_error("ASSERT FAIL in mst_skiplist_init");
+            GENIECLUST_ASSERT(mst_i[i*2+0] < n && mst_i[i*2+1] < n);
             if (mst_i[i*2+0] < 0 || mst_i[i*2+1] < 0)
-                continue;
+                continue; // a no-edge -> ignore
             if (!this->noise_leaves || (this->deg[this->mst_i[i*2+0]]>1 && this->deg[this->mst_i[i*2+1]]>1)) {
                 (*mst_skiplist)[i] = i/*only key is important, not value*/;
             }
@@ -108,7 +101,7 @@ protected:
             if (this->denoise_index_rev[i] >= 0) {
                 // a non-noise point
                 ssize_t j = this->denoise_index[ds->find(this->denoise_index_rev[i])];
-                // assert 0 <= j < n
+                // GENIECLUST_ASSERT 0 <= j < n
                 if (res_cluster_id[j] < 0) {
                     res_cluster_id[j] = c;
                     ++c;
@@ -230,7 +223,7 @@ public:
         this->noise_leaves = noise_leaves;
 
         for (ssize_t i=1; i<n-1; ++i)
-            if (mst_d[i-1] > mst_d[i])
+            if (mst_i[i] >= 0 && mst_i[i] >= 0 && mst_d[i-1] > mst_d[i])
                 throw std::domain_error("mst_d unsorted");
 
         // set up this->deg:
@@ -252,10 +245,8 @@ public:
                     ++j;
                 }
             }
-            if (!(noise_count >= 2))
-                throw std::runtime_error("ASSERT FAIL (noise_count >= 2)");
-            if (!(j + noise_count == n))
-                throw std::runtime_error("ASSERT FAIL (j + noise_count == n)");
+            GENIECLUST_ASSERT(noise_count >= 2);
+            GENIECLUST_ASSERT(j + noise_count == n);
         }
         else { // there are no noise points
             this->noise_count = 0;
@@ -311,6 +302,8 @@ protected:
                 is too large with this many detected noise points");
         }
 
+        // mst_skiplist contains all mst_i edge indexes
+        // that we need to consider, and nothing more.
         ssize_t lastidx = mst_skiplist->get_key_min();
         ssize_t lastm = 0; // last minimal cluster size
         for (ssize_t i=0; i<this->n - this->noise_count - n_clusters; ++i) {
@@ -328,13 +321,17 @@ protected:
                 }
                 // else reuse lastidx
 
+                GENIECLUST_ASSERT(lastidx >= 0 && lastidx < this->n - 1);
+                GENIECLUST_ASSERT(this->mst_i[2*lastidx+0] >= 0 && this->mst_i[2*lastidx+1] >= 0);
+
                 // find the MST edge connecting a cluster of the smallest size
                 // with another one
                 while (ds->get_count(this->denoise_index_rev[this->mst_i[2*lastidx+0]]) != m
                     && ds->get_count(this->denoise_index_rev[this->mst_i[2*lastidx+1]]) != m)
                 {
                     lastidx = mst_skiplist->get_key_next(lastidx);
-                    assert(lastidx < this->n - 1);
+                    GENIECLUST_ASSERT(lastidx >= 0 && lastidx < this->n - 1);
+                    GENIECLUST_ASSERT(this->mst_i[2*lastidx+0] >= 0 && this->mst_i[2*lastidx+1] >= 0);
                 }
 
                 i1 = this->mst_i[2*lastidx+0];
@@ -345,11 +342,14 @@ protected:
                 lastm = m;
             }
             else { // single linkage-like
+                // note that we consume the MST edges in an non-decreasing order w.r.t. weights
                 ssize_t curidx = mst_skiplist->pop_key_min();
+                GENIECLUST_ASSERT(curidx >= 0 && curidx < this->n - 1);
                 i1 = this->mst_i[2*curidx+0];
                 i2 = this->mst_i[2*curidx+1];
             }
 
+            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
             ds->merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
         }
     }
@@ -381,9 +381,6 @@ public:
         this->do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold);
         this->get_labels(&ds, res);
     }
-
-
-
 
 };
 
@@ -435,18 +432,13 @@ protected:
         std::vector<ssize_t> unused_edges;
         if (n_thresholds <= 0 || n_clusters >= this->n - this->noise_count) {
             // all edges unused -> will start from n singletons
-            if (!this->noise_leaves) {
-                unused_edges.resize(this->n - 1);
-                for (ssize_t i=0; i < this->n - 1; ++i)
-                    unused_edges[i] = i;
-            }
-            else {
-                for (ssize_t i=0; i < this->n - 1; ++i) {
-                    ssize_t i1 = this->mst_i[2*i+0];
-                    ssize_t i2 = this->mst_i[2*i+1];
-                    if (this->deg[i1] > 1 && this->deg[i2] > 1)
-                        unused_edges.push_back(i);
-                }
+            for (ssize_t i=0; i < this->n - 1; ++i) {
+                ssize_t i1 = this->mst_i[2*i+0];
+                ssize_t i2 = this->mst_i[2*i+1];
+                if (i1 < 0 || i2 < 0)
+                    continue;
+                if (!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
+                    unused_edges.push_back(i);
             }
             unused_edges.push_back(this->n - 1);  // sentinel
             return unused_edges;
@@ -508,9 +500,9 @@ public:
                    ssize_t n_thresholds,
                    ssize_t* res)
     {
-        assert(add_clusters>=0);
-        assert(n_clusters>=1);
-        assert(n_thresholds>=0);
+        GENIECLUST_ASSERT(add_clusters>=0);
+        GENIECLUST_ASSERT(n_clusters>=1);
+        GENIECLUST_ASSERT(n_thresholds>=0);
 
         std::vector<ssize_t> unused_edges = get_intersection_of_genies(
                 n_clusters+add_clusters, gini_thresholds, n_thresholds
@@ -526,12 +518,12 @@ public:
         for (ssize_t i=0; i<this->n - 1; ++i) {
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
-            if (this->noise_leaves && (this->deg[i1] == 1 || this->deg[i2] == 1)) {
-                // noise edge, ignore
-                continue;
-            }
+            if (i1 < 0 || i2 < 0)
+                continue; // a no-edge
+            if (this->noise_leaves && (this->deg[i1] == 1 || this->deg[i2] == 1))
+                continue; // noise edge, ignore
 
-            assert(i<=unused_edges[cur_unused_edges]);
+            GENIECLUST_ASSERT(i<=unused_edges[cur_unused_edges]);
 
             if (unused_edges[cur_unused_edges] == i) {
                 // ignore current edge and advance to the next unused edge
@@ -557,9 +549,9 @@ public:
             )
         */
 
-        assert(unused_edges[unused_edges.size()-1] == n-1); // sentinel
+        GENIECLUST_ASSERT(unused_edges[unused_edges.size()-1] == this->n-1); // sentinel
         ssize_t num_unused_edges = unused_edges.size()-1; // ignore sentinel
-        assert(num_unused_edges+1 == ds.get_k());
+        GENIECLUST_ASSERT(num_unused_edges+1 == ds.get_k());
 
         while (ds.get_k() != n_clusters) {
             ssize_t min_which = -1;
@@ -572,7 +564,7 @@ public:
                 i2 = ds.find(this->denoise_index_rev[i2]);
                 if (i1 > i2) std::swap(i1, i2);
 
-                assert(i1 != i2);
+                GENIECLUST_ASSERT(i1 != i2);
 
                 // singletons will be merged first
                 if (cluster_d_sums[i1] < 1e-12 || cluster_d_sums[i2] < 1e-12) {
@@ -594,17 +586,18 @@ public:
                   -(n_features-1.0)*log(cluster_sizes[i2])
                 );
 
-                assert(std::isfinite(cur_obj));
+                GENIECLUST_ASSERT(std::isfinite(cur_obj));
                 if (cur_obj < min_obj) {
                     min_obj = cur_obj;
                     min_which = j;
                 }
             }
 
-            assert(min_which >= 0 && min_which < num_unused_edges);
+            GENIECLUST_ASSERT(min_which >= 0 && min_which < num_unused_edges);
             ssize_t i = unused_edges[min_which];
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
+            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
             i1 = ds.find(this->denoise_index_rev[i1]);
             i2 = ds.find(this->denoise_index_rev[i2]);
             if (i1 > i2) std::swap(i1, i2);

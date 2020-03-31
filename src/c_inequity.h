@@ -34,7 +34,7 @@
 #ifndef __c_inequity_h
 #define __c_inequity_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 
 

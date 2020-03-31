@@ -34,6 +34,7 @@
 #ifndef __c_distance_h
 #define __c_distance_h
 
+#include "c_common.h"
 #include <vector>
 #include <cmath>
 
@@ -148,8 +149,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
 #endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
-            // if (w < 0 || w >= n)
-            //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
+            // GENIECLUST_ASSERT(w>=0 && w < n)
             __buf[w] = 0.0;
 
 //             const T* x = X+d*i;
@@ -212,8 +212,7 @@ struct CDistanceManhattan : public CDistance<T>  {
 #endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
-            // if (w < 0 || w >= n)
-            //     throw std::runtime_error("ASSERT FAIL: CDistanceManhattan");
+            // GENIECLUST_ASSERT(w>=0 && w<n)
             __buf[w] = 0.0;
 
             for (ssize_t u=0; u<d; ++u) {
@@ -273,8 +272,7 @@ struct CDistanceCosine : public CDistance<T>  {
 #endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
-            // if (w < 0 || w >= n)
-            //     throw std::runtime_error("ASSERT FAIL: CDistanceEuclidean");
+            // GENIECLUST_ASSERT(w>=0&&w<n)
             __buf[w] = 0.0;
 
             for (ssize_t u=0; u<d; ++u) {

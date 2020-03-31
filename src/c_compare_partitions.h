@@ -40,7 +40,7 @@
 #ifndef __c_compare_partitions_h
 #define __c_compare_partitions_h
 
-#include <stdexcept>
+#include "c_common.h"
 #include <algorithm>
 #include <cmath>
 

@@ -36,6 +36,7 @@
 #ifndef __c_gini_disjoint_sets_h
 #define __c_gini_disjoint_sets_h
 
+#include "c_common.h"
 #include "c_disjoint_sets.h"
 #include "c_int_dict.h"
 
@@ -157,9 +158,9 @@ public:
         this->cnt[x] += this->cnt[y]; // cluster x has more elements now
         this->cnt[y] = 0;             // cluster y, well, cleaning up
 
-        //assert(number_of_size.at(size1)>0);
+        //GENIECLUST_ASSERT(number_of_size.at(size1)>0);
         number_of_size[size1]  -= 1; // one cluster of size1 is no more
-        //assert(number_of_size.at(size2)>0);
+        //GENIECLUST_ASSERT(number_of_size.at(size2)>0);
         number_of_size[size2]  -= 1; // one cluster of size2 is an ex-cluster
 
         // get rid of size1 and size2, if necessary
@@ -211,7 +212,7 @@ public:
         {
             // add this->tab[v] times v
             for (ssize_t j=0; j<number_of_size[*it]; ++j) {
-                if (i >= k) throw std::out_of_range("ASSERT1 FAIL in get_counts()");
+                GENIECLUST_ASSERT(i<k);
                 out[i++] = *it;
             }
         }
