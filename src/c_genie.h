@@ -63,10 +63,6 @@ protected:
     std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
 
 
-    //TODO links(n-1, 2)
-    //TODO height(n-1)
-
-
     /*! When the Genie correction is on, some MST edges will be chosen
      * in non-consecutive order. An array-based skiplist will speed up
      * searching within the to-be-consumed edges. Also, if there are
@@ -80,7 +76,7 @@ protected:
             if (mst_i[i*2+0] < 0 || mst_i[i*2+1] < 0)
                 continue; // a no-edge -> ignore
             if (!this->noise_leaves || (this->deg[this->mst_i[i*2+0]]>1 && this->deg[this->mst_i[i*2+1]]>1)) {
-                (*mst_skiplist)[i] = i/*only key is important, not value*/;
+                (*mst_skiplist)[i] = i; /*only key is important, not value*/
             }
         }
     }
@@ -283,6 +279,7 @@ public:
  *   but here we will call it MST anyway) - it must be acyclic though.
  *
  *
+ *
  *   References
  *   ===========
  *
@@ -294,8 +291,20 @@ template <class T>
 class CGenie : public CGenieBase<T> {
 protected:
 
-    void do_genie(CGiniDisjointSets* ds, CIntDict<ssize_t>* mst_skiplist,
-        ssize_t n_clusters, double gini_threshold)
+
+    /*!
+     *  @param ds
+     *  @param mst_skiplist
+     *  @param n_clusters
+     *  @param gini_threshold
+     *  @param links [out] c_contiguous array of size (n-1),
+     *      links[iter] = index of merged mst_i (up to the number of performed
+     *      merges, see retval).
+     *
+     *  @return The number of performed merges.
+     */
+    ssize_t do_genie(CGiniDisjointSets* ds, CIntDict<ssize_t>* mst_skiplist,
+        ssize_t n_clusters, double gini_threshold, std::vector<ssize_t>* links)
     {
         if (this->n - this->noise_count - n_clusters <= 0) {
             throw std::runtime_error("The requested number of clusters \
@@ -306,7 +315,8 @@ protected:
         // that we need to consider, and nothing more.
         ssize_t lastidx = mst_skiplist->get_key_min();
         ssize_t lastm = 0; // last minimal cluster size
-        for (ssize_t i=0; i<this->n - this->noise_count - n_clusters; ++i) {
+        ssize_t i;
+        for (i=0; i<this->n - this->noise_count - n_clusters; ++i) {
 
             // determine the pair of vertices to merge
             ssize_t i1;
@@ -336,6 +346,7 @@ protected:
 
                 i1 = this->mst_i[2*lastidx+0];
                 i2 = this->mst_i[2*lastidx+1];
+                (*links)[i] = lastidx;
                 ssize_t delme = lastidx;
                 lastidx = mst_skiplist->get_key_next(lastidx);
                 mst_skiplist->erase(delme); // O(1)
@@ -347,11 +358,13 @@ protected:
                 GENIECLUST_ASSERT(curidx >= 0 && curidx < this->n - 1);
                 i1 = this->mst_i[2*curidx+0];
                 i2 = this->mst_i[2*curidx+1];
+                (*links)[i] = curidx;
             }
 
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
             ds->merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
         }
+        return i;
     }
 
 
@@ -375,10 +388,12 @@ public:
      */
     void apply_genie(ssize_t n_clusters, double gini_threshold, ssize_t* res)
     {
-        CGiniDisjointSets ds(this->n - this->noise_count);
+        CGiniDisjointSets ds(this->n - this->noise_count); // final partition
+        std::vector<ssize_t> links(this->n - 1, -1); // history of the merged mst_is
         CIntDict<ssize_t> mst_skiplist(this->n - 1);
         this->mst_skiplist_init(&mst_skiplist);
-        this->do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold);
+        ssize_t i = this->do_genie(&ds, &mst_skiplist, n_clusters,
+            gini_threshold, &links);
         this->get_labels(&ds, res);
     }
 
@@ -444,32 +459,35 @@ protected:
             return unused_edges;
             // EOF.
         }
+        else {
+            for (ssize_t i=0; i<n_thresholds; ++i) {
+                double gini_threshold = gini_thresholds[i];
+                CGiniDisjointSets ds(this->n - this->noise_count);
+                std::vector<ssize_t> links(this->n - 1, -1); // history of the merged points
+                CIntDict<ssize_t> mst_skiplist(this->n-1);
+                this->mst_skiplist_init(&mst_skiplist);
+                this->do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold,
+                               &links);
 
-        for (ssize_t i=0; i<n_thresholds; ++i) {
-            double gini_threshold = gini_thresholds[i];
-            CGiniDisjointSets ds(this->n - this->noise_count);
-            CIntDict<ssize_t> mst_skiplist(this->n-1);
-            this->mst_skiplist_init(&mst_skiplist);
-            this->do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold);
-
-            // start where do_genie concluded
-            while (!mst_skiplist.empty())
-                unused_edges.push_back(mst_skiplist.pop_key_min());
-        }
-
-        // let unused_edges = sort(unique(unused_edges))
-        unused_edges.push_back(this->n-1); // sentinel
-        std::sort(unused_edges.begin(), unused_edges.end());
-        // sorted, but some might not be unique, so let's remove dups
-        ssize_t k = 0;
-        for (ssize_t i=1; i<(ssize_t)unused_edges.size(); ++i) {
-            if (unused_edges[i] != unused_edges[k]) {
-                k++;
-                unused_edges[k] = unused_edges[i];
+                // start where do_genie concluded
+                while (!mst_skiplist.empty())
+                    unused_edges.push_back(mst_skiplist.pop_key_min());
             }
+
+            // let unused_edges = sort(unique(unused_edges))
+            unused_edges.push_back(this->n-1); // sentinel
+            std::sort(unused_edges.begin(), unused_edges.end());
+            // sorted, but some might not be unique, so let's remove dups
+            ssize_t k = 0;
+            for (ssize_t i=1; i<(ssize_t)unused_edges.size(); ++i) {
+                if (unused_edges[i] != unused_edges[k]) {
+                    k++;
+                    unused_edges[k] = unused_edges[i];
+                }
+            }
+            unused_edges.resize(k+1);
+            return unused_edges;
         }
-        unused_edges.resize(k+1);
-        return unused_edges;
     }
 
 public:
@@ -493,7 +511,7 @@ public:
      * @param n_thresholds size of gini_thresholds
      * @param res [out] array of length n, will give cluster labels
      */
-    void apply_gic(ssize_t n_clusters,
+    ssize_t apply_gic(ssize_t n_clusters,
                    ssize_t add_clusters,
                    double n_features,
                    double* gini_thresholds,
@@ -507,21 +525,23 @@ public:
         std::vector<ssize_t> unused_edges = get_intersection_of_genies(
                 n_clusters+add_clusters, gini_thresholds, n_thresholds
         );
-        // note that unused_edges do not include noise edges
+
+        // note that unused_edges does not include noise edges
+        // unised_edges contains a sentinel element at the end == n-1
 
 
         // first generate ds representing the intersection of the partitions
-        CDisjointSets ds(this->n - this->noise_count);
+        CGiniDisjointSets ds(this->n - this->noise_count); // final partition
+        std::vector<ssize_t> links(this->n - 1); // history of the merged mst_is
         ssize_t cur_unused_edges = 0;
         std::vector<ssize_t> cluster_sizes(this->n - this->noise_count, 1);
         std::vector<T> cluster_d_sums(this->n - this->noise_count, (T)0.0);
+        ssize_t it = 0;
         for (ssize_t i=0; i<this->n - 1; ++i) {
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
-            if (i1 < 0 || i2 < 0)
-                continue; // a no-edge
-            if (this->noise_leaves && (this->deg[i1] == 1 || this->deg[i2] == 1))
-                continue; // noise edge, ignore
+            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
+            GENIECLUST_ASSERT(!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
 
             GENIECLUST_ASSERT(i<=unused_edges[cur_unused_edges]);
 
@@ -531,6 +551,8 @@ public:
                 continue;
             }
 
+            GENIECLUST_ASSERT(it<this->n-1);
+            links[it++] = i;
             i1 = ds.find(this->denoise_index_rev[i1]);
             i2 = ds.find(this->denoise_index_rev[i2]);
             if (i1 > i2) std::swap(i1, i2);
@@ -595,6 +617,8 @@ public:
 
             GENIECLUST_ASSERT(min_which >= 0 && min_which < num_unused_edges);
             ssize_t i = unused_edges[min_which];
+            GENIECLUST_ASSERT(it<this->n-1);
+            links[it++] = i;
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
@@ -615,6 +639,7 @@ public:
         }
 
         this->get_labels(&ds, res);
+        return it;
     }
 };
 
