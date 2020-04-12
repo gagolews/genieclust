@@ -39,6 +39,7 @@
 #include <limits>
 
 
+
 #ifndef GENIECLUST_ASSERT
 #define __GENIECLUST_STR(x) #x
 #define GENIECLUST_STR(x) __GENIECLUST_STR(x)

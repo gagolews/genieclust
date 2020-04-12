@@ -117,6 +117,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
      * @param X n*d c_contiguous array
      * @param n number of points
      * @param d dimensionality
+     * @param squared true for the squared Euclidean distance
      */
     CDistanceEuclidean(const T* X, ssize_t n, ssize_t d, bool squared=false)
             : buf(n)//, sqnorm(n)

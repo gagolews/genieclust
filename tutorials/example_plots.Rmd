@@ -38,13 +38,13 @@ path = os.path.join("..", "benchmark_data")
 dataset = "jain"
 
 # Load an example 2D dataset
-X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
 
 # Load the corresponding reference labels.
 # The original labels are in {1,2,..,k} and 0 denotes the noise cluster.
 # Let's make them more Python-ish by subtracting 1
 # (and hence the noise cluster will be marked as -1).
-labels_true = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
+labels_true = np.loadtxt(os.path.join(path, "%s.labels0.gz" % dataset), dtype=np.intp)-1
 n_clusters = len(np.unique(labels_true))-(np.min(labels_true)==-1)
 # do not count the "noise" cluster (if present) as a separate entity
 
@@ -66,7 +66,7 @@ to each point in X, giving its plot style
 
 
 ```{python results="hide"}
-genieclust.plots.plot_scatter(X, 1-labels_true)
+genieclust.plots.plot_scatter(X, labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 plt.show()
