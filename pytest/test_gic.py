@@ -7,6 +7,7 @@ import time
 import gc
 
 
+
 import scipy.spatial.distance
 from rpy2.robjects.packages import importr
 stats = importr("stats")
@@ -15,6 +16,16 @@ import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
+
+# TODO
+# TODO
+# TODO
+# TODO
+# TODO
+# TODO
+# TODO
+
+
 
 def test_gic():
     for dataset in ["jain", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
@@ -40,13 +51,15 @@ def test_gic():
             gc.collect()
 
             t01 = time.time()
-            labels_gic = genieclust.internal.gic_from_mst(mst_d, mst_i,
+            res = genieclust.internal.gic_from_mst(mst_d, mst_i,
                 n_clusters=K, n_features=X.shape[1], gini_thresholds=g,
                 noise_leaves=False)
+            labels_gic = res["labels"]
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
             assert len(np.unique(labels_gic[labels_gic>=0])) == K
+            assert res["n_clusters"] == K
             print()
 
 

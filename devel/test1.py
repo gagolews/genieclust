@@ -21,11 +21,12 @@ gini_threshold = 0.3
 
 
 mst_dist, mst_ind = genieclust.internal.mst_from_distance(X)
-ret = genieclust.internal.genie_from_mst(mst_dist, mst_ind,
+res = genieclust.internal.genie_from_mst(mst_dist, mst_ind,
             n_clusters=n_clusters,
             gini_threshold=gini_threshold,
             noise_leaves=False)
-print(ret)
+labels = res["labels"]
+print(labels)
 
 plt.rcParams["figure.figsize"] = (8,4)
 plt.subplot("121")
@@ -33,7 +34,7 @@ genieclust.plots.plot_scatter(X, labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 plt.subplot("122")
-genieclust.plots.plot_scatter(X, ret)
+genieclust.plots.plot_scatter(X, labels)
 plt.title("%s Genie g=%g"%(dataset, gini_threshold))
 plt.axis("equal")
 plt.show()

@@ -15,6 +15,10 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
+
+# TODO: test early stop
+
+
 def test_genie(metric='euclidean'):
     for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":

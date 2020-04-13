@@ -145,20 +145,28 @@ class Genie(BaseEstimator, ClusterMixin):
     Attributes
     ----------
 
-    n_clusters_ : int
-        The number of clusters detected by the algorithm.
-        If 0, then labels_ are not set.
-        Note that the actual number might be larger than the n_clusters
-        requested.
     labels_ : ndarray, shape (n_samples,) or None
         Detected cluster labels of each point:
         an integer vector c with c[i] denoting the cluster id
         (in {0, ..., n_clusters-1}) of the i-th object.
         If M>1, noise points are labelled -1.
+    n_clusters_ : int
+        The number of clusters detected by the algorithm.
+        If 0, then labels_ are not set.
+        Note that the actual number might be larger than the n_clusters
+        requested, for instance, if there are many noise points.
     n_samples_ : int
         The number of points in the fitted dataset.
     n_features_ : int
         The number of features in the fitted dataset.
+    links_ : TODO
+        TODO
+    iters_ : int
+        TODO
+    mst_dist_ : TODO
+        TODO
+    mst_ind_ : TODO
+        TODO
     """
 
     def __init__(self,
@@ -183,7 +191,13 @@ class Genie(BaseEstimator, ClusterMixin):
         self.compute_full_tree = compute_full_tree
 
         self.labels_ = None
-        self.n_clusters_ = 0
+        self.n_clusters_ = 0 # should not be confused with self.n_clusters
+        self.n_samples_  = 0
+        self.n_features_ = 0
+        #self.links_  = res["links"]
+        #self.iters_  = res["iters"]
+        #self.mst_dist_ = mst_dist
+        #self.mst_ind_  = mst_ind
 
 
     def fit(self, X, y=None):
@@ -329,37 +343,29 @@ class Genie(BaseEstimator, ClusterMixin):
                 )
 
         # apply the Genie+ algorithm
-        result = internal.genie_from_mst(mst_dist, mst_ind,
+        res = internal.genie_from_mst(mst_dist, mst_ind,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"]>1),
             compute_full_tree=cur_state["compute_full_tree"])
 
-        # postprocess labels, if requested to do so
-        if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
-            pass
-        elif cur_state["postprocess"] == "boundary":
-            labels = internal.merge_boundary_points(mst_ind, labels, nn_ind, cur_state["M"])
-        elif cur_state["postprocess"] == "all":
-            labels = internal.merge_noise_points(mst_ind, labels)
-
-        self.n_clusters_ = .........
-        self.labels_ = labels
+        self.n_clusters_ = res["n_clusters"]
+        self.labels_ = res["labels"]
+        self.links_  = res["links"]
+        self.iters_  = res["iters"]
         self.n_samples_ = n_samples
         self.n_features_ = n_features
+        self.mst_dist_ = mst_dist
+        self.mst_ind_  = mst_ind
 
-        if cur_state["compute_full_tree"]:
-            self._mst_dist = mst_dist
-            self._mst_ind  = mst_ind
-            self._links = ........
-
-        # # save state
-        # self.__last_state    = cur_state
-
-        # self.__last_X        = X
-        # self.__last_mst      = mst
-        # self.__last_nn_dist  = nn_dist
-        # self.__last_nn_ind   = nn_ind
+        if self.labels_ is not None:
+            # postprocess labels, if requested to do so
+            if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
+                pass
+            elif cur_state["postprocess"] == "boundary":
+                self.labels_ = internal.merge_boundary_points(mst_ind, self.labels_, nn_ind, cur_state["M"])
+            elif cur_state["postprocess"] == "all":
+                self.labels_ = internal.merge_noise_points(mst_ind, self.labels_)
 
         return self
 

@@ -1030,46 +1030,52 @@ cpdef dict genie_from_mst(
     Returns
     -------
 
-    res : dict
-        res_labels : ndarray, shape (n,) or None
+    res : dict, with the following elements:
+        labels : ndarray, shape (n,) or None
             Predicted labels, representing an n_clusters-partition of X.
-            res_labels[i] gives the cluster id of the i-th input point.
+            labels[i] gives the cluster id of the i-th input point.
             If noise_leaves==True, then label -1 denotes a noise point.
-            Is None if n_clusters==1.
+            Is None if n_clusters==0.
 
-        res_links : ndarray, shape (n-1,)
-            res_links[i] gives the MST edge merged at the i-th iteration
+        links : ndarray, shape (n-1,)
+            links[i] gives the MST edge merged at the i-th iteration
             of the algorithm.
 
-        it : int
+        iters : int
             number of merge steps performed
+
+        n_cluster : integer
+            actual number of clusters found, 0 if labels is None
 
     """
     cdef ssize_t n = mst_i.shape[0]+1
 
-    if not 1 <= n_clusters <= n:
+    if not 0 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
     if not n-1 == mst_d.shape[0]:
         raise ValueError("ill-defined MST")
     if not 0.0 <= gini_threshold <= 1.0:
         raise ValueError("incorrect gini_threshold")
 
+
+
+    cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t] labels_ # on request, see below
+    cdef ssize_t n_clusters_ = 0, iters_
+
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
 
+    g.apply_genie(1 if compute_full_tree else n_clusters, gini_threshold)
+    iters_ = g.get_links(&links_[0])
+    if n_clusters >= 1:
+        labels_     = np.empty(n, dtype=np.intp)
+        n_clusters_ = g.get_labels(n_clusters, &labels_[0])
 
-    cdef np.ndarray[ssize_t] res_links  = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t] res_labels
-    if n_clusters > 1:
-        res_labels = np.empty(n, dtype=np.intp)
-
-    it = g.apply_genie(n_clusters, gini_threshold,
-            <ssize_t*>NULL if n_clusters == 1 else &res_labels[0],
-            &res_links[0])
-
-    return dict(res_labels=None if n_clusters == 1 else res_labels,
-                res_links=res_links,
-                it=it)
+    return dict(labels=None if n_clusters == 0 else labels_,
+                n_clusters=n_clusters_,
+                links=links_,
+                iters=iters_)
 
 
 
@@ -1143,23 +1149,26 @@ cpdef dict gic_from_mst(
     Returns
     -------
 
-    res : dict
-        res_labels : ndarray, shape (n,) or None
+    res : dict, with the following elements:
+        labels : ndarray, shape (n,) or None
             Predicted labels, representing an n_clusters-partition of X.
-            res_labels[i] gives the cluster id of the i-th input point.
+            labels[i] gives the cluster id of the i-th input point.
             If noise_leaves==True, then label -1 denotes a noise point.
-            Is None if n_clusters==1.
+            Is None if n_clusters==0.
 
-        res_links : ndarray, shape (n-1,)
-            res_links[i] gives the MST edge merged at the i-th iteration
+        links : ndarray, shape (n-1,)
+            links[i] gives the MST edge merged at the i-th iteration
             of the algorithm.
 
-        it : int
+        iters : int
             number of merge steps performed
+
+        n_cluster : integer
+            actual number of clusters found, 0 if labels is None
     """
     cdef ssize_t n = mst_i.shape[0]+1
 
-    if not 1 <= n_clusters <= n:
+    if not 0 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
     if not n-1 == mst_d.shape[0]:
         raise ValueError("ill-defined MST")
@@ -1167,19 +1176,23 @@ cpdef dict gic_from_mst(
     if gini_thresholds is None:
         gini_thresholds = np.r_[0.3, 0.5, 0.7]
 
+
+
+    cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t] labels_ # on request, see below
+    cdef ssize_t n_clusters_ = 0, iters_
+
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
 
-    cdef np.ndarray[ssize_t] res_links  = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t] res_labels
-    if n_clusters > 1:
-        res_labels = np.empty(n, dtype=np.intp)
+    g.apply_gic(1 if compute_full_tree else n_clusters, add_clusters, n_features,
+            &gini_thresholds[0], gini_thresholds.shape[0])
+    iters_ = g.get_links(&links_[0])
+    if n_clusters >= 1:
+        labels_     = np.empty(n, dtype=np.intp)
+        n_clusters_ = g.get_labels(n_clusters, &labels_[0])
 
-    it = g.apply_gic(n_clusters, add_clusters, n_features,
-            &gini_thresholds[0], gini_thresholds.shape[0],
-            <ssize_t*>NULL if n_clusters == 1 else &res_labels[0], &res_links[0])
-
-    return dict(res_labels=None if n_clusters == 1 else res_labels,
-                res_links=res_links,
-                it=it)
-
+    return dict(labels=None if n_clusters == 0 else labels_,
+                n_clusters=n_clusters_,
+                links=links_,
+                iters=iters_)
