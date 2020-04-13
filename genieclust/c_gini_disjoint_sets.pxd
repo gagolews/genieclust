@@ -43,4 +43,4 @@ cdef extern from "../src/c_gini_disjoint_sets.h":
         double get_gini()
         ssize_t get_smallest_count()
         ssize_t get_count(ssize_t)
-        vector[ssize_t] get_counts()
+        void get_counts(ssize_t*)

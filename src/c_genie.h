@@ -90,7 +90,7 @@ protected:
 
 
     /*! When the Genie correction is on, some MST edges will be chosen
-     * in non-consecutive order. An array-based skiplist will speed up
+     * in a non-consecutive order. An array-based skiplist will speed up
      * searching within the to-be-consumed edges. Also, if there are
      * noise points, then the skiplist allows the algorithm
      * to naturally ignore edges that connect the leaves. */
@@ -109,13 +109,15 @@ protected:
 
 
 
-    /*! Propagate res with clustering results
+    /*! Propagate res with clustering results - the requested n_clusters-partition
      *
      * Noise points get cluster id of -1.
      *
-     * @param res [out] array of length n
+     * @param res [out] c_contiguous array of length n
+     *
+     * @return number of noise points
      */
-    void get_labels(ssize_t* res) {
+    ssize_t get_labels(ssize_t* res) {
         if (this->results.ds.get_n() <= 0)
             throw std::runtime_error("Apply the clustering procedure first.");
 
@@ -137,11 +139,36 @@ protected:
                 res[i] = -1;
             }
         }
+
+        return this->noise_count;
     }
 
 
+    /*! Propagate res with clustering results
+     *
+     * If there are noise points, not all elements in res will be set.
+     *
+     * @param res [out] c_contiguous array of length n-1,
+     * res[i] gives the index of the MST edge merged at the i-th iteration.
+     *
+     * @return number of items in res set (the array is -1
+     */
+    ssize_t get_links(ssize_t* res) {
+        if (this->results.ds.get_n() <= 0)
+            throw std::runtime_error("Apply the clustering procedure first.");
 
-    // https://github.com/gagolews/genieclust/issues/8 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+        for (ssize_t i=0; i<this->results.it; ++i) {
+            res[i] = this->results.links[i];
+        }
+
+        for (ssize_t i=this->results.it; i<this->n-1; ++i) {
+            res[i] = -1;
+        }
+
+        return this->results.it;
+    }
+
+
 
     /*! Generate cluster hierarchy compatible with R's hclust().
      *
@@ -417,11 +444,13 @@ public:
      *
      * @param n_clusters number of clusters to find, 1 for the complete hierarchy
      * @param gini_threshold the Gini index threshold
-     * @param res [out] array of length n, will give cluster labels (can be NULL)
+     * @param res_labels [out] array of length n defining cluster labels (can be NULL)
+     * @param res_links [out] array of length n-1 defining MST edges merge order (can be NULL)
      *
      * @return number of merge steps performed
      */
-    ssize_t apply_genie(ssize_t n_clusters, double gini_threshold, ssize_t* res=NULL)
+    ssize_t apply_genie(ssize_t n_clusters, double gini_threshold,
+                        ssize_t* res_labels=NULL, ssize_t* res_links=NULL)
     {
         if (n_clusters < 1)
             throw std::domain_error("n_clusters must be >= 1");
@@ -434,10 +463,8 @@ public:
         this->results.it = this->do_genie(&(this->results.ds), &mst_skiplist,
             n_clusters, gini_threshold, &(this->results.links));
 
-        if (res) {
-            // ds is the partition in the last iteration of the algorithm
-            this->get_labels(res);
-        }
+        if (res_labels) this->get_labels(res_labels);
+        if (res_links) this->get_links(res_links);
 
         return this->results.it;
     }
@@ -554,16 +581,15 @@ public:
      * @param n_features number of features (can be fractional)
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
-     * @param res [out] array of length n, will give cluster labels  (can be NULL)
+     * @param res_labels [out] array of length n defining cluster labels (can be NULL)
+     * @param res_links [out] array of length n-1 defining MST edges merge order (can be NULL)
      *
      * @return number of merge steps performed
      */
     ssize_t apply_gic(ssize_t n_clusters,
-                   ssize_t add_clusters,
-                   double n_features,
-                   double* gini_thresholds,
-                   ssize_t n_thresholds,
-                   ssize_t* res=NULL)
+                   ssize_t add_clusters, double n_features,
+                   double* gini_thresholds, ssize_t n_thresholds,
+                   ssize_t* res_labels=NULL, ssize_t* res_links=NULL)
     {
         if (n_clusters < 1)
             throw std::domain_error("n_clusters must be >= 1");
@@ -584,7 +610,7 @@ public:
         ssize_t cur_unused_edges = 0;
         std::vector<ssize_t> cluster_sizes(this->n - this->noise_count, 1);
         std::vector<T> cluster_d_sums(this->n - this->noise_count, (T)0.0);
-        ssize_t it = 0;
+        this->results.it = 0;
         for (ssize_t i=0; i<this->n - 1; ++i) {
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
@@ -599,8 +625,8 @@ public:
                 continue;
             }
 
-            GENIECLUST_ASSERT(it<this->n-1);
-            this->results.links[it++] = i;
+            GENIECLUST_ASSERT(this->results.it < this->n-1);
+            this->results.links[this->results.it++] = i;
             i1 = this->results.ds.find(this->denoise_index_rev[i1]);
             i2 = this->results.ds.find(this->denoise_index_rev[i2]);
             if (i1 > i2) std::swap(i1, i2);
@@ -665,8 +691,8 @@ public:
 
             GENIECLUST_ASSERT(min_which >= 0 && min_which < num_unused_edges);
             ssize_t i = unused_edges[min_which];
-            GENIECLUST_ASSERT(it<this->n-1);
-            this->results.links[it++] = i;
+            GENIECLUST_ASSERT(this->results.it < this->n - 1);
+            this->results.links[this->results.it++] = i;
             ssize_t i1 = this->mst_i[2*i+0];
             ssize_t i2 = this->mst_i[2*i+1];
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
@@ -686,12 +712,10 @@ public:
             num_unused_edges--;
         }
 
-        if (res) {
-            this->get_labels(res);
-        }
+        if (res_labels) this->get_labels(res_labels);
+        if (res_links) this->get_links(res_links);
 
-        this->results.it = it;
-        return it;
+        return this->results.it;
     }
 };
 

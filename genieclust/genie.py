@@ -82,12 +82,23 @@ class Genie(BaseEstimator, ClusterMixin):
     and hence  not dependent on the original DBSCAN's somehow magical
     `eps` parameter or the HDBSCAN Python package's `min_cluster_size` one.
 
+    Note that the resulting partition tree (dendrogram) might violate
+    the ultrametricity property (merges might occur at nonmonotone levels).
+    Hence, distance threshold-based stopping criterion is not implemented.
+
+
+
 
     Parameters
     ----------
 
-    n_clusters : int, default=2
-        Number of clusters to detect.
+    n_clusters : int >= 0, default=2
+        Number of clusters to detect. Note that depending on the dataset
+        and approximations used (see parameter `exact`), the actual
+        partition size can be smaller.
+        n_clusters==1 can act as a noise point/outlier detector (if M>1).
+        n_clusters==0 computes the whole dendrogram but doesn't generate
+        any particular cuts.
     gini_threshold : float in [0,1], default=0.3
         The threshold for the Genie correction, i.e.,
         the Gini index of the cluster size distribution.
@@ -100,7 +111,7 @@ class Genie(BaseEstimator, ClusterMixin):
         n_neighbors < 0 picks the default one, typically several dozen,
         but no less than M. Note that the algorithm's memory
         consumption is proportional to n_samples*n_neighbors.
-    postprocess : str, one of "boundary" [default], "none", "all"
+    postprocess : str, one of "boundary" (default), "none", "all"
         In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points. To force a classical
         n_clusters-partition of a data set (with no notion of noise),
@@ -117,19 +128,32 @@ class Genie(BaseEstimator, ClusterMixin):
         methods require float32 data anyway.  This also normalises
         the input coordinates so that the method is guaranteed to be translation
         and scale invariant.
-    nn_params: dict, optional (default=None)
+    nn_params : dict, optional (default=None)
         Arguments to the sklearn.neighbors.NearestNeighbors class
         constructor, e.g., the metric to use (default='euclidean').
+    compute_full_tree : bool, default=True
+        If True, only a partial hierarchy is determined so that
+        at most n_clusters are generated. Saves some time if you think you know
+        how many clusters to expect, but do you?
 
 
     Attributes
     ----------
 
-    labels_ : ndarray, shape (n_samples,)
-        Detected cluster labels for each point in the dataset given to fit():
+    n_clusters_ : int
+        The number of clusters detected by the algorithm.
+        If 0, then labels_ are not set.
+        Note that the actual number might be larger than the n_clusters
+        requested.
+    labels_ : ndarray, shape (n_samples,) or None
+        Detected cluster labels of each point:
         an integer vector c with c[i] denoting the cluster id
         (in {0, ..., n_clusters-1}) of the i-th object.
         If M>1, noise points are labelled -1.
+    n_samples_ : int
+        The number of points in the fitted dataset.
+    n_features_ : int
+        The number of features in the fitted dataset.
     """
 
     def __init__(self,
@@ -140,7 +164,8 @@ class Genie(BaseEstimator, ClusterMixin):
             postprocess="boundary",
             exact=True,
             allow_cast_float32=True,
-            nn_params=None
+            nn_params=None,
+            compute_full_tree=True
         ):
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
@@ -150,31 +175,24 @@ class Genie(BaseEstimator, ClusterMixin):
         self.exact = exact
         self.allow_cast_float32 = allow_cast_float32
         self.nn_params = nn_params
+        self.compute_full_tree = compute_full_tree
 
         self.labels_ = None
-        # self.__last_state = dict()
-        # self.__last_X
-        # self.__last_mst
-        # self.__last_nn_dist
-        # self.__last_nn_ind
+        self.n_clusters_ = 0
 
 
-    def fit(self, X, y=None, cache=False):
-        """Perform clustering on X.
-        The resulting partition shall be given by self.labels_.
+    def fit(self, X, y=None):
+        """Perform clustering of the X dataset.
+        See the labels_ and n_clusters_ attributes for the clustering result.
 
 
         Parameters
         ----------
 
         X : ndarray, shape (n_samples, n_features)
-            A matrix defining n_samples points in
-            a n_features-dimensional vector space.
+            A matrix defining n_samples in a vector space with n_features.
         y : None
             Ignored.
-        cache : bool, default=True
-            Store auxiliary results to speed up further calls
-            to fit() on the same data matrix, but with different params.
 
 
         Returns
@@ -182,11 +200,8 @@ class Genie(BaseEstimator, ClusterMixin):
 
         self
         """
-        n = X.shape[0]
-        #d = X.shape[0]
-
-        if cache:
-            raise NotImplementedError("cache not implemented yet")
+        n_samples  = X.shape[0]
+        n_features = X.shape[1]
 
 
         cur_state = dict()
@@ -202,15 +217,15 @@ class Genie(BaseEstimator, ClusterMixin):
             cur_state["metric_params"] = dict()
 
         cur_state["n_clusters"] = int(self.n_clusters)
-        if cur_state["n_clusters"] <= 1:
-            raise ValueError("n_clusters must be > 1")
+        if cur_state["n_clusters"] < 0:
+            raise ValueError("n_clusters must be >= 0")
 
         cur_state["gini_threshold"] = float(self.gini_threshold)
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("gini_threshold not in [0,1]")
 
         cur_state["M"] = int(self.M)
-        if not 1 <= cur_state["M"] <= n:
+        if not 1 <= cur_state["M"] <= n_samples:
             raise ValueError("M must be in [1, n_samples]")
 
         cur_state["postprocess"] = self.postprocess
@@ -223,6 +238,7 @@ class Genie(BaseEstimator, ClusterMixin):
 
         cur_state["exact"] = bool(self.exact)
         cur_state["allow_cast_float32"] = bool(self.allow_cast_float32)
+        cur_state["compute_full_tree"] = bool(self.compute_full_tree)
 
         if cur_state["allow_cast_float32"]:
             X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
@@ -231,15 +247,14 @@ class Genie(BaseEstimator, ClusterMixin):
 
         nn_dist       = None
         nn_ind        = None
-        spanning_tree = None
         if not cur_state["exact"]:
             #raise NotImplementedError("approximate method not implemented yet")
 
             actual_n_neighbors = cur_state["n_neighbors"]
             if actual_n_neighbors < 0:
-                actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n))))
+                actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
                 actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-                actual_n_neighbors = min(n-1, actual_n_neighbors)
+                actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
 
             # t0 = time.time()
             #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=actual_n_neighbors, **cur_state["nn_params"])
@@ -251,12 +266,12 @@ class Genie(BaseEstimator, ClusterMixin):
 
 
 
-            nn = faiss.IndexFlatL2(X.shape[1])
+            nn = faiss.IndexFlatL2(n_features)
             nn.add(X)
             nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
 
             # @TODO:::::
-            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n)))[0]
+            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n_samples)))[0]
             #print(nn_bad_where)
             #print(nn_ind[nn_bad_where,:5])
             #print(X[nn_bad_where,:])
@@ -304,10 +319,11 @@ class Genie(BaseEstimator, ClusterMixin):
                 )
 
         # apply the Genie+ algorithm
-        labels = internal.genie_from_mst(mst_dist, mst_ind,
+        result = internal.genie_from_mst(mst_dist, mst_ind,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            noise_leaves=(cur_state["M"]>1))
+            noise_leaves=(cur_state["M"]>1),
+            compute_full_tree=cur_state["compute_full_tree"])
 
         # postprocess labels, if requested to do so
         if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
@@ -317,7 +333,15 @@ class Genie(BaseEstimator, ClusterMixin):
         elif cur_state["postprocess"] == "all":
             labels = internal.merge_noise_points(mst_ind, labels)
 
+        self.n_clusters_ = .........
         self.labels_ = labels
+        self.n_samples_ = n_samples
+        self.n_features_ = n_features
+
+        if cur_state["compute_full_tree"]:
+            self._mst_dist = mst_dist
+            self._mst_ind  = mst_ind
+            self._links = ........
 
         # # save state
         # self.__last_state    = cur_state
@@ -327,14 +351,11 @@ class Genie(BaseEstimator, ClusterMixin):
         # self.__last_nn_dist  = nn_dist
         # self.__last_nn_ind   = nn_ind
 
-        self._mst_dist = mst_dist
-        self._mst_ind  = mst_ind
-
         return self
 
 
     # not needed - inherited from ClusterMixin
-    def fit_predict(self, X, y=None, cache=False):
+    def fit_predict(self, X, y=None):
         """Compute a k-partition and return the predicted labels,
         see fit().
 
@@ -346,9 +367,6 @@ class Genie(BaseEstimator, ClusterMixin):
             see fit()
         y : None
             see fit()
-        cache : bool
-            see fit()
-
 
 
         Returns
@@ -358,6 +376,8 @@ class Genie(BaseEstimator, ClusterMixin):
             Predicted labels, representing a partition of X.
             labels_[i] gives the cluster id of the i-th input point.
             negative labels_ correspond to noise points.
+            Note that the determined number of clusters
+            might be larger than the requested one.
         """
         self.fit(X)
         return self.labels_

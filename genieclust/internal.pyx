@@ -6,6 +6,8 @@
 # cython: language_level=3
 
 
+
+
 """
 Internal functions
 
@@ -74,6 +76,8 @@ from . cimport c_postprocess
 from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
+
+
 
 
 
@@ -950,11 +954,9 @@ cdef class GiniDisjointSets():
 
         Run time: O(k), where k is the current number of subsets.
         """
-        cdef vector[ssize_t] counts = self.ds.get_counts()
-        cdef ssize_t k = counts.size(), i
+        cdef ssize_t k = self.ds.get_k()
         cdef np.ndarray[ssize_t] out = np.empty(k, dtype=np.intp)
-        for i in range(k):
-            out[i] = counts[i]
+        self.ds.get_counts(&out[0])
         return out
 
 
@@ -971,12 +973,13 @@ cdef class GiniDisjointSets():
 # The Genie+ Clustering Algorithm (internal)
 #############################################################################
 
-cpdef np.ndarray[ssize_t] genie_from_mst(
+cpdef dict genie_from_mst(
         floatT[::1] mst_d,
         ssize_t[:,::1] mst_i,
-        ssize_t n_clusters=2,
+        ssize_t n_clusters=1,
         double gini_threshold=0.3,
-        bint noise_leaves=False):
+        bint noise_leaves=False,
+        bint compute_full_tree=True):
     """Compute a k-partition based on a precomputed MST.
 
     The Genie+ Clustering Algorithm (with extensions)
@@ -1012,22 +1015,35 @@ cpdef np.ndarray[ssize_t] genie_from_mst(
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
-    n_clusters : int, default=2
-        Number of clusters the data is split into.
+    n_clusters : int, default=1
+        Number of clusters the dataset is split into.
+        Use n_clusters==1 to generate the complete hierarchy.
     gini_threshold : float, default=0.3
         The threshold for the Genie correction
     noise_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.
+    compute_full_tree : bool
+        Compute the whole merge sequence or stop early?
 
 
     Returns
     -------
 
-    labels_ : ndarray, shape (n,)
-        Predicted labels, representing a partition of X.
-        labels_[i] gives the cluster id of the i-th input point.
-        If noise_leaves==True, then label -1 denotes a noise point.
+    res : dict
+        res_labels : ndarray, shape (n,) or None
+            Predicted labels, representing an n_clusters-partition of X.
+            res_labels[i] gives the cluster id of the i-th input point.
+            If noise_leaves==True, then label -1 denotes a noise point.
+            Is None if n_clusters==1.
+
+        res_links : ndarray, shape (n-1,)
+            res_links[i] gives the MST edge merged at the i-th iteration
+            of the algorithm.
+
+        it : int
+            number of merge steps performed
+
     """
     cdef ssize_t n = mst_i.shape[0]+1
 
@@ -1038,12 +1054,22 @@ cpdef np.ndarray[ssize_t] genie_from_mst(
     if not 0.0 <= gini_threshold <= 1.0:
         raise ValueError("incorrect gini_threshold")
 
-    cdef np.ndarray[ssize_t] res = np.empty(n, dtype=np.intp)
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
-    g.apply_genie(n_clusters, gini_threshold, &res[0])
 
-    return res
+
+    cdef np.ndarray[ssize_t] res_links  = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t] res_labels
+    if n_clusters > 1:
+        res_labels = np.empty(n, dtype=np.intp)
+
+    it = g.apply_genie(n_clusters, gini_threshold,
+            <ssize_t*>NULL if n_clusters == 1 else &res_labels[0],
+            &res_links[0])
+
+    return dict(res_labels=None if n_clusters == 1 else res_labels,
+                res_links=res_links,
+                it=it)
 
 
 
@@ -1055,14 +1081,15 @@ cpdef np.ndarray[ssize_t] genie_from_mst(
 #############################################################################
 
 
-cpdef np.ndarray[ssize_t] gic_from_mst(
+cpdef dict gic_from_mst(
         floatT[::1] mst_d,
         ssize_t[:,::1] mst_i,
         double n_features,
-        ssize_t n_clusters=2,
+        ssize_t n_clusters=1,
         ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
-        bint noise_leaves=False):
+        bint noise_leaves=False,
+        bint compute_full_tree=True):
     """GIc (Genie+Information Criterion) Hierarchical Clustering Algorithm
 
     Compute a k-partition based on a pre-computed MST.
@@ -1097,8 +1124,9 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
     n_features : double
         number of features in the data set
         [can be fractional if you know what you're doing]
-    n_clusters : int, default=2
-        Number of clusters the data is split into.
+    n_clusters : int, default=1
+        Number of clusters the dataset is split into.
+        Use n_clusters==1 to generate the complete hierarchy.
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
@@ -1108,15 +1136,26 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
     noise_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.
+    compute_full_tree : bool
+        Compute the whole merge sequence or stop early?
 
 
     Returns
     -------
 
-    labels_ : ndarray, shape (n,)
-        Predicted labels, representing a partition of X.
-        labels_[i] gives the cluster id of the i-th input point.
-        If noise_leaves==True, then label -1 denotes a noise point.
+    res : dict
+        res_labels : ndarray, shape (n,) or None
+            Predicted labels, representing an n_clusters-partition of X.
+            res_labels[i] gives the cluster id of the i-th input point.
+            If noise_leaves==True, then label -1 denotes a noise point.
+            Is None if n_clusters==1.
+
+        res_links : ndarray, shape (n-1,)
+            res_links[i] gives the MST edge merged at the i-th iteration
+            of the algorithm.
+
+        it : int
+            number of merge steps performed
     """
     cdef ssize_t n = mst_i.shape[0]+1
 
@@ -1128,11 +1167,19 @@ cpdef np.ndarray[ssize_t] gic_from_mst(
     if gini_thresholds is None:
         gini_thresholds = np.r_[0.3, 0.5, 0.7]
 
-    cdef np.ndarray[ssize_t] res = np.empty(n, dtype=np.intp)
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
-    g.apply_gic(n_clusters, add_clusters, n_features,
-        &gini_thresholds[0], gini_thresholds.shape[0], &res[0])
 
-    return res
+    cdef np.ndarray[ssize_t] res_links  = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t] res_labels
+    if n_clusters > 1:
+        res_labels = np.empty(n, dtype=np.intp)
+
+    it = g.apply_gic(n_clusters, add_clusters, n_features,
+            &gini_thresholds[0], gini_thresholds.shape[0],
+            <ssize_t*>NULL if n_clusters == 1 else &res_labels[0], &res_links[0])
+
+    return dict(res_labels=None if n_clusters == 1 else res_labels,
+                res_links=res_links,
+                it=it)
 

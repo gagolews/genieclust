@@ -203,20 +203,20 @@ public:
      *  The resulting vector is ordered nondecreasingly.
      *
      *  Run time: O(k), where k is the current number of subsets.
+     *
+     *  @param res [out] c_contiguous array of length k
      */
-    std::vector<ssize_t> get_counts() {
+    void get_counts(ssize_t* res) {
         ssize_t i = 0;
-        std::vector<ssize_t> out(k);
         for (CIntDict<ssize_t>::iterator it = number_of_size.begin();
              it != number_of_size.end(); ++it)
         {
             // add this->tab[v] times v
             for (ssize_t j=0; j<number_of_size[*it]; ++j) {
                 GENIECLUST_ASSERT(i<k);
-                out[i++] = *it;
+                res[i++] = *it;
             }
         }
-        return out;
     }
 
 };
