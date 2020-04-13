@@ -13,7 +13,8 @@ plt.style.use('seaborn-whitegrid')
 path = os.path.join("..", "benchmark_data")
 dataset = "jain"
 X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
-X = (X-np.mean(X))/np.std(X, ddof=1)
+X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
+X = X.astype(np.float32, order="C", copy=False)
 labels_true = np.loadtxt(os.path.join(path, "%s.labels0.gz" % dataset), dtype=np.intp)-1
 n_clusters = int(len(np.unique(labels_true))-(np.min(labels_true)==-1))
 gini_threshold = 0.3

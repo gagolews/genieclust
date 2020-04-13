@@ -50,7 +50,7 @@ n_clusters = len(np.unique(labels_true))-(np.min(labels_true)==-1)
 
 # Centre and scale (proportionally in all the axes) all the points.
 # Note: this is NOT a standardization of all the variables.
-X = (X-np.mean(X))/np.std(X, ddof=1)
+X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 ```
 
 

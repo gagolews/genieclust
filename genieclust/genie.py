@@ -106,31 +106,36 @@ class Genie(BaseEstimator, ClusterMixin):
         Low thresholds highly penalise the formation of small clusters.
     M : int, default=1
         Smoothing factor. M=1 gives the original Genie algorithm.
-    n_neighbors : int, default=-1
-        Number of nearest neighbours to compute for each data point.
-        n_neighbors < 0 picks the default one, typically several dozen,
-        but no less than M. Note that the algorithm's memory
-        consumption is proportional to n_samples*n_neighbors.
     postprocess : str, one of "boundary" (default), "none", "all"
         In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points. To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
     exact : bool, default=False
-        If False, the minimum spanning tree shall be approximated
+        TODO: NOT IMPLEMENTED YET
+        ........................................................................
+        If False, the minimum spanning tree is approximated
         based on the nearest neighbours graph. Finding nearest neighbours
         in low dimensional spaces is usually fast. Otherwise,
         the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of O(n_samples*n_samples*n_features).
-    allow_cast_float32 : bool, default=True
-        Allow casting input data to float32 (for efficiency reasons, however,
-        increases total memory usage). Note that some nearest neighbour search
-        methods require float32 data anyway.  This also normalises
-        the input coordinates so that the method is guaranteed to be translation
-        and scale invariant.
+    cast_float32 : bool, default=True
+        Allow casting input data to a float32 dense matrix
+        (for efficiency reasons, however, increases total memory usage).
+        TODO: Note that some nearest neighbour search
+        methods require float32 data anyway.
+        TODO: Might be a problem if the input matrix is sparse, but
+        with don't support this yet.
     nn_params : dict, optional (default=None)
+        TODO: Use own distances ................................................
         Arguments to the sklearn.neighbors.NearestNeighbors class
         constructor, e.g., the metric to use (default='euclidean').
+    n_neighbors : int, default=-1
+        TODO: only if exact=False
+        Number of nearest neighbours to compute for each data point.
+        n_neighbors < 0 picks the default one, typically several dozen,
+        but no less than M. Note that the algorithm's memory
+        consumption is proportional to n_samples*max(n_neighbors, n_features).
     compute_full_tree : bool, default=True
         If True, only a partial hierarchy is determined so that
         at most n_clusters are generated. Saves some time if you think you know
@@ -160,11 +165,11 @@ class Genie(BaseEstimator, ClusterMixin):
             n_clusters=2,
             gini_threshold=0.3,
             M=1,
-            n_neighbors=-1,
             postprocess="boundary",
             exact=True,
-            allow_cast_float32=True,
+            cast_float32=True,
             nn_params=None,
+            n_neighbors=-1,
             compute_full_tree=True
         ):
         self.n_clusters = n_clusters
@@ -173,7 +178,7 @@ class Genie(BaseEstimator, ClusterMixin):
         self.n_neighbors = n_neighbors
         self.postprocess = postprocess
         self.exact = exact
-        self.allow_cast_float32 = allow_cast_float32
+        self.cast_float32 = cast_float32
         self.nn_params = nn_params
         self.compute_full_tree = compute_full_tree
 
@@ -191,6 +196,11 @@ class Genie(BaseEstimator, ClusterMixin):
 
         X : ndarray, shape (n_samples, n_features)
             A matrix defining n_samples in a vector space with n_features.
+            Hint: it might be a good idea to normalise the coordinates of the
+            input data points by calling
+            X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False) so that the dataset is centered at 0 and
+            has total variance of 1. This way the method becomes
+            translation and scale invariant.
         y : None
             Ignored.
 
@@ -237,13 +247,13 @@ class Genie(BaseEstimator, ClusterMixin):
             raise ValueError("n_neighbors should be >= M-1")
 
         cur_state["exact"] = bool(self.exact)
-        cur_state["allow_cast_float32"] = bool(self.allow_cast_float32)
+        cur_state["cast_float32"] = bool(self.cast_float32)
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
 
-        if cur_state["allow_cast_float32"]:
+        if cur_state["cast_float32"]:
             X = X.astype(np.float32, order="C", copy=False) # faiss supports float32 only # warning if sparse!!
-            # center X + scale (NOT: standardize!)
-            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # we don't want this for sparse X
+
+
 
         nn_dist       = None
         nn_ind        = None
@@ -304,7 +314,7 @@ class Genie(BaseEstimator, ClusterMixin):
             else:
                 # Genie+HDBSCAN
 
-                # 1. Use sklearn to determine d_core distance
+                # 1. Use sklearn to determine the d_core distance
                 nn = sklearn.neighbors.NearestNeighbors(
                     n_neighbors=cur_state["M"]-1, **cur_state["nn_params"])
                 nn_dist, nn_ind = nn.fit(X).kneighbors()
