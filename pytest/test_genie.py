@@ -17,7 +17,7 @@ path = "benchmark_data"
 
 
 # TODO: test early stop
-
+# TODO: test affinity="precomputed"
 
 def test_genie(metric='euclidean'):
     for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
@@ -45,7 +45,7 @@ def test_genie(metric='euclidean'):
             print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
             t01 = time.time()
-            res1 = Genie(k, g, exact=True, nn_params=dict(metric=metric)).fit_predict(X)+1
+            res1 = Genie(k, g, exact=True, affinity=metric).fit_predict(X)+1
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
@@ -64,11 +64,6 @@ def test_genie(metric='euclidean'):
 
             print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
 
-            # t0 = time.time()
-            # res3 = Genie(k, g, exact=False, n_neighbors=64, nn_params=dict(metric=metric, algorithm='brute')).fit_predict(X)+1
-            # print("t_py2=%.3f" % (time.time()-t0), end="\t")
-            # ari = adjusted_rand_score(res1, res3)
-            # print("ARI2=%.3f" % ari, end="\t")
 
             res1, res2 = None, None
             print("")

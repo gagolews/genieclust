@@ -40,7 +40,7 @@ def test_genie(metric='euclidean'):
             print("%-20s g=%.2f n=%7d d=%4d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
             t01 = time.time()
-            res1 = Genie(k, g, exact=True, nn_params=dict(metric=metric)).fit_predict(X)+1
+            res1 = Genie(k, g, exact=True, affinity=metric).fit_predict(X)+1
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
@@ -60,7 +60,7 @@ def test_genie(metric='euclidean'):
             print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
 
             t03 = time.time()
-            res3 = Genie(k, g, exact=False, compute_full_tree=False, n_neighbors=32, nn_params=dict(metric=metric)).fit_predict(X)+1
+            res3 = Genie(k, g, exact=False, compute_full_tree=False, affinity=metric).fit_predict(X)+1
             t13 = time.time()
             print("t_py2=%.3f" % (t13-t03), end="\t")
             print("t_rel=%.3f" % ((t03-t13)/(t01-t11),), end="\t")
@@ -74,8 +74,7 @@ def test_genie(metric='euclidean'):
 
 
 if __name__ == "__main__":
-    print("TODO: Is R::genie using OMP? Is Py::genieclust using OMP?")
     print("**Euclidean**")
     test_genie('euclidean')
-    #print("**Manhattan**")
-    #test_genie('manhattan')
+    #print("**Cosine**")
+    #test_genie('cosine')

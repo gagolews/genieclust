@@ -38,6 +38,17 @@ def mst_check(X, metric='euclidean', **kwargs):
     assert np.all(mst_i == mst_i2)
     assert np.allclose(mst_d, mst_d2)
 
+
+    #for nnn in [8, 32, 128]:
+        #t0 = time.time()
+        #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=nnn, metric=metric, **kwargs)
+        #nn.fit(X)
+        #dist, ind = nn.kneighbors()
+        #mst_d1, mst_i1 = genieclust.internal.mst_from_nn(dist, ind)
+        #print("  **NearestNeighbors_%3d %6.3fs [sum diff=%g]" % (nnn,
+                                                            #time.time()-t0,
+                                                            #mst_d1.sum()-mst_d.sum()))
+
     return True
 
 
@@ -58,7 +69,7 @@ def mst_mutreach_check(X, metric='euclidean'):
 
         t0 = time.time()
         mst_d2, mst_i2 = genieclust.internal.mst_from_distance(X, metric=metric,
-            metric_params=dict(d_core=d_core))
+            d_core=d_core)
         print("    mutreach2   %10.3fs" % (time.time()-t0,))
 
         assert np.allclose(mst_d1.sum(), mst_d2.sum())
@@ -70,9 +81,9 @@ def mst_mutreach_check(X, metric='euclidean'):
 
 def test_MST():
     path = "benchmark_data"
-    for dataset in ["pathbased", "h2mg_64_50"]:
+    for dataset in ["pathbased", "h2mg_64_50", "big_one"]:
         if dataset == "big_one":
-            X =  np.random.rand(10_000, 1_00)
+            X =  np.random.rand(1_000, 2)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
 

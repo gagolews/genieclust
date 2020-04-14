@@ -51,7 +51,7 @@ cdef extern from "../src/c_mst.h":
 
     cdef cppclass CDistanceEuclidean[T]: # inherits from CDistance
         CDistanceEuclidean()
-        CDistanceEuclidean(T* X, ssize_t n, ssize_t d)
+        CDistanceEuclidean(T* X, ssize_t n, ssize_t d, bint squared)
 
     cdef cppclass CDistanceManhattan[T]: # inherits from CDistance
         CDistanceManhattan()

@@ -237,7 +237,7 @@ cpdef tuple mst_from_complete(floatT[:,::1] dist): # [:,::1]==c_contiguous
 
 
 cpdef tuple mst_from_distance(floatT[:,::1] X,
-       str metric="euclidean", metric_params=None):
+       str metric="euclidean", floatT[::1] d_core=None):
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
@@ -271,9 +271,8 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
         `"cosine"`.
         More metrics/distances might be supported in future versions.
-    metric_params : dict, optional (default=None)
-        Additional keyword arguments for the metric function, including:
-        * `d_core` - core distances for computing the mutual reachability distance
+    d_core : c_contiguous ndarray of length n; optional (default=None)
+        core distances for computing the mutual reachability distance
 
 
     Returns
@@ -296,28 +295,31 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
-    cdef floatT[::1] d_core
     cdef c_mst.CDistance[floatT]* dist = NULL
     cdef c_mst.CDistance[floatT]* dist2 = NULL
     cdef dict metric_params_dict
 
     if metric == "euclidean" or metric == "l2":
-        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
+        # get squared(!) Euclidean if d_core is None
+        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, d_core is None)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine":
         dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
+    elif metric == "precomputed":
+        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCompletePrecomputed[floatT](&X[0,0], n)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 
-    if metric_params is not None:
-        metric_params_dict = metric_params
-        if "d_core" in metric_params_dict:
-            d_core = metric_params_dict["d_core"]
-            dist2 = dist # must be deleted separately
-            dist  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, dist2)
+    if d_core is not None:
+        dist2 = dist # must be deleted separately
+        dist  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, dist2)
 
     c_mst.Cmst_from_complete(dist, n, &mst_dist[0], &mst_ind[0,0])
+
+    if d_core is None and (metric == "euclidean" or metric == "l2"):
+        for i in range(n-1):
+            mst_dist[i] = libc.math.sqrt(mst_dist[i])
 
     if dist:  del dist
     if dist2: del dist2

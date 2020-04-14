@@ -33,7 +33,7 @@ print("n=%d, d=%d, g=%.2f, k=%d" %(n,d,g,k))
 print("OMP_NUM_THREADS=%d"%int(os.environ["OMP_NUM_THREADS"]))
 
 t01 = time.time()
-res1 = Genie(k, g, exact=True, nn_params=dict(metric=metric)).fit_predict(X)+1
+res1 = Genie(k, g, exact=True, affinity=metric).fit_predict(X)+1
 t11 = time.time()
 print("t_py =%.3f" % (t11-t01))
 
@@ -51,7 +51,7 @@ assert ari>1.0-1e-12
 
 
 t03 = time.time()
-res3 = Genie(k, g, exact=False, compute_full_tree=False, n_neighbors=32, nn_params=dict(metric=metric)).fit_predict(X)+1
+res3 = Genie(k, g, exact=False, compute_full_tree=False, affinity=metric).fit_predict(X)+1
 t13 = time.time()
 ari = adjusted_rand_score(res1, res3)
 print("t_py2=%.3f (rel_to_py=%.3f; ari=%.8f)" % (t13-t03,(t03-t13)/(t01-t11), ari))
@@ -62,6 +62,13 @@ assert ari>1.0-1e-6
 # 2020-04-14:
 #n=50000, d=69, g=0.30, k=8
 #OMP_NUM_THREADS=8
-#t_py =18.351
+#t_py =18.351 [mostly because we use float32]
 #t_r  =42.293 (rel_to_py=2.305)
 #t_py2=11.611 (rel_to_py=0.633; ari=1.00000000)
+
+# 2020-04-14:
+#n=50000, d=69, g=0.30, k=8
+#OMP_NUM_THREADS=4
+#t_py =21.677
+#t_r  =44.671 (rel_to_py=2.061)
+#t_py2=12.770 (rel_to_py=0.589; ari=1.00000000)
