@@ -38,8 +38,6 @@
 #include <vector>
 #include <cmath>
 
-
-
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -160,9 +158,11 @@ struct CDistanceEuclidean : public CDistance<T>  {
 //                 ++x; ++y;
 //             }
 
+            // or we could use the BLAS snrm2() for increased numerical stability.
             for (ssize_t u=0; u<d; ++u) {
                 __buf[w] += square(X[d*i+u]-X[d*w+u]);
             }
+
 
             // // did you know that (x-y)**2 = x**2 + y**2 - 2*x*y ?
             // const T* x = X+d*i;

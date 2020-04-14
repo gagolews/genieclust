@@ -67,6 +67,7 @@ def test_genie(metric='euclidean'):
 
             ari = adjusted_rand_score(res1, res3)
             print("ARI2=%.3f" % ari, end="\t")
+            assert ari>1.0-1e-12
 
             res1, res2 = None, None
             print("")

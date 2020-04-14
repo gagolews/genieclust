@@ -6,14 +6,15 @@
 The *Genie*++ Hierarchical Clustering Algorithm
 -----------------------------------------------
 
-> **Genie outputs meaningful partitions and is fast even for larger data sets.**
+> **Genie outputs meaningful partitions and is fast even for large
+> data sets.**
 
 
 
 Author: [Marek Gagolewski](https://www.gagolewski.com)
 
 Co-authors/contributors:
-[Anna Cena](https://cena.rexamine.com)
+[Anna Cena](https://cena.rexamine.com),
 [Maciej Bartoszuk](https://bartoszuk.rexamine.com)
 
 The time needed to apply a hierarchical clustering algorithm is most
@@ -54,7 +55,7 @@ original algorithm available on CRAN, see R package
 Package Features
 ----------------
 
--   The Genie++ hierarchical clustering algorithm (with a scikit-learn-like
+-   The Genie++ hierarchical clustering algorithm (with a `scikit-learn`-like
     interface), together with **TODO**: a robustified version of
     HDBSCAN\*, IcA, GC, GIc, ...
 
@@ -63,10 +64,10 @@ Package Features
 -   Inequity measures (the Gini index, the Bonferroni index
     etc.)
 
--   Functions to compare partitions (the Rand,
-    adjusted Rand, Fowlkes-Mallows and adjusted Fowlkes-Mallows indices)
+-   Functions to compare partitions (the Rand, adjusted Rand,
+    Fowlkes-Mallows and adjusted Fowlkes-Mallows indexes)
 
--   Plotting functions
+-   Useful plotting functions
 
 
 
@@ -94,14 +95,14 @@ Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`).
 
 **TODO**: OS X builds
 
-Via `pip` - see [PyPI](https://pypi.org/project/genieclust/):
+To install via `pip` (the current version is a little outdated,
+see [PyPI](https://pypi.org/project/genieclust/)):
 
 ```bash
-pip3 install genieclust # or pip3 install genieclust --user
+pip3 install genieclust --user # or sudo pip3 install genieclust
 ```
 
-
-The most recent development version:
+To build and install the most recent development version:
 
 ```bash
 git clone https://github.com/gagolews/genieclust.git
@@ -109,12 +110,10 @@ cd genieclust
 python3 setup.py install --user
 ```
 
-
-
-**TODO**: OpenMP support...:
+To support parallelised computations, build with OpenMP support (for gcc/clang):
 
 ```bash
-CPPFLAGS="-UNDEBUG -fopenmp" LDFLAGS="-fopenmp" python3 setup.py install --user
+CPPFLAGS="-fopenmp -DNDEBUG" LDFLAGS="-fopenmp" python3 setup.py install --user
 ```
 
 
