@@ -1103,9 +1103,8 @@ cpdef dict gic_from_mst(
     """GIc (Genie+Information Criterion) Information-Theoretic
     Hierarchical Clustering Algorithm
 
-
     Computes a k-partition based on a pre-computed MST
-    minimising (heuristically) an information criterion.
+    minimising (heuristically) the information criterion [2].
 
     GIc has been proposed by Anna Cena in [1] and was inspired
     by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]

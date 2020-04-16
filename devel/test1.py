@@ -10,7 +10,7 @@ plt.style.use('seaborn-whitegrid')
 #plt.rcParams["figure.figsize"] = (8,4)
 
 path = os.path.join("..", "benchmark_data")
-dataset = "Aggregation"
+dataset = "flame"
 X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
 X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 X = X.astype(np.float32, order="C", copy=False)
@@ -24,8 +24,8 @@ g = genieclust.Genie(n_clusters=n_clusters,
 labels_g = g.fit_predict(X)
 print(labels_g)
 
-gic = genieclust.Genie(n_clusters=n_clusters,
-            gini_threshold=[0.1, 0.3, 0.5, 0.7])
+gic = genieclust.GIc(n_clusters=n_clusters,
+            gini_thresholds=[0.3, 0.3])
 labels_gic = gic.fit_predict(X)
 print(labels_gic)
 
@@ -37,11 +37,11 @@ plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 plt.subplot("132")
 genieclust.plots.plot_scatter(X, labels=labels_g)
-plt.title("%s Genie g=%g"%(dataset, gini_threshold))
+plt.title("%s Genie g=%g"%(dataset, g.gini_threshold))
 plt.axis("equal")
-plt.subplot("134")
+plt.subplot("133")
 genieclust.plots.plot_scatter(X, labels=labels_gic)
-plt.title("%s GIc g=%r"%(dataset, gini_threshold))
+plt.title("%s GIc g=%r"%(dataset, gic.gini_thresholds))
 plt.axis("equal")
 plt.show()
 

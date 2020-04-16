@@ -522,3 +522,156 @@ class Genie(GenieBase):
         return self
 
 
+
+
+class GIc(GenieBase):
+    """GIc (Genie+Information Criterion) Information-Theoretic
+    Hierarchical Clustering Algorithm
+
+    Computes a k-partition based on a pre-computed MST
+    minimising (heuristically) the information criterion [2].
+
+    GIc has been proposed by Anna Cena in [1] and was inspired
+    by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
+
+    GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
+    which follows a divisive scheme). It greedily selects for merging
+    a pair of clusters that minimises the information criterion [2].
+    By default, the initial partition is determined by considering
+    the intersection of clusterings found by the Genie methods with
+    thresholds 0.1, 0.3, 0.5 and 0.7.
+
+
+    References
+    ==========
+
+    [1] Cena A., Adaptive hierarchical clustering algorithms based on
+    data aggregation methods, PhD Thesis, Systems Research Institute,
+    Polish Academy of Sciences 2018.
+
+    [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+    Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
+
+    [3] Gagolewski M., Bartoszuk M., Cena A.,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
+
+    Parameters
+    ----------
+
+
+    TODO
+
+
+    Returns
+    -------
+
+    TODO
+    """
+    def __init__(self,
+            n_clusters=2,
+            gini_thresholds=[0.1, 0.3, 0.5, 0.7],
+            M=1,
+            affinity="euclidean",
+            compute_full_tree=True,
+            postprocess="boundary",
+            exact=True,
+            cast_float32=True
+        ):
+        super().__init__(M, affinity, exact, cast_float32)
+
+        self.n_clusters = n_clusters
+        self.gini_thresholds = gini_thresholds
+        self.compute_full_tree = compute_full_tree
+        self.postprocess = postprocess
+
+        #self.n_samples_   = 0
+        #self.n_features_  = 0
+        self.n_clusters_  = 0 # should not be confused with self.n_clusters
+        self.labels_      = None
+        self.children_    = None
+        self.distances_   = None
+        self.counts_      = None
+        self._links_      = None
+        self._iters_      = None
+
+
+
+    def fit(self, X, y=None):
+        """Perform clustering of the X dataset.
+        See the labels_ and n_clusters_ attributes for the clustering result.
+
+
+        Parameters
+        ----------
+
+        X : ndarray, shape (n_samples, n_features) or (n_samples, n_samples)
+            A matrix defining n_samples in a vector space with n_features.
+            Hint: it might be a good idea to normalise the coordinates of the
+            input data points by calling
+            X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False) so that the dataset is centered at 0 and
+            has total variance of 1. This way the method becomes
+            translation and scale invariant.
+            However, if affinity="precomputed", then X is assumed to define
+            all pairwise distances between n_samples.
+        y : None
+            Ignored.
+
+
+        Returns
+        -------
+
+        self
+        """
+        super().fit(X, y)
+        cur_state = self._last_state_
+
+        cur_state["n_clusters"] = int(self.n_clusters)
+        if cur_state["n_clusters"] < 0:
+            raise ValueError("n_clusters must be >= 0")
+
+        cur_state["gini_thresholds"] = np.array(self.gini_thresholds)
+
+        _postprocess_options = ("boundary", "none", "all")
+        cur_state["postprocess"] = str(self.postprocess).lower()
+        if cur_state["postprocess"] not in _postprocess_options:
+            raise ValueError("postprocess should be one of %r"%_postprocess_options)
+
+        cur_state["compute_full_tree"] = bool(self.compute_full_tree)
+
+
+        # apply the Genie+ algorithm (the fast part):
+        res = internal.gic_from_mst(self._mst_dist_, self._mst_ind_,
+            n_features=self.n_features_,
+            n_clusters=cur_state["n_clusters"],
+            add_clusters=0,
+            gini_thresholds=cur_state["gini_thresholds"],
+            noise_leaves=(cur_state["M"]>1),
+            compute_full_tree=cur_state["compute_full_tree"])
+
+        self.n_clusters_ = res["n_clusters"]
+        self.labels_     = res["labels"]
+        self._links_     = res["links"]
+        self._iters_     = res["iters"]
+
+
+        if self.labels_ is not None:
+            # postprocess labels, if requested to do so
+            if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
+                pass
+            elif cur_state["postprocess"] == "boundary":
+                self.labels_ = internal.merge_boundary_points(self._mst_ind_,
+                    self.labels_, self._nn_ind_, cur_state["M"])
+            elif cur_state["postprocess"] == "all":
+                self.labels_ = internal.merge_noise_points(self._mst_ind_,
+                    self.labels_)
+
+        if cur_state["compute_full_tree"]:
+            Z = internal.get_linkage_matrix(self._links_,
+                self._mst_dist_, self._mst_ind_)
+            self.children_    = Z["children"]
+            self.distances_   = Z["distances"]
+            self.counts_      = Z["counts"]
+
+        return self
