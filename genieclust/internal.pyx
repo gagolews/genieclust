@@ -1100,13 +1100,22 @@ cpdef dict gic_from_mst(
         double[::1] gini_thresholds=None,
         bint noise_leaves=False,
         bint compute_full_tree=True):
-    """GIc (Genie+Information Criterion) Hierarchical Clustering Algorithm
+    """GIc (Genie+Information Criterion) Information-Theoretic
+    Hierarchical Clustering Algorithm
 
-    Compute a k-partition based on a pre-computed MST.
 
+    Computes a k-partition based on a pre-computed MST
+    minimising (heuristically) an information criterion.
 
     GIc has been proposed by Anna Cena in [1] and was inspired
     by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
+
+    GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
+    which follows a divisive scheme). It greedily selects for merging
+    a pair of clusters that minimises the information criterion [2].
+    By default, the initial partition is determined by considering
+    the intersection of clusterings found by the Genie methods with
+    thresholds 0.1, 0.3, 0.5 and 0.7.
 
 
     References
@@ -1140,9 +1149,15 @@ cpdef dict gic_from_mst(
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
-        TODO: describe
-        if of length 0, add_clusters is ignored and the procedure
-        starts from a weak clustering (all are singletons) == Agglomerative-IC (ICA)
+        Gini index thresholds to use when computing the initial
+        partition. Multiple runs of the Genie algorithm with different
+        thresholds are explored and the intersection of the resulting
+        clusterings is taken as the entry point.
+        If gini_thresholds is an empty array, `add_clusters`
+        is ignored and the procedure starts from a weak clustering
+        (singletons), which we call Agglomerative-IC (ICA).
+        If gini_thresholds is of length 1 and add_clusters==0,
+        then the procedure is equivalent to the classical Genie algorithm.
     noise_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.
@@ -1178,7 +1193,7 @@ cpdef dict gic_from_mst(
         raise ValueError("ill-defined MST")
 
     if gini_thresholds is None:
-        gini_thresholds = np.r_[0.3, 0.5, 0.7]
+        gini_thresholds = np.r_[0.1, 0.3, 0.5, 0.7]
 
 
 

@@ -48,7 +48,243 @@ except ImportError:
 
 
 
-class Genie(BaseEstimator, ClusterMixin):
+
+
+class GenieBase(BaseEstimator, ClusterMixin):
+    """Base class for Genie and GIc Clustering Algorithms"""
+
+    def __init__(self,
+            M,
+            affinity,
+            exact,
+            cast_float32
+        ):
+        self.M = M
+        self.affinity = affinity
+        self.cast_float32 = cast_float32
+        self.exact = exact
+
+        self.n_samples_   = 0
+        self.n_features_  = 0
+        self._mst_dist_   = None
+        self._mst_ind_    = None
+        self._nn_dist_    = None
+        self._nn_ind_     = None
+        self._d_core_     = None
+        self._last_state_ = None
+
+
+    def fit(self, X, y=None):
+        cur_state = dict()
+
+        _affinity_options = ("euclidean", "l2", "manhattan", "l1",
+                             "cityblock", "cosine", "precomputed")
+        cur_state["affinity"] = str(self.affinity).lower()
+        if cur_state["affinity"] not in _affinity_options:
+            raise ValueError("affinity should be one of %r"%_affinity_options)
+
+        n_samples  = X.shape[0]
+        if cur_state["affinity"] == "precomputed":
+            n_features = None
+            if X.shape[0] != X.shape[1]:
+                raise ValueError("X must be a square matrix that gives all the pairwise distances")
+        else:
+            n_features = X.shape[1]
+
+        cur_state["M"] = int(self.M)
+        if not 1 <= cur_state["M"] <= n_samples:
+            raise ValueError("M must be in [1, n_samples]")
+
+        cur_state["exact"] = bool(self.exact)
+        cur_state["cast_float32"] = bool(self.cast_float32)
+
+
+
+        mst_dist = None
+        mst_ind  = None
+        nn_dist  = None
+        nn_ind   = None
+        d_core   = None
+
+        if cur_state["cast_float32"]:
+            # faiss supports float32 only
+            # warning if sparse!!
+            X = X.astype(np.float32, order="C", copy=False)
+
+        if not cur_state["exact"]:
+            if cur_state["affinity"] == "precomputed":
+                raise ValueError('exact=True with affinity="precomputed"')
+
+            #raise NotImplementedError("approximate method not implemented yet")
+
+            assert cur_state["affinity"] in ("euclidean", "l2")
+
+            actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
+            actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
+            actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
+
+            # t0 = time.time()
+            #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=actual_n_neighbors, **cur_state["nn_params"])
+            #nn_dist, nn_ind = nn.fit(X).kneighbors()
+            # print("T=%.3f" % (time.time()-t0), end="\t")
+
+            # FAISS - `euclidean` and `cosine` only!
+
+
+
+            # TODO:  cur_state["metric"], cur_state["metric_params"]
+            #t0 = time.time()
+            # the slow part:
+            nn = faiss.IndexFlatL2(n_features)
+            nn.add(X)
+            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
+            #print("T=%.3f" % (time.time()-t0), end="\t")
+
+
+
+            # @TODO:::::
+            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n_samples)))[0]
+            #print(nn_bad_where)
+            #print(nn_ind[nn_bad_where,:5])
+            #print(X[nn_bad_where,:])
+            #assert nn_bad_where.shape[0] == 0
+
+            nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
+            nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
+
+            if cur_state["M"] > 1:
+                # d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+                raise NotImplementedError("approximate method not implemented yet")
+
+            #t0 = time.time()
+            # the fast part:
+            mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
+                stop_disconnected=False, # TODO: test this!!!!
+                stop_inexact=False)
+            #print("T=%.3f" % (time.time()-t0), end="\t")
+
+        else: # cur_state["exact"]
+            if cur_state["M"] > 1:
+                # Genie+HDBSCAN
+                # Use sklearn to determine the d_core distance
+                nn = sklearn.neighbors.NearestNeighbors(
+                    n_neighbors=cur_state["M"]-1,
+                    metric=cur_state["affinity"] # supports "precomputed"
+                )
+                nn_dist, nn_ind = nn.fit(X).kneighbors()
+                d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+
+            # Use Prim's algorithm to determine the MST
+            # w.r.t. the distances computed on the fly
+            mst_dist, mst_ind = internal.mst_from_distance(X,
+                metric=cur_state["affinity"],
+                d_core=d_core
+            )
+
+        self.n_samples_  = n_samples
+        self.n_features_ = n_features
+        self._mst_dist_  = mst_dist
+        self._mst_ind_   = mst_ind
+        self._nn_dist_   = nn_dist
+        self._nn_ind_    = nn_ind
+        self._d_core_    = d_core
+        self._last_state_= cur_state
+
+        return self
+
+
+    def fit_predict(self, X, y=None):
+        """Compute a k-partition and return the predicted labels,
+        see fit().
+
+
+        Parameters
+        ----------
+
+        X : ndarray
+            see fit()
+        y : None
+            see fit()
+
+
+        Returns
+        -------
+
+        labels_ : ndarray, shape (n_samples,)
+            Predicted labels, representing a partition of X.
+            labels_[i] gives the cluster id of the i-th input point.
+            negative labels_ correspond to noise points.
+            Note that the determined number of clusters
+            might be larger than the requested one.
+        """
+        self.fit(X)
+        return self.labels_
+
+
+
+
+    # not needed - inherited from BaseEstimator
+    # def __repr__(self):
+    #     """
+    #     Return repr(self).
+    #     """
+    #     return "Genie(%s)" % (
+    #         ", ".join(["%s=%r"%(k,v) for (k,v) in self.get_params().items()])
+    #     )
+
+    #
+    # def get_params(self, deep=False):
+    #     """
+    #     Get the parameters for this estimator.
+    #
+    #     Parameters:
+    #     -----------
+    #
+    #     deep: bool
+    #         Ignored
+    #
+    #     Returns:
+    #     --------
+    #
+    #     params: dict
+    #     """
+    #     return dict(
+    #         n_clusters = self.__n_clusters,
+    #         gini_threshold = self.__gini_threshold,
+    #         M = self.__M,
+    #         postprocess = self.__postprocess,
+    #         n_neighbors = self.__n_neighbors,
+    #         **self.__NearestNeighbors_params
+    #     )
+
+    # not needed - inherited from BaseEstimator
+    # def set_params(self, **params):
+    #     """
+    #     Set the parameters for this estimator.
+    #
+    #
+    #     Parameters:
+    #     -----------
+    #
+    #     params
+    #
+    #
+    #     Returns:
+    #     --------
+    #
+    #     self
+    #     """
+    #     ################## @TODO
+    #     return self
+
+
+
+
+
+
+
+
+class Genie(GenieBase):
     """The Genie+ Clustering Algorithm with optional smoothing and
     noise point detection (for M>1)
 
@@ -188,29 +424,23 @@ class Genie(BaseEstimator, ClusterMixin):
             exact=True,
             cast_float32=True
         ):
+        super().__init__(M, affinity, exact, cast_float32)
+
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
-        self.M = M
-        self.affinity = affinity
         self.compute_full_tree = compute_full_tree
         self.postprocess = postprocess
-        self.exact = exact
-        self.cast_float32 = cast_float32
 
+        #self.n_samples_   = 0
+        #self.n_features_  = 0
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
-        self.n_samples_   = 0
-        self.n_features_  = 0
         self.labels_      = None
         self.children_    = None
         self.distances_   = None
         self.counts_      = None
         self._links_      = None
         self._iters_      = None
-        self._mst_dist_   = None
-        self._mst_ind_    = None
-        self._nn_dist_    = None
-        self._nn_ind_     = None
-        self._d_core_     = None
+
 
 
     def fit(self, X, y=None):
@@ -239,22 +469,8 @@ class Genie(BaseEstimator, ClusterMixin):
 
         self
         """
-        cur_state = dict()
-
-        _affinity_options = ("euclidean", "l2", "manhattan", "l1",
-                             "cityblock", "cosine", "precomputed")
-        cur_state["affinity"] = str(self.affinity).lower()
-        if cur_state["affinity"] not in _affinity_options:
-            raise ValueError("postprocess should be one of %r"%_affinity_options)
-
-        n_samples  = X.shape[0]
-        if cur_state["affinity"] == "precomputed":
-            n_features = None
-            if X.shape[0] != X.shape[1]:
-                raise ValueError("X must be a square matrix that gives all the pairwise distances")
-        else:
-            n_features = X.shape[1]
-
+        super().fit(X, y)
+        cur_state = self._last_state_
 
         cur_state["n_clusters"] = int(self.n_clusters)
         if cur_state["n_clusters"] < 0:
@@ -264,102 +480,16 @@ class Genie(BaseEstimator, ClusterMixin):
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("gini_threshold not in [0,1]")
 
-        cur_state["M"] = int(self.M)
-        if not 1 <= cur_state["M"] <= n_samples:
-            raise ValueError("M must be in [1, n_samples]")
-
         _postprocess_options = ("boundary", "none", "all")
         cur_state["postprocess"] = str(self.postprocess).lower()
         if cur_state["postprocess"] not in _postprocess_options:
             raise ValueError("postprocess should be one of %r"%_postprocess_options)
 
-        cur_state["exact"] = bool(self.exact)
-        cur_state["cast_float32"] = bool(self.cast_float32)
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
 
-        mst_dist = None
-        mst_ind  = None
-        nn_dist  = None
-        nn_ind   = None
-        d_core   = None
-
-        if cur_state["cast_float32"]:
-            # faiss supports float32 only
-            # warning if sparse!!
-            X = X.astype(np.float32, order="C", copy=False)
-
-        if not cur_state["exact"]:
-            if cur_state["affinity"] == "precomputed":
-                raise ValueError('exact=True with affinity="precomputed"')
-
-            #raise NotImplementedError("approximate method not implemented yet")
-
-            assert cur_state["affinity"] in ("euclidean", "l2")
-
-            actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
-            actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-            actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
-
-            # t0 = time.time()
-            #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=actual_n_neighbors, **cur_state["nn_params"])
-            #nn_dist, nn_ind = nn.fit(X).kneighbors()
-            # print("T=%.3f" % (time.time()-t0), end="\t")
-
-            # FAISS - `euclidean` and `cosine` only!
-
-
-
-            # TODO:  cur_state["metric"], cur_state["metric_params"]
-            #t0 = time.time()
-            # the slow part:
-            nn = faiss.IndexFlatL2(n_features)
-            nn.add(X)
-            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
-            #print("T=%.3f" % (time.time()-t0), end="\t")
-
-
-
-            # @TODO:::::
-            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n_samples)))[0]
-            #print(nn_bad_where)
-            #print(nn_ind[nn_bad_where,:5])
-            #print(X[nn_bad_where,:])
-            #assert nn_bad_where.shape[0] == 0
-
-            nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
-            nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
-
-            if cur_state["M"] > 1:
-                # d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
-                raise NotImplementedError("approximate method not implemented yet")
-
-            #t0 = time.time()
-            # the fast part:
-            mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
-                stop_disconnected=False, # TODO: test this!!!!
-                stop_inexact=False)
-            #print("T=%.3f" % (time.time()-t0), end="\t")
-
-        else: # cur_state["exact"]
-            if cur_state["M"] > 1:
-                # Genie+HDBSCAN
-                # Use sklearn to determine the d_core distance
-                nn = sklearn.neighbors.NearestNeighbors(
-                    n_neighbors=cur_state["M"]-1,
-                    metric=cur_state["affinity"] # supports "precomputed"
-                )
-                nn_dist, nn_ind = nn.fit(X).kneighbors()
-                d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
-
-            # Use Prim's algorithm to determine the MST
-            # w.r.t. the distances computed on the fly
-            mst_dist, mst_ind = internal.mst_from_distance(X,
-                metric=cur_state["affinity"],
-                d_core=d_core
-            )
 
         # apply the Genie+ algorithm (the fast part):
-        res = internal.genie_from_mst(mst_dist, mst_ind,
+        res = internal.genie_from_mst(self._mst_dist_, self._mst_ind_,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"]>1),
@@ -367,15 +497,8 @@ class Genie(BaseEstimator, ClusterMixin):
 
         self.n_clusters_ = res["n_clusters"]
         self.labels_     = res["labels"]
-        self.n_samples_  = n_samples
-        self.n_features_ = n_features
         self._links_     = res["links"]
         self._iters_     = res["iters"]
-        self._mst_dist_  = mst_dist
-        self._mst_ind_   = mst_ind
-        self._nn_dist_   = nn_dist
-        self._nn_ind_    = nn_ind
-        self._d_core_    = d_core
 
 
         if self.labels_ is not None:
@@ -383,10 +506,10 @@ class Genie(BaseEstimator, ClusterMixin):
             if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
                 pass
             elif cur_state["postprocess"] == "boundary":
-                self.labels_ = internal.merge_boundary_points(mst_ind,
-                    self.labels_, nn_ind, cur_state["M"])
+                self.labels_ = internal.merge_boundary_points(self._mst_ind_,
+                    self.labels_, self._nn_ind_, cur_state["M"])
             elif cur_state["postprocess"] == "all":
-                self.labels_ = internal.merge_noise_points(mst_ind,
+                self.labels_ = internal.merge_noise_points(self._mst_ind_,
                     self.labels_)
 
         if cur_state["compute_full_tree"]:
@@ -399,85 +522,3 @@ class Genie(BaseEstimator, ClusterMixin):
         return self
 
 
-    # not needed - inherited from ClusterMixin
-    def fit_predict(self, X, y=None):
-        """Compute a k-partition and return the predicted labels,
-        see fit().
-
-
-        Parameters
-        ----------
-
-        X : ndarray
-            see fit()
-        y : None
-            see fit()
-
-
-        Returns
-        -------
-
-        labels_ : ndarray, shape (n_samples,)
-            Predicted labels, representing a partition of X.
-            labels_[i] gives the cluster id of the i-th input point.
-            negative labels_ correspond to noise points.
-            Note that the determined number of clusters
-            might be larger than the requested one.
-        """
-        self.fit(X)
-        return self.labels_
-
-
-    # not needed - inherited from BaseEstimator
-    # def __repr__(self):
-    #     """
-    #     Return repr(self).
-    #     """
-    #     return "Genie(%s)" % (
-    #         ", ".join(["%s=%r"%(k,v) for (k,v) in self.get_params().items()])
-    #     )
-
-    #
-    # def get_params(self, deep=False):
-    #     """
-    #     Get the parameters for this estimator.
-    #
-    #     Parameters:
-    #     -----------
-    #
-    #     deep: bool
-    #         Ignored
-    #
-    #     Returns:
-    #     --------
-    #
-    #     params: dict
-    #     """
-    #     return dict(
-    #         n_clusters = self.__n_clusters,
-    #         gini_threshold = self.__gini_threshold,
-    #         M = self.__M,
-    #         postprocess = self.__postprocess,
-    #         n_neighbors = self.__n_neighbors,
-    #         **self.__NearestNeighbors_params
-    #     )
-
-    # not needed - inherited from BaseEstimator
-    # def set_params(self, **params):
-    #     """
-    #     Set the parameters for this estimator.
-    #
-    #
-    #     Parameters:
-    #     -----------
-    #
-    #     params
-    #
-    #
-    #     Returns:
-    #     --------
-    #
-    #     self
-    #     """
-    #     ################## @TODO
-    #     return self

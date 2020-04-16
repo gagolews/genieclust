@@ -46,73 +46,6 @@
 
 
 
-/*!  Base class for CGenie and CGIc
- */
-template <class T>
-class CGenieBase {
-protected:
-
-    /*!  Stores the clustering result as obtained by
-     *   CGenie::apply_genie() or CGIc::apply_gic()
-     */
-    struct CGenieResult {
-
-        CGiniDisjointSets ds; /*!< ds at the last iteration, it;
-                               * use denoise_index to obtain the final partition
-                               */
-        std::vector<ssize_t> links; //<! links[..] = index of merged mst_i
-        ssize_t it;                 //<! number of merges performed
-        ssize_t n_clusters;         //<! maximal number of clusters requested
-
-        CGenieResult() { }
-
-        CGenieResult(ssize_t n, ssize_t noise_count, ssize_t n_clusters):
-            ds(n-noise_count), links(n-1, -1), it(0), n_clusters(n_clusters) { }
-
-    };
-
-
-
-    ssize_t* mst_i;   /*!< n-1 edges of the MST,
-                       * given by c_contiguous (n-1)*2 indices;
-                       * (-1, -1) denotes a no-edge and will be ignored
-                       */
-    T* mst_d;         //<! n-1 edge weights
-    ssize_t n;        //<! number of points
-    bool noise_leaves;//<! mark leaves as noise points?
-
-    std::vector<ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
-
-    ssize_t noise_count; //<! now many noise points are there (leaves)
-    std::vector<ssize_t> denoise_index; //<! which noise point is it?
-    std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
-
-    CGenieResult results;
-
-
-    /*! When the Genie correction is on, some MST edges will be chosen
-     * in a non-consecutive order. An array-based skiplist will speed up
-     * searching within the to-be-consumed edges. Also, if there are
-     * noise points, then the skiplist allows the algorithm
-     * to naturally ignore edges that connect the leaves. */
-    void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {
-        // start with a list that skips all edges that lead to noise points
-        mst_skiplist->clear();
-        for (ssize_t i=0; i<this->n-1; ++i) {
-            GENIECLUST_ASSERT(this->mst_i[i*2+0] < this->n && this->mst_i[i*2+1] < this->n);
-            if (this->mst_i[i*2+0] < 0 || this->mst_i[i*2+1] < 0)
-                continue; // a no-edge -> ignore
-            if (!this->noise_leaves ||
-                    (this->deg[this->mst_i[i*2+0]]>1 && this->deg[this->mst_i[i*2+1]]>1)) {
-                (*mst_skiplist)[i] = i; /*only the key is important, not the value*/
-            }
-        }
-    }
-
-
-
-
-
 
 
     /*! Generate cluster hierarchy compatible with R's hclust().
@@ -196,6 +129,73 @@ protected:
 //             order[k++] = (*it);
 //         }
 //     }
+
+
+
+/*!  Base class for CGenie and CGIc
+ */
+template <class T>
+class CGenieBase {
+protected:
+
+    /*!  Stores the clustering result as obtained by
+     *   CGenie::apply_genie() or CGIc::apply_gic()
+     */
+    struct CGenieResult {
+
+        CGiniDisjointSets ds; /*!< ds at the last iteration, it;
+                               * use denoise_index to obtain the final partition
+                               */
+        std::vector<ssize_t> links; //<! links[..] = index of merged mst_i
+        ssize_t it;                 //<! number of merges performed
+        ssize_t n_clusters;         //<! maximal number of clusters requested
+
+        CGenieResult() { }
+
+        CGenieResult(ssize_t n, ssize_t noise_count, ssize_t n_clusters):
+            ds(n-noise_count), links(n-1, -1), it(0), n_clusters(n_clusters) { }
+
+    };
+
+
+
+    ssize_t* mst_i;   /*!< n-1 edges of the MST,
+                       * given by c_contiguous (n-1)*2 indices;
+                       * (-1, -1) denotes a no-edge and will be ignored
+                       */
+    T* mst_d;         //<! n-1 edge weights
+    ssize_t n;        //<! number of points
+    bool noise_leaves;//<! mark leaves as noise points?
+
+    std::vector<ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
+
+    ssize_t noise_count; //<! now many noise points are there (leaves)
+    std::vector<ssize_t> denoise_index; //<! which noise point is it?
+    std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
+
+    CGenieResult results;
+
+
+    /*! When the Genie correction is on, some MST edges will be chosen
+     * in a non-consecutive order. An array-based skiplist will speed up
+     * searching within the to-be-consumed edges. Also, if there are
+     * noise points, then the skiplist allows the algorithm
+     * to naturally ignore edges that connect the leaves. */
+    void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {
+        // start with a list that skips all edges that lead to noise points
+        mst_skiplist->clear();
+        for (ssize_t i=0; i<this->n-1; ++i) {
+            GENIECLUST_ASSERT(this->mst_i[i*2+0] < this->n && this->mst_i[i*2+1] < this->n);
+            if (this->mst_i[i*2+0] < 0 || this->mst_i[i*2+1] < 0)
+                continue; // a no-edge -> ignore
+            if (!this->noise_leaves ||
+                    (this->deg[this->mst_i[i*2+0]]>1 && this->deg[this->mst_i[i*2+1]]>1)) {
+                (*mst_skiplist)[i] = i; /*only the key is important, not the value*/
+            }
+        }
+    }
+
+
 
 
     /** internal, used by get_labels(n_clusters, res) */
@@ -525,10 +525,10 @@ template <class T>
 class CGIc : public CGenie<T> {
 protected:
 
-    /*! Run the Genie++ algorithm with different Gini index
-     *  thresholds and determine the intersection of all the resulting
-     *  partitions; for this, we need the union of the set of MST edges that
-     *  were left "unmerged"
+    /*! Run the Genie++ algorithm with different thresholds for the Gini index
+     *  and determine the intersection of all the resulting
+     *  n_clusters-partitions; for this, we need the union of the
+     *  set of MST edges that were left "unmerged".
      *
      * @param n_clusters number of clusters to look for in Genie run
      * @param gini_thresholds array of floats in [0,1]
@@ -536,8 +536,9 @@ protected:
      *
      * @return indexes of MST edges that were left unused by at least
      * one Genie algorithm run; this gives the intersection of partitions.
+     * The resulting list will contain a sentinel, this->n - 1.
      *
-     * If n_thresholds is 0 or requested n_clusters is too large,
+     * If n_thresholds is 0 or the requested n_clusters is too large,
      * all non-noise edges are set as unused.
      */
     std::vector<ssize_t> get_intersection_of_genies(ssize_t n_clusters,
@@ -566,12 +567,13 @@ protected:
             for (ssize_t i=0; i<n_thresholds; ++i) {
                 double gini_threshold = gini_thresholds[i];
                 CGiniDisjointSets ds(this->n - this->noise_count);
-                std::vector<ssize_t> links(this->n - 1, -1); // history of the merged points
+                std::vector<ssize_t> links(this->n - 1, -1); // the history of edge merges
                 CIntDict<ssize_t> mst_skiplist(mst_skiplist_template);
                 this->do_genie(&ds, &mst_skiplist, n_clusters, gini_threshold,
                                &links);
 
-                // start where do_genie concluded
+                // start where do_genie() concluded; add all remaining MST edges
+                // to the list of unused_edges
                 while (!mst_skiplist.empty())
                     unused_edges.push_back(mst_skiplist.pop_key_min());
             }
@@ -588,6 +590,7 @@ protected:
                 }
             }
             unused_edges.resize(k+1);
+            GENIECLUST_ASSERT(unused_edges[k] == this->n - 1);
             return unused_edges;
         }
     }
