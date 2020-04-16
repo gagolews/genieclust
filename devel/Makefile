@@ -11,5 +11,5 @@ user:
 	cd .. && CPPFLAGS="-fopenmp -march=native -mtune=native" \
 		LDFLAGS="-fopenmp" python3 setup.py install --user
 	jupyter-qtconsole-sender --silent "import importlib, genieclust; \
-importlib.reload(genieclust); \
+genieclust = importlib.reload(genieclust); \
 print(\"Package 'genieclust' reloaded.\")"

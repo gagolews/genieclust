@@ -37,10 +37,10 @@ import sklearn.neighbors
 import warnings
 import math
 
-# @TODO: delme
+# TODO: delme
 import time
 
-#
+# TODO: ???
 try:
     import faiss
 except ImportError:
@@ -130,7 +130,8 @@ class Genie(BaseEstimator, ClusterMixin):
         which gives the time complexity of O(n_samples*n_samples*n_features).
     cast_float32 : bool, default=True
         Allow casting input data to a float32 dense matrix
-        (for efficiency reasons, however, increases total memory usage).
+        (for efficiency reasons == decreases the run-time ~2x times
+        at a cost of greater memory usage).
         TODO: Note that some nearest neighbour search
         methods require float32 data anyway.
         TODO: Might be a problem if the input matrix is sparse, but
@@ -192,7 +193,7 @@ class Genie(BaseEstimator, ClusterMixin):
         #self.iters_  = res["iters"]
         #self.mst_dist_ = mst_dist
         #self.mst_ind_  = mst_ind
-
+        #https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
 
     def fit(self, X, y=None):
         """Perform clustering of the X dataset.

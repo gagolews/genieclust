@@ -1,8 +1,6 @@
-
-
 ---
 title: "Genieclust Tutorial"
-subtitle: "Additional Plotting Functions in `genieclust.plots`"
+subtitle: "Plotting Functions in `genieclust.plots`"
 author: "Marek Gagolewski"
 ---
 
@@ -10,12 +8,15 @@ author: "Marek Gagolewski"
 > **It is a draft version of the tutorial distributed
 > in the hope that it will be useful.**
 
-The genieclust package introduces some `matplotlib`-based plotting
+The `genieclust` package introduces some `matplotlib`-based plotting
 functions that I was missing (but are present in R's `graphics`).
 
 
 
-
+```{r hello,echo=FALSE}
+library("reticulate")
+use_python("/usr/bin/python3")
+```
 
 
 
@@ -23,8 +24,7 @@ functions that I was missing (but are present in R's `graphics`).
 # Load Example Data
 
 
-
-```python
+```{python imports,results="hide"}
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -33,25 +33,24 @@ import genieclust
 ```
 
 
-
-```python
+```{python load_data,results="hide"}
 path = os.path.join("..", "benchmark_data")
 dataset = "jain"
 
 # Load an example 2D dataset
-X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
 
 # Load the corresponding reference labels.
 # The original labels are in {1,2,..,k} and 0 denotes the noise cluster.
 # Let's make them more Python-ish by subtracting 1
 # (and hence the noise cluster will be marked as -1).
-labels_true = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
+labels_true = np.loadtxt(os.path.join(path, "%s.labels0.gz" % dataset), dtype=np.intp)-1
 n_clusters = len(np.unique(labels_true))-(np.min(labels_true)==-1)
 # do not count the "noise" cluster (if present) as a separate entity
 
 # Centre and scale (proportionally in all the axes) all the points.
 # Note: this is NOT a standardization of all the variables.
-X = (X-np.mean(X))/np.std(X, ddof=1)
+X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 ```
 
 
@@ -66,18 +65,12 @@ Usage: `genieclust.plots.plot_scatter(X, labels, **kwargs)`, where
 to each point in X, giving its plot style
 
 
-
-```python
-genieclust.plots.plot_scatter(X, 1-labels_true)
+```{python plot_scatter,results="hide"}
+genieclust.plots.plot_scatter(X, labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
-```
-
-```python
 plt.show()
 ```
-
-![plot of chunk unnamed-chunk-5](example_plots-figures/unnamed-chunk-5-1.png)
 
 
 
@@ -88,8 +81,7 @@ corresponding to `labels == i` are always drawn in the same way,
 Here are the first 10 plotting styles:
 
 
-
-```python
+```{python plotting_styles,results="hide"}
 ncol = len(genieclust.plots.col)
 nmrk = len(genieclust.plots.mrk)
 mrk_recycled = np.tile(genieclust.plots.mrk, int(np.ceil(ncol/nmrk)))[:ncol]
@@ -100,17 +92,9 @@ for i in range(10):
     plt.plot(i, 1, marker=styles["marker"][i], color=styles["color"][i])
 plt.title("Plotting styles for labels==i")
 plt.ylim(-3,4)
-```
-
-```python
 plt.axis('off')
-```
-
-```python
 plt.show()
 ```
-
-![plot of chunk unnamed-chunk-6](example_plots-figures/unnamed-chunk-6-1.png)
 
 
 
@@ -131,30 +115,14 @@ The line segments are given by
     for `i = 0, ..., pairs.shape[0]-1`.
 
 
-
-```python
+```{python mst_preview}
 # Example: draw the minimum spanning tree
 pairs = genieclust.internal.mst_from_distance(X)[1]
 print(pairs[:6,:6]) # preview
 ```
 
-```
-## [[209 210]
-##  [238 239]
-##  [253 307]
-##  [340 341]
-##  [254 255]
-##  [234 235]]
-```
-
-
-```python
+```{python plot_segments,results="hide"}
 genieclust.plots.plot_segments(X, pairs)
 plt.axis("equal")
-```
-
-```python
 plt.show()
 ```
-
-![plot of chunk unnamed-chunk-8](example_plots-figures/unnamed-chunk-8-1.png)

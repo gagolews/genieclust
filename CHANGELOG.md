@@ -2,17 +2,20 @@
 ==============================
 
 
-
 ## genieclust 0.XX (under development)
 
--   The full distance matrix is not required anymore for computing an
-    exact MST -- the distances are computed on the fly; this is
+-   The full distance matrix is no longer required for computing an
+    exact MST -- the distances might be computed on the fly; this is
     currently supported for `"euclidean"`,
     `"cityblock"`, and `"cosine"`
     distances. The upgrade saves a lot of memory ($O(n)$ instead
-    of $O(n^2)$)  -- genieclust can solve much larger problems now.
+    of $O(n^2)$)  -- `genieclust` can solve much larger problems now.
 
--   `sklearn.neighbors.NearestNeighbors`,
+-   TODO: see a list of resolved github issues....
+
+-   TODO: GIc...
+
+-   TODO: `sklearn.neighbors.NearestNeighbors`,
     `faiss` or other search data structures are used to
     determine few first NNs when computing the mutual reachability
     distance a.k.a. the "core distance".
@@ -21,14 +24,13 @@
     `internal.merge_boundary_points` are now available via
     `deprecated.*`.
 
--   [INTERNAL] Most of the code was rewritten in C++, in
-    particular the `DisjointSets` and
-    `GiniDisjointSets` classes, so that:
+-   [INTERNAL] Most of the code was rewritten in C++, so that:
 
-    a. they can be used in other projects,
+    a.  they can be used in other projects (in particular the `IntDict`,
+        `DisjointSets` and `GiniDisjointSets` classes),
 
-    b. genieclust can be easily made available for other environments in the
-    future.
+    b.  genieclust can be made available for
+        other environments in the future.
 
 -   [INTERNAL] Use OpenMP for distance computations.
 

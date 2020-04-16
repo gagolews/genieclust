@@ -1,6 +1,8 @@
+
+
 ---
 title: "Genieclust Tutorial"
-subtitle: "Additional Plotting Functions in `genieclust.plots`"
+subtitle: "Plotting Functions in `genieclust.plots`"
 author: "Marek Gagolewski"
 ---
 
@@ -8,15 +10,12 @@ author: "Marek Gagolewski"
 > **It is a draft version of the tutorial distributed
 > in the hope that it will be useful.**
 
-The genieclust package introduces some `matplotlib`-based plotting
+The `genieclust` package introduces some `matplotlib`-based plotting
 functions that I was missing (but are present in R's `graphics`).
 
 
 
-```{r echo=FALSE}
-library("reticulate")
-use_python("/usr/bin/python3")
-```
+
 
 
 
@@ -24,7 +23,8 @@ use_python("/usr/bin/python3")
 # Load Example Data
 
 
-```{python results="hide"}
+
+```python
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -33,7 +33,8 @@ import genieclust
 ```
 
 
-```{python results="hide"}
+
+```python
 path = os.path.join("..", "benchmark_data")
 dataset = "jain"
 
@@ -65,12 +66,18 @@ Usage: `genieclust.plots.plot_scatter(X, labels, **kwargs)`, where
 to each point in X, giving its plot style
 
 
-```{python results="hide"}
+
+```python
 genieclust.plots.plot_scatter(X, labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
+```
+
+```python
 plt.show()
 ```
+
+![plot of chunk plot_scatter](plots-figures/plot_scatter-1.png)
 
 
 
@@ -81,7 +88,8 @@ corresponding to `labels == i` are always drawn in the same way,
 Here are the first 10 plotting styles:
 
 
-```{python results="hide"}
+
+```python
 ncol = len(genieclust.plots.col)
 nmrk = len(genieclust.plots.mrk)
 mrk_recycled = np.tile(genieclust.plots.mrk, int(np.ceil(ncol/nmrk)))[:ncol]
@@ -92,9 +100,17 @@ for i in range(10):
     plt.plot(i, 1, marker=styles["marker"][i], color=styles["color"][i])
 plt.title("Plotting styles for labels==i")
 plt.ylim(-3,4)
+```
+
+```python
 plt.axis('off')
+```
+
+```python
 plt.show()
 ```
+
+![plot of chunk plotting_styles](plots-figures/plotting_styles-1.png)
 
 
 
@@ -115,14 +131,30 @@ The line segments are given by
     for `i = 0, ..., pairs.shape[0]-1`.
 
 
-```{python}
+
+```python
 # Example: draw the minimum spanning tree
 pairs = genieclust.internal.mst_from_distance(X)[1]
 print(pairs[:6,:6]) # preview
 ```
 
-```{python results="hide"}
+```
+## [[209 210]
+##  [238 239]
+##  [253 307]
+##  [254 255]
+##  [340 341]
+##  [234 235]]
+```
+
+
+```python
 genieclust.plots.plot_segments(X, pairs)
 plt.axis("equal")
+```
+
+```python
 plt.show()
 ```
+
+![plot of chunk plot_segments](plots-figures/plot_segments-1.png)

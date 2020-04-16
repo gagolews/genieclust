@@ -77,7 +77,8 @@ Examples and Tutorials
 
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
--   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/example_plots.md)
+-   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/plots.md)
+-   [Comparing Different Hierarchical Linkage Methods on Toy Datasets -- A scikit-learn Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
 
 
 
