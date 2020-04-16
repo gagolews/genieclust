@@ -156,14 +156,25 @@ class Genie(BaseEstimator, ClusterMixin):
         The number of points in the fitted dataset.
     n_features_ : int or None
         The number of features in the fitted dataset.
-    links_ : TODO
-        TODO
-    iters_ : int
-        TODO
-    mst_dist_ : TODO
-        TODO
-    mst_ind_ : TODO
-        TODO
+    children_ : ndarray, shape (_iters_, 2)
+        The i-th row provides the information on the clusters merged at
+        the i-th iteration. Noise points are never reported. Hence, the number
+        of iterations can be smaller than n_samples-1.
+        See the description of Z[i,0] and Z[i,1] in
+        scipy.cluster.hierarchy.linkage. Together with distances_ and
+        counts_, this can be used for plotting the dendrogram.
+        Only available if `compute_full_tree` is True.
+    distances_ : ndarray, shape (_iters_,)
+        Distance between the two clusters merged at the i-th iteration.
+        Note Genie does not guarantee that that distances are
+        ordered increasingly (do not panic, there are some other hierarchical
+        clustering linkages that also violate the ultrametricity property).
+        See the description of Z[i,2] in scipy.cluster.hierarchy.linkage.
+        Only available if `compute_full_tree` is True.
+    counts_ : ndarray, shape (_iters_,)
+        Number of elements in a cluster created at the i-th iteration.
+        See the description of Z[i,3] in scipy.cluster.hierarchy.linkage.
+        Only available if `compute_full_tree` is True.
     """
 
     def __init__(self,
@@ -185,15 +196,21 @@ class Genie(BaseEstimator, ClusterMixin):
         self.exact = exact
         self.cast_float32 = cast_float32
 
-        self.labels_ = None
-        self.n_clusters_ = 0 # should not be confused with self.n_clusters
-        self.n_samples_  = 0
-        self.n_features_ = 0
-        #self.links_  = res["links"]
-        #self.iters_  = res["iters"]
-        #self.mst_dist_ = mst_dist
-        #self.mst_ind_  = mst_ind
-        #https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html
+        self.n_clusters_  = 0 # should not be confused with self.n_clusters
+        self.n_samples_   = 0
+        self.n_features_  = 0
+        self.labels_      = None
+        self.children_    = None
+        self.distances_   = None
+        self.counts_      = None
+        self._links_      = None
+        self._iters_      = None
+        self._mst_dist_   = None
+        self._mst_ind_    = None
+        self._nn_dist_    = None
+        self._nn_ind_     = None
+        self._d_core_     = None
+
 
     def fit(self, X, y=None):
         """Perform clustering of the X dataset.
@@ -259,6 +276,11 @@ class Genie(BaseEstimator, ClusterMixin):
         cur_state["cast_float32"] = bool(self.cast_float32)
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
 
+        mst_dist = None
+        mst_ind  = None
+        nn_dist  = None
+        nn_ind   = None
+        d_core   = None
 
         if cur_state["cast_float32"]:
             # faiss supports float32 only
@@ -327,8 +349,6 @@ class Genie(BaseEstimator, ClusterMixin):
                 )
                 nn_dist, nn_ind = nn.fit(X).kneighbors()
                 d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
-            else:
-                d_core = None
 
             # Use Prim's algorithm to determine the MST
             # w.r.t. the distances computed on the fly
@@ -345,13 +365,17 @@ class Genie(BaseEstimator, ClusterMixin):
             compute_full_tree=cur_state["compute_full_tree"])
 
         self.n_clusters_ = res["n_clusters"]
-        self.labels_ = res["labels"]
-        self.links_  = res["links"]
-        self.iters_  = res["iters"]
-        self.n_samples_ = n_samples
+        self.labels_     = res["labels"]
+        self.n_samples_  = n_samples
         self.n_features_ = n_features
-        self.mst_dist_ = mst_dist
-        self.mst_ind_  = mst_ind
+        self._links_     = res["links"]
+        self._iters_     = res["iters"]
+        self._mst_dist_  = mst_dist
+        self._mst_ind_   = mst_ind
+        self._nn_dist_   = nn_dist
+        self._nn_ind_    = nn_ind
+        self._d_core_    = d_core
+
 
         if self.labels_ is not None:
             # postprocess labels, if requested to do so
@@ -361,6 +385,17 @@ class Genie(BaseEstimator, ClusterMixin):
                 self.labels_ = internal.merge_boundary_points(mst_ind, self.labels_, nn_ind, cur_state["M"])
             elif cur_state["postprocess"] == "all":
                 self.labels_ = internal.merge_noise_points(mst_ind, self.labels_)
+
+        if cur_state["compute_full_tree"]:
+            self.children_    = None
+            self.distances_   = None
+            self.counts_      = None
+
+            self._links_
+            self._iters_
+            self._mst_dist_
+            self._mst_ind_
+
 
         return self
 
