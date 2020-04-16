@@ -75,10 +75,21 @@ Package Features
 Examples and Tutorials
 ----------------------
 
+`genieclust` has a familiar `scikit-learn` look-and-feel:
+
+```python
+import genieclust
+X = ... # some data
+g = genieclust.Genie(n_clusters=2)
+g.fit_predict(X)
+```
+
+For more illustrations, use cases and details, make sure to check out:
+
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
 -   [Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/plots.md)
--   [Comparing Different Hierarchical Linkage Methods on Toy Datasets -- A scikit-learn Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
+-   [Comparing Different Hierarchical Linkage Methods on Toy Datasets - A `scikit-learn` Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
 
 
 
