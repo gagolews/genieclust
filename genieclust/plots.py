@@ -45,7 +45,7 @@ col = ["k", "r", "g", "b", "c", "m", "y"]+\
 mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
 
-def plot_scatter(X, labels, **kwargs):
+def plot_scatter(X, y=None, labels=None, **kwargs):
     """
     Draws a scatter plot.
 
@@ -57,17 +57,31 @@ def plot_scatter(X, labels, **kwargs):
     Parameters:
     ----------
 
-    X : ndarray, shape (n, 2)
+    X : ndarray, shape (n, 2) or ndarray, shape (n,)
         A two-column matrix giving the x and y coordinates of the points.
+        Optionally, these can be given by both X and y.
 
-    labels : ndarray, shape (n,)
+    y : None or ndarray, shape (n,)
+        y coordinates in the case of X being a vector
+
+    labels : ndarray, shape (n,) or None
         A vector of integer labels corresponding to each point in `X`,
         giving its plot style.
 
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter()`.
     """
-    if not X.shape[1] == 2: raise ValueError("X must have 2 columns")
+    if labels is None: labels = np.repeat(0, X.shape[0])
+    if X.ndim == 2:
+        if not X.shape[1] == 2:
+            raise ValueError("X must have 2 columns or y must be given")
+    elif X.ndim == 1:
+        if y is None or y.ndim != 1 or X.shape[0] != y.shape[0]:
+            raise ValueError("X and y must have the same shape")
+        X = np.column_stack((X, y))
+    else:
+        raise ValueError("invalid X")
+
     if not X.shape[0] == labels.shape[0]:
         raise ValueError("incorrect number of labels")
     for i in np.unique(labels): # 0 is black, 1 is red, etc.

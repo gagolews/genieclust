@@ -5,7 +5,7 @@ author: "Marek Gagolewski"
 ---
 
 
-> **It is a draft version of the tutorial distributed
+> **This is a draft of the tutorial distributed
 > in the hope that it will be useful.**
 
 The `genieclust` package introduces some `matplotlib`-based plotting
@@ -58,15 +58,16 @@ X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 
 Draws a scatter plot.
 
-Usage: `genieclust.plots.plot_scatter(X, labels, **kwargs)`, where
+Usage: `genieclust.plots.plot_scatter(X, y=None, labels=None, **kwargs)`, where:
 
-* `X` is a two-column matrix giving the x and y coordinates of the points
+* `X` is a two-column matrix or `X` and `y` are two vectors of identical
+    lengths, which gives the x and y coordinates of each point,
 * `labels` is a vector of integer labels corresponding
-to each point in X, giving its plot style
+to each point, defining its plot style.
 
 
 ```{python plot_scatter,results="hide"}
-genieclust.plots.plot_scatter(X, labels_true)
+genieclust.plots.plot_scatter(X, labels=labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 plt.show()

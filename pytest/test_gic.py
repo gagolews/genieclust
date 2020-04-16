@@ -17,7 +17,7 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
-# TODO
+# TODO test  -1 <= labels < n_clusters
 # TODO
 # TODO
 # TODO

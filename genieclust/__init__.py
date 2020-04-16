@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from . import plots
 from . import inequity
+from . import tools
 from . import compare_partitions
-from . import genie # should be deprecated
+from . import genie # this import should be deprecated
 from .genie import *

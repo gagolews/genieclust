@@ -69,7 +69,7 @@ ctypedef fused floatT:
 
 
 
-from . cimport c_argfuns
+
 from . cimport c_mst
 from . cimport c_preprocess
 from . cimport c_postprocess
@@ -78,87 +78,6 @@ from . cimport c_gini_disjoint_sets
 from . cimport c_genie
 
 
-
-
-
-
-################################################################################
-# Provide access to the argsort() and argkmin() functions.
-################################################################################
-
-cpdef np.ndarray[ssize_t] argsort(T[::1] x, bint stable=True):
-    """
-    Finds the(*) ordering permutation of a c_contiguous array x
-
-    (*) if stable==True, otherwise it's *an* ordering permutation
-
-
-    Parameters:
-    ----------
-
-    x : c_contiguous 1d array
-        an integer or float vector
-
-    stable : bool
-        should a stable (a bit slower) sorting algorithm be used?
-
-
-    Returns:
-    -------
-
-    ndarray:
-        The ordering permutation.
-    """
-    cdef ssize_t n = x.shape[0]
-    cdef np.ndarray[ssize_t] ret = np.empty(n, dtype=np.intp)
-    c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
-    return ret
-
-
-
-
-cpdef ssize_t argkmin(T[::1] x, int k):
-    """
-    Returns the index of the (k-1)-th smallest value in an array x,
-    where argkmin(x, 0) == argmin(x), or, more generally,
-    argkmin(x, k) == np.argsort(x)[k].
-
-    Run time: O(nk), where n == len(x). Working mem: O(k).
-
-    In practice, very fast for small k and randomly ordered
-    or almost sorted (increasingly) data.
-
-    Example timings:                 argkmin(x, k) np.argsort(x)[k]
-    (ascending)  n= 100000000, k=   1:      0.060s       4.388s
-    (descending)                            0.168s       7.329s
-    (random)                                0.073s      26.673s
-    (ascending)  n= 100000000, k=   5:      0.060s       4.403s
-    (descending)                            0.505s       7.414s
-    (random)                                0.072s      26.447s
-    (ascending)  n= 100000000, k= 100:      0.061s       4.390s
-    (descending)                            8.007s       7.639s
-    (random)                                0.075s      27.299s
-
-
-
-    Parameters:
-    ----------
-
-    x : c_contiguous 1d array
-        an integer or float vector
-
-    k : int
-        an integer in {0,...,len(x)-1}, preferably small
-
-
-    Returns:
-    -------
-
-    value:
-        the (k-1)-th smallest value in x
-    """
-    cdef ssize_t n = x.shape[0]
-    return c_argfuns.Cargkmin(&x[0], n, k, <ssize_t*>0)
 
 
 
@@ -534,7 +453,90 @@ cpdef np.ndarray[ssize_t] merge_noise_points(
     return cl2
 
 
+cpdef dict get_linkage_matrix(ssize_t[::1] links,
+                              floatT[::1] mst_d,
+                              ssize_t[:,::1] mst_i):
+    """
 
+    Parameters
+    ----------
+
+    links : ndarray
+        see return value of genieclust.internal.genie_from_mst.
+    mst_d, mst_i : ndarray
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        see genieclust.mst.
+
+
+    Returns
+    -------
+
+    Z : dict
+        A dictionary with 3 keys: children, distances, counts,
+        see the description of Z[:,:2], Z[:,2] and Z[:,3], respectively,
+        in scipy.cluster.hierarchy.linkage.
+    """
+    cdef ssize_t n = mst_i.shape[0]+1
+    cdef ssize_t i, i1, i2, par, w, num_unused, j
+
+    if not n-1 == mst_d.shape[0]:
+        raise ValueError("ill-defined MST")
+    if not n-1 == links.shape[0]:
+        raise ValueError("ill-defined MST")
+
+    cdef c_gini_disjoint_sets.CGiniDisjointSets ds = \
+        c_gini_disjoint_sets.CGiniDisjointSets(n)
+
+    cdef np.ndarray[ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[floatT]         distances_ = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef np.ndarray[ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
+    cdef np.ndarray[ssize_t]        ids        = np.empty(n, dtype=np.intp)
+
+    num_unused = n-1
+    for i in range(n-1):
+        if links[i] < 0: break # no more mst edges
+        if links[i] >= n-1: raise ValueError("ill-defined links")
+        used[links[i]] += 1
+        num_unused -= 1
+
+    for i in range(n):
+        ids[i] = i
+
+    w = -1
+    for i in range(n-1):
+        if i < num_unused:
+            # get the next unused edge (links a leaf node)
+            while True:
+                w += 1
+                assert w < n-1
+                if not used[w]: break
+        else:
+            assert 0 <= i-num_unused < n-1
+            w = links[i-num_unused]
+
+        assert 0 <= w < n-1
+        i1 = mst_i[w, 0]
+        i2 = mst_i[w, 1]
+        if not 0 <= i1 < n: raise ValueError("ill-defined MST")
+        if not 0 <= i2 < n: raise ValueError("ill-defined MST")
+
+        i1 = ds.find(i1)
+        i2 = ds.find(i2)
+        children_[i, 0] = ids[i1]
+        children_[i, 1] = ids[i2]
+        par = ds.merge(i1, i2)
+        ids[par] = n+i # see scipy.cluster.hierarchy.linkage
+        distances_[i] = mst_d[w] if i >= num_unused else 0.0
+        counts_[i] = ds.get_count(par)
+
+
+    return dict(
+        children=children_,
+        distances=distances_,
+        counts=counts_
+    )
 
 
 ################################################################################

@@ -215,10 +215,10 @@ protected:
                 }
                 res[i] = res_cluster_id[j];
             }
-            //else {
-            //    // a noise point
-            //    res[i] = -1; // see constructor call above
-            // }
+            else {
+               // a noise point
+               res[i] = -1;
+            }
         }
 
         return c;
@@ -285,8 +285,6 @@ public:
     ssize_t get_labels(ssize_t n_clusters, ssize_t* res) {
         if (this->results.ds.get_n() <= 0)
             throw std::runtime_error("Apply the clustering procedure first.");
-
-
 
         if (n_clusters <= this->results.n_clusters) {
             // use this->results.ds -- from the final iteration

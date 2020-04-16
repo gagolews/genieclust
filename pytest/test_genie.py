@@ -15,7 +15,7 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
-
+# TODO test  -1 <= labels < n_clusters
 # TODO: test early stop
 # TODO: test affinity="precomputed"
 

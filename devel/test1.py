@@ -21,23 +21,51 @@ n_clusters = int(len(np.unique(labels_true))-(np.min(labels_true)==-1))
 gini_threshold = 0.3
 
 
-mst_dist, mst_ind = genieclust.internal.mst_from_distance(X)
-res = genieclust.internal.genie_from_mst(mst_dist, mst_ind,
-            n_clusters=n_clusters,
-            gini_threshold=gini_threshold,
-            noise_leaves=False)
-labels = res["labels"]
+g = genieclust.Genie(n_clusters=n_clusters,
+            gini_threshold=gini_threshold)
+labels = g.fit_predict(X)
 print(labels)
 
 plt.rcParams["figure.figsize"] = (8,4)
 plt.subplot("121")
-genieclust.plots.plot_scatter(X, labels_true)
+genieclust.plots.plot_scatter(X, labels=labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)"%(dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 plt.subplot("122")
-genieclust.plots.plot_scatter(X, labels)
+genieclust.plots.plot_scatter(X, labels=labels)
 plt.title("%s Genie g=%g"%(dataset, gini_threshold))
 plt.axis("equal")
+plt.show()
+
+
+# create the linkage matrix, see scipy.cluster.hierarchy.linkage
+Z = np.column_stack((g.children_, g.distances_, g.counts_))
+# correct for possible departures from ultrametricity:
+Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]
+import scipy.cluster.hierarchy
+scipy.cluster.hierarchy.dendrogram(Z)
+plt.show()
+
+
+X = np.array(
+    [[0, 0], [0, 1], [1, 0],
+     [0, 4], [0, 3], [1, 4],
+     [4, 0], [3, 0], [4, 1],
+     [4, 4], [3, 4], [4, 3]])
+g = genieclust.Genie(n_clusters=n_clusters,
+            gini_threshold=gini_threshold)
+labels = g.fit_predict(X)
+# create the linkage matrix, see scipy.cluster.hierarchy.linkage
+Z = np.column_stack((g.children_, g.distances_, g.counts_))
+print(Z)
+
+
+import scipy.cluster.hierarchy
+plt.subplot(121)
+genieclust.plots.plot_scatter(X)
+plt.axis("equal")
+plt.subplot(122)
+scipy.cluster.hierarchy.dendrogram(Z)
 plt.show()
 
 
