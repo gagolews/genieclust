@@ -62,7 +62,7 @@ struct CMstTriple {
 
     CMstTriple() {}
 
-    CMstTriple(ssize_t i1, ssize_t i2, T d, bool order) {
+    CMstTriple(ssize_t i1, ssize_t i2, T d, bool order=true) {
         this->d = d;
         if (!order || (i1 < i2)) {
             this->i1 = i1;

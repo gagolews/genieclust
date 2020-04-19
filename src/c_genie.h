@@ -545,7 +545,7 @@ protected:
         double* gini_thresholds, ssize_t n_thresholds)
     {
         std::vector<ssize_t> unused_edges;
-        if (n_thresholds <= 0 || n_clusters >= this->n - this->noise_count) {
+        if (n_thresholds == 0 || n_clusters >= this->n - this->noise_count) {
             // all edges unused -> will start from n singletons
             for (ssize_t i=0; i < this->n - 1; ++i) {
                 ssize_t i1 = this->mst_i[2*i+0];
@@ -615,8 +615,6 @@ public:
      * @param n_features number of features (can be fractional)
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
-     * @param res_labels [out] array of length n defining cluster labels (can be NULL)
-     * @param res_links [out] array of length n-1 defining MST edges merge order (can be NULL)
      */
     void apply_gic(ssize_t n_clusters,
                    ssize_t add_clusters, double n_features,
@@ -632,98 +630,112 @@ public:
                 n_clusters+add_clusters, gini_thresholds, n_thresholds
         );
 
-        // note that unused_edges does not include noise edges;
-        // unused_edges contains a sentinel element at the end == n-1
+        // note that the unused_edges list:
+        // 1. does not include noise edges;
+        // 2. is sorted (strictly) increasingly
+        // 3. contains a sentinel element at the end == n-1
 
 
         this->results = typename CGenieBase<T>::CGenieResult(this->n,
             this->noise_count, n_clusters);
 
+        // Step 1. Merge all used edges (used by all the Genies)
+        // There are of course many possible merge orders that we could consider
+        // here. We will rely on the current ordering of the MST edges,
+        // which is wrt non-decreasing mst_d.
+
         ssize_t cur_unused_edges = 0;
+        ssize_t num_unused_edges = unused_edges.size()-1; // ignore sentinel
         std::vector<ssize_t> cluster_sizes(this->n - this->noise_count, 1);
         std::vector<T> cluster_d_sums(this->n - this->noise_count, (T)0.0);
         this->results.it = 0;
         for (ssize_t i=0; i<this->n - 1; ++i) {
-            ssize_t i1 = this->mst_i[2*i+0];
-            ssize_t i2 = this->mst_i[2*i+1];
-            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0); // ????????????????????? that should be skipped.....
-            GENIECLUST_ASSERT(!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1)) // ?????????????????????
-
             GENIECLUST_ASSERT(i<=unused_edges[cur_unused_edges]);
-
             if (unused_edges[cur_unused_edges] == i) {
                 // ignore current edge and advance to the next unused edge
                 cur_unused_edges++;
                 continue;
             }
 
-            GENIECLUST_ASSERT(this->results.it < this->n-1);
-            this->results.links[this->results.it++] = i;
-            i1 = this->results.ds.find(this->denoise_index_rev[i1]);
-            i2 = this->results.ds.find(this->denoise_index_rev[i2]);
-            if (i1 > i2) std::swap(i1, i2);
-            this->results.ds.merge(i1, i2);
-            // new parent node is i1
-            cluster_sizes[i1]  += cluster_sizes[i2];
-            cluster_d_sums[i1] += cluster_d_sums[i2] + this->mst_d[i];
-            cluster_sizes[i2]   = 0;
-            cluster_d_sums[i2]  = INFTY;
-        }
+            ssize_t i1 = this->mst_i[2*i+0];
+            ssize_t i2 = this->mst_i[2*i+1];
 
-        /*  The objective function to MINIMISE is
-            sum_{i in ds.parents()} cluster_sizes[i] * (
+            if (i1 < 0 || i2 < 0)
+                continue; // a no-edge -> ignore
+
+            if (!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1)) {
+                GENIECLUST_ASSERT(this->results.it < this->n-1);
+                this->results.links[this->results.it++] = i;
+                i1 = this->results.ds.find(this->denoise_index_rev[i1]);
+                i2 = this->results.ds.find(this->denoise_index_rev[i2]);
+                if (i1 > i2) std::swap(i1, i2);
+                this->results.ds.merge(i1, i2);
+                // new parent node is i1
+                cluster_sizes[i1]  += cluster_sizes[i2];
+                cluster_d_sums[i1] += cluster_d_sums[i2] + this->mst_d[i];
+                cluster_sizes[i2]   = 0;
+                cluster_d_sums[i2]  = INFTY;
+            }
+        }
+        GENIECLUST_ASSERT(cur_unused_edges == num_unused_edges); // sentinel
+        GENIECLUST_ASSERT(unused_edges[num_unused_edges] == this->n-1); // sentinel
+        GENIECLUST_ASSERT(num_unused_edges+1 == this->results.ds.get_k());
+
+
+        // Step 2. Merge all used edges
+
+        // TODO::::::::: double check!!!
+        /*  The objective function - Information Criterion - to MAXIMISE is
+            sum_{i in ds.parents()} -cluster_sizes[i] * (
                 n_features     * log cluster_sizes[i]
               -(n_features-1)  * log cluster_d_sums[i]
             )
         */
 
-        GENIECLUST_ASSERT(unused_edges[unused_edges.size()-1] == this->n-1); // sentinel
-        ssize_t num_unused_edges = unused_edges.size()-1; // ignore sentinel
-        GENIECLUST_ASSERT(num_unused_edges+1 == this->results.ds.get_k());
-
-        // TODO: until num_unused_edges>0 .........
-        while (this->results.ds.get_k() != n_clusters) {
-            ssize_t min_which = -1;
-            double  min_obj = INFTY;
+        while (num_unused_edges > 0 && this->results.it<this->n - this->noise_count - n_clusters) {
+            ssize_t max_which = -1;
+            double  max_obj = -INFTY;
             for (ssize_t j=0; j<num_unused_edges; ++j) {
                 ssize_t i = unused_edges[j];
                 ssize_t i1 = this->mst_i[2*i+0];
                 ssize_t i2 = this->mst_i[2*i+1];
+                GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
                 i1 = this->results.ds.find(this->denoise_index_rev[i1]);
                 i2 = this->results.ds.find(this->denoise_index_rev[i2]);
                 if (i1 > i2) std::swap(i1, i2);
-
                 GENIECLUST_ASSERT(i1 != i2);
 
-                // singletons will be merged first
+                // singletons should be merged first (they have cluster_d_sums==0.0)
+                // TODO::::::::: double check!!!
                 if (cluster_d_sums[i1] < 1e-12 || cluster_d_sums[i2] < 1e-12) {
-                    min_which = j;
+                    max_which = j;
                     break;
                 }
 
                 // compute difference in obj
-                double cur_obj = (cluster_sizes[i1]+cluster_sizes[i2])*(
+                // TODO::::::::: double check!!!
+                double cur_obj = -(cluster_sizes[i1]+cluster_sizes[i2])*(
                     n_features*log(cluster_d_sums[i1]+cluster_d_sums[i2]+this->mst_d[i])
                   -(n_features-1.0)*log(cluster_sizes[i1]+cluster_sizes[i2])
                 );
-                cur_obj -= cluster_sizes[i1]*(
+                cur_obj += cluster_sizes[i1]*(
                     n_features*log(cluster_d_sums[i1])
                   -(n_features-1.0)*log(cluster_sizes[i1])
                 );
-                cur_obj -= cluster_sizes[i2]*(
+                cur_obj += cluster_sizes[i2]*(
                     n_features*log(cluster_d_sums[i2])
                   -(n_features-1.0)*log(cluster_sizes[i2])
                 );
 
                 GENIECLUST_ASSERT(std::isfinite(cur_obj));
-                if (cur_obj < min_obj) {
-                    min_obj = cur_obj;
-                    min_which = j;
+                if (cur_obj > max_obj) {
+                    max_obj = cur_obj;
+                    max_which = j;
                 }
             }
 
-            GENIECLUST_ASSERT(min_which >= 0 && min_which < num_unused_edges);
-            ssize_t i = unused_edges[min_which];
+            GENIECLUST_ASSERT(max_which >= 0 && max_which < num_unused_edges);
+            ssize_t i = unused_edges[max_which];
             GENIECLUST_ASSERT(this->results.it < this->n - 1);
             this->results.links[this->results.it++] = i;
             ssize_t i1 = this->mst_i[2*i+0];
@@ -741,7 +753,7 @@ public:
             cluster_sizes[i2] = 0;
             cluster_d_sums[i2] = INFTY;
 
-            unused_edges[min_which] = unused_edges[num_unused_edges-1];
+            unused_edges[max_which] = unused_edges[num_unused_edges-1];
             num_unused_edges--;
         }
     }

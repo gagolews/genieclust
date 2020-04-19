@@ -1,4 +1,6 @@
-#%cd /home/gagolews/Python/genieclust/devel
+#%%silent
+#%%restart
+#%%cd .
 
 import numpy as np
 import pandas as pd
@@ -10,7 +12,7 @@ plt.style.use('seaborn-whitegrid')
 #plt.rcParams["figure.figsize"] = (8,4)
 
 path = os.path.join("..", "benchmark_data")
-dataset = "flame"
+dataset = "pathbased"
 X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
 X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 X = X.astype(np.float32, order="C", copy=False)
@@ -20,15 +22,20 @@ n_clusters = int(len(np.unique(labels_true))-(np.min(labels_true)==-1))
 
 
 g = genieclust.Genie(n_clusters=n_clusters,
-            gini_threshold=0.3)
+            gini_threshold=0.3,
+            M=1)
 labels_g = g.fit_predict(X)
 print(labels_g)
 
 gic = genieclust.GIc(n_clusters=n_clusters,
-            gini_thresholds=[0.3, 0.3])
+            gini_thresholds=[0.1, 0.3, 0.5, 0.7],
+            add_clusters=10,
+            M=1)
 labels_gic = gic.fit_predict(X)
 print(labels_gic)
+print(genieclust.compare_partitions.compare_partitions2(labels_gic, labels_g))
 
+#%%eof
 
 plt.rcParams["figure.figsize"] = (12,4)
 plt.subplot("131")

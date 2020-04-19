@@ -1021,7 +1021,8 @@ cpdef dict genie_from_mst(
         see genieclust.mst.
     n_clusters : int, default=1
         Number of clusters the dataset is split into.
-        Use n_clusters==1 to generate the complete hierarchy.
+        Use n_clusters==1 to generate the complete hierarchy,
+        see also `compute_full_tree`.
     gini_threshold : float, default=0.3
         The threshold for the Genie correction
     noise_leaves : bool
@@ -1104,14 +1105,14 @@ cpdef dict gic_from_mst(
     Hierarchical Clustering Algorithm
 
     Computes a k-partition based on a pre-computed MST
-    minimising (heuristically) the information criterion [2].
+    maximising (heuristically) the information criterion [2].
 
     GIc has been proposed by Anna Cena in [1] and was inspired
     by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
 
     GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
     which follows a divisive scheme). It greedily selects for merging
-    a pair of clusters that minimises the information criterion [2].
+    a pair of clusters that maximises the information criterion [2].
     By default, the initial partition is determined by considering
     the intersection of clusterings found by the Genie methods with
     thresholds 0.1, 0.3, 0.5 and 0.7.
@@ -1144,7 +1145,8 @@ cpdef dict gic_from_mst(
         [can be fractional if you know what you're doing]
     n_clusters : int, default=1
         Number of clusters the dataset is split into.
-        Use n_clusters==1 to generate the complete hierarchy.
+        Use n_clusters==1 to generate the complete hierarchy,
+        see also `compute_full_tree`.
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
@@ -1203,7 +1205,9 @@ cpdef dict gic_from_mst(
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
 
-    g.apply_gic(1 if compute_full_tree else n_clusters, add_clusters, n_features,
+    g.apply_gic(1 if compute_full_tree else n_clusters,
+                n_clusters-1+add_clusters if compute_full_tree else add_clusters,
+                n_features,
             &gini_thresholds[0], gini_thresholds.shape[0])
     iters_ = g.get_links(&links_[0])
     if n_clusters >= 1:

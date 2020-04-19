@@ -18,8 +18,8 @@ rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
 # TODO test  -1 <= labels < n_clusters
-# TODO
-# TODO
+# TODO gini_thresholds=[g]*r & add_clusters=0 == standard genie for every r>=1
+# TODO gini_thresholds=[] or add_clusters too large => Agglomerative-IC (ICA)
 # TODO
 # TODO
 # TODO

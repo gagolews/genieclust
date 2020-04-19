@@ -529,14 +529,14 @@ class GIc(GenieBase):
     Hierarchical Clustering Algorithm
 
     Computes a k-partition based on a pre-computed MST
-    minimising (heuristically) the information criterion [2].
+    maximising (heuristically) the information criterion [2].
 
     GIc has been proposed by Anna Cena in [1] and was inspired
     by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
 
     GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
     which follows a divisive scheme). It greedily selects for merging
-    a pair of clusters that minimises the information criterion [2].
+    a pair of clusters that maximises the information criterion [2].
     By default, the initial partition is determined by considering
     the intersection of clusterings found by the Genie methods with
     thresholds 0.1, 0.3, 0.5 and 0.7.
@@ -572,6 +572,7 @@ class GIc(GenieBase):
     def __init__(self,
             n_clusters=2,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
+            add_clusters=0,
             M=1,
             affinity="euclidean",
             compute_full_tree=True,
@@ -582,6 +583,7 @@ class GIc(GenieBase):
         super().__init__(M, affinity, exact, cast_float32)
 
         self.n_clusters = n_clusters
+        self.add_clusters = add_clusters
         self.gini_thresholds = gini_thresholds
         self.compute_full_tree = compute_full_tree
         self.postprocess = postprocess
@@ -631,6 +633,10 @@ class GIc(GenieBase):
         if cur_state["n_clusters"] < 0:
             raise ValueError("n_clusters must be >= 0")
 
+        cur_state["add_clusters"] = int(self.add_clusters)
+        if cur_state["add_clusters"] < 0:
+            raise ValueError("add_clusters must be >= 0")
+
         cur_state["gini_thresholds"] = np.array(self.gini_thresholds)
 
         _postprocess_options = ("boundary", "none", "all")
@@ -645,7 +651,7 @@ class GIc(GenieBase):
         res = internal.gic_from_mst(self._mst_dist_, self._mst_ind_,
             n_features=self.n_features_,
             n_clusters=cur_state["n_clusters"],
-            add_clusters=0,
+            add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
             noise_leaves=(cur_state["M"]>1),
             compute_full_tree=cur_state["compute_full_tree"])
