@@ -14,6 +14,7 @@ import matplotlib.pyplot as plt
 import os.path
 import genieclust
 np.set_printoptions(precision=5, threshold=10, edgeitems=5)
+pd.set_option("min_rows", 20)
 plt.style.use('seaborn-whitegrid')
 #plt.rcParams["figure.figsize"] = (8,4)
 
