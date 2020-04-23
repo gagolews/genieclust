@@ -1,6 +1,12 @@
 #%%silent
 #%%restart
-#%%cd .
+#%%cd @
+
+import sys
+# "https://github.com/gagolews/clustering_benchmarks_v1"
+benchmarks_path = "/home/gagolews/Projects/clustering_benchmarks_v1"
+sys.path.append(benchmarks_path)
+from load_dataset import load_dataset
 
 import numpy as np
 import pandas as pd
@@ -11,13 +17,12 @@ np.set_printoptions(precision=5, threshold=10, edgeitems=5)
 plt.style.use('seaborn-whitegrid')
 #plt.rcParams["figure.figsize"] = (8,4)
 
-path = os.path.join("..", "benchmark_data")
-dataset = "pathbased"
-X = np.loadtxt(os.path.join(path, "%s.data.gz" % dataset), ndmin=2)
+X, labels_true, dataset = load_dataset("wut/smile", benchmarks_path)
 X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 X = X.astype(np.float32, order="C", copy=False)
-labels_true = np.loadtxt(os.path.join(path, "%s.labels0.gz" % dataset),
-    dtype=np.intp)-1
+labels_true = [l-1 for l in labels_true] # noise class==-1
+
+labels_true = labels_true[0]
 n_clusters = int(len(np.unique(labels_true))-(np.min(labels_true)==-1))
 
 

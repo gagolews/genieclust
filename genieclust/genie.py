@@ -59,6 +59,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             exact,
             cast_float32
         ):
+        super().__init__()
         self.M = M
         self.affinity = affinity
         self.cast_float32 = cast_float32
@@ -76,6 +77,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
     def fit(self, X, y=None):
         cur_state = dict()
+        cur_state["X"] = id(X)
 
         _affinity_options = ("euclidean", "l2", "manhattan", "l1",
                              "cityblock", "cosine", "precomputed")
@@ -110,6 +112,25 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # faiss supports float32 only
             # warning if sparse!!
             X = X.astype(np.float32, order="C", copy=False)
+
+
+        if  self._last_state_ is not None and \
+                cur_state["X"]            == self._last_state_["X"] and \
+                cur_state["affinity"]     == self._last_state_["affinity"] and \
+                cur_state["exact"]        == self._last_state_["exact"] and \
+                cur_state["cast_float32"] == self._last_state_["cast_float32"]:
+
+            if cur_state["M"] == self._last_state_["M"]:
+                mst_dist = self._mst_dist_
+                mst_ind  = self._mst_ind_
+                nn_dist  = self._nn_dist_
+                nn_ind   = self._nn_ind_
+                d_core   = self._d_core_
+            elif cur_state["M"] < self._last_state_["M"]:
+                nn_dist  = self._nn_dist_
+                nn_ind   = self._nn_ind_
+            else:
+                pass
 
         if not cur_state["exact"]:
             if cur_state["affinity"] == "precomputed":
@@ -149,6 +170,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #print(X[nn_bad_where,:])
             #assert nn_bad_where.shape[0] == 0
 
+            # TODO: check cache if rebuild needed
             nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
             nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
 
@@ -166,20 +188,23 @@ class GenieBase(BaseEstimator, ClusterMixin):
         else: # cur_state["exact"]
             if cur_state["M"] > 1:
                 # Genie+HDBSCAN
-                # Use sklearn to determine the d_core distance
-                nn = sklearn.neighbors.NearestNeighbors(
-                    n_neighbors=cur_state["M"]-1,
-                    metric=cur_state["affinity"] # supports "precomputed"
-                )
-                nn_dist, nn_ind = nn.fit(X).kneighbors()
-                d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+                # Use sklearn (TODO: rly???) to determine the d_core distance
+                if nn_dist is None or nn_ind is None:
+                    nn = sklearn.neighbors.NearestNeighbors(
+                        n_neighbors=cur_state["M"]-1,
+                        metric=cur_state["affinity"] # supports "precomputed"
+                    )
+                    nn_dist, nn_ind = nn.fit(X).kneighbors()
+                if d_core is None:
+                    d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
 
             # Use Prim's algorithm to determine the MST
             # w.r.t. the distances computed on the fly
-            mst_dist, mst_ind = internal.mst_from_distance(X,
-                metric=cur_state["affinity"],
-                d_core=d_core
-            )
+            if mst_dist is None or mst_ind is None:
+                mst_dist, mst_ind = internal.mst_from_distance(X,
+                    metric=cur_state["affinity"],
+                    d_core=d_core
+                )
 
         self.n_samples_  = n_samples
         self.n_features_ = n_features
@@ -258,24 +283,26 @@ class GenieBase(BaseEstimator, ClusterMixin):
     #     )
 
     # not needed - inherited from BaseEstimator
-    # def set_params(self, **params):
-    #     """
-    #     Set the parameters for this estimator.
-    #
-    #
-    #     Parameters:
-    #     -----------
-    #
-    #     params
-    #
-    #
-    #     Returns:
-    #     --------
-    #
-    #     self
-    #     """
-    #     ################## @TODO
-    #     return self
+    #def set_params(self, **params):
+        #"""
+        #Set the parameters for this estimator.
+
+
+        #Parameters:
+        #-----------
+
+        #params
+
+
+        #Returns:
+        #--------
+
+        #self
+        #"""
+        ################### @TODO
+        #print(params)
+        #super().set_params(**params)
+        #return self
 
 
 
