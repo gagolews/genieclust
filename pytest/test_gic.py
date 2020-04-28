@@ -18,12 +18,7 @@ rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
 # TODO test  -1 <= labels < n_clusters
-# TODO gini_thresholds=[g]*r & add_clusters=0 == standard genie for every r>=1
 # TODO gini_thresholds=[] or add_clusters too large => Agglomerative-IC (ICA)
-# TODO
-# TODO
-# TODO
-# TODO
 
 
 
@@ -43,23 +38,35 @@ def test_gic():
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)
 
-        mst_d, mst_i = genieclust.internal.mst_from_distance(X)
-
         print("%-20s n=%7d d=%4d"%(dataset,X.shape[0],X.shape[1]))
-        for g in [ np.r_[0.1],  np.r_[0.2],  np.r_[0.3], np.r_[0.4], np.r_[0.5], np.r_[0.6], np.r_[0.7], np.arange(1, 8)/10, np.empty(0)]:
+        for g in [ np.r_[0.1],  np.r_[0.2],  np.r_[0.3], np.r_[0.4], np.r_[0.5], np.r_[0.6], np.r_[0.7] ]:
             print(g, end="\t")
             gc.collect()
 
             t01 = time.time()
-            res = genieclust.internal.gic_from_mst(mst_d, mst_i,
-                n_clusters=K, n_features=X.shape[1], gini_thresholds=g,
-                noise_leaves=False)
-            labels_gic = res["labels"]
+            labels_gic = genieclust.GIc(n_clusters=K, gini_thresholds=g).fit_predict(X)
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
+
+            labels_g = genieclust.Genie(n_clusters=K, gini_threshold=g[0]).fit_predict(X)
+
             assert len(np.unique(labels_gic[labels_gic>=0])) == K
-            assert res["n_clusters"] == K
+            assert adjusted_rand_score(labels_gic, labels_g)>1-1e-6
+            print()
+
+        for g in [ np.arange(1, 8)/10, np.empty(0)]:
+            print(g, end="\t")
+            gc.collect()
+
+            t01 = time.time()
+            labels_gic = genieclust.GIc(n_clusters=K, gini_thresholds=g).fit_predict(X)
+            t11 = time.time()
+            print("t_py=%.3f" % (t11-t01), end="\t")
+
+            # what tests here???
+
+            assert len(np.unique(labels_gic[labels_gic>=0])) == K
             print()
 
 

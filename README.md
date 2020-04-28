@@ -2,7 +2,6 @@
 ===========================
 
 
-
 The *Genie*++ Hierarchical Clustering Algorithm
 -----------------------------------------------
 
@@ -40,7 +39,7 @@ threads to speed up its execution further on. Its memory overhead is
 small: there is no need to precompute the complete distance matrix to
 perform the computations in order to obtain a desired clustering.
 
-This is a new, faster and even more robust implementation of the
+This package features a new, faster and even more robust implementation of the
 original algorithm available on CRAN, see R package
 [genie](http://www.gagolewski.com/software/genie/) and the paper:
 
@@ -55,17 +54,27 @@ original algorithm available on CRAN, see R package
 Package Features
 ----------------
 
--   The Genie++ hierarchical clustering algorithm (with a `scikit-learn`-like
-    interface), together with **TODO**: a robustified version of
-    HDBSCAN\*, IcA, GC, GIc, ...
+Implemented algorithms include:
 
--   `DisjointSets` (union-find) data structure (with extensions)
+-   Genie++ -- a reimplementation of the original Genie algorithm
+    (with a `scikit-learn`-like interface; Gagolewski et al., 2016)
+
+-   Genie+HDBSCAN\* -- our robustified retake on the HDBSCAN\*
+    (Campello et al., 2015) method -- detects noise points in data
+
+-   Genie+Ic (GIc) -- Cena's (2018) algorithm to minimise the information
+    theoretic criterion discussed by Mueller et al. (2012)
+
+
+Other goodies:
 
 -   Inequity measures (the Gini index, the Bonferroni index
     etc.)
 
 -   Functions to compare partitions (the Rand, adjusted Rand,
     Fowlkes-Mallows and adjusted Fowlkes-Mallows indexes)
+
+-   `DisjointSets` (union-find) data structure (with extensions)
 
 -   Useful plotting functions
 
@@ -81,13 +90,14 @@ Examples and Tutorials
 import genieclust
 X = ... # some data
 g = genieclust.Genie(n_clusters=2)
-g.fit_predict(X)
+labels = g.fit_predict(X)
 ```
 
 For more illustrations, use cases and details, make sure to check out:
 
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
+-   **TODO**: GIc Algorithm - Information-Theoretic Clustering
 -   [Plotting Dendrograms](https://github.com/gagolews/genieclust/blob/master/tutorials/dendrogram.md)
 -   [Comparing Different Hierarchical Linkage Methods on Toy Datasets - A `scikit-learn` Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
 -   [Auxiliary Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/plots.md)
@@ -96,23 +106,13 @@ For more illustrations, use cases and details, make sure to check out:
 Installation
 ------------
 
-> *This package is in alpha-stage (development is Linux-only).*
+> *This package is in an alpha-stage (development and testing is Linux-only).*
 
 The package requires Python 3.6+ together with `cython` as well as
 `numpy`, `scipy`, `matplotlib` and `sklearn`.
 
 Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`).
 
-**TODO**: Windows builds
-
-**TODO**: OS X builds
-
-To install via `pip` (the current version is a little outdated,
-see [PyPI](https://pypi.org/project/genieclust/)):
-
-```bash
-pip3 install genieclust --user # or sudo pip3 install genieclust
-```
 
 To build and install the most recent development version:
 
@@ -126,6 +126,20 @@ To support parallelised computations, build with OpenMP support (for gcc/clang):
 
 ```bash
 CPPFLAGS="-fopenmp -DNDEBUG" LDFLAGS="-fopenmp" python3 setup.py install --user
+```
+
+
+
+
+**TODO**: Windows builds
+
+**TODO**: OS X builds
+
+**TODO** To install via `pip` (the current version is a little outdated,
+see [PyPI](https://pypi.org/project/genieclust/)):
+
+```bash
+pip3 install genieclust --user # or sudo pip3 install genieclust
 ```
 
 

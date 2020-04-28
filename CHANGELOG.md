@@ -5,11 +5,11 @@
 ## genieclust 0.XX (under development)
 
 -   The full distance matrix is no longer required for computing an
-    exact MST -- the distances might be computed on the fly; this is
-    currently supported for `"euclidean"`,
-    `"cityblock"`, and `"cosine"`
-    distances. The upgrade saves a lot of memory ($O(n)$ instead
-    of $O(n^2)$)  -- `genieclust` can solve much larger problems now.
+    exact MST -- by default, the distances are be computed on the fly;
+    this is     currently supported for `"euclidean"`,
+    `"cityblock"`  and `"cosine"` distances.
+    The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$)  --
+    `genieclust` can solve much larger problems now.
 
 -   TODO: see a list of resolved github issues....
 
@@ -29,8 +29,8 @@
     a.  they can be used in other projects (in particular the `IntDict`,
         `DisjointSets` and `GiniDisjointSets` classes),
 
-    b.  genieclust can be made available for
-        other environments in the future.
+    b.  `genieclust` can be made available in
+        other scientific computing environments in the future.
 
 -   [INTERNAL] Use OpenMP for distance computations.
 
