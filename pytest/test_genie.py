@@ -16,8 +16,9 @@ rpy2.robjects.numpy2ri.activate()
 path = "benchmark_data"
 
 # TODO test  -1 <= labels < n_clusters
-# TODO: test early stop
-# TODO: test affinity="precomputed"
+
+
+
 
 def test_genie(metric='euclidean'):
     for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
@@ -68,9 +69,47 @@ def test_genie(metric='euclidean'):
             res1, res2 = None, None
             print("")
 
+def test_genie_precomputed():
+    for dataset in ["s1", "Aggregation"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+        if dataset == "bigger":
+            np.random.seed(123)
+            n = 10_000
+            X = np.random.normal(size=(n,2))
+            labels = np.random.choice(np.r_[1,2], n)
+        else:
+            X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
+
+        k = len(np.unique(labels[labels>=0]))
+
+        # center X + scale (NOT: standardize!)
+        X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+        X += np.random.normal(0, 0.0001, X.shape)
+
+        D = scipy.spatial.distance.pdist(X)
+        D = scipy.spatial.distance.squareform(D)
+
+        for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
+            gc.collect()
+
+            print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
+
+            res1 = Genie(k, g, exact=True,
+                         affinity="precomputed",
+                         compute_full_tree=False).fit_predict(D)+1
+            res2 = Genie(k, g, exact=True, affinity="euclidean").fit_predict(X)+1
+            ari = adjusted_rand_score(res1, res2)
+            print("ARI=%.3f" % ari, end="\t")
+            assert ari>1.0-1e-12
+
+            res1, res2 = None, None
+            print("")
+
 
 if __name__ == "__main__":
     print("**Euclidean**")
     test_genie('euclidean')
     print("**Manhattan**")
     test_genie('manhattan')
+    print("**Precomputed**")
+    test_genie_precomputed()

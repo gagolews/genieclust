@@ -138,6 +138,8 @@ for folder in folders:
 
 
 res = pd.DataFrame(res)
+#res.to_csv("20200428_results_temp.csv")
+
 
 res_max = res.loc[(res.preprocess=="none") & res.method.isin(["GIc_A0_3", "Genie_0.3"]) &
                   (~res.dataset.str.contains("2mg")),:].\
@@ -191,4 +193,4 @@ sns.heatmap(res_summary_ar2, annot=True, fmt=".2f", vmin=0.5, vmax=1.0)
 plt.title("Median ARI")
 plt.show()
 
-#res.to_csv("20200423_results_temp.csv")
+

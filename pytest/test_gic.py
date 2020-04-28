@@ -64,7 +64,13 @@ def test_gic():
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
-            # what tests here???
+
+            t01 = time.time()
+            labels_gic = genieclust.GIc(n_clusters=K, gini_thresholds=g, M=10).fit_predict(X)
+            t11 = time.time()
+            print("t_py=%.3f" % (t11-t01), end="\t")
+
+            # what tests should be added here???
 
             assert len(np.unique(labels_gic[labels_gic>=0])) == K
             print()

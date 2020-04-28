@@ -684,7 +684,6 @@ public:
 
         // Step 2. Merge all used edges
 
-        // TODO::::::::: double check!!!
         /*  The objective function - Information Criterion - to MAXIMISE is
             sum_{i in ds.parents()} -cluster_sizes[i] * (
                 n_features     * log cluster_sizes[i]
@@ -705,15 +704,14 @@ public:
                 if (i1 > i2) std::swap(i1, i2);
                 GENIECLUST_ASSERT(i1 != i2);
 
-                // singletons should be merged first (they have cluster_d_sums==0.0)
-                // TODO::::::::: double check!!!
+                // singletons should be merged first
+                // (we assume that they have cluster_d_sums==Inf
+                // (this was not addressed in Mueller's in his paper)
                 if (cluster_d_sums[i1] < 1e-12 || cluster_d_sums[i2] < 1e-12) {
                     max_which = j;
                     break;
                 }
 
-                // compute difference in obj
-                // TODO::::::::: double check!!!
                 double cur_obj = -(cluster_sizes[i1]+cluster_sizes[i2])*(
                     n_features*log(cluster_d_sums[i1]+cluster_d_sums[i2]+this->mst_d[i])
                   -(n_features-1.0)*log(cluster_sizes[i1]+cluster_sizes[i2])

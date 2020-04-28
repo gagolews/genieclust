@@ -37,10 +37,7 @@ import sklearn.neighbors
 import warnings
 import math
 
-# TODO: delme
-import time
 
-# TODO: ???
 try:
     import faiss
 except ImportError:
@@ -312,14 +309,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
 class Genie(GenieBase):
-    """The Genie+ Clustering Algorithm with optional smoothing and
+    """The Genie++ Clustering Algorithm with optional smoothing and
     noise point detection (for M>1)
 
-    Based on: Gagolewski M., Bartoszuk M., Cena A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
-
-    A new hierarchical clustering linkage criterion: the Genie algorithm
+    The Genie algorithm [1]
     links two clusters in such a way that an inequity measure
     (namely, the Gini index) of the cluster sizes doesn't go far beyond
     some threshold. The introduced method most often outperforms
@@ -328,28 +321,39 @@ class Genie(GenieBase):
     quality while - at the same time - it retains the speed of
     the single linkage algorithm.
 
-    This is a new implementation of the Genie algorithm that requires
+    This is a reimplementation (with extras) of the original Genie
+    algorithm as implemented in the R package `genie` that requires
     O(n_samples*sqrt(n_samples))-time given a minimum spanning tree
     of the pairwise distance graph.
+
     The clustering can also be computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric),
-    which is used in the definition of the HDBSCAN* algorithm, see
-    R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi:10.1145/2733381.
+    which is used in the definition of the HDBSCAN* algorithm, see [2].
 
-    The Genie correction together with the smoothing factor M>2 (note that
+    The Genie correction together with the smoothing factor M>1 (note that
     M==2 corresponds to the original distance) gives a robustified version of
-    the HDBSCAN algorithm that is able to yield a predefined number of clusters,
-    and hence  not dependent on the original DBSCAN's somehow magical
+    the HDBSCAN* algorithm that is able to yield a predefined number of
+    clusters. Hence it does not dependent on the DBSCAN's somehow magical
     `eps` parameter or the HDBSCAN Python package's `min_cluster_size` one.
 
     Note that the resulting partition tree (dendrogram) might violate
-    the ultrametricity property (merges might occur at nonmonotone levels).
-    Hence, distance threshold-based stopping criterion is not implemented.
+    the ultrametricity property (merges might occur at levels that
+    are not increasing w.r.t. a between-cluster distance).
+    Hence, a distance threshold-based stopping criterion is not implemented.
 
 
+    References
+    ==========
+
+    [1] Gagolewski M., Bartoszuk M., Cena A.,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
+    [2] Campello R., Moulavi D., Zimek A., Sander J.,
+    Hierarchical density estimates for data clustering, visualization,
+    and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
+    doi:10.1145/2733381.
 
 
     Parameters
@@ -458,8 +462,6 @@ class Genie(GenieBase):
         self.compute_full_tree = compute_full_tree
         self.postprocess = postprocess
 
-        #self.n_samples_   = 0
-        #self.n_features_  = 0
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
         self.labels_      = None
         self.children_    = None
@@ -587,14 +589,31 @@ class GIc(GenieBase):
     Parameters
     ----------
 
+    n_clusters : int >= 0, default=2
+        see `Genie`
+    gini_threshold : float in [0,1], default=0.3
+        The threshold for the Genie correction, i.e.,
+        the Gini index of the cluster size distribution.
+        Threshold of 1.0 disables the correction.
+        Low thresholds highly penalise the formation of small clusters.
+    M : int, default=1
+        see `Genie`
+    affinity : str, default="euclidean"
+        see `Genie`
+    compute_full_tree : bool, default=True
+        see `Genie`
+    postprocess : str, one of "boundary" (default), "none", "all"
+        see `Genie`
+    exact : bool, default=True
+        see `Genie`
+    cast_float32 : bool, default=True
+        see `Genie`
 
-    TODO
 
+    Attributes
+    ----------
 
-    Returns
-    -------
-
-    TODO
+    see `Genie`
     """
     def __init__(self,
             n_clusters=2,
@@ -615,8 +634,6 @@ class GIc(GenieBase):
         self.compute_full_tree = compute_full_tree
         self.postprocess = postprocess
 
-        #self.n_samples_   = 0
-        #self.n_features_  = 0
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
         self.labels_      = None
         self.children_    = None
@@ -636,14 +653,7 @@ class GIc(GenieBase):
         ----------
 
         X : ndarray, shape (n_samples, n_features) or (n_samples, n_samples)
-            A matrix defining n_samples in a vector space with n_features.
-            Hint: it might be a good idea to normalise the coordinates of the
-            input data points by calling
-            X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False) so that the dataset is centered at 0 and
-            has total variance of 1. This way the method becomes
-            translation and scale invariant.
-            However, if affinity="precomputed", then X is assumed to define
-            all pairwise distances between n_samples.
+            see `Genie.fit()`
         y : None
             Ignored.
 

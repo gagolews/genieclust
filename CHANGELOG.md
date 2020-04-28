@@ -4,16 +4,17 @@
 
 ## genieclust 0.XX (under development)
 
--   The full distance matrix is no longer required for computing an
-    exact MST -- by default, the distances are be computed on the fly;
-    this is     currently supported for `"euclidean"`,
-    `"cityblock"`  and `"cosine"` distances.
-    The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$)  --
-    `genieclust` can solve much larger problems now.
-
 -   TODO: see a list of resolved github issues....
 
--   TODO: GIc...
+-   The package now features the GIc algorithm proposed by A.Cena
+    in her 2018 PhD thesis.
+
+-   The full distance matrix is no longer required for computing an
+    exact MST -- by default, the distances are be computed on the fly;
+    this is currently supported for `"euclidean"`,
+    `"manhattan"`  and `"cosine"` distances.
+    The upgrade saves a lot of memory ($O(n)$ instead of $O(n^2)$)  --
+    `genieclust` can solve much larger problems now.
 
 -   TODO: `sklearn.neighbors.NearestNeighbors`,
     `faiss` or other search data structures are used to
