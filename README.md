@@ -57,26 +57,31 @@ Package Features
 Implemented algorithms include:
 
 -   Genie++ -- a reimplementation of the original Genie algorithm
-    (with a `scikit-learn`-like interface; Gagolewski et al., 2016)
+    (with a `scikit-learn`-compatible interface; Gagolewski et al., 2016)
 
 -   Genie+HDBSCAN\* -- our robustified retake on the HDBSCAN\*
-    (Campello et al., 2015) method -- detects noise points in data
+    (Campello et al., 2015) method that detects noise points in data
 
 -   Genie+Ic (GIc) -- Cena's (2018) algorithm to minimise the information
     theoretic criterion discussed by Mueller et al. (2012)
 
+See classes `genieclust.Genie` and `genieclust.GIc`.
+
 
 Other goodies:
 
--   Inequity measures (the Gini index, the Bonferroni index
-    etc.)
+-   `genieclust.inequity` -- Inequity measures (the Gini and Bonferroni
+    index)
 
--   Functions to compare partitions (the Rand, adjusted Rand,
-    Fowlkes-Mallows and adjusted Fowlkes-Mallows indexes)
+-   `genieclust.compare_partitions` -- Functions to compare partitions
+    (adjusted&unadjusted Rand,
+    adjusted&unadjusted Fowlkes-Mallows,
+    adjusted&normalised&unadjusted mutual information scores)
 
--   `DisjointSets` (union-find) data structure (with extensions)
+-   `genieclust.internal.DisjointSets`, `genieclust.internal.GiniDisjointSets` --
+    Union-find data structures (with extensions)
 
--   Useful plotting functions
+-   `genieclust.plots` -- Useful plotting functions
 
 
 
@@ -199,7 +204,8 @@ Adaptive hierarchical clustering algorithms based on data aggregation methods,
 PhD Thesis, Systems Research Institute, Polish Academy of Sciences, 2018.
 
 Campello R., Moulavi D., Zimek A., Sander J.,
-Hierarchical density estimates for data clustering, visualization, and outlier detection,
+Hierarchical density estimates for data clustering, visualization,
+and outlier detection,
 *ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
 doi:10.1145/2733381.
 
@@ -217,4 +223,9 @@ Prim R., Shortest connection networks and some generalizations,
 *Bell Syst. Tech. J.* **36**, 1957, pp. 1389–1401.
 
 Hubert L., Arabie P., Comparing Partitions,
-*Journal of Classification* **2**(1), 1985, pp. 193-218
+*Journal of Classification* **2**(1), 1985, pp. 193-218.
+
+Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+*Journal of Machine Learning Research* **11**, 2010, pp. 2837-2854.

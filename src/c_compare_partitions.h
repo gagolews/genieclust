@@ -1,9 +1,18 @@
 /*  Adjusted- and Nonadjusted Rand Score,
- *  Adjusted- and Nonadjusted Fowlkes-Mallows Score
- *  (for vectors of `small' ints)
+ *  Adjusted- and Nonadjusted Fowlkes-Mallows Score,
+ *  Adjusted-, Normalised and Nonadjusted Mutual Information Score
+ *  (for vectors of "small" ints)
  *
- *  See Hubert L., Arabie P., Comparing Partitions,
- *  Journal of Classification 2(1), 1985, 193-218
+ *  References
+ *  ==========
+ *
+ *  Hubert L., Arabie P., Comparing Partitions,
+ *  Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+ *
+ *  Vinh N.X., Epps J., Bailey J.,
+ *  Information theoretic measures for clusterings comparison:
+ *  Variants, properties, normalization and correction for chance,
+ *  Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
  *
  *
  *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
@@ -43,6 +52,7 @@
 #include "c_common.h"
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 
 /*! (t choose 2)
@@ -78,13 +88,16 @@ void Cminmax(const T* x, ssize_t n, T* xmin, T* xmax)
 
 
 /*!
- * Stores AR and FM indices as well as their normalised versions.
+ * Stores AR, FM and MI scores as well as their adjusted/normalised versions.
  */
 struct CComparePartitionsResult {
     double ar;
     double r;
     double fm;
     double afm;
+    double mi;
+    double nmi;
+    double ami;
 };
 
 
@@ -146,16 +159,24 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
 
 
 /*! Computes the adjusted and nonadjusted Rand- and FM scores
- *   based on a given confusion matrix.
+ *  based on a given confusion matrix.
  *
- *  See Hubert L., Arabie P., Comparing Partitions,
- *  Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4)
+ *  References
+ *  ==========
  *
- * @param C a c_contiguous confusion matrix of size xc*yc
- * @param xc number of rows in C
- * @param yc number of columns in C
+ *  Hubert L., Arabie P., Comparing Partitions,
+ *  Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
  *
- * @return The computed scores.
+ *  Vinh N.X., Epps J., Bailey J.,
+ *  Information theoretic measures for clusterings comparison:
+ *  Variants, properties, normalization and correction for chance,
+ *  Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+ *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C
+ *  @param yc number of columns in C
+ *
+ *  @return the computed scores
  */
 CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize_t yc)
 {
@@ -163,34 +184,73 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
-    double sum_comb_x = 0.0, sum_comb = 0.0, sum_comb_y = 0.0;
+    std::vector<double> sum_x(xc);
+    std::vector<double> sum_y(yc);
+
+    double sum_comb_x = 0.0, sum_comb_y = 0.0, sum_comb = 0.0;
+    double h_x = 0.0, h_y = 0.0, h_x_cond_y = 0.0, h_x_y = 0.0;
+
     for (ssize_t i=0; i<xc; ++i) {
         double t = 0.0;
         for (ssize_t j=0; j<yc; ++j) {
+            if (C[i*yc+j] > 0) h_x_y += C[i*yc+j]*log((double)C[i*yc+j]/(double)n);
             t += C[i*yc+j];
             sum_comb += Ccomb2(C[i*yc+j]);
         }
         sum_comb_x += Ccomb2(t);
+        sum_x[i] = t;
+        if (t > 0) h_y += t*log(t/(double)n);
     }
 
     for (ssize_t j=0; j<yc; ++j) {
         double t = 0.0;
         for (ssize_t i=0; i<xc; ++i) {
+            if (C[i*yc+j] > 0) h_x_cond_y += C[i*yc+j]*log(C[i*yc+j]/sum_x[i]);
             t += C[i*yc+j];
         }
         sum_comb_y += Ccomb2(t);
+        sum_y[j] = t;
+        if (t > 0) h_x += t*log(t/(double)n);
     }
+
+    h_x = -h_x/(double)n;
+    h_y = -h_y/(double)n;
+    h_x_cond_y = -h_x_cond_y/(double)n;
+    h_x_y = -h_x_y/(double)n;
 
     double prod_comb = (sum_comb_x*sum_comb_y)/n/(n-1.0)*2.0; // expected sum_comb,
                                         // see Eq.(2) in (Hubert, Arabie, 1985)
     double mean_comb = (sum_comb_x+sum_comb_y)*0.5;
     double e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y); // expected FM (variant)
 
+    double e_mi = 0.0;
+    for (ssize_t i=0; i<xc; ++i) {
+        double fac0 = lgamma(sum_x[i]+1.0)+lgamma(n-sum_x[i]+1.0)-lgamma(n+1.0);
+        for (ssize_t j=0; j<yc; ++j) {
+            double fac1 = log(n/sum_x[i]/sum_y[j]);
+            double fac2 = fac0+lgamma(sum_y[j]+1.0)+lgamma(n-sum_y[j]+1.0);
+
+            for (ssize_t nij=std::max(1.0, sum_x[i]+sum_y[j]-n);
+                        nij<=std::min(sum_x[i],sum_y[j]); nij++) {
+                double fac3 = fac2;
+                fac3 -= lgamma(nij+1.0);
+                fac3 -= lgamma(sum_x[i]-nij+1.0);
+                fac3 -= lgamma(sum_y[j]-nij+1.0);
+                fac3 -= lgamma(n-sum_x[i]-sum_y[j]+nij+1.0);
+                e_mi += nij*(fac1+log(nij))*exp(fac3);
+            }
+        }
+    }
+    e_mi = e_mi/(double)n;
+
     CComparePartitionsResult res;
     res.ar  = (sum_comb-prod_comb)/(mean_comb-prod_comb);
     res.r   = 1.0 + (2.0*sum_comb - (sum_comb_x+sum_comb_y))/n/(n-1.0)*2.0;
     res.fm  = sum_comb/sqrt(sum_comb_x*sum_comb_y);
     res.afm = (res.fm - e_fm)/(1.0 - e_fm); // Eq.(4) in (Hubert, Arabie, 1985)
+    res.mi = h_x-h_x_cond_y;
+    res.nmi = res.mi/(0.5*(h_x+h_y)); // NMI_sum in (Vinh et al., 2010)
+    res.ami = (res.mi - e_mi)/(0.5*(h_x+h_y) - e_mi); // AMI_sum in (Vinh et al., 2010)
 
     return res;
 }

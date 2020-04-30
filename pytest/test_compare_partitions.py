@@ -19,13 +19,30 @@ def test_compare_partitions():
             fm2 = sklearn.metrics.fowlkes_mallows_score(x, y)
             assert abs(fm1-fm2)<1e-9
 
+            mi1 = mi_score(x, y)
+            mi2 = sklearn.metrics.mutual_info_score(x, y)
+            assert abs(mi1-mi2)<1e-9
+
+            nmi1 = normalised_mi_score(x, y)
+            nmi2 = sklearn.metrics.normalized_mutual_info_score(x, y)
+            assert abs(nmi1-nmi2)<1e-9
+
+            ami1 = adjusted_mi_score(x, y)
+            ami2 = sklearn.metrics.adjusted_mutual_info_score(x, y)
+            assert abs(ami1-ami2)<1e-9
+
+
             y = x.copy()
             c = np.random.permutation(np.arange(k+1))
             for i in range(n): y[i] = c[y[i]]
-            assert adjusted_rand_score(x, y)>1.0-1e-9
-            assert rand_score(x, y)>1.0-1e-9
-            assert adjusted_fm_score(x, y)>1.0-1e-9
-            assert fm_score(x, y)>1.0-1e-9
+
+            assert 1.0+1e-9>adjusted_rand_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>rand_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>adjusted_fm_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>fm_score(x, y)>1.0-1e-9
+            assert          mi_score(x, y)>-1e-9
+            assert 1.0+1e-9>normalised_mi_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>adjusted_mi_score(x, y)>1.0-1e-9
 
             # TODO: more tests...
 

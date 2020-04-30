@@ -8,11 +8,20 @@
 
 """
 Adjusted- and Nonadjusted Rand Score,
-Adjusted- and Nonadjusted Fowlkes-Mallows Score
-(for vectors of `small' ints)
+Adjusted- and Nonadjusted Fowlkes-Mallows Score,
+Adjusted-, Normalised and Nonadjusted Mutual Information Score
+(for vectors of "small" ints)
 
-See Hubert L., Arabie P., Comparing Partitions,
-    Journal of Classification 2(1), 1985, 193-218
+References
+==========
+
+Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+
+Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
@@ -147,9 +156,16 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:
     Computes the adjusted and nonadjusted Rand- and FM scores
     based on a given confusion matrix.
 
-    See Hubert L., Arabie P., Comparing Partitions,
-       Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4)
+    References
+    ==========
 
+    Hubert L., Arabie P., Comparing Partitions,
+    Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+
+    Vinh N.X., Epps J., Bailey J.,
+    Information theoretic measures for clusterings comparison:
+    Variants, properties, normalization and correction for chance,
+    Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
     Parameters:
     ----------
@@ -161,9 +177,11 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:
     -------
 
     scores : dict
-        a dictionary with keys 'ar', 'r', 'afm', 'fm', giving
-        the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
-        Fowlkes-Mallows scores, respectively.
+        a dictionary with keys 'ar', 'r', 'afm', 'fm', 'mi', 'nmi', 'ami',
+        giving the adjusted Rand, Rand,
+        adjusted Fowlkes-Mallows, Fowlkes-Mallows
+        mutual information, normalised mutual information (NMI_sum)
+        and adjusted mutual information (AMI_sum) scores, respectively.
     """
     cdef ssize_t xc = C.shape[0]
     cdef ssize_t yc = C.shape[1]
@@ -186,9 +204,7 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(x, y):
     -------
 
     scores : dict
-        a dictionary with keys 'ar', 'r', 'afm', 'fm', giving
-        the adjusted Rand, Rand, adjusted Fowlkes-Mallows, and
-        Fowlkes-Mallows scores, respectively.
+        see compare_partitions().
     """
     return compare_partitions(confusion_matrix(x, y))
 
@@ -293,3 +309,86 @@ cpdef double fm_score(x, y):
     """
 
     return compare_partitions(confusion_matrix(x, y)).fm
+
+
+cpdef double mi_score(x, y):
+    """
+    Mutual information score
+
+    See: Vinh N.X., Epps J., Bailey J.,
+    Information theoretic measures for clusterings comparison:
+    Variants, properties, normalization and correction for chance,
+    Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+    -------
+
+    score : double
+        partition similarity measure
+    """
+
+    return compare_partitions(confusion_matrix(x, y)).mi
+
+
+
+cpdef double normalised_mi_score(x, y):
+    """
+    Normalised mutual information score (NMI_sum)
+
+    See: Vinh N.X., Epps J., Bailey J.,
+    Information theoretic measures for clusterings comparison:
+    Variants, properties, normalization and correction for chance,
+    Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+    -------
+
+    score : double
+        partition similarity measure
+    """
+
+    return compare_partitions(confusion_matrix(x, y)).nmi
+
+
+cpdef double adjusted_mi_score(x, y):
+    """
+    Adjusted mutual information score (AMI_sum)
+
+    See: Vinh N.X., Epps J., Bailey J.,
+    Information theoretic measures for clusterings comparison:
+    Variants, properties, normalization and correction for chance,
+    Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two k-partitions of the same set
+
+
+    Returns:
+    -------
+
+    score : double
+        partition similarity measure
+    """
+
+    return compare_partitions(confusion_matrix(x, y)).ami
+

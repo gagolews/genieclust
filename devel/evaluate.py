@@ -23,16 +23,11 @@ plt.style.use("seaborn-whitegrid")
 
 
 def get_metrics(labels_true, labels_pred):
-
     # disregard noise points from counting
     # noise cluster == 0
     labels_pred = labels_pred[labels_true>0]
     labels_true = labels_true[labels_true>0]
-
-    return {**genieclust.compare_partitions.compare_partitions2(labels_true, labels_pred),
-            "nmi": sklearn.metrics.normalized_mutual_info_score(labels_true, labels_pred),
-            "ami": sklearn.metrics.adjusted_mutual_info_score(labels_true, labels_pred)
-        }
+    return {**genieclust.compare_partitions.compare_partitions2(labels_true, labels_pred)}
 
 
 def benchmark(dataset, benchmarks_path, preprocess="none"):
@@ -42,14 +37,16 @@ def benchmark(dataset, benchmarks_path, preprocess="none"):
     np.random.seed(123)
     X = np.loadtxt(os.path.join(benchmarks_path, dataset+".data.gz"), ndmin=2)
 
-    if X.shape[0]>=10_000:
-        return [] # TODO:        just testing now...............................................
+    #if X.shape[0]>=10_000:
+    #    return [] # TODO:        just testing now...............................................
+
+    X = X[:, X.var(axis=0) > 0] # remove all columns of 0 variance
 
     if preprocess == "standardise":
         X = (X-X.mean(axis=0))/X.std(axis=0, ddof=1)
     elif preprocess == "standardise_robust":
         X = (X-np.percentile(X, 50, axis=0))/(
-            np.percentile(X, 75, axis=0)-np.percentile(X, 25, axis=0)
+            np.mean((X-np.percentile(X, 50, axis=0)), axis=0)
         )
     else:
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1) # scale all axes proportionally
@@ -73,8 +70,8 @@ def benchmark(dataset, benchmarks_path, preprocess="none"):
 
     ret = []
 
-    genie = genieclust.Genie()
-    gic = genieclust.GIc()
+    genie = genieclust.Genie(compute_full_tree=False)
+    gic = genieclust.GIc(compute_full_tree=False)
     for i in range(len(label_names)):
         #print("#### %s (true_k=%2d, noise=%5d, true_g=%.3f)" % (
         #            label_names[i], true_K[i], noise_counts[i], true_G[i]))
@@ -96,14 +93,16 @@ def benchmark(dataset, benchmarks_path, preprocess="none"):
                 genie.set_params(n_clusters=true_K[i],
                     gini_threshold=g, M=M, postprocess="all")
                 labels_pred = genie.fit_predict(X)
-                metrics = genieclust.compare_partitions.compare_partitions2(labels[i], labels_pred)
                 ret_cur = {
                     **params,
                     "method": "Genie_%.1f"%(g,),
                     "M": M,
                     **get_metrics(labels[i], labels_pred)
                 }
+                print(".", end="")
                 ret.append(ret_cur)
+
+            print(" ", end="")
 
             for add in [5, 1, 0]:
                 for g in [np.r_[0.3, 0.5, 0.7], np.linspace(0.0, 1.0, 11), []]:
@@ -112,29 +111,30 @@ def benchmark(dataset, benchmarks_path, preprocess="none"):
                     gic.set_params(n_clusters=true_K[i],
                         gini_thresholds=g, add_clusters=add, M=M, postprocess="all")
                     labels_pred = gic.fit_predict(X)
-                    metrics = genieclust.compare_partitions.compare_partitions2(
-                        labels[i], labels_pred)
                     ret_cur = {
                         **params,
                         "method": "GIc_A%d_%d"%(add,len(g)),
                         "M": M,
                         **get_metrics(labels[i], labels_pred)
                     }
+                    print(".", end="")
                     ret.append(ret_cur)
+
+            print("")
 
     return ret
 
 res = []
 
-folders = ["sipu", "wut", "other", "fcps", "graves"]
+folders = ["sipu"]#["sipu", "wut", "other", "fcps", "graves", "mnist", "uci"]
 for folder in folders:
     fnames = glob.glob(os.path.join(benchmarks_path, folder, "*.data.gz"))
     datasets = natsorted([re.search(r"([^/]*/[^/]*)\.data\.gz", name)[1] for name in fnames])
 
     for dataset in datasets:
         res += benchmark(dataset, benchmarks_path, preprocess="none")
-        res += benchmark(dataset, benchmarks_path, preprocess="standardise")
-        res += benchmark(dataset, benchmarks_path, preprocess="standardise_robust")
+        #res += benchmark(dataset, benchmarks_path, preprocess="standardise")
+        #res += benchmark(dataset, benchmarks_path, preprocess="standardise_robust")
 
 
 res = pd.DataFrame(res)
@@ -192,5 +192,3 @@ res_summary_ar2 = res_max2.groupby(["method", "preprocess_M"]).ar.\
 sns.heatmap(res_summary_ar2, annot=True, fmt=".2f", vmin=0.5, vmax=1.0)
 plt.title("Median ARI")
 plt.show()
-
-

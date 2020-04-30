@@ -47,6 +47,9 @@ cdef extern from "../src/c_compare_partitions.h":
         double r
         double fm
         double afm
+        double mi
+        double nmi
+        double ami
 
     void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
 
