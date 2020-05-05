@@ -2,6 +2,30 @@ import numpy as np
 import sklearn.metrics
 from genieclust.compare_partitions import *
 
+# compare our C++ implementation (that we can make available in R, Julia etc.!)
+# with the sklearn one (written in Python)
+
+def compare_with_sklearn(x, y):
+    ari1 = adjusted_rand_score(x, y)
+    ari2 = sklearn.metrics.adjusted_rand_score(x, y)
+    assert abs(ari1-ari2)<1e-9
+
+    fm1 = fm_score(x, y)
+    fm2 = sklearn.metrics.fowlkes_mallows_score(x, y)
+    assert abs(fm1-fm2)<1e-9
+
+    mi1 = mi_score(x, y)
+    mi2 = sklearn.metrics.mutual_info_score(x, y)
+    assert abs(mi1-mi2)<1e-9
+
+    nmi1 = normalized_mi_score(x, y)
+    nmi2 = sklearn.metrics.normalized_mutual_info_score(x, y)
+    assert abs(nmi1-nmi2)<1e-9
+
+    ami1 = adjusted_mi_score(x, y)
+    ami2 = sklearn.metrics.adjusted_mutual_info_score(x, y)
+    assert abs(ami1-ami2)<1e-9
+
 
 # np.random.seed(123)
 def test_compare_partitions():
@@ -10,27 +34,15 @@ def test_compare_partitions():
 
             x = np.random.choice(np.arange(k), n)
             y = np.random.choice(np.arange(k), n)
+            compare_with_sklearn(x, y)
 
-            ari1 = adjusted_rand_score(x, y)
-            ari2 = sklearn.metrics.adjusted_rand_score(x, y)
-            assert abs(ari1-ari2)<1e-9
+            y = x.copy()
+            y[:5] = 1
+            compare_with_sklearn(x, y)
 
-            fm1 = fm_score(x, y)
-            fm2 = sklearn.metrics.fowlkes_mallows_score(x, y)
-            assert abs(fm1-fm2)<1e-9
-
-            mi1 = mi_score(x, y)
-            mi2 = sklearn.metrics.mutual_info_score(x, y)
-            assert abs(mi1-mi2)<1e-9
-
-            nmi1 = normalised_mi_score(x, y)
-            nmi2 = sklearn.metrics.normalized_mutual_info_score(x, y)
-            assert abs(nmi1-nmi2)<1e-9
-
-            ami1 = adjusted_mi_score(x, y)
-            ami2 = sklearn.metrics.adjusted_mutual_info_score(x, y)
-            assert abs(ami1-ami2)<1e-9
-
+            y = x.copy()
+            y[::2] = 1
+            compare_with_sklearn(x, y)
 
             y = x.copy()
             c = np.random.permutation(np.arange(k+1))

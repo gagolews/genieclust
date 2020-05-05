@@ -18,7 +18,7 @@ pd.set_option("min_rows", 20)
 plt.style.use('seaborn-whitegrid')
 #plt.rcParams["figure.figsize"] = (8,4)
 
-X, labels_true, dataset = load_dataset("wut/smile", benchmarks_path)
+X, labels_true, dataset = load_dataset("sipu/aggregation", benchmarks_path)
 X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1))
 X = X.astype(np.float32, order="C", copy=False)
 labels_true = [l-1 for l in labels_true] # noise class==-1
@@ -31,6 +31,7 @@ g = genieclust.Genie(n_clusters=n_clusters,
             gini_threshold=0.3,
             M=1)
 labels_g = g.fit_predict(X)
+print(genieclust.compare_partitions.compare_partitions2(labels_true, labels_g))
 print(labels_g)
 
 gic = genieclust.GIc(n_clusters=n_clusters,

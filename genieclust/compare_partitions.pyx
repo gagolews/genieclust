@@ -339,7 +339,7 @@ cpdef double mi_score(x, y):
 
 
 
-cpdef double normalised_mi_score(x, y):
+cpdef double normalized_mi_score(x, y):
     """
     Normalised mutual information score (NMI_sum)
 
