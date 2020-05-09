@@ -46,13 +46,11 @@
 
 
 
-
-
-    /*! Generate cluster hierarchy compatible with R's hclust().
-     *
-     * @param merge [out] fortran_contiguous??? array of size (n-1)*n
-     * @param order [out] array of length n
-     */
+/*! Generate cluster hierarchy compatible with R's hclust().
+    *
+    * @param merge [out] fortran_contiguous??? array of size (n-1)*n
+    * @param order [out] array of length n
+    */
 //     void HClustResult::generate_hierarchy_r(ssize_t* merge, ssize_t* order)
 //     {
 //         STOPIFNOT(curiter == n-1);
@@ -330,26 +328,26 @@ public:
             throw std::runtime_error("Apply the clustering procedure first.");
 
         CGiniDisjointSets ds(this->get_max_n_clusters());
-        ssize_t it=0;
-        for (; it<this->get_max_n_clusters() - n_clusters - 1; ++it) {
-            ssize_t j = (this->results.links[it]);
-            ssize_t i1 = this->mst_i[2*j+0];
-            ssize_t i2 = this->mst_i[2*j+1];
-            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
-            ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
-        }
         // you can do up to this->get_max_n_clusters() - 1 merges
-        for (; it<this->get_max_n_clusters() - 1; ++it) {
+        ssize_t cur_cluster = n_clusters;
+        if (this->get_max_n_clusters() == n_clusters) {
+            cur_cluster--;
+            GENIECLUST_ASSERT(cur_cluster >= 0)
+            this->get_labels(&ds, &res[cur_cluster * this->n]);
+        }
+        for (ssize_t it=0; it<this->get_max_n_clusters() - 1; ++it) {
             ssize_t j = (this->results.links[it]);
             ssize_t i1 = this->mst_i[2*j+0];
             ssize_t i2 = this->mst_i[2*j+1];
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
             ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
-            n_clusters--;
-            GENIECLUST_ASSERT(n_clusters >= 0)
-            this->get_labels(&ds, &res[n_clusters * this->n]);
+            if (it >= this->get_max_n_clusters() - n_clusters - 1) {
+                cur_cluster--;
+                GENIECLUST_ASSERT(cur_cluster >= 0)
+                this->get_labels(&ds, &res[cur_cluster * this->n]);
+            }
         }
-        GENIECLUST_ASSERT(n_clusters == 0)
+        GENIECLUST_ASSERT(cur_cluster == 0)
     }
 
 

@@ -1086,10 +1086,7 @@ cpdef dict genie_from_mst(
     iters_ = g.get_links(&links_[0])
 
     if n_clusters >= 1:
-        if g.get_max_n_clusters() < n_clusters:
-            n_clusters_ = g.get_max_n_clusters()
-        else:
-            n_clusters_ = n_clusters
+        n_clusters_ = min(g.get_max_n_clusters(), n_clusters)
 
         if compute_all_cuts:
             tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)
@@ -1242,10 +1239,7 @@ cpdef dict gic_from_mst(
     iters_ = g.get_links(&links_[0])
 
     if n_clusters >= 1:
-        if g.get_max_n_clusters() < n_clusters:
-            n_clusters_ = g.get_max_n_clusters()
-        else:
-            n_clusters_ = n_clusters
+        n_clusters_ = min(g.get_max_n_clusters(), n_clusters)
 
         if compute_all_cuts:
             tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)

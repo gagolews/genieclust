@@ -84,7 +84,7 @@ def test_gic():
 
 
 def test_gic_precomputed():
-    for dataset in ["Aggregation", "s1"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+    for dataset in ["x1", "Aggregation", "s1"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
             n = 10_000
@@ -123,17 +123,17 @@ def test_gic_precomputed():
 
 
         # test compute_all_cuts
-        K = 10
+        K = 20
         g = np.arange(1, 8)/10
         res1 = genieclust.GIc(K, g, exact=True, affinity="precomputed",
-            compute_full_tree=True, compute_all_cuts=True)
+            compute_full_tree=True, compute_all_cuts=True, M=20)
         res1.n_features_ = X.shape[1]
         res1 = res1.fit_predict(D)
         assert res1.shape[1] == X.shape[0]
-        assert res1.shape[0] == K+1
-        for k in range(1, K+1):
+        # assert res1.shape[0] == K+1   #  that's not necessarily true!
+        for k in range(1, res1.shape[0]):
             res2 = genieclust.GIc(k, g, add_clusters=K-k,
-                exact=True, affinity="precomputed",
+                exact=True, M=20, affinity="precomputed",
                 compute_full_tree=False)
             res2.n_features_ = X.shape[1]
             res2 = res2.fit_predict(D)

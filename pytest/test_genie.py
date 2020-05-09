@@ -76,7 +76,7 @@ def test_genie(metric='euclidean'):
 
 
 def test_genie_precomputed():
-    for dataset in ["s1", "Aggregation"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+    for dataset in ["x1", "s1", "Aggregation"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
             n = 10_000
@@ -89,8 +89,9 @@ def test_genie_precomputed():
         k = len(np.unique(labels[labels>=0]))
 
         # center X + scale (NOT: standardize!)
+        X = X+np.random.normal(0, 0.0001, X.shape)
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
-        X += np.random.normal(0, 0.0001, X.shape)
+        X = X.astype("float32")
 
         D = scipy.spatial.distance.pdist(X)
         D = scipy.spatial.distance.squareform(D)
@@ -113,23 +114,23 @@ def test_genie_precomputed():
 
 
         # test compute_all_cuts
-        K = 10
-        g = 0.3
-        res1 = Genie(K, g, exact=True, affinity="precomputed",
-            compute_full_tree=True, compute_all_cuts=True).fit_predict(D)
+        K = 16
+        g = 0.1
+        res1 = Genie(K, g, exact=True, affinity="euclidean",
+            compute_full_tree=True, compute_all_cuts=True, M=25).fit_predict(X)
         assert res1.shape[1] == X.shape[0]
-        assert res1.shape[0] == K+1
-        for k in range(1, K+1):
+        # assert res1.shape[0] == K+1   #  that's not necessarily true!
+        for k in range(1, res1.shape[0]):
             res2 = Genie(k, g, exact=True, affinity="euclidean",
-            compute_full_tree=False).fit_predict(X)
+                compute_full_tree=False, M=25).fit_predict(X)
             assert np.all(res2 == res1[k,:])
 
 
 
 if __name__ == "__main__":
+    print("**Precomputed**")
+    test_genie_precomputed()
     print("**Euclidean**")
     test_genie('euclidean')
     print("**Manhattan**")
     test_genie('manhattan')
-    print("**Precomputed**")
-    test_genie_precomputed()
