@@ -13,7 +13,13 @@ genie = importr("genie")
 import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
-path = "benchmark_data"
+
+
+import os
+if os.path.exists("benchmark_data"):
+    path = "benchmark_data"
+else:
+    path = "../benchmark_data"
 
 
 

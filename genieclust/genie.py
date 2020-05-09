@@ -1,4 +1,4 @@
-"""The Genie+ Clustering Algorithm
+"""The Genie++ Clustering Algorithm
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -48,7 +48,7 @@ except ImportError:
 
 
 class GenieBase(BaseEstimator, ClusterMixin):
-    """Base class for Genie and GIc Clustering Algorithms"""
+    """Base class for Genie and GIc"""
 
     def __init__(self,
             M,
@@ -62,14 +62,50 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.cast_float32 = cast_float32
         self.exact = exact
 
-        self.n_samples_   = 0
-        self.n_features_  = 0
+        self.n_samples_   = None
+        self.n_features_  = None
         self._mst_dist_   = None
         self._mst_ind_    = None
         self._nn_dist_    = None
         self._nn_ind_     = None
         self._d_core_     = None
         self._last_state_ = None
+
+
+    def _postprocess(self, M, postprocess):
+        """(internal)
+        updates self.labels_ and self.is_noise_
+        """
+        reshaped = False
+        if self.labels_.ndim == 1:
+            reshaped = True
+            # promote it to a matrix with 1 row
+            self.labels_.shape = (1, self.labels_.shape[0])
+            start_partition = 0
+        else:
+            # duplicate the 1st row (create the "0"-partition that will
+            # not be postprocessed):
+            self.labels_ = np.vstack((self.labels_[0,:], self.labels_))
+            start_partition = 1 # do not postprocess the "0"-partition
+
+        self.is_noise_    = (self.labels_[0,:] < 0)
+
+        # postprocess labels, if requested to do so
+        if M == 1 or postprocess == "none":
+            pass
+        elif postprocess == "boundary":
+            for i in range(start_partition, self.labels_.shape[0]):
+                self.labels_[i,:] = internal.merge_boundary_points(
+                    self._mst_ind_, self.labels_[i,:],
+                    self._nn_ind_, M)
+        elif postprocess == "all":
+            for i in range(start_partition, self.labels_.shape[0]):
+                self.labels_[i,:] = internal.merge_noise_points(
+                    self._mst_ind_, self.labels_[i,:])
+
+        if reshaped:
+            self.labels_.shape = (self.labels_.shape[1],)
+
 
 
     def fit(self, X, y=None):
@@ -84,7 +120,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
-            n_features = None
+            n_features = self.n_features_ # the user must set it manually
             if X.shape[0] != X.shape[1]:
                 raise ValueError("X must be a square matrix that gives all the pairwise distances")
         else:
@@ -362,8 +398,9 @@ class Genie(GenieBase):
     n_clusters : int >= 0, default=2
         Number of clusters to detect. Note that depending on the dataset
         and approximations used (see parameter `exact`), the actual
-        partition size can be smaller.
-        n_clusters==1 can act as a noise point/outlier detector (if M>1).
+        partition cardinality can be smaller.
+        n_clusters==1 can act as a noise point/outlier detector (if M>1
+        and postprocess is not "all").
         n_clusters==0 computes the whole dendrogram but doesn't generate
         any particular cuts.
     gini_threshold : float in [0,1], default=0.3
@@ -381,7 +418,11 @@ class Genie(GenieBase):
     compute_full_tree : bool, default=True
         If True, only a partial hierarchy is determined so that
         at most n_clusters are generated. Saves some time if you think you know
-        how many clusters to expect, but do you?
+        how many clusters are there, but are you *really* sure about that?
+    compute_all_cuts : bool, default=False
+        If True, n_clusters-partition and all the more coarse-grained
+        ones will be determined; in such a case, the labels_ attribute
+        will be a matrix
     postprocess : str, one of "boundary" (default), "none", "all"
         In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points. To force a classical
@@ -397,7 +438,7 @@ class Genie(GenieBase):
         which gives the time complexity of O(n_samples*n_samples*n_features).
     cast_float32 : bool, default=True
         Allow casting input data to a float32 dense matrix
-        (for efficiency reasons == decreases the run-time ~2x times
+        (for efficiency reasons; decreases the run-time ~2x times
         at a cost of greater memory usage).
         TODO: Note that some nearest neighbour search
         methods require float32 data anyway.
@@ -409,11 +450,22 @@ class Genie(GenieBase):
     Attributes
     ----------
 
-    labels_ : ndarray, shape (n_samples,) or None
-        Detected cluster labels of each point:
-        an integer vector c with c[i] denoting the cluster id
-        (in {0, ..., n_clusters-1}) of the i-th object.
-        If M>1, noise points are labelled -1.
+    labels_ : ndarray, shape (n_samples,) or (<=n_clusters+1, n_samples), or None
+        If n_clusters==0, no labels_ are generated (None).
+        If compute_all_cuts==True (the default), these are the detected
+        cluster labels of each point: an integer vector with labels_[i]
+        denoting the cluster id (in {0, ..., n_clusters-1}) of the i-th object.
+        If M>1, noise points are labelled -1 (unless taken care of in the
+        postprocessing stage).
+        Otherwise, i.e., if compute_all_cuts==False,
+        all partitions of cardinality down to n_clusters (if n_samples
+        and the number of noise points allows) are determined.
+        In such a case, labels_[j,i] denotes the cluster id of the i-th
+        point in a j-partition.
+        We assume that a 0- and 1- partition only distinguishes between
+        noise- and non-noise points, however, no postprocessing
+        is conducted on the 0-partition (there might be points with
+        labels -1 even if postprocess=="all").
     n_clusters_ : int
         The number of clusters detected by the algorithm.
         If 0, then labels_ are not set.
@@ -426,7 +478,7 @@ class Genie(GenieBase):
     is_noise_ : ndarray, shape (n_samples,) or None
         is_noise_[i] is True iff the i-th point is a noise one;
         For M=1, all points are no-noise ones.
-        Points are marked as noise even if postprocess="all".
+        Points are marked as noise even if postprocess=="all".
         Note that boundary points are also marked as noise points.
     children_ : ndarray, shape (n_samples-1, 2)
         The i-th row provides the information on the clusters merged at
@@ -436,18 +488,18 @@ class Genie(GenieBase):
         scipy.cluster.hierarchy.linkage. Together with distances_ and
         counts_, this forms the linkage matrix that can be used for
         plotting the dendrogram.
-        Only available if `compute_full_tree` is True.
+        Only available if compute_full_tree==True.
     distances_ : ndarray, shape (n_samples-1,)
         Distance between the two clusters merged at the i-th iteration.
         Note Genie does not guarantee that that distances are
         ordered increasingly (do not panic, there are some other hierarchical
         clustering linkages that also violate the ultrametricity property).
         See the description of Z[i,2] in scipy.cluster.hierarchy.linkage.
-        Only available if `compute_full_tree` is True.
+        Only available if compute_full_tree==True.
     counts_ : ndarray, shape (n_samples-1,)
         Number of elements in a cluster created at the i-th iteration.
         See the description of Z[i,3] in scipy.cluster.hierarchy.linkage.
-        Only available if `compute_full_tree` is True.
+        Only available if compute_full_tree==True.
     """
 
     def __init__(self,
@@ -456,6 +508,7 @@ class Genie(GenieBase):
             M=1,
             affinity="euclidean",
             compute_full_tree=True,
+            compute_all_cuts=False,
             postprocess="boundary",
             exact=True,
             cast_float32=True
@@ -465,6 +518,7 @@ class Genie(GenieBase):
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
         self.compute_full_tree = compute_full_tree
+        self.compute_all_cuts = compute_all_cuts
         self.postprocess = postprocess
 
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
@@ -521,32 +575,24 @@ class Genie(GenieBase):
             raise ValueError("postprocess should be one of %r"%_postprocess_options)
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
+        cur_state["compute_all_cuts"] = bool(self.compute_all_cuts)
 
 
-        # apply the Genie+ algorithm (the fast part):
+        # apply the Genie++ algorithm (the fast part):
         res = internal.genie_from_mst(self._mst_dist_, self._mst_ind_,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"]>1),
-            compute_full_tree=cur_state["compute_full_tree"])
+            compute_full_tree=cur_state["compute_full_tree"],
+            compute_all_cuts=cur_state["compute_all_cuts"])
 
         self.n_clusters_ = res["n_clusters"]
         self.labels_     = res["labels"]
         self._links_     = res["links"]
         self._iters_     = res["iters"]
 
-
         if self.labels_ is not None:
-            self.is_noise_    = (self.labels_ < 0)
-            # postprocess labels, if requested to do so
-            if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
-                pass
-            elif cur_state["postprocess"] == "boundary":
-                self.labels_ = internal.merge_boundary_points(self._mst_ind_,
-                    self.labels_, self._nn_ind_, cur_state["M"])
-            elif cur_state["postprocess"] == "all":
-                self.labels_ = internal.merge_noise_points(self._mst_ind_,
-                    self.labels_)
+            self._postprocess(cur_state["M"], cur_state["postprocess"])
 
         if cur_state["compute_full_tree"]:
             Z = internal.get_linkage_matrix(self._links_,
@@ -598,17 +644,27 @@ class GIc(GenieBase):
 
     n_clusters : int >= 0, default=2
         see `Genie`
-    gini_threshold : float in [0,1], default=0.3
-        The threshold for the Genie correction, i.e.,
-        the Gini index of the cluster size distribution.
-        Threshold of 1.0 disables the correction.
-        Low thresholds highly penalise the formation of small clusters.
+    gini_thresholds : float in [0,1], default=[0.1, 0.3, 0.5, 0.7]
+        The GIc algorithm optimises the information criterion
+        in an agglomerative way, starting from the intersection
+        of the clusterings returned by
+        Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i]),
+        for all i=0,...,len(gini_thresholds)-1.
+    add_clusters : int, default=0
+        Number of additional clusters to work with internally.
     M : int, default=1
         see `Genie`
     affinity : str, default="euclidean"
         see `Genie`
     compute_full_tree : bool, default=True
         see `Genie`
+    compute_all_cuts : bool, default=False
+        see `Genie`
+        Note that for GIc if compute_all_cuts==True,
+        then the i-th cut in the hierarchy behaves as if
+        add_clusters=n_clusters-i. In other words, the returned cuts
+        will not be the same as these obtained by calling
+        GIc numerous times, each time with different n_clusters requested.
     postprocess : str, one of "boundary" (default), "none", "all"
         see `Genie`
     exact : bool, default=True
@@ -629,6 +685,7 @@ class GIc(GenieBase):
             M=1,
             affinity="euclidean",
             compute_full_tree=True,
+            compute_all_cuts=False,
             postprocess="boundary",
             exact=True,
             cast_float32=True
@@ -639,6 +696,7 @@ class GIc(GenieBase):
         self.add_clusters = add_clusters
         self.gini_thresholds = gini_thresholds
         self.compute_full_tree = compute_full_tree
+        self.compute_all_cuts = compute_all_cuts
         self.postprocess = postprocess
 
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
@@ -690,34 +748,29 @@ class GIc(GenieBase):
             raise ValueError("postprocess should be one of %r"%_postprocess_options)
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
+        cur_state["compute_all_cuts"] = bool(self.compute_all_cuts)
 
+        if self.n_features_ is None:
+            raise ValueError("The n_features_ attribute must be set manually.")
 
-        # apply the Genie+ algorithm (the fast part):
+        # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(self._mst_dist_, self._mst_ind_,
             n_features=self.n_features_,
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
             noise_leaves=(cur_state["M"]>1),
-            compute_full_tree=cur_state["compute_full_tree"])
+            compute_full_tree=cur_state["compute_full_tree"],
+            compute_all_cuts=cur_state["compute_all_cuts"])
 
         self.n_clusters_ = res["n_clusters"]
         self.labels_     = res["labels"]
         self._links_     = res["links"]
         self._iters_     = res["iters"]
 
-
         if self.labels_ is not None:
-            self.is_noise_    = (self.labels_ < 0)
-            # postprocess labels, if requested to do so
-            if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
-                pass
-            elif cur_state["postprocess"] == "boundary":
-                self.labels_ = internal.merge_boundary_points(self._mst_ind_,
-                    self.labels_, self._nn_ind_, cur_state["M"])
-            elif cur_state["postprocess"] == "all":
-                self.labels_ = internal.merge_noise_points(self._mst_ind_,
-                    self.labels_)
+            self._postprocess(cur_state["M"], cur_state["postprocess"])
+
 
         if cur_state["compute_full_tree"]:
             Z = internal.get_linkage_matrix(self._links_,

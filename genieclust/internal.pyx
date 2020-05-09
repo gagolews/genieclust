@@ -983,7 +983,8 @@ cpdef dict genie_from_mst(
         ssize_t n_clusters=1,
         double gini_threshold=0.3,
         bint noise_leaves=False,
-        bint compute_full_tree=True):
+        bint compute_full_tree=True,
+        bint compute_all_cuts=False):
     """Compute a k-partition based on a precomputed MST.
 
     The Genie+ Clustering Algorithm (with extensions)
@@ -1030,17 +1031,24 @@ cpdef dict genie_from_mst(
         Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the whole merge sequence or stop early?
+    compute_all_cuts : bool
+        Compute the n_clusters and all the more coarse-grained ones?
 
 
     Returns
     -------
 
     res : dict, with the following elements:
-        labels : ndarray, shape (n,) or None
-            Predicted labels, representing an n_clusters-partition of X.
+        labels : ndarray, shape (n,) or (n_clusters, n) or None
+            Is None if n_clusters==0.
+
+            If compute_all_cuts==False, this gives the predicted labels,
+            representing an n_clusters-partition of X.
             labels[i] gives the cluster id of the i-th input point.
             If noise_leaves==True, then label -1 denotes a noise point.
-            Is None if n_clusters==0.
+
+            If compute_all_cuts==True, then
+            labels[i,:] gives the (i+1)-partition, i=0,...,n_cluster-1.
 
         links : ndarray, shape (n-1,)
             links[i] gives the MST edge merged at the i-th iteration
@@ -1063,21 +1071,37 @@ cpdef dict genie_from_mst(
         raise ValueError("incorrect gini_threshold")
 
 
+    cdef np.ndarray[ssize_t] tmp_labels_1
+    cdef np.ndarray[ssize_t,ndim=2] tmp_labels_2
 
     cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t] labels_ # on request, see below
     cdef ssize_t n_clusters_ = 0, iters_
+    labels_ = None # on request, see below
 
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
 
     g.apply_genie(1 if compute_full_tree else n_clusters, gini_threshold)
-    iters_ = g.get_links(&links_[0])
-    if n_clusters >= 1:
-        labels_     = np.empty(n, dtype=np.intp)
-        n_clusters_ = g.get_labels(n_clusters, &labels_[0])
 
-    return dict(labels=None if n_clusters == 0 else labels_,
+    iters_ = g.get_links(&links_[0])
+
+    if n_clusters >= 1:
+        if g.get_max_n_clusters() < n_clusters:
+            n_clusters_ = g.get_max_n_clusters()
+        else:
+            n_clusters_ = n_clusters
+
+        if compute_all_cuts:
+            tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)
+            g.get_labels_matrix(n_clusters_, &tmp_labels_2[0,0])
+            labels_ = tmp_labels_2
+        else:
+            # just one cut:
+            tmp_labels_1 = np.empty(n, dtype=np.intp)
+            g.get_labels(n_clusters_, &tmp_labels_1[0])
+            labels_ = tmp_labels_1
+
+    return dict(labels=labels_,
                 n_clusters=n_clusters_,
                 links=links_,
                 iters=iters_)
@@ -1100,7 +1124,8 @@ cpdef dict gic_from_mst(
         ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
         bint noise_leaves=False,
-        bint compute_full_tree=True):
+        bint compute_full_tree=True,
+        bint compute_all_cuts=False):
     """GIc (Genie+Information Criterion) Information-Theoretic
     Hierarchical Clustering Algorithm
 
@@ -1164,6 +1189,8 @@ cpdef dict gic_from_mst(
         Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the whole merge sequence or stop early?
+    compute_all_cuts : bool
+        Compute the n_clusters and all the more coarse-grained ones?
 
 
     Returns
@@ -1197,10 +1224,12 @@ cpdef dict gic_from_mst(
         gini_thresholds = np.r_[0.1, 0.3, 0.5, 0.7]
 
 
+    cdef np.ndarray[ssize_t] tmp_labels_1
+    cdef np.ndarray[ssize_t,ndim=2] tmp_labels_2
 
     cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t] labels_ # on request, see below
     cdef ssize_t n_clusters_ = 0, iters_
+    labels_ = None # on request, see below
 
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
@@ -1209,12 +1238,26 @@ cpdef dict gic_from_mst(
                 n_clusters-1+add_clusters if compute_full_tree else add_clusters,
                 n_features,
             &gini_thresholds[0], gini_thresholds.shape[0])
-    iters_ = g.get_links(&links_[0])
-    if n_clusters >= 1:
-        labels_     = np.empty(n, dtype=np.intp)
-        n_clusters_ = g.get_labels(n_clusters, &labels_[0])
 
-    return dict(labels=None if n_clusters == 0 else labels_,
+    iters_ = g.get_links(&links_[0])
+
+    if n_clusters >= 1:
+        if g.get_max_n_clusters() < n_clusters:
+            n_clusters_ = g.get_max_n_clusters()
+        else:
+            n_clusters_ = n_clusters
+
+        if compute_all_cuts:
+            tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)
+            g.get_labels_matrix(n_clusters_, &tmp_labels_2[0,0])
+            labels_ = tmp_labels_2
+        else:
+            # just one cut:
+            tmp_labels_1 = np.empty(n, dtype=np.intp)
+            g.get_labels(n_clusters_, &tmp_labels_1[0])
+            labels_ = tmp_labels_1
+
+    return dict(labels=labels_,
                 n_clusters=n_clusters_,
                 links=links_,
                 iters=iters_)

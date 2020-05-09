@@ -13,7 +13,12 @@ genie = importr("genie")
 import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
-path = "benchmark_data"
+
+import os
+if os.path.exists("benchmark_data"):
+    path = "benchmark_data"
+else:
+    path = "../benchmark_data"
 
 # TODO test  -1 <= labels < n_clusters
 
@@ -69,6 +74,7 @@ def test_genie(metric='euclidean'):
             res1, res2 = None, None
             print("")
 
+
 def test_genie_precomputed():
     for dataset in ["s1", "Aggregation"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
@@ -104,6 +110,20 @@ def test_genie_precomputed():
 
             res1, res2 = None, None
             print("")
+
+
+        # test compute_all_cuts
+        K = 10
+        g = 0.3
+        res1 = Genie(K, g, exact=True, affinity="precomputed",
+            compute_full_tree=True, compute_all_cuts=True).fit_predict(D)
+        assert res1.shape[1] == X.shape[0]
+        assert res1.shape[0] == K+1
+        for k in range(1, K+1):
+            res2 = Genie(k, g, exact=True, affinity="euclidean",
+            compute_full_tree=False).fit_predict(X)
+            assert np.all(res2 == res1[k,:])
+
 
 
 if __name__ == "__main__":

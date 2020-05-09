@@ -15,7 +15,13 @@ genie = importr("genie")
 import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
-path = "benchmark_data"
+
+
+import os
+if os.path.exists("benchmark_data"):
+    path = "benchmark_data"
+else:
+    path = "../benchmark_data"
 
 # TODO test  -1 <= labels < n_clusters
 # TODO gini_thresholds=[] or add_clusters too large => Agglomerative-IC (ICA)
@@ -76,5 +82,66 @@ def test_gic():
             print()
 
 
+
+def test_gic_precomputed():
+    for dataset in ["Aggregation", "s1"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+        if dataset == "bigger":
+            np.random.seed(123)
+            n = 10_000
+            X = np.random.normal(size=(n,2))
+            labels = np.random.choice(np.r_[1,2], n)
+        else:
+            X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
+
+        k = len(np.unique(labels[labels>=0]))
+
+        # center X + scale (NOT: standardize!)
+        X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+        X += np.random.normal(0, 0.0001, X.shape)
+
+        D = scipy.spatial.distance.pdist(X)
+        D = scipy.spatial.distance.squareform(D)
+
+        for g in [ np.arange(1, 8)/10, np.empty(0) ]:
+            gc.collect()
+
+            print("%-20s g=%r n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
+
+            res1 = genieclust.GIc(k, g, exact=True,
+                         affinity="precomputed",
+                         compute_full_tree=False)
+            res1.n_features_ = X.shape[1]
+            res1 = res1.fit_predict(D)+1
+            res2 = genieclust.GIc(k, g, exact=True, affinity="euclidean").fit_predict(X)+1
+            ari = adjusted_rand_score(res1, res2)
+            print("ARI=%.3f" % ari, end="\t")
+            assert ari>1.0-1e-12
+
+            res1, res2 = None, None
+            print("")
+
+
+        # test compute_all_cuts
+        K = 10
+        g = np.arange(1, 8)/10
+        res1 = genieclust.GIc(K, g, exact=True, affinity="precomputed",
+            compute_full_tree=True, compute_all_cuts=True)
+        res1.n_features_ = X.shape[1]
+        res1 = res1.fit_predict(D)
+        assert res1.shape[1] == X.shape[0]
+        assert res1.shape[0] == K+1
+        for k in range(1, K+1):
+            res2 = genieclust.GIc(k, g, add_clusters=K-k,
+                exact=True, affinity="precomputed",
+                compute_full_tree=False)
+            res2.n_features_ = X.shape[1]
+            res2 = res2.fit_predict(D)
+            assert np.all(res2 == res1[k,:])
+
+
+
 if __name__ == "__main__":
     test_gic()
+    print("**Precomputed**")
+    test_gic_precomputed()
