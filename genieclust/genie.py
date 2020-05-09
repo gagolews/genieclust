@@ -423,6 +423,11 @@ class Genie(GenieBase):
         The number of points in the fitted dataset.
     n_features_ : int or None
         The number of features in the fitted dataset.
+    is_noise_ : ndarray, shape (n_samples,) or None
+        is_noise_[i] is True iff the i-th point is a noise one;
+        For M=1, all points are no-noise ones.
+        Points are marked as noise even if postprocess="all".
+        Note that boundary points are also marked as noise points.
     children_ : ndarray, shape (n_samples-1, 2)
         The i-th row provides the information on the clusters merged at
         the i-th iteration. Noise points are merged first, with
@@ -464,6 +469,7 @@ class Genie(GenieBase):
 
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
         self.labels_      = None
+        self.is_noise_    = None
         self.children_    = None
         self.distances_   = None
         self.counts_      = None
@@ -531,6 +537,7 @@ class Genie(GenieBase):
 
 
         if self.labels_ is not None:
+            self.is_noise_    = (self.labels_ < 0)
             # postprocess labels, if requested to do so
             if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
                 pass
@@ -636,6 +643,7 @@ class GIc(GenieBase):
 
         self.n_clusters_  = 0 # should not be confused with self.n_clusters
         self.labels_      = None
+        self.is_noise_    = None
         self.children_    = None
         self.distances_   = None
         self.counts_      = None
@@ -700,6 +708,7 @@ class GIc(GenieBase):
 
 
         if self.labels_ is not None:
+            self.is_noise_    = (self.labels_ < 0)
             # postprocess labels, if requested to do so
             if cur_state["M"] == 1 or cur_state["postprocess"] == "none":
                 pass

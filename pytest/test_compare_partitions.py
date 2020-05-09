@@ -53,7 +53,7 @@ def test_compare_partitions():
             assert 1.0+1e-9>adjusted_fm_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>fm_score(x, y)>1.0-1e-9
             assert          mi_score(x, y)>-1e-9
-            assert 1.0+1e-9>normalised_mi_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>normalized_mi_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>adjusted_mi_score(x, y)>1.0-1e-9
 
             # TODO: more tests...
