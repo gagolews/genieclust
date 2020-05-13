@@ -663,7 +663,7 @@ class GIc(GenieBase):
         Note that for GIc if compute_all_cuts==True,
         then the i-th cut in the hierarchy behaves as if
         add_clusters=n_clusters-i. In other words, the returned cuts
-        will not be the same as these obtained by calling
+        will not be the same as those obtained by calling
         GIc numerous times, each time with different n_clusters requested.
     postprocess : str, one of "boundary" (default), "none", "all"
         see `Genie`

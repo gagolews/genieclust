@@ -1109,7 +1109,6 @@ cpdef dict genie_from_mst(
 
 #############################################################################
 # The Genie+Information Criterion (G+IC) Clustering Algorithm
-# (experimental, under construction)
 #############################################################################
 
 
