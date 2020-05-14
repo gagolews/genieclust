@@ -74,7 +74,7 @@ ssize_t __augmenting_path(
 
 
 /**
- *  Solves the 2D rectangular assignment problem for minimisation
+ *  Solves the 2D rectangular assignment problem
  *  using the algorithm described in <doi:10.1109/TAES.2016.140952>
  *
  *  The procedure is adapted from
@@ -99,24 +99,33 @@ ssize_t __augmenting_path(
  *  @param output_col4row [output] c_contiguous vector of length nr;
  *                        (i, output_col4row[i]) gives location of the
  *                        nr items in C with the smallest sum.
- *
+ *  @param minimise false if we seek the maximum
  *
  * @return 0 on success
  */
-ssize_t min_linear_sum_assignment(
-    double* C,
+template<class T> ssize_t linear_sum_assignment(
+    T* C,
     ssize_t nr,
     ssize_t nc,
-    ssize_t* output_col4row)
+    ssize_t* output_col4row,
+    bool minimise=true)
 {
     if (nr > nc)
         throw std::domain_error("nr > nc");
 
     // build a non-negative cost matrix
     std::vector<double> cost(nr * nc);
-    double minval = *std::min_element(C, C + nr * nc);
-    for (ssize_t i = 0; i < nr * nc; i++) {
-        cost[i] = C[i] - minval;
+    if (minimise) {
+        double minval = *std::min_element(C, C + nr * nc);
+        for (ssize_t i = 0; i < nr * nc; i++) {
+            cost[i] = C[i] - minval;
+        }
+    }
+    else {
+        double maxval = *std::max_element(C, C + nr * nc);
+        for (ssize_t i = 0; i < nr * nc; i++) {
+            cost[i] = maxval-C[i];
+        }
     }
 
     // initialize variables

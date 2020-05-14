@@ -353,10 +353,18 @@ CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
+    std::vector<ssize_t> output_col4row(xc);
 
+    ssize_t retval = linear_sum_assignment(C, xc, yc, output_col4row.data(), false); // minimise=false
+    GENIECLUST_ASSERT(retval == 0);
 
+    ssize_t t = 0;
+    for (ssize_t i=0; i<xc; ++i)
+        t += C[yc*i+output_col4row[i]];
+
+    double pur = (double)t/(double)n;
     CComparePartitionsMatchResult res;
-    res.npur = -1.0; // TODO
+    res.npur = (pur-1.0/xc)/(1.0-1.0/xc); // TODO
     res.psi  = -1.0; // TODO
 
     return res;
