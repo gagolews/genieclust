@@ -9,7 +9,7 @@
 
 """
 Provides access to the Ccontingency_table(), Capply_pivoting()
-and Ccompare_partitions() functions.
+and Ccompare_partitions_*() functions.
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -42,14 +42,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 cdef extern from "../src/c_compare_partitions.h":
-    cdef struct CComparePartitionsResult:
+    cdef struct CComparePartitionsPairsResult:
         double ar
         double r
         double fm
         double afm
+
+    cdef struct CComparePartitionsInfoResult:
         double mi
         double nmi
         double ami
+
+    cdef struct CComparePartitionsMatchResult:
+        double npur
+        double psi
+
 
     void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
 
@@ -59,4 +66,6 @@ cdef extern from "../src/c_compare_partitions.h":
 
     void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc)
 
-    CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize_t yc)
+    CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C, ssize_t xc, ssize_t yc)
+    CComparePartitionsInfoResult  Ccompare_partitions_info(const ssize_t* C, ssize_t xc, ssize_t yc)
+    CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_t xc, ssize_t yc)

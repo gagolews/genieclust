@@ -209,6 +209,10 @@ and outlier detection,
 *ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
 doi:10.1145/2733381.
 
+Crouse D.F., On implementing 2D rectangular assignment algorithms,
+*IEEE Transactions on Aerospace and Electronic Systems* **52**(4), 2016,
+pp. 1679-1696, doi:10.1109/TAES.2016.140952.
+
 Mueller A., Nowozin S., Lampert C.H.,
 Information Theoretic Clustering using Minimum Spanning Trees,
 *DAGM-OAGM* 2012.
@@ -224,6 +228,10 @@ Prim R., Shortest connection networks and some generalizations,
 
 Hubert L., Arabie P., Comparing Partitions,
 *Journal of Classification* **2**(1), 1985, pp. 193-218.
+
+Rezaei M., Franti P., Set matching measures for external cluster validity,
+*IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, pp. 2173-2186,
+doi:10.1109/TKDE.2016.2551240
 
 Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:

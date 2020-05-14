@@ -35,9 +35,6 @@
 
 -   [INTERNAL] Use OpenMP for distance computations.
 
--   [BUGFIX] Internal function `MST_pair()` did not return all
-    weights of the MST edges.
-
 
 ## genieclust 0.1a3 (unreleased)
 

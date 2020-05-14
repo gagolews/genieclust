@@ -100,11 +100,11 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="0.2a1",
+    version="0.9a1",
     description="The Genie++ Clustering Algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Marek Gagolewski",
+    author="Marek Gagolewski and others",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
     license="BSD-3-Clause",
@@ -128,7 +128,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: BSD License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Topic :: Scientific/Engineering",
     ],
     cmdclass={

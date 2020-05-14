@@ -1,7 +1,11 @@
-/*  Adjusted- and Nonadjusted Rand Score,
+/*  External Cluster Validity Measures
+ *
+ *  Adjusted- and Nonadjusted Rand Score,
  *  Adjusted- and Nonadjusted Fowlkes-Mallows Score,
- *  Adjusted-, Normalised and Nonadjusted Mutual Information Score
+ *  Adjusted-, Normalised and Nonadjusted Mutual Information Score,
+ *  Normalised Purity, Pair Sets Index
  *  (for vectors of "small" ints)
+ *
  *
  *  References
  *  ==========
@@ -13,6 +17,11 @@
  *  Information theoretic measures for clusterings comparison:
  *  Variants, properties, normalization and correction for chance,
  *  Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+ *
+ *  Rezaei M., Franti P., Set matching measures for external cluster validity,
+ *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+ *  doi:10.1109/TKDE.2016.2551240
+ *
  *
  *
  *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
@@ -50,6 +59,7 @@
 #define __c_compare_partitions_h
 
 #include "c_common.h"
+#include "c_scipy_rectangular_lsap.h"
 #include <algorithm>
 #include <cmath>
 #include <vector>
@@ -88,17 +98,36 @@ void Cminmax(const T* x, ssize_t n, T* xmin, T* xmax)
 
 
 /*!
- * Stores AR, FM and MI scores as well as their adjusted/normalised versions.
+ * Stores AR and FM scores as well as their adjusted/normalised versions.
  */
-struct CComparePartitionsResult {
+struct CComparePartitionsPairsResult {
     double ar;
     double r;
     double fm;
     double afm;
+};
+
+
+/*!
+ * Stores mutual information-based scores
+ */
+struct CComparePartitionsInfoResult {
     double mi;
     double nmi;
     double ami;
 };
+
+
+
+/*!
+ * Stores Normalised Purity and Pair Sets Index
+ */
+struct CComparePartitionsMatchResult {
+    double npur;
+    double psi;
+};
+
+
 
 
 /*! Applies partial pivoting to a given confusion matrix - permutes the columns
@@ -153,8 +182,11 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
     for (ssize_t j=0; j<xc*yc; ++j)
         C[j] = 0;
 
-    for (ssize_t i=0; i<n; ++i)
+    for (ssize_t i=0; i<n; ++i) {
+        GENIECLUST_ASSERT(   0 <= (x[i]-xmin)*yc +(y[i]-ymin));
+        GENIECLUST_ASSERT(xc*yc > (x[i]-xmin)*yc +(y[i]-ymin));
         C[(x[i]-xmin)*yc +(y[i]-ymin)]++;
+    }
 }
 
 
@@ -167,6 +199,60 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
  *  Hubert L., Arabie P., Comparing Partitions,
  *  Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
  *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C
+ *  @param yc number of columns in C
+ *
+ *  @return the computed scores
+ */
+CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C, ssize_t xc, ssize_t yc)
+{
+    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    for (ssize_t ij=0; ij<xc*yc; ++ij)
+        n += C[ij];
+
+    double sum_comb_x = 0.0, sum_comb_y = 0.0, sum_comb = 0.0;
+
+    for (ssize_t i=0; i<xc; ++i) {
+        double t = 0.0;
+        for (ssize_t j=0; j<yc; ++j) {
+            t += C[i*yc+j];
+            sum_comb += Ccomb2(C[i*yc+j]);
+        }
+        sum_comb_x += Ccomb2(t);
+    }
+
+    for (ssize_t j=0; j<yc; ++j) {
+        double t = 0.0;
+        for (ssize_t i=0; i<xc; ++i) {
+            t += C[i*yc+j];
+        }
+        sum_comb_y += Ccomb2(t);
+    }
+
+    double prod_comb = (sum_comb_x*sum_comb_y)/n/(n-1.0)*2.0; // expected sum_comb,
+                                        // see Eq.(2) in (Hubert, Arabie, 1985)
+    double mean_comb = (sum_comb_x+sum_comb_y)*0.5;
+    double e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y); // expected FM (variant)
+
+    CComparePartitionsPairsResult res;
+    res.ar  = (sum_comb-prod_comb)/(mean_comb-prod_comb);
+    res.r   = 1.0 + (2.0*sum_comb - (sum_comb_x+sum_comb_y))/n/(n-1.0)*2.0;
+    res.fm  = sum_comb/sqrt(sum_comb_x*sum_comb_y);
+    res.afm = (res.fm - e_fm)/(1.0 - e_fm); // Eq.(4) in (Hubert, Arabie, 1985)
+
+    return res;
+}
+
+
+
+
+/*! Computes the mutual information-based scores
+ *  for a given confusion matrix.
+ *
+ *  References
+ *  ==========
+ *
  *  Vinh N.X., Epps J., Bailey J.,
  *  Information theoretic measures for clusterings comparison:
  *  Variants, properties, normalization and correction for chance,
@@ -178,7 +264,7 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
  *
  *  @return the computed scores
  */
-CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize_t yc)
+CComparePartitionsInfoResult Ccompare_partitions_info(const ssize_t* C, ssize_t xc, ssize_t yc)
 {
     ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
@@ -187,7 +273,6 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
     std::vector<double> sum_x(xc);
     std::vector<double> sum_y(yc);
 
-    double sum_comb_x = 0.0, sum_comb_y = 0.0, sum_comb = 0.0;
     double h_x = 0.0, h_y = 0.0, h_x_cond_y = 0.0, h_x_y = 0.0;
 
     for (ssize_t i=0; i<xc; ++i) {
@@ -195,9 +280,7 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
         for (ssize_t j=0; j<yc; ++j) {
             if (C[i*yc+j] > 0) h_x_y += C[i*yc+j]*log((double)C[i*yc+j]/(double)n);
             t += C[i*yc+j];
-            sum_comb += Ccomb2(C[i*yc+j]);
         }
-        sum_comb_x += Ccomb2(t);
         sum_x[i] = t;
         if (t > 0) h_y += t*log(t/(double)n);
     }
@@ -208,7 +291,6 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
             if (C[i*yc+j] > 0) h_x_cond_y += C[i*yc+j]*log(C[i*yc+j]/sum_x[i]);
             t += C[i*yc+j];
         }
-        sum_comb_y += Ccomb2(t);
         sum_y[j] = t;
         if (t > 0) h_x += t*log(t/(double)n);
     }
@@ -217,11 +299,6 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
     h_y = -h_y/(double)n;
     h_x_cond_y = -h_x_cond_y/(double)n;
     h_x_y = -h_x_y/(double)n;
-
-    double prod_comb = (sum_comb_x*sum_comb_y)/n/(n-1.0)*2.0; // expected sum_comb,
-                                        // see Eq.(2) in (Hubert, Arabie, 1985)
-    double mean_comb = (sum_comb_x+sum_comb_y)*0.5;
-    double e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y); // expected FM (variant)
 
     double e_mi = 0.0;
     for (ssize_t i=0; i<xc; ++i) {
@@ -243,16 +320,47 @@ CComparePartitionsResult Ccompare_partitions(const ssize_t* C, ssize_t xc, ssize
     }
     e_mi = e_mi/(double)n;
 
-    CComparePartitionsResult res;
-    res.ar  = (sum_comb-prod_comb)/(mean_comb-prod_comb);
-    res.r   = 1.0 + (2.0*sum_comb - (sum_comb_x+sum_comb_y))/n/(n-1.0)*2.0;
-    res.fm  = sum_comb/sqrt(sum_comb_x*sum_comb_y);
-    res.afm = (res.fm - e_fm)/(1.0 - e_fm); // Eq.(4) in (Hubert, Arabie, 1985)
+    CComparePartitionsInfoResult res;
     res.mi = h_x-h_x_cond_y;
     res.nmi = res.mi/(0.5*(h_x+h_y)); // NMI_sum in (Vinh et al., 2010)
     res.ami = (res.mi - e_mi)/(0.5*(h_x+h_y) - e_mi); // AMI_sum in (Vinh et al., 2010)
 
     return res;
 }
+
+
+
+
+
+/*! Computes the set matching-based partition similarity scores
+ *
+ *  References
+ *  ==========
+ *
+ *  Rezaei M., Franti P., Set matching measures for external cluster validity,
+ *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+ *  doi:10.1109/TKDE.2016.2551240
+ *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C
+ *  @param yc number of columns in C
+ *
+ *  @return the computed scores
+ */
+CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_t xc, ssize_t yc)
+{
+    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    for (ssize_t ij=0; ij<xc*yc; ++ij)
+        n += C[ij];
+
+
+
+    CComparePartitionsMatchResult res;
+    res.npur = -1.0; // TODO
+    res.psi  = -1.0; // TODO
+
+    return res;
+}
+
 
 #endif

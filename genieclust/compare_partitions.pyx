@@ -9,8 +9,10 @@
 """
 Adjusted- and Nonadjusted Rand Score,
 Adjusted- and Nonadjusted Fowlkes-Mallows Score,
-Adjusted-, Normalised and Nonadjusted Mutual Information Score
+Adjusted-, Normalised and Nonadjusted Mutual Information Score,
+Normalised Purity, Pair Sets Index
 (for vectors of "small" ints)
+
 
 References
 ==========
@@ -22,6 +24,11 @@ Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
 Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+
+Rezaei M., Franti P., Set matching measures for external cluster validity,
+IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+doi:10.1109/TKDE.2016.2551240
+
 
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
@@ -68,14 +75,14 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     Parameters:
     ----------
 
-    C : ndarray, shape (kx,ky)
+    C : ndarray, shape (xc,yc)
         a c_contiguous confusion matrix
 
 
     Returns:
     -------
 
-    C_normalized: ndarray, shape(kx,ky)
+    C_normalized: ndarray, shape(xc,yc)
     """
     cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(C, dtype=np.intp)
     cdef ssize_t xc = C_normalized.shape[0]
@@ -100,7 +107,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     Returns:
     -------
 
-    C : ndarray, shape (kx, ky)
+    C : ndarray, shape (xc, yc)
         a confusion matrix
     """
     cdef np.ndarray[ssize_t] _x = np.array(x, dtype=np.intp)
@@ -137,13 +144,13 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
     -------
 
-    C : ndarray, shape (kx, ky)
+    C : ndarray, shape (xc, yc)
         a confusion matrix
     """
     cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
@@ -151,10 +158,12 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
 
 
 
-cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:,::1] C):
+cpdef dict compare_partitions(ssize_t[:,::1] C):
     """
-    Computes the adjusted and nonadjusted Rand- and FM scores
-    based on a given confusion matrix.
+    Computes the adjusted and nonadjusted Rand- and FM scores,
+    nonadjusted, normalised and adjusted mutual information scores,
+    normalised purity and pair sets index.
+
 
     References
     ==========
@@ -167,28 +176,41 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions(ssize_t[:
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
+    Rezaei M., Franti P., Set matching measures for external cluster validity,
+    IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+    doi:10.1109/TKDE.2016.2551240
+
+
     Parameters:
     ----------
 
-    C : ndarray, shape (kx,ky)
+    C : ndarray, shape (xc, yc)
         a confusion matrix
+
 
     Returns:
     -------
 
     scores : dict
-        a dictionary with keys 'ar', 'r', 'afm', 'fm', 'mi', 'nmi', 'ami',
-        giving the adjusted Rand, Rand,
+        a dictionary with keys 'ar', 'r', 'afm', 'fm', 'mi', 'nmi', 'ami', 'npur' and 'psi'
+        giving the following scores: adjusted Rand, Rand,
         adjusted Fowlkes-Mallows, Fowlkes-Mallows
-        mutual information, normalised mutual information (NMI_sum)
-        and adjusted mutual information (AMI_sum) scores, respectively.
+        mutual information, normalised mutual information (NMI_sum),
+        adjusted mutual information (AMI_sum),
+        normalised purity and pair sets index, respectively.
     """
     cdef ssize_t xc = C.shape[0]
     cdef ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions(&C[0,0], xc, yc)
+    if xc > yc:
+        raise ValueError("number of rows in the confusion matrix \
+            must be less than or equal to the number of columns")
+    cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
+    cdef dict res2 = c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc)
+    cdef dict res3 = c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc)
+    return {**res1, **res2, **res3}
 
 
-cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(x, y):
+cpdef dict compare_partitions2(x, y):
     """
     Calls compare_partitions(confusion_matrix(x, y)).
 
@@ -198,7 +220,7 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
     Returns:
     -------
@@ -207,6 +229,9 @@ cpdef c_compare_partitions.CComparePartitionsResult compare_partitions2(x, y):
         see compare_partitions().
     """
     return compare_partitions(confusion_matrix(x, y))
+
+
+
 
 
 cpdef double adjusted_rand_score(x, y):
@@ -222,17 +247,21 @@ cpdef double adjusted_rand_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
     -------
 
     score : double
-        partition similarity measure
+        partition similarity measure;
+        by definition of this index, returned values might be negative.
     """
 
-    return compare_partitions(confusion_matrix(x, y)).ar
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).ar
 
 
 cpdef double rand_score(x, y):
@@ -249,7 +278,7 @@ cpdef double rand_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
@@ -259,7 +288,10 @@ cpdef double rand_score(x, y):
         partition similarity measure
     """
 
-    return compare_partitions(confusion_matrix(x, y)).r
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).r
 
 
 cpdef double adjusted_fm_score(x, y):
@@ -274,16 +306,20 @@ cpdef double adjusted_fm_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
 
     score : double
-        partition similarity measure
+        partition similarity measure;
+        by definition of this index, returned values might be negative.
     """
 
-    return compare_partitions(confusion_matrix(x, y)).afm
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).afm
 
 
 cpdef double fm_score(x, y):
@@ -298,7 +334,7 @@ cpdef double fm_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
@@ -308,7 +344,10 @@ cpdef double fm_score(x, y):
         partition similarity measure
     """
 
-    return compare_partitions(confusion_matrix(x, y)).fm
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).fm
 
 
 cpdef double mi_score(x, y):
@@ -325,7 +364,7 @@ cpdef double mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
@@ -335,7 +374,10 @@ cpdef double mi_score(x, y):
         partition similarity measure
     """
 
-    return compare_partitions(confusion_matrix(x, y)).mi
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).mi
 
 
 
@@ -353,7 +395,7 @@ cpdef double normalized_mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
 
 
     Returns:
@@ -363,7 +405,10 @@ cpdef double normalized_mi_score(x, y):
         partition similarity measure
     """
 
-    return compare_partitions(confusion_matrix(x, y)).nmi
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).nmi
 
 
 cpdef double adjusted_mi_score(x, y):
@@ -380,7 +425,43 @@ cpdef double adjusted_mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two k-partitions of the same set
+        two K-partitions of the same set
+
+
+    Returns:
+    -------
+
+    score : double
+        partition similarity measure;
+        by definition of this index, returned values might be negative.
+    """
+
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).ami
+
+
+
+cpdef double normalised_purity(x, y):
+    """
+    Normalised Purity: (Purity-1/K)/(1-1/K).
+
+    Purity is similar to Accuracy, however it permutes the columns of the
+    confusion matrix based on the solution to the Linear Sum Assignment Problem.
+
+
+    See, e.g.: Rezaei M., Franti P., Set matching measures for external cluster validity,
+    IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+    doi:10.1109/TKDE.2016.2551240
+
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two K-partitions of the same set
 
 
     Returns:
@@ -390,5 +471,50 @@ cpdef double adjusted_mi_score(x, y):
         partition similarity measure
     """
 
-    return compare_partitions(confusion_matrix(x, y)).ami
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    if xc > yc:
+        raise ValueError("number of rows in the confusion matrix \
+            must be less than or equal to the number of columns")
+    return c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc).npur
+
+
+
+
+cpdef double pair_sets_index(x, y):
+    """
+    Pair Sets Index (PSI) adjusted for chance
+
+    Pairing is based on the solution to the Linear Sum Assignment Problem
+    of the confusion matrix.
+
+
+    See, e.g.: Rezaei M., Franti P., Set matching measures for external cluster validity,
+    IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+    doi:10.1109/TKDE.2016.2551240
+
+
+    Parameters:
+    ----------
+
+    x, y : ndarray, shape (n,)
+        two small-int vectors of the same lengths, representing
+        two K-partitions of the same set
+
+
+    Returns:
+    -------
+
+    score : double
+        partition similarity measure
+    """
+
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    if xc > yc:
+        raise ValueError("number of rows in the confusion matrix \
+            must be less than or equal to the number of columns")
+    return c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc).psi
 
