@@ -364,8 +364,43 @@ CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_
 
     double pur = (double)t/(double)n;
     CComparePartitionsMatchResult res;
-    res.npur = (pur-1.0/xc)/(1.0-1.0/xc); // TODO
-    res.psi  = -1.0; // TODO
+    res.npur = (pur-1.0/xc)/(1.0-1.0/xc);
+
+    // TODO: these two could be separated from each other - they're independent
+
+
+    std::vector<double> sum_x(xc);
+    std::vector<double> sum_y(yc);
+    for (ssize_t i=0; i<xc; ++i) {
+        for (ssize_t j=0; j<yc; ++j) {
+            sum_x[i] += C[i*yc+j];
+            sum_y[j] += C[i*yc+j];
+        }
+    }
+
+    std::vector<double> S(xc*yc);
+    for (ssize_t i=0; i<xc; ++i) {
+        for (ssize_t j=0; j<yc; ++j) {
+            S[i*yc+j] = (double)C[i*yc+j]/(double)std::max(sum_x[i], sum_y[j]);
+        }
+    }
+    std::vector<ssize_t> output_col4row2(xc);
+    retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
+    GENIECLUST_ASSERT(retval == 0);
+
+    double s = 0.0;
+    for (ssize_t i=0; i<xc; ++i)
+        s += S[yc*i+output_col4row2[i]];
+
+    std::sort(sum_x.begin(), sum_x.end());
+    std::sort(sum_y.begin(), sum_y.end());
+    double es = 0.0;
+    for (ssize_t i=0; i<xc; ++i)
+        es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
+    es /= (double)n;
+
+    res.psi  = (s-es)/(yc-es);
+    if (res.psi<0.0) res.psi = 0.0;
 
     return res;
 }

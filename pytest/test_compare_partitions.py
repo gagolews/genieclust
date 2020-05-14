@@ -29,11 +29,11 @@ def compare_with_sklearn(x, y):
 
 # np.random.seed(123)
 def test_compare_partitions():
-    for n in [10, 25, 50, 100, 250, 500, 1000]:
+    for n in [15, 25, 50, 100, 250, 500, 1000]:
         for k in range(2, 11):
 
-            x = np.random.choice(np.arange(k), n)
-            y = np.random.choice(np.arange(k), n)
+            x = np.random.permutation(np.r_[np.arange(k), np.random.choice(np.arange(k), n-k)])
+            y = np.random.permutation(np.r_[np.arange(k), np.random.choice(np.arange(k), n-k)])
             compare_with_sklearn(x, y)
 
             y = x.copy()
@@ -45,8 +45,8 @@ def test_compare_partitions():
             compare_with_sklearn(x, y)
 
             y = x.copy()
-            c = np.random.permutation(np.arange(k+1))
-            for i in range(n): y[i] = c[y[i]]
+            c = np.random.permutation(np.arange(k))
+            for i in range(n): y[i] = c[x[i]]
 
             assert 1.0+1e-9>adjusted_rand_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>rand_score(x, y)>1.0-1e-9
@@ -55,6 +55,8 @@ def test_compare_partitions():
             assert          mi_score(x, y)>-1e-9
             assert 1.0+1e-9>normalized_mi_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>adjusted_mi_score(x, y)>1.0-1e-9
+            assert 1.0+1e-9>normalised_purity(x, y)>1.0-1e-9
+            assert 1.0+1e-9>pair_sets_index(x, y)>1.0-1e-9
 
             # TODO: more tests...
 

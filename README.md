@@ -75,8 +75,9 @@ Other goodies:
 
 -   `genieclust.compare_partitions` -- Functions to compare partitions
     (adjusted&unadjusted Rand,
-    adjusted&unadjusted Fowlkes-Mallows,
-    adjusted&normalised&unadjusted mutual information scores)
+    adjusted&unadjusted Fowlkes-Mallows (FM),
+    adjusted&normalised&unadjusted mutual information (MI) scores,
+    normalised purity and pair sets index (PSI))
 
 -   `genieclust.internal.DisjointSets`, `genieclust.internal.GiniDisjointSets` --
     Union-find data structures (with extensions)

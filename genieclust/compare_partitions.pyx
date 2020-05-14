@@ -117,7 +117,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     cdef ssize_t xc = (xmax-xmin+1)
 
     cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
-    if n != y.shape[0]: raise ValueError("incompatible lengths")
+    if n != _y.shape[0]: raise ValueError("incompatible lengths")
     cdef ssize_t ymin, ymax
     c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
     cdef ssize_t yc = (ymax-ymin+1)
