@@ -5,8 +5,7 @@
 The *Genie*++ Hierarchical Clustering Algorithm
 -----------------------------------------------
 
-> **Genie outputs meaningful partitions and is fast even for large
-> data sets.**
+> **Genie outputs meaningful partitions and is fast even for large data sets.**
 
 
 
@@ -27,9 +26,8 @@ underlying data structure -- unless the clusters are well-separated.
 
 To overcome its limitations, we proposed a new hierarchical clustering
 linkage criterion called Genie. Namely, our algorithm links two clusters
-in such a way that a chosen economic inequity measure (here, the Gini
-index) of the cluster sizes does not increase drastically above a given
-threshold.
+in such a way that a chosen economic inequity measure (here, the Gini index)
+of the cluster sizes does not increase drastically above a given threshold.
 
 The algorithm most often outperforms the Ward or average linkage, k-means,
 spectral clustering, DBSCAN, Birch and others in terms of the

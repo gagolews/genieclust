@@ -122,7 +122,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["affinity"] == "precomputed":
             n_features = self.n_features_ # the user must set it manually
             if X.shape[0] != X.shape[1]:
-                raise ValueError("X must be a square matrix that gives all the pairwise distances")
+                raise ValueError("X must be a square matrix that gives all the pairwise distances, see scipy.spatial.distance.squareform")
         else:
             n_features = X.shape[1]
 
@@ -652,6 +652,9 @@ class GIc(GenieBase):
         for all i=0,...,len(gini_thresholds)-1.
     add_clusters : int, default=0
         Number of additional clusters to work with internally.
+    n_features : float or None, default None
+        Dataset (intrinsic) dimensionality, if None, it will be set based on
+        the shape of the input matrix.
     M : int, default=1
         see `Genie`
     affinity : str, default="euclidean"
@@ -682,6 +685,7 @@ class GIc(GenieBase):
             n_clusters=2,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             add_clusters=0,
+            n_features=None,
             M=1,
             affinity="euclidean",
             compute_full_tree=True,
@@ -693,6 +697,7 @@ class GIc(GenieBase):
         super().__init__(M, affinity, exact, cast_float32)
 
         self.n_clusters = n_clusters
+        self.n_features = n_features
         self.add_clusters = add_clusters
         self.gini_thresholds = gini_thresholds
         self.compute_full_tree = compute_full_tree
@@ -750,12 +755,20 @@ class GIc(GenieBase):
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         cur_state["compute_all_cuts"] = bool(self.compute_all_cuts)
 
-        if self.n_features_ is None:
-            raise ValueError("The n_features_ attribute must be set manually.")
+        if self.n_features is None:
+            if self.n_features_ is None:
+                raise ValueError("The n_features attribute must be set manually.")
+            else:
+                # X.shape[1], set by GenieBase.fit()
+                cur_state["n_features"] = self.n_features_
+        else:
+            cur_state["n_features"] = self.n_features
+
+        cur_state["n_features"] = max(1.0, cur_state["n_features"])
 
         # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(self._mst_dist_, self._mst_ind_,
-            n_features=self.n_features_,
+            n_features=cur_state["n_features"],
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
