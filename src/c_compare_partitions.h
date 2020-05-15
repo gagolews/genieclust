@@ -3,7 +3,7 @@
  *  Adjusted- and Nonadjusted Rand Score,
  *  Adjusted- and Nonadjusted Fowlkes-Mallows Score,
  *  Adjusted-, Normalised and Nonadjusted Mutual Information Score,
- *  Normalised Purity, Pair Sets Index
+ *  Normalised Accuracy, Pair Sets Index
  *  (for vectors of "small" ints)
  *
  *
@@ -117,15 +117,6 @@ struct CComparePartitionsInfoResult {
     double ami;
 };
 
-
-
-/*!
- * Stores Normalised Purity and Pair Sets Index
- */
-struct CComparePartitionsMatchResult {
-    double npur;
-    double psi;
-};
 
 
 
@@ -332,22 +323,32 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const ssize_t* C, ssize_t 
 
 
 
-/*! Computes the set matching-based partition similarity scores
+/*! Computes the normalised accuracy score between two partitions
+ *
+ *  Normalised accuracy is (Accuracy(C[sigma])-1.0/yc)/(1.0-1.0/yc),
+ *  where C[sigma] is a version of the input confusion matrix
+ *  with columns permuted based on the solution to the
+ *  maximal linear sum assignment problem.
+ *
+ *  Accuracy(C[sigma]) is sometimes referred to as purity,
+ *  e.g. in (Rendon et al. 2011).
+ *
  *
  *  References
  *  ==========
  *
- *  Rezaei M., Franti P., Set matching measures for external cluster validity,
- *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
- *  doi:10.1109/TKDE.2016.2551240
+ *  Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
+ *  Internal versus external cluster validation indexes,
+ *  International Journal of Computers and Communications 5(1), 2011, pp. 27-34.
+
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
- *  @param xc number of rows in C
+ *  @param xc number of rows in C, xc <= yc
  *  @param yc number of columns in C
  *
- *  @return the computed scores
+ *  @return the computed score
  */
-CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_t xc, ssize_t yc)
+double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
 {
     ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
@@ -363,11 +364,34 @@ CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_
         t += C[yc*i+output_col4row[i]];
 
     double pur = (double)t/(double)n;
-    CComparePartitionsMatchResult res;
-    res.npur = (pur-1.0/xc)/(1.0-1.0/xc);
+    return (pur-1.0/yc)/(1.0-1.0/yc);
 
-    // TODO: these two could be separated from each other - they're independent
+}
 
+
+
+
+
+/*! Computes the PSI (pair sets index) score
+ *
+ *  References
+ *  ==========
+ *
+ *  Rezaei M., Franti P., Set matching measures for external cluster validity,
+ *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+ *  doi:10.1109/TKDE.2016.2551240
+ *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C, xc <= yc
+ *  @param yc number of columns in C
+ *
+ *  @return the computed score
+ */
+double Ccompare_partitions_psi(const ssize_t* C, ssize_t xc, ssize_t yc)
+{
+    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    for (ssize_t ij=0; ij<xc*yc; ++ij)
+        n += C[ij];
 
     std::vector<double> sum_x(xc);
     std::vector<double> sum_y(yc);
@@ -385,7 +409,7 @@ CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_
         }
     }
     std::vector<ssize_t> output_col4row2(xc);
-    retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
+    ssize_t retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
     double s = 0.0;
@@ -399,10 +423,10 @@ CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_
         es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
     es /= (double)n;
 
-    res.psi  = (s-es)/(yc-es);
-    if (res.psi<0.0) res.psi = 0.0;
+    double psi  = (s-es)/(yc-es);
+    if (psi<0.0) psi = 0.0;
 
-    return res;
+    return psi;
 }
 
 

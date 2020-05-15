@@ -53,10 +53,6 @@ cdef extern from "../src/c_compare_partitions.h":
         double nmi
         double ami
 
-    cdef struct CComparePartitionsMatchResult:
-        double npur
-        double psi
-
 
     void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
 
@@ -66,6 +62,9 @@ cdef extern from "../src/c_compare_partitions.h":
 
     void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc)
 
-    CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C, ssize_t xc, ssize_t yc)
-    CComparePartitionsInfoResult  Ccompare_partitions_info(const ssize_t* C, ssize_t xc, ssize_t yc)
-    CComparePartitionsMatchResult Ccompare_partitions_match(const ssize_t* C, ssize_t xc, ssize_t yc)
+    CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C,
+        ssize_t xc, ssize_t yc)
+    CComparePartitionsInfoResult  Ccompare_partitions_info(const ssize_t* C,
+        ssize_t xc, ssize_t yc)
+    double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
+    double Ccompare_partitions_psi(const ssize_t* C, ssize_t xc, ssize_t yc)

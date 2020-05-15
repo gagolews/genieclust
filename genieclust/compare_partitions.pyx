@@ -10,7 +10,7 @@
 Adjusted- and Nonadjusted Rand Score,
 Adjusted- and Nonadjusted Fowlkes-Mallows Score,
 Adjusted-, Normalised and Nonadjusted Mutual Information Score,
-Normalised Purity, Pair Sets Index
+Normalised Accuracy, Pair Sets Index
 (for vectors of "small" ints)
 
 
@@ -127,7 +127,8 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
         raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
     cdef np.ndarray[ssize_t,ndim=2] C = np.empty((xc, yc), dtype=np.intp)
-    c_compare_partitions.Ccontingency_table(&C[0,0], xc, yc, xmin, ymin, &_x[0], &_y[0], n)
+    c_compare_partitions.Ccontingency_table(&C[0,0], xc, yc,
+        xmin, ymin, &_x[0], &_y[0], n)
     return C
 
 
@@ -144,7 +145,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -162,11 +163,11 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     """
     Computes the adjusted and nonadjusted Rand- and FM scores,
     nonadjusted, normalised and adjusted mutual information scores,
-    normalised purity and pair sets index.
+    normalised accuracy and pair sets index.
 
 
-    References
-    ==========
+    References:
+    ----------
 
     Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
@@ -192,12 +193,13 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     -------
 
     scores : dict
-        a dictionary with keys 'ar', 'r', 'afm', 'fm', 'mi', 'nmi', 'ami', 'npur' and 'psi'
+        a dictionary with keys 'ar', 'r', 'afm', 'fm', 'mi', 'nmi', 'ami',
+        'nacc' and 'psi',
         giving the following scores: adjusted Rand, Rand,
         adjusted Fowlkes-Mallows, Fowlkes-Mallows
         mutual information, normalised mutual information (NMI_sum),
         adjusted mutual information (AMI_sum),
-        normalised purity and pair sets index, respectively.
+        normalised accuracy and pair sets index, respectively.
     """
     cdef ssize_t xc = C.shape[0]
     cdef ssize_t yc = C.shape[1]
@@ -206,8 +208,12 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
             must be less than or equal to the number of columns")
     cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
     cdef dict res2 = c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc)
-    cdef dict res3 = c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc)
-    return {**res1, **res2, **res3}
+    cdef double nacc = c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
+    cdef double psi = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
+    return {**res1,
+            **res2,
+            "nacc": nacc,
+            "psi": psi}
 
 
 cpdef dict compare_partitions2(x, y):
@@ -220,7 +226,8 @@ cpdef dict compare_partitions2(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
+
 
     Returns:
     -------
@@ -238,7 +245,12 @@ cpdef double adjusted_rand_score(x, y):
     """
     The Rand index adjusted for chance.
 
-    See Hubert L., Arabie P., Comparing Partitions,
+
+
+    References:
+    ----------
+
+    Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
@@ -247,7 +259,7 @@ cpdef double adjusted_rand_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -269,7 +281,11 @@ cpdef double rand_score(x, y):
     The original Rand index (not adjusted for chance),
     yielding the `probability' of agreement between the two partitions
 
-    See Hubert L., Arabie P., Comparing Partitions,
+
+    References:
+    ----------
+
+    Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
@@ -278,7 +294,7 @@ cpdef double rand_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -298,15 +314,21 @@ cpdef double adjusted_fm_score(x, y):
     """
     The Fowlkes-Mallows index adjusted for chance,
 
-    See Eqs. (2) and (4)  in Hubert L., Arabie P., Comparing Partitions,
+    See Eqs. (2) and (4)  in (Hubert, Arabie, 1985).
+
+    References:
+    ----------
+
+    Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
+
 
     Parameters:
     ----------
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -326,7 +348,11 @@ cpdef double fm_score(x, y):
     """
     The original Fowlkes-Mallows index (not adjusted for chance)
 
-    See Hubert L., Arabie P., Comparing Partitions,
+
+    References:
+    ----------
+
+    Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
     Parameters:
@@ -334,7 +360,7 @@ cpdef double fm_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -354,7 +380,10 @@ cpdef double mi_score(x, y):
     """
     Mutual information score
 
-    See: Vinh N.X., Epps J., Bailey J.,
+    References:
+    ----------
+
+    Vinh N.X., Epps J., Bailey J.,
     Information theoretic measures for clusterings comparison:
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
@@ -364,7 +393,7 @@ cpdef double mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -385,7 +414,11 @@ cpdef double normalized_mi_score(x, y):
     """
     Normalised mutual information score (NMI_sum)
 
-    See: Vinh N.X., Epps J., Bailey J.,
+
+    References:
+    ----------
+
+    Vinh N.X., Epps J., Bailey J.,
     Information theoretic measures for clusterings comparison:
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
@@ -395,7 +428,7 @@ cpdef double normalized_mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -415,7 +448,10 @@ cpdef double adjusted_mi_score(x, y):
     """
     Adjusted mutual information score (AMI_sum)
 
-    See: Vinh N.X., Epps J., Bailey J.,
+    References:
+    ----------
+
+    Vinh N.X., Epps J., Bailey J.,
     Information theoretic measures for clusterings comparison:
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
@@ -425,7 +461,7 @@ cpdef double adjusted_mi_score(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -443,15 +479,29 @@ cpdef double adjusted_mi_score(x, y):
 
 
 
-cpdef double normalised_purity(x, y):
+cpdef double normalised_accuracy(x, y):
     """
-    Normalised Purity: (Purity-1/K)/(1-1/K).
+    Normalised Accuracy: (Accuracy(C[sigma]-1/K)/(1-1/K).
 
-    Purity is similar to Accuracy, however it permutes the columns of the
-    confusion matrix based on the solution to the Linear Sum Assignment Problem.
+    C[sigma] is a version of the confusion matrix for given x and y
+    with columns permuted based on the solution to the
+    maximal linear sum assignment problem.
+
+    Accuracy(C[sigma]) is sometimes referred to as Purity,
+    e.g. in (Rendon et al. 2011).
+
+    It is assumed that y represents a K-partition
+    and x represents an L-partition and that K>=L.
 
 
-    See, e.g.: Rezaei M., Franti P., Set matching measures for external cluster validity,
+    References:
+    ----------
+
+    Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
+    Internal versus external cluster validation indexes,
+    International Journal of Computers and Communications 5(1), 2011, pp. 27-34.
+
+    Rezaei M., Franti P., Set matching measures for external cluster validity,
     IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
     doi:10.1109/TKDE.2016.2551240
 
@@ -461,7 +511,7 @@ cpdef double normalised_purity(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -477,7 +527,7 @@ cpdef double normalised_purity(x, y):
     if xc > yc:
         raise ValueError("number of rows in the confusion matrix \
             must be less than or equal to the number of columns")
-    return c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc).npur
+    return c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
 
 
 
@@ -487,12 +537,19 @@ cpdef double pair_sets_index(x, y):
     Pair Sets Index (PSI) adjusted for chance
 
     Pairing is based on the solution to the Linear Sum Assignment Problem
-    of the confusion matrix.
+    of the transformed confusion matrix.
+
+    It is assumed that y represents a K-partition
+    and x represents an L-partition and that K>=L.
 
 
-    See, e.g.: Rezaei M., Franti P., Set matching measures for external cluster validity,
+    References:
+    ----------
+
+    Rezaei M., Franti P., Set matching measures for external cluster validity,
     IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
     doi:10.1109/TKDE.2016.2551240
+
 
 
     Parameters:
@@ -500,7 +557,7 @@ cpdef double pair_sets_index(x, y):
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths, representing
-        two K-partitions of the same set
+        two partitions of the same set
 
 
     Returns:
@@ -516,5 +573,5 @@ cpdef double pair_sets_index(x, y):
     if xc > yc:
         raise ValueError("number of rows in the confusion matrix \
             must be less than or equal to the number of columns")
-    return c_compare_partitions.Ccompare_partitions_match(&C[0,0], xc, yc).psi
+    return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
 
