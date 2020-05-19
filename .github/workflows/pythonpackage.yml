@@ -29,7 +29,7 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt -y install python3-rpy2
-        pip install rpy2
+        pip install rpy2 faiss-cpu
         sudo Rscript -e "install.packages('genie')"
     - name: Install genieclust
       run: |
