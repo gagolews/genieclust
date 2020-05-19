@@ -30,7 +30,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt -y install python3-rpy2
         pip install rpy2
-        Rscript -e "install.packages('genie')"
+        sudo Rscript -e "install.packages('genie')"
     - name: Install genieclust
       run: |
         python3 setup.py install --user
