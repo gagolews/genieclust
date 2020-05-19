@@ -32,7 +32,7 @@ def test_gic():
     for dataset in ["jain", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
-            n = 100_000
+            n = 100000
             X = np.random.normal(size=(n,32))
             labels = np.random.choice(np.r_[1,2], n)
         else:
@@ -87,7 +87,7 @@ def test_gic_precomputed():
     for dataset in ["x1", "Aggregation", "s1"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
-            n = 10_000
+            n = 10000
             X = np.random.normal(size=(n,2))
             labels = np.random.choice(np.r_[1,2], n)
         else:

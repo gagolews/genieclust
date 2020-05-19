@@ -29,7 +29,7 @@ def test_genie(metric='euclidean'):
     for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
-            n = 10_000
+            n = 10000
             X = np.random.normal(size=(n,2))
             labels = np.random.choice(np.r_[1,2], n)
         else:
@@ -79,7 +79,7 @@ def test_genie_precomputed():
     for dataset in ["x1", "s1", "Aggregation"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
-            n = 10_000
+            n = 10000
             X = np.random.normal(size=(n,2))
             labels = np.random.choice(np.r_[1,2], n)
         else:

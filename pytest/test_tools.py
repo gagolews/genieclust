@@ -4,7 +4,7 @@ from genieclust.tools import *
 
 # np.random.seed(123)
 def test_argsort():
-    for n in [1, 10, 1_000]:
+    for n in [1, 10, 1000]:
 
         x = np.arange(n)
         t0 = time.time()
@@ -35,7 +35,7 @@ def test_argsort():
 
 
 def test_argkmin():
-    for n in [1, 5, 1_000]:
+    for n in [1, 5, 1000]:
         for k in [k for k in [0, 1, 2, 4, 10, 25, 50, 100] if k < n]:
             x = np.arange(n)
             t0 = time.time()
@@ -66,7 +66,7 @@ def test_argkmin():
 
 
 def test_cummin():
-    for n in [1, 5, 1_000]:
+    for n in [1, 5, 1000]:
         x = np.random.rand(n)
         cx = cummin(x)
         for i in range(n):
@@ -84,7 +84,7 @@ def test_cummin():
 
 
 def test_cummax():
-    for n in [1, 5, 1_000]:
+    for n in [1, 5, 1000]:
         x = np.random.rand(n)
         cx = cummax(x)
         for i in range(n):

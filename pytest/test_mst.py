@@ -83,7 +83,7 @@ def test_MST():
     path = "benchmark_data"
     for dataset in ["pathbased", "h2mg_64_50", "big_one"]:
         if dataset == "big_one":
-            X =  np.random.rand(1_000, 2)
+            X =  np.random.rand(1000, 2)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
 
