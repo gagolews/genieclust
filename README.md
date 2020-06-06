@@ -115,7 +115,7 @@ Installation
 The package requires Python 3.6+ together with `cython` as well as
 `numpy`, `scipy`, `matplotlib` and `sklearn`.
 
-Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`).
+Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`), `mlpack`.
 
 
 To build and install the most recent development version:

@@ -34,16 +34,20 @@ from . import internal
 import scipy.spatial.distance
 from sklearn.base import BaseEstimator, ClusterMixin
 import sklearn.neighbors
-import warnings
+#import warnings
 import math
 
 
 try:
     import faiss
 except ImportError:
-    pass
+    faiss = None
 
 
+try:
+    import mlpack
+except ImportError:
+    mlpack = None
 
 
 
@@ -54,13 +58,15 @@ class GenieBase(BaseEstimator, ClusterMixin):
             M,
             affinity,
             exact,
-            cast_float32
+            cast_float32,
+            use_mlpack
         ):
         super().__init__()
         self.M = M
         self.affinity = affinity
         self.cast_float32 = cast_float32
         self.exact = exact
+        self.use_mlpack = use_mlpack
 
         self.n_samples_   = None
         self.n_features_  = None
@@ -118,6 +124,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["affinity"] not in _affinity_options:
             raise ValueError("affinity should be one of %r"%_affinity_options)
 
+        if cur_state["affinity"] == "l2":
+            cur_state["affinity"] = "euclidean"
+        if cur_state["affinity"] == "l1" or cur_state["affinity"] == "cityblock":
+            cur_state["affinity"] = "manhattan"
+
         n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
             n_features = self.n_features_ # the user must set it manually
@@ -133,7 +144,24 @@ class GenieBase(BaseEstimator, ClusterMixin):
         cur_state["exact"] = bool(self.exact)
         cur_state["cast_float32"] = bool(self.cast_float32)
 
+        if self.use_mlpack == "auto":
+            if mlpack is not None and \
+                    cur_state["affinity"] == "euclidean" and \
+                    n_features <= 6 and \
+                    cur_state["M"] == 1:
+                cur_state["use_mlpack"] = True
+            else:
+                cur_state["use_mlpack"] = False
 
+        else:
+            cur_state["use_mlpack"] = bool(self.use_mlpack)
+
+        if cur_state["use_mlpack"] and mlpack is None:
+            raise ValueError("package mlpack is not available")
+        if cur_state["use_mlpack"] and cur_state["affinity"] != "euclidean":
+            raise ValueError("mlpack can only be used with affinity=='euclidean'")
+        if cur_state["use_mlpack"] and cur_state["M"] != 1:
+            raise ValueError("mlpack can only be used with M==1")
 
         mst_dist = None
         mst_ind  = None
@@ -141,7 +169,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         nn_ind   = None
         d_core   = None
 
-        if cur_state["cast_float32"]:
+        if cur_state["cast_float32"] and cur_state["affinity"] != "precomputed":
             # faiss supports float32 only
             # warning if sparse!!
             X = X.astype(np.float32, order="C", copy=False)
@@ -166,12 +194,13 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 pass
 
         if not cur_state["exact"]:
-            if cur_state["affinity"] == "precomputed":
-                raise ValueError('exact=True with affinity="precomputed"')
-
             #raise NotImplementedError("approximate method not implemented yet")
 
-            assert cur_state["affinity"] in ("euclidean", "l2")
+            if cur_state["affinity"] == "precomputed":
+                raise ValueError('exact==True with affinity=="precomputed"')
+
+
+            assert cur_state["affinity"] == "euclidean"
 
             actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
             actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
@@ -219,25 +248,35 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]
-            if cur_state["M"] > 1:
-                # Genie+HDBSCAN
-                # Use sklearn (TODO: rly???) to determine the d_core distance
-                if nn_dist is None or nn_ind is None:
-                    nn = sklearn.neighbors.NearestNeighbors(
-                        n_neighbors=cur_state["M"]-1,
-                        metric=cur_state["affinity"] # supports "precomputed"
-                    )
-                    nn_dist, nn_ind = nn.fit(X).kneighbors()
-                if d_core is None:
-                    d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+            if cur_state["use_mlpack"]:
+                assert cur_state["M"] == 1
+                assert cur_state["affinity"] == "euclidean"
 
-            # Use Prim's algorithm to determine the MST
-            # w.r.t. the distances computed on the fly
-            if mst_dist is None or mst_ind is None:
-                mst_dist, mst_ind = internal.mst_from_distance(X,
-                    metric=cur_state["affinity"],
-                    d_core=d_core
-                )
+                if mst_dist is None or mst_ind is None:
+                    _res = mlpack.emst(input=X)["output"]
+                    mst_dist = _res[:,2].astype(np.double, order="C")
+                    mst_ind  = _res[:,:2].astype(np.intp, order="C")
+            else:
+                if cur_state["M"] > 1:
+                    # Genie+HDBSCAN
+                    # Use sklearn (TODO: rly???) to determine d_core
+                    # TODO: mlpack?
+                    if nn_dist is None or nn_ind is None:
+                        nn = sklearn.neighbors.NearestNeighbors(
+                            n_neighbors=cur_state["M"]-1,
+                            metric=cur_state["affinity"] # supports "precomputed"
+                        )
+                        nn_dist, nn_ind = nn.fit(X).kneighbors()
+                    if d_core is None:
+                        d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+
+                # Use Prim's algorithm to determine the MST
+                # w.r.t. the distances computed on the fly
+                if mst_dist is None or mst_ind is None:
+                    mst_dist, mst_ind = internal.mst_from_distance(X,
+                        metric=cur_state["affinity"],
+                        d_core=d_core
+                    )
 
         self.n_samples_  = n_samples
         self.n_features_ = n_features
@@ -429,8 +468,7 @@ class Genie(GenieBase):
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
     exact : bool, default=True
-        TODO: NOT IMPLEMENTED YET
-        ........................................................................
+        TODO: Not yet implemented.
         If False, the minimum spanning tree is approximated
         based on the nearest neighbours graph. Finding nearest neighbours
         in low dimensional spaces is usually fast. Otherwise,
@@ -443,8 +481,12 @@ class Genie(GenieBase):
         TODO: Note that some nearest neighbour search
         methods require float32 data anyway.
         TODO: Might be a problem if the input matrix is sparse, but
-        with don't support this yet.
-
+        we don't support this yet.
+    use_mlpack : bool or "auto", default="auto"
+        Use mlpack.emst() for computing the Euclidean minimum spanning tree?
+        Might be faster for lower-dimensional spaces. As the name suggests,
+        only affinity='euclidean' is supported. By default, we rely on mlpack
+        if it is installed and n_features is <= 6.
 
 
     Attributes
@@ -511,9 +553,10 @@ class Genie(GenieBase):
             compute_all_cuts=False,
             postprocess="boundary",
             exact=True,
-            cast_float32=True
+            cast_float32=True,
+            use_mlpack="auto"
         ):
-        super().__init__(M, affinity, exact, cast_float32)
+        super().__init__(M, affinity, exact, cast_float32, use_mlpack)
 
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
@@ -674,6 +717,8 @@ class GIc(GenieBase):
         see `Genie`
     cast_float32 : bool, default=True
         see `Genie`
+    use_mlpack : bool or "auto", default="auto"
+        see `Genie`
 
 
     Attributes
@@ -692,9 +737,10 @@ class GIc(GenieBase):
             compute_all_cuts=False,
             postprocess="boundary",
             exact=True,
-            cast_float32=True
+            cast_float32=True,
+            use_mlpack="auto"
         ):
-        super().__init__(M, affinity, exact, cast_float32)
+        super().__init__(M, affinity, exact, cast_float32, use_mlpack)
 
         self.n_clusters = n_clusters
         self.n_features = n_features
