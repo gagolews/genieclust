@@ -3,10 +3,26 @@
 #VPATH="/home/gagolews/Python/genieclust"
 
 
-.PHONY: all user
+.PHONY: python pytest r check testthat
 
 all: please_specify_build_target_manually
 
-user:
+python:
 	CPPFLAGS="-fopenmp -march=native -mtune=native" \
 	LDFLAGS="-fopenmp" python3 setup.py install --user
+
+pytest: python
+	pytest
+
+r:
+	Rscript -e 'Rcpp::compileAttributes()'
+	Rscript -e 'devtools::document(roclets = c("rd", "collate", "namespace", "vignette"))'
+	R CMD INSTALL .
+
+check: r
+	Rscript -e 'devtools::check()'
+
+testthat: r
+	Rscript -e 'options(width=120); source("devel/testthat.R")'
+
+

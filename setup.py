@@ -104,7 +104,7 @@ setuptools.setup(
     description="The Genie++ Clustering Algorithm",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author="Marek Gagolewski and others",
+    author="Marek Gagolewski",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
     license="BSD-3-Clause",

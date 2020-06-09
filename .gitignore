@@ -12,3 +12,5 @@ genieclust.egg-info
 pytest/__pycache__
 .ipynb_checkpoints
 *.Rmd-tmp-*
+src/*.o
+src/*.so

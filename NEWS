@@ -17,7 +17,7 @@
     `genieclust` can solve much larger problems now.
 
 -   TODO: `sklearn.neighbors.NearestNeighbors`,
-    `faiss` or other search data structures are used to
+    `faiss`, `mlpack` or other search data structures are used to
     determine few first NNs when computing the mutual reachability
     distance a.k.a. the "core distance".
 

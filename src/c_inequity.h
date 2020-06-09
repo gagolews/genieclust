@@ -38,7 +38,7 @@
 #include <algorithm>
 
 
-/*! The normalised Gini index
+/*! The Normalised Gini Index
  *
  * The normalised  Gini index is given by:
  * $$
@@ -78,7 +78,7 @@ double Cgini_sorted(const T* x, ssize_t n)
 
 
 
-/*! The normalised Bonferroni index
+/*! The Normalised Bonferroni Index
  *
  * The normalised Bonferroni index is given by:
  * $$

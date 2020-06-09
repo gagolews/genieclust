@@ -11,7 +11,7 @@ The *Genie*++ Hierarchical Clustering Algorithm
 
 Author: [Marek Gagolewski](https://www.gagolewski.com)
 
-Co-authors/contributors:
+Contributors:
 [Anna Cena](https://cena.rexamine.com),
 [Maciej Bartoszuk](https://bartoszuk.rexamine.com)
 
