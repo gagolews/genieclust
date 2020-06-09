@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// adjusted_rand_index
+double adjusted_rand_index(RObject x, RObject y);
+RcppExport SEXP _genieclust_adjusted_rand_index(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(adjusted_rand_index(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gini
 double gini(Rcpp::NumericVector x);
 RcppExport SEXP _genieclust_gini(SEXP xSEXP) {
@@ -29,6 +41,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_genieclust_adjusted_rand_index", (DL_FUNC) &_genieclust_adjusted_rand_index, 2},
     {"_genieclust_gini", (DL_FUNC) &_genieclust_gini, 1},
     {"_genieclust_bonferroni", (DL_FUNC) &_genieclust_bonferroni, 1},
     {NULL, NULL, 0}

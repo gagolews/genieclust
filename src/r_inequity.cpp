@@ -77,11 +77,11 @@
 // [[Rcpp::export]]
 double gini(Rcpp::NumericVector x)
 {
-    size_t n = x.size();
+    ssize_t n = x.size();
 
     // check if sorted; if not, sort.
-    for (size_t i=1; i<n; ++i) {
-        if (x[i] > x[i+1]) {
+    for (ssize_t i=1; i<n; ++i) {
+        if (x[i-1] > x[i]) {
             x = Rcpp::clone(x);
             std::sort(x.begin(), x.end());
             break;
@@ -127,11 +127,11 @@ double gini(Rcpp::NumericVector x)
 // [[Rcpp::export]]
 double bonferroni(Rcpp::NumericVector x)
 {
-    size_t n = x.size();
+    ssize_t n = x.size();
 
     // check if sorted; if not, sort.
-    for (size_t i=1; i<n; ++i) {
-        if (x[i] > x[i+1]) {
+    for (ssize_t i=1; i<n; ++i) {
+        if (x[i-1] > x[i]) {
             x = Rcpp::clone(x);
             std::sort(x.begin(), x.end());
             break;

@@ -135,7 +135,8 @@ struct CComparePartitionsInfoResult {
  *
  * Note that C is modified in-place (overwritten).
  */
-void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc)
+template<class T>
+void Capply_pivoting(T* C, ssize_t xc, ssize_t yc)
 {
     for (ssize_t i=0; i<std::min(xc-1, yc-1); ++i) {
         ssize_t w = i;
@@ -166,9 +167,10 @@ void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc)
  *
  * The elements in C are modified in-place.
  */
-void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
-        ssize_t xmin, ssize_t ymin,
-        ssize_t* x, ssize_t* y, ssize_t n)
+template<class T>
+void Ccontingency_table(T* C, ssize_t xc, ssize_t yc,
+        T xmin, T ymin,
+        const T* x, const T* y, ssize_t n)
 {
     for (ssize_t j=0; j<xc*yc; ++j)
         C[j] = 0;
@@ -196,9 +198,11 @@ void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
  *
  *  @return the computed scores
  */
-CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C, ssize_t xc, ssize_t yc)
+template<class T>
+CComparePartitionsPairsResult Ccompare_partitions_pairs(const T* C,
+    ssize_t xc, ssize_t yc)
 {
-    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
@@ -255,9 +259,11 @@ CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C, ssize_
  *
  *  @return the computed scores
  */
-CComparePartitionsInfoResult Ccompare_partitions_info(const ssize_t* C, ssize_t xc, ssize_t yc)
+template<class T>
+CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
+    ssize_t xc, ssize_t yc)
 {
-    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
@@ -348,9 +354,10 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const ssize_t* C, ssize_t 
  *
  *  @return the computed score
  */
-double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
+template<class T>
+double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
 {
-    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
@@ -359,7 +366,7 @@ double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
     ssize_t retval = linear_sum_assignment(C, xc, yc, output_col4row.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
-    ssize_t t = 0;
+    double t = 0.0;
     for (ssize_t i=0; i<xc; ++i)
         t += C[yc*i+output_col4row[i]];
 
@@ -387,9 +394,10 @@ double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
  *
  *  @return the computed score
  */
-double Ccompare_partitions_psi(const ssize_t* C, ssize_t xc, ssize_t yc)
+template<class T>
+double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc)
 {
-    ssize_t n = 0; // total sum (length of the underlying x and y = number of points)
+    double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 

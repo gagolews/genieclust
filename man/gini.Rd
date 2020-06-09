@@ -22,7 +22,7 @@ The normalised  Gini index is given by:
     }.
 }
 
-Time complexity: $O(n)$ for sorted (increasingly) data.
+Time complexity: \eqn{O(n)} for sorted (increasingly) data.
 Otherwise, the vector will be sorted.
 Note that for sorted data, it holds:
 \deqn{

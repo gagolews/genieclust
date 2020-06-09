@@ -22,7 +22,7 @@ The normalised Bonferroni index is given by:
     (n-1) \sum_{i=1}^n x_i
 }   },
 
-Time complexity: $O(n)$ for sorted (increasingly) data.
+Time complexity: \eqn{O(n)} for sorted (increasingly) data.
 Otherwise, the vector will be sorted.
 }
 \examples{
