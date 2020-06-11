@@ -91,11 +91,15 @@ struct CMstTriple {
 
 
 
-/*! Computes a minimum spanning forest of a (<=k)-nearest neighbour graph
- *  using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+/*! Computes a minimum spanning forest of a (<=k)-nearest neighbour
+ *  (i.e., one that consists of 1-, 2-, ..., k-neighbours = the first k
+ *  nearest neighbours) graph using Kruskal's algorithm, and orders
+ *  its edges w.r.t. increasing weights.
  *
  *  Note that, in general, an MST of the (<=k)-nearest neighbour graph
  *  might not be equal to the MST of the complete Pairwise Distances Graph.
+ *
+ *  It is assumed that each query point is not its own neighbour.
  *
  * @param dist   a c_contiguous array, shape (n,k),
  *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
@@ -124,6 +128,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
     ssize_t nk = n*k;
 
     // determine the ordering permutation of dist
@@ -199,6 +204,77 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
 
 
 
+/*! Determine the first k nearest neighbours of each point.
+ *
+ *  Exactly n*(n-1) distance computations are performed.
+ *
+ *  It is assumed that each query point is not its own neighbour.
+ *
+ * Worst-case time complexity: O(n*(n-1)/2*d*k)
+ *
+ *
+ * @param D a callable CDistance object such that a call to
+ *        <T*>D(j, <ssize_t*>M, ssize_t l) returns an n-ary array
+ *        with the distances from the j-th point to l points whose indices
+ *        are given in array M
+ * @param n number of points
+ * @param k number of nearest neighbours,
+ * @param dist [out]  a c_contiguous array, shape (n,k),
+ *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
+ * @param ind [out]   a c_contiguous array, shape (n,k),
+ *        (undirected) edge definition, interpreted as {i, ind[i,j]}
+ */
+template <class T>
+void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
+    T* dist, ssize_t* ind)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
+
+    for (ssize_t i=0; i<n*k; ++i) {
+        dist[i] = INFTY;
+        ind[i] = -1;
+    }
+
+    std::vector<ssize_t> M(n);
+    for (ssize_t i=0; i<n; ++i) M[i] = i;
+
+    for (ssize_t i=0; i<n-1; ++i) {
+        // pragma omp parallel for inside:
+        const T* dij = (*D)(i, M.data()+i+1, n-i-1);
+        // let dij[j] == d(x_i, x_j)
+
+        for (ssize_t j=i+1; j<n; ++j) {
+
+            if (dij[j] < dist[i*k+k-1]) {
+                // j might be amongst k-NNs of i
+                ssize_t l = k-1;
+                while (l > 0 && dij[j] < dist[i*k+l-1]) {
+                    dist[i*k+l] = dist[i*k+l-1];
+                    ind[i*k+l]  = ind[i*k+l-1];
+                    l -= 1;
+                }
+                dist[i*k+l] = dij[j];
+                ind[i*k+l]  = j;
+            }
+
+            if (dij[j] < dist[j*k+k-1]) {
+                // i might be amongst k-NNs of j
+                ssize_t l = k-1;
+                while (l > 0 && dij[j] < dist[j*k+l-1]) {
+                    dist[j*k+l] = dist[j*k+l-1];
+                    ind[j*k+l]  = ind[j*k+l-1];
+                    l -= 1;
+                }
+                dist[j*k+l] = dij[j];
+                ind[j*k+l]  = i;
+            }
+        }
+    }
+}
+
+
 
 
 /*! A Jarník (Prim/Dijkstra)-like algorithm for determining
@@ -227,8 +303,8 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
  *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
  *
  *
- * @param dist a callable CDistance object such that a call to
- *        <T*>dist(j, <ssize_t*>M, ssize_t k) returns an n-ary array
+ * @param D a callable CDistance object such that a call to
+ *        <T*>D(j, <ssize_t*>M, ssize_t k) returns an n-ary array
  *        with the distances from the j-th point to k points whose indices
  *        are given in array M
  * @param n number of points
@@ -239,10 +315,10 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
  */
 template <class T>
-void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
+void Cmst_from_complete(CDistance<T>* D, ssize_t n,
     T* mst_dist, ssize_t* mst_ind)
 {
-    std::vector<T>  Dnn(n, INFTY);
+    std::vector<T> Dnn(n, INFTY);
     std::vector<ssize_t> Fnn(n);
     std::vector<ssize_t> M(n);
     std::vector< CMstTriple<T> > res(n-1);
@@ -255,26 +331,25 @@ void Cmst_from_complete(CDistance<T>* dist, ssize_t n,
 
         // compute the distances from lastj (on the fly)
         // dist_from_lastj[j] == d(lastj, j)
-        // pragma omp parallel for inside::
-        const T* dist_from_lastj = (*dist)(lastj, M.data()+1, n-i-1);
+        // pragma omp parallel for inside:
+        const T* dist_from_lastj = (*D)(lastj, M.data()+1, n-i-1);
 
         bestjpos = bestj = 0;
         for (ssize_t j=1; j<n-i; ++j) {
-            // T curdist = dist[n*lastj+M_j]; // d(lastj, M_j)
             ssize_t M_j = M[j];
-            T curdist = dist_from_lastj[M_j];
+            T curdist = dist_from_lastj[M_j]; // d(lastj, M_j)
             if (curdist < Dnn[M_j]) {
                 Dnn[M_j] = curdist;
                 Fnn[M_j] = lastj;
             }
-            if (Dnn[M_j] < Dnn[bestj]) {        // D[0] == INFTY
+            if (Dnn[M_j] < Dnn[bestj]) {        // Dnn[0] == INFTY
                 bestj = M_j;
                 bestjpos = j;
             }
         }
 
-        M[bestjpos] = M[n-i-1]; // never ever visit bestj again
-        lastj = bestj;          // next time, start from bestj
+        M[bestjpos] = M[n-i-1]; // don't visit bestj again
+        lastj = bestj;          // start from bestj next time
 
         // and an edge to MST: (smaller index first)
         res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);

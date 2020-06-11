@@ -216,7 +216,6 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         dtype=np.float32 if floatT is float else np.float64)
     cdef c_mst.CDistance[floatT]* dist = NULL
     cdef c_mst.CDistance[floatT]* dist2 = NULL
-    cdef dict metric_params_dict
 
     if metric == "euclidean" or metric == "l2":
         # get squared(!) Euclidean if d_core is None
@@ -322,6 +321,75 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
 
 
 
+cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
+       str metric="euclidean", floatT[::1] d_core=None):
+    """Determines the first k nearest neighbours of each point in X,
+    with respect to a given metric (distance).
+    Distances are computed on the fly.
+    Memory use: O(k*n).
+
+    It is assumed that each query point is not its own neighbour.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n,d)
+        n data points in a feature space of dimensionality d.
+    k : int < n
+        number of nearest neighbours
+    metric : string
+        one of `"euclidean"` (a.k.a. `"l2"`),
+        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
+        `"cosine"`.
+        More metrics/distances might be supported in future versions.
+    d_core : c_contiguous ndarray of length n; optional (default=None)
+        core distances for computing the mutual reachability distance
+
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (dist, ind) representing the k-NN graph, where:
+            dist : a c_contiguous ndarray, shape (n,k)
+                dist[i,:] is sorted nondecreasingly for all i,
+                dist[i,j] gives the weight of the edge {i, ind[i,j]},
+                i.e., the distance between the i-th point and its j-th NN.
+            ind : a c_contiguous ndarray, shape (n,k)
+                edge definition, interpreted as {i, ind[i,j]};
+                ind[i,j] is the index of the j-th nearest neighbour of i.
+    """
+    cdef ssize_t n = X.shape[0]
+    cdef ssize_t d = X.shape[1]
+    cdef ssize_t i
+    cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+    cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef c_mst.CDistance[floatT]* D = NULL
+    cdef c_mst.CDistance[floatT]* D2 = NULL
+
+    if metric == "euclidean" or metric == "l2":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, False)
+    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
+    elif metric == "cosine":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
+    elif metric == "precomputed":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCompletePrecomputed[floatT](&X[0,0], n)
+    else:
+        raise NotImplementedError("given `metric` is not supported (yet)")
+
+    if d_core is not None:
+        D2 = D # must be deleted separately
+        D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
+
+    c_mst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0])
+
+    if D:  del D
+    if D2: del D2
+
+    return dist, ind
 
 
 ################################################################################

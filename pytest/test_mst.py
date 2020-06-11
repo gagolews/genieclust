@@ -9,6 +9,24 @@ import genieclust.deprecated
 def mst_check(X, metric='euclidean', **kwargs):
     n = X.shape[0]
     d = X.shape[1]
+
+
+    for n_neighbors in [2, 5, 10]:
+        t0 = time.time()
+        distb, indb = genieclust.internal.knn_from_distance(X, k=n_neighbors, metric=metric)
+        print("        knn_from_distance %10.3fs" % (time.time()-t0,))
+
+        t0 = time.time()
+        nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, metric=metric, **kwargs)
+        nn.fit(X)
+        dist, ind = nn.kneighbors()
+        print("        sklearn           %10.3fs" % (time.time()-t0,))
+
+        assert np.allclose(dist.sum(), distb.sum())
+        assert np.allclose(dist, distb)
+        assert np.all(ind == indb)
+
+
     n_neighbors = n-1
 
     t0 = time.time()
@@ -25,6 +43,7 @@ def mst_check(X, metric='euclidean', **kwargs):
     mst_d1, mst_i1 = genieclust.internal.mst_from_nn(dist, ind)
     print("    NearestNeighbors %10.3fs" % (time.time()-t0,))
 
+
     assert np.allclose(mst_d.sum(), mst_d1.sum())
     assert np.all(mst_i == mst_i1)
     assert np.allclose(mst_d, mst_d1)
@@ -37,6 +56,8 @@ def mst_check(X, metric='euclidean', **kwargs):
     assert np.allclose(mst_d.sum(), mst_d2.sum())
     assert np.all(mst_i == mst_i2)
     assert np.allclose(mst_d, mst_d2)
+
+
 
 
     #for nnn in [8, 32, 128]:
@@ -81,9 +102,9 @@ def mst_mutreach_check(X, metric='euclidean'):
 
 def test_MST():
     path = "benchmark_data"
-    for dataset in ["pathbased", "h2mg_64_50", "big_one"]:
+    for dataset in ["big_one", "pathbased", "h2mg_64_50"]:
         if dataset == "big_one":
-            X =  np.random.rand(1000, 2)
+            X =  np.random.rand(1000, 32)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
 

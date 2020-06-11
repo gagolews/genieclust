@@ -1,5 +1,5 @@
-`genieclust` Python Package
-===========================
+`genieclust` Python and R Package
+=================================
 
 
 The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
@@ -49,8 +49,8 @@ original algorithm available on CRAN, see R package
 
 
 
-Package Features
-----------------
+Python Package Features
+-----------------------
 
 Implemented algorithms include:
 
@@ -68,14 +68,14 @@ See classes `genieclust.Genie` and `genieclust.GIc`.
 
 Other goodies:
 
--   `genieclust.inequity` -- Inequity measures (the Gini and Bonferroni
-    index)
+-   `genieclust.inequity` -- Inequity measures (the normalised
+    Gini and Bonferroni index)
 
 -   `genieclust.compare_partitions` -- Functions to compare partitions
     (adjusted&unadjusted Rand,
     adjusted&unadjusted Fowlkes-Mallows (FM),
     adjusted&normalised&unadjusted mutual information (MI) scores,
-    normalised purity and pair sets index (PSI))
+    normalised accuracy and pair sets index (PSI))
 
 -   `genieclust.internal.DisjointSets`, `genieclust.internal.GiniDisjointSets` --
     Union-find data structures (with extensions)
@@ -85,10 +85,22 @@ Other goodies:
 
 
 
+R Package Features
+------------------
+
+The R version of the package features:
+
+-   Partition similarity measures (that can be used as external cluster
+    validity scores)
+
+-   Inequity measures
+
+
+
 Examples and Tutorials
 ----------------------
 
-`genieclust` has a familiar `scikit-learn` look-and-feel:
+The Python language version of `genieclust` has a familiar `scikit-learn` look-and-feel:
 
 ```python
 import genieclust
@@ -96,6 +108,11 @@ X = ... # some data
 g = genieclust.Genie(n_clusters=2)
 labels = g.fit_predict(X)
 ```
+
+TODO: The R version is compatible with `hclust()`...
+
+
+
 
 For more illustrations, use cases and details, make sure to check out:
 
@@ -146,6 +163,8 @@ see [PyPI](https://pypi.org/project/genieclust/)):
 pip3 install genieclust --user # or sudo pip3 install genieclust
 ```
 
+
+TODO: R version
 
 
 
