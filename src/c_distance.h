@@ -73,7 +73,7 @@ struct CDistance {
  *  complete pairwise distance c_contiguous matrix.
  */
 template<class T>
-struct CDistanceCompletePrecomputed : public CDistance<T> {
+struct CDistancePrecomputedMatrix : public CDistance<T> {
     const T* dist;
     ssize_t n;
 
@@ -82,13 +82,13 @@ struct CDistanceCompletePrecomputed : public CDistance<T> {
      *    the i-th and the j-th point, the matrix is symmetric
      * @param n number of points
      */
-    CDistanceCompletePrecomputed(const T* dist, ssize_t n) {
+    CDistancePrecomputedMatrix(const T* dist, ssize_t n) {
         this->n = n;
         this->dist = dist;
     }
 
-    CDistanceCompletePrecomputed()
-        : CDistanceCompletePrecomputed(NULL, 0) { }
+    CDistancePrecomputedMatrix()
+        : CDistancePrecomputedMatrix(NULL, 0) { }
 
     virtual const T* operator()(ssize_t i, const ssize_t* /*M*/, ssize_t /*k*/) {
         return &this->dist[i*n]; // the i-th row of dist
@@ -96,6 +96,45 @@ struct CDistanceCompletePrecomputed : public CDistance<T> {
 };
 
 
+/*! A class to "compute" the distances from the i-th point
+ *  to all n points based on a pre-computed a vector-form
+ *  c_contiguous distance vector.
+ */
+template<class T>
+struct CDistancePrecomputedVector : public CDistance<T> {
+    const T* dist;
+    ssize_t n;
+    std::vector<T> buf;
+
+    /*!
+     * @param dist n*(n-1)/2 c_contiguous vector, dist[ i*n - i*(i+1)/2 + w-i-1 ]
+     *    where w is the distance between the i-th and the w-th point
+     * @param n number of points
+     */
+    CDistancePrecomputedVector(const T* dist, ssize_t n)
+            : buf(n)
+    {
+        this->n = n;
+        this->dist = dist;
+    }
+
+    CDistancePrecomputedVector()
+        : CDistancePrecomputedVector(NULL, 0) { }
+
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        T* __buf = buf.data();
+        for (ssize_t j=0; j<k; ++j) {
+            ssize_t w = M[j];
+            if (i == w)
+                __buf[w] = 0.0;
+            else if (i < w)
+                __buf[w] = dist[ i*n - i*(i+1)/2 + w-i-1 ];
+            else
+                __buf[w] = dist[ w*n - w*(w+1)/2 + i-w-1 ];
+        }
+        return __buf;
+    }
+};
 
 
 

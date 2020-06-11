@@ -126,14 +126,22 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         if cur_state["affinity"] == "l2":
             cur_state["affinity"] = "euclidean"
-        if cur_state["affinity"] == "l1" or cur_state["affinity"] == "cityblock":
+        if cur_state["affinity"] in ["l1", "cityblock"]:
             cur_state["affinity"] = "manhattan"
 
         n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
             n_features = self.n_features_ # the user must set it manually
-            if X.shape[0] != X.shape[1]:
-                raise ValueError("X must be a square matrix that gives all the pairwise distances, see scipy.spatial.distance.squareform")
+            X = X.reshape(X.shape[0], -1)
+            if X.shape[1] not in [1, X.shape[0]]:
+                raise ValueError("X must be distance vector \
+                    or a square-form distance matrix, \
+                    see scipy.spatial.distance.pdist or \
+                    scipy.spatial.distance.squareform")
+            if X.shape[1] == 1:
+                n_samples =  int(round((math.sqrt(1.0+8.0*n_samples)+1.0)/2.0))
+                assert n_samples*(n_samples-1)//2 == X.shape[0]
+
         else:
             n_features = X.shape[1]
 
@@ -197,7 +205,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #raise NotImplementedError("approximate method not implemented yet")
 
             if cur_state["affinity"] == "precomputed":
-                raise ValueError('exact==True with affinity=="precomputed"')
+                raise ValueError('exact==False with affinity=="precomputed"')
 
 
             assert cur_state["affinity"] == "euclidean"
@@ -458,8 +466,11 @@ class Genie(GenieBase):
     affinity : str, default="euclidean"
         Metric used to compute the linkage. One of: "euclidean" (synonym: "l2"),
         "manhattan" (a.k.a. "l1" and "cityblock"), "cosine" or "precomputed".
-        If "precomputed", a complete pairwise distance matrix
-        is needed as input (argument X) for the fit() method.
+        If "precomputed", a n_samples*(n_samples-1)/2 distance vector
+        or a square-form distance
+        matrix is needed on input (argument X) for the fit() method,
+        see `scipy.spatial.distance.pdist()` or
+        `scipy.spatial.distance.squareform()`, amongst others.
     compute_full_tree : bool, default=True
         If True, only a partial hierarchy is determined so that
         at most n_clusters are generated. Saves some time if you think you know
@@ -589,15 +600,18 @@ class Genie(GenieBase):
         Parameters
         ----------
 
-        X : ndarray, shape (n_samples, n_features) or (n_samples, n_samples)
+        X : ndarray, shape (n_samples, n_features)  or
+                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
             A matrix defining n_samples in a vector space with n_features.
             Hint: it might be a good idea to normalise the coordinates of the
             input data points by calling
-            X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False) so that the dataset is centered at 0 and
+            `X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False)`
+            so that the dataset is centred at 0 and
             has total variance of 1. This way the method becomes
             translation and scale invariant.
             However, if affinity="precomputed", then X is assumed to define
-            all pairwise distances between n_samples.
+            all pairwise distances between n_samples
+            (either in form of a distance vector or square distance matrix).
         y : None
             Ignored.
 
@@ -775,7 +789,8 @@ class GIc(GenieBase):
         Parameters
         ----------
 
-        X : ndarray, shape (n_samples, n_features) or (n_samples, n_samples)
+        X : ndarray, shape (n_samples, n_features) or
+                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
             see `Genie.fit()`
         y : None
             Ignored.

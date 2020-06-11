@@ -90,164 +90,6 @@ from . cimport c_genie
 
 
 
-
-cpdef tuple mst_from_complete(floatT[:,::1] dist): # [:,::1]==c_contiguous
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a(*) minimum spanning tree (MST) of a complete undirected graph
-    with weights given by a symmetric n*n matrix.
-
-    (*) Note that there might be multiple minimum trees spanning a given graph.
-
-
-    References:
-    ----------
-
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
-
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
-
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
-
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
-
-
-    Parameters
-    ----------
-
-    dist : c_contiguous ndarray, shape (n,n)
-
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
-          a) the (n-1)-ary array mst_dist is such that
-          mst_dist[i] gives the weight of the i-th edge;
-          b) mst_ind is a matrix with n-1 rows and 2 columns,
-          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
-
-        The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
-        For each i, it holds mst[i,0]<mst[i,1].
-    """
-    if not dist.shape[0] == dist.shape[1]:
-        raise ValueError("D must be a square matrix")
-
-    cdef ssize_t n = dist.shape[0]
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-
-    cdef c_mst.CDistanceCompletePrecomputed[floatT] dist_complete = \
-        c_mst.CDistanceCompletePrecomputed[floatT](&dist[0,0], n)
-
-    c_mst.Cmst_from_complete(<c_mst.CDistance[floatT]*>(&dist_complete),
-        n, &mst_dist[0], &mst_ind[0,0])
-
-    return mst_dist, mst_ind
-
-
-
-
-cpdef tuple mst_from_distance(floatT[:,::1] X,
-       str metric="euclidean", floatT[::1] d_core=None):
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a(*) minimum spanning tree (MST) of X with respect to a given metric
-    (distance). Distances are computed on the fly.
-    Memory use: O(n).
-
-
-    References
-    ----------
-
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
-
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
-
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
-
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n,d)
-        n data points in a feature space of dimensionality d.
-    metric : string
-        one of `"euclidean"` (a.k.a. `"l2"`),
-        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
-        `"cosine"`.
-        More metrics/distances might be supported in future versions.
-    d_core : c_contiguous ndarray of length n; optional (default=None)
-        core distances for computing the mutual reachability distance
-
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
-          a) the (n-1)-ary array mst_dist is such that
-          mst_dist[i] gives the weight of the i-th edge;
-          b) mst_ind is a matrix with n-1 rows and 2 columns,
-          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
-
-        The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
-        For each i, it holds mst[i,0]<mst[i,1].
-    """
-    cdef ssize_t n = X.shape[0]
-    cdef ssize_t d = X.shape[1]
-    cdef ssize_t i
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-    cdef c_mst.CDistance[floatT]* dist = NULL
-    cdef c_mst.CDistance[floatT]* dist2 = NULL
-
-    if metric == "euclidean" or metric == "l2":
-        # get squared(!) Euclidean if d_core is None
-        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, d_core is None)
-    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
-    elif metric == "cosine":
-        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
-    elif metric == "precomputed":
-        dist = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCompletePrecomputed[floatT](&X[0,0], n)
-    else:
-        raise NotImplementedError("given `metric` is not supported (yet)")
-
-    if d_core is not None:
-        dist2 = dist # must be deleted separately
-        dist  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, dist2)
-
-    c_mst.Cmst_from_complete(dist, n, &mst_dist[0], &mst_ind[0,0])
-
-    if d_core is None and (metric == "euclidean" or metric == "l2"):
-        for i in range(n-1):
-            mst_dist[i] = libc.math.sqrt(mst_dist[i])
-
-    if dist:  del dist
-    if dist2: del dist2
-
-    return mst_dist, mst_ind
-
-
-
-
-
 cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         bint stop_disconnected=True,
         bint stop_inexact=False):
@@ -321,6 +163,181 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
 
 
 
+cpdef tuple mst_from_complete(floatT[:,::1] X): # [:,::1]==c_contiguous
+    """A Jarník (Prim/Dijkstra)-like algorithm for determining
+    a(*) minimum spanning tree (MST) of a complete undirected graph
+    with weights given by a symmetric n*n matrix
+    or a distance vector of length n*(n-1)/2.
+
+    (*) Note that there might be multiple minimum trees spanning a given graph.
+
+
+    References:
+    ----------
+
+    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363 (2016) 8–23.
+
+    [2] V. Jarník, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+
+    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
+    Parallel Comput. 21 (1995) 1313–1325.
+
+    [4] R. Prim, Shortest connection networks and some generalizations,
+    Bell Syst. Tech. J. 36 (1957) 1389–1401.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n*(n-1)/2, 1) or (n,n)
+        distance vector or matrix
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
+          a) the (n-1)-ary array mst_dist is such that
+          mst_dist[i] gives the weight of the i-th edge;
+          b) mst_ind is a matrix with n-1 rows and 2 columns,
+          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+
+        The results are ordered w.r.t. nondecreasing weights.
+        (and then the 1st, and the the 2nd index).
+        For each i, it holds mst[i,0]<mst[i,1].
+    """
+    cdef ssize_t d = X.shape[1]
+    cdef ssize_t n = X.shape[0]
+    if d == 1:
+        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        assert n*(n-1)//2 == X.shape[0]
+
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+
+    cdef c_mst.CDistance[floatT]* D = NULL
+    if d == 1:
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+    else:
+        assert d == n
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
+
+    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0])
+
+    if D:  del D
+
+    return mst_dist, mst_ind
+
+
+
+
+cpdef tuple mst_from_distance(floatT[:,::1] X,
+       str metric="euclidean", floatT[::1] d_core=None):
+    """A Jarník (Prim/Dijkstra)-like algorithm for determining
+    a(*) minimum spanning tree (MST) of X with respect to a given metric
+    (distance). Distances are computed on the fly.
+    Memory use: O(n).
+
+
+    References
+    ----------
+
+    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363 (2016) 8–23.
+
+    [2] V. Jarník, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+
+    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
+    Parallel Comput. 21 (1995) 1313–1325.
+
+    [4] R. Prim, Shortest connection networks and some generalizations,
+    Bell Syst. Tech. J. 36 (1957) 1389–1401.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n,d) or,
+            if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
+        n data points in a feature space of dimensionality d
+        or pairwise distances between n points
+    metric : string
+        one of `"euclidean"` (a.k.a. `"l2"`),
+        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`),
+        `"cosine"` or `"precomputed"`.
+        More metrics/distances might be supported in future versions.
+    d_core : c_contiguous ndarray of length n; optional (default=None)
+        core distances for computing the mutual reachability distance
+
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
+          a) the (n-1)-ary array mst_dist is such that
+          mst_dist[i] gives the weight of the i-th edge;
+          b) mst_ind is a matrix with n-1 rows and 2 columns,
+          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+
+        The results are ordered w.r.t. nondecreasing weights.
+        (and then the 1st, and the the 2nd index).
+        For each i, it holds mst[i,0]<mst[i,1].
+    """
+    cdef ssize_t n = X.shape[0]
+    cdef ssize_t d = X.shape[1]
+    if d == 1 and metric == "precomputed":
+        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        assert n*(n-1)//2 == X.shape[0]
+    cdef ssize_t i
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef c_mst.CDistance[floatT]* D = NULL
+    cdef c_mst.CDistance[floatT]* D2 = NULL
+
+    if metric == "euclidean" or metric == "l2":
+        # get squared(!) Euclidean if d_core is None
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, d_core is None)
+    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
+    elif metric == "cosine":
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
+    elif metric == "precomputed":
+        if d == 1:
+            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+        else:
+            assert d == n
+            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
+    else:
+        raise NotImplementedError("given `metric` is not supported (yet)")
+
+    if d_core is not None:
+        D2 = D # must be deleted separately
+        D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
+
+    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0])
+
+    if d_core is None and (metric == "euclidean" or metric == "l2"):
+        for i in range(n-1):
+            mst_dist[i] = libc.math.sqrt(mst_dist[i])
+
+    if D:  del D
+    if D2: del D2
+
+    return mst_dist, mst_ind
+
+
+
+
+
+
 cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
        str metric="euclidean", floatT[::1] d_core=None):
     """Determines the first k nearest neighbours of each point in X,
@@ -334,14 +351,16 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
     Parameters
     ----------
 
-    X : c_contiguous ndarray, shape (n,d)
-        n data points in a feature space of dimensionality d.
+    X : c_contiguous ndarray, shape (n,d) or,
+            if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
+        n data points in a feature space of dimensionality d
+        or pairwise distances between n points
     k : int < n
         number of nearest neighbours
     metric : string
         one of `"euclidean"` (a.k.a. `"l2"`),
-        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`), or
-        `"cosine"`.
+        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`),
+        `"cosine"` or `"precomputed"`.
         More metrics/distances might be supported in future versions.
     d_core : c_contiguous ndarray of length n; optional (default=None)
         core distances for computing the mutual reachability distance
@@ -362,6 +381,10 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
     """
     cdef ssize_t n = X.shape[0]
     cdef ssize_t d = X.shape[1]
+    if d == 1 and metric == "precomputed":
+        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        assert n*(n-1)//2 == X.shape[0]
+
     cdef ssize_t i
     cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
     cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
@@ -376,7 +399,11 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
     elif metric == "cosine":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
     elif metric == "precomputed":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCompletePrecomputed[floatT](&X[0,0], n)
+        if d == 1:
+            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+        else:
+            assert d == n
+            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 

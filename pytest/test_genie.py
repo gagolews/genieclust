@@ -94,7 +94,8 @@ def test_genie_precomputed():
         X = X.astype("float32")
 
         D = scipy.spatial.distance.pdist(X)
-        D = scipy.spatial.distance.squareform(D)
+        if np.random.rand(1) > 0.5:
+            D = scipy.spatial.distance.squareform(D)
 
         for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
             gc.collect()

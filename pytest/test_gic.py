@@ -101,7 +101,8 @@ def test_gic_precomputed():
         X += np.random.normal(0, 0.0001, X.shape)
 
         D = scipy.spatial.distance.pdist(X)
-        D = scipy.spatial.distance.squareform(D)
+        if np.random.rand(1) > 0.5:
+            D = scipy.spatial.distance.squareform(D)
 
         for g in [ np.arange(1, 8)/10, np.empty(0) ]:
             gc.collect()

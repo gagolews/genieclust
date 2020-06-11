@@ -33,8 +33,17 @@ def mst_check(X, metric='euclidean', **kwargs):
     dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
     dist_complete = scipy.spatial.distance.squareform(dist_complete)
     mst_d, mst_i = genieclust.internal.mst_from_complete(dist_complete)
-    print("    precomputed      %10.3fs" % (time.time()-t0,))
+    print("    precomputed-matrix %10.3fs" % (time.time()-t0,))
 
+
+    t0 = time.time()
+    dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
+    mst_d1, mst_i1 = genieclust.internal.mst_from_complete(dist_complete.reshape(dist_complete.shape[0],-1))
+    print("    precomputed-vector %10.3fs" % (time.time()-t0,))
+
+    assert np.allclose(mst_d.sum(), mst_d1.sum())
+    assert np.all(mst_i == mst_i1)
+    assert np.allclose(mst_d, mst_d1)
 
     t0 = time.time()
     nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, metric=metric, **kwargs)

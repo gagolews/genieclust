@@ -61,9 +61,13 @@ cdef extern from "../src/c_mst.h":
         CDistanceCosine()
         CDistanceCosine(T* X, ssize_t n, ssize_t d)
 
-    cdef cppclass CDistanceCompletePrecomputed[T]: # inherits from CDistance
-        CDistanceCompletePrecomputed()
-        CDistanceCompletePrecomputed(T* d, ssize_t n)
+    cdef cppclass CDistancePrecomputedMatrix[T]: # inherits from CDistance
+        CDistancePrecomputedMatrix()
+        CDistancePrecomputedMatrix(T* d, ssize_t n)
+
+    cdef cppclass CDistancePrecomputedVector[T]: # inherits from CDistance
+        CDistancePrecomputedVector()
+        CDistancePrecomputedVector(T* d, ssize_t n)
 
 
     ssize_t Cmst_from_nn[T](T* dist, ssize_t* ind, ssize_t n, ssize_t k,
