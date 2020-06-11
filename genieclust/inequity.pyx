@@ -7,7 +7,7 @@
 
 
 """
-Economic Inequity (Inequality) Measures
+Inequity (Inequality) Measures
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 All rights reserved.
@@ -56,7 +56,7 @@ cdef T square(T x):
 
 
 
-cpdef double gini(T[:] x, bint is_sorted=False):
+cpdef double gini_index(T[:] x, bint is_sorted=False):
     """
     The Normalised Gini index:
 
@@ -81,11 +81,44 @@ cpdef double gini(T[:] x, bint is_sorted=False):
     Time complexity: $O(n)$ for sorted data.
 
 
+    Both the Gini and Bonferroni indices can be used to quantify the "inequity"
+    of a numeric sample. They can be perceived as measures of data dispersion.
+    For constant vectors (perfect equity), the indices yield values of 0.
+    Vectors with all elements but one equal to 0 (perfect inequity),
+    are assigned scores of 1.
+    Both indices follow the Pigou-Dalton principle (are Schur-convex):
+    setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$
+    and $x_i - h \geq  x_j + h$ (taking from the "rich" and giving to the "poor")
+    decreases the inequity.
+
+    These indices have applications in economics, amongst others.
+    The Gini clustering algorithm uses the Gini index as a measure
+    of the inequality of cluster sizes.
+
+
+    References:
+    -----------
+
+    Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
+    outlier-resistant hierarchical clustering algorithm,
+    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
+    Gini C., Variabilita e Mutabilita,
+    Tipografia di Paolo Cuppini, Bologna, 1912.
+
+
+
+    See also:
+    ---------
+
+    bonferroni_index
+
+
     Parameters:
     ----------
 
     x : ndarray, shape (n,)
-        Input vector.
+        Input vector >= 0.
 
     is_sorted : bool
         Indicates if x is sorted increasingly.
@@ -103,7 +136,7 @@ cpdef double gini(T[:] x, bint is_sorted=False):
 
 
 
-cpdef double bonferroni(T[:] x, bint is_sorted=False):
+cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     """
     The Normalised Bonferroni index:
     $$
@@ -118,11 +151,24 @@ cpdef double bonferroni(T[:] x, bint is_sorted=False):
     Time complexity: $O(n)$ for sorted data.
 
 
+    References:
+    -----------
+
+    Bonferroni C., Elementi di Statistica Generale, Libreria Seber,
+    Firenze, 1930.
+
+
+    See also:
+    ---------
+
+    gini_index
+
+
     Parameters:
     ----------
 
     x : ndarray, shape (n,)
-        Input vector.
+        Input vector >= 0.
 
     is_sorted : bool
         Indicates if x is sorted increasingly.

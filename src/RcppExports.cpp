@@ -17,33 +17,33 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gini
-double gini(Rcpp::NumericVector x);
-RcppExport SEXP _genieclust_gini(SEXP xSEXP) {
+// gini_index
+double gini_index(Rcpp::NumericVector x);
+RcppExport SEXP _genieclust_gini_index(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(gini(x));
+    rcpp_result_gen = Rcpp::wrap(gini_index(x));
     return rcpp_result_gen;
 END_RCPP
 }
-// bonferroni
-double bonferroni(Rcpp::NumericVector x);
-RcppExport SEXP _genieclust_bonferroni(SEXP xSEXP) {
+// bonferroni_index
+double bonferroni_index(Rcpp::NumericVector x);
+RcppExport SEXP _genieclust_bonferroni_index(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(bonferroni(x));
+    rcpp_result_gen = Rcpp::wrap(bonferroni_index(x));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_rand_index", (DL_FUNC) &_genieclust_adjusted_rand_index, 2},
-    {"_genieclust_gini", (DL_FUNC) &_genieclust_gini, 1},
-    {"_genieclust_bonferroni", (DL_FUNC) &_genieclust_bonferroni, 1},
+    {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},
+    {"_genieclust_bonferroni_index", (DL_FUNC) &_genieclust_bonferroni_index, 1},
     {NULL, NULL, 0}
 };
 

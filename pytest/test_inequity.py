@@ -30,14 +30,14 @@ def test_inequity():
             else:
                 x = np.random.random(n)*8 + 3
 
-            xg1 = gini(np.array(x))
-            xg2 = gini(np.array(x, dtype=np.float_))
+            xg1 = gini_index(np.array(x))
+            xg2 = gini_index(np.array(x, dtype=np.float_))
             xg3 = gini_ref(x)
             assert abs(xg1 - xg2) < 1e-9
             assert abs(xg1 - xg3) < 1e-9
 
-            xb1 = bonferroni(np.array(x))
-            xb2 = bonferroni(np.array(x, dtype=np.float_))
+            xb1 = bonferroni_index(np.array(x))
+            xb2 = bonferroni_index(np.array(x, dtype=np.float_))
             xb3 = bonferroni_ref(x)
             assert abs(xb1 - xb2) < 1e-9
             assert abs(xb1 - xb3) < 1e-9

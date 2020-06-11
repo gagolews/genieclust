@@ -1,4 +1,4 @@
-/*  Economic Inequity (Inequality) Measures.
+/*  Inequity (Inequality) Measures
  *
  *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.
@@ -60,7 +60,14 @@
  * where $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
  *
  *
- * @param x non-decreasingly sorted c_contiguous input vector
+ * References
+ * ----------
+ *
+ * Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini,
+ * Bologna, 1912.
+ *
+ *
+ * @param x non-decreasingly sorted c_contiguous input vector >= 0
  * @param n length of x
  *
  * @return the value of the inequity index, a number in [0,1].
@@ -69,6 +76,8 @@ template<class T>
 double Cgini_sorted(const T* x, ssize_t n)
 {
     double s = 0.0, t = 0.0;
+    GENIECLUST_ASSERT(x[0] >= 0);
+    GENIECLUST_ASSERT(x[n-1] > 0);
     for (ssize_t i=1; i<=n; ++i) {
         t += x[n-i];
         s += (n-2.0*i+1.0)*x[n-i];
@@ -94,7 +103,13 @@ double Cgini_sorted(const T* x, ssize_t n)
  * Time complexity: $O(n)$ for sorted data.
  *
  *
- * @param x non-decreasingly sorted c_contiguous input vector
+ * References
+ * ----------
+ *
+ * Bonferroni C., Elementi di Statistica Generale, Libreria Seber,
+ * Firenze, 1930.
+ *
+ * @param x non-decreasingly sorted c_contiguous input vector >= 0
  * @param n length of x
  *
  * @return the value of the inequity index, a number in [0,1].
@@ -103,6 +118,8 @@ template<class T>
 double Cbonferroni_sorted(const T* x, ssize_t n)
 {
     double s = 0.0, t = 0.0, c = 0.0;
+    GENIECLUST_ASSERT(x[0] >= 0);
+    GENIECLUST_ASSERT(x[n-1] > 0);
     for (ssize_t i=1; i<=n; ++i) {
         c += n/(n-i+1.0);
         t += x[n-i];

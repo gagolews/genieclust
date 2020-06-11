@@ -41,5 +41,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 cdef extern from "../src/c_inequity.h":
-    double Cgini_sorted[T](const T* x, ssize_t n)
-    double Cbonferroni_sorted[T](const T* x, ssize_t n)
+    double Cgini_sorted[T](const T* x, ssize_t n) except +
+    double Cbonferroni_sorted[T](const T* x, ssize_t n) except +

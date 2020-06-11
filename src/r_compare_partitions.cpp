@@ -38,7 +38,8 @@ using namespace Rcpp;
 
 
 
-/**
+/** Extract or compute the contingency matrix based on given arguments
+ *
  *  @param x vector or contingency table (matrix)
  *  @param y R_NilValue or vector of size x.size() if x is not a matrix
  *  @param xc [out]
@@ -92,8 +93,24 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
 
 
 
-
-
+//' @title Adjusted Rand Index
+//'
+//' @description
+//' The Adjusted Rand Index is a pairwise similarity measure used....
+//' Two identical partitions yield the score of 1.0.
+//' The index is corrected for chance, i.e., its expected value is 0.0
+//' for two independent partitions.
+//' Due to the adjustment. the resulting index might also be negative for some
+//' inputs.
+//'
+//' @references
+//' Hubert L., Arabie P., Comparing Partitions,
+//' Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+//'
+//' @param x an integer vector where x[i] representing the
+//' @param y an integer vector
+//' @return A single real value.
+//'
 //' adjusted_rand_index(x, y), adjusted_rand_index(table(x, y))
 //' @export
 //[[Rcpp::export]]

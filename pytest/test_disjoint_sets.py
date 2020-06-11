@@ -48,7 +48,7 @@ def test_GiniDisjointSets():
 
 
             g1 = d.get_gini()
-            g2 = gini(np.array(c1), True)
+            g2 = gini_index(np.array(c1), True)
             assert np.allclose(g1, g2)
 
         assert len(np.unique(d.to_list())) == d.get_k()
