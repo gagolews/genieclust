@@ -33,7 +33,7 @@ import numpy as np
 from . import internal
 import scipy.spatial.distance
 from sklearn.base import BaseEstimator, ClusterMixin
-import sklearn.neighbors
+#import sklearn.neighbors
 #import warnings
 import math
 
@@ -207,8 +207,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
             actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
 
             # t0 = time.time()
-            #nn = sklearn.neighbors.NearestNeighbors(n_neighbors=actual_n_neighbors, **cur_state["nn_params"])
-            #nn_dist, nn_ind = nn.fit(X).kneighbors()
+            ##nn = sklearn.neighbors.NearestNeighbors(
+            ##n_neighbors=actual_n_neighbors, ....**cur_state["nn_params"])
+            ##nn_dist, nn_ind = nn.fit(X).kneighbors()
+            #nn_dist, nn_ind = internal.knn_from_distance(
+            #X, k=actual_n_neighbors, ...metric=metric)
             # print("T=%.3f" % (time.time()-t0), end="\t")
 
             # FAISS - `euclidean` and `cosine` only!
@@ -262,11 +265,14 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     # Use sklearn (TODO: rly???) to determine d_core
                     # TODO: mlpack?
                     if nn_dist is None or nn_ind is None:
-                        nn = sklearn.neighbors.NearestNeighbors(
-                            n_neighbors=cur_state["M"]-1,
-                            metric=cur_state["affinity"] # supports "precomputed"
-                        )
-                        nn_dist, nn_ind = nn.fit(X).kneighbors()
+                        #nn = sklearn.neighbors.NearestNeighbors(
+                        #    n_neighbors=cur_state["M"]-1,
+                        #    metric=cur_state["affinity"] # supports "precomputed"
+                        #)
+                        #nn_dist, nn_ind = nn.fit(X).kneighbors()
+                        nn_dist, nn_ind = internal.knn_from_distance(
+                            X, k=cur_state["M"]-1,
+                            metric=cur_state["affinity"]) # supports "precomputed"
                     if d_core is None:
                         d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
 
