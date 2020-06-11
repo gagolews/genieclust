@@ -357,6 +357,8 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 template<class T>
 double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
 {
+    GENIECLUST_ASSERT(xc <= yc);
+
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
@@ -397,6 +399,8 @@ double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
 template<class T>
 double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc)
 {
+    GENIECLUST_ASSERT(xc <= yc);
+
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];

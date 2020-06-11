@@ -2,8 +2,8 @@
 ===========================
 
 
-The *Genie*++ Hierarchical Clustering Algorithm
------------------------------------------------
+The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
+-------------------------------------------------------------
 
 > **Genie outputs meaningful partitions and is fast even for large data sets.**
 

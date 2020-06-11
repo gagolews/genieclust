@@ -1,4 +1,4 @@
-#' @title The Genie++ Hierarchical Clustering Algorithm
+#' @title The Genie++ Hierarchical Clustering Algorithm (with Extras)
 #'
 #' @description
 #' TODO
