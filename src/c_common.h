@@ -38,7 +38,9 @@
 #include <string>
 #include <limits>
 
-
+#ifdef _OPENMP
+#include <omp.h>
+#endif
 
 #ifndef GENIECLUST_ASSERT
 #define __GENIECLUST_STR(x) #x

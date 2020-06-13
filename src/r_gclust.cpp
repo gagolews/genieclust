@@ -30,17 +30,99 @@
  *  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "c_common.h"
 #include "c_matrix.h"
+#include "c_distance.h"
+#include "c_mst.h"
 #include "c_genie.h"
 #include <Rcpp.h>
 #include <cmath>
 using namespace Rcpp;
 
 
-List gclust(CDistance* D,
-            size_t n,
+
+/* This function was originally part of our `genie` package for R */
+void generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
+{
+    std::vector<ssize_t> elements(n+1, 0);
+    std::vector<ssize_t> parents(n+1, 0);
+
+    ssize_t clusterNumber = 1;
+    for (ssize_t k=0; k<n-1; ++k, ++clusterNumber) {
+        ssize_t i = (ssize_t)links(k, 0);
+        ssize_t j = (ssize_t)links(k, 1);
+        ssize_t si = elements[i];
+        ssize_t sj = elements[j];
+        elements[i] = clusterNumber;
+        elements[j] = clusterNumber;
+
+        if (si == 0)
+            merge(k, 0) = -(double)i;
+        else {
+            while (parents[si] != 0) {
+                size_t sinew = parents[si];
+                parents[si] = clusterNumber;
+                si = sinew;
+            }
+            if (si != 0) parents[si] = clusterNumber;
+            merge(k,0) = (double)si;
+        }
+
+        if (sj == 0)
+            merge(k, 1) = -(double)j;
+        else {
+            while (parents[sj] != 0) {
+                ssize_t sjnew = parents[sj];
+                parents[sj] = clusterNumber;
+                sj = sjnew;
+            }
+            if (sj != 0) parents[sj] = clusterNumber;
+            merge(k,1) = (double)sj;
+        }
+
+        if (merge(k, 0) < 0) {
+            if (merge(k, 1) < 0 && merge(k, 0) < merge(k, 1)) std::swap(merge(k, 0), merge(k, 1));
+        }
+        else {
+            if (merge(k, 0) > merge(k, 1)) std::swap(merge(k, 0), merge(k, 1));
+        }
+    }
+}
+
+
+/* This function was originally part of our `genie` package for R */
+void generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
+{
+   std::vector< std::list<double> > relord(n+1);
+   ssize_t clusterNumber = 1;
+   for (ssize_t k=0; k<n-1; ++k, ++clusterNumber) {
+      double i = merge(k, 0);
+      if (i < 0)
+         relord[clusterNumber].push_back(-i);
+      else
+         relord[clusterNumber].splice(relord[clusterNumber].end(), relord[(size_t)i]);
+
+      double j = merge(k, 1);
+      if (j < 0)
+         relord[clusterNumber].push_back(-j);
+      else
+         relord[clusterNumber].splice(relord[clusterNumber].end(), relord[(size_t)j]);
+   }
+
+   GENIECLUST_ASSERT(relord[n-1].size() == (size_t)n);
+   ssize_t k = 0;
+   for (std::list<double>::iterator it = relord[n-1].begin();
+         it != relord[n-1].end(); ++it) {
+      order[k++] = (*it);
+   }
+}
+
+
+
+List gclust(CDistance<double>* D,
+            ssize_t n,
             double gini_threshold,
-            int M,
+            ssize_t M,
             String postprocess)
 {
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
@@ -49,15 +131,31 @@ List gclust(CDistance* D,
         stop("`M` must be an integer in [1, n-1)");
 
 
-    CDistance* D2 = NULL;
-    if (M > 1) {
+    CDistance<double>* D2 = NULL;
+    if (M > 2) {
         // clustering w.r.t. mutual reachability distance
-        stop("M > 1 is not supported yet.");
+        // M == 2 is like the original distance, but with noise points detection
+        stop("M > 2 is not supported yet.");
+
+        // k = M-1
+        // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+        // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
+        // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
+
+        std::vector<double> d_core(n);
+        // TODO
+        D2 = new CDistanceMutualReachability<double>(d_core.data(), n, D);
     }
 
+    std::vector<ssize_t> mst_i((n-1)*2);
+    std::vector<double>  mst_d(n-1);
+    Cmst_from_complete(D2?D2:D, n, mst_d.data(), mst_i.data());
 
+    CGenie<double> g(mst_d.data(), mst_i.data(), n, /*noise_leaves*/M>1);
+    g.apply_genie(1, gini_threshold);
 
-
+    std::vector<ssize_t> links(n-1);
+    g.get_links(links.data());
 
     if (M > 1) {
         // noise points post-processing might be requested
@@ -73,34 +171,61 @@ List gclust(CDistance* D,
         else
             stop("incorrect `postprocess`");
 
-        delete D2;
+        stop("M > 1 is not supported yet.");
+
+        if (D2) delete D2;
     }
 
+
+    NumericMatrix links2(n-1, 2);
+    NumericVector height(n-1, NA_REAL);
+    ssize_t k = 0;
+    for (ssize_t i=0; i<n-1; ++i) {
+        if (links[i] >= 0) {
+            links2(k, 0) = mst_i[ links[i]*2 + 0 ] + 1;
+            links2(k, 1) = mst_i[ links[i]*2 + 1 ] + 1;
+            height(k) = mst_d[ links[i] ];
+            ++k;
+        }
+    }
+    for (; k<n-1; ++k) {
+        links2(k, 0) = links2(k, 1) = NA_REAL;
+    }
+
+
+    NumericMatrix merge(n-1, 2);
+    generate_merge(n, links2, merge);
+
+    NumericVector order(n, NA_REAL);
+    generate_order(n, merge, order);
+
     return List::create(
-        _["merge"] = merge,
+        _["merge"]  = merge,
         _["height"] = height,
-        _["order"] = order
+        _["order"]  = order
     );
 }
 
 
 // [[Rcpp::export(".gclust.default")]]
-List gclust_default(NumericMatrix d,
+List gclust_default(NumericMatrix X,
     double gini_threshold=0.3,
     int M=1,
     String postprocess="boundary",
     String distance="euclidean")
 {
-    CDistance* D = NULL;
-    ssize_t n = d.nrow();
-    ssize_t d = d.ncol();
+    CDistance<double>* D = NULL;
+    ssize_t n = X.nrow();
+    ssize_t d = X.ncol();
+
+    matrix<double> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
     if (distance == "euclidean" || distance == "l2")
-        D = (CDistance*)new CDistanceEuclidean(REAL(SEXP(d)), n, d);
+        D = (CDistance<double>*)(new CDistanceEuclidean<double>(X2.data(), n, d));
     else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
-        D = (CDistance*)new CDistanceManhattan(REAL(SEXP(d)), n, d);
+        D = (CDistance<double>*)(new CDistanceManhattan<double>(X2.data(), n, d));
     else if (distance == "cosine")
-        D = (CDistance*)new CDistanceCosine(REAL(SEXP(d)), n, d);
+        D = (CDistance<double>*)(new CDistanceCosine<double>(X2.data(), n, d));
     else
         stop("given `distance` is not supported (yet)");
 
@@ -110,15 +235,16 @@ List gclust_default(NumericMatrix d,
 }
 
 
+
 // [[Rcpp::export(".gclust.dist")]]
 List gclust_dist(NumericVector d,
     double gini_threshold=0.3,
     int M=1,
     String postprocess="boundary")
 {
-    size_t n = (size_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
+    ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
     GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
-    CDistancePrecomputedVector D(REAL(SEXP(d)), n);
+    CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
 
-    return gclust(&D, n, gini_threshold, M, postprocess);
+    return gclust((CDistance<double>*)&D, n, gini_threshold, M, postprocess);
 }

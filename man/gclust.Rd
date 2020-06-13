@@ -12,25 +12,41 @@ gclust(d, ...)
   d,
   gini_threshold = 0.3,
   M = 1L,
-  postprocess = "boundary",
-  distance = "euclidean",
+  postprocess = c("boundary", "none", "all"),
+  distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   ...
 )
 
-\method{gclust}{dist}(d, gini_threshold = 0.3, M = 1L, postprocess = "boundary", ...)
+\method{gclust}{dist}(
+  d,
+  gini_threshold = 0.3,
+  M = 1L,
+  postprocess = c("boundary", "none", "all"),
+  ...
+)
 }
 \arguments{
-\item{d}{TODO}
+\item{d}{either a numeric matrix (or an object coercible to one,
+e.g., a data frame with numeric-like columns) or an
+object of class \code{dist}, see \code{\link[stats]{dist}}.}
 
-\item{...}{TODO}
+\item{...}{further arguments passed to or from other methods.}
 
-\item{gini_threshold}{TODO}
+\item{gini_threshold}{threshold for the Genie correction, i.e.,
+the Gini index of the cluster size distribution;
+Threshold of 1.0 disables the correction.
+Low thresholds highly penalise the formation of small clusters.}
 
-\item{M}{TODO}
+\item{M}{smoothing factor; M=1 gives the original Genie algorithm.}
 
-\item{postprocess}{TODO}
+\item{postprocess}{one of "boundary" (default), "none", "all";
+in effect only if M>1. By default, only "boundary" points are merged
+with their nearest "core" points. To force a classical
+n_clusters-partition of a data set (with no notion of noise),
+choose "all".}
 
-\item{distance}{TODO}
+\item{distance}{metric used to compute the linkage, one of: "euclidean"
+(synonym: "l2"), "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
 }
 \value{
 A list of class \code{hclust}, see \code{\link[stats]{hclust}}.

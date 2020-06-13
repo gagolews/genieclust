@@ -114,17 +114,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // gclust_default
-List gclust_default(NumericMatrix d, double gini_threshold, int M, String postprocess, String distance);
-RcppExport SEXP _genieclust_gclust_default(SEXP dSEXP, SEXP gini_thresholdSEXP, SEXP MSEXP, SEXP postprocessSEXP, SEXP distanceSEXP) {
+List gclust_default(NumericMatrix X, double gini_threshold, int M, String postprocess, String distance);
+RcppExport SEXP _genieclust_gclust_default(SEXP XSEXP, SEXP gini_thresholdSEXP, SEXP MSEXP, SEXP postprocessSEXP, SEXP distanceSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type d(dSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
     Rcpp::traits::input_parameter< int >::type M(MSEXP);
     Rcpp::traits::input_parameter< String >::type postprocess(postprocessSEXP);
     Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
-    rcpp_result_gen = Rcpp::wrap(gclust_default(d, gini_threshold, M, postprocess, distance));
+    rcpp_result_gen = Rcpp::wrap(gclust_default(X, gini_threshold, M, postprocess, distance));
     return rcpp_result_gen;
 END_RCPP
 }

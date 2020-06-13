@@ -31,8 +31,8 @@
  */
 
 
-#ifndef __c_genie_h
-#define __c_genie_h
+#ifndef __c_matrix_h
+#define __c_matrix_h
 #include <vector>
 
 
@@ -87,9 +87,10 @@ public:
                 elems[i] = (T)(_data[i]);
         }
         else {
+            size_t k = 0;
             for (size_t i=0; i<_nrow; i++) {
                 for (size_t j=0; j<_ncol; j++) {
-                    elems[_ncol*i + j] = (T)_data[i+_nrow*j];
+                    elems[k++] = (T)_data[i+_nrow*j];
                 }
             }
         }
