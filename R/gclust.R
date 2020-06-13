@@ -3,12 +3,22 @@
 #' @description
 #' TODO
 #'
-#' @param d TODO
-#' @param gini_threshold TODO
-#' @param M TODO
-#' @param postprocess TODO
-#' @param distance TODO
-#' @param ... TODO
+#' @param d either a numeric matrix (or an object coercible to one,
+#'     e.g., a data frame with numeric-like columns) or an
+#'     object of class \code{dist}, see \code{\link[stats]{dist}}.
+#' @param gini_threshold threshold for the Genie correction, i.e.,
+#'     the Gini index of the cluster size distribution;
+#'     Threshold of 1.0 disables the correction.
+#'     Low thresholds highly penalise the formation of small clusters.
+#' @param M smoothing factor; M=1 gives the original Genie algorithm.
+#' @param postprocess one of "boundary" (default), "none", "all";
+#'     in effect only if M>1. By default, only "boundary" points are merged
+#'     with their nearest "core" points. To force a classical
+#'     n_clusters-partition of a data set (with no notion of noise),
+#'     choose "all".
+#' @param distance metric used to compute the linkage, one of: "euclidean"
+#'     (synonym: "l2"), "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
+#' @param ... further arguments passed to or from other methods.
 #'
 #' @return
 #' A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
@@ -50,9 +60,16 @@ gclust <- function(d, ...)
 #' @export
 #' @rdname gclust
 #' @method gclust default
-gclust.default <- function(d, gini_threshold=0.3, M=1L,
-    postprocess="boundary", distance="euclidean", ...)
+gclust.default <- function(d,
+    gini_threshold=0.3,
+    M=1L,
+    postprocess=c("boundary", "none", "all"),
+    distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+    ...)
 {
+    postprocess <- match.arg(postprocess)
+    distance <- match.arg(distance)
+
     d <- as.matrix(d)
 
     result <- .gclust.default(d, gini_threshold, M, postprocess, distance)
@@ -72,8 +89,14 @@ gclust.default <- function(d, gini_threshold=0.3, M=1L,
 #' @export
 #' @rdname gclust
 #' @method gclust dist
-gclust.dist <- function(d, gini_threshold=0.3, M=1L, postprocess="boundary", ...)
+gclust.dist <- function(d,
+    gini_threshold=0.3,
+    M=1L,
+    postprocess=c("boundary", "none", "all"),
+    ...)
 {
+    postprocess <- match.arg(postprocess)
+
     result <- .gclust.dist(d, gini_threshold, M, postprocess)
 
     result[["height"]] <- .correct_height(result[["height"]])

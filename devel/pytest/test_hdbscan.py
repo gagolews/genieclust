@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.spatial.distance
 from genieclust.genie import *
 from genieclust.inequity import*
 from genieclust.internal import *
