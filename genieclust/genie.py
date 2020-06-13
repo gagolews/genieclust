@@ -156,7 +156,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             if mlpack is not None and \
                     cur_state["affinity"] == "euclidean" and \
                     n_features <= 6 and \
-                    cur_state["M"] == 1:
+                    cur_state["M"] <= 2:
                 cur_state["use_mlpack"] = True
             else:
                 cur_state["use_mlpack"] = False
@@ -194,7 +194,6 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 mst_ind  = self._mst_ind_
                 nn_dist  = self._nn_dist_
                 nn_ind   = self._nn_ind_
-                d_core   = self._d_core_
             elif cur_state["M"] < self._last_state_["M"]:
                 nn_dist  = self._nn_dist_
                 nn_ind   = self._nn_ind_
@@ -260,7 +259,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         else: # cur_state["exact"]
             if cur_state["use_mlpack"]:
-                assert cur_state["M"] == 1
+                assert cur_state["M"] in [1, 2]
                 assert cur_state["affinity"] == "euclidean"
 
                 if mst_dist is None or mst_ind is None:
@@ -268,21 +267,16 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     mst_dist = _res[:,2].astype(np.double, order="C")
                     mst_ind  = _res[:,:2].astype(np.intp, order="C")
             else:
-                if cur_state["M"] > 1:
-                    # Genie+HDBSCAN
-                    # Use sklearn (TODO: rly???) to determine d_core
-                    # TODO: mlpack?
+                if cur_state["M"] > 2: # else d_core   = None
+                    # Genie+HDBSCAN --- determine d_core
+                    # TODO: mlpack for k-nns?
                     if nn_dist is None or nn_ind is None:
-                        #nn = sklearn.neighbors.NearestNeighbors(
-                        #    n_neighbors=cur_state["M"]-1,
-                        #    metric=cur_state["affinity"] # supports "precomputed"
-                        #)
-                        #nn_dist, nn_ind = nn.fit(X).kneighbors()
                         nn_dist, nn_ind = internal.knn_from_distance(
                             X, k=cur_state["M"]-1,
                             metric=cur_state["affinity"]) # supports "precomputed"
-                    if d_core is None:
-                        d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+
+                    assert cur_state["M"]-2 < nn_dist.shape[1]
+                    d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
 
                 # Use Prim's algorithm to determine the MST
                 # w.r.t. the distances computed on the fly
