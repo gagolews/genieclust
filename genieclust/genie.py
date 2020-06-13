@@ -168,8 +168,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             raise ValueError("package mlpack is not available")
         if cur_state["use_mlpack"] and cur_state["affinity"] != "euclidean":
             raise ValueError("mlpack can only be used with affinity=='euclidean'")
-        if cur_state["use_mlpack"] and cur_state["M"] != 1:
-            raise ValueError("mlpack can only be used with M==1")
+        if cur_state["use_mlpack"] and cur_state["M"] not in [1, 2]:
+            raise ValueError("mlpack can only be used with M of 1 or 2")
 
         mst_dist = None
         mst_ind  = None
@@ -498,8 +498,8 @@ class Genie(GenieBase):
     use_mlpack : bool or "auto", default="auto"
         Use mlpack.emst() for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
-        only affinity='euclidean' is supported. By default, we rely on mlpack
-        if it is installed and n_features is <= 6.
+        only affinity='euclidean' is supported (and M<=2).
+        By default, we rely on mlpack if it is installed and n_features <= 6.
 
 
     Attributes
