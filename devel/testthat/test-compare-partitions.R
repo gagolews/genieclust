@@ -13,6 +13,13 @@ for (score in scores) {
     expect_equal(score(x, x), score(table(x, x)))
     expect_equal(score(x, x), score(x, 3-x+1))
 
+    expect_error(score(c("a", "b"), 1:2))
+
+    expect_equal(score(c(1L, 2L, 2L), c(1L, 2L, 2L)), 1.0)
+    expect_equal(score(c(1.0, 2.0, 2.0), c(1.0, 2.0, 2.0)), 1.0)
+    expect_equal(score(factor(c("a", "b", "b")), factor(c("a", "b", "b"))), 1.0)
+    expect_equal(score(c(TRUE, FALSE, FALSE), c(FALSE, TRUE, TRUE)), 1.0)
+
     x <- c(1, 1, 1, 2, 2, 2, 3, 2, 1)
     y <- c(1, 1, 1, 2, 2, 2, 3, 4, 4)
     expect_equal(score(x, x), 1.0)

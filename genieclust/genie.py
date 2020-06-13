@@ -139,7 +139,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     see scipy.spatial.distance.pdist or \
                     scipy.spatial.distance.squareform")
             if X.shape[1] == 1:
-                n_samples =  int(round((math.sqrt(1.0+8.0*n_samples)+1.0)/2.0))
+                # from a quadratic equation:
+                n_samples = int(round((math.sqrt(1.0+8.0*n_samples)+1.0)/2.0))
                 assert n_samples*(n_samples-1)//2 == X.shape[0]
 
         else:

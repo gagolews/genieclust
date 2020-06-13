@@ -54,6 +54,8 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
     if (Rf_isMatrix(x)) {
         if (!Rf_isNull(y))
             stop("if x is a contingency matrix, y must be NULL");
+        if (!(Rf_isInteger(x) | Rf_isReal(x)))
+            stop("x must be of type numeric");
 
         IntegerMatrix _C(x);
         *xc = _C.nrow();
@@ -68,6 +70,10 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
     else {
         if (Rf_isNull(y))
             stop("if x is not a contingency matrix, y must not be NULL");
+        if (!(Rf_isInteger(x) | Rf_isReal(x) | Rf_isLogical(x) | Rf_isFactor(x)))
+            stop("x must be of type numeric");
+        if (!(Rf_isInteger(x) | Rf_isReal(x) | Rf_isLogical(x) | Rf_isFactor(x)))
+            stop("y must be of type numeric");
 
         IntegerVector _x(x);
         IntegerVector _y(y);
@@ -164,11 +170,13 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
 //' Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 //'
 //'
-//' @param x an integer vector of length n (representing a K-partition of
-//' an n-element set)
+//' @param x an integer vector of length n (or an object coercible to)
+//' representing a K-partition of an n-set,
 //' or a confusion matrix with K rows and L columns (see \code{table(x, y)})
-//' @param y an integer vector of length n (representing an L-partition
-//' of the same set) or NULL (if x is an K*L confusion matrix)
+//'
+//' @param y an integer vector of length n (or an object coercible to)
+//' representing an L-partition of the same set),
+//' or NULL (if x is an K*L confusion matrix)
 //'
 //' @return A single real value giving the similarity score.
 //'
