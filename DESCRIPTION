@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm
 Version: 0.9.1
-Date: 2020-06-09
+Date: 2020-06-13
 Authors@R: c(
     person("Marek", "Gagolewski",
     role = c("aut", "cre"),
@@ -15,9 +15,11 @@ URL: http://www.gagolewski.com/software/genieclust
 License: BSD_3_clause + file LICENSE
 License_is_FOSS: yes
 Imports:
-    Rcpp (>= 1.0.4)
+    Rcpp (>= 1.0.4),
+    stats
 Suggests:
-    testthat
+    testthat,
+    datasets
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP, C++11

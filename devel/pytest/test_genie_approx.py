@@ -16,7 +16,9 @@ rpy2.robjects.numpy2ri.activate()
 
 
 import os
-if os.path.exists("benchmark_data"):
+if os.path.exists("devel/benchmark_data"):
+    path = "devel/benchmark_data"
+elif os.path.exists("benchmark_data"):
     path = "benchmark_data"
 else:
     path = "../benchmark_data"

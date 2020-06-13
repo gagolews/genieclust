@@ -426,10 +426,12 @@ class Genie(GenieBase):
     clusters. Hence it does not dependent on the DBSCAN's somehow magical
     `eps` parameter or the HDBSCAN Python package's `min_cluster_size` one.
 
-    Note that the resulting partition tree (dendrogram) might violate
+    Note according to the algorithm's original definition,
+    the resulting partition tree (dendrogram) might violate
     the ultrametricity property (merges might occur at levels that
     are not increasing w.r.t. a between-cluster distance).
-    Hence, a distance threshold-based stopping criterion is not implemented.
+    Departures from ultrametricity are corrected by applying
+    `Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]`.
 
 
     References
@@ -551,9 +553,11 @@ class Genie(GenieBase):
         Only available if compute_full_tree==True.
     distances_ : ndarray, shape (n_samples-1,)
         Distance between the two clusters merged at the i-th iteration.
-        Note Genie does not guarantee that that distances are
+        As Genie does not guarantee that that distances are
         ordered increasingly (do not panic, there are some other hierarchical
-        clustering linkages that also violate the ultrametricity property).
+        clustering linkages that also violate the ultrametricity property),
+        these are corrected by applying
+        `distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]`.
         See the description of Z[i,2] in scipy.cluster.hierarchy.linkage.
         Only available if compute_full_tree==True.
     counts_ : ndarray, shape (n_samples-1,)

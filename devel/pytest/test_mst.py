@@ -6,6 +6,16 @@ import gc
 import genieclust.internal
 import genieclust.deprecated
 
+import os
+if os.path.exists("devel/benchmark_data"):
+    path = "devel/benchmark_data"
+elif os.path.exists("benchmark_data"):
+    path = "benchmark_data"
+else:
+    path = "../benchmark_data"
+
+
+
 def mst_check(X, metric='euclidean', **kwargs):
     n = X.shape[0]
     d = X.shape[1]
@@ -110,7 +120,6 @@ def mst_mutreach_check(X, metric='euclidean'):
 
 
 def test_MST():
-    path = "benchmark_data"
     for dataset in ["big_one", "pathbased", "h2mg_64_50"]:
         if dataset == "big_one":
             X =  np.random.rand(1000, 32)

@@ -15,7 +15,9 @@ import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
 import os
-if os.path.exists("benchmark_data"):
+if os.path.exists("devel/benchmark_data"):
+    path = "devel/benchmark_data"
+elif os.path.exists("benchmark_data"):
     path = "benchmark_data"
 else:
     path = "../benchmark_data"
@@ -51,10 +53,12 @@ def test_genie(metric='euclidean'):
             print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
             t01 = time.time()
-            res1 = Genie(k, g, exact=True, affinity=metric).fit_predict(X)+1
+            _res1 = Genie(k, g, exact=True, affinity=metric)
+            res1 = _res1.fit_predict(X)+1
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
 
+            assert np.all(np.diff(_res1.distances_)>= 0.0)
             assert len(np.unique(res1)) == k
 
             t02 = time.time()
@@ -102,14 +106,20 @@ def test_genie_precomputed():
 
             print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
-            res1 = Genie(k, g, exact=True,
+            _res1 = Genie(k, g, exact=True,
                          affinity="precomputed",
-                         compute_full_tree=False).fit_predict(D)+1
-            res2 = Genie(k, g, exact=True, affinity="euclidean").fit_predict(X)+1
+                         compute_full_tree=False)
+            res1 = _res1.fit_predict(D)+1
+
+            _res2 = Genie(k, g, exact=True, affinity="euclidean")
+            res2 = _res2.fit_predict(X)+1
+
             ari = adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")
             assert ari>1.0-1e-12
+            assert np.all(np.diff(_res2.distances_)>= 0.0)
 
+            _res1, _res2 = None, None
             res1, res2 = None, None
             print("")
 

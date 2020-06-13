@@ -12,4 +12,7 @@
 #'
 #' @useDynLib genieclust, .registration=TRUE
 #' @importFrom Rcpp evalCpp
+#' @importFrom stats hclust
+#' @importFrom stats dist
+#' @importFrom stats approx
 invisible(NULL)

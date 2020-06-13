@@ -31,12 +31,13 @@ normalized_accuracy(x, y = NULL)
 pair_sets_index(x, y = NULL)
 }
 \arguments{
-\item{x}{an integer vector of length n (representing a K-partition of
-an n-element set)
+\item{x}{an integer vector of length n (or an object coercible to)
+representing a K-partition of an n-set,
 or a confusion matrix with K rows and L columns (see \code{table(x, y)})}
 
-\item{y}{an integer vector of length n (representing an L-partition
-of the same set) or NULL (if x is an K*L confusion matrix)}
+\item{y}{an integer vector of length n (or an object coercible to)
+representing an L-partition of the same set),
+or NULL (if x is an K*L confusion matrix)}
 }
 \value{
 A single real value giving the similarity score.

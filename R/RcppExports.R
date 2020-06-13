@@ -72,11 +72,13 @@
 #' Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 #'
 #'
-#' @param x an integer vector of length n (representing a K-partition of
-#' an n-element set)
+#' @param x an integer vector of length n (or an object coercible to)
+#' representing a K-partition of an n-set,
 #' or a confusion matrix with K rows and L columns (see \code{table(x, y)})
-#' @param y an integer vector of length n (representing an L-partition
-#' of the same set) or NULL (if x is an K*L confusion matrix)
+#'
+#' @param y an integer vector of length n (or an object coercible to)
+#' representing an L-partition of the same set),
+#' or NULL (if x is an K*L confusion matrix)
 #'
 #' @return A single real value giving the similarity score.
 #'
@@ -145,6 +147,14 @@ normalized_accuracy <- function(x, y = NULL) {
 #' @export
 pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust_pair_sets_index`, x, y)
+}
+
+.gclust.default <- function(d, gini_threshold = 0.3, M = 1L, postprocess = "boundary", distance = "euclidean") {
+    .Call(`_genieclust_gclust_default`, d, gini_threshold, M, postprocess, distance)
+}
+
+.gclust.dist <- function(d, gini_threshold = 0.3, M = 1L, postprocess = "boundary") {
+    .Call(`_genieclust_gclust_dist`, d, gini_threshold, M, postprocess)
 }
 
 #' @title Inequity (Inequality) Measures

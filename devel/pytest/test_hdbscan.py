@@ -18,9 +18,13 @@ def mutual_reachability_distance_old(D, M):
 
 
 
-import scipy.spatial.distance
-import numpy as np
-path = "benchmark_data"
+import os
+if os.path.exists("devel/benchmark_data"):
+    path = "devel/benchmark_data"
+elif os.path.exists("benchmark_data"):
+    path = "benchmark_data"
+else:
+    path = "../benchmark_data"
 
 def test_hdbscan():
     for dataset in ["jain", "pathbased"]:#, "s1", "Aggregation", "WUT_Smile", "unbalance", "a1"]:

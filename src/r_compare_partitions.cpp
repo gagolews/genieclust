@@ -1,4 +1,4 @@
-/*  Economic Inequity (Inequality) Measures.
+/*  Partition Similarity Scores
  *
  *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
  *  All rights reserved.

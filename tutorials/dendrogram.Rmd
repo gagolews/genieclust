@@ -125,8 +125,6 @@ Draw the dendrogram with `scipy`:
 ```{python jain4,results="hide"}
 # create the linkage matrix, see scipy.cluster.hierarchy.linkage
 Z = np.column_stack((g.children_, g.distances_, g.counts_))
-# correct for possible departures from ultrametricity:
-Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]
 import scipy.cluster.hierarchy
 scipy.cluster.hierarchy.dendrogram(Z)
 plt.show()

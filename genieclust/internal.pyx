@@ -627,6 +627,13 @@ cpdef dict get_linkage_matrix(ssize_t[::1] links,
         counts_[i] = ds.get_count(par)
 
 
+
+    # corrections for departures from ultrametricity:
+    # distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]
+    for i in range(n-2, 0, -1):
+        if distances_[i-1] > distances_[i]:
+            distances_[i-1] = distances_[i]
+
     return dict(
         children=children_,
         distances=distances_,
