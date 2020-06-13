@@ -16,7 +16,9 @@ pytest: python
 
 r:
 	Rscript -e 'Rcpp::compileAttributes()'
-	Rscript -e 'devtools::document(roclets = c("rd", "collate", "namespace", "vignette"))'
+	R CMD INSTALL .
+	# AVOID ADDING THE -O0 flag!!!
+	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
 	R CMD INSTALL .
 
 check: r
@@ -24,5 +26,3 @@ check: r
 
 testthat: r
 	Rscript -e 'options(width=120); source("devel/testthat.R")'
-
-
