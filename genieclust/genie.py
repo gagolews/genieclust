@@ -29,13 +29,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import numpy as np
-from . import internal
-import scipy.spatial.distance
-from sklearn.base import BaseEstimator, ClusterMixin
-#import sklearn.neighbors
-#import warnings
 import math
+import numpy as np
+from sklearn.base import BaseEstimator, ClusterMixin
+from . import internal
+# import scipy.spatial.distance
+# import sklearn.neighbors
+# import warnings
 
 
 try:
@@ -48,7 +48,6 @@ try:
     import mlpack
 except ImportError:
     mlpack = None
-
 
 
 class GenieBase(BaseEstimator, ClusterMixin):

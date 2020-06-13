@@ -67,8 +67,8 @@ class genieclust_sdist(sdist):
 
 class genieclust_build_ext(build_ext):
     def build_extensions(self):
-        c = self.compiler.compiler_type
-
+        # c = self.compiler.compiler_type
+        #
         # @TODO once n_jobs params are added
         # if c == "msvc":
         #     for e in self.extensions:
@@ -89,10 +89,9 @@ class genieclust_build_ext(build_ext):
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
-    depends=glob.glob(os.path.join("src", "*.h"))+
+    depends=glob.glob(os.path.join("src", "*.h")) +
             glob.glob(os.path.join("genieclust", "*.pxd"))
 )
-
 
 
 with open("README.md", "r") as fh:
