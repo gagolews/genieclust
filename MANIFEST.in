@@ -1,5 +1,5 @@
 include README.md
 include LICENSE
-include CHANGELOG.md
+include NEWS
 include src/c_*.h
 include genieclust/c_*.pxd
