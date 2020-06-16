@@ -10,7 +10,7 @@ context("gclust")
 if (require("genie")) {
 
     set.seed(123)
-    n <- 1000000
+    n <- 10000
     d <- 2
     X <- matrix(rnorm(n*d), nrow=n)
 

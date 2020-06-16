@@ -52,8 +52,8 @@ choose "all".}
 "euclidean" (synonym: "l2"),
 "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
 
-\item{cast_float32}{logical; whether to work internally with 32-bit
-instead of 64-bit precision FP arithmetic (2x faster)}
+\item{cast_float32}{logical; whether to compute the distances using 32-bit
+instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}

@@ -12,8 +12,7 @@ Authors@R: c(
 Description: TO DO description....
 BugReports: http://github.com/gagolews/genieclust/issues
 URL: http://www.gagolewski.com/software/genieclust
-License: BSD_3_clause + file LICENSE
-License_is_FOSS: yes
+License: AGPL-3
 Imports:
     Rcpp (>= 1.0.4),
     stats
