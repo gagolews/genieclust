@@ -92,7 +92,8 @@ from . cimport c_genie
 
 cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         bint stop_disconnected=True,
-        bint stop_inexact=False):
+        bint stop_inexact=False,
+        bint verbose=False):
     """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbour graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
@@ -115,7 +116,8 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         edge definition, interpreted as {i, ind[i,j]}
     stop_disconnected : bool
         raise an exception if the input graph is not connected
-
+    verbose: bool
+        whether to print diagnostic messages
 
     Returns:
     -------
@@ -150,7 +152,7 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
     cdef bool maybe_inexact
 
     cdef ssize_t n_edges = c_mst.Cmst_from_nn(&dist[0,0], &ind[0,0], n, k,
-             &mst_dist[0], &mst_ind[0,0], &maybe_inexact)
+             &mst_dist[0], &mst_ind[0,0], &maybe_inexact, verbose)
 
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
@@ -163,7 +165,7 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
 
 
 
-cpdef tuple mst_from_complete(floatT[:,::1] X): # [:,::1]==c_contiguous
+cpdef tuple mst_from_complete(floatT[:,::1] X, bint verbose=False): # [:,::1]==c_contiguous
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
     with weights given by a symmetric n*n matrix
@@ -194,6 +196,8 @@ cpdef tuple mst_from_complete(floatT[:,::1] X): # [:,::1]==c_contiguous
 
     X : c_contiguous ndarray, shape (n*(n-1)/2, 1) or (n,n)
         distance vector or matrix
+    verbose: bool
+        whether to print diagnostic messages
 
     Returns
     -------
@@ -226,7 +230,7 @@ cpdef tuple mst_from_complete(floatT[:,::1] X): # [:,::1]==c_contiguous
         assert d == n
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
 
-    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0])
+    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if D:  del D
 
@@ -236,7 +240,7 @@ cpdef tuple mst_from_complete(floatT[:,::1] X): # [:,::1]==c_contiguous
 
 
 cpdef tuple mst_from_distance(floatT[:,::1] X,
-       str metric="euclidean", floatT[::1] d_core=None):
+       str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
@@ -274,7 +278,8 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         More metrics/distances might be supported in future versions.
     d_core : c_contiguous ndarray of length n; optional (default=None)
         core distances for computing the mutual reachability distance
-
+    verbose: bool
+        whether to print diagnostic messages
 
     Returns
     -------
@@ -322,7 +327,7 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         D2 = D # must be deleted separately
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
-    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0])
+    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if d_core is None and (metric == "euclidean" or metric == "l2"):
         for i in range(n-1):
@@ -339,7 +344,7 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
 
 
 cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
-       str metric="euclidean", floatT[::1] d_core=None):
+       str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
     """Determines the first k nearest neighbours of each point in X,
     with respect to a given metric (distance).
     Distances are computed on the fly.
@@ -364,7 +369,8 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
         More metrics/distances might be supported in future versions.
     d_core : c_contiguous ndarray of length n; optional (default=None)
         core distances for computing the mutual reachability distance
-
+    verbose: bool
+        whether to print diagnostic messages
 
     Returns
     -------
@@ -411,7 +417,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
         D2 = D # must be deleted separately
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
-    c_mst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0])
+    c_mst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0], verbose)
 
     if D:  del D
     if D2: del D2

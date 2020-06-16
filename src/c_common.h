@@ -34,6 +34,17 @@
 #ifndef __c_common_h
 #define __c_common_h
 
+
+#ifdef Py_PYTHON_H
+#define GENIECLUST_PYTHON 1
+#endif
+
+#ifdef GENIECLUST_R
+#undef GENIECLUST_R
+#define GENIECLUST_R 1
+#endif
+
+
 #include <stdexcept>
 #include <string>
 #include <limits>
@@ -50,6 +61,37 @@
     throw std::runtime_error( "genieclust: Assertion " #EXPR " failed in "\
         __FILE__ ":" GENIECLUST_STR(__LINE__) ); }
 #endif
+
+
+
+
+#if GENIECLUST_R
+#include <Rcpp.h>
+#else
+#include <cstdio>
+#endif
+
+
+void GENIECLUST_PRINT(const char* fmt) {
+#if GENIECLUST_R
+    REprintf(fmt);
+#else
+    fputs(fmt, stderr);
+#endif
+}
+
+void GENIECLUST_PRINT_int(const char* fmt, int val) {
+    // cstdargs, variadic templates, who needs them :)
+#if GENIECLUST_R
+    REprintf(fmt, val);
+#else
+    fprintf(stderr, fmt, val);
+#endif
+}
+
+
+
+
 
 
 #ifndef INFTY

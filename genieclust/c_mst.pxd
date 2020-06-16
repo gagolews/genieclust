@@ -71,10 +71,10 @@ cdef extern from "../src/c_mst.h":
 
 
     ssize_t Cmst_from_nn[T](T* dist, ssize_t* ind, ssize_t n, ssize_t k,
-             T* mst_dist, ssize_t* mst_ind, bint* maybe_inexact)
+             T* mst_dist, ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
 
     void Cknn_from_complete[T](CDistance[T]* D, ssize_t n, ssize_t k,
-             T* dist, ssize_t* ind)
+             T* dist, ssize_t* ind, bint verbose) except +
 
     void Cmst_from_complete[T](CDistance[T]* D, ssize_t n,
-             T* mst_dist, ssize_t* mst_ind)
+             T* mst_dist, ssize_t* mst_ind, bint verbose) except +

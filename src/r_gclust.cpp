@@ -35,8 +35,8 @@
 #include "c_distance.h"
 #include "c_mst.h"
 #include "c_genie.h"
-#include <Rcpp.h>
 #include <cmath>
+#include <Rcpp.h>
 using namespace Rcpp;
 
 
@@ -152,17 +152,13 @@ List gclust(CDistance<double>* D,
     std::vector<double>  mst_d(n-1);
     Cmst_from_complete(D2?D2:D, n, mst_d.data(), mst_i.data(), verbose);
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Determining clusters.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
 
     CGenie<double> g(mst_d.data(), mst_i.data(), n, /*noise_leaves*/M>1);
     g.apply_genie(1, gini_threshold);
 
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Postprocessing the outputs.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
 
     std::vector<ssize_t> links(n-1);
     g.get_links(links.data());
@@ -229,9 +225,7 @@ List gclust_default(NumericMatrix X,
     ssize_t n = X.nrow();
     ssize_t d = X.ncol();
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Initialising data.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
 
     matrix<double> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
@@ -248,9 +242,7 @@ List gclust_default(NumericMatrix X,
 
     List ret = gclust(D, n, gini_threshold, M, postprocess, verbose);
     delete D;
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Done.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;
 }
 
@@ -266,16 +258,12 @@ List gclust_dist(NumericVector d,
     ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
     GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Initialising data.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
 
     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
 
     List ret = gclust((CDistance<double>*)&D, n, gini_threshold, M, postprocess, verbose);
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Done.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;
 }
 

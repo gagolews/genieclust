@@ -47,11 +47,6 @@
 #include "c_distance.h"
 
 
-#ifdef GENIECLUST_R
-#include <Rcpp.h>
-#endif
-
-
 
 /*! Represents an undirected edge in a weighted graph.
  *  Main purpose: a comparer used to sort MST edges w.r.t. decreasing weights
@@ -120,18 +115,22 @@ struct CMstTriple {
  * @param maybe_inexact [out] true indicates that k should be increased to
  *        guarantee that the resulting tree would be the same if a complete
  *        pairwise distance graph was given.
+ * @param verbose output diagnostic/progress messages?
  *
  * @return number of edges in the minimal spanning forest
  */
 template <class T>
 ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
     ssize_t n, ssize_t k,
-    T* mst_dist, ssize_t* mst_ind, bool* maybe_inexact)
+    T* mst_dist, ssize_t* mst_ind, bool* maybe_inexact,
+    bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
     ssize_t nk = n*k;
+
+    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
     // determine the ordering permutation of dist
     // we're using O(nk) memory anyway
@@ -199,7 +198,17 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
 
         ds.merge(u, v);
         mst_edge_cur++;
+
+        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
     }
+
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
 
     return mst_edge_cur;
 }
@@ -225,8 +234,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
  *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
  * @param ind [out]   a c_contiguous array, shape (n,k),
  *        (undirected) edge definition, interpreted as {i, ind[i,j]}
- * @param verbose output diagnostic/progress messages? may not be available
- *        on all platforms
+ * @param verbose output diagnostic/progress messages?
  */
 template <class T>
 void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
@@ -236,9 +244,7 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Computing the K-nn graph... %3d%%", 0);
-    #endif
+    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the K-nn graph... %3d%%", 0);
 
 
     for (ssize_t i=0; i<n*k; ++i) {
@@ -281,15 +287,16 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
             }
         }
 
-        #ifdef GENIECLUST_R
-        if (verbose) REprintf("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+
+        #if GENIECLUST_R
         Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
         #endif
     }
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("\b\b\b\bdone.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
 }
 
 
@@ -331,8 +338,7 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
  * @param mst_i [out] vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
- * @param verbose output diagnostic/progress messages? may not be available
- *        on all platforms
+ * @param verbose output diagnostic/progress messages?
  */
 template <class T>
 void Cmst_from_complete(CDistance<T>* D, ssize_t n,
@@ -345,9 +351,7 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
 
     for (ssize_t i=0; i<n; ++i) M[i] = i;
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("[genieclust] Computing the MST... %3d%%", 0);
-    #endif
+    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
     ssize_t lastj = 0, bestj, bestjpos;
     for (ssize_t i=0; i<n-1; ++i) {
@@ -378,9 +382,12 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         // and an edge to MST: (smaller index first)
         res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);
 
-        #ifdef GENIECLUST_R
-        if (verbose) REprintf("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+
+        #if GENIECLUST_R
         Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
         #endif
     }
 
@@ -393,9 +400,7 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         mst_ind[2*i+1] = res[n-i-2].i2;
     }
 
-    #ifdef GENIECLUST_R
-    if (verbose) REprintf("\b\b\b\bdone.\n");
-    #endif
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
 }
 
 #endif

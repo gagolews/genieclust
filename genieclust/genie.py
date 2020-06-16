@@ -33,6 +33,7 @@ import math
 import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
+import sys
 # import scipy.spatial.distance
 # import sklearn.neighbors
 # import warnings
@@ -58,7 +59,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             affinity,
             exact,
             cast_float32,
-            use_mlpack
+            use_mlpack,
+            verbose
         ):
         super().__init__()
         self.M = M
@@ -66,6 +68,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.cast_float32 = cast_float32
         self.exact = exact
         self.use_mlpack = use_mlpack
+        self.verbose = verbose
 
         self.n_samples_   = None
         self.n_features_  = None
@@ -151,6 +154,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         cur_state["exact"] = bool(self.exact)
         cur_state["cast_float32"] = bool(self.cast_float32)
+        cur_state["verbose"] = bool(self.verbose)
 
         if self.use_mlpack == "auto":
             if mlpack is not None and \
@@ -170,6 +174,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
             raise ValueError("mlpack can only be used with affinity=='euclidean'")
         if cur_state["use_mlpack"] and cur_state["M"] not in [1, 2]:
             raise ValueError("mlpack can only be used with M of 1 or 2")
+
+
+
+        if cur_state["verbose"]:
+            print("[genieclust] Initialising data.", file=sys.stderr)
 
         mst_dist = None
         mst_ind  = None
@@ -230,7 +239,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # the slow part:
             nn = faiss.IndexFlatL2(n_features)
             nn.add(X)
-            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1)
+            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1) # TODO: , verbose=cur_state["verbose"]
             #print("T=%.3f" % (time.time()-t0), end="\t")
 
 
@@ -254,7 +263,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # the fast part:
             mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
                 stop_disconnected=False, # TODO: test this!!!!
-                stop_inexact=False)
+                stop_inexact=False,
+                verbose=cur_state["verbose"])
             #print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]
@@ -263,7 +273,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 assert cur_state["affinity"] == "euclidean"
 
                 if mst_dist is None or mst_ind is None:
-                    _res = mlpack.emst(input=X)["output"]
+                    _res = mlpack.emst(input=X, verbose=cur_state["verbose"])["output"]
                     mst_dist = _res[:,2].astype(np.double, order="C")
                     mst_ind  = _res[:,:2].astype(np.intp, order="C")
             else:
@@ -273,7 +283,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     if nn_dist is None or nn_ind is None:
                         nn_dist, nn_ind = internal.knn_from_distance(
                             X, k=cur_state["M"]-1,
-                            metric=cur_state["affinity"]) # supports "precomputed"
+                            metric=cur_state["affinity"],
+                            verbose=cur_state["verbose"]) # supports "precomputed"
 
                     assert cur_state["M"]-2 < nn_dist.shape[1]
                     d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
@@ -283,7 +294,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 if mst_dist is None or mst_ind is None:
                     mst_dist, mst_ind = internal.mst_from_distance(X,
                         metric=cur_state["affinity"],
-                        d_core=d_core
+                        d_core=d_core,
+                        verbose=cur_state["verbose"]
                     )
 
         self.n_samples_  = n_samples
@@ -500,6 +512,8 @@ class Genie(GenieBase):
         Might be faster for lower-dimensional spaces. As the name suggests,
         only affinity='euclidean' is supported (and M<=2).
         By default, we rely on mlpack if it is installed and n_features <= 6.
+    verbose : bool, default=False
+        Whether to print diagnostic messages and progress information on stderr.
 
 
     Attributes
@@ -569,9 +583,10 @@ class Genie(GenieBase):
             postprocess="boundary",
             exact=True,
             cast_float32=True,
-            use_mlpack="auto"
+            use_mlpack="auto",
+            verbose=False
         ):
-        super().__init__(M, affinity, exact, cast_float32, use_mlpack)
+        super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
 
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
@@ -638,6 +653,8 @@ class Genie(GenieBase):
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         cur_state["compute_all_cuts"] = bool(self.compute_all_cuts)
 
+        if cur_state["verbose"]:
+            print("[genieclust] Determining clusters.", file=sys.stderr)
 
         # apply the Genie++ algorithm (the fast part):
         res = internal.genie_from_mst(self._mst_dist_, self._mst_ind_,
@@ -646,6 +663,9 @@ class Genie(GenieBase):
             noise_leaves=(cur_state["M"]>1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
+
+        if cur_state["verbose"]:
+            print("[genieclust] Postprocessing the outputs.", file=sys.stderr)
 
         self.n_clusters_ = res["n_clusters"]
         self.labels_     = res["labels"]
@@ -661,6 +681,9 @@ class Genie(GenieBase):
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
+
+        if cur_state["verbose"]:
+            print("[genieclust] Done.", file=sys.stderr)
 
         return self
 
@@ -737,6 +760,8 @@ class GIc(GenieBase):
         see `Genie`
     use_mlpack : bool or "auto", default="auto"
         see `Genie`
+    verbose : bool, default=False
+        see `Genie`
 
 
     Attributes
@@ -756,9 +781,10 @@ class GIc(GenieBase):
             postprocess="boundary",
             exact=True,
             cast_float32=True,
-            use_mlpack="auto"
+            use_mlpack="auto",
+            verbose=False
         ):
-        super().__init__(M, affinity, exact, cast_float32, use_mlpack)
+        super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
 
         self.n_clusters = n_clusters
         self.n_features = n_features
@@ -831,6 +857,10 @@ class GIc(GenieBase):
 
         cur_state["n_features"] = max(1.0, cur_state["n_features"])
 
+
+        if cur_state["verbose"]:
+            print("[genieclust] Determining clusters.", file=sys.stderr)
+
         # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(self._mst_dist_, self._mst_ind_,
             n_features=cur_state["n_features"],
@@ -840,6 +870,10 @@ class GIc(GenieBase):
             noise_leaves=(cur_state["M"]>1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
+
+
+        if cur_state["verbose"]:
+            print("[genieclust] Postprocessing the outputs.", file=sys.stderr)
 
         self.n_clusters_ = res["n_clusters"]
         self.labels_     = res["labels"]
@@ -856,5 +890,8 @@ class GIc(GenieBase):
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
+
+        if cur_state["verbose"]:
+            print("[genieclust] Done.", file=sys.stderr)
 
         return self
