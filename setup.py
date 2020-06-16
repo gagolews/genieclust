@@ -21,6 +21,8 @@ from Cython.Build import cythonize
 import numpy as np
 import os.path
 import glob
+import os
+import sys
 
 
 cython_modules = {
@@ -51,9 +53,50 @@ class genieclust_sdist(sdist):
 
 class genieclust_build_ext(build_ext):
     def build_extensions(self):
+
+        # This code is adapted from
+        # scikit-learn/sklearn/_build_utils/openmp_helpers.py
+        # (version last updated on 13 Nov 2019; 9876f74)
+        # See https://github.com/scikit-learn/scikit-learn and https://scikit-learn.org/.
+
+        if hasattr(self.compiler, 'compiler'):
+            compiler = self.compiler.compiler[0]
+        else:
+            compiler = self.compiler.__class__.__name__
+
+        if sys.platform == "win32" and ('icc' in compiler or 'icl' in compiler):
+            for e in self.extensions:
+                e.extra_compile_args += ['/Qopenmp']
+                e.extra_link_args += ['/Qopenmp']
+        elif sys.platform == "win32":
+            for e in self.extensions:
+                e.extra_compile_args += ['/openmp']
+                e.extra_link_args += ['/openmp']
+        elif sys.platform == "darwin" and ('icc' in compiler or 'icl' in compiler):
+            for e in self.extensions:
+                e.extra_compile_args += ['-openmp']
+                e.extra_link_args += ['-openmp']
+        elif sys.platform == "darwin" and 'openmp' in os.getenv('CPPFLAGS', ''):
+            # -fopenmp can't be passed as compile flag when using Apple-clang.
+            # OpenMP support has to be enabled during preprocessing.
+            #
+            # For example, our macOS wheel build jobs use the following environment
+            # variables to build with Apple-clang and the brew installed "libomp":
+            #
+            # export CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
+            # export CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
+            # export CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
+            # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
+            #                          -L/usr/local/opt/libomp/lib -lomp"
+            pass
+        else:
+            # Default flag for GCC and clang:
+            for e in self.extensions:
+                e.extra_compile_args += ['-fopenmp']
+                e.extra_link_args += ['-fopenmp']
+
+        # Old version:
         # c = self.compiler.compiler_type
-        #
-        # @TODO once n_jobs params are added
         # if c == "msvc":
         #     for e in self.extensions:
         #         e.extra_compile_args += "/openmp"

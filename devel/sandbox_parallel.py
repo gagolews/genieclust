@@ -10,16 +10,17 @@ import scipy.spatial.distance
 from rpy2.robjects.packages import importr
 stats = importr("stats")
 genie = importr("genie")
+genieclustr = importr("genieclust")
 import numpy as np
 import rpy2.robjects.numpy2ri
 rpy2.robjects.numpy2ri.activate()
 
 
-verbose = True
+verbose = False
 
 np.random.seed(123)
 n = 10_000
-d = 6
+d = 2
 X = np.random.normal(size=(n,d))
 labels = np.random.choice(np.r_[1,2,3,4,5,6,7,8], n)
 
@@ -50,6 +51,17 @@ assert len(np.unique(res2)) == k
 ari = adjusted_rand_score(res1, res2)
 assert ari>1.0-1e-12
 
+
+
+t02 = time.time()
+res2 = stats.cutree(genieclustr.gclust(X, distance=metric, gini_threshold=g, verbose=False), k)
+t12 = time.time()
+print("t_r_new  =%.3f (rel_to_py=%.3f)" % (t12-t02,(t02-t12)/(t01-t11)))
+
+res2 = np.array(res2, np.intp)
+assert len(np.unique(res2)) == k
+ari = adjusted_rand_score(res1, res2)
+assert ari>1.0-1e-12
 
 t03 = time.time()
 res3 = Genie(k, g, exact=False, compute_full_tree=False, affinity=metric, verbose=verbose).fit_predict(X)+1

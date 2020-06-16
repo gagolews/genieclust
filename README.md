@@ -127,34 +127,12 @@ For more illustrations, use cases and details, make sure to check out:
 Installation
 ------------
 
-> *This package is in an alpha-stage (development and testing is Linux-only).*
-
-The package requires Python 3.6+ together with `cython` as well as
-`numpy`, `scipy`, `matplotlib` and `sklearn`.
-
-Optional dependencies: `rpy2`, `faiss` (e.g. `faiss-cpu`), `mlpack`.
-
-
-To build and install the most recent development version:
-
-```bash
-git clone https://github.com/gagolews/genieclust.git
-cd genieclust
-python3 setup.py install --user
-```
-
-To support parallelised computations, build with OpenMP support (for gcc/clang):
-
-```bash
-CPPFLAGS="-fopenmp -DNDEBUG" LDFLAGS="-fopenmp" python3 setup.py install --user
-```
+> *This package is in a beta-stage (development and testing is currently Linux-only).*
 
 
 
+### Python Version
 
-**TODO**: Windows builds
-
-**TODO**: OS X builds
 
 **TODO** To install via `pip` (the current version is a little outdated,
 see [PyPI](https://pypi.org/project/genieclust/)):
@@ -164,7 +142,45 @@ pip3 install genieclust --user # or sudo pip3 install genieclust
 ```
 
 
-TODO: R version
+
+**TODO**: Windows builds
+
+**TODO**: OS X builds
+
+
+
+
+
+
+The package requires Python 3.6+ together with `cython` as well as
+`numpy`, `scipy`, `matplotlib` and `sklearn`.
+Optional dependencies: `mlpack` (TODO: `faiss`?).
+
+
+To build and install the most recent development version, call:
+
+```bash
+git clone https://github.com/gagolews/genieclust.git
+cd genieclust
+python3 setup.py install --user
+```
+
+
+
+
+### R Version
+
+**TODO**: CRAN
+
+
+To fetch, compile (C++11 compiler required;
+Windows users: see [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
+OS X users: see [Xcode](https://developer.apple.com/xcode/))
+the most recent development version of the package from github, call:
+
+```bash
+devtools::install_github("gagolews/genieclust")
+```
 
 
 

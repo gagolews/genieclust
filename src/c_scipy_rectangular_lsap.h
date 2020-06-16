@@ -1,7 +1,7 @@
 /*
 This file is adapted from
 scipy/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp
-(version last updated on 5 Mar; c050fd9)
+(version last updated on 5 Mar 2020; c050fd9)
 See https://github.com/scipy/scipy/ and https://scipy.org/scipylib/.
 
 This code implements the shortest augmenting path algorithm for the

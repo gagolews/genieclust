@@ -7,9 +7,11 @@
 
 all: please_specify_build_target_manually
 
+#CPPFLAGS="-fopenmp -march=native -mtune=native"
+#LDFLAGS="-fopenmp"
+
 python:
-	CPPFLAGS="-fopenmp -march=native -mtune=native" \
-	LDFLAGS="-fopenmp" python3 setup.py install --user
+	python3 setup.py install --user
 
 pytest: python
 	pytest
