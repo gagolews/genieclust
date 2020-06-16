@@ -308,8 +308,7 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
     cdef c_mst.CDistance[floatT]* D2 = NULL
 
     if metric == "euclidean" or metric == "l2":
-        # get squared(!) Euclidean if d_core is None
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, d_core is None)
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine":
@@ -328,10 +327,6 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
     c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
-
-    if d_core is None and (metric == "euclidean" or metric == "l2"):
-        for i in range(n-1):
-            mst_dist[i] = libc.math.sqrt(mst_dist[i])
 
     if D:  del D
     if D2: del D2
@@ -399,7 +394,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
     cdef c_mst.CDistance[floatT]* D2 = NULL
 
     if metric == "euclidean" or metric == "l2":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d, False)
+        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine":

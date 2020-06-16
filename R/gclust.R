@@ -25,6 +25,8 @@
 #'     "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
+#' @param cast_float32 logical; whether to compute the distances using 32-bit
+#'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -72,6 +74,7 @@ gclust.default <- function(d,
     M=1L,
     postprocess=c("boundary", "none", "all"),
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+    cast_float32=TRUE,
     verbose=FALSE,
     ...)
 {
@@ -80,7 +83,8 @@ gclust.default <- function(d,
 
     d <- as.matrix(d)
 
-    result <- .gclust.default(d, gini_threshold, M, postprocess, distance, verbose)
+    result <- .gclust.default(d, gini_threshold, M,
+        postprocess, distance, cast_float32, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- dimnames(d)[[1L]]

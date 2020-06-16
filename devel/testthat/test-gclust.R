@@ -10,18 +10,27 @@ context("gclust")
 if (require("genie")) {
 
     set.seed(123)
-    n <- 20000
-    d <- 100
+    n <- 1000000
+    d <- 2
     X <- matrix(rnorm(n*d), nrow=n)
 
+    cat(sprintf("n=%d, d=%d\n", n, d))
     print(system.time(gclust(X)))
+    print(system.time(gclust(X, cast_float32=FALSE)))
     print(system.time(hclust2(objects=X)))
         #gclust(dist(X)),
         #hclust2(dist(X)),
 
 }
 
-
+#  2020-06-16 15:26
+# n=100000, d=100
+#    user  system elapsed
+# 656.823   0.212 164.319
+#     user   system  elapsed
+# 1161.052    0.248  290.456
+#     user   system  elapsed
+# 1032.423    0.140  268.770
 
 
 n <- 10000

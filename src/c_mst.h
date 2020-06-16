@@ -260,6 +260,8 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
         const T* dij = (*D)(i, M.data()+i+1, n-i-1);
         // let dij[j] == d(x_i, x_j)
 
+
+        // TODO: the 2nd if below can be OpenMP'd
         for (ssize_t j=i+1; j<n; ++j) {
 
             if (dij[j] < dist[i*k+k-1]) {
@@ -362,7 +364,9 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         // pragma omp parallel for inside:
         const T* dist_from_lastj = (*D)(lastj, M.data()+1, n-i-1);
 
-        bestjpos = bestj = 0;
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
         for (ssize_t j=1; j<n-i; ++j) {
             ssize_t M_j = M[j];
             T curdist = dist_from_lastj[M_j]; // d(lastj, M_j)
@@ -370,6 +374,12 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
                 Dnn[M_j] = curdist;
                 Fnn[M_j] = lastj;
             }
+        }
+
+        // find min and argmin in Dnn:
+        bestjpos = bestj = 0;
+        for (ssize_t j=1; j<n-i; ++j) {
+            ssize_t M_j = M[j];
             if (Dnn[M_j] < Dnn[bestj]) {        // Dnn[0] == INFTY
                 bestj = M_j;
                 bestjpos = j;

@@ -14,6 +14,7 @@ gclust(d, ...)
   M = 1L,
   postprocess = c("boundary", "none", "all"),
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+  cast_float32 = TRUE,
   verbose = FALSE,
   ...
 )
@@ -50,6 +51,9 @@ choose "all".}
 \item{distance}{metric used to compute the linkage, one of:
 "euclidean" (synonym: "l2"),
 "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
+
+\item{cast_float32}{logical; whether to work internally with 32-bit
+instead of 64-bit precision FP arithmetic (2x faster)}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}

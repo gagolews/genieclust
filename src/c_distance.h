@@ -146,34 +146,19 @@ struct CDistanceEuclidean : public CDistance<T>  {
     const T* X;
     ssize_t n;
     ssize_t d;
-    bool squared;
     std::vector<T> buf;
-    // std::vector<T> sqnorm;
 
     /*!
      * @param X n*d c_contiguous array
      * @param n number of points
      * @param d dimensionality
-     * @param squared true for the squared Euclidean distance
      */
-    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d, bool squared=false)
-            : buf(n)//, sqnorm(n)
+    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d)
+            : buf(n)
     {
         this->n = n;
         this->d = d;
         this->X = X;
-        this->squared = squared;
-
-//         T* __sqnorm = sqnorm.data();
-// #ifdef _OPENMP
-//         #pragma omp parallel for schedule(static)
-// #endif
-//         for (ssize_t i=0; i<n; ++i) {
-//             __sqnorm[i] = 0.0;
-//             for (ssize_t u=0; u<d; ++u) {
-//                 __sqnorm[i] += X[d*i+u]*X[d*i+u];
-//             }
-//         }
     }
 
     CDistanceEuclidean()
@@ -181,41 +166,79 @@ struct CDistanceEuclidean : public CDistance<T>  {
 
     virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
         T* __buf = buf.data();
-        // T* __sqnorm = sqnorm.data();
+        const T* x = X+d*i;
+
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
         for (ssize_t j=0; j<k; ++j) {
             ssize_t w = M[j];
-            // GENIECLUST_ASSERT(w>=0 && w < n)
+            const T* y = X+d*w;
+
+            // or we could use the BLAS snrm2() for increased numerical
+            // stability. are we building a rocket though?
             __buf[w] = 0.0;
-
-//             const T* x = X+d*i;
-//             const T* y = X+d*w;
-//             for (ssize_t u=0; u<d; ++u) {
-//                 __buf[w] += (*x-*y)*(*x-*y);
-//                 ++x; ++y;
-//             }
-
-            // or we could use the BLAS snrm2() for increased numerical stability.
             for (ssize_t u=0; u<d; ++u) {
-                __buf[w] += square(X[d*i+u]-X[d*w+u]);
+                __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
             }
-
-
-            // // did you know that (x-y)**2 = x**2 + y**2 - 2*x*y ?
-            // const T* x = X+d*i;
-            // const T* y = X+d*w;
-            // for (ssize_t u=0; u<d; ++u) {
-            //     __buf[w] -= (*(x++))*(*(y++));
-            // }
-            // __buf[w] = 2.0*__buf[w]+__sqnorm[i]+__sqnorm[w];
-
-            if (!squared) __buf[w] = sqrt(__buf[w]);
+            __buf[w] = sqrt(__buf[w]);
         }
         return __buf;
     }
 };
+
+
+
+
+
+/*! A class to compute the squared Euclidean distances from the i-th point
+ *  to all given k points.
+ */
+template<class T>
+struct CDistanceEuclideanSquared : public CDistance<T>  {
+    const T* X;
+    ssize_t n;
+    ssize_t d;
+    std::vector<T> buf;
+
+    /*!
+     * @param X n*d c_contiguous array
+     * @param n number of points
+     * @param d dimensionality
+     */
+    CDistanceEuclideanSquared(const T* X, ssize_t n, ssize_t d)
+            : buf(n)
+    {
+        this->n = n;
+        this->d = d;
+        this->X = X;
+    }
+
+    CDistanceEuclideanSquared()
+        : CDistanceEuclideanSquared(NULL, 0, 0) { }
+
+    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+        T* __buf = buf.data();
+        const T* x = X+d*i;
+
+#ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+#endif
+        for (ssize_t j=0; j<k; ++j) {
+            ssize_t w = M[j];
+            const T* y = X+d*w;
+
+            // or we could use the BLAS snrm2() for increased numerical
+            // stability. are we building a rocket though?
+            __buf[w] = 0.0;
+            for (ssize_t u=0; u<d; ++u) {
+                __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
+            }
+        }
+        return __buf;
+    }
+};
+
 
 
 
@@ -360,19 +383,22 @@ struct CDistanceMutualReachability : public CDistance<T>  {
     virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
         // pragma omp parallel for inside::
         const T* d = (*d_pairwise)(i, M, k);
+        T*  __buf = buf.data();
 
-        // NO pragma omp parallel for -- should be fast, no need for OMP?
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
         for (ssize_t j=0; j<k; ++j)  { //
             // buf[w] = max{d[w],d_core[i],d_core[w]}
             ssize_t w = M[j];
-            if (w == i) buf[w] = 0.0;
+            if (w == i) __buf[w] = 0.0;
             else {
-                buf[w] = d[w];
-                if (d_core[i] > buf[w]) buf[w] = d_core[i];
-                if (d_core[w] > buf[w]) buf[w] = d_core[w];
+                __buf[w] = d[w];
+                if (d_core[i] > __buf[w]) __buf[w] = d_core[i];
+                if (d_core[w] > __buf[w]) __buf[w] = d_core[w];
             }
         }
-        return buf.data();
+        return __buf;
     }
 };
 

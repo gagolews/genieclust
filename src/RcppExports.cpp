@@ -114,8 +114,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gclust_default
-List gclust_default(NumericMatrix X, double gini_threshold, int M, String postprocess, String distance, bool verbose);
-RcppExport SEXP _genieclust_gclust_default(SEXP XSEXP, SEXP gini_thresholdSEXP, SEXP MSEXP, SEXP postprocessSEXP, SEXP distanceSEXP, SEXP verboseSEXP) {
+List gclust_default(NumericMatrix X, double gini_threshold, int M, String postprocess, String distance, bool cast_float32, bool verbose);
+RcppExport SEXP _genieclust_gclust_default(SEXP XSEXP, SEXP gini_thresholdSEXP, SEXP MSEXP, SEXP postprocessSEXP, SEXP distanceSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -124,8 +124,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type M(MSEXP);
     Rcpp::traits::input_parameter< String >::type postprocess(postprocessSEXP);
     Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
+    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(gclust_default(X, gini_threshold, M, postprocess, distance, verbose));
+    rcpp_result_gen = Rcpp::wrap(gclust_default(X, gini_threshold, M, postprocess, distance, cast_float32, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -177,7 +178,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
-    {"_genieclust_gclust_default", (DL_FUNC) &_genieclust_gclust_default, 6},
+    {"_genieclust_gclust_default", (DL_FUNC) &_genieclust_gclust_default, 7},
     {"_genieclust_gclust_dist", (DL_FUNC) &_genieclust_gclust_dist, 5},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},
     {"_genieclust_bonferroni_index", (DL_FUNC) &_genieclust_bonferroni_index, 1},
