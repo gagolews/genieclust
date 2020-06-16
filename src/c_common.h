@@ -72,25 +72,17 @@
 #endif
 
 
-void GENIECLUST_PRINT(const char* fmt) {
 #if GENIECLUST_R
-    REprintf(fmt);
+#define GENIECLUST_PRINT(fmt) REprintf((fmt));
 #else
-    fputs(fmt, stderr);
+#define GENIECLUST_PRINT(fmt) fprintf(stderr, (fmt));
 #endif
-}
 
-void GENIECLUST_PRINT_int(const char* fmt, int val) {
-    // cstdargs, variadic templates, who needs them :)
 #if GENIECLUST_R
-    REprintf(fmt, val);
+#define GENIECLUST_PRINT_int(fmt, val) REprintf((fmt), (int)(val));
 #else
-    fprintf(stderr, fmt, val);
+#define GENIECLUST_PRINT_int(fmt, val) fprintf(stderr, (fmt), (int)(val));
 #endif
-}
-
-
-
 
 
 
