@@ -14,6 +14,7 @@ gclust(d, ...)
   M = 1L,
   postprocess = c("boundary", "none", "all"),
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+  verbose = FALSE,
   ...
 )
 
@@ -22,6 +23,7 @@ gclust(d, ...)
   gini_threshold = 0.3,
   M = 1L,
   postprocess = c("boundary", "none", "all"),
+  verbose = FALSE,
   ...
 )
 }
@@ -45,8 +47,12 @@ with their nearest "core" points. To force a classical
 n_clusters-partition of a data set (with no notion of noise),
 choose "all".}
 
-\item{distance}{metric used to compute the linkage, one of: "euclidean"
-(synonym: "l2"), "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
+\item{distance}{metric used to compute the linkage, one of:
+"euclidean" (synonym: "l2"),
+"manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
+
+\item{verbose}{logical; whether to print diagnostic messages
+and progress information}
 }
 \value{
 A list of class \code{hclust}, see \code{\link[stats]{hclust}}.

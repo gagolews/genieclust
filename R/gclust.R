@@ -16,8 +16,11 @@
 #'     with their nearest "core" points. To force a classical
 #'     n_clusters-partition of a data set (with no notion of noise),
 #'     choose "all".
-#' @param distance metric used to compute the linkage, one of: "euclidean"
-#'     (synonym: "l2"), "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
+#' @param distance metric used to compute the linkage, one of:
+#'     "euclidean" (synonym: "l2"),
+#'     "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
+#' @param verbose logical; whether to print diagnostic messages
+#'     and progress information
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -65,6 +68,7 @@ gclust.default <- function(d,
     M=1L,
     postprocess=c("boundary", "none", "all"),
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+    verbose=FALSE,
     ...)
 {
     postprocess <- match.arg(postprocess)
@@ -72,7 +76,7 @@ gclust.default <- function(d,
 
     d <- as.matrix(d)
 
-    result <- .gclust.default(d, gini_threshold, M, postprocess, distance)
+    result <- .gclust.default(d, gini_threshold, M, postprocess, distance, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- dimnames(d)[[1L]]
@@ -93,11 +97,12 @@ gclust.dist <- function(d,
     gini_threshold=0.3,
     M=1L,
     postprocess=c("boundary", "none", "all"),
+    verbose=FALSE,
     ...)
 {
     postprocess <- match.arg(postprocess)
 
-    result <- .gclust.dist(d, gini_threshold, M, postprocess)
+    result <- .gclust.dist(d, gini_threshold, M, postprocess, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- attr(d, "Labels")

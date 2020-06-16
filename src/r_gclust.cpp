@@ -123,7 +123,8 @@ List gclust(CDistance<double>* D,
             ssize_t n,
             double gini_threshold,
             ssize_t M,
-            String postprocess)
+            String postprocess,
+            bool verbose)
 {
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
         stop("`gini_threshold` must be in [0, 1]");
@@ -149,10 +150,19 @@ List gclust(CDistance<double>* D,
 
     std::vector<ssize_t> mst_i((n-1)*2);
     std::vector<double>  mst_d(n-1);
-    Cmst_from_complete(D2?D2:D, n, mst_d.data(), mst_i.data());
+    Cmst_from_complete(D2?D2:D, n, mst_d.data(), mst_i.data(), verbose);
+
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Determining clusters.\n");
+    #endif
 
     CGenie<double> g(mst_d.data(), mst_i.data(), n, /*noise_leaves*/M>1);
     g.apply_genie(1, gini_threshold);
+
+
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Postprocessing the outputs.\n");
+    #endif
 
     std::vector<ssize_t> links(n-1);
     g.get_links(links.data());
@@ -212,16 +222,23 @@ List gclust_default(NumericMatrix X,
     double gini_threshold=0.3,
     int M=1,
     String postprocess="boundary",
-    String distance="euclidean")
+    String distance="euclidean",
+    bool verbose=false)
 {
     CDistance<double>* D = NULL;
     ssize_t n = X.nrow();
     ssize_t d = X.ncol();
 
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Initialising data.\n");
+    #endif
+
     matrix<double> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
     if (distance == "euclidean" || distance == "l2")
         D = (CDistance<double>*)(new CDistanceEuclidean<double>(X2.data(), n, d));
+//     else if (distance == "euclidean_squared" || distance == "l2_squared")
+//         D = (CDistance<double>*)(new CDistanceEuclidean<double>(X2.data(), n, d, true));
     else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
         D = (CDistance<double>*)(new CDistanceManhattan<double>(X2.data(), n, d));
     else if (distance == "cosine")
@@ -229,8 +246,11 @@ List gclust_default(NumericMatrix X,
     else
         stop("given `distance` is not supported (yet)");
 
-    List ret = gclust(D, n, gini_threshold, M, postprocess);
+    List ret = gclust(D, n, gini_threshold, M, postprocess, verbose);
     delete D;
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Done.\n");
+    #endif
     return ret;
 }
 
@@ -240,11 +260,22 @@ List gclust_default(NumericMatrix X,
 List gclust_dist(NumericVector d,
     double gini_threshold=0.3,
     int M=1,
-    String postprocess="boundary")
+    String postprocess="boundary",
+    bool verbose=false)
 {
     ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
     GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
+
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Initialising data.\n");
+    #endif
+
     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
 
-    return gclust((CDistance<double>*)&D, n, gini_threshold, M, postprocess);
+    List ret = gclust((CDistance<double>*)&D, n, gini_threshold, M, postprocess, verbose);
+    #ifdef GENIECLUST_R
+    if (verbose) REprintf("[genieclust] Done.\n");
+    #endif
+    return ret;
 }
+

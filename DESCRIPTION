@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm
 Version: 0.9.1
-Date: 2020-06-13
+Date: 2020-06-16
 Authors@R: c(
     person("Marek", "Gagolewski",
     role = c("aut", "cre"),
