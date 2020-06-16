@@ -60,6 +60,10 @@ A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
 \description{
 TODO
 }
+\details{
+Note that as with all the distance-based methods, standardisation
+of the input features is definitely worth giving a try.
+}
 \examples{
 library("datasets")
 data("iris")

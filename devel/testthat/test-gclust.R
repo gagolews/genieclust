@@ -6,6 +6,24 @@ context("gclust")
 # TODO:
 
 
+
+if (require("genie")) {
+
+    set.seed(123)
+    n <- 20000
+    d <- 100
+    X <- matrix(rnorm(n*d), nrow=n)
+
+    print(system.time(gclust(X)))
+    print(system.time(hclust2(objects=X)))
+        #gclust(dist(X)),
+        #hclust2(dist(X)),
+
+}
+
+
+
+
 n <- 10000
 d <- 100
 X <- matrix(rnorm(n*d), nrow=n)
@@ -31,20 +49,5 @@ if (require("genie")) {
 
 #print(genieclust::gclust(iris[1:4], M=5))
 #print(genieclust::gclust(dist(iris[1:4]), M=5))
-
-
-if (require("genie")) {
-
-    set.seed(123)
-    n <- 10000
-    d <- 100
-    X <- matrix(rnorm(n*d), nrow=n)
-
-    print(system.time(gclust(X)))
-    print(system.time(hclust2(objects=X)))
-        #gclust(dist(X)),
-        #hclust2(dist(X)),
-
-}
 
 

@@ -616,7 +616,8 @@ class Genie(GenieBase):
         X : ndarray, shape (n_samples, n_features)  or
                 (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
             A matrix defining n_samples in a vector space with n_features.
-            Hint: it might be a good idea to normalise the coordinates of the
+            Hint: it might be a good idea to standardise or at least
+            normalise the coordinates of the
             input data points by calling
             `X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False)`
             so that the dataset is centred at 0 and

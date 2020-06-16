@@ -18,7 +18,7 @@ rpy2.robjects.numpy2ri.activate()
 verbose = True
 
 np.random.seed(123)
-n = 100_000
+n = 10_000
 d = 6
 X = np.random.normal(size=(n,d))
 labels = np.random.choice(np.r_[1,2,3,4,5,6,7,8], n)

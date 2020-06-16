@@ -3,6 +3,10 @@
 #' @description
 #' TODO
 #'
+#' @details
+#' Note that as with all the distance-based methods, standardisation
+#' of the input features is definitely worth giving a try.
+#'
 #' @param d either a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
 #'     object of class \code{dist}, see \code{\link[stats]{dist}}.
