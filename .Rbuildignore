@@ -18,3 +18,4 @@
 ^setup\.cfg$
 ^MANIFEST
 ^requirements.txt$
+^LICENSE$
