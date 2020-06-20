@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python package
+name: Python and R package
 
 on:
   push:
@@ -28,9 +25,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt -y install python3-rpy2
-        pip install rpy2 faiss-cpu
-        sudo Rscript -e "install.packages('genie')"
+        sudo apt -y install python3-rpy2 python3-mlpack
+        pip install rpy2 faiss-cpu mlpack
+        sudo Rscript -e "install.packages(c('genie', 'devtools', 'Rcpp', 'testthat'))"
     - name: Install genieclust
       run: |
         python3 setup.py install --user
@@ -43,3 +40,7 @@ jobs:
     - name: Test with pytest
       run: |
         pytest devel/pytest
+    - name: Check and test with testthat
+      run: |
+        Rscript -e 'devtools::check()'
+        Rscript -e 'source("devel/testthat.R")'
