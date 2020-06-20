@@ -16,6 +16,8 @@ if (require("genie")) {
 
     cat(sprintf("n=%d, d=%d\n", n, d))
     print(system.time(gclust(X)))
+#     print(system.time(gclust(X, use_mlpack=TRUE)))
+#     print(system.time(gclust(X, use_mlpack=FALSE)))
     print(system.time(gclust(X, cast_float32=FALSE)))
     print(system.time(hclust2(objects=X)))
         #gclust(dist(X)),
@@ -47,12 +49,18 @@ print(genieclust::gclust(dist(iris[1:4], method="manhattan"), gini_threshold=0.5
 
 
 if (require("genie")) {
-    h1 <- gclust(iris[1:4])
-    h2 <- gclust(dist(iris[1:4]))
-    h3 <- hclust2(dist(iris[1:4]))
+    for (distance in c("euclidean", "manhattan")) {
+        h1 <- gclust(iris[1:4], distance=distance)
+    #     h2 <- gclust(iris[1:4], use_mlpack=TRUE)
+    #     h3 <- gclust(iris[1:4], use_mlpack=FALSE)
+        h4 <- gclust(dist(iris[1:4], method=distance))
+        h5 <- hclust2(dist(iris[1:4], method=distance))
 
-    expect_equal(adjusted_rand_score(cutree(h1, 3), cutree(h3, 3)), 1.0)
-    expect_equal(adjusted_rand_score(cutree(h2, 3), cutree(h3, 3)), 1.0)
+        expect_equal(adjusted_rand_score(cutree(h1, 3), cutree(h5, 3)), 1.0)
+    #     expect_equal(adjusted_rand_score(cutree(h2, 3), cutree(h5, 3)), 1.0)
+    #     expect_equal(adjusted_rand_score(cutree(h3, 3), cutree(h5, 3)), 1.0)
+        expect_equal(adjusted_rand_score(cutree(h4, 3), cutree(h5, 3)), 1.0)
+    }
 }
 
 

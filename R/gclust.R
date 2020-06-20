@@ -37,11 +37,6 @@
 #'     and progress information
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
-#' @param use_mlpack logical or "auto"; whether the Euclidean Minimum
-#'     Spanning Tree algorithm from MLPACK should be used instead of the
-#'     parallelised Prim's method; the latter performs n*(n-1)/2 distance
-#'     computations; "auto" turns on the MLPACK routine
-#'     for Euclidean spaces of dimensions up to 6.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -88,7 +83,6 @@ gclust <- function(d, ...)
 gclust.default <- function(d,
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-    use_mlpack="auto",
     cast_float32=TRUE,
     verbose=FALSE,
     ...)
@@ -97,13 +91,18 @@ gclust.default <- function(d,
     distance <- match.arg(distance)
     d <- as.matrix(d)
 
-    if (use_mlpack == "auto") {
-        use_mlpack <- (distance == "euclidean" && ncol(d) <= 6)
-    }
+# use_mlpack logical or "auto"; whether the Euclidean Minimum
+#     Spanning Tree algorithm from MLPACK should be used instead of the
+#     parallelised Prim's method; the latter performs n*(n-1)/2 distance
+#     computations; "auto" turns on the MLPACK routine
+#     for Euclidean spaces of dimensions up to 6.
+#     if (use_mlpack == "auto") {
+#         use_mlpack <- (distance == "euclidean" && ncol(d) <= 6)
+#     }
 
 
     result <- .gclust.default(d, gini_threshold, distance,
-        use_mlpack, cast_float32, verbose)
+        cast_float32, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- dimnames(d)[[1L]]

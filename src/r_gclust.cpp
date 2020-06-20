@@ -13,14 +13,21 @@
  *  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+// //[[Rcpp::depends(RcppMLPACK)]]
+// #include <RcppMLPACK.h>
+
+
+
 #include "c_common.h"
 #include "c_matrix.h"
 #include "c_distance.h"
 #include "c_mst.h"
 #include "c_genie.h"
 #include <cmath>
-#include <Rcpp.h>
+
 using namespace Rcpp;
+
 
 
 
@@ -102,37 +109,13 @@ void generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 
 
 template<typename T>
-List __gclust(CDistance<T>* D,
-            ssize_t n,
-            double gini_threshold,
-//             ssize_t M,
-//             String postprocess,
-            bool verbose)
+List __gclust(
+        std::vector<ssize_t>& mst_i,
+        std::vector<T>&  mst_d,
+        ssize_t n,
+        double gini_threshold,
+        bool verbose)
 {
-//     if (M < 1 || M >= n-1)
-//         stop("`M` must be an integer in [1, n-1)");
-
-
-    CDistance<T>* D2 = NULL;
-//     if (M > 2) {
-//         // clustering w.r.t. mutual reachability distance
-//         // M == 2 is like the original distance, but with noise points detection
-//         stop("M > 2 is not supported yet.");
-//
-//         // k = M-1
-//         // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-//         // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-//         // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
-//
-//         std::vector<T> d_core(n);
-//         // TODO
-//         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
-//     }
-
-    std::vector<ssize_t> mst_i((n-1)*2);
-    std::vector<T>  mst_d(n-1);
-    Cmst_from_complete<T>(D2?D2:D, n, mst_d.data(), mst_i.data(), verbose);
-
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
 
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
@@ -162,8 +145,6 @@ List __gclust(CDistance<T>* D,
 //             stop("incorrect `postprocess`");
 //
 //         stop("M > 1 is not supported yet.");
-//
-//         if (D2) delete D2;
 //     }
 
 
@@ -197,23 +178,75 @@ List __gclust(CDistance<T>* D,
 }
 
 
+
+
+//     if (M < 1 || M >= n-1)
+//         stop("`M` must be an integer in [1, n-1)");
+
+
+//     CDistance<T>* D2 = NULL;
+//     if (M > 2) {
+//         // clustering w.r.t. mutual reachability distance
+//         // M == 2 is like the original distance, but with noise points detection
+//         stop("M > 2 is not supported yet.");
+//
+//         // k = M-1
+//         // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+//         // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
+//         // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
+//
+//         std::vector<T> d_core(n);
+//         // TODO
+//         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
+//     }
+
+//     if (D2) delete D2;
+
+
+
+
 template<typename T>
 List __gclust_default(NumericMatrix X,
     double gini_threshold,
 //     int M,
 //     String postprocess,
     String distance,
-    bool use_mlpack,
+//     bool use_mlpack,
     bool verbose)
 {
-    CDistance<T>* D = NULL;
     ssize_t n = X.nrow();
     ssize_t d = X.ncol();
+    List ret;
+
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
 
-    matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
+//     if (use_mlpack) {
+//         if (distance != "euclidean" && distance != "l2")
+//             stop("`use_mlpack` can only be used with Euclidean distance");
+//
+//         std::vector<ssize_t> mst_i((n-1)*2);
+//         std::vector<double>  mst_d(n-1);
+//
+//         //mlpack::Log::Info.ignoreInput = !verbose;
+//         //mlpack::Log::Warn.ignoreInput = !verbose;
+//
+//         arma::Mat<double> X2(REAL(SEXP(X)), n, d, /*copy_aux_mem=*/true, /*strict=*/true);
+//         mlpack::emst::DualTreeBoruvka<> boruvka(X2.t());
+//         arma::mat mst;
+//         boruvka.ComputeMST(mst);
+//         for (ssize_t i=0; i<n-1; ++i) {
+//             mst_d[i]     = (double)mst(2, i);
+//             mst_i[i*2+0] = (ssize_t)mst(0, i); // edges are sorted
+//             mst_i[i*2+1] = (ssize_t)mst(1, i);
+//         }
+//
+//         ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
+//     }
+//     else {
 
+    matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
+    CDistance<T>* D = NULL;
     if (distance == "euclidean" || distance == "l2")
         D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
     else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
@@ -223,14 +256,20 @@ List __gclust_default(NumericMatrix X,
     else
         stop("given `distance` is not supported (yet)");
 
-    List ret = __gclust<T>(D, n, gini_threshold, /*M, postprocess,*/ verbose);
+    std::vector<ssize_t> mst_i((n-1)*2);
+    std::vector<T>  mst_d(n-1);
+    Cmst_from_complete<T>(D, n, mst_d.data(), mst_i.data(), verbose);
     delete D;
+
+    ret = __gclust<T>(mst_i, mst_d, n, gini_threshold, verbose);
 
     if (distance == "euclidean" || distance == "l2") {
         NumericVector height = ret["height"];
         for (ssize_t i=0; i<n-1; ++i)
             height[i] = sqrt(height[i]);
     }
+
+//     }
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;
@@ -240,10 +279,10 @@ List __gclust_default(NumericMatrix X,
 
 
 template List __gclust_default<float>(NumericMatrix X, double gini_threshold,
-    /*int M, String postprocess, */String distance, bool use_mlpack, bool verbose);
+    /*int M, String postprocess, */String distance, /*bool use_mlpack, */bool verbose);
 
 template List __gclust_default<double>(NumericMatrix X, double gini_threshold,
-    /*int M, String postprocess, */String distance, bool use_mlpack, bool verbose);
+    /*int M, String postprocess, */String distance, /*bool use_mlpack, */bool verbose);
 
 
 
@@ -254,14 +293,13 @@ template List __gclust_default<double>(NumericMatrix X, double gini_threshold,
 List gclust_default(NumericMatrix X,
     double gini_threshold=0.3,
     String distance="euclidean",
-    bool use_mlpack=false,
     bool cast_float32=true,
     bool verbose=false)
 {
     if (cast_float32)
-        return __gclust_default<float>(X, gini_threshold, /*M, postprocess, */distance, use_mlpack, verbose);
+        return __gclust_default<float>(X, gini_threshold, /*M, postprocess, */distance, /*use_mlpack, */verbose);
     else
-        return __gclust_default<double>(X, gini_threshold, /*M, postprocess, */distance, use_mlpack, verbose);
+        return __gclust_default<double>(X, gini_threshold, /*M, postprocess, */distance, /*use_mlpack, */verbose);
 }
 
 
@@ -276,9 +314,13 @@ List gclust_dist(NumericVector d,
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
 
-    List ret;
     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
-    ret = __gclust<double>((CDistance<double>*)&D, n, gini_threshold, /*M, postprocess, */verbose);
+
+    std::vector<ssize_t> mst_i((n-1)*2);
+    std::vector<double>  mst_d(n-1);
+    Cmst_from_complete<double>(&D, n, mst_d.data(), mst_i.data(), verbose);
+
+    List ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;

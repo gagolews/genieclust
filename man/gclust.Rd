@@ -12,7 +12,6 @@ gclust(d, ...)
   d,
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  use_mlpack = "auto",
   cast_float32 = TRUE,
   verbose = FALSE,
   ...
@@ -35,12 +34,6 @@ Low thresholds highly penalise the formation of small clusters.}
 \item{distance}{metric used to compute the linkage, one of:
 "euclidean" (synonym: "l2"),
 "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
-
-\item{use_mlpack}{logical or "auto"; whether the Euclidean Minimum
-Spanning Tree algorithm from MLPACK should be used instead of the
-parallelised Prim's method; the latter performs n*(n-1)/2 distance
-computations; "auto" turns on the MLPACK routine
-for Euclidean spaces of dimensions up to 6.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
 instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
