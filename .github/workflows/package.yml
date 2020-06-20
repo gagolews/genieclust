@@ -26,8 +26,8 @@ jobs:
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt -y install python3-rpy2 libmlpack-dev
-        pip install rpy2 faiss-cpu mlpack r-cran-devtools
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'testthat'))"
+        pip install rpy2 faiss-cpu mlpack libcurl4-gnutls-dev
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat'))"
     - name: Install genieclust
       run: |
         python3 setup.py install --user
