@@ -42,5 +42,6 @@ jobs:
         pytest devel/pytest
     - name: Check and test with testthat
       run: |
+        R CMD INSTALL .
         Rscript -e 'devtools::check()'
         Rscript -e 'source("devel/testthat.R")'
