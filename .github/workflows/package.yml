@@ -1,4 +1,4 @@
-name: Python and R package
+name: Python package
 
 on:
   push:
