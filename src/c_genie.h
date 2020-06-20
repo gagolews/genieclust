@@ -412,7 +412,7 @@ protected:
 
 
 public:
-    CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves)
+    CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves=false)
         : CGenieBase<T>(mst_d, mst_i, n, noise_leaves)
     {
         ;
@@ -543,7 +543,7 @@ protected:
     }
 
 public:
-    CGIc(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves)
+    CGIc(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves=false)
         : CGenie<T>(mst_d, mst_i, n, noise_leaves)
     {
         ;

@@ -14,13 +14,13 @@
 
 
 
-#' @title The Genie++ Hierarchical Clustering Algorithm
+#' @title The Genie Hierarchical Clustering Algorithm
 #'
 #' @description
 #' TODO
 #'
 #' @details
-#' Note that as with all the distance-based methods, standardisation
+#' Note that as in the case of all the distance-based methods, standardisation
 #' of the input features is definitely worth giving a try.
 #'
 #' @param d either a numeric matrix (or an object coercible to one,
@@ -30,12 +30,6 @@
 #'     the Gini index of the cluster size distribution;
 #'     Threshold of 1.0 disables the correction.
 #'     Low thresholds highly penalise the formation of small clusters.
-#' @param M smoothing factor; M=1 gives the original Genie algorithm.
-#' @param postprocess one of "boundary" (default), "none", "all";
-#'     in effect only if M>1. By default, only "boundary" points are merged
-#'     with their nearest "core" points. To force a classical
-#'     n_clusters-partition of a data set (with no notion of noise),
-#'     choose "all".
 #' @param distance metric used to compute the linkage, one of:
 #'     "euclidean" (synonym: "l2"),
 #'     "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
@@ -43,6 +37,11 @@
 #'     and progress information
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
+#' @param use_mlpack logical or "auto"; whether the Euclidean Minimum
+#'     Spanning Tree algorithm from MLPACK should be used instead of the
+#'     parallelised Prim's method; the latter performs n*(n-1)/2 distance
+#'     computations; "auto" turns on the MLPACK routine
+#'     for Euclidean spaces of dimensions up to 6.
 #' @param ... further arguments passed to or from other methods.
 #'
 #' @return
@@ -57,12 +56,13 @@
 #' library("datasets")
 #' data("iris")
 #' X <- iris[1:4]
-#' #h <- gclust(X)
-#' # y_pred <- cutree(h, 3)
+#' h <- gclust(X)
+#' y_pred <- cutree(h, 3)
 #' y_test <- iris[,5]
-#' #plot(iris[,2], iris[,3], col=y_pred,
-#' #   pch=as.integer(iris[,5]), asp=1, las=1)
-#' #adjusted_rand_score(y_test, y_pred)
+#' plot(iris[,2], iris[,3], col=y_pred,
+#'    pch=as.integer(iris[,5]), asp=1, las=1)
+#' adjusted_rand_score(y_test, y_pred)
+#' pair_sets_index(y_test, y_pred)
 #'
 #' @rdname gclust
 #' @export
@@ -87,27 +87,31 @@ gclust <- function(d, ...)
 #' @method gclust default
 gclust.default <- function(d,
     gini_threshold=0.3,
-    M=1L,
-    postprocess=c("boundary", "none", "all"),
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+    use_mlpack="auto",
     cast_float32=TRUE,
     verbose=FALSE,
     ...)
 {
-    postprocess <- match.arg(postprocess)
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     distance <- match.arg(distance)
-
     d <- as.matrix(d)
 
-    result <- .gclust.default(d, gini_threshold, M,
-        postprocess, distance, cast_float32, verbose)
+    if (use_mlpack == "auto") {
+        use_mlpack <- (distance == "euclidean" && ncol(d) <= 6)
+    }
+
+
+    result <- .gclust.default(d, gini_threshold, distance,
+        use_mlpack, cast_float32, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- dimnames(d)[[1L]]
-    result[["method"]] <- sprintf("Genie++(%g)", gini_threshold)
+    result[["method"]] <- sprintf("Genie(%g)", gini_threshold)
     result[["call"]]   <- match.call()
-    result[["dist.method"]] <- if (M == 1L) distance else
-        sprintf("mutual reachability distance (%s, M=%d)", distance, M)
+    result[["dist.method"]] <- distance
+    #result[["dist.method"]] <- if (M == 1L) distance else
+    #    sprintf("mutual reachability distance (%s, M=%d)", distance, M)
     class(result) <- "hclust"
 
     result
@@ -119,21 +123,19 @@ gclust.default <- function(d,
 #' @method gclust dist
 gclust.dist <- function(d,
     gini_threshold=0.3,
-    M=1L,
-    postprocess=c("boundary", "none", "all"),
     verbose=FALSE,
     ...)
 {
-    postprocess <- match.arg(postprocess)
-
-    result <- .gclust.dist(d, gini_threshold, M, postprocess, verbose)
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+    result <- .gclust.dist(d, gini_threshold, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- attr(d, "Labels")
-    result[["method"]] <- sprintf("Genie++(%g)", gini_threshold)
+    result[["method"]] <- sprintf("Genie(%g)", gini_threshold)
     result[["call"]]   <- match.call()
-    result[["dist.method"]] <- if (M == 1L) attr(d, "method") else
-        sprintf("mutual reachability distance (%s, M=%d)", attr(d, "method"), M)
+    result[["dist.method"]] <- attr(d, "method")
+    #result[["dist.method"]] <- if (M == 1L) attr(d, "method") else
+    #    sprintf("mutual reachability distance (%s, M=%d)", attr(d, "method"), M)
     class(result) <- "hclust"
 
     result

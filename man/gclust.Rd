@@ -4,29 +4,21 @@
 \alias{gclust}
 \alias{gclust.default}
 \alias{gclust.dist}
-\title{The Genie++ Hierarchical Clustering Algorithm}
+\title{The Genie Hierarchical Clustering Algorithm}
 \usage{
 gclust(d, ...)
 
 \method{gclust}{default}(
   d,
   gini_threshold = 0.3,
-  M = 1L,
-  postprocess = c("boundary", "none", "all"),
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+  use_mlpack = "auto",
   cast_float32 = TRUE,
   verbose = FALSE,
   ...
 )
 
-\method{gclust}{dist}(
-  d,
-  gini_threshold = 0.3,
-  M = 1L,
-  postprocess = c("boundary", "none", "all"),
-  verbose = FALSE,
-  ...
-)
+\method{gclust}{dist}(d, gini_threshold = 0.3, verbose = FALSE, ...)
 }
 \arguments{
 \item{d}{either a numeric matrix (or an object coercible to one,
@@ -40,17 +32,15 @@ the Gini index of the cluster size distribution;
 Threshold of 1.0 disables the correction.
 Low thresholds highly penalise the formation of small clusters.}
 
-\item{M}{smoothing factor; M=1 gives the original Genie algorithm.}
-
-\item{postprocess}{one of "boundary" (default), "none", "all";
-in effect only if M>1. By default, only "boundary" points are merged
-with their nearest "core" points. To force a classical
-n_clusters-partition of a data set (with no notion of noise),
-choose "all".}
-
 \item{distance}{metric used to compute the linkage, one of:
 "euclidean" (synonym: "l2"),
 "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
+
+\item{use_mlpack}{logical or "auto"; whether the Euclidean Minimum
+Spanning Tree algorithm from MLPACK should be used instead of the
+parallelised Prim's method; the latter performs n*(n-1)/2 distance
+computations; "auto" turns on the MLPACK routine
+for Euclidean spaces of dimensions up to 6.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
 instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
@@ -65,19 +55,20 @@ A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
 TODO
 }
 \details{
-Note that as with all the distance-based methods, standardisation
+Note that as in the case of all the distance-based methods, standardisation
 of the input features is definitely worth giving a try.
 }
 \examples{
 library("datasets")
 data("iris")
 X <- iris[1:4]
-#h <- gclust(X)
-# y_pred <- cutree(h, 3)
+h <- gclust(X)
+y_pred <- cutree(h, 3)
 y_test <- iris[,5]
-#plot(iris[,2], iris[,3], col=y_pred,
-#   pch=as.integer(iris[,5]), asp=1, las=1)
-#adjusted_rand_score(y_test, y_pred)
+plot(iris[,2], iris[,3], col=y_pred,
+   pch=as.integer(iris[,5]), asp=1, las=1)
+adjusted_rand_score(y_test, y_pred)
+pair_sets_index(y_test, y_pred)
 
 }
 \references{

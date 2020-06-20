@@ -134,7 +134,6 @@ setuptools.setup(
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
     license="GNU Affero General Public License v3",
-    license_file="LICENSE",
     install_requires=[
           "numpy",
           "scipy",

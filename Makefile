@@ -16,6 +16,9 @@ python:
 pytest: python
 	pytest
 
+py-check: python
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude devel/ --exclude build/
+
 r:
 	Rscript -e 'Rcpp::compileAttributes()'
 	R CMD INSTALL .
@@ -23,8 +26,15 @@ r:
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
 	R CMD INSTALL .
 
-check: r
+r-check: r
 	Rscript -e 'devtools::check()'
 
 testthat: r
 	Rscript -e 'options(width=120); source("devel/testthat.R")'
+
+
+r-build:
+	Rscript -e 'Rcpp::compileAttributes()'
+	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"))'
+	R CMD INSTALL . --preclean
+	R CMD build .

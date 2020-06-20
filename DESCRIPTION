@@ -1,6 +1,6 @@
 Package: genieclust
 Type: Package
-Title: The Genie++ Hierarchical Clustering Algorithm
+Title: The Genie Hierarchical Clustering Algorithm
 Version: 0.9.1
 Date: 2020-06-16
 Authors@R: c(
@@ -9,7 +9,16 @@ Authors@R: c(
     email = "marek@gagolewski.com",
     comment = c(ORCID = "0000-0003-0637-6028"))
     )
-Description: TO DO description....
+Description: A reimplementation of the Genie algorithm - a robust and outlier
+    resistant hierarchical clustering method
+    (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
+    It is now faster and more memory efficient; clustering of
+    datasets of 10M points in low dimensional Euclidean spaces or
+    100K points in high dimensional ones takes 1-2 minutes.
+    Also features an implementation of economic inequity indices
+    (Gini, Bonferroni index) and internal cluster validity measures
+    (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
+    adjusted mutual information, pair sets index).
 BugReports: http://github.com/gagolews/genieclust/issues
 URL: http://www.gagolewski.com/software/genieclust
 License: AGPL-3
@@ -17,7 +26,6 @@ Imports:
     Rcpp (>= 1.0.4),
     stats
 Suggests:
-    testthat,
     datasets
 LinkingTo: Rcpp
 Encoding: UTF-8

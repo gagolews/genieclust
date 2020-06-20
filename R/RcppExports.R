@@ -149,12 +149,12 @@ pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust_pair_sets_index`, x, y)
 }
 
-.gclust.default <- function(X, gini_threshold = 0.3, M = 1L, postprocess = "boundary", distance = "euclidean", cast_float32 = TRUE, verbose = FALSE) {
-    .Call(`_genieclust_gclust_default`, X, gini_threshold, M, postprocess, distance, cast_float32, verbose)
+.gclust.default <- function(X, gini_threshold = 0.3, distance = "euclidean", use_mlpack = FALSE, cast_float32 = TRUE, verbose = FALSE) {
+    .Call(`_genieclust_gclust_default`, X, gini_threshold, distance, use_mlpack, cast_float32, verbose)
 }
 
-.gclust.dist <- function(d, gini_threshold = 0.3, M = 1L, postprocess = "boundary", verbose = FALSE) {
-    .Call(`_genieclust_gclust_dist`, d, gini_threshold, M, postprocess, verbose)
+.gclust.dist <- function(d, gini_threshold = 0.3, verbose = FALSE) {
+    .Call(`_genieclust_gclust_dist`, d, gini_threshold, verbose)
 }
 
 #' @title Inequity (Inequality) Measures

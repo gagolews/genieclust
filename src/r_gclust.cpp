@@ -105,31 +105,29 @@ template<typename T>
 List __gclust(CDistance<T>* D,
             ssize_t n,
             double gini_threshold,
-            ssize_t M,
-            String postprocess,
+//             ssize_t M,
+//             String postprocess,
             bool verbose)
 {
-    if (gini_threshold < 0.0 || gini_threshold > 1.0)
-        stop("`gini_threshold` must be in [0, 1]");
-    if (M < 1 || M >= n-1)
-        stop("`M` must be an integer in [1, n-1)");
+//     if (M < 1 || M >= n-1)
+//         stop("`M` must be an integer in [1, n-1)");
 
 
     CDistance<T>* D2 = NULL;
-    if (M > 2) {
-        // clustering w.r.t. mutual reachability distance
-        // M == 2 is like the original distance, but with noise points detection
-        stop("M > 2 is not supported yet.");
-
-        // k = M-1
-        // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-        // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-        // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
-
-        std::vector<T> d_core(n);
-        // TODO
-        D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
-    }
+//     if (M > 2) {
+//         // clustering w.r.t. mutual reachability distance
+//         // M == 2 is like the original distance, but with noise points detection
+//         stop("M > 2 is not supported yet.");
+//
+//         // k = M-1
+//         // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+//         // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
+//         // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
+//
+//         std::vector<T> d_core(n);
+//         // TODO
+//         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
+//     }
 
     std::vector<ssize_t> mst_i((n-1)*2);
     std::vector<T>  mst_d(n-1);
@@ -137,7 +135,10 @@ List __gclust(CDistance<T>* D,
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
 
-    CGenie<T> g(mst_d.data(), mst_i.data(), n, /*noise_leaves*/M>1);
+    if (gini_threshold < 0.0 || gini_threshold > 1.0)
+        stop("`gini_threshold` must be in [0, 1]");
+
+    CGenie<T> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
     g.apply_genie(1, gini_threshold);
 
 
@@ -146,24 +147,24 @@ List __gclust(CDistance<T>* D,
     std::vector<ssize_t> links(n-1);
     g.get_links(links.data());
 
-    if (M > 1) {
-        // noise points post-processing might be requested
-        if (postprocess == "boundary") {
-
-        }
-        else if (postprocess == "none") {
-
-        }
-        else if (postprocess == "all") {
-
-        }
-        else
-            stop("incorrect `postprocess`");
-
-        stop("M > 1 is not supported yet.");
-
-        if (D2) delete D2;
-    }
+//     if (M > 1) {
+//         // noise points post-processing might be requested
+//         if (postprocess == "boundary") {
+//
+//         }
+//         else if (postprocess == "none") {
+//
+//         }
+//         else if (postprocess == "all") {
+//
+//         }
+//         else
+//             stop("incorrect `postprocess`");
+//
+//         stop("M > 1 is not supported yet.");
+//
+//         if (D2) delete D2;
+//     }
 
 
     NumericMatrix links2(n-1, 2);
@@ -199,9 +200,10 @@ List __gclust(CDistance<T>* D,
 template<typename T>
 List __gclust_default(NumericMatrix X,
     double gini_threshold,
-    int M,
-    String postprocess,
+//     int M,
+//     String postprocess,
     String distance,
+    bool use_mlpack,
     bool verbose)
 {
     CDistance<T>* D = NULL;
@@ -221,7 +223,7 @@ List __gclust_default(NumericMatrix X,
     else
         stop("given `distance` is not supported (yet)");
 
-    List ret = __gclust<T>(D, n, gini_threshold, M, postprocess, verbose);
+    List ret = __gclust<T>(D, n, gini_threshold, /*M, postprocess,*/ verbose);
     delete D;
 
     if (distance == "euclidean" || distance == "l2") {
@@ -238,10 +240,10 @@ List __gclust_default(NumericMatrix X,
 
 
 template List __gclust_default<float>(NumericMatrix X, double gini_threshold,
-    int M, String postprocess, String distance, bool verbose);
+    /*int M, String postprocess, */String distance, bool use_mlpack, bool verbose);
 
 template List __gclust_default<double>(NumericMatrix X, double gini_threshold,
-    int M, String postprocess, String distance, bool verbose);
+    /*int M, String postprocess, */String distance, bool use_mlpack, bool verbose);
 
 
 
@@ -251,16 +253,15 @@ template List __gclust_default<double>(NumericMatrix X, double gini_threshold,
 // [[Rcpp::export(".gclust.default")]]
 List gclust_default(NumericMatrix X,
     double gini_threshold=0.3,
-    int M=1,
-    String postprocess="boundary",
     String distance="euclidean",
+    bool use_mlpack=false,
     bool cast_float32=true,
     bool verbose=false)
 {
     if (cast_float32)
-        return __gclust_default<float>(X, gini_threshold, M, postprocess, distance, verbose);
+        return __gclust_default<float>(X, gini_threshold, /*M, postprocess, */distance, use_mlpack, verbose);
     else
-        return __gclust_default<double>(X, gini_threshold, M, postprocess, distance, verbose);
+        return __gclust_default<double>(X, gini_threshold, /*M, postprocess, */distance, use_mlpack, verbose);
 }
 
 
@@ -268,8 +269,6 @@ List gclust_default(NumericMatrix X,
 // [[Rcpp::export(".gclust.dist")]]
 List gclust_dist(NumericVector d,
     double gini_threshold=0.3,
-    int M=1,
-    String postprocess="boundary",
     bool verbose=false)
 {
     ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
@@ -279,7 +278,7 @@ List gclust_dist(NumericVector d,
 
     List ret;
     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
-    ret = __gclust<double>((CDistance<double>*)&D, n, gini_threshold, M, postprocess, verbose);
+    ret = __gclust<double>((CDistance<double>*)&D, n, gini_threshold, /*M, postprocess, */verbose);
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;
