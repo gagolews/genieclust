@@ -25,7 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt -y install python3-rpy2 libmlpack-dev libmlpack3
+        sudo apt -y install python3-rpy2 libmlpack-dev
         pip install rpy2 faiss-cpu mlpack
         sudo Rscript -e "install.packages(c('genie', 'devtools', 'Rcpp', 'testthat'))"
     - name: Install genieclust
