@@ -17,6 +17,30 @@
 // //[[Rcpp::depends(RcppMLPACK)]]
 // #include <RcppMLPACK.h>
 
+//     if (use_mlpack) {
+//         if (distance != "euclidean" && distance != "l2")
+//             stop("`use_mlpack` can only be used with Euclidean distance");
+//
+//         std::vector<ssize_t> mst_i((n-1)*2);
+//         std::vector<double>  mst_d(n-1);
+//
+//         //mlpack::Log::Info.ignoreInput = !verbose;
+//         //mlpack::Log::Warn.ignoreInput = !verbose;
+//
+//         arma::Mat<double> X2(REAL(SEXP(X)), n, d, /*copy_aux_mem=*/true, /*strict=*/true);
+//         mlpack::emst::DualTreeBoruvka<> boruvka(X2.t());
+//         arma::mat mst;
+//         boruvka.ComputeMST(mst);
+//         for (ssize_t i=0; i<n-1; ++i) {
+//             mst_d[i]     = (double)mst(2, i);
+//             mst_i[i*2+0] = (ssize_t)mst(0, i); // edges are sorted
+//             mst_i[i*2+1] = (ssize_t)mst(1, i);
+//         }
+//
+//         ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
+//     }
+
+
 
 
 #include "c_common.h"
@@ -32,7 +56,7 @@ using namespace Rcpp;
 
 
 /* This function was originally part of our `genie` package for R */
-void generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
+void __generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
 {
     std::vector<ssize_t> elements(n+1, 0);
     std::vector<ssize_t> parents(n+1, 0);
@@ -71,17 +95,19 @@ void generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
         }
 
         if (merge(k, 0) < 0) {
-            if (merge(k, 1) < 0 && merge(k, 0) < merge(k, 1)) std::swap(merge(k, 0), merge(k, 1));
+            if (merge(k, 1) < 0 && merge(k, 0) < merge(k, 1))
+                std::swap(merge(k, 0), merge(k, 1));
         }
         else {
-            if (merge(k, 0) > merge(k, 1)) std::swap(merge(k, 0), merge(k, 1));
+            if (merge(k, 0) > merge(k, 1))
+                std::swap(merge(k, 0), merge(k, 1));
         }
     }
 }
 
 
 /* This function was originally part of our `genie` package for R */
-void generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
+void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 {
    std::vector< std::list<double> > relord(n+1);
    ssize_t clusterNumber = 1;
@@ -165,10 +191,10 @@ List __gclust(
 
 
     NumericMatrix merge(n-1, 2);
-    generate_merge(n, links2, merge);
+    __generate_merge(n, links2, merge);
 
     NumericVector order(n, NA_REAL);
-    generate_order(n, merge, order);
+    __generate_order(n, merge, order);
 
     return List::create(
         _["merge"]  = merge,
@@ -180,27 +206,6 @@ List __gclust(
 
 
 
-//     if (M < 1 || M >= n-1)
-//         stop("`M` must be an integer in [1, n-1)");
-
-
-//     CDistance<T>* D2 = NULL;
-//     if (M > 2) {
-//         // clustering w.r.t. mutual reachability distance
-//         // M == 2 is like the original distance, but with noise points detection
-//         stop("M > 2 is not supported yet.");
-//
-//         // k = M-1
-//         // cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-//         // cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-//         // Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0]) ...
-//
-//         std::vector<T> d_core(n);
-//         // TODO
-//         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
-//     }
-
-//     if (D2) delete D2;
 
 
 
@@ -220,30 +225,6 @@ List __gclust_default(NumericMatrix X,
 
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
-
-//     if (use_mlpack) {
-//         if (distance != "euclidean" && distance != "l2")
-//             stop("`use_mlpack` can only be used with Euclidean distance");
-//
-//         std::vector<ssize_t> mst_i((n-1)*2);
-//         std::vector<double>  mst_d(n-1);
-//
-//         //mlpack::Log::Info.ignoreInput = !verbose;
-//         //mlpack::Log::Warn.ignoreInput = !verbose;
-//
-//         arma::Mat<double> X2(REAL(SEXP(X)), n, d, /*copy_aux_mem=*/true, /*strict=*/true);
-//         mlpack::emst::DualTreeBoruvka<> boruvka(X2.t());
-//         arma::mat mst;
-//         boruvka.ComputeMST(mst);
-//         for (ssize_t i=0; i<n-1; ++i) {
-//             mst_d[i]     = (double)mst(2, i);
-//             mst_i[i*2+0] = (ssize_t)mst(0, i); // edges are sorted
-//             mst_i[i*2+1] = (ssize_t)mst(1, i);
-//         }
-//
-//         ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
-//     }
-//     else {
 
     matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
     CDistance<T>* D = NULL;
@@ -325,4 +306,129 @@ List gclust_dist(NumericVector d,
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
     return ret;
 }
+
+
+
+
+
+template<typename T>
+NumericMatrix __compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
+{
+    if (M < 1 || M >= n-1)
+        stop("`M` must be an integer in [1, n-1)");
+
+
+    CDistance<T>* D2 = NULL;
+    if (M > 2) {
+        if (verbose) GENIECLUST_PRINT("[genieclust] Determining the core distance.\n");
+
+        ssize_t k = M-1;
+        matrix<ssize_t> nn_i(n, k);
+        matrix<T>  nn_d(n, k);
+        Cknn_from_complete(D, n, k, nn_d.data(), nn_i.data());
+
+        std::vector<T> d_core(n);
+        for (ssize_t i=0; i<n; ++i) {
+            d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
+            GENIECLUST_ASSERT(std::isfinite(d_core[i]));
+        }
+
+        D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
+    }
+
+    matrix<ssize_t> mst_i(n-1, 2);
+    std::vector<T>  mst_d(n-1);
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
+    Cmst_from_complete<T>(D2?D2:D, n, mst_d.data(), mst_i.data(), verbose);
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+    if (D2) delete D2;
+
+    NumericMatrix ret(n-1, 3);
+    for (ssize_t i=0; i<n-1; ++i) {
+//         Rprintf("%d,%d\n", mst_i(i,0), mst_i(i,1));
+        GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
+        GENIECLUST_ASSERT(std::isfinite(mst_d[i]));
+        ret(i,0) = mst_i(i,0)+1; // R-based indexing
+        ret(i,1) = mst_i(i,1)+1; // R-based indexing
+        ret(i,2) = mst_d[i];
+    }
+
+    return ret;
+}
+
+
+
+
+template<typename T>
+NumericMatrix __mst_default(
+    NumericMatrix X,
+    String distance,
+    ssize_t M,
+    /*bool use_mlpack, */
+    bool verbose)
+{
+    ssize_t n = X.nrow();
+    ssize_t d = X.ncol();
+    NumericMatrix ret;
+
+    matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
+    CDistance<T>* D = NULL;
+    if (distance == "euclidean" || distance == "l2")
+        D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
+    else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
+        D = (CDistance<T>*)(new CDistanceManhattan<T>(X2.data(), n, d));
+    else if (distance == "cosine")
+        D = (CDistance<T>*)(new CDistanceCosine<T>(X2.data(), n, d));
+    else
+        stop("given `distance` is not supported (yet)");
+
+    ret = __compute_mst<T>(D, n, M, verbose);
+    delete D;
+
+    if (distance == "euclidean" || distance == "l2") {
+        for (ssize_t i=0; i<n-1; ++i) {
+            ret(i,2) = sqrt(ret(i,2));
+        }
+    }
+
+    return ret;
+}
+
+
+
+
+
+
+// [[Rcpp::export(".mst.default")]]
+NumericMatrix mst_default(
+    NumericMatrix X,
+    String distance="euclidean",
+    int M=1,
+    bool cast_float32=true,
+    bool verbose=false)
+{
+    if (cast_float32)
+        return __mst_default<float >(X, distance, M, verbose);
+    else
+        return __mst_default<double>(X, distance, M, verbose);
+}
+
+
+
+// [[Rcpp::export(".mst.dist")]]
+NumericMatrix mst_dist(
+    NumericVector d,
+    int M=1,
+    bool verbose=false)
+{
+    ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
+    GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
+
+    CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
+
+    return __compute_mst<double>(&D, n, M, verbose);
+}
+
 

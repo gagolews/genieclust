@@ -14,6 +14,20 @@
 
 
 
+
+.correct_height <- function(height)
+{
+    # correction for the departure from ultrametricity
+    if (any(height < 0)) {
+        height <- rev(cummin(rev(height)))
+    }
+    height
+}
+
+
+
+
+
 #' @title The Genie Hierarchical Clustering Algorithm
 #'
 #' @description
@@ -31,8 +45,9 @@
 #'     Threshold of 1.0 disables the correction.
 #'     Low thresholds highly penalise the formation of small clusters.
 #' @param distance metric used to compute the linkage, one of:
-#'     "euclidean" (synonym: "l2"),
-#'     "manhattan" (a.k.a. "l1" and "cityblock"), "cosine"
+#'     \code{"euclidean"} (synonym: \code{"l2"}),
+#'     \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
+#'     \code{"cosine"}
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
@@ -66,15 +81,6 @@ gclust <- function(d, ...)
     UseMethod("gclust")
 }
 
-
-.correct_height <- function(height)
-{
-    # correction for the departure from ultrametricity
-    if (any(height < 0)) {
-        height <- rev(cummin(rev(height)))
-    }
-    height
-}
 
 
 #' @export
@@ -143,4 +149,4 @@ gclust.dist <- function(d,
 
 
 registerS3method("gclust", "default", "gclust.default")
-registerS3method("gclust", "dist", "gclust.dist")
+registerS3method("gclust", "dist",    "gclust.dist")

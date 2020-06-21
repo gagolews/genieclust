@@ -348,15 +348,16 @@ struct CDistanceCosine : public CDistance<T>  {
  *
  */
 template<class T>
-struct CDistanceMutualReachability : public CDistance<T>  {
-    const T* d_core;
+struct CDistanceMutualReachability : public CDistance<T>
+{
     ssize_t n;
     CDistance<T>* d_pairwise;
     std::vector<T> buf;
+    std::vector<T> d_core;
 
-    CDistanceMutualReachability(const T* d_core, ssize_t n, CDistance<T>* d_pairwise)
-            : buf(n) {
-        this->d_core = d_core;
+    CDistanceMutualReachability(const T* _d_core, ssize_t n, CDistance<T>* d_pairwise)
+            : buf(n), d_core(_d_core, _d_core+n)
+    {
         this->n = n;
         this->d_pairwise = d_pairwise;
     }

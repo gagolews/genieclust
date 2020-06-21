@@ -359,15 +359,21 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
             }
         }
 
+        //GENIECLUST_ASSERT(!std::isfinite(Dnn[0]));
+        // Dnn[0] == INFTY
         // find min and argmin in Dnn:
-        bestjpos = bestj = 0;
-        for (ssize_t j=1; j<n-i; ++j) {
+        bestjpos = 1;
+        bestj = M[1];
+        for (ssize_t j=2; j<n-i; ++j) {
             ssize_t M_j = M[j];
-            if (Dnn[M_j] < Dnn[bestj]) {        // Dnn[0] == INFTY
+            if (Dnn[M_j] < Dnn[bestj]) {
                 bestj = M_j;
                 bestjpos = j;
             }
         }
+        GENIECLUST_ASSERT(std::isfinite(Dnn[bestj]));
+        GENIECLUST_ASSERT(bestj > 0);
+        GENIECLUST_ASSERT(Fnn[bestj] != bestj);
 
         M[bestjpos] = M[n-i-1]; // don't visit bestj again
         lastj = bestj;          // start from bestj next time

@@ -27,7 +27,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools
         pip install rpy2 faiss-cpu mlpack
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat'))"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
     - name: Install genieclust
       run: |
         python3 setup.py install --user

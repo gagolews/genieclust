@@ -32,8 +32,9 @@ Threshold of 1.0 disables the correction.
 Low thresholds highly penalise the formation of small clusters.}
 
 \item{distance}{metric used to compute the linkage, one of:
-"euclidean" (synonym: "l2"),
-"manhattan" (a.k.a. "l1" and "cityblock"), "cosine"}
+\code{"euclidean"} (synonym: \code{"l2"}),
+\code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
+\code{"cosine"}}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
 instead of 64-bit precision floating-point arithmetic (up to 2x faster)}

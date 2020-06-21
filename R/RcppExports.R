@@ -157,6 +157,14 @@ pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust_gclust_dist`, d, gini_threshold, verbose)
 }
 
+.mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
+    .Call(`_genieclust_mst_default`, X, distance, M, cast_float32, verbose)
+}
+
+.mst.dist <- function(d, M = 1L, verbose = FALSE) {
+    .Call(`_genieclust_mst_dist`, d, M, verbose)
+}
+
 #' @title Inequity (Inequality) Measures
 #'
 #' @description
