@@ -154,3 +154,52 @@ mst.dist <- function(d,
 registerS3method("mst", "default", "mst.default")
 registerS3method("mst", "dist",    "mst.dist")
 
+
+#' @title Euclidean Minimum Spanning Tree
+#'
+#' @description
+#' Provides access to an implementation of the Dual-Tree Boruvka
+#' algorithm based on kd-trees. It is fast for low-dimensional
+#' Euclidean spaces. For high dimensional spaces (say, over 6-10 features)
+#' or other metrics,
+#' use the parallelised Prim-like algorithm implemented in \code{\link{mst}()}.
+#'
+#'
+#' @details
+#' Calls \code{emstreeR::mlpack_mst()} and converts the result
+#' so that it is compatible with the output of \code{\link{mst}()}.
+#'
+#' If the \code{emstreeR} package is not available, an error is generated.
+#'
+#' @param X a numeric matrix (or an object coercible to one,
+#'     e.g., a data frame with numeric-like columns)
+#' @param verbose logical; whether to print diagnostic messages
+#'
+#' @return
+#' An object of class \code{mst}, see \code{\link{mst}()} for details.
+#'
+#' @references
+#' March W.B., Ram P., Gray A.G.,
+#' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+#' Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}
+#'
+#' @export
+emst_mlpack <- function(X, verbose=FALSE)
+{
+    X <- as.matrix(X)
+    if (requireNamespace("emstreeR", quietly=TRUE)) {
+
+        if (!verbose)
+            capture.output({mst <- emstreeR::mlpack_mst(X)})
+        else
+            mst <- emstreeR::mlpack_mst(X)
+
+        structure(t(mst),
+            class="mst",
+            dist.method="euclidean"
+        )
+
+    } else {
+        stop("emstreeR` package is not installed.")
+    }
+}

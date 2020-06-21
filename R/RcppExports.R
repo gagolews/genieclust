@@ -149,12 +149,8 @@ pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust_pair_sets_index`, x, y)
 }
 
-.gclust.default <- function(X, gini_threshold = 0.3, distance = "euclidean", cast_float32 = TRUE, verbose = FALSE) {
-    .Call(`_genieclust_gclust_default`, X, gini_threshold, distance, cast_float32, verbose)
-}
-
-.gclust.dist <- function(d, gini_threshold = 0.3, verbose = FALSE) {
-    .Call(`_genieclust_gclust_dist`, d, gini_threshold, verbose)
+.gclust <- function(mst, gini_threshold, verbose) {
+    .Call(`_genieclust___gclust`, mst, gini_threshold, verbose)
 }
 
 .mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {

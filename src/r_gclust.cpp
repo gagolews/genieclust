@@ -134,11 +134,9 @@ void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 }
 
 
-template<typename T>
+// [[Rcpp::export(".gclust")]]
 List __gclust(
-        std::vector<ssize_t>& mst_i,
-        std::vector<T>&  mst_d,
-        ssize_t n,
+        NumericMatrix mst,
         double gini_threshold,
         bool verbose)
 {
@@ -147,7 +145,17 @@ List __gclust(
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
         stop("`gini_threshold` must be in [0, 1]");
 
-    CGenie<T> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
+    ssize_t n = mst.nrow()+1;
+    matrix<ssize_t> mst_i(n-1, 2);
+    std::vector<double>  mst_d(n-1);
+
+    for (ssize_t i=0; i<n-1; ++i) {
+        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
+        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_d[i] = mst(i, 2);
+    }
+
+    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
     g.apply_genie(1, gini_threshold);
 
 
@@ -156,22 +164,6 @@ List __gclust(
     std::vector<ssize_t> links(n-1);
     g.get_links(links.data());
 
-//     if (M > 1) {
-//         // noise points post-processing might be requested
-//         if (postprocess == "boundary") {
-//
-//         }
-//         else if (postprocess == "none") {
-//
-//         }
-//         else if (postprocess == "all") {
-//
-//         }
-//         else
-//             stop("incorrect `postprocess`");
-//
-//         stop("M > 1 is not supported yet.");
-//     }
 
 
     NumericMatrix links2(n-1, 2);
@@ -179,8 +171,8 @@ List __gclust(
     ssize_t k = 0;
     for (ssize_t i=0; i<n-1; ++i) {
         if (links[i] >= 0) {
-            links2(k, 0) = mst_i[ links[i]*2 + 0 ] + 1;
-            links2(k, 1) = mst_i[ links[i]*2 + 1 ] + 1;
+            links2(k, 0) = mst_i(links[i], 0) + 1;
+            links2(k, 1) = mst_i(links[i], 1) + 1;
             height(k) = mst_d[ links[i] ];
             ++k;
         }
@@ -206,106 +198,25 @@ List __gclust(
 
 
 
-
-
-
-
-template<typename T>
-List __gclust_default(NumericMatrix X,
-    double gini_threshold,
-//     int M,
-//     String postprocess,
-    String distance,
-//     bool use_mlpack,
-    bool verbose)
-{
-    ssize_t n = X.nrow();
-    ssize_t d = X.ncol();
-    List ret;
-
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
-
-    matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
-    CDistance<T>* D = NULL;
-    if (distance == "euclidean" || distance == "l2")
-        D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
-    else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
-        D = (CDistance<T>*)(new CDistanceManhattan<T>(X2.data(), n, d));
-    else if (distance == "cosine")
-        D = (CDistance<T>*)(new CDistanceCosine<T>(X2.data(), n, d));
-    else
-        stop("given `distance` is not supported (yet)");
-
-    std::vector<ssize_t> mst_i((n-1)*2);
-    std::vector<T>  mst_d(n-1);
-    Cmst_from_complete<T>(D, n, mst_d.data(), mst_i.data(), verbose);
-    delete D;
-
-    ret = __gclust<T>(mst_i, mst_d, n, gini_threshold, verbose);
-
-    if (distance == "euclidean" || distance == "l2") {
-        NumericVector height = ret["height"];
-        for (ssize_t i=0; i<n-1; ++i)
-            height[i] = sqrt(height[i]);
-    }
-
+//     if (M > 1) {
+//         // noise points post-processing might be requested
+//         if (postprocess == "boundary") {
+//
+//         }
+//         else if (postprocess == "none") {
+//
+//         }
+//         else if (postprocess == "all") {
+//
+//         }
+//         else
+//             stop("incorrect `postprocess`");
+//
+//         stop("M > 1 is not supported yet.");
 //     }
 
-    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-    return ret;
-}
 
 
-
-
-template List __gclust_default<float>(NumericMatrix X, double gini_threshold,
-    /*int M, String postprocess, */String distance, /*bool use_mlpack, */bool verbose);
-
-template List __gclust_default<double>(NumericMatrix X, double gini_threshold,
-    /*int M, String postprocess, */String distance, /*bool use_mlpack, */bool verbose);
-
-
-
-
-
-
-// [[Rcpp::export(".gclust.default")]]
-List gclust_default(NumericMatrix X,
-    double gini_threshold=0.3,
-    String distance="euclidean",
-    bool cast_float32=true,
-    bool verbose=false)
-{
-    if (cast_float32)
-        return __gclust_default<float>(X, gini_threshold, /*M, postprocess, */distance, /*use_mlpack, */verbose);
-    else
-        return __gclust_default<double>(X, gini_threshold, /*M, postprocess, */distance, /*use_mlpack, */verbose);
-}
-
-
-
-// [[Rcpp::export(".gclust.dist")]]
-List gclust_dist(NumericVector d,
-    double gini_threshold=0.3,
-    bool verbose=false)
-{
-    ssize_t n = (ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
-    GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Initialising data.\n");
-
-    CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
-
-    std::vector<ssize_t> mst_i((n-1)*2);
-    std::vector<double>  mst_d(n-1);
-    Cmst_from_complete<double>(&D, n, mst_d.data(), mst_i.data(), verbose);
-
-    List ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-    return ret;
-}
 
 
 

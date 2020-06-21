@@ -30,5 +30,5 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats hclust
 #' @importFrom stats dist
-#' @importFrom stats approx
+#' @importFrom utils capture.output
 invisible(NULL)

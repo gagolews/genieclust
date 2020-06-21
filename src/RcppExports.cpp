@@ -113,31 +113,16 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// gclust_default
-List gclust_default(NumericMatrix X, double gini_threshold, String distance, bool cast_float32, bool verbose);
-RcppExport SEXP _genieclust_gclust_default(SEXP XSEXP, SEXP gini_thresholdSEXP, SEXP distanceSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
+// __gclust
+List __gclust(NumericMatrix mst, double gini_threshold, bool verbose);
+RcppExport SEXP _genieclust___gclust(SEXP mstSEXP, SEXP gini_thresholdSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
-    Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
-    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(gclust_default(X, gini_threshold, distance, cast_float32, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// gclust_dist
-List gclust_dist(NumericVector d, double gini_threshold, bool verbose);
-RcppExport SEXP _genieclust_gclust_dist(SEXP dSEXP, SEXP gini_thresholdSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mst(mstSEXP);
     Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(gclust_dist(d, gini_threshold, verbose));
+    rcpp_result_gen = Rcpp::wrap(__gclust(mst, gini_threshold, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -202,8 +187,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
-    {"_genieclust_gclust_default", (DL_FUNC) &_genieclust_gclust_default, 5},
-    {"_genieclust_gclust_dist", (DL_FUNC) &_genieclust_gclust_dist, 3},
+    {"_genieclust___gclust", (DL_FUNC) &_genieclust___gclust, 3},
     {"_genieclust_mst_default", (DL_FUNC) &_genieclust_mst_default, 5},
     {"_genieclust_mst_dist", (DL_FUNC) &_genieclust_mst_dist, 3},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},

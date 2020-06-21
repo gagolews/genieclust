@@ -12,7 +12,7 @@ Authors@R: c(
 Description: A reimplementation of the Genie algorithm - a robust and outlier
     resistant hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
-    It is now faster and more memory efficient; clustering of
+    It is now faster and more memory efficient; processing of
     datasets of 10M points in low dimensional Euclidean spaces or
     100K points in high dimensional ones takes 1-2 minutes.
     Also features an implementation of economic inequity indices
@@ -24,9 +24,11 @@ URL: http://www.gagolewski.com/software/genieclust
 License: AGPL-3
 Imports:
     Rcpp (>= 1.0.4),
-    stats
+    stats,
+    utils
 Suggests:
-    datasets
+    datasets,
+    emstreeR
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP, C++11

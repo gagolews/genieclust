@@ -4,6 +4,7 @@
 \alias{gclust}
 \alias{gclust.default}
 \alias{gclust.dist}
+\alias{gclust.mst}
 \title{The Genie Hierarchical Clustering Algorithm}
 \usage{
 gclust(d, ...)
@@ -18,13 +19,17 @@ gclust(d, ...)
 )
 
 \method{gclust}{dist}(d, gini_threshold = 0.3, verbose = FALSE, ...)
+
+\method{gclust}{mst}(d, gini_threshold = 0.3, verbose = FALSE, ...)
 }
 \arguments{
-\item{d}{either a numeric matrix (or an object coercible to one,
+\item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
-object of class \code{dist}, see \code{\link[stats]{dist}}.}
+object of class \code{dist}, see \code{\link[stats]{dist}}
+or an object of class \code{mst}, see \code{\link{mst}()}.}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{...}{further arguments passed to other methods, such as
+\code{\link{mst}}}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
@@ -46,11 +51,21 @@ and progress information}
 A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
 }
 \description{
-TODO
+A reimplementation of the robust and outlier resistant
+Genie (see Gagolewski, Bartoszuk, Cena, 2016) clustering algorithm.
+
+Given an minimum spanning tree (see \code{\link{mst}()}
+or \code{\link{emst_mlpack}()} (the latter is very fast in the case
+of Euclidean spaces of low dimensionality), the algorithm runs
+in \eqn{O(n \sqrt{n})} time (computing a minimum spanning tree
+takes a most \eqn{O(n^2)} time).
 }
 \details{
 Note that as in the case of all the distance-based methods, standardisation
 of the input features is definitely worth giving a try.
+
+If \code{d} is a numeric matrix or an object of class \code{dist},
+\code{\link{mst}()} will be called to compute the minimum spanning tree.
 }
 \examples{
 library("datasets")
@@ -63,6 +78,9 @@ plot(iris[,2], iris[,3], col=y_pred,
    pch=as.integer(iris[,5]), asp=1, las=1)
 adjusted_rand_score(y_test, y_pred)
 pair_sets_index(y_test, y_pred)
+
+# Fast for low-dimensional Euclidean spaces:
+if (require("emstreeR")) h <- gclust(emst_mlpack(X))
 
 }
 \references{

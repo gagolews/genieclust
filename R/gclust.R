@@ -31,15 +31,26 @@
 #' @title The Genie Hierarchical Clustering Algorithm
 #'
 #' @description
-#' TODO
+#' A reimplementation of the robust and outlier resistant
+#' Genie (see Gagolewski, Bartoszuk, Cena, 2016) clustering algorithm.
+#'
+#' Given an minimum spanning tree (see \code{\link{mst}()}
+#' or \code{\link{emst_mlpack}()} (the latter is very fast in the case
+#' of Euclidean spaces of low dimensionality), the algorithm runs
+#' in \eqn{O(n \sqrt{n})} time (computing a minimum spanning tree
+#' takes a most \eqn{O(n^2)} time).
 #'
 #' @details
 #' Note that as in the case of all the distance-based methods, standardisation
 #' of the input features is definitely worth giving a try.
 #'
-#' @param d either a numeric matrix (or an object coercible to one,
+#' If \code{d} is a numeric matrix or an object of class \code{dist},
+#' \code{\link{mst}()} will be called to compute the minimum spanning tree.
+#'
+#' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
-#'     object of class \code{dist}, see \code{\link[stats]{dist}}.
+#'     object of class \code{dist}, see \code{\link[stats]{dist}}
+#'     or an object of class \code{mst}, see \code{\link{mst}()}.
 #' @param gini_threshold threshold for the Genie correction, i.e.,
 #'     the Gini index of the cluster size distribution;
 #'     Threshold of 1.0 disables the correction.
@@ -52,7 +63,8 @@
 #'     and progress information
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
-#' @param ... further arguments passed to or from other methods.
+#' @param ... further arguments passed to other methods, such as
+#' \code{\link{mst}}
 #'
 #' @return
 #' A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
@@ -73,6 +85,9 @@
 #'    pch=as.integer(iris[,5]), asp=1, las=1)
 #' adjusted_rand_score(y_test, y_pred)
 #' pair_sets_index(y_test, y_pred)
+#'
+#' # Fast for low-dimensional Euclidean spaces:
+#' if (require("emstreeR")) h <- gclust(emst_mlpack(X))
 #'
 #' @rdname gclust
 #' @export
@@ -97,29 +112,9 @@ gclust.default <- function(d,
     distance <- match.arg(distance)
     d <- as.matrix(d)
 
-# use_mlpack logical or "auto"; whether the Euclidean Minimum
-#     Spanning Tree algorithm from MLPACK should be used instead of the
-#     parallelised Prim's method; the latter performs n*(n-1)/2 distance
-#     computations; "auto" turns on the MLPACK routine
-#     for Euclidean spaces of dimensions up to 6.
-#     if (use_mlpack == "auto") {
-#         use_mlpack <- (distance == "euclidean" && ncol(d) <= 6)
-#     }
-
-
-    result <- .gclust.default(d, gini_threshold, distance,
-        cast_float32, verbose)
-
-    result[["height"]] <- .correct_height(result[["height"]])
-    result[["labels"]] <- dimnames(d)[[1L]]
-    result[["method"]] <- sprintf("Genie(%g)", gini_threshold)
-    result[["call"]]   <- match.call()
-    result[["dist.method"]] <- distance
-    #result[["dist.method"]] <- if (M == 1L) distance else
-    #    sprintf("mutual reachability distance (%s, M=%d)", distance, M)
-    class(result) <- "hclust"
-
-    result
+    gclust.mst(mst.default(d, M=1, distance=distance,
+                verbose=verbose, cast_float32=cast_float32),
+        gini_threshold=gini_threshold, verbose=verbose, ...)
 }
 
 
@@ -132,21 +127,33 @@ gclust.dist <- function(d,
     ...)
 {
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
-    result <- .gclust.dist(d, gini_threshold, verbose)
+    gclust.mst(mst.dist(d, M=1, verbose=verbose),
+        gini_threshold=gini_threshold, verbose=verbose, ...)
+}
+
+
+#' @export
+#' @rdname gclust
+#' @method gclust mst
+gclust.mst <- function(d,
+    gini_threshold=0.3,
+    verbose=FALSE,
+    ...)
+{
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+    result <- .gclust(d, gini_threshold, verbose)
 
     result[["height"]] <- .correct_height(result[["height"]])
     result[["labels"]] <- attr(d, "Labels")
     result[["method"]] <- sprintf("Genie(%g)", gini_threshold)
     result[["call"]]   <- match.call()
     result[["dist.method"]] <- attr(d, "method")
-    #result[["dist.method"]] <- if (M == 1L) attr(d, "method") else
-    #    sprintf("mutual reachability distance (%s, M=%d)", attr(d, "method"), M)
     class(result) <- "hclust"
 
     result
 }
 
 
-
 registerS3method("gclust", "default", "gclust.default")
 registerS3method("gclust", "dist",    "gclust.dist")
+registerS3method("gclust", "mst",     "gclust.mst")
