@@ -29,6 +29,7 @@
 #' @useDynLib genieclust, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats hclust
+#' @importFrom stats cutree
 #' @importFrom stats dist
 #' @importFrom utils capture.output
 invisible(NULL)

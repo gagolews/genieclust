@@ -33,19 +33,33 @@
 #' @description
 #' A reimplementation of the robust and outlier resistant
 #' Genie (see Gagolewski, Bartoszuk, Cena, 2016) clustering algorithm.
+#' The Genie algorithm is based on a minimum spanning tree (MST) of the
+#' pairwise distance graph. Just like single linkage, it consumes the edges
+#' of the MST in increasing order of weights. However, it prevents
+#' the formation of clusters of highly imbalanced sizes; once the Gini index
+#' (see \code{\link{gini_index}()}) of the cluster size distribution
+#' raises above \code{gini_threshold}, a forced merge of a point group
+#' of the smallest size is performed. This approach often tends to outperform
+#' other clustering approaches on benchmark data,
+#' such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
 #'
-#' Given an minimum spanning tree (see \code{\link{mst}()}
-#' or \code{\link{emst_mlpack}()} (the latter is very fast in the case
-#' of Euclidean spaces of low dimensionality), the algorithm runs
-#' in \eqn{O(n \sqrt{n})} time (computing a minimum spanning tree
-#' takes a most \eqn{O(n^2)} time).
+#' TODO: mutual reachability distance
+#'
 #'
 #' @details
-#' Note that as in the case of all the distance-based methods, standardisation
-#' of the input features is definitely worth giving a try.
+#' Note that as in the case of all the distance-based methods,
+#' the standardisation of the input features is definitely worth giving a try.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},
-#' \code{\link{mst}()} will be called to compute the minimum spanning tree.
+#' \code{\link{mst}()} will be called to compute an MST, which generally
+#' takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised).
+#' However, see \code{\link{emst_mlpack}()} for a very fast alternative
+#' in the case of Euclidean spaces of (very) low dimensionality.
+#'
+#' Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
+#' Therefore, if you want to test different \code{gini_threshold}s,
+#' (or \code{k}s), it is best to explicitly compute the MST first.
+#'
 #'
 #' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
@@ -64,15 +78,41 @@
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
 #' @param ... further arguments passed to other methods, such as
-#' \code{\link{mst}}
+#' \code{\link{mst}()}, \code{gclust.mst()} or  \code{genie.mst()}
+#' @param k the desired number of clusters to detect
+#' @param detect_noise ... TODO
+#' @param M ... TODO
+#' @param postprocess ... TODO
+#'
 #'
 #' @return
-#' A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
+#' \code{gclust()} computes the whole clustering hierarchy; it
+#' returns a list of class \code{hclust},
+#' see \code{\link[stats]{hclust}}. Use \code{link{cutree}()} to obtain
+#' an arbitrary k-partition.
+#'
+#' \code{genie()} returns a k-partition - a vector with elements in 1,...,k,
+#' whose i-th element denotes the i-th input point's cluster identifier.
+#' Missing values (\code{NA}) denote noise points (if \code{detect_noise}
+#' is \code{TRUE}).
+#'
+#' @seealso
+#' \code{\link{mst}()} for the minimum spanning tree routines.
+#'
+#' \code{\link{adjusted_rand_score}()} (amongst others) for external
+#' cluster validity measures (partition similarity scores).
+#'
 #'
 #' @references
 #' Gagolewski M., Bartoszuk M., Cena A.,
 #' Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 #' \emph{Information Sciences} 363, 2016, pp. 8-23.
+#'
+#' Campello R., Moulavi D., Zimek A., Sander J.,
+#' Hierarchical density estimates for data clustering, visualization,
+#' and outlier detection,
+#' ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+#'
 #'
 #' @examples
 #' library("datasets")
@@ -154,6 +194,95 @@ gclust.mst <- function(d,
 }
 
 
+
+
+#' @rdname gclust
+#' @export
+genie <- function(d, ...)
+{
+    UseMethod("genie")
+}
+
+
+#' @export
+#' @rdname gclust
+#' @method genie default
+genie.default <- function(d,
+    k,
+    gini_threshold=0.3,
+    distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+    M=1,
+    postprocess=c("boundary", "none", "all"),
+    detect_noise=M>1,
+    cast_float32=TRUE,
+    verbose=FALSE,
+    ...)
+{
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+    postprocess <- match.arg(postprocess)
+    distance <- match.arg(distance)
+
+    d <- as.matrix(d)
+
+    genie.mst(mst.default(d, M=M, distance=distance,
+                verbose=verbose, cast_float32=cast_float32),
+        k=k,
+        gini_threshold=gini_threshold,
+        postprocess=postprocess,
+        detect_noise=detect_noise,
+        verbose=verbose, ...)
+}
+
+
+#' @export
+#' @rdname gclust
+#' @method genie dist
+genie.dist <- function(d,
+    k,
+    gini_threshold=0.3,
+    M=1,
+    postprocess=c("boundary", "none", "all"),
+    detect_noise=M>1,
+    verbose=FALSE,
+    ...)
+{
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+    postprocess <- match.arg(postprocess)
+
+    genie.mst(mst.dist(d, M=M, verbose=verbose),
+        k=k,
+        gini_threshold=gini_threshold,
+        postprocess=postprocess,
+        detect_noise=detect_noise,
+        verbose=verbose, ...)
+}
+
+
+#' @export
+#' @rdname gclust
+#' @method genie mst
+genie.mst <- function(d,
+    k,
+    gini_threshold=0.3,
+    M=1,
+    postprocess=c("boundary", "none", "all"),
+    detect_noise=M>1,
+    verbose=FALSE,
+    ...)
+{
+    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+    postprocess <- match.arg(postprocess)
+
+    stop("just you wait")
+    NULL
+}
+
+
 registerS3method("gclust", "default", "gclust.default")
 registerS3method("gclust", "dist",    "gclust.dist")
 registerS3method("gclust", "mst",     "gclust.mst")
+
+
+registerS3method("genie", "default", "genie.default")
+registerS3method("genie", "dist",    "genie.dist")
+registerS3method("genie", "mst",     "genie.mst")

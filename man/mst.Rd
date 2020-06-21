@@ -105,7 +105,6 @@ and outlier detection,
 ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
 }
 \seealso{
-\code{emstreeR::mlpack_mst} for a very fast alternative
-in case of low-dimensional Euclidean spaces (and M=1).
-Call \code{t(emstreeR::mlpack_mst(d))} to get an equivalent result.
+\code{\link{emst_mlpack}()} for a very fast alternative
+in case of (very) low-dimensional Euclidean spaces (and M=1).
 }

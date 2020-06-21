@@ -5,6 +5,10 @@
 \alias{gclust.default}
 \alias{gclust.dist}
 \alias{gclust.mst}
+\alias{genie}
+\alias{genie.default}
+\alias{genie.dist}
+\alias{genie.mst}
 \title{The Genie Hierarchical Clustering Algorithm}
 \usage{
 gclust(d, ...)
@@ -21,6 +25,43 @@ gclust(d, ...)
 \method{gclust}{dist}(d, gini_threshold = 0.3, verbose = FALSE, ...)
 
 \method{gclust}{mst}(d, gini_threshold = 0.3, verbose = FALSE, ...)
+
+genie(d, ...)
+
+\method{genie}{default}(
+  d,
+  k,
+  gini_threshold = 0.3,
+  distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
+  M = 1,
+  postprocess = c("boundary", "none", "all"),
+  detect_noise = M > 1,
+  cast_float32 = TRUE,
+  verbose = FALSE,
+  ...
+)
+
+\method{genie}{dist}(
+  d,
+  k,
+  gini_threshold = 0.3,
+  M = 1,
+  postprocess = c("boundary", "none", "all"),
+  detect_noise = M > 1,
+  verbose = FALSE,
+  ...
+)
+
+\method{genie}{mst}(
+  d,
+  k,
+  gini_threshold = 0.3,
+  M = 1,
+  postprocess = c("boundary", "none", "all"),
+  detect_noise = M > 1,
+  verbose = FALSE,
+  ...
+)
 }
 \arguments{
 \item{d}{a numeric matrix (or an object coercible to one,
@@ -29,7 +70,7 @@ object of class \code{dist}, see \code{\link[stats]{dist}}
 or an object of class \code{mst}, see \code{\link{mst}()}.}
 
 \item{...}{further arguments passed to other methods, such as
-\code{\link{mst}}}
+\code{\link{mst}()}, \code{gclust.mst()} or  \code{genie.mst()}}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
@@ -46,26 +87,51 @@ instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
+
+\item{k}{the desired number of clusters to detect}
+
+\item{M}{...}
+
+\item{postprocess}{...}
+
+\item{detect_noise}{...}
 }
 \value{
-A list of class \code{hclust}, see \code{\link[stats]{hclust}}.
+\code{gclust()} returns a list of class \code{hclust},
+see \code{\link[stats]{hclust}}. Use \code{link{cutree}()} to obtain
+an arbitrary k-partition.
+
+\code{genie()} returns a k-partition - a vector with elements in 1,...,k,
+whose i-th element denotes the i-th input point's cluster identifier.
+Missing values (\code{NA}) denote noise points (if \code{detect_noise}
+is \code{TRUE}).
 }
 \description{
 A reimplementation of the robust and outlier resistant
 Genie (see Gagolewski, Bartoszuk, Cena, 2016) clustering algorithm.
-
-Given an minimum spanning tree (see \code{\link{mst}()}
-or \code{\link{emst_mlpack}()} (the latter is very fast in the case
-of Euclidean spaces of low dimensionality), the algorithm runs
-in \eqn{O(n \sqrt{n})} time (computing a minimum spanning tree
-takes a most \eqn{O(n^2)} time).
+The Genie algorithm is based on a minimum spanning tree (MST) of the
+pairwise distance graph. Just like single linkage, it consumes the edges
+of the MST in increasing order of weights. However, it prevents
+the formation of clusters of highly imbalanced sizes; once the Gini index
+(see \code{\link{gini_index}()}) of the cluster size distribution
+raises above \code{gini_threshold}, a forced merge of a point group
+of the smallest size is performed. This approach often tends to outperform
+other clustering approaches on benchmark data,
+such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
 }
 \details{
-Note that as in the case of all the distance-based methods, standardisation
-of the input features is definitely worth giving a try.
+Note that as in the case of all the distance-based methods,
+the standardisation of the input features is definitely worth giving a try.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
-\code{\link{mst}()} will be called to compute the minimum spanning tree.
+\code{\link{mst}()} will be called to compute an MST, which generally
+takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised).
+However, see \code{\link{emst_mlpack}()} for a very fast alternative
+in the case of Euclidean spaces of (very) low dimensionality.
+
+Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
+Therefore, if you want to test different \code{gini_threshold}s,
+(or \code{k}s), it is best to explicitly compute the MST first.
 }
 \examples{
 library("datasets")
@@ -87,4 +153,9 @@ if (require("emstreeR")) h <- gclust(emst_mlpack(X))
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 \emph{Information Sciences} 363, 2016, pp. 8-23.
+
+Campello R., Moulavi D., Zimek A., Sander J.,
+Hierarchical density estimates for data clustering, visualization,
+and outlier detection,
+ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
 }

@@ -50,9 +50,8 @@
 #'
 #'
 #' @seealso
-#' \code{emstreeR::mlpack_mst} for a very fast alternative
-#' in case of low-dimensional Euclidean spaces (and M=1).
-#' Call \code{t(emstreeR::mlpack_mst(d))} to get an equivalent result.
+#' \code{\link{emst_mlpack}()} for a very fast alternative
+#' in case of (very) low-dimensional Euclidean spaces (and M=1).
 #'
 #'
 #' @references
@@ -153,6 +152,9 @@ mst.dist <- function(d,
 
 registerS3method("mst", "default", "mst.default")
 registerS3method("mst", "dist",    "mst.dist")
+
+
+
 
 
 #' @title Euclidean Minimum Spanning Tree

@@ -1,6 +1,6 @@
 Package: genieclust
 Type: Package
-Title: The Genie++ Hierarchical Clustering Algorithm
+Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
 Version: 0.9.1
 Date: 2020-06-16
 Authors@R: c(
@@ -12,9 +12,11 @@ Authors@R: c(
 Description: A reimplementation of the Genie algorithm - a robust and outlier
     resistant hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
-    It is now faster and more memory efficient; processing of
-    datasets of 10M points in low dimensional Euclidean spaces or
+    It is faster and more memory efficient; determining the whole hierarchy
+    for datasets of 10M points in low dimensional Euclidean spaces or
     100K points in high dimensional ones takes 1-2 minutes.
+    Allows clustering with respect to HDBSCAN*'s mutual reachability distance
+    so that it can act as a noise point detector.
     Also features an implementation of economic inequity indices
     (the Gini, Bonferroni index) and external cluster validity measures
     (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
