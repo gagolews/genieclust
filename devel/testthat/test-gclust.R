@@ -5,8 +5,8 @@ context("gclust")
 
 verbose <- FALSE
 set.seed(123)
-n <- 100000
-d <- 100
+n <- 1000
+d <- 2
 X <- matrix(rnorm(n*d), nrow=n)
 cat(sprintf("n=%d, d=%d\n", n, d))
 
@@ -39,16 +39,16 @@ if (require("emstreeR")) {
 
 
 # 2020-06-21
-# n=100000, d=100
-
-#  2020-06-16 15:26
-# n=100000, d=100
+# gclustn=100000, d=100
 #    user  system elapsed
-#  656.823    0.212  164.319!!
+# 651.079     0.176  162.907 !!
 #     user   system  elapsed
-# 1161.052    0.248  290.456!!
+# 1184.137    0.196  296.280 !!
 #     user   system  elapsed
-# 1032.423    0.140  268.770!!
+# 1121.105    0.220  290.941 !!
+#     user   system  elapsed
+# 4865.173    0.136 4865.264
+
 
 
 

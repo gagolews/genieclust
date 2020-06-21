@@ -43,7 +43,7 @@
 #' other clustering approaches on benchmark data,
 #' such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
 #'
-#' TODO: mutual reachability distance
+#' TODO: mutual reachability distance, HDBSCAN* ................
 #'
 #'
 #' @details
@@ -78,11 +78,20 @@
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
 #' @param ... further arguments passed to other methods, such as
-#' \code{\link{mst}()}, \code{gclust.mst()} or  \code{genie.mst()}
-#' @param k the desired number of clusters to detect
-#' @param detect_noise ... TODO
-#' @param M ... TODO
-#' @param postprocess ... TODO
+#'     \code{\link{mst}()}, \code{gclust.mst()} or  \code{genie.mst()}
+#' @param k the desired number of clusters to detect, \code{k}=1 with \code{M}>1
+#'     acts as a noise point detector.
+#' @param detect_noise whether the minimum spanning tree's leaves
+#'     should be marked as noise points, defaults to \code{TRUE} if \code{M}>1
+#'     for compatibility with HDBSCAN*
+#' @param M smoothing factor; M<=2 gives the selected \code{distance};
+#'     otherwise, the mutual reachability distance is used
+#' @param postprocess one of \code{"boundary"} (default), \code{"none"}
+#'     or \code{"all"};  in effect only if \code{M}>1.
+#'     By default, only "boundary" points are merged
+#'     with their nearest "core" points. To force a classical
+#'     k-partition of a data set (with no notion of noise),
+#'     choose "all".
 #'
 #'
 #' @return

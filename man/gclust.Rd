@@ -88,16 +88,26 @@ instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
 
-\item{k}{the desired number of clusters to detect}
+\item{k}{the desired number of clusters to detect, \code{k}=1 with \code{M}>1
+acts as a noise point detector.}
 
-\item{M}{...}
+\item{M}{smoothing factor; M<=2 gives the selected \code{distance};
+otherwise, the mutual reachability distance is used}
 
-\item{postprocess}{...}
+\item{postprocess}{one of \code{"boundary"} (default), \code{"none"}
+or \code{"all"};  in effect only if \code{M}>1.
+By default, only "boundary" points are merged
+with their nearest "core" points. To force a classical
+k-partition of a data set (with no notion of noise),
+choose "all".}
 
-\item{detect_noise}{...}
+\item{detect_noise}{whether the minimum spanning tree's leaves
+should be marked as noise points, defaults to \code{TRUE} if \code{M}>1
+for compatibility with HDBSCAN*}
 }
 \value{
-\code{gclust()} returns a list of class \code{hclust},
+\code{gclust()} computes the whole clustering hierarchy; it
+returns a list of class \code{hclust},
 see \code{\link[stats]{hclust}}. Use \code{link{cutree}()} to obtain
 an arbitrary k-partition.
 
@@ -118,6 +128,8 @@ raises above \code{gini_threshold}, a forced merge of a point group
 of the smallest size is performed. This approach often tends to outperform
 other clustering approaches on benchmark data,
 such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
+
+TODO: mutual reachability distance, HDBSCAN* ................
 }
 \details{
 Note that as in the case of all the distance-based methods,
@@ -158,4 +170,10 @@ Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,
 ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+}
+\seealso{
+\code{\link{mst}()} for the minimum spanning tree routines.
+
+\code{\link{adjusted_rand_score}()} (amongst others) for external
+cluster validity measures (partition similarity scores).
 }
