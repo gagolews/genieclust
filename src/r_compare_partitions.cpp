@@ -65,6 +65,11 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
         if (_y.size() != n)
             stop("x and y must be of equal lengths");
 
+        for (ssize_t i=0; i<n; ++i) {
+            if (_x[i] == NA_INTEGER || _y[i] == NA_INTEGER)
+                stop("missing values not allowed");
+        }
+
         int xmin, xmax;
         Cminmax(INTEGER(SEXP(_x)), n, &xmin, &xmax);
         *xc = (xmax-xmin+1);

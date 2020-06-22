@@ -128,6 +128,18 @@ def test_genie_precomputed():
         K = 16
         g = 0.1
         res1 = Genie(K, g, exact=True, affinity="euclidean",
+            compute_full_tree=True, compute_all_cuts=True, M=2).fit_predict(X)
+        assert res1.shape[1] == X.shape[0]
+        # assert res1.shape[0] == K+1   #  that's not necessarily true!
+        for k in range(1, res1.shape[0]):
+            res2 = Genie(k, g, exact=True, affinity="euclidean",
+                compute_full_tree=False, M=2).fit_predict(X)
+            assert np.all(res2 == res1[k,:])
+
+        # test compute_all_cuts
+        K = 16
+        g = 0.1
+        res1 = Genie(K, g, exact=True, affinity="euclidean",
             compute_full_tree=True, compute_all_cuts=True, M=25).fit_predict(X)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!

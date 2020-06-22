@@ -153,6 +153,10 @@ pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust___gclust`, mst, gini_threshold, verbose)
 }
 
+.genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {
+    .Call(`_genieclust___genie`, mst, k, gini_threshold, postprocess, detect_noise, verbose)
+}
+
 .mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
     .Call(`_genieclust_mst_default`, X, distance, M, cast_float32, verbose)
 }

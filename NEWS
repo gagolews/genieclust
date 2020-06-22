@@ -4,9 +4,11 @@
 
 ## genieclust 0.XX (under development)
 
+-   R version now available
+
 -   TODO: see a list of resolved github issues....
 
--   The package now features the GIc algorithm proposed by A.Cena
+-   The Python package now features the GIc algorithm proposed by A.Cena
     in her 2018 PhD thesis.
 
 -   The full distance matrix is no longer required for computing an

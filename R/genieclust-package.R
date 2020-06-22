@@ -17,7 +17,7 @@
 #' @title The Genie++ Hierarchical Clustering Algorithm (with Extras)
 #'
 #' @description
-#' TODO
+#' See \code{\link{genie}()} for more details.
 #'
 #'
 #' @name genieclust-package

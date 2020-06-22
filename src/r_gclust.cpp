@@ -48,6 +48,7 @@
 #include "c_distance.h"
 #include "c_mst.h"
 #include "c_genie.h"
+#include "c_postprocess.h"
 #include <cmath>
 
 using namespace Rcpp;
@@ -188,6 +189,8 @@ List __gclust(
     NumericVector order(n, NA_REAL);
     __generate_order(n, merge, order);
 
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
     return List::create(
         _["merge"]  = merge,
         _["height"] = height,
@@ -198,22 +201,84 @@ List __gclust(
 
 
 
-//     if (M > 1) {
-//         // noise points post-processing might be requested
-//         if (postprocess == "boundary") {
-//
-//         }
-//         else if (postprocess == "none") {
-//
-//         }
-//         else if (postprocess == "all") {
-//
-//         }
-//         else
-//             stop("incorrect `postprocess`");
-//
-//         stop("M > 1 is not supported yet.");
-//     }
+
+// [[Rcpp::export(".genie")]]
+IntegerVector __genie(
+        NumericMatrix mst,
+        int k,
+        double gini_threshold,
+        String postprocess,
+        bool detect_noise,
+        bool verbose)
+{
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
+
+    if (gini_threshold < 0.0 || gini_threshold > 1.0)
+        stop("`gini_threshold` must be in [0, 1]");
+
+    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn")))
+        stop("`nn` attribute of the MST not set; unable to proceed with this postprocessing action");
+
+    ssize_t n = mst.nrow()+1;
+
+    if (k < 1 || k > n) stop("invalid requested number of clusters, `k`");
+
+    matrix<ssize_t> mst_i(n-1, 2);
+    std::vector<double>  mst_d(n-1);
+
+    for (ssize_t i=0; i<n-1; ++i) {
+        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
+        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_d[i] = mst(i, 2);
+    }
+
+    CGenie<double> g(mst_d.data(), mst_i.data(), n, detect_noise);
+    g.apply_genie(k, gini_threshold);
+
+
+
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
+
+    std::vector<ssize_t> __res(n);
+    ssize_t k_detected = g.get_labels(k, __res.data());
+
+    if (k_detected != k)
+        Rf_warning("Number of clusters detected is different than the requested one due to the presence of noise points.");
+
+    if (detect_noise && postprocess == "boundary") {
+        NumericMatrix nn_r = mst.attr("nn");
+        GENIECLUST_ASSERT(nn_r.nrow() == n);
+        ssize_t M = nn_r.ncol()+1;
+        GENIECLUST_ASSERT(M < n);
+        matrix<ssize_t> nn_i(n, M-1);
+        for (ssize_t i=0; i<n; ++i) {
+            for (ssize_t j=0; j<M-1; ++j) {
+                GENIECLUST_ASSERT(nn_r(i,j) >= 1);
+                GENIECLUST_ASSERT(nn_r(i,j) <= n);
+                nn_i(i,j) = (ssize_t)nn_r(i,j)-1; // 0-based indexing
+            }
+        }
+
+        Cmerge_boundary_points(mst_i.data(), n-1, nn_i.data(),
+                               M-1, M, __res.data(), n);
+    }
+    else if (detect_noise && postprocess == "all") {
+        Cmerge_noise_points(mst_i.data(), n-1, __res.data(), n);
+    }
+
+    IntegerVector res(n);
+    for (ssize_t i=0; i<n; ++i) {
+        if (__res[i] < 0) res[i] = NA_INTEGER; // noise point
+        else res[i] = __res[i] + 1;
+    }
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+    return res;
+}
+
+
 
 
 
@@ -228,21 +293,31 @@ NumericMatrix __compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
     if (M < 1 || M >= n-1)
         stop("`M` must be an integer in [1, n-1)");
 
+    NumericMatrix ret(n-1, 3);
 
     CDistance<T>* D2 = NULL;
-    if (M > 2) {
+    if (M >= 2) { // yep, we need it for M==2 as well
         if (verbose) GENIECLUST_PRINT("[genieclust] Determining the core distance.\n");
 
         ssize_t k = M-1;
         matrix<ssize_t> nn_i(n, k);
-        matrix<T>  nn_d(n, k);
+        matrix<T> nn_d(n, k);
         Cknn_from_complete(D, n, k, nn_d.data(), nn_i.data());
+
+        NumericMatrix nn_r(n, k);
 
         std::vector<T> d_core(n);
         for (ssize_t i=0; i<n; ++i) {
             d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
             GENIECLUST_ASSERT(std::isfinite(d_core[i]));
+
+            for (ssize_t j=0; j<k; ++j) {
+                GENIECLUST_ASSERT(nn_i(i,j) != i);
+                nn_r(i,j) = nn_i(i,j)+1; // 1-based indexing
+            }
         }
+
+        ret.attr("nn") = nn_r;
 
         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
     }
@@ -256,7 +331,6 @@ NumericMatrix __compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
 
     if (D2) delete D2;
 
-    NumericMatrix ret(n-1, 3);
     for (ssize_t i=0; i<n-1; ++i) {
 //         Rprintf("%d,%d\n", mst_i(i,0), mst_i(i,1));
         GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
@@ -341,5 +415,3 @@ NumericMatrix mst_dist(
 
     return __compute_mst<double>(&D, n, M, verbose);
 }
-
-

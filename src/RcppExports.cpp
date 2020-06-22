@@ -126,6 +126,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// __genie
+IntegerVector __genie(NumericMatrix mst, int k, double gini_threshold, String postprocess, bool detect_noise, bool verbose);
+RcppExport SEXP _genieclust___genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP postprocessSEXP, SEXP detect_noiseSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type mst(mstSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
+    Rcpp::traits::input_parameter< String >::type postprocess(postprocessSEXP);
+    Rcpp::traits::input_parameter< bool >::type detect_noise(detect_noiseSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(__genie(mst, k, gini_threshold, postprocess, detect_noise, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mst_default
 NumericMatrix mst_default(NumericMatrix X, String distance, int M, bool cast_float32, bool verbose);
 RcppExport SEXP _genieclust_mst_default(SEXP XSEXP, SEXP distanceSEXP, SEXP MSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
@@ -188,6 +204,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
     {"_genieclust___gclust", (DL_FUNC) &_genieclust___gclust, 3},
+    {"_genieclust___genie", (DL_FUNC) &_genieclust___genie, 6},
     {"_genieclust_mst_default", (DL_FUNC) &_genieclust_mst_default, 5},
     {"_genieclust_mst_dist", (DL_FUNC) &_genieclust_mst_dist, 3},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},

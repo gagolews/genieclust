@@ -11,13 +11,13 @@ mst(d, ...)
 \method{mst}{default}(
   d,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  M = 1,
+  M = 1L,
   cast_float32 = TRUE,
   verbose = FALSE,
   ...
 )
 
-\method{mst}{dist}(d, M = 1, verbose = FALSE, ...)
+\method{mst}{dist}(d, M = 1L, verbose = FALSE, ...)
 }
 \arguments{
 \item{d}{either a numeric matrix (or an object coercible to one,
@@ -29,27 +29,31 @@ object of class \code{dist}, see \code{\link[stats]{dist}}.}
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
-\code{"cosine"}}
+\code{"cosine"}.}
 
-\item{M}{smoothing factor; M<=2 gives the selected \code{distance};
-otherwise, the mutual reachability distance is used}
+\item{M}{smoothing factor; \code{M}=1 gives the selected \code{distance};
+otherwise, the mutual reachability distance is used.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
+instead of 64-bit precision floating-point arithmetic (up to 2x faster).}
 
 \item{verbose}{logical; whether to print diagnostic messages
-and progress information}
+and progress information.}
 }
 \value{
 Matrix of class \code{mst} with n-1 rows and 3 columns:
 \code{from}, \code{to} and \code{dist}. It holds \code{from} < \code{to}.
 Moreover, \code{dist} is sorted nondecreasingly.
 The i-th row gives the i-th edge of the MST.
-\code{(from[i], to[i])} defines the vertex indices (in 1,...,n)
+\code{(from[i], to[i])} defines the vertices (in 1,...,n)
 and \code{dist[i]} gives the weight, i.e., the
 distance between the corresponding points.
 
-The \code{dist.method} attribute gives the name of the distance used.
+The \code{method} attribute gives the name of the distance used.
+The \code{Labels} attribute gives the labels of all the input points.
+
+If \code{M}>1, the \code{nn} attribute gives the indices of the \code{M}-1
+nearest neighbours of each point.
 }
 \description{
 An parallelised implementation of a Jarník (Prim/Dijkstra)-like
@@ -72,15 +76,20 @@ used.
 Time complexity is \eqn{O(n^2)} for the method accepting an object of
 class \code{dist} \eqn{and O(p n^2)} otherwise.
 
-If M>2, then the mutual reachability distance m(i,j) with smoothing factor M
+If M>=2, then the mutual reachability distance m(i,j) with smoothing factor M
 (see Campello et al. 2015)
 is used instead of the chosen "raw" distance d(i,j).
 It holds m(i, j)=max(d(i,j), c(i), c(j)), where c(i) is
-d(i, k) with k being the (M-1)-th nearest neighbour of i.
+d(i, k) with k being the (M-1)-th nearest neighbour of i
 This makes "noise" and "boundary" points being "pulled away" from each other.
 Genie++ clustering algorithm (see \code{\link{gclust}})
 with respect to the mutual reachability distance gains the ability to
 identify some observations are noise points.
+
+Note that the case M=2 corresponds to the original distance, but we are
+determining the 1-nearest neighbours separately as well, which is a bit
+suboptimal; you can file a feature request if this makes your data analysis
+tasks too slow.
 }
 \examples{
 library("datasets")

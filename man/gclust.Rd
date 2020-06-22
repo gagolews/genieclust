@@ -9,7 +9,7 @@
 \alias{genie.default}
 \alias{genie.dist}
 \alias{genie.mst}
-\title{The Genie Hierarchical Clustering Algorithm}
+\title{The Genie++ Hierarchical Clustering Algorithm}
 \usage{
 gclust(d, ...)
 
@@ -33,9 +33,9 @@ genie(d, ...)
   k,
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  M = 1,
+  M = 1L,
   postprocess = c("boundary", "none", "all"),
-  detect_noise = M > 1,
+  detect_noise = M > 1L,
   cast_float32 = TRUE,
   verbose = FALSE,
   ...
@@ -45,9 +45,9 @@ genie(d, ...)
   d,
   k,
   gini_threshold = 0.3,
-  M = 1,
+  M = 1L,
   postprocess = c("boundary", "none", "all"),
-  detect_noise = M > 1,
+  detect_noise = M > 1L,
   verbose = FALSE,
   ...
 )
@@ -56,9 +56,8 @@ genie(d, ...)
   d,
   k,
   gini_threshold = 0.3,
-  M = 1,
   postprocess = c("boundary", "none", "all"),
-  detect_noise = M > 1,
+  detect_noise = FALSE,
   verbose = FALSE,
   ...
 )
@@ -69,8 +68,7 @@ e.g., a data frame with numeric-like columns) or an
 object of class \code{dist}, see \code{\link[stats]{dist}}
 or an object of class \code{mst}, see \code{\link{mst}()}.}
 
-\item{...}{further arguments passed to other methods, such as
-\code{\link{mst}()}, \code{gclust.mst()} or  \code{genie.mst()}}
+\item{...}{further arguments passed to other methods.}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
@@ -80,24 +78,26 @@ Low thresholds highly penalise the formation of small clusters.}
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
-\code{"cosine"}}
+\code{"cosine"}.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
+instead of 64-bit precision floating-point arithmetic (up to 2x faster).}
 
 \item{verbose}{logical; whether to print diagnostic messages
-and progress information}
+and progress information.}
 
 \item{k}{the desired number of clusters to detect, \code{k}=1 with \code{M}>1
 acts as a noise point detector.}
 
 \item{M}{smoothing factor; M<=2 gives the selected \code{distance};
-otherwise, the mutual reachability distance is used}
+otherwise, the mutual reachability distance is used.}
 
 \item{postprocess}{one of \code{"boundary"} (default), \code{"none"}
 or \code{"all"};  in effect only if \code{M}>1.
 By default, only "boundary" points are merged
-with their nearest "core" points. To force a classical
+with their nearest "core" points (A point is a boundary point if it is
+a noise point and it's amongst its adjacent vertex's
+\code{M}-1 nearest neighbours). To force a classical
 k-partition of a data set (with no notion of noise),
 choose "all".}
 
@@ -117,19 +117,33 @@ Missing values (\code{NA}) denote noise points (if \code{detect_noise}
 is \code{TRUE}).
 }
 \description{
-A reimplementation of the robust and outlier resistant
-Genie (see Gagolewski, Bartoszuk, Cena, 2016) clustering algorithm.
+A reimplementation of \emph{Genie} - a robust and outlier resistant
+clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016).
 The Genie algorithm is based on a minimum spanning tree (MST) of the
 pairwise distance graph. Just like single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it prevents
 the formation of clusters of highly imbalanced sizes; once the Gini index
 (see \code{\link{gini_index}()}) of the cluster size distribution
 raises above \code{gini_threshold}, a forced merge of a point group
-of the smallest size is performed. This approach often tends to outperform
+of the smallest size is performed. Its appealing simplicity goes hand
+in hand with its usability; Genie often outperforms
 other clustering approaches on benchmark data,
 such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
 
-TODO: mutual reachability distance, HDBSCAN* ................
+The clustering can now also be computed with respect to the
+mutual reachability distance (based, e.g., on the Euclidean metric),
+which is used in the definition of the HDBSCAN* algorithm
+(see Campello et al., 2015). If \code{M}>1, then the mutual reachability
+distance m(i,j) with smoothing factor \code{M} is used instead of the
+chosen "raw" distance d(i,j). It holds m(i,j)=max(d(i,j), c(i), c(j)),
+where c(i) is d(i,k) with k being the (M-1)-th nearest neighbour of i.
+This makes "noise" and "boundary" points being "pulled away" from each other.
+
+The Genie correction together with the smoothing factor M>1 (note that
+M==2 corresponds to the original distance) gives a robustified version of
+the HDBSCAN* algorithm that is able to detect a predefined number of
+clusters. Hence it does not dependent on the DBSCAN's somehow magical
+\code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
 }
 \details{
 Note that as in the case of all the distance-based methods,
@@ -137,13 +151,21 @@ the standardisation of the input features is definitely worth giving a try.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
 \code{\link{mst}()} will be called to compute an MST, which generally
-takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised).
-However, see \code{\link{emst_mlpack}()} for a very fast alternative
-in the case of Euclidean spaces of (very) low dimensionality.
+takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised,
+environment variable \code{OMP_NUM_THREADS} controls the number of threads
+in use). However, see \code{\link{emst_mlpack}()} for a very fast alternative
+in the case of Euclidean spaces of (very) low dimensionality and \code{M}=1.
 
 Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
 Therefore, if you want to test different \code{gini_threshold}s,
 (or \code{k}s), it is best to explicitly compute the MST first.
+
+According to the algorithm's original definition,
+the resulting partition tree (dendrogram) might violate
+the ultrametricity property (merges might occur at levels that
+are not increasing w.r.t. a between-cluster distance).
+Departures from ultrametricity are corrected by applying
+\code{height = rev(cummin(rev(height)))}.
 }
 \examples{
 library("datasets")

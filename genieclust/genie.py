@@ -86,6 +86,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if M == 1 or postprocess == "none":
             pass
         elif postprocess == "boundary":
+            assert self._nn_ind_ is not None
+            assert self._nn_ind_.shape[1] >= M-1
             for i in range(start_partition, self.labels_.shape[0]):
                 self.labels_[i,:] = internal.merge_boundary_points(
                     self._mst_ind_, self.labels_[i,:],
@@ -144,7 +146,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             if mlpack is not None and \
                     cur_state["affinity"] == "euclidean" and \
                     n_features <= 6 and \
-                    cur_state["M"] <= 2:
+                    cur_state["M"] == 1:
                 cur_state["use_mlpack"] = True
             else:
                 cur_state["use_mlpack"] = False
@@ -156,8 +158,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             raise ValueError("package mlpack is not available")
         if cur_state["use_mlpack"] and cur_state["affinity"] != "euclidean":
             raise ValueError("mlpack can only be used with affinity=='euclidean'")
-        if cur_state["use_mlpack"] and cur_state["M"] not in [1, 2]:
-            raise ValueError("mlpack can only be used with M of 1 or 2")
+        if cur_state["use_mlpack"] and cur_state["M"] != 1:
+            raise ValueError("mlpack can only be used with M=1")
 
 
 
@@ -253,7 +255,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         else: # cur_state["exact"]
             if cur_state["use_mlpack"]:
-                assert cur_state["M"] in [1, 2]
+                assert cur_state["M"] == 1
                 assert cur_state["affinity"] == "euclidean"
 
                 if mst_dist is None or mst_ind is None:
@@ -261,7 +263,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     mst_dist = _res[:,2].astype(np.double, order="C")
                     mst_ind  = _res[:,:2].astype(np.intp, order="C")
             else:
-                if cur_state["M"] > 2: # else d_core   = None
+                if cur_state["M"] >= 2: # else d_core   = None
                     # Genie+HDBSCAN --- determine d_core
                     # TODO: mlpack for k-nns?
                     if nn_dist is None or nn_ind is None:
@@ -270,7 +272,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                             metric=cur_state["affinity"],
                             verbose=cur_state["verbose"]) # supports "precomputed"
 
-                    assert cur_state["M"]-2 < nn_dist.shape[1]
+                    assert nn_dist.shape[1] >= cur_state["M"]-1
                     d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
 
                 # Use Prim's algorithm to determine the MST
@@ -391,36 +393,60 @@ class Genie(GenieBase):
     """The Genie++ Clustering Algorithm with optional smoothing and
     noise point detection (for M>1)
 
-    The Genie algorithm [1]
-    links two clusters in such a way that an inequity measure
-    (namely, the Gini index) of the cluster sizes doesn't go far beyond
-    some threshold. The introduced method most often outperforms
-    the Ward or average linkage, k-means, spectral clustering,
-    DBSCAN, Birch, and many others in terms of the clustering
-    quality while - at the same time - it retains the speed of
-    the single linkage algorithm.
+    A reimplementation of Genie - a robust and outlier resistant
+    clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
+    originally published as an R package `genie`.
 
-    This is a reimplementation (with extras) of the original Genie
-    algorithm as implemented in the R package `genie` that requires
-    O(n_samples*sqrt(n_samples))-time given a minimum spanning tree
-    of the pairwise distance graph.
+    The Genie algorithm is based on a minimum spanning tree (MST) of the
+    pairwise distance graph of a given point set.
+    Just like single linkage, it consumes the edges
+    of the MST in increasing order of weights. However, it prevents
+    the formation of clusters of highly imbalanced sizes; once the Gini index
+    (see \code{\link{gini_index}()}) of the cluster size distribution
+    raises above \code{gini_threshold}, a forced merge of a point group
+    of the smallest size is performed. Its appealing simplicity goes hand
+    in hand with its usability; Genie often outperforms
+    other clustering approaches on benchmark data,
+    such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
+
 
     The clustering can also be computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric),
     which is used in the definition of the HDBSCAN* algorithm, see [2].
+    If M>1, then the mutual reachability
+    distance m(i,j) with smoothing factor M is used instead of the
+    chosen "raw" distance d(i,j). It holds m(i,j)=max(d(i,j), c(i), c(j)),
+    where c(i) is d(i,k) with k being the (M-1)-th nearest neighbour of i.
+    This makes "noise" and "boundary" points being "pulled away" from each other.
 
     The Genie correction together with the smoothing factor M>1 (note that
     M==2 corresponds to the original distance) gives a robustified version of
-    the HDBSCAN* algorithm that is able to yield a predefined number of
+    the HDBSCAN* algorithm that is able to detect a predefined number of
     clusters. Hence it does not dependent on the DBSCAN's somehow magical
-    `eps` parameter or the HDBSCAN Python package's `min_cluster_size` one.
+    `eps` parameter or the HDBSCAN's `min_cluster_size` one.
 
-    Note according to the algorithm's original definition,
+
+    The algorithm has O(n_samples*sqrt(n_samples)) time complexity
+    given a minimum spanning tree of the pairwise distance graph.
+    Unless we use MLPACK (or other variations, see Parameters),
+    our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
+    will be called to compute an MST, which generally takes O(n^2) time
+    (environment variable \code{OMP_NUM_THREADS} controls the number of threads).
+    MLPACK (see Python package `mlpack`) is a very fast alternative
+    in the case of Euclidean spaces of (very) low dimensionality and M=1.
+
+
+
+    Note that as in the case of all the distance-based methods,
+    the standardisation of the input features is definitely worth giving a try.
+
+    According to the algorithm's original definition,
     the resulting partition tree (dendrogram) might violate
     the ultrametricity property (merges might occur at levels that
     are not increasing w.r.t. a between-cluster distance).
     Departures from ultrametricity are corrected by applying
     `Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]`.
+
 
 
     References
@@ -473,7 +499,9 @@ class Genie(GenieBase):
         will be a matrix
     postprocess : str, one of "boundary" (default), "none", "all"
         In effect only if M>1. By default, only "boundary" points are merged
-        with their nearest "core" points. To force a classical
+        with their nearest "core" points (A point is a boundary point if it is
+        a noise point and it's amongst its adjacent vertex's
+        M-1 nearest neighbours). To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
     exact : bool, default=True
@@ -494,8 +522,11 @@ class Genie(GenieBase):
     use_mlpack : bool or "auto", default="auto"
         Use mlpack.emst() for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
-        only affinity='euclidean' is supported (and M<=2).
-        By default, we rely on mlpack if it is installed and n_features <= 6.
+        only affinity='euclidean' is supported (and M=1).
+        By default, we rely on mlpack if it's installed and n_features <= 6.
+        Otherwise, we use our own implementation of a parallelised version
+        of Prim's algorithm (environment variable `OMP_NUM_THREADS` controls
+        the number of threads used).
     verbose : bool, default=False
         Whether to print diagnostic messages and progress information on stderr.
 
@@ -536,12 +567,12 @@ class Genie(GenieBase):
     children_ : ndarray, shape (n_samples-1, 2)
         The i-th row provides the information on the clusters merged at
         the i-th iteration. Noise points are merged first, with
-        the corresponding distances_[i] of 0.
-        See the description of Z[i,0] and Z[i,1] in
-        scipy.cluster.hierarchy.linkage. Together with distances_ and
-        counts_, this forms the linkage matrix that can be used for
+        the corresponding `distances_[i]` of 0.
+        See the description of `Z[i,0]` and `Z[i,1]` in
+        `scipy.cluster.hierarchy.linkage`. Together with `distances_` and
+        `counts_`, this forms the linkage matrix that can be used for
         plotting the dendrogram.
-        Only available if compute_full_tree==True.
+        Only available if `compute_full_tree==True`.
     distances_ : ndarray, shape (n_samples-1,)
         Distance between the two clusters merged at the i-th iteration.
         As Genie does not guarantee that that distances are

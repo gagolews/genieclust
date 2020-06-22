@@ -28,7 +28,7 @@
  *  For all the boundary points i, set c[i] = c[j],
  *  where {i,j} is an edge in a spanning forest given by adjacency matrix ind.
  *
- *  The i-it point is a boundary point if it is a noise point, i.e., c[i] < 0,
+ *  The i-th point is a boundary point if it is a noise point, i.e., c[i] < 0,
  *  and it's amongst j's M-1 nearest neighbours.
  *
  *
@@ -71,14 +71,14 @@ void Cmerge_boundary_points(
         if (c[u] < 0 && c[v] < 0)
             throw std::domain_error("Edge between two unallocated points detected");
 
-        if (c[u] >= 0 && c[v] <= 0)
+        if (c[u] >= 0 && c[v] >= 0)
             continue;
 
         if (c[v] < 0)
             std::swap(u, v);
 
-        // GENIECLUST_ASSERT(cl2[u] <  0);  # u is marked as a noise point
-        // GENIECLUST_ASSERT(cl2[v] >= 0);  # v is a core point
+        GENIECLUST_ASSERT(c[u] <  0);  // u is marked as a noise point
+        GENIECLUST_ASSERT(c[v] >= 0);  // v is a core point
 
         // a noise point is not necessarily a boundary point:
         // u is a boundary point if u is amongst v's M-1 nearest neighbours
