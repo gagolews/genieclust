@@ -17,7 +17,7 @@ pairwise distance graph of an input point set.
 Just like single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it prevents
 the formation of clusters of highly imbalanced sizes; once the Gini index
-of the cluster size distribution raises above a given threshold,
+of the cluster size distribution raises above an assumed threshold,
 a point group of the smallest size is forced to merge with its nearest
 neighbouring cluster.
 

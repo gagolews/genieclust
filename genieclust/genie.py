@@ -390,7 +390,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
 class Genie(GenieBase):
-    """The Genie++ Clustering Algorithm with optional smoothing and
+    """
+    The Genie++ Clustering Algorithm with optional smoothing and
     noise point detection (for M>1)
 
     A reimplementation of Genie - a robust and outlier resistant
@@ -402,12 +403,10 @@ class Genie(GenieBase):
     Just like single linkage, it consumes the edges
     of the MST in increasing order of weights. However, it prevents
     the formation of clusters of highly imbalanced sizes; once the Gini index
-    (see \code{\link{gini_index}()}) of the cluster size distribution
-    raises above \code{gini_threshold}, a forced merge of a point group
-    of the smallest size is performed. Its appealing simplicity goes hand
-    in hand with its usability; Genie often outperforms
-    other clustering approaches on benchmark data,
-    such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
+    of the cluster size distribution raises above an assumed threshold,
+    a forced merge of a point group of the smallest size is performed.
+    Its appealing simplicity goes hand in hand with its usability;
+    Genie often outperforms other clustering approaches on benchmark data.
 
 
     The clustering can also be computed with respect to the
