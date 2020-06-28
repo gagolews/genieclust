@@ -84,7 +84,8 @@ struct CMstTriple {
  * @param dist   a c_contiguous array, shape (n,k),
  *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
  * @param ind    a c_contiguous array, shape (n,k),
- *        (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *        (undirected) edge definition, interpreted as {i, ind[i,j]};
+ *        negative indices as well as such that ind[i,j]==i are ignored
  * @param n number of nodes
  * @param k minimal degree of all the nodes
  * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
@@ -169,10 +170,10 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
         nn_used[u]++;
         if (nn_used[u] == k) *maybe_inexact = true;
 
-        if (ds.find(u) == ds.find(v))
+        if (u > v) std::swap(u, v); // assure u < v
+        if (u == v || u < 0 || ds.find(u) == ds.find(v))
             continue;
 
-        if (u > v) std::swap(u, v);
         mst_ind[2*mst_edge_cur+0] = u;
         mst_ind[2*mst_edge_cur+1] = v;
         mst_dist[mst_edge_cur]    = d;

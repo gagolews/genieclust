@@ -32,8 +32,10 @@ def test_genie(metric='euclidean'):
         if dataset == "bigger":
             np.random.seed(123)
             n = 10000
-            X = np.random.normal(size=(n,2))
-            labels = np.random.choice(np.r_[1,2], n)
+            d = 2
+            K = 2
+            X = np.random.normal(size=(n,d))
+            labels = np.random.choice(np.r_[0:K], n)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
             labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1

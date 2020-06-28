@@ -260,7 +260,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
                 if mst_dist is None or mst_ind is None:
                     _res = mlpack.emst(input=X, verbose=cur_state["verbose"])["output"]
-                    mst_dist = _res[:,2].astype(np.double, order="C")
+                    mst_dist = _res[:,2].astype(X.dtype, order="C")
                     mst_ind  = _res[:,:2].astype(np.intp, order="C")
             else:
                 if cur_state["M"] >= 2: # else d_core   = None
