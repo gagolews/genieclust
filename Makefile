@@ -21,6 +21,7 @@ sphinx: python
 	rm -rf docs/
 	mkdir docs/
 	cp -rf devel/sphinx/_build/html/* docs/
+	cp devel/CNAME.tpl docs/CNAME
 
 py-check: python
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude devel/ --exclude build/
