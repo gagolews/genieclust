@@ -116,8 +116,9 @@ cpdef double gini_index(T[:] x, bint is_sorted=False):
     References
     ----------
 
-    .. [1] Gini C., *Variabilita e Mutabilita*,
-       Tipografia di Paolo Cuppini, Bologna, 1912.
+    .. [1]
+        Gini C., *Variabilita e Mutabilita*,
+        Tipografia di Paolo Cuppini, Bologna, 1912.
     """
 
     if not is_sorted: x = np.sort(x)
@@ -176,8 +177,9 @@ cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     References
     ----------
 
-    .. [1] Bonferroni C., *Elementi di Statistica Generale*, Libreria Seber,
-       Firenze, 1930.
+    .. [1]
+        Bonferroni C., *Elementi di Statistica Generale*, Libreria Seber,
+        Firenze, 1930.
     """
 
     if not is_sorted: x = np.sort(x)

@@ -128,7 +128,7 @@ cpdef np.ndarray[ssize_t] argsort(T[::1] x, bint stable=True):
     """
     argsort(x, stable=True)
 
-    Finds the[1]_ ordering permutation of a c_contiguous array x
+    Finds the [1]_ ordering permutation of a c_contiguous array x
 
 
     Parameters
@@ -151,8 +151,9 @@ cpdef np.ndarray[ssize_t] argsort(T[::1] x, bint stable=True):
     Notes
     -----
 
-    .. [1] The ordering permutation is uniquely defined provided that
-       `stable` is True, otherwise it's *an* ordering permutation.
+    .. [1]
+        The ordering permutation is uniquely defined provided that
+        `stable` is True, otherwise it's *an* ordering permutation.
 
     """
     cdef ssize_t n = x.shape[0]

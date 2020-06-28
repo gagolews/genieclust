@@ -2,6 +2,7 @@
 ^\.Rproj\.user$
 ^\.pytest_cache
 ^\.git
+^\.nojekyll
 ^\.gitignore$
 ^\.travis\.yml$
 ^\.ipynb_checkpoints

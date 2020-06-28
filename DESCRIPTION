@@ -25,7 +25,7 @@ Description: A reimplementation of the Genie algorithm - a robust
     (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
     adjusted mutual information, pair sets index).
 BugReports: http://github.com/gagolews/genieclust/issues
-URL: http://www.gagolewski.com/software/genieclust
+URL: http://genieclust.gagolewski.com/
 License: AGPL-3
 Imports:
     Rcpp (>= 1.0.4),

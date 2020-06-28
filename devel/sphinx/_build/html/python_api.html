@@ -203,7 +203,7 @@ at most n_clusters are generated. Saves some time if you think you know
 how many clusters are there, but are you <em>really</em> sure about that?</p>
 </dd>
 <dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>If True, n_clusters-partition and all the more coarse-grained
-ones will be determined; in such a case, the <a href="#id17"><span class="problematic" id="id18">labels_</span></a> attribute
+ones will be determined; in such a case, the <a href="#id18"><span class="problematic" id="id19">labels_</span></a> attribute
 will be a matrix</p>
 </dd>
 <dt><strong>postprocess</strong><span class="classifier">{‘boundary’, ‘none’, ‘all’}</span></dt><dd><p>In effect only if M&gt;1. By default, only “boundary” points are merged
@@ -303,7 +303,7 @@ doi:10.1145/2733381.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>labels_</strong><span class="classifier">ndarray, shape (n_samples,) or (&lt;=n_clusters+1, n_samples), or None</span></dt><dd><p>If n_clusters==0, no <a href="#id19"><span class="problematic" id="id20">labels_</span></a> are generated (None).
+<dt><strong>labels_</strong><span class="classifier">ndarray, shape (n_samples,) or (&lt;=n_clusters+1, n_samples), or None</span></dt><dd><p>If n_clusters==0, no <a href="#id20"><span class="problematic" id="id21">labels_</span></a> are generated (None).
 If compute_all_cuts==True (the default), these are the detected
 cluster labels of each point: an integer vector with labels_[i]
 denoting the cluster id (in {0, …, n_clusters-1}) of the i-th object.
@@ -320,7 +320,7 @@ is conducted on the 0-partition (there might be points with
 labels -1 even if postprocess==”all”).</p>
 </dd>
 <dt><strong>n_clusters_</strong><span class="classifier">int</span></dt><dd><p>The number of clusters detected by the algorithm.
-If 0, then <a href="#id21"><span class="problematic" id="id22">labels_</span></a> are not set.
+If 0, then <a href="#id22"><span class="problematic" id="id23">labels_</span></a> are not set.
 Note that the actual number might be larger than the n_clusters
 requested, for instance, if there are many noise points.</p>
 </dd>
@@ -383,7 +383,7 @@ Only available if compute_full_tree==True.</p>
 <dt id="genieclust.Genie.fit">
 <code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform clustering of the X dataset.
-See the <a href="#id23"><span class="problematic" id="id24">labels_</span></a> and <a href="#id25"><span class="problematic" id="id26">n_clusters_</span></a> attributes for the clustering result.</p>
+See the <a href="#id24"><span class="problematic" id="id25">labels_</span></a> and <a href="#id26"><span class="problematic" id="id27">n_clusters_</span></a> attributes for the clustering result.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -517,7 +517,7 @@ Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
 <dt id="genieclust.GIc.fit">
 <code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform clustering of the X dataset.
-See the <a href="#id27"><span class="problematic" id="id28">labels_</span></a> and <a href="#id29"><span class="problematic" id="id30">n_clusters_</span></a> attributes for the clustering result.</p>
+See the <a href="#id28"><span class="problematic" id="id29">labels_</span></a> and <a href="#id30"><span class="problematic" id="id31">n_clusters_</span></a> attributes for the clustering result.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
@@ -635,7 +635,7 @@ in <cite>x</cite> and <cite>y</cite>), hence their adjusted versions are preferr
 information-theoretic scores, based on mutual information,
 see the definition of $AMI_{sum}$ and $NMI_{sum}$
 in (Vinh et al., 2010).</p>
-<p><cite>normalized_accuracy()</cite> is defined as $(Accuracy(<a href="#id31"><span class="problematic" id="id32">C_</span></a>sigma)-1/L)/(1-1/L)$,
+<p><cite>normalized_accuracy()</cite> is defined as $(Accuracy(<a href="#id32"><span class="problematic" id="id33">C_</span></a>sigma)-1/L)/(1-1/L)$,
 where $C_sigma$ is a version of the confusion matrix for given <cite>x</cite> and <cite>y</cite>,
 K&lt;=L, with columns permuted based on the solution to the
 Maximal Linear Sum Assignment Problem.
@@ -1111,7 +1111,7 @@ or almost sorted (increasingly) data.</p>
 <dl class="py attribute">
 <dt id="genieclust.tools.argsort">
 <code class="sig-prename descclassname">genieclust.tools.</code><code class="sig-name descname">argsort</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">stable</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.tools.argsort" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the[R7181d5aab013-1]_ ordering permutation of a c_contiguous array x</p>
+<dd><p>Finds the <a class="reference internal" href="#r7181d5aab013-1" id="id17">[1]</a> ordering permutation of a c_contiguous array x</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
@@ -1130,7 +1130,7 @@ or almost sorted (increasingly) data.</p>
 </dl>
 <p class="rubric">Notes</p>
 <dl class="citation">
-<dt class="label" id="r7181d5aab013-1"><span class="brackets">1</span></dt>
+<dt class="label" id="r7181d5aab013-1"><span class="brackets"><a class="fn-backref" href="#id17">1</a></span></dt>
 <dd><p>The ordering permutation is uniquely defined provided that
 <cite>stable</cite> is True, otherwise it’s <em>an</em> ordering permutation.</p>
 </dd>
@@ -1199,7 +1199,7 @@ or almost sorted (increasingly) data.</p>
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Marek Gagolewski
+        &copy; Copyright 2018-2020, Marek Gagolewski
 
     </p>
   </div>
