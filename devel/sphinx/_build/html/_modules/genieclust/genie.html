@@ -1,0 +1,1111 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>genieclust.genie &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../python_api.html">Python Package <cite>genieclust</cite> Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>genieclust.genie</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for genieclust.genie</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;The Genie++ Clustering Algorithm</span>
+
+<span class="sd">Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)</span>
+
+<span class="sd">This program is free software: you can redistribute it and/or modify</span>
+<span class="sd">it under the terms of the GNU Affero General Public License</span>
+<span class="sd">Version 3, 19 November 2007, published by the Free Software Foundation.</span>
+<span class="sd">This program is distributed in the hope that it will be useful,</span>
+<span class="sd">but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span>
+<span class="sd">GNU Affero General Public License Version 3 for more details.</span>
+<span class="sd">You should have received a copy of the License along with this program.</span>
+<span class="sd">If not, see &lt;https://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="k">import</span> <span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClusterMixin</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">internal</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="c1"># import scipy.spatial.distance</span>
+<span class="c1"># import sklearn.neighbors</span>
+<span class="c1"># import warnings</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">faiss</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">faiss</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">mlpack</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">mlpack</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<span class="k">class</span> <span class="nc">GenieBase</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">ClusterMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for Genie and GIc&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">M</span><span class="p">,</span>
+            <span class="n">affinity</span><span class="p">,</span>
+            <span class="n">exact</span><span class="p">,</span>
+            <span class="n">cast_float32</span><span class="p">,</span>
+            <span class="n">use_mlpack</span><span class="p">,</span>
+            <span class="n">verbose</span>
+        <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">M</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affinity</span> <span class="o">=</span> <span class="n">affinity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cast_float32</span> <span class="o">=</span> <span class="n">cast_float32</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exact</span> <span class="o">=</span> <span class="n">exact</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_mlpack</span> <span class="o">=</span> <span class="n">use_mlpack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nn_dist_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span>     <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d_core_</span>     <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+    <span class="k">def</span> <span class="nf">_postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">postprocess</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;(internal)</span>
+<span class="sd">        updates self.labels_ and self.is_noise_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reshaped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">reshaped</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1"># promote it to a matrix with 1 row</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">start_partition</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># duplicate the 1st row (create the &quot;0&quot;-partition that will</span>
+            <span class="c1"># not be postprocessed):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">))</span>
+            <span class="n">start_partition</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># do not postprocess the &quot;0&quot;-partition</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_noise_</span>    <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="mi">0</span><span class="p">,:]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># postprocess labels, if requested to do so</span>
+        <span class="k">if</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">postprocess</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="n">postprocess</span> <span class="o">==</span> <span class="s2">&quot;boundary&quot;</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">M</span><span class="o">-</span><span class="mi">1</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_partition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">merge_boundary_points</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">i</span><span class="p">,:],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">postprocess</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_partition</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">i</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">merge_noise_points</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="p">[</span><span class="n">i</span><span class="p">,:])</span>
+
+        <span class="k">if</span> <span class="n">reshaped</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],)</span>
+
+
+
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">cur_state</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+        <span class="n">_affinity_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s2">&quot;l2&quot;</span><span class="p">,</span> <span class="s2">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s2">&quot;l1&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;cityblock&quot;</span><span class="p">,</span> <span class="s2">&quot;cosine&quot;</span><span class="p">,</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">affinity</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_affinity_options</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;affinity should be one of </span><span class="si">%r</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">_affinity_options</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;l2&quot;</span><span class="p">:</span>
+            <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;euclidean&quot;</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="s2">&quot;cityblock&quot;</span><span class="p">]:</span>
+            <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;manhattan&quot;</span>
+
+        <span class="n">n_samples</span>  <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+            <span class="n">n_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="c1"># users must set it manually</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;X must be distance vector &quot;</span>
+                    <span class="s2">&quot;or a square-form distance matrix, &quot;</span>
+                    <span class="s2">&quot;see scipy.spatial.distance.pdist or &quot;</span>
+                    <span class="s2">&quot;scipy.spatial.distance.squareform&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># from a very advanced and sophisticated quadratic equation:</span>
+                <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">((</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span><span class="o">+</span><span class="mf">8.0</span><span class="o">*</span><span class="n">n_samples</span><span class="p">)</span><span class="o">+</span><span class="mf">1.0</span><span class="p">)</span><span class="o">/</span><span class="mf">2.0</span><span class="p">))</span>
+                <span class="k">assert</span> <span class="n">n_samples</span><span class="o">*</span><span class="p">(</span><span class="n">n_samples</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span> <span class="o">==</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_features</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">n_samples</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;M must be in [1, n_samples]&quot;</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;exact&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exact</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;cast_float32&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cast_float32</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mlpack</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mlpack</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                    <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span> <span class="ow">and</span> \
+                    <span class="n">n_features</span> <span class="o">&lt;=</span> <span class="mi">6</span> <span class="ow">and</span> \
+                    <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">use_mlpack</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">mlpack</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;package mlpack is not available&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mlpack can only be used with affinity==&#39;euclidean&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;mlpack can only be used with M=1&quot;</span><span class="p">)</span>
+
+
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Initialising data.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="n">mst_dist</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">mst_ind</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">nn_dist</span>  <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">nn_ind</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">d_core</span>   <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;cast_float32&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+            <span class="c1"># faiss supports float32 only</span>
+            <span class="c1"># warning if sparse!!</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+        <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span>            <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span> <span class="ow">and</span> \
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span>     <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="ow">and</span> \
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;exact&quot;</span><span class="p">]</span>        <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;exact&quot;</span><span class="p">]</span> <span class="ow">and</span> \
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;cast_float32&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;cast_float32&quot;</span><span class="p">]:</span>
+
+            <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]:</span>
+                <span class="n">mst_dist</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span>
+                <span class="n">mst_ind</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span>
+                <span class="n">nn_dist</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_dist_</span>
+                <span class="n">nn_ind</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span>
+            <span class="k">elif</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]:</span>
+                <span class="n">nn_dist</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_dist_</span>
+                <span class="n">nn_ind</span>   <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;exact&quot;</span><span class="p">]:</span>
+            <span class="c1">#raise NotImplementedError(&quot;approximate method not implemented yet&quot;)</span>
+
+            <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;precomputed&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;exact==False with affinity==&quot;precomputed&quot;&#39;</span><span class="p">)</span>
+
+
+            <span class="k">assert</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span>
+
+            <span class="n">actual_n_neighbors</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n_samples</span><span class="p">))))</span>
+            <span class="n">actual_n_neighbors</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">actual_n_neighbors</span><span class="p">,</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">actual_n_neighbors</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">n_samples</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">actual_n_neighbors</span><span class="p">)</span>
+
+            <span class="c1"># t0 = time.time()</span>
+            <span class="c1">##nn = sklearn.neighbors.NearestNeighbors(</span>
+            <span class="c1">##n_neighbors=actual_n_neighbors, ....**cur_state[&quot;nn_params&quot;])</span>
+            <span class="c1">##nn_dist, nn_ind = nn.fit(X).kneighbors()</span>
+            <span class="c1">#nn_dist, nn_ind = internal.knn_from_distance(</span>
+            <span class="c1">#X, k=actual_n_neighbors, ...metric=metric)</span>
+            <span class="c1"># print(&quot;T=%.3f&quot; % (time.time()-t0), end=&quot;\t&quot;)</span>
+
+            <span class="c1"># FAISS - `euclidean` and `cosine` only!</span>
+
+
+
+            <span class="c1"># TODO:  cur_state[&quot;metric&quot;], cur_state[&quot;metric_params&quot;]</span>
+            <span class="c1">#t0 = time.time()</span>
+            <span class="c1"># the slow part:</span>
+            <span class="n">nn</span> <span class="o">=</span> <span class="n">faiss</span><span class="o">.</span><span class="n">IndexFlatL2</span><span class="p">(</span><span class="n">n_features</span><span class="p">)</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+            <span class="n">nn_dist</span><span class="p">,</span> <span class="n">nn_ind</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">actual_n_neighbors</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># TODO: , verbose=cur_state[&quot;verbose&quot;]</span>
+            <span class="c1">#print(&quot;T=%.3f&quot; % (time.time()-t0), end=&quot;\t&quot;)</span>
+
+
+
+            <span class="c1"># @TODO:::::</span>
+            <span class="c1">#nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n_samples)))[0]</span>
+            <span class="c1">#print(nn_bad_where)</span>
+            <span class="c1">#print(nn_ind[nn_bad_where,:5])</span>
+            <span class="c1">#print(X[nn_bad_where,:])</span>
+            <span class="c1">#assert nn_bad_where.shape[0] == 0</span>
+
+            <span class="c1"># TODO: check cache if rebuild needed</span>
+            <span class="n">nn_dist</span> <span class="o">=</span> <span class="n">nn_dist</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="n">nn_ind</span>  <span class="o">=</span> <span class="n">nn_ind</span><span class="p">[:,</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># d_core = nn_dist[:,cur_state[&quot;M&quot;]-2].astype(X.dtype, order=&quot;C&quot;)</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;approximate method not implemented yet&quot;</span><span class="p">)</span>
+
+            <span class="c1">#t0 = time.time()</span>
+            <span class="c1"># the fast part:</span>
+            <span class="n">mst_dist</span><span class="p">,</span> <span class="n">mst_ind</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">mst_from_nn</span><span class="p">(</span><span class="n">nn_dist</span><span class="p">,</span> <span class="n">nn_ind</span><span class="p">,</span>
+                <span class="n">stop_disconnected</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># TODO: test this!!!!</span>
+                <span class="n">stop_inexact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">])</span>
+            <span class="c1">#print(&quot;T=%.3f&quot; % (time.time()-t0), end=&quot;\t&quot;)</span>
+
+        <span class="k">else</span><span class="p">:</span> <span class="c1"># cur_state[&quot;exact&quot;]</span>
+            <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;use_mlpack&quot;</span><span class="p">]:</span>
+                <span class="k">assert</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+                <span class="k">assert</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span>
+
+                <span class="k">if</span> <span class="n">mst_dist</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mst_ind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">_res</span> <span class="o">=</span> <span class="n">mlpack</span><span class="o">.</span><span class="n">emst</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">X</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">])[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span>
+                    <span class="n">mst_dist</span> <span class="o">=</span> <span class="n">_res</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+                    <span class="n">mst_ind</span>  <span class="o">=</span> <span class="n">_res</span><span class="p">[:,:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span> <span class="c1"># else d_core   = None</span>
+                    <span class="c1"># Genie+HDBSCAN --- determine d_core</span>
+                    <span class="c1"># TODO: mlpack for k-nns?</span>
+                    <span class="k">if</span> <span class="n">nn_dist</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">nn_ind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">nn_dist</span><span class="p">,</span> <span class="n">nn_ind</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">knn_from_distance</span><span class="p">(</span>
+                            <span class="n">X</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">metric</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">],</span>
+                            <span class="n">verbose</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">])</span> <span class="c1"># supports &quot;precomputed&quot;</span>
+
+                    <span class="k">assert</span> <span class="n">nn_dist</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="n">d_core</span> <span class="o">=</span> <span class="n">nn_dist</span><span class="p">[:,</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Use Prim&#39;s algorithm to determine the MST</span>
+                <span class="c1"># w.r.t. the distances computed on the fly</span>
+                <span class="k">if</span> <span class="n">mst_dist</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">mst_ind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">mst_dist</span><span class="p">,</span> <span class="n">mst_ind</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">mst_from_distance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span>
+                        <span class="n">metric</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;affinity&quot;</span><span class="p">],</span>
+                        <span class="n">d_core</span><span class="o">=</span><span class="n">d_core</span><span class="p">,</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]</span>
+                    <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_samples_</span>  <span class="o">=</span> <span class="n">n_samples</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="o">=</span> <span class="n">n_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span>  <span class="o">=</span> <span class="n">mst_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span>   <span class="o">=</span> <span class="n">mst_ind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nn_dist_</span>   <span class="o">=</span> <span class="n">nn_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_nn_ind_</span>    <span class="o">=</span> <span class="n">nn_ind</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_d_core_</span>    <span class="o">=</span> <span class="n">d_core</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span><span class="o">=</span> <span class="n">cur_state</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+    <span class="k">def</span> <span class="nf">fit_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute a k-partition and return the predicted labels,</span>
+<span class="sd">        see fit().</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        X : ndarray</span>
+<span class="sd">            see fit()</span>
+<span class="sd">        y : None</span>
+<span class="sd">            see fit()</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        labels_ : ndarray, shape (n_samples,)</span>
+<span class="sd">            Predicted labels, representing a partition of X.</span>
+<span class="sd">            labels_[i] gives the cluster id of the i-th input point.</span>
+<span class="sd">            negative labels_ correspond to noise points.</span>
+<span class="sd">            Note that the determined number of clusters</span>
+<span class="sd">            might be larger than the requested one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span>
+
+
+
+
+    <span class="c1"># not needed - inherited from BaseEstimator</span>
+    <span class="c1"># def __repr__(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Return repr(self).</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return &quot;Genie(%s)&quot; % (</span>
+    <span class="c1">#         &quot;, &quot;.join([&quot;%s=%r&quot;%(k,v) for (k,v) in self.get_params().items()])</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># def get_params(self, deep=False):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Get the parameters for this estimator.</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Parameters:</span>
+    <span class="c1">#     -----------</span>
+    <span class="c1">#</span>
+    <span class="c1">#     deep: bool</span>
+    <span class="c1">#         Ignored</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#     --------</span>
+    <span class="c1">#</span>
+    <span class="c1">#     params: dict</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     return dict(</span>
+    <span class="c1">#         n_clusters = self.__n_clusters,</span>
+    <span class="c1">#         gini_threshold = self.__gini_threshold,</span>
+    <span class="c1">#         M = self.__M,</span>
+    <span class="c1">#         postprocess = self.__postprocess,</span>
+    <span class="c1">#         n_neighbors = self.__n_neighbors,</span>
+    <span class="c1">#         **self.__NearestNeighbors_params</span>
+    <span class="c1">#     )</span>
+
+    <span class="c1"># not needed - inherited from BaseEstimator</span>
+    <span class="c1">#def set_params(self, **params):</span>
+        <span class="c1">#&quot;&quot;&quot;</span>
+        <span class="c1">#Set the parameters for this estimator.</span>
+
+
+        <span class="c1">#Parameters:</span>
+        <span class="c1">#-----------</span>
+
+        <span class="c1">#params</span>
+
+
+        <span class="c1">#Returns:</span>
+        <span class="c1">#--------</span>
+
+        <span class="c1">#self</span>
+        <span class="c1">#&quot;&quot;&quot;</span>
+        <span class="c1">################### @TODO</span>
+        <span class="c1">#print(params)</span>
+        <span class="c1">#super().set_params(**params)</span>
+        <span class="c1">#return self</span>
+
+
+
+
+
+
+
+
+<div class="viewcode-block" id="Genie"><a class="viewcode-back" href="../../python_api.html#genieclust.Genie">[docs]</a><span class="k">class</span> <span class="nc">Genie</span><span class="p">(</span><span class="n">GenieBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The Genie++ Clustering Algorithm with optional smoothing and</span>
+<span class="sd">    noise point detection (for M&gt;1)</span>
+
+<span class="sd">    A reimplementation of Genie - a robust and outlier resistant</span>
+<span class="sd">    clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),</span>
+<span class="sd">    originally published as an R package `genie`.</span>
+
+<span class="sd">    The Genie algorithm is based on a minimum spanning tree (MST) of the</span>
+<span class="sd">    pairwise distance graph of a given point set.</span>
+<span class="sd">    Just like single linkage, it consumes the edges</span>
+<span class="sd">    of the MST in increasing order of weights. However, it prevents</span>
+<span class="sd">    the formation of clusters of highly imbalanced sizes; once the Gini index</span>
+<span class="sd">    of the cluster size distribution raises above an assumed threshold,</span>
+<span class="sd">    a forced merge of a point group of the smallest size is performed.</span>
+<span class="sd">    Its appealing simplicity goes hand in hand with its usability;</span>
+<span class="sd">    Genie often outperforms other clustering approaches on benchmark data.</span>
+
+
+<span class="sd">    The clustering can also be computed with respect to the</span>
+<span class="sd">    mutual reachability distance (based, e.g., on the Euclidean metric),</span>
+<span class="sd">    which is used in the definition of the HDBSCAN* algorithm, see [2].</span>
+<span class="sd">    If M&gt;1, then the mutual reachability</span>
+<span class="sd">    distance m(i,j) with smoothing factor M is used instead of the</span>
+<span class="sd">    chosen &quot;raw&quot; distance d(i,j). It holds m(i,j)=max(d(i,j), c(i), c(j)),</span>
+<span class="sd">    where c(i) is d(i,k) with k being the (M-1)-th nearest neighbour of i.</span>
+<span class="sd">    This makes &quot;noise&quot; and &quot;boundary&quot; points being &quot;pulled away&quot; from each other.</span>
+
+<span class="sd">    The Genie correction together with the smoothing factor M&gt;1 (note that</span>
+<span class="sd">    M==2 corresponds to the original distance) gives a robustified version of</span>
+<span class="sd">    the HDBSCAN* algorithm that is able to detect a predefined number of</span>
+<span class="sd">    clusters. Hence it does not dependent on the DBSCAN&#39;s somehow magical</span>
+<span class="sd">    `eps` parameter or the HDBSCAN&#39;s `min_cluster_size` one.</span>
+
+
+<span class="sd">    The algorithm has O(n_samples*sqrt(n_samples)) time complexity</span>
+<span class="sd">    given a minimum spanning tree of the pairwise distance graph.</span>
+<span class="sd">    Unless we use MLPACK (or other variations, see Parameters),</span>
+<span class="sd">    our parallelised implementation of a Jarník (Prim/Dijkstra)-like method</span>
+<span class="sd">    will be called to compute an MST, which generally takes O(n^2) time</span>
+<span class="sd">    (environment variable \code{OMP_NUM_THREADS} controls the number of threads).</span>
+<span class="sd">    MLPACK (see Python package `mlpack`) is a very fast alternative</span>
+<span class="sd">    in the case of Euclidean spaces of (very) low dimensionality and M=1.</span>
+
+
+
+<span class="sd">    Note that as in the case of all the distance-based methods,</span>
+<span class="sd">    the standardisation of the input features is definitely worth giving a try.</span>
+
+<span class="sd">    According to the algorithm&#39;s original definition,</span>
+<span class="sd">    the resulting partition tree (dendrogram) might violate</span>
+<span class="sd">    the ultrametricity property (merges might occur at levels that</span>
+<span class="sd">    are not increasing w.r.t. a between-cluster distance).</span>
+<span class="sd">    Departures from ultrametricity are corrected by applying</span>
+<span class="sd">    `Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]`.</span>
+
+
+
+<span class="sd">    References</span>
+<span class="sd">    ==========</span>
+
+<span class="sd">    [1] Gagolewski M., Bartoszuk M., Cena A.,</span>
+<span class="sd">    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,</span>
+<span class="sd">    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</span>
+
+<span class="sd">    [2] Campello R., Moulavi D., Zimek A., Sander J.,</span>
+<span class="sd">    Hierarchical density estimates for data clustering, visualization,</span>
+<span class="sd">    and outlier detection,</span>
+<span class="sd">    ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.</span>
+<span class="sd">    doi:10.1145/2733381.</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    n_clusters : int &gt;= 0, default=2</span>
+<span class="sd">        Number of clusters to detect. Note that depending on the dataset</span>
+<span class="sd">        and approximations used (see parameter `exact`), the actual</span>
+<span class="sd">        partition cardinality can be smaller.</span>
+<span class="sd">        n_clusters==1 can act as a noise point/outlier detector (if M&gt;1</span>
+<span class="sd">        and postprocess is not &quot;all&quot;).</span>
+<span class="sd">        n_clusters==0 computes the whole dendrogram but doesn&#39;t generate</span>
+<span class="sd">        any particular cuts.</span>
+<span class="sd">    gini_threshold : float in [0,1], default=0.3</span>
+<span class="sd">        The threshold for the Genie correction, i.e.,</span>
+<span class="sd">        the Gini index of the cluster size distribution.</span>
+<span class="sd">        Threshold of 1.0 disables the correction.</span>
+<span class="sd">        Low thresholds highly penalise the formation of small clusters.</span>
+<span class="sd">    M : int, default=1</span>
+<span class="sd">        Smoothing factor. M=1 gives the original Genie algorithm.</span>
+<span class="sd">    affinity : str, default=&quot;euclidean&quot;</span>
+<span class="sd">        Metric used to compute the linkage. One of: &quot;euclidean&quot; (synonym: &quot;l2&quot;),</span>
+<span class="sd">        &quot;manhattan&quot; (a.k.a. &quot;l1&quot; and &quot;cityblock&quot;), &quot;cosine&quot; or &quot;precomputed&quot;.</span>
+<span class="sd">        If &quot;precomputed&quot;, a n_samples*(n_samples-1)/2 distance vector</span>
+<span class="sd">        or a square-form distance</span>
+<span class="sd">        matrix is needed on input (argument X) for the fit() method,</span>
+<span class="sd">        see `scipy.spatial.distance.pdist()` or</span>
+<span class="sd">        `scipy.spatial.distance.squareform()`, amongst others.</span>
+<span class="sd">    compute_full_tree : bool, default=True</span>
+<span class="sd">        If True, only a partial hierarchy is determined so that</span>
+<span class="sd">        at most n_clusters are generated. Saves some time if you think you know</span>
+<span class="sd">        how many clusters are there, but are you *really* sure about that?</span>
+<span class="sd">    compute_all_cuts : bool, default=False</span>
+<span class="sd">        If True, n_clusters-partition and all the more coarse-grained</span>
+<span class="sd">        ones will be determined; in such a case, the labels_ attribute</span>
+<span class="sd">        will be a matrix</span>
+<span class="sd">    postprocess : str, one of &quot;boundary&quot; (default), &quot;none&quot;, &quot;all&quot;</span>
+<span class="sd">        In effect only if M&gt;1. By default, only &quot;boundary&quot; points are merged</span>
+<span class="sd">        with their nearest &quot;core&quot; points (A point is a boundary point if it is</span>
+<span class="sd">        a noise point and it&#39;s amongst its adjacent vertex&#39;s</span>
+<span class="sd">        M-1 nearest neighbours). To force a classical</span>
+<span class="sd">        n_clusters-partition of a data set (with no notion of noise),</span>
+<span class="sd">        choose &quot;all&quot;.</span>
+<span class="sd">    exact : bool, default=True</span>
+<span class="sd">        TODO: Not yet implemented.</span>
+<span class="sd">        If False, the minimum spanning tree is approximated</span>
+<span class="sd">        based on the nearest neighbours graph. Finding nearest neighbours</span>
+<span class="sd">        in low dimensional spaces is usually fast. Otherwise,</span>
+<span class="sd">        the algorithm will need to inspect all pairwise distances,</span>
+<span class="sd">        which gives the time complexity of O(n_samples*n_samples*n_features).</span>
+<span class="sd">    cast_float32 : bool, default=True</span>
+<span class="sd">        Allow casting input data to a float32 dense matrix</span>
+<span class="sd">        (for efficiency reasons; decreases the run-time ~2x times</span>
+<span class="sd">        at a cost of greater memory usage).</span>
+<span class="sd">        TODO: Note that some nearest neighbour search</span>
+<span class="sd">        methods require float32 data anyway.</span>
+<span class="sd">        TODO: Might be a problem if the input matrix is sparse, but</span>
+<span class="sd">        we don&#39;t support this yet.</span>
+<span class="sd">    use_mlpack : bool or &quot;auto&quot;, default=&quot;auto&quot;</span>
+<span class="sd">        Use mlpack.emst() for computing the Euclidean minimum spanning tree?</span>
+<span class="sd">        Might be faster for lower-dimensional spaces. As the name suggests,</span>
+<span class="sd">        only affinity=&#39;euclidean&#39; is supported (and M=1).</span>
+<span class="sd">        By default, we rely on mlpack if it&#39;s installed and n_features &lt;= 6.</span>
+<span class="sd">        Otherwise, we use our own implementation of a parallelised version</span>
+<span class="sd">        of Prim&#39;s algorithm (environment variable `OMP_NUM_THREADS` controls</span>
+<span class="sd">        the number of threads used).</span>
+<span class="sd">    verbose : bool, default=False</span>
+<span class="sd">        Whether to print diagnostic messages and progress information on stderr.</span>
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    labels_ : ndarray, shape (n_samples,) or (&lt;=n_clusters+1, n_samples), or None</span>
+<span class="sd">        If n_clusters==0, no labels_ are generated (None).</span>
+<span class="sd">        If compute_all_cuts==True (the default), these are the detected</span>
+<span class="sd">        cluster labels of each point: an integer vector with labels_[i]</span>
+<span class="sd">        denoting the cluster id (in {0, ..., n_clusters-1}) of the i-th object.</span>
+<span class="sd">        If M&gt;1, noise points are labelled -1 (unless taken care of in the</span>
+<span class="sd">        postprocessing stage).</span>
+<span class="sd">        Otherwise, i.e., if compute_all_cuts==False,</span>
+<span class="sd">        all partitions of cardinality down to n_clusters (if n_samples</span>
+<span class="sd">        and the number of noise points allows) are determined.</span>
+<span class="sd">        In such a case, labels_[j,i] denotes the cluster id of the i-th</span>
+<span class="sd">        point in a j-partition.</span>
+<span class="sd">        We assume that a 0- and 1- partition only distinguishes between</span>
+<span class="sd">        noise- and non-noise points, however, no postprocessing</span>
+<span class="sd">        is conducted on the 0-partition (there might be points with</span>
+<span class="sd">        labels -1 even if postprocess==&quot;all&quot;).</span>
+<span class="sd">    n_clusters_ : int</span>
+<span class="sd">        The number of clusters detected by the algorithm.</span>
+<span class="sd">        If 0, then labels_ are not set.</span>
+<span class="sd">        Note that the actual number might be larger than the n_clusters</span>
+<span class="sd">        requested, for instance, if there are many noise points.</span>
+<span class="sd">    n_samples_ : int</span>
+<span class="sd">        The number of points in the fitted dataset.</span>
+<span class="sd">    n_features_ : int or None</span>
+<span class="sd">        The number of features in the fitted dataset.</span>
+<span class="sd">    is_noise_ : ndarray, shape (n_samples,) or None</span>
+<span class="sd">        is_noise_[i] is True iff the i-th point is a noise one;</span>
+<span class="sd">        For M=1, all points are no-noise ones.</span>
+<span class="sd">        Points are marked as noise even if postprocess==&quot;all&quot;.</span>
+<span class="sd">        Note that boundary points are also marked as noise points.</span>
+<span class="sd">    children_ : ndarray, shape (n_samples-1, 2)</span>
+<span class="sd">        The i-th row provides the information on the clusters merged at</span>
+<span class="sd">        the i-th iteration. Noise points are merged first, with</span>
+<span class="sd">        the corresponding `distances_[i]` of 0.</span>
+<span class="sd">        See the description of `Z[i,0]` and `Z[i,1]` in</span>
+<span class="sd">        `scipy.cluster.hierarchy.linkage`. Together with `distances_` and</span>
+<span class="sd">        `counts_`, this forms the linkage matrix that can be used for</span>
+<span class="sd">        plotting the dendrogram.</span>
+<span class="sd">        Only available if `compute_full_tree==True`.</span>
+<span class="sd">    distances_ : ndarray, shape (n_samples-1,)</span>
+<span class="sd">        Distance between the two clusters merged at the i-th iteration.</span>
+<span class="sd">        As Genie does not guarantee that that distances are</span>
+<span class="sd">        ordered increasingly (do not panic, there are some other hierarchical</span>
+<span class="sd">        clustering linkages that also violate the ultrametricity property),</span>
+<span class="sd">        these are corrected by applying</span>
+<span class="sd">        `distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]`.</span>
+<span class="sd">        See the description of Z[i,2] in scipy.cluster.hierarchy.linkage.</span>
+<span class="sd">        Only available if compute_full_tree==True.</span>
+<span class="sd">    counts_ : ndarray, shape (n_samples-1,)</span>
+<span class="sd">        Number of elements in a cluster created at the i-th iteration.</span>
+<span class="sd">        See the description of Z[i,3] in scipy.cluster.hierarchy.linkage.</span>
+<span class="sd">        Only available if compute_full_tree==True.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">gini_threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+            <span class="n">M</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">compute_all_cuts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">postprocess</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span>
+            <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">cast_float32</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_mlpack</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">exact</span><span class="p">,</span> <span class="n">cast_float32</span><span class="p">,</span> <span class="n">use_mlpack</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gini_threshold</span> <span class="o">=</span> <span class="n">gini_threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_full_tree</span> <span class="o">=</span> <span class="n">compute_full_tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_all_cuts</span> <span class="o">=</span> <span class="n">compute_all_cuts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters_</span>  <span class="o">=</span> <span class="mi">0</span> <span class="c1"># should not be confused with self.n_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_noise_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances_</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_links_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iters_</span>      <span class="o">=</span> <span class="kc">None</span>
+
+
+
+<div class="viewcode-block" id="Genie.fit"><a class="viewcode-back" href="../../python_api.html#genieclust.Genie.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform clustering of the X dataset.</span>
+<span class="sd">        See the labels_ and n_clusters_ attributes for the clustering result.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        X : ndarray, shape (n_samples, n_features)  or</span>
+<span class="sd">                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)</span>
+<span class="sd">            A matrix defining n_samples in a vector space with n_features.</span>
+<span class="sd">            Hint: it might be a good idea to standardise or at least</span>
+<span class="sd">            normalise the coordinates of the</span>
+<span class="sd">            input data points by calling</span>
+<span class="sd">            `X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order=&quot;C&quot;, copy=False)`</span>
+<span class="sd">            so that the dataset is centred at 0 and</span>
+<span class="sd">            has total variance of 1. This way the method becomes</span>
+<span class="sd">            translation and scale invariant.</span>
+<span class="sd">            However, if affinity=&quot;precomputed&quot;, then X is assumed to define</span>
+<span class="sd">            all pairwise distances between n_samples</span>
+<span class="sd">            (either in form of a distance vector or square distance matrix).</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">cur_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_clusters must be &gt;= 0&quot;</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;gini_threshold&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mf">0.0</span> <span class="o">&lt;=</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;gini_threshold&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">1.0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;gini_threshold not in [0,1]&quot;</span><span class="p">)</span>
+
+        <span class="n">_postprocess_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_postprocess_options</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;postprocess should be one of </span><span class="si">%r</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">_postprocess_options</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_full_tree</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_all_cuts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_all_cuts</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Determining clusters.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="c1"># apply the Genie++ algorithm (the fast part):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">genie_from_mst</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">,</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">],</span>
+            <span class="n">gini_threshold</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;gini_threshold&quot;</span><span class="p">],</span>
+            <span class="n">noise_leaves</span><span class="o">=</span><span class="p">(</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">compute_full_tree</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">],</span>
+            <span class="n">compute_all_cuts</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_all_cuts&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Postprocessing the outputs.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters_</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_links_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iters_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;iters&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">]:</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">get_linkage_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_links_</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">children_</span>    <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distances_</span>   <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counts_</span>      <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;counts&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Done.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+
+
+<div class="viewcode-block" id="GIc"><a class="viewcode-back" href="../../python_api.html#genieclust.GIc">[docs]</a><span class="k">class</span> <span class="nc">GIc</span><span class="p">(</span><span class="n">GenieBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;GIc (Genie+Information Criterion) Information-Theoretic</span>
+<span class="sd">    Hierarchical Clustering Algorithm</span>
+
+<span class="sd">    Computes a k-partition based on a pre-computed MST</span>
+<span class="sd">    maximising (heuristically) the information criterion [2].</span>
+
+<span class="sd">    GIc has been proposed by Anna Cena in [1] and was inspired</span>
+<span class="sd">    by Mueller&#39;s (et al.) ITM [2] and Gagolewski&#39;s (et al.) Genie [3]</span>
+
+<span class="sd">    GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,</span>
+<span class="sd">    which follows a divisive scheme). It greedily selects for merging</span>
+<span class="sd">    a pair of clusters that maximises the information criterion [2].</span>
+<span class="sd">    By default, the initial partition is determined by considering</span>
+<span class="sd">    the intersection of clusterings found by the Genie methods with</span>
+<span class="sd">    thresholds 0.1, 0.3, 0.5 and 0.7.</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ==========</span>
+
+<span class="sd">    [1] Cena A., Adaptive hierarchical clustering algorithms based on</span>
+<span class="sd">    data aggregation methods, PhD Thesis, Systems Research Institute,</span>
+<span class="sd">    Polish Academy of Sciences 2018.</span>
+
+<span class="sd">    [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic</span>
+<span class="sd">    Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.</span>
+
+<span class="sd">    [3] Gagolewski M., Bartoszuk M., Cena A.,</span>
+<span class="sd">    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,</span>
+<span class="sd">    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</span>
+
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    n_clusters : int &gt;= 0, default=2</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    gini_thresholds : float in [0,1], default=[0.1, 0.3, 0.5, 0.7]</span>
+<span class="sd">        The GIc algorithm optimises the information criterion</span>
+<span class="sd">        in an agglomerative way, starting from the intersection</span>
+<span class="sd">        of the clusterings returned by</span>
+<span class="sd">        Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i]),</span>
+<span class="sd">        for all i=0,...,len(gini_thresholds)-1.</span>
+<span class="sd">    add_clusters : int, default=0</span>
+<span class="sd">        Number of additional clusters to work with internally.</span>
+<span class="sd">    n_features : float or None, default None</span>
+<span class="sd">        Dataset (intrinsic) dimensionality, if None, it will be set based on</span>
+<span class="sd">        the shape of the input matrix.</span>
+<span class="sd">    M : int, default=1</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    affinity : str, default=&quot;euclidean&quot;</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    compute_full_tree : bool, default=True</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    compute_all_cuts : bool, default=False</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">        Note that for GIc if compute_all_cuts==True,</span>
+<span class="sd">        then the i-th cut in the hierarchy behaves as if</span>
+<span class="sd">        add_clusters=n_clusters-i. In other words, the returned cuts</span>
+<span class="sd">        will not be the same as those obtained by calling</span>
+<span class="sd">        GIc numerous times, each time with different n_clusters requested.</span>
+<span class="sd">    postprocess : str, one of &quot;boundary&quot; (default), &quot;none&quot;, &quot;all&quot;</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    exact : bool, default=True</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    cast_float32 : bool, default=True</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    use_mlpack : bool or &quot;auto&quot;, default=&quot;auto&quot;</span>
+<span class="sd">        see `Genie`</span>
+<span class="sd">    verbose : bool, default=False</span>
+<span class="sd">        see `Genie`</span>
+
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    see `Genie`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="n">gini_thresholds</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">],</span>
+            <span class="n">add_clusters</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">n_features</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">M</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;euclidean&quot;</span><span class="p">,</span>
+            <span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">compute_all_cuts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">postprocess</span><span class="o">=</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span>
+            <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">cast_float32</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">use_mlpack</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">affinity</span><span class="p">,</span> <span class="n">exact</span><span class="p">,</span> <span class="n">cast_float32</span><span class="p">,</span> <span class="n">use_mlpack</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span> <span class="o">=</span> <span class="n">n_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span> <span class="o">=</span> <span class="n">n_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_clusters</span> <span class="o">=</span> <span class="n">add_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gini_thresholds</span> <span class="o">=</span> <span class="n">gini_thresholds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_full_tree</span> <span class="o">=</span> <span class="n">compute_full_tree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_all_cuts</span> <span class="o">=</span> <span class="n">compute_all_cuts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span> <span class="o">=</span> <span class="n">postprocess</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters_</span>  <span class="o">=</span> <span class="mi">0</span> <span class="c1"># should not be confused with self.n_clusters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_noise_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children_</span>    <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances_</span>   <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_links_</span>      <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iters_</span>      <span class="o">=</span> <span class="kc">None</span>
+
+
+
+<div class="viewcode-block" id="GIc.fit"><a class="viewcode-back" href="../../python_api.html#genieclust.GIc.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform clustering of the X dataset.</span>
+<span class="sd">        See the labels_ and n_clusters_ attributes for the clustering result.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        X : ndarray, shape (n_samples, n_features) or</span>
+<span class="sd">                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)</span>
+<span class="sd">            see `Genie.fit()`</span>
+<span class="sd">        y : None</span>
+<span class="sd">            Ignored.</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        self</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">cur_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_state_</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;n_clusters must be &gt;= 0&quot;</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;add_clusters&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_clusters</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;add_clusters&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;add_clusters must be &gt;= 0&quot;</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;gini_thresholds&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gini_thresholds</span><span class="p">)</span>
+
+        <span class="n">_postprocess_options</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;boundary&quot;</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_postprocess_options</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;postprocess should be one of </span><span class="si">%r</span><span class="s2">&quot;</span><span class="o">%</span><span class="n">_postprocess_options</span><span class="p">)</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_full_tree</span><span class="p">)</span>
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_all_cuts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_all_cuts</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The n_features attribute must be set manually.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># X.shape[1], set by GenieBase.fit()</span>
+                <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features_</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_features</span>
+
+        <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_features&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_features&quot;</span><span class="p">])</span>
+
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Determining clusters.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="c1"># apply the Genie+Ic algorithm:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">gic_from_mst</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">,</span>
+            <span class="n">n_features</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_features&quot;</span><span class="p">],</span>
+            <span class="n">n_clusters</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">],</span>
+            <span class="n">add_clusters</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;add_clusters&quot;</span><span class="p">],</span>
+            <span class="n">gini_thresholds</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;gini_thresholds&quot;</span><span class="p">],</span>
+            <span class="n">noise_leaves</span><span class="o">=</span><span class="p">(</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">compute_full_tree</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">],</span>
+            <span class="n">compute_all_cuts</span><span class="o">=</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_all_cuts&quot;</span><span class="p">])</span>
+
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Postprocessing the outputs.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_clusters_</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;n_clusters&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;labels&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_links_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;links&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iters_</span>     <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;iters&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">labels_</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_postprocess</span><span class="p">(</span><span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;M&quot;</span><span class="p">],</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;postprocess&quot;</span><span class="p">])</span>
+
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;compute_full_tree&quot;</span><span class="p">]:</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="n">internal</span><span class="o">.</span><span class="n">get_linkage_matrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_links_</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_mst_dist_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mst_ind_</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">children_</span>    <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;children&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distances_</span>   <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;distances&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counts_</span>      <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="s2">&quot;counts&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">cur_state</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[genieclust] Done.&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

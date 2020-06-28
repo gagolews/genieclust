@@ -17,7 +17,10 @@ pytest: python
 	pytest
 
 sphinx: python
-	cd docs && make html
+	cd devel/sphinx && make html && cd ../../
+	rm -rf docs/
+	mkdir docs/
+	cp -rf devel/sphinx/_build/html/* docs/
 
 py-check: python
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude devel/ --exclude build/

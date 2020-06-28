@@ -158,7 +158,7 @@ cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     Notes
     -----
 
-    The normalised Bonferroni [2]_ index is given by:
+    The normalised Bonferroni [1]_ index is given by:
 
     .. math::
 
