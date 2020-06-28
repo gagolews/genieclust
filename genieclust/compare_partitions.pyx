@@ -6,43 +6,41 @@
 # cython: language_level=3
 
 
-"""
-Adjusted- and Nonadjusted Rand Score,
-Adjusted- and Nonadjusted Fowlkes-Mallows Score,
-Adjusted-, Normalised and Nonadjusted Mutual Information Score,
-Normalised Accuracy, Pair Sets Index
-(for vectors of "small" ints)
-
-
-References
-==========
-
-Hubert L., Arabie P., Comparing Partitions,
-Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
-
-Vinh N.X., Epps J., Bailey J.,
-Information theoretic measures for clusterings comparison:
-Variants, properties, normalization and correction for chance,
-Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
-
-Rezaei M., Franti P., Set matching measures for external cluster validity,
-IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
-doi:10.1109/TKDE.2016.2551240
-
-
-
-Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License
-Version 3, 19 November 2007, published by the Free Software Foundation.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License Version 3 for more details.
-You should have received a copy of the License along with this program.
-If not, see <https://www.gnu.org/licenses/>.
-"""
+# Adjusted- and Nonadjusted Rand Score,
+# Adjusted- and Nonadjusted Fowlkes-Mallows Score,
+# Adjusted-, Normalised and Nonadjusted Mutual Information Score,
+# Normalised Accuracy, Pair Sets Index
+# (for vectors of "small" ints)
+#
+#
+# References
+# ==========
+#
+# Hubert L., Arabie P., Comparing Partitions,
+# Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+#
+# Vinh N.X., Epps J., Bailey J.,
+# Information theoretic measures for clusterings comparison:
+# Variants, properties, normalization and correction for chance,
+# Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+#
+# Rezaei M., Franti P., Set matching measures for external cluster validity,
+# IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+# doi:10.1109/TKDE.2016.2551240
+#
+#
+#
+# Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License
+# Version 3, 19 November 2007, published by the Free Software Foundation.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License Version 3 for more details.
+# You should have received a copy of the License along with this program.
+# If not, see <https://www.gnu.org/licenses/>.
 
 
 cimport numpy as np

@@ -119,15 +119,15 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
-            n_features = self.n_features_ # the user must set it manually
+            n_features = self.n_features_ # users must set it manually
             X = X.reshape(X.shape[0], -1)
             if X.shape[1] not in [1, X.shape[0]]:
-                raise ValueError("X must be distance vector \
-                    or a square-form distance matrix, \
-                    see scipy.spatial.distance.pdist or \
-                    scipy.spatial.distance.squareform")
+                raise ValueError("X must be distance vector "
+                    "or a square-form distance matrix, "
+                    "see scipy.spatial.distance.pdist or "
+                    "scipy.spatial.distance.squareform")
             if X.shape[1] == 1:
-                # from a quadratic equation:
+                # from a very advanced and sophisticated quadratic equation:
                 n_samples = int(round((math.sqrt(1.0+8.0*n_samples)+1.0)/2.0))
                 assert n_samples*(n_samples-1)//2 == X.shape[0]
 
@@ -391,96 +391,29 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 class Genie(GenieBase):
     """
-    The Genie++ Clustering Algorithm with optional smoothing and
-    noise point detection (for M>1)
-
-    A reimplementation of Genie - a robust and outlier resistant
-    clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
-    originally published as an R package `genie`.
-
-    The Genie algorithm is based on a minimum spanning tree (MST) of the
-    pairwise distance graph of a given point set.
-    Just like single linkage, it consumes the edges
-    of the MST in increasing order of weights. However, it prevents
-    the formation of clusters of highly imbalanced sizes; once the Gini index
-    of the cluster size distribution raises above an assumed threshold,
-    a forced merge of a point group of the smallest size is performed.
-    Its appealing simplicity goes hand in hand with its usability;
-    Genie often outperforms other clustering approaches on benchmark data.
-
-
-    The clustering can also be computed with respect to the
-    mutual reachability distance (based, e.g., on the Euclidean metric),
-    which is used in the definition of the HDBSCAN* algorithm, see [2].
-    If M>1, then the mutual reachability
-    distance m(i,j) with smoothing factor M is used instead of the
-    chosen "raw" distance d(i,j). It holds m(i,j)=max(d(i,j), c(i), c(j)),
-    where c(i) is d(i,k) with k being the (M-1)-th nearest neighbour of i.
-    This makes "noise" and "boundary" points being "pulled away" from each other.
-
-    The Genie correction together with the smoothing factor M>1 (note that
-    M==2 corresponds to the original distance) gives a robustified version of
-    the HDBSCAN* algorithm that is able to detect a predefined number of
-    clusters. Hence it does not dependent on the DBSCAN's somehow magical
-    `eps` parameter or the HDBSCAN's `min_cluster_size` one.
-
-
-    The algorithm has O(n_samples*sqrt(n_samples)) time complexity
-    given a minimum spanning tree of the pairwise distance graph.
-    Unless we use MLPACK (or other variations, see Parameters),
-    our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
-    will be called to compute an MST, which generally takes O(n^2) time
-    (environment variable \code{OMP_NUM_THREADS} controls the number of threads).
-    MLPACK (see Python package `mlpack`) is a very fast alternative
-    in the case of Euclidean spaces of (very) low dimensionality and M=1.
-
-
-
-    Note that as in the case of all the distance-based methods,
-    the standardisation of the input features is definitely worth giving a try.
-
-    According to the algorithm's original definition,
-    the resulting partition tree (dendrogram) might violate
-    the ultrametricity property (merges might occur at levels that
-    are not increasing w.r.t. a between-cluster distance).
-    Departures from ultrametricity are corrected by applying
-    `Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]`.
-
-
-
-    References
-    ==========
-
-    [1] Gagolewski M., Bartoszuk M., Cena A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
-
-    [2] Campello R., Moulavi D., Zimek A., Sander J.,
-    Hierarchical density estimates for data clustering, visualization,
-    and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
-    doi:10.1145/2733381.
+    The Genie++ hierarchical clustering algorithm with optional smoothing and
+    noise point detection (for M>1).
 
 
     Parameters
     ----------
 
-    n_clusters : int >= 0, default=2
-        Number of clusters to detect. Note that depending on the dataset
+    n_clusters : int
+        Number of clusters to detect >= 0. Note that depending on the dataset
         and approximations used (see parameter `exact`), the actual
         partition cardinality can be smaller.
-        n_clusters==1 can act as a noise point/outlier detector (if M>1
+        n_clusters==1 can act as a noise point/outlier detector (if `M`>1
         and postprocess is not "all").
         n_clusters==0 computes the whole dendrogram but doesn't generate
         any particular cuts.
-    gini_threshold : float in [0,1], default=0.3
-        The threshold for the Genie correction, i.e.,
+    gini_threshold : float
+        The threshold for the Genie correction in [0,1], i.e.,
         the Gini index of the cluster size distribution.
         Threshold of 1.0 disables the correction.
         Low thresholds highly penalise the formation of small clusters.
-    M : int, default=1
+    M : int
         Smoothing factor. M=1 gives the original Genie algorithm.
-    affinity : str, default="euclidean"
+    affinity : {'euclidean', 'l2', 'manhattan', 'l1', 'cityblock', 'cosine', 'precomputed'}
         Metric used to compute the linkage. One of: "euclidean" (synonym: "l2"),
         "manhattan" (a.k.a. "l1" and "cityblock"), "cosine" or "precomputed".
         If "precomputed", a n_samples*(n_samples-1)/2 distance vector
@@ -488,22 +421,22 @@ class Genie(GenieBase):
         matrix is needed on input (argument X) for the fit() method,
         see `scipy.spatial.distance.pdist()` or
         `scipy.spatial.distance.squareform()`, amongst others.
-    compute_full_tree : bool, default=True
+    compute_full_tree : bool
         If True, only a partial hierarchy is determined so that
         at most n_clusters are generated. Saves some time if you think you know
         how many clusters are there, but are you *really* sure about that?
-    compute_all_cuts : bool, default=False
+    compute_all_cuts : bool
         If True, n_clusters-partition and all the more coarse-grained
         ones will be determined; in such a case, the labels_ attribute
         will be a matrix
-    postprocess : str, one of "boundary" (default), "none", "all"
+    postprocess : {'boundary', 'none', 'all'}
         In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points (A point is a boundary point if it is
         a noise point and it's amongst its adjacent vertex's
         M-1 nearest neighbours). To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
-    exact : bool, default=True
+    exact : bool
         TODO: Not yet implemented.
         If False, the minimum spanning tree is approximated
         based on the nearest neighbours graph. Finding nearest neighbours
@@ -585,6 +518,81 @@ class Genie(GenieBase):
         Number of elements in a cluster created at the i-th iteration.
         See the description of Z[i,3] in scipy.cluster.hierarchy.linkage.
         Only available if compute_full_tree==True.
+
+
+
+    Notes
+    -----
+
+    A reimplementation of Genie - a robust and outlier resistant
+    clustering algorithm [1]_,
+    originally published as an R package `genie`.
+
+    The Genie algorithm is based on a minimum spanning tree (MST) of the
+    pairwise distance graph of a given point set.
+    Just like single linkage, it consumes the edges
+    of the MST in increasing order of weights. However, it prevents
+    the formation of clusters of highly imbalanced sizes; once the Gini index
+    of the cluster size distribution raises above an assumed threshold,
+    a forced merge of a point group of the smallest size is performed.
+    Its appealing simplicity goes hand in hand with its usability;
+    Genie often outperforms other clustering approaches on benchmark data.
+
+
+    The clustering can also be computed with respect to the
+    mutual reachability distance (based, e.g., on the Euclidean metric),
+    which is used in the definition of the HDBSCAN* algorithm [2]_.
+    If M>1, then the mutual reachability
+    distance :math:`m(i,j)` with smoothing factor M is used instead of the
+    chosen "raw" distance d(i,j). It holds
+    :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
+    where :math:`c(i)` is :math:`d(i,k)` with k being the (M-1)-th nearest
+    neighbour of i. This makes "noise" and "boundary" points being
+    "pulled away" from each other.
+
+    The Genie correction together with the smoothing factor M>1 (note that
+    M==2 corresponds to the original distance) gives a robustified version of
+    the HDBSCAN* algorithm that is able to detect a predefined number of
+    clusters. Hence it does not dependent on the DBSCAN's somehow magical
+    `eps` parameter or the HDBSCAN's `min_cluster_size` one.
+
+
+    The algorithm has O(n_samples*sqrt(n_samples)) time complexity
+    given a minimum spanning tree of the pairwise distance graph.
+    Unless we use MLPACK (or other variations, see Parameters),
+    our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
+    will be called to compute an MST, which generally takes O(n^2) time
+    (environment variable ``OMP_NUM_THREADS`` controls the number of threads).
+    MLPACK (see Python package `mlpack`) is a very fast alternative
+    in the case of Euclidean spaces of (very) low dimensionality and M=1.
+
+
+
+    Note that as in the case of all the distance-based methods,
+    the standardisation of the input features is definitely worth giving a try.
+
+    According to the algorithm's original definition,
+    the resulting partition tree (dendrogram) might violate
+    the ultrametricity property (merges might occur at levels that
+    are not increasing w.r.t. a between-cluster distance).
+    Departures from ultrametricity are corrected by applying
+    ``Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
+
+
+    References
+    ----------
+
+    .. [1] Gagolewski M., Bartoszuk M., Cena A.,
+       Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+       *Information Sciences* **363**, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
+    .. [2] Campello R., Moulavi D., Zimek A., Sander J.,
+       Hierarchical density estimates for data clustering, visualization,
+       and outlier detection,
+       *ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
+       doi:10.1145/2733381.
+
+
     """
 
     def __init__(self,

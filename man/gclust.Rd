@@ -120,7 +120,8 @@ is \code{TRUE}).
 A reimplementation of \emph{Genie} - a robust and outlier resistant
 clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016).
 The Genie algorithm is based on a minimum spanning tree (MST) of the
-pairwise distance graph. Just like single linkage, it consumes the edges
+pairwise distance graph of a given point set.
+Just like single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it prevents
 the formation of clusters of highly imbalanced sizes; once the Gini index
 (see \code{\link{gini_index}()}) of the cluster size distribution

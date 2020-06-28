@@ -20,3 +20,6 @@ from . import tools
 from . import compare_partitions
 from . import genie # this import should be deprecated
 from .genie import *
+
+
+__version__ = '0.9.1'

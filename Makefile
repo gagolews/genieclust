@@ -3,9 +3,9 @@
 #VPATH="/home/gagolews/Python/genieclust"
 
 
-.PHONY: python pytest r check testthat
+.PHONY: python pytest py-check r r-check testthat r-build sphinx
 
-all: please_specify_build_target_manually
+all: r python
 
 #CPPFLAGS="-fopenmp -march=native -mtune=native"
 #LDFLAGS="-fopenmp"
@@ -15,6 +15,9 @@ python:
 
 pytest: python
 	pytest
+
+sphinx: python
+	cd docs && make html
 
 py-check: python
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude devel/ --exclude build/

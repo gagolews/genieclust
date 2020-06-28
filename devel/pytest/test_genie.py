@@ -4,7 +4,7 @@ from genieclust.inequity import *
 from genieclust.compare_partitions import *
 import time
 import gc
-
+#import hdbscan
 
 import scipy.spatial.distance
 from rpy2.robjects.packages import importr
@@ -28,7 +28,7 @@ else:
 
 
 def test_genie(metric='euclidean'):
-    for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50", "bigger"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+    for dataset in ["bigger", "s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
             n = 10000
@@ -43,6 +43,17 @@ def test_genie(metric='euclidean'):
         # center X + scale (NOT: standardize!)
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)
+
+        #t01 = time.time()
+        #hdbscan.RobustSingleLinkage().fit_predict(X)
+        #t11 = time.time()
+        #print("t_robustsl=%.3f" % (t11-t01), end="\t")
+
+        #t01 = time.time()
+        #hdbscan.HDBSCAN().fit_predict(X)
+        #t11 = time.time()
+        #print("t_hdbscan=%.3f" % (t11-t01), end="\t")
+
 
         for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
             gc.collect()
@@ -77,6 +88,7 @@ def test_genie(metric='euclidean'):
 
             res1, res2 = None, None
             print("")
+
 
 
 def test_genie_precomputed():

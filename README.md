@@ -1,11 +1,10 @@
-`genieclust` Python and R Package
-=================================
+# `genieclust` Python and R Package
 
 
-The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
--------------------------------------------------------------
 
-> **Genie outputs meaningful partitions and is fast even for large data sets.**
+## The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
+
+> **Genie outputs meaningful clusters and is fast even for large data sets.**
 
 A reimplementation of **Genie** - a robust and outlier resistant
 clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
@@ -40,8 +39,8 @@ difficult-to-set `eps` parameter).
 
 
 
-Author and Contributors
------------------------
+## Author and Contributors
+
 
 Author: [Marek Gagolewski](https://www.gagolewski.com)
 
@@ -52,8 +51,8 @@ Contributors for the original R package `genie`:
 
 
 
-Python and R Package Features
------------------------------
+## Python and R Package Features
+
 
 Implemented algorithms include:
 
@@ -88,8 +87,8 @@ Other goodies:
 
 
 
-Examples and Tutorials
-----------------------
+## Examples and Tutorials
+
 
 The Python language version of `genieclust` has a familiar `scikit-learn` look-and-feel:
 
@@ -111,7 +110,7 @@ cutree(h, k=2)
 ```
 
 
-For more illustrations, use cases and details, make sure to check out:
+**TODO**: For more illustrations, use cases and details, make sure to check out:
 
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
@@ -124,8 +123,8 @@ For more illustrations, use cases and details, make sure to check out:
 
 
 
-Installation
-------------
+## Installation
+
 
 > *This package is in beta-stage (development and testing is currently Linux-only).*
 
@@ -133,6 +132,8 @@ Installation
 
 ### Python Version
 
+
+#### PyPI
 
 **TODO** To install via `pip` (the current version is a little outdated,
 see [PyPI](https://pypi.org/project/genieclust/)):
@@ -154,8 +155,10 @@ pip3 install genieclust --user # or sudo pip3 install genieclust
 
 The package requires Python 3.6+ together with `cython` as well as
 `numpy`, `scipy`, `matplotlib` and `sklearn`.
-Optional dependencies: `mlpack` (TODO: `faiss`?).
+Optional dependencies: `mlpack`.
 
+
+#### Development Version
 
 To build and install the most recent development version, call:
 
@@ -170,13 +173,19 @@ python3 setup.py install --user
 
 ### R Version
 
+
+#### CRAN
+
 **TODO**: CRAN
 
 
-To fetch, compile (C++11 compiler required;
-Windows users: see [Rtools](https://cran.r-project.org/bin/windows/Rtools/);
-OS X users: see [Xcode](https://developer.apple.com/xcode/))
-the most recent development version of the package from github, call:
+
+#### Development Version
+
+To fetch and compile the most recent development version of the package from
+github, call (C++11 compiler required;
+Windows users see [Rtools](https://cran.r-project.org/bin/windows/Rtools/),
+OS X users see [Xcode](https://developer.apple.com/xcode/)):
 
 ```bash
 devtools::install_github("gagolews/genieclust")
@@ -184,8 +193,9 @@ devtools::install_github("gagolews/genieclust")
 
 
 
-License
--------
+
+## License
+
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 
@@ -212,8 +222,8 @@ Author: PM Larsen. Distributed under the BSD-3-Clause license.
 
 
 
-References
-----------
+## References
+
 
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
