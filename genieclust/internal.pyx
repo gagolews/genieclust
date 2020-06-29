@@ -1069,7 +1069,8 @@ cpdef dict genie_from_mst(
         double gini_threshold=0.3,
         bint noise_leaves=False,
         bint compute_full_tree=True,
-        bint compute_all_cuts=False):
+        bint compute_all_cuts=False,
+        bint new_merge=False):
     """Compute a k-partition based on a precomputed MST.
 
     The Genie+ Clustering Algorithm (with extensions)
@@ -1105,11 +1106,11 @@ cpdef dict genie_from_mst(
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
-    n_clusters : int, default=1
+    n_clusters : int
         Number of clusters the dataset is split into.
         Use n_clusters==1 to generate the complete hierarchy,
         see also `compute_full_tree`.
-    gini_threshold : float, default=0.3
+    gini_threshold : float
         The threshold for the Genie correction
     noise_leaves : bool
         Mark leaves as noise;
@@ -1118,6 +1119,11 @@ cpdef dict genie_from_mst(
         Compute the whole merge sequence or stop early?
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
+    new_merge : bool
+        False for compatibility with the original Genie algorithm
+        (R package `genie`). True merges pairs that lower the Gini index
+        below `gini_threshold` (if that is possible) -- much slower
+        and not that awesome.
 
 
     Returns
@@ -1164,7 +1170,7 @@ cpdef dict genie_from_mst(
     labels_ = None # on request, see below
 
     cdef c_genie.CGenie[floatT] g
-    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, new_merge)
 
     g.apply_genie(1 if compute_full_tree else n_clusters, gini_threshold)
 

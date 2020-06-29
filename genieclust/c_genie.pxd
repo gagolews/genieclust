@@ -27,7 +27,7 @@ If not, see <https://www.gnu.org/licenses/>.
 cdef extern from "../src/c_genie.h":
     cdef cppclass CGenie[T]:
         CGenie() except +
-        CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves) except +
+        CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bint noise_leaves, bint new_merge) except +
         void apply_genie(ssize_t n_clusters, double gini_threshold)  except +
         ssize_t get_max_n_clusters()
         ssize_t get_links(ssize_t* res)

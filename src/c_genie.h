@@ -71,6 +71,8 @@ protected:
     std::vector<ssize_t> denoise_index; //<! which noise point is it?
     std::vector<ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
 
+    CCountDisjointSets forest_components;
+
     CGenieResult results;
 
 
@@ -80,15 +82,19 @@ protected:
      * searching within the to-be-consumed edges. Also, if there are
      * noise points, then the skiplist allows the algorithm
      * to naturally ignore edges that connect the leaves. */
-    void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist) {
+    void mst_skiplist_init(CIntDict<ssize_t>* mst_skiplist)
+    {
         // start with a list that skips all edges that lead to noise points
         mst_skiplist->clear();
         for (ssize_t i=0; i<this->n-1; ++i) {
-            GENIECLUST_ASSERT(this->mst_i[i*2+0] < this->n && this->mst_i[i*2+1] < this->n);
-            if (this->mst_i[i*2+0] < 0 || this->mst_i[i*2+1] < 0)
+            ssize_t i1 = this->mst_i[i*2+0];
+            ssize_t i2 = this->mst_i[i*2+1];
+            GENIECLUST_ASSERT(i1 < this->n)
+            GENIECLUST_ASSERT(i2 < this->n)
+            if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
-            if (!this->noise_leaves ||
-                    (this->deg[this->mst_i[i*2+0]]>1 && this->deg[this->mst_i[i*2+1]]>1)) {
+            }
+            if (!this->noise_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
                 (*mst_skiplist)[i] = i; /*only the key is important, not the value*/
             }
         }
@@ -134,9 +140,16 @@ public:
         this->n = n;
         this->noise_leaves = noise_leaves;
 
-        for (ssize_t i=1; i<n-1; ++i)
-            if (mst_i[i] >= 0 && mst_i[i] >= 0 && mst_d[i-1] > mst_d[i])
-                throw std::domain_error("mst_d unsorted");
+        // ssize_t missing_mst_edges = 0;
+        for (ssize_t i=0; i<n-1; ++i) {
+            if (mst_i[i] < 0 || mst_i[i] < 0) {
+                // missing_mst_edges++;
+                continue;
+            }
+            else {
+                GENIECLUST_ASSERT(i == 0 || mst_d[i-1] <= mst_d[i])
+            }
+        }
 
         // set up this->deg:
         Cget_graph_node_degrees(mst_i, n-1, n, this->deg.data());
@@ -165,6 +178,20 @@ public:
             for (ssize_t i=0; i<n; ++i) {
                 denoise_index[i]     = i; // identity
                 denoise_index_rev[i] = i;
+            }
+        }
+
+        forest_components = CCountDisjointSets(this->n - this->noise_count);
+        for (ssize_t i=0; i<this->n-1; ++i) {
+            ssize_t i1 = this->mst_i[i*2+0];
+            ssize_t i2 = this->mst_i[i*2+1];
+            GENIECLUST_ASSERT(i1 < this->n)
+            GENIECLUST_ASSERT(i2 < this->n)
+            if (i1 < 0 || i2 < 0) {
+                continue; // a no-edge -> ignore
+            }
+            if (!this->noise_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
+                forest_components.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
             }
         }
     }
@@ -199,9 +226,11 @@ public:
             CGiniDisjointSets ds(this->get_max_n_clusters());
             for (ssize_t it=0; it<this->get_max_n_clusters() - n_clusters; ++it) {
                 ssize_t j = (this->results.links[it]);
+                if (j < 0) break; // remaining are no-edges
                 ssize_t i1 = this->mst_i[2*j+0];
                 ssize_t i2 = this->mst_i[2*j+1];
-                GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
+                GENIECLUST_ASSERT(i1 >= 0)
+                GENIECLUST_ASSERT(i2 >= 0)
                 ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
             }
             return this->get_labels(&ds, res);
@@ -227,6 +256,10 @@ public:
         if (this->results.ds.get_n() <= 0)
             throw std::runtime_error("Apply the clustering procedure first.");
 
+        if (n_clusters < this->forest_components.get_k()) {
+            n_clusters = this->forest_components.get_k();
+        }
+
         CGiniDisjointSets ds(this->get_max_n_clusters());
         // you can do up to this->get_max_n_clusters() - 1 merges
         ssize_t cur_cluster = n_clusters;
@@ -237,10 +270,12 @@ public:
         }
         for (ssize_t it=0; it<this->get_max_n_clusters() - 1; ++it) {
             ssize_t j = (this->results.links[it]);
-            ssize_t i1 = this->mst_i[2*j+0];
-            ssize_t i2 = this->mst_i[2*j+1];
-            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
-            ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+            if (j >= 0) { // might not be true if forest_components.get_k() > 1
+                ssize_t i1 = this->mst_i[2*j+0];
+                ssize_t i2 = this->mst_i[2*j+1];
+                GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
+                ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+            }
             if (it >= this->get_max_n_clusters() - n_clusters - 1) {
                 cur_cluster--;
                 GENIECLUST_ASSERT(cur_cluster >= 0)
@@ -304,15 +339,20 @@ public:
  *   linkage algorithm.
  *
  *   This is a re-implementation of the original (Gagolewski et al., 2016)
- *   algorithm. First of all, given a pre-computed minimum spanning tree (MST),
+ *   algorithm. New features include:
+ *   1. Given a pre-computed minimum spanning tree (MST),
  *   it only requires amortised O(n sqrt(n))-time.
- *   Additionally, MST leaves can be
+ *   2. MST leaves can be
  *   marked as noise points (if `noise_leaves==True`). This is useful,
  *   if the Genie algorithm is applied on the MST with respect to
  *   the HDBSCAN-like mutual reachability distance.
- *
- *   Note that the input graph might be disconnected (spanning forest,
- *   but here we will call it MST anyway) - it must be acyclic though.
+ *   3. (option) During merge, first pair of clusters that would
+ *   give a decrease of the Gini index below the threshold is chosen
+ *   (or the one that gives the smallest Gini index if that's not possible)
+ *       -- turns out to be slower and not that great.
+ *   4. The MST need not be connected (is a spanning forest) (e.g., if it
+ *   computed based on a disconnected k-NN graph) - each component
+ *   will never be merged with any other one.
  *
  *
  *
@@ -327,6 +367,7 @@ template <class T>
 class CGenie : public CGenieBase<T> {
 protected:
 
+    bool new_merge; //<! if there are two clusters, both of the smallest sizes, try merging them first
 
     /*! Run the Genie++ partitioning.
      *
@@ -343,10 +384,16 @@ protected:
     ssize_t do_genie(CGiniDisjointSets* ds, CIntDict<ssize_t>* mst_skiplist,
         ssize_t n_clusters, double gini_threshold, std::vector<ssize_t>* links)
     {
-        if (this->get_max_n_clusters() < n_clusters) {
+        if (n_clusters > this->get_max_n_clusters()) {
             // there is nothing to do, no merge needed.
             throw std::runtime_error("The requested number of clusters \
                 is too large with this many detected noise points");
+        }
+
+        if (n_clusters < this->forest_components.get_k()) {
+            n_clusters = this->forest_components.get_k();
+//             throw std::runtime_error("The requested number of clusters
+//                 is too small as the MST is not connected");
         }
 
         // mst_skiplist contains all mst_i edge indexes
@@ -355,11 +402,12 @@ protected:
         ssize_t lastidx = mst_skiplist->get_key_min();
         ssize_t lastm = 0; // last minimal cluster size
         ssize_t it = 0;
-        while (!mst_skiplist->empty() && it<this->get_max_n_clusters() - n_clusters) {
+        while (!mst_skiplist->empty() && ds->get_k() > n_clusters) {
 
             // determine the pair of vertices to merge
             ssize_t i1;
             ssize_t i2;
+
 
             if (ds->get_gini() > gini_threshold) {
                 // the Genie correction for inequity of cluster sizes
@@ -370,6 +418,8 @@ protected:
                 }
                 // else reuse lastidx
 
+
+                GENIECLUST_ASSERT(lastidx < this->n - 1)
                 GENIECLUST_ASSERT(lastidx >= 0 && lastidx < this->n - 1);
                 GENIECLUST_ASSERT(this->mst_i[2*lastidx+0] >= 0 && this->mst_i[2*lastidx+1] >= 0);
 
@@ -385,6 +435,7 @@ protected:
 
                 i1 = this->mst_i[2*lastidx+0];
                 i2 = this->mst_i[2*lastidx+1];
+
                 (*links)[it] = lastidx;
                 ssize_t delme = lastidx;
                 lastidx = mst_skiplist->get_key_next(lastidx);
@@ -401,7 +452,20 @@ protected:
             }
 
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
-            ds->merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+            ssize_t i1r = this->denoise_index_rev[i1];
+            ssize_t i2r = this->denoise_index_rev[i2];
+            bool forget = this->forest_components.get_k() > 1 &&
+                this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
+                this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
+
+            if (forget)
+            {
+                ds->merge_and_forget(i1r, i2r);
+            }
+            else {
+                ds->merge(i1r, i2r);
+            }
+
             it++;
         }
 
@@ -410,10 +474,101 @@ protected:
 
 
 
+    /*! Run the Genie+++++ partitioning -- merge a pair of sets
+     *  that reduces the Gini index below the threshold (provided that is possible)
+     *
+     *  This is slower and not that awesome.
+     *
+     *  @param ds
+     *  @param mst_skiplist
+     *  @param n_clusters maximal number of clusters to detect
+     *  @param gini_threshold
+     *  @param links [out] c_contiguous array of size (n-1),
+     *      links[iter] = index of merged mst_i (up to the number of performed
+     *      merges, see retval).
+     *
+     *  @return The number of performed merges.
+     */
+    ssize_t do_genie_new(CGiniDisjointSets* ds, CIntDict<ssize_t>* mst_skiplist,
+        ssize_t n_clusters, double gini_threshold, std::vector<ssize_t>* links)
+    {
+        if (n_clusters > this->get_max_n_clusters()) {
+            // there is nothing to do, no merge needed.
+            throw std::runtime_error("The requested number of clusters \
+                is too large with this many detected noise points");
+        }
+
+        if (n_clusters < this->forest_components.get_k()) {
+            n_clusters = this->forest_components.get_k();
+//             throw std::runtime_error("The requested number of clusters
+//                 is too small as the MST is not connected");
+        }
+
+        // mst_skiplist contains all mst_i edge indexes
+        // that we need to consider, and nothing more.
+        GENIECLUST_ASSERT(!mst_skiplist->empty());
+        ssize_t it = 0;
+        while (!mst_skiplist->empty() && ds->get_k() > n_clusters) {
+            // determine the pair of vertices to merge
+            ssize_t last_idx = mst_skiplist->get_key_min();
+            double best_gini = 1.0;
+            ssize_t best_idx = last_idx;
+
+            while (1) {
+                ssize_t i1 = this->mst_i[2*last_idx+0];
+                ssize_t i2 = this->mst_i[2*last_idx+1];
+                ssize_t i1r = this->denoise_index_rev[i1];
+                ssize_t i2r = this->denoise_index_rev[i2];
+                bool forget = this->forest_components.get_k() > 1 &&
+                    this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
+                    this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
+
+                double test_gini = ds->test_gini_after_merge(i1r, i2r, forget);
+                if (test_gini < best_gini) {
+                    best_gini = test_gini;
+                    best_idx = last_idx;
+                }
+
+//                 printf("    %ld-%ld %.3lf %.3lf\n", i1r, i2r, test_gini, gini_threshold);
+
+                if (best_gini <= gini_threshold)
+                    break;
+
+                if (last_idx == mst_skiplist->get_key_max())
+                    break;
+
+                last_idx = mst_skiplist->get_key_next(last_idx);
+            }
+
+            ssize_t i1 = this->mst_i[2*best_idx+0];
+            ssize_t i2 = this->mst_i[2*best_idx+1];
+            ssize_t i1r = this->denoise_index_rev[i1];
+            ssize_t i2r = this->denoise_index_rev[i2];
+            bool forget = this->forest_components.get_k() > 1 &&
+                this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
+                this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
+
+            (*links)[it] = best_idx;
+            mst_skiplist->erase(best_idx); // O(1)
+
+            if (forget)
+                ds->merge_and_forget(i1r, i2r);
+            else
+                ds->merge(i1r, i2r);
+
+//             printf("%ld-%ld %.3lf\n", i1r, i2r, ds->get_gini());
+
+            it++;
+        }
+
+        return it; // number of merges performed
+    }
+
+
 
 public:
-    CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves=false)
-        : CGenieBase<T>(mst_d, mst_i, n, noise_leaves)
+    CGenie(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves=false, bool new_merge=false)
+        : CGenieBase<T>(mst_d, mst_i, n, noise_leaves), new_merge(new_merge)
     {
         ;
     }
@@ -439,8 +594,15 @@ public:
         CIntDict<ssize_t> mst_skiplist(this->n - 1);
         this->mst_skiplist_init(&mst_skiplist);
 
-        this->results.it = this->do_genie(&(this->results.ds), &mst_skiplist,
-            n_clusters, gini_threshold, &(this->results.links));
+        if (new_merge) {
+            this->results.it = this->do_genie_new(&(this->results.ds),
+                &mst_skiplist, n_clusters, gini_threshold,
+                &(this->results.links));
+        } else {
+            this->results.it = this->do_genie(&(this->results.ds),
+                &mst_skiplist, n_clusters, gini_threshold,
+                &(this->results.links));
+        }
     }
 
 };
@@ -546,7 +708,8 @@ public:
     CGIc(T* mst_d, ssize_t* mst_i, ssize_t n, bool noise_leaves=false)
         : CGenie<T>(mst_d, mst_i, n, noise_leaves)
     {
-        ;
+        if (this->forest_components.get_k() > 1)
+            throw std::domain_error("MST is not connected; this is not (yet) supported");
     }
 
     CGIc() : CGIc(NULL, NULL, 0, false) { }
