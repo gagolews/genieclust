@@ -14,3 +14,4 @@ pytest/__pycache__
 *.Rmd-tmp-*
 src/*.o
 src/*.so
+devel/sphinx/_build

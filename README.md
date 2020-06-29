@@ -63,8 +63,9 @@ Implemented algorithms include:
     (Campello et al., 2015) method that detects noise points in data
     and outputs clusters of predefined sizes
 
--   *(Python only)* Genie+Ic (GIc) -- Cena's (2018) algorithm to minimise
-    the information theoretic criterion discussed by Mueller et al. (2012)
+-   *(Python only, experimental preview)* Genie+Ic (GIc) -- Cena's (2018)
+    algorithm to minimise the information theoretic criterion discussed
+    by Mueller et al. (2012)
 
 See classes `genieclust.Genie` and `genieclust.GIc` (Python)
 or functions `gclust()` and `genieclust()` (R).
@@ -114,7 +115,6 @@ cutree(h, k=2)
 
 -   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
 -   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
--   **TODO**: GIc Algorithm - Information-Theoretic Clustering
 -   [Plotting Dendrograms](https://github.com/gagolews/genieclust/blob/master/tutorials/dendrogram.md)
 -   [Comparing Different Hierarchical Linkage Methods on Toy Datasets - A `scikit-learn` Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
 -   [Auxiliary Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/plots.md)

@@ -9,11 +9,13 @@ Genie
    :members:
 
 
-GIc
----
+..
+    GIc
+    ---
 
-.. autoclass:: genieclust.GIc
-   :members:
+    .. autoclass:: genieclust.GIc
+    :members:
+
 
 
 External Cluster Validity Measures

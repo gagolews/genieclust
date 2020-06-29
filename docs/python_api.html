@@ -91,7 +91,6 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python Package <cite>genieclust</cite> Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#genie">Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gic">GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-genieclust.compare_partitions">External Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-genieclust.inequity">Inequity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-genieclust.plots">Plotting Functions</a></li>
@@ -417,130 +416,6 @@ all pairwise distances between n_samples
 </dd></dl>
 
 </div>
-<div class="section" id="gic">
-<h2>GIc<a class="headerlink" href="#gic" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="genieclust.GIc">
-<em class="property">class </em><code class="sig-prename descclassname">genieclust.</code><code class="sig-name descname">GIc</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_clusters</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">gini_thresholds</span><span class="o">=</span><span class="default_value">[0.1, 0.3, 0.5, 0.7]</span></em>, <em class="sig-param"><span class="n">add_clusters</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">n_features</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">M</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">affinity</span><span class="o">=</span><span class="default_value">'euclidean'</span></em>, <em class="sig-param"><span class="n">compute_full_tree</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_all_cuts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">postprocess</span><span class="o">=</span><span class="default_value">'boundary'</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cast_float32</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_mlpack</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc" title="Permalink to this definition">¶</a></dt>
-<dd><p>GIc (Genie+Information Criterion) Information-Theoretic
-Hierarchical Clustering Algorithm</p>
-<p>Computes a k-partition based on a pre-computed MST
-maximising (heuristically) the information criterion [2].</p>
-<p>GIc has been proposed by Anna Cena in [1] and was inspired
-by Mueller’s (et al.) ITM [2] and Gagolewski’s (et al.) Genie [3]</p>
-<p>GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
-which follows a divisive scheme). It greedily selects for merging
-a pair of clusters that maximises the information criterion [2].
-By default, the initial partition is determined by considering
-the intersection of clusterings found by the Genie methods with
-thresholds 0.1, 0.3, 0.5 and 0.7.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>n_clusters</strong><span class="classifier">int &gt;= 0, default=2</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>gini_thresholds</strong><span class="classifier">float in [0,1], default=[0.1, 0.3, 0.5, 0.7]</span></dt><dd><p>The GIc algorithm optimises the information criterion
-in an agglomerative way, starting from the intersection
-of the clusterings returned by
-Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i]),
-for all i=0,…,len(gini_thresholds)-1.</p>
-</dd>
-<dt><strong>add_clusters</strong><span class="classifier">int, default=0</span></dt><dd><p>Number of additional clusters to work with internally.</p>
-</dd>
-<dt><strong>n_features</strong><span class="classifier">float or None, default None</span></dt><dd><p>Dataset (intrinsic) dimensionality, if None, it will be set based on
-the shape of the input matrix.</p>
-</dd>
-<dt><strong>M</strong><span class="classifier">int, default=1</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>affinity</strong><span class="classifier">str, default=”euclidean”</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>compute_full_tree</strong><span class="classifier">bool, default=True</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>compute_all_cuts</strong><span class="classifier">bool, default=False</span></dt><dd><p>see <cite>Genie</cite>
-Note that for GIc if compute_all_cuts==True,
-then the i-th cut in the hierarchy behaves as if
-add_clusters=n_clusters-i. In other words, the returned cuts
-will not be the same as those obtained by calling
-GIc numerous times, each time with different n_clusters requested.</p>
-</dd>
-<dt><strong>postprocess</strong><span class="classifier">str, one of “boundary” (default), “none”, “all”</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>exact</strong><span class="classifier">bool, default=True</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>cast_float32</strong><span class="classifier">bool, default=True</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>use_mlpack</strong><span class="classifier">bool or “auto”, default=”auto”</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool, default=False</span></dt><dd><p>see <cite>Genie</cite></p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<p>[1] Cena A., Adaptive hierarchical clustering algorithms based on
-data aggregation methods, PhD Thesis, Systems Research Institute,
-Polish Academy of Sciences 2018.</p>
-<p>[2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
-Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.</p>
-<p>[3] Gagolewski M., Bartoszuk M., Cena A.,
-Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>see `Genie`</strong></dt><dd></dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#genieclust.GIc.fit" title="genieclust.GIc.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(self, X[, y])</p></td>
-<td><p>Perform clustering of the X dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(self, X[, y])</p></td>
-<td><p>Compute a k-partition and return the predicted labels, see fit().</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
-<td><p>Get parameters for this estimator.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(self, **params)</p></td>
-<td><p>Set the parameters of this estimator.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt id="genieclust.GIc.fit">
-<code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform clustering of the X dataset.
-See the <a href="#id28"><span class="problematic" id="id29">labels_</span></a> and <a href="#id30"><span class="problematic" id="id31">n_clusters_</span></a> attributes for the clustering result.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>X</strong><span class="classifier">ndarray, shape (n_samples, n_features) or</span></dt><dd><blockquote>
-<div><p>(n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)</p>
-</div></blockquote>
-<p>see <cite>Genie.fit()</cite></p>
-</dd>
-<dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>self</dt><dd></dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-</div>
 <div class="section" id="module-genieclust.compare_partitions">
 <span id="external-cluster-validity-measures"></span><h2>External Cluster Validity Measures<a class="headerlink" href="#module-genieclust.compare_partitions" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
@@ -635,7 +510,7 @@ in <cite>x</cite> and <cite>y</cite>), hence their adjusted versions are preferr
 information-theoretic scores, based on mutual information,
 see the definition of $AMI_{sum}$ and $NMI_{sum}$
 in (Vinh et al., 2010).</p>
-<p><cite>normalized_accuracy()</cite> is defined as $(Accuracy(<a href="#id32"><span class="problematic" id="id33">C_</span></a>sigma)-1/L)/(1-1/L)$,
+<p><cite>normalized_accuracy()</cite> is defined as $(Accuracy(<a href="#id28"><span class="problematic" id="id29">C_</span></a>sigma)-1/L)/(1-1/L)$,
 where $C_sigma$ is a version of the confusion matrix for given <cite>x</cite> and <cite>y</cite>,
 K&lt;=L, with columns permuted based on the solution to the
 Maximal Linear Sum Assignment Problem.
