@@ -22,8 +22,8 @@
 #include "c_common.h"
 #include <vector>
 #include <algorithm>
-#include <queue>
-#include <deque>
+// #include <queue>
+// #include <deque>
 #include <cmath>
 #include "c_argfuns.h"
 #include "c_disjoint_sets.h"
@@ -32,10 +32,11 @@
 
 
 /*! Represents an undirected edge in a weighted graph.
- *  Main purpose: a comparer used to sort MST edges w.r.t. decreasing weights
+ *  Main purpose: a comparer used to sort MST edges w.r.t. increasing weights
  */
 template <class T>
-struct CMstTriple {
+class CMstTriple {
+public:
     ssize_t i1; //!< first  vertex defining an edge
     ssize_t i2; //!< second vertex defining an edge
     T d;        //!< edge weight
@@ -57,15 +58,113 @@ struct CMstTriple {
     bool operator<(const CMstTriple<T>& other) const {
         if (d == other.d) {
             if (i1 == other.i1)
-                return i2 > other.i2;
+                return i2 < other.i2;
             else
-                return i1 > other.i1;
+                return i1 < other.i1;
         }
         else
-            return d > other.d;
+            return d < other.d;
     }
 };
 
+
+
+
+
+
+/*! Computes a minimum spanning forest of a near-neighbour
+ *  graph using Kruskal's algorithm, and orders
+ *  its edges w.r.t. increasing weights.
+ *
+ *  It is assumed that each point can have a different number of nearest
+ *  neighbours determined and hence the input graph is given in a "list"-like
+ *  form.
+ *
+ *  Note that, in general, an MST of the (<=k)-nearest neighbour graph
+ *  might not be equal to the MST of the complete Pairwise Distances Graph.
+ *
+ *
+ * @param nns [in/out]  a c_contiguous array, shape (c,), of CMstTriple elements
+ *        defining the near-neighbour graphs. Loops are ignored.
+ *        The array is sorted in-place.
+ * @param c number of elements in `nns`.
+ * @param n number of nodes in the graph
+ * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
+ *        resulting MST edges in nondecreasing order;
+ *        refer to the function's return value for the actual number
+ *        of edges generated (if this is < n-1, the object is padded with INFTY)
+ * @param mst_ind [out] c_contiguous matrix of size (n-1)*2, defining the edges
+ *        corresponding to mst_d, with mst_i[j,0] <= mst_i[j,1] for all j;
+ *        refer to the function's return value for the actual number
+ *        of edges generated (if this is < n-1, the object is padded with -1)
+ * @param verbose output diagnostic/progress messages?
+ *
+ * @return number of edges in the minimal spanning forest
+ */
+template <class T>
+ssize_t Cmst_from_nn_list(CMstTriple<T>* nns, ssize_t c,
+    ssize_t n, T* mst_dist, ssize_t* mst_ind, bool verbose=false)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (c <= 0)   throw std::domain_error("c <= 0");
+
+    if (verbose)
+        GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+
+    std::sort(nns, nns+c); // unstable sort (do we need stable here?)
+
+    ssize_t triple_cur = 0;
+    ssize_t mst_edge_cur = 0;
+
+    CDisjointSets ds(n);
+    while (mst_edge_cur < n-1) {
+        if (triple_cur == c) {
+            // The input graph is not connected (we have a forest)
+            ssize_t ret = mst_edge_cur;
+            while (mst_edge_cur < n-1) {
+                mst_ind[2*mst_edge_cur+0] = -1;
+                mst_ind[2*mst_edge_cur+1] = -1;
+                mst_dist[mst_edge_cur]    = INFTY;
+                mst_edge_cur++;
+            }
+            if (verbose)
+                GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+            return ret;
+        }
+
+        ssize_t u = nns[triple_cur].i1;
+        ssize_t v = nns[triple_cur].i2;
+        T d = nns[triple_cur].d;
+        triple_cur++;
+
+        if (u > v) std::swap(u, v); // assure u < v
+        if (u < 0 || ds.find(u) == ds.find(v))
+            continue;
+
+        mst_ind[2*mst_edge_cur+0] = u;
+        mst_ind[2*mst_edge_cur+1] = v;
+        mst_dist[mst_edge_cur]    = d;
+
+        GENIECLUST_ASSERT(mst_edge_cur == 0 || mst_dist[mst_edge_cur] >= mst_dist[mst_edge_cur-1]);
+
+        ds.merge(u, v);
+        mst_edge_cur++;
+
+
+        if (verbose)
+            GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
+    }
+
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
+
+    return mst_edge_cur;
+}
 
 
 
@@ -122,22 +221,12 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
     Cargsort(arg_dist.data(), dist, nk, true); // stable sort
     std::vector<ssize_t> nn_used(n, 0);
 
-    // slower than arg_dist:
-    // std::priority_queue< CMstTriple<T>, std::deque< CMstTriple<T> > > pq;
-    // for (ssize_t i=0; i<n; ++i) {
-    //     pq.push(CMstTriple<T>(i, ind[k*i+0], dist[k*i+0], false));
-    // }
-    // std::vector<ssize_t> nn_used(n, 1);
-
-
-
-
     ssize_t arg_dist_cur = 0;
     ssize_t mst_edge_cur = 0;
     *maybe_inexact = false;
     CDisjointSets ds(n);
     while (mst_edge_cur < n-1) {
-        if (arg_dist_cur == nk /*pq.empty()*/) {
+        if (arg_dist_cur == nk) {
             // The input graph is not connected (we have a forest)
             ssize_t ret = mst_edge_cur;
             while (mst_edge_cur < n-1) {
@@ -146,12 +235,10 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
                 mst_dist[mst_edge_cur]    = INFTY;
                 mst_edge_cur++;
             }
+            if (verbose)
+                GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
             return ret;
         }
-
-        //ssize_t u = pq.top().i1;
-        //ssize_t v = pq.top().i2;
-        //T d = pq.top().d;
 
         ssize_t u = arg_dist[arg_dist_cur]/k; // u is the arg_dist_cur-th edge
         GENIECLUST_ASSERT(nn_used[u] < k && u >= 0 && u < n);
@@ -159,14 +246,6 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
         T d = dist[k*u+nn_used[u]];
         arg_dist_cur++;
 
-        //pq.pop();
-
-        //if (nn_used[u] < k) {
-        //    pq.push(CMstTriple<T>(u, ind[k*u+nn_used[u]], dist[k*u+nn_used[u]], false));
-        //    nn_used[u]++;                         // mark u's NN as used
-        //}
-        //else
-        //    *maybe_inexact = true; // we've run out of elems
         nn_used[u]++;
         if (nn_used[u] == k) *maybe_inexact = true;
 
@@ -196,6 +275,7 @@ ssize_t Cmst_from_nn(const T* dist, const ssize_t* ind,
 
     return mst_edge_cur;
 }
+
 
 
 
@@ -391,13 +471,13 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         #endif
     }
 
-    // sort the resulting MST edges in nondecreasing order w.r.t. d
+    // sort the resulting MST edges in increasing order w.r.t. d
     std::sort(res.begin(), res.end());
 
     for (ssize_t i=0; i<n-1; ++i) {
-        mst_dist[i]    = res[n-i-2].d;
-        mst_ind[2*i+0] = res[n-i-2].i1; // i1 < i2
-        mst_ind[2*i+1] = res[n-i-2].i2;
+        mst_dist[i]    = res[i].d;
+        mst_ind[2*i+0] = res[i].i1; // i1 < i2
+        mst_ind[2*i+1] = res[i].i2;
     }
 
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");

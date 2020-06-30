@@ -29,7 +29,7 @@ import gc
 np.random.seed(12345)
 #plt.rcParams["figure.figsize"] = (8,4)
 
-X, labels_true, dataset = load_dataset("sipu/a1", benchmarks_path)
+X, labels_true, dataset = load_dataset("sipu/worms_64", benchmarks_path)
 labels_true = [l-1 for l in labels_true] # noise class==-1
 
 
@@ -59,30 +59,47 @@ num_neighbours = min(64, int(math.sqrt(X.shape[0])))
 num_threads = 4 # set to OMP_***....
 verbose = True
 
+# https://github.com/nmslib/nmslib/blob/master/manual/spaces.md
+# all dense-vector spaces require float32 numpy-array input (except squared l2)
+# sparse scipy matrices (csr_matrix)
+# otherwise, string arrays
+#   levenshtein = ASCII strings
+#   other = space-separated numbers
 t02 = time.time()
-index = nmslib.init(method='hnsw', space='l2')
+# data_type=nmslib.DataType.DENSE_VECTOR|OBJECT_AS_STRING|SPARSE_VECTOR
+# dtype = nmslib.DistType.FLOAT|INT
+# https://github.com/nmslib/nmslib/blob/master/manual/methods.md
+# https://github.com/nmslib/nmslib/blob/master/manual/spaces.md
+nmslib_params_init = dict(method='hnsw', space='l2')# data_type, dtype
+nmslib_params_index = dict(post=2, indexThreadQty=num_threads)
+nmslib_params_query = dict()
+index = nmslib.init(**nmslib_params_init)
 index.addDataPointBatch(X)
-index.createIndex({'post': 2}, print_progress=verbose) # num_threads=????
+index.createIndex(nmslib_params_index, print_progress=verbose)
+index.setQueryTimeParams(nmslib_params_query)
 nns = index.knnQueryBatch(X, k=num_neighbours+1, num_threads=num_threads)
-print(type(nns))
 index = None
 gc.collect()
 # TODO: when determining M, note that the actual number NNs might be < M!
-nn_d = np.ones((X.shape[0], num_neighbours+1), dtype=X.dtype)*np.inf
-nn_i = np.ones((X.shape[0], num_neighbours+1), dtype=np.intp)*(-1)
-for i in range(X.shape[0]):
-    nn_d[i, :len(nns[i][1])] = nns[i][1]
-    nn_i[i, :len(nns[i][0])] = nns[i][0]
-nns = gc.collect()
-#nn_d = np.stack([np.r_[nn[1], [np.inf]*(num_neighbours+1-nn[1].shape[0])] for nn in nns])
-#nn_i = np.stack([np.r_[nn[0], [-1]*(num_neighbours+1-nn[0].shape[0])] for nn in nns])
-#nn_i = nn_i.astype(np.intp, order="C")
-#nn_d = nn_d.astype(X.dtype, order="C")
-# mst_from_nn ignores self-loops
-mst_d, mst_i = genieclust.internal.mst_from_nn(nn_d, nn_i,
-    stop_disconnected=False, stop_inexact=False, verbose=verbose)
-nn_d = None
-nn_i = None
+
+#t03 = time.time()
+#nn_d = np.ones((X.shape[0], num_neighbours+1), dtype=X.dtype)*np.inf
+#nn_i = np.ones((X.shape[0], num_neighbours+1), dtype=np.intp)*(-1)
+#for i in range(X.shape[0]):
+    #nn_d[i, :len(nns[i][1])] = nns[i][1]
+    #nn_i[i, :len(nns[i][0])] = nns[i][0]
+#mst_d, mst_i = genieclust.internal.mst_from_nn(nn_d, nn_i,
+    #stop_disconnected=False, stop_inexact=False, verbose=verbose)
+#print("aaa=%.3f" % (time.time()-t03))
+
+#nn_d = None
+#nn_i = None
+t03 = time.time()
+mst_d, mst_i = genieclust.internal.mst_from_nn_list(nns, k_max=num_neighbours,
+    stop_disconnected=False, verbose=verbose)
+print("bbb=%.3f" % (time.time()-t03))
+
+nns = None
 gc.collect()
 #print(np.sum(mst_i[:,0]<0))
 out = genieclust.internal.genie_from_mst(mst_d, mst_i,
@@ -92,19 +109,21 @@ print("t_py_approx=%.3f" % (t12-t02))
 print(genieclust.compare_partitions.compare_partitions2(out, labels_true)["ar"])
 
 
-t02 = time.time()
-g = genieclust.Genie(n_clusters=n_clusters, verbose=verbose)
-labels_g = g.fit_predict(X)
-t12 = time.time()
-print("t_py=%.3f" % (t12-t02))
-g = None
-gc.collect()
 
-print(n_clusters)
-print(genieclust.compare_partitions.confusion_matrix(out, labels_g))
-print(genieclust.compare_partitions.compare_partitions2(out, labels_g)["ar"])
-print(genieclust.compare_partitions.compare_partitions2(labels_g, labels_true)["ar"])
-#print(labels_g)
+
+#t02 = time.time()
+#g = genieclust.Genie(n_clusters=n_clusters, verbose=verbose)
+#labels_g = g.fit_predict(X)
+#t12 = time.time()
+#print("t_py=%.3f" % (t12-t02))
+#g = None
+#gc.collect()
+
+#print(n_clusters)
+#print(genieclust.compare_partitions.confusion_matrix(out, labels_g))
+#print(genieclust.compare_partitions.compare_partitions2(out, labels_g)["ar"])
+#print(genieclust.compare_partitions.compare_partitions2(labels_g, labels_true)["ar"])
+##print(labels_g)
 
 
 #t02 = time.time()

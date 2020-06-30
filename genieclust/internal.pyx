@@ -72,6 +72,79 @@ from . cimport c_genie
 
 
 
+
+cpdef tuple mst_from_nn_list(list nns,
+        ssize_t k_max=0,
+        bint stop_disconnected=True,
+        bint verbose=False):
+    """Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
+    using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+
+    See `mst_from_nn` for more details.
+
+
+    Parameters
+    ----------
+
+    nns : list of length n
+        Each nns[i] should be a pair of c_contiguous ndarrays.
+        An edge {i, nns[i][0][j]} has weight nns[i][1][j].
+        Each nns[i][0] is of type int32 and nns[i][1] of type float32
+        (for compatibility with nmslib).
+    k_max : int
+        If k_max > 0, O(n*k_max) space will be reserved for auxiliary data.
+    stop_disconnected : bool
+        raise an exception if the input graph is not connected
+    verbose: bool
+        whether to print diagnostic messages
+
+    Returns
+    -------
+
+    pair : tuple
+        See `mst_from_nn`.
+    """
+    cdef ssize_t n = len(nns)
+    cdef np.ndarray[int]   nn_i
+    cdef np.ndarray[float] nn_d
+    cdef ssize_t k
+    cdef ssize_t i, j
+    cdef ssize_t i1, i2
+    cdef float d
+
+    cdef vector[ c_mst.CMstTriple[float] ] nns2
+    if k_max > 0:
+        nns2.reserve(n*k_max)
+
+
+    for i in range(n):
+        nn_i = nns[i][0]
+        nn_d = nns[i][1]
+        k = nn_i.shape[0]
+        if nn_d.shape[0] != k:
+            raise ValueError("nns has arrays of different lengths as elements")
+
+        for j in range(k):
+            i1 = i
+            i2 = nn_i[j]
+            d = nn_d[j]
+            if i2 >= 0 and i1 != i2:
+                nns2.push_back( c_mst.CMstTriple[float](i1, i2, d) )
+
+    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[float]          mst_dist = np.empty(n-1, dtype=np.float32)
+
+    cdef ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
+            &mst_dist[0], &mst_ind[0,0], verbose)
+
+    if stop_disconnected and n_edges < n-1:
+        raise ValueError("graph is disconnected")
+
+    return mst_dist, mst_ind
+
+
+
+
 cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         bint stop_disconnected=True,
         bint stop_inexact=False,
