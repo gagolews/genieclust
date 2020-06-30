@@ -135,6 +135,7 @@ void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 }
 
 
+
 // [[Rcpp::export(".gclust")]]
 List __gclust(
         NumericMatrix mst,

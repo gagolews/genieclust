@@ -349,7 +349,7 @@ public:
  *   3. (option) During merge, first pair of clusters that would
  *   give a decrease of the Gini index below the threshold is chosen
  *   (or the one that gives the smallest Gini index if that's not possible)
- *       -- turns out to be slower and not that great.
+ *       -- turns out to be slower and (TODO: testing required).
  *   4. The MST need not be connected (is a spanning forest) (e.g., if it
  *   computed based on a disconnected k-NN graph) - each component
  *   will never be merged with any other one.
@@ -474,10 +474,11 @@ protected:
 
 
 
-    /*! Run the Genie+++++ partitioning -- merge a pair of sets
+    /*! Run the Genie+++ partitioning -- merge a pair of sets
      *  that reduces the Gini index below the threshold (provided that is possible)
      *
-     *  This is slower and not that awesome.
+     *  **EXPERIMENTAL** This is slower and (perhaps - thorough testing required)
+     *  not that awesome.
      *
      *  @param ds
      *  @param mst_skiplist

@@ -1121,9 +1121,10 @@ cpdef dict genie_from_mst(
         Compute the n_clusters and all the more coarse-grained ones?
     new_merge : bool
         False for compatibility with the original Genie algorithm
-        (R package `genie`). True merges pairs that lower the Gini index
-        below `gini_threshold` (if that is possible) -- much slower
-        and not that awesome.
+        (R package `genie`). True (EXPERIMENTAL) merges pairs that
+        lower the Gini index below `gini_threshold`
+        (if that is possible) -- slower and perhaps not that awesome
+        (TODO: testing required).
 
 
     Returns
