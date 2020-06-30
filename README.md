@@ -154,8 +154,8 @@ pip3 install genieclust --user # or sudo pip3 install genieclust
 
 
 The package requires Python 3.6+ together with `cython` as well as
-`numpy`, `scipy`, `matplotlib` and `sklearn`.
-Optional dependencies: `mlpack`.
+`numpy`, `scipy`, `matplotlib`, and `sklearn`.
+Optional dependencies: `mlpack` and `nmslib`.
 
 
 #### Development Version

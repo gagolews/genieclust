@@ -6,17 +6,20 @@
 -   [GENERAL] The package has been completely rewritten.
     The core functionality is now implemented in C++ (with OpenMP).
 
--   [R] R version now available.
+-   [R] R version is now available.
 
--   [Python] The GIc algorithm proposed by Anna Cena in her 2018 PhD thesis
-    was added.
+-   [PYTHON] [EXPERIMENTAL] The GIc algorithm proposed by Anna Cena
+    in her 2018 PhD thesis was added.
+
+-   [PYTHON] Approximate version based on nearest neighbour graphs produced
+    by `nmslib` was added.
 
 -   [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
-    distance computations. Euclidean minimum spanning tree can now be
+    distance computations. Euclidean minimum spanning tree can be
     determined with `mlpack`, which is much faster in low-dimensional spaces.
 
 -   [GENERAL] Clustering with respect to HDBSCAN*-like
-    mutual reachability distances is now supported.
+    mutual reachability distances is supported.
 
 
 

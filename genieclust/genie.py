@@ -1,32 +1,31 @@
-"""The Genie++ Clustering Algorithm
+# The Genie++ Clustering Algorithm
+#
+# Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License
+# Version 3, 19 November 2007, published by the Free Software Foundation.
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU Affero General Public License Version 3 for more details.
+# You should have received a copy of the License along with this program.
+# If not, see <https://www.gnu.org/licenses/>.
 
-Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License
-Version 3, 19 November 2007, published by the Free Software Foundation.
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License Version 3 for more details.
-You should have received a copy of the License along with this program.
-If not, see <https://www.gnu.org/licenses/>.
-"""
-
-import math
+import os, sys, math
 import numpy as np
+import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
-import sys
 # import scipy.spatial.distance
 # import sklearn.neighbors
 # import warnings
 
 
 try:
-    import faiss
+    import nmslib
 except ImportError:
-    faiss = None
+    nmslib = None
 
 
 try:
@@ -36,7 +35,9 @@ except ImportError:
 
 
 class GenieBase(BaseEstimator, ClusterMixin):
-    """Base class for Genie and GIc"""
+    """
+    Base class for Genie and GIc.
+    """
 
     def __init__(self,
             M,
@@ -65,8 +66,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def _postprocess(self, M, postprocess):
-        """(internal)
-        updates self.labels_ and self.is_noise_
+        """
+        (internal) Updates `self.labels_` and `self.is_noise_`
         """
         reshaped = False
         if self.labels_.ndim == 1:
@@ -103,6 +104,27 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def fit(self, X, y=None):
+        """
+        Determines the minimum spanning trees and other thingies.
+
+        See the documentation of overloaded methods for more details:
+        `Genie.fit`, `GIc.fit`.
+
+
+        Parameters
+        ----------
+
+        X :
+            See `Genie.fit`.
+        y : None
+            See `Genie.fit`.
+
+
+        Returns
+        -------
+
+        `self`
+        """
         cur_state = dict()
         cur_state["X"] = id(X)
 
@@ -297,93 +319,28 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def fit_predict(self, X, y=None):
-        """Compute a k-partition and return the predicted labels,
-        see fit().
+        """
+        Compute the `n_clusters`-partition and return the predicted labels,
+        see `fit`.
 
 
         Parameters
         ----------
 
-        X : ndarray
-            see fit()
+        X : numpy.ndarray
+            See `fit`.
         y : None
-            see fit()
+            See `fit`.
 
 
         Returns
         -------
 
-        labels_ : ndarray, shape (n_samples,)
-            Predicted labels, representing a partition of X.
-            labels_[i] gives the cluster id of the i-th input point.
-            negative labels_ correspond to noise points.
-            Note that the determined number of clusters
-            might be larger than the requested one.
+        labels_ : numpy.ndarray
+            `self.labels_` attribute.
         """
         self.fit(X)
         return self.labels_
-
-
-
-
-    # not needed - inherited from BaseEstimator
-    # def __repr__(self):
-    #     """
-    #     Return repr(self).
-    #     """
-    #     return "Genie(%s)" % (
-    #         ", ".join(["%s=%r"%(k,v) for (k,v) in self.get_params().items()])
-    #     )
-
-    #
-    # def get_params(self, deep=False):
-    #     """
-    #     Get the parameters for this estimator.
-    #
-    #     Parameters:
-    #     -----------
-    #
-    #     deep: bool
-    #         Ignored
-    #
-    #     Returns:
-    #     --------
-    #
-    #     params: dict
-    #     """
-    #     return dict(
-    #         n_clusters = self.__n_clusters,
-    #         gini_threshold = self.__gini_threshold,
-    #         M = self.__M,
-    #         postprocess = self.__postprocess,
-    #         n_neighbors = self.__n_neighbors,
-    #         **self.__NearestNeighbors_params
-    #     )
-
-    # not needed - inherited from BaseEstimator
-    #def set_params(self, **params):
-        #"""
-        #Set the parameters for this estimator.
-
-
-        #Parameters:
-        #-----------
-
-        #params
-
-
-        #Returns:
-        #--------
-
-        #self
-        #"""
-        ################### @TODO
-        #print(params)
-        #super().set_params(**params)
-        #return self
-
-
-
 
 
 
@@ -392,29 +349,30 @@ class GenieBase(BaseEstimator, ClusterMixin):
 class Genie(GenieBase):
     """
     The Genie++ hierarchical clustering algorithm with optional smoothing and
-    noise point detection (for M>1).
+    noise point detection (if `M`>1).
 
 
     Parameters
     ----------
 
     n_clusters : int
-        Number of clusters to detect >= 0. Note that depending on the dataset
+        Number of clusters to detect. Note that depending on the dataset
         and approximations used (see parameter `exact`), the actual
         partition cardinality can be smaller.
-        n_clusters==1 can act as a noise point/outlier detector (if `M`>1
-        and postprocess is not "all").
-        n_clusters==0 computes the whole dendrogram but doesn't generate
-        any particular cuts.
+        `n_clusters` equal to 1 can act as a noise point/outlier detector
+        (if `M`>1 and `postprocess` is not ``"all"``).
+        `n_clusters` equal to 0 computes the whole dendrogram but doesn't
+        generate any particular cuts.
     gini_threshold : float
         The threshold for the Genie correction in [0,1], i.e.,
         the Gini index of the cluster size distribution.
         Threshold of 1.0 disables the correction.
         Low thresholds highly penalise the formation of small clusters.
     M : int
-        Smoothing factor. M=1 gives the original Genie algorithm.
+        Smoothing factor. `M`=1 gives the original Genie algorithm.
     affinity : {'euclidean', 'l2', 'manhattan', 'l1', 'cityblock', 'cosine', 'precomputed'}
-        Metric used to compute the linkage. One of: "euclidean" (synonym: "l2"),
+        Metric used to compute the linkage. One of:
+        ``"euclidean"`` (synonym: ``"l2"``),
         "manhattan" (a.k.a. "l1" and "cityblock"), "cosine" or "precomputed".
         If "precomputed", a n_samples*(n_samples-1)/2 distance vector
         or a square-form distance
@@ -422,13 +380,13 @@ class Genie(GenieBase):
         see `scipy.spatial.distance.pdist()` or
         `scipy.spatial.distance.squareform()`, amongst others.
     compute_full_tree : bool
-        If True, only a partial hierarchy is determined so that
+        If False, only a partial hierarchy is determined so that
         at most n_clusters are generated. Saves some time if you think you know
         how many clusters are there, but are you *really* sure about that?
     compute_all_cuts : bool
         If True, n_clusters-partition and all the more coarse-grained
-        ones will be determined; in such a case, the labels_ attribute
-        will be a matrix
+        ones will be determined; in such a case, the `labels_` attribute
+        will be a matrix/
     postprocess : {'boundary', 'none', 'all'}
         In effect only if M>1. By default, only "boundary" points are merged
         with their nearest "core" points (A point is a boundary point if it is
@@ -438,26 +396,22 @@ class Genie(GenieBase):
         choose "all".
     exact : bool
         TODO: Not yet implemented.
-        If False, the minimum spanning tree is approximated
-        based on the nearest neighbours graph. Finding nearest neighbours
-        in low dimensional spaces is usually fast. Otherwise,
-        the algorithm will need to inspect all pairwise distances,
+        If ``False``, the minimum spanning tree is approximated
+        based on an approximate nearest neighbours graph found by
+        `nmslib`. Otherwise, the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of O(n_samples*n_samples*n_features).
     cast_float32 : bool, default=True
-        Allow casting input data to a float32 dense matrix
+        Allow casting input data to a ``float32`` dense matrix
         (for efficiency reasons; decreases the run-time ~2x times
-        at a cost of greater memory usage).
-        TODO: Note that some nearest neighbour search
-        methods require float32 data anyway.
-        TODO: Might be a problem if the input matrix is sparse, but
-        we don't support this yet.
+        at a cost of greater memory usage)? Note that `nmslib`
+        (used when `exact` is ``False``) requires ``float32`` data anyway.
     use_mlpack : bool or "auto", default="auto"
-        Use mlpack.emst() for computing the Euclidean minimum spanning tree?
+        Use ``mlpack.emst()`` for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
         only affinity='euclidean' is supported (and M=1).
         By default, we rely on mlpack if it's installed and n_features <= 6.
-        Otherwise, we use our own implementation of a parallelised version
-        of Prim's algorithm (environment variable `OMP_NUM_THREADS` controls
+        Otherwise, we use our own parallelised implementation of Prim's
+        algorithm (environment variable `OMP_NUM_THREADS` controls
         the number of threads used).
     verbose : bool, default=False
         Whether to print diagnostic messages and progress information on stderr.
@@ -466,58 +420,63 @@ class Genie(GenieBase):
     Attributes
     ----------
 
-    labels_ : ndarray, shape (n_samples,) or (<=n_clusters+1, n_samples), or None
-        If n_clusters==0, no labels_ are generated (None).
-        If compute_all_cuts==True (the default), these are the detected
-        cluster labels of each point: an integer vector with labels_[i]
-        denoting the cluster id (in {0, ..., n_clusters-1}) of the i-th object.
-        If M>1, noise points are labelled -1 (unless taken care of in the
+    labels_ : numpy.ndarray
+        shape (n_samples,) or (<=n_clusters+1, n_samples), or None
+        If `n_clusters`=0, no `labels_` are generated (None).
+        If `compute_all_cuts`=``True`` (the default), these are the detected
+        cluster labels of each point: an integer vector with ``labels_[i]``
+        denoting the cluster id (in {0, ..., `n_clusters`-1}) of the i-th object.
+        If `M`>1, noise points are labelled ``-1`` (unless taken care of in the
         postprocessing stage).
-        Otherwise, i.e., if compute_all_cuts==False,
-        all partitions of cardinality down to n_clusters (if n_samples
+        Otherwise, i.e., if `compute_all_cuts`=``False``,
+        all partitions of cardinality down to n_clusters (if `n_samples`
         and the number of noise points allows) are determined.
-        In such a case, labels_[j,i] denotes the cluster id of the i-th
+        In such a case, ``labels_[j,i]`` denotes the cluster id of the i-th
         point in a j-partition.
         We assume that a 0- and 1- partition only distinguishes between
         noise- and non-noise points, however, no postprocessing
         is conducted on the 0-partition (there might be points with
-        labels -1 even if postprocess=="all").
+        labels -1 even if `postprocess`=``"all"``).
+        Note that the approximate method (`exact`=``False``) might fail
+        to determine the fine-grained clusters (if the approximate
+        neighbour graph is disconnected) and then the first few rows
+        might be identical.
     n_clusters_ : int
         The number of clusters detected by the algorithm.
-        If 0, then labels_ are not set.
-        Note that the actual number might be larger than the n_clusters
+        If 0, then `labels_` are not set.
+        Note that the actual number might be larger than the `n_clusters`
         requested, for instance, if there are many noise points.
     n_samples_ : int
         The number of points in the fitted dataset.
     n_features_ : int or None
         The number of features in the fitted dataset.
-    is_noise_ : ndarray, shape (n_samples,) or None
-        is_noise_[i] is True iff the i-th point is a noise one;
+    is_noise_ : numpy.ndarray, shape (n_samples,) or None
+        ``is_noise_[i]`` is True iff the i-th point is a noise one;
         For M=1, all points are no-noise ones.
-        Points are marked as noise even if postprocess=="all".
+        Points are marked as noise even if `postprocess`=``"all"``.
         Note that boundary points are also marked as noise points.
-    children_ : ndarray, shape (n_samples-1, 2)
+    children_ : numpy.ndarray, shape (n_samples-1, 2)
         The i-th row provides the information on the clusters merged at
         the i-th iteration. Noise points are merged first, with
-        the corresponding `distances_[i]` of 0.
-        See the description of `Z[i,0]` and `Z[i,1]` in
+        the corresponding ``distances_[i]`` of 0.
+        See the description of ``Z[i,0]`` and ``Z[i,1]`` in
         `scipy.cluster.hierarchy.linkage`. Together with `distances_` and
         `counts_`, this forms the linkage matrix that can be used for
         plotting the dendrogram.
-        Only available if `compute_full_tree==True`.
-    distances_ : ndarray, shape (n_samples-1,)
+        Only available if `compute_full_tree`=``True``.
+    distances_ : numpy.ndarray, shape (n_samples-1,)
         Distance between the two clusters merged at the i-th iteration.
         As Genie does not guarantee that that distances are
         ordered increasingly (do not panic, there are some other hierarchical
         clustering linkages that also violate the ultrametricity property),
         these are corrected by applying
-        `distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]`.
-        See the description of Z[i,2] in scipy.cluster.hierarchy.linkage.
-        Only available if compute_full_tree==True.
-    counts_ : ndarray, shape (n_samples-1,)
+        ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
+        See the description of ``Z[i,2]`` in `scipy.cluster.hierarchy.linkage`.
+        Only available if `compute_full_tree`=``True``.
+    counts_ : numpy.ndarray, shape (n_samples-1,)
         Number of elements in a cluster created at the i-th iteration.
-        See the description of Z[i,3] in scipy.cluster.hierarchy.linkage.
-        Only available if compute_full_tree==True.
+        See the description of ``Z[i,3]`` in `scipy.cluster.hierarchy.linkage`.
+        Only available if `compute_full_tree`=``True``.
 
 
 
@@ -525,8 +484,7 @@ class Genie(GenieBase):
     -----
 
     A reimplementation of Genie - a robust and outlier resistant
-    clustering algorithm [1]_,
-    originally published as an R package `genie`.
+    clustering algorithm [1]_, originally published as an R package `genie`.
 
     The Genie algorithm is based on a minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
@@ -589,10 +547,8 @@ class Genie(GenieBase):
     .. [2] Campello R., Moulavi D., Zimek A., Sander J.,
        Hierarchical density estimates for data clustering, visualization,
        and outlier detection,
-       *ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
-       doi:10.1145/2733381.
-
-
+       *ACM Transactions on Knowledge Discovery from Data* **10**(1),
+       2015, 5:1–5:51. doi:10.1145/2733381.
     """
 
     def __init__(self,
@@ -628,14 +584,17 @@ class Genie(GenieBase):
 
 
     def fit(self, X, y=None):
-        """Perform clustering of the X dataset.
-        See the labels_ and n_clusters_ attributes for the clustering result.
+        """
+        Perform clustering of the given dataset.
+
+        Refer to the `labels_` and `n_clusters_` attributes for the result.
 
 
         Parameters
         ----------
 
-        X : ndarray, shape (n_samples, n_features)  or
+        X : numpy.ndarray or scipy.sparse.csr_matrix
+            , shape (n_samples, n_features)  or
                 (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
             A matrix defining n_samples in a vector space with n_features.
             Hint: it might be a good idea to standardise or at least
@@ -655,7 +614,7 @@ class Genie(GenieBase):
         Returns
         -------
 
-        self
+        `self`
         """
         super().fit(X, y)
         cur_state = self._last_state_
@@ -714,44 +673,18 @@ class Genie(GenieBase):
 
 
 class GIc(GenieBase):
-    """GIc (Genie+Information Criterion) Information-Theoretic
-    Hierarchical Clustering Algorithm
-
-    Computes a k-partition based on a pre-computed MST
-    maximising (heuristically) the information criterion [2].
-
-    GIc has been proposed by Anna Cena in [1] and was inspired
-    by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
-
-    GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
-    which follows a divisive scheme). It greedily selects for merging
-    a pair of clusters that maximises the information criterion [2].
-    By default, the initial partition is determined by considering
-    the intersection of clusterings found by the Genie methods with
-    thresholds 0.1, 0.3, 0.5 and 0.7.
-
-
-    References
-    ==========
-
-    [1] Cena A., Adaptive hierarchical clustering algorithms based on
-    data aggregation methods, PhD Thesis, Systems Research Institute,
-    Polish Academy of Sciences 2018.
-
-    [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
-    Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
-
-    [3] Gagolewski M., Bartoszuk M., Cena A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+    """
+    GIc (Genie+Information Criterion)
+    Information-Theoretic Hierarchical Clustering Algorithm
+    (**EXPERIMENTAL**)
 
 
     Parameters
     ----------
 
-    n_clusters : int >= 0, default=2
-        see `Genie`
-    gini_thresholds : float in [0,1], default=[0.1, 0.3, 0.5, 0.7]
+    n_clusters : int
+        See `Genie`.
+    gini_thresholds : list
         The GIc algorithm optimises the information criterion
         in an agglomerative way, starting from the intersection
         of the clusterings returned by
@@ -759,38 +692,73 @@ class GIc(GenieBase):
         for all i=0,...,len(gini_thresholds)-1.
     add_clusters : int, default=0
         Number of additional clusters to work with internally.
-    n_features : float or None, default None
-        Dataset (intrinsic) dimensionality, if None, it will be set based on
-        the shape of the input matrix.
+    n_features : float or None
+        Dataset's (intrinsic) dimensionality;
+        if ``None``, it will be set based on the shape of the input matrix.
     M : int, default=1
-        see `Genie`
+        See `Genie`.
     affinity : str, default="euclidean"
-        see `Genie`
+        See `Genie`.
     compute_full_tree : bool, default=True
-        see `Genie`
+        See `Genie`.
     compute_all_cuts : bool, default=False
-        see `Genie`
+        See `Genie`.
         Note that for GIc if compute_all_cuts==True,
         then the i-th cut in the hierarchy behaves as if
         add_clusters=n_clusters-i. In other words, the returned cuts
         will not be the same as those obtained by calling
         GIc numerous times, each time with different n_clusters requested.
     postprocess : str, one of "boundary" (default), "none", "all"
-        see `Genie`
+        See `Genie`.
     exact : bool, default=True
-        see `Genie`
+        See `Genie`.
     cast_float32 : bool, default=True
-        see `Genie`
+        See `Genie`.
     use_mlpack : bool or "auto", default="auto"
-        see `Genie`
+        See `Genie`.
     verbose : bool, default=False
-        see `Genie`
+        See `Genie`.
 
 
     Attributes
     ----------
 
-    see `Genie`
+    See class `Genie`.
+
+
+    Notes
+    -----
+
+    Computes a `n_clusters`-partition based on a pre-computed MST
+    maximising (heuristically) the information criterion [2]_.
+
+    GIc has been proposed by Anna Cena in [1]_ and was inspired
+    by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_.
+
+    GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
+    which follows a divisive scheme). It greedily selects for merging
+    a pair of clusters that maximises the information criterion [2]_.
+    By default, the initial partition is determined by considering
+    the intersection of clusterings found by multiple runs of the Genie method
+    with thresholds [0.1, 0.3, 0.5, 0.7].
+
+
+    References
+    ----------
+
+    .. [1] Cena A., *Adaptive hierarchical clustering algorithms based on
+        data aggregation methods*, PhD Thesis, Systems Research Institute,
+        Polish Academy of Sciences 2018.
+
+    .. [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+        Clustering using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
+
+    .. [3] Gagolewski M., Bartoszuk M., Cena A.,
+        Genie: A new, fast, and outlier-resistant hierarchical clustering
+        algorithm, *Information Sciences* **363**, 2016, pp. 8-23.
+        doi:10.1016/j.ins.2016.05.003
+
+
     """
     def __init__(self,
             n_clusters=2,
@@ -829,16 +797,17 @@ class GIc(GenieBase):
 
 
     def fit(self, X, y=None):
-        """Perform clustering of the X dataset.
-        See the labels_ and n_clusters_ attributes for the clustering result.
+        """
+        Perform clustering of the given dataset.
+
+        Refer to the `labels_` and `n_clusters_` attributes for the result.
 
 
         Parameters
         ----------
 
-        X : ndarray, shape (n_samples, n_features) or
-                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
-            see `Genie.fit()`
+        X : numpy.ndarray
+            See `Genie.fit`.
         y : None
             Ignored.
 
@@ -846,7 +815,7 @@ class GIc(GenieBase):
         Returns
         -------
 
-        self
+        `self`
         """
         super().fit(X, y)
         cur_state = self._last_state_
