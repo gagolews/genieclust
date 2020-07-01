@@ -1,5 +1,7 @@
-# Various plotting functions
-#
+"""
+Various plotting functions
+"""
+
 # Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -19,86 +21,203 @@ import numpy as np
 
 
 # module globals:
-col = ["k", "r", "g", "b", "c", "m", "y"]+\
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab10").colors]+\
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20").colors]+\
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20b").colors]+\
+col = ["k", "r", "g", "b", "c", "m", "y"]                                   + \
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab10").colors]  + \
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20").colors]  + \
+    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20b").colors] + \
     [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20c").colors]
 
 mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
 
-def plot_scatter(X, y=None, labels=None, **kwargs):
-    """
-    Draws a scatter plot.
 
-    Unlike in `matplitlib.pyplot.scatter()`, all points in `X`
-    corresponding to `labels == i` are always drawn in the same way,
-    no matter the `max(labels)`.
-
-
-    Parameters:
-    ----------
-
-    X : ndarray, shape (n, 2) or ndarray, shape (n,)
-        A two-column matrix giving the x and y coordinates of the points.
-        Optionally, these can be given by both X and y.
-
-    y : None or ndarray, shape (n,)
-        y coordinates in the case of X being a vector
-
-    labels : ndarray, shape (n,) or None
-        A vector of integer labels corresponding to each point in `X`,
-        giving its plot style.
-
-    **kwargs : Collection properties
-        Further arguments to `matplotlib.pyplot.scatter()`.
-    """
-    if labels is None: labels = np.repeat(0, X.shape[0])
+def _get_xy(X, y):
+    # auxiliary function
+    X = np.array(X)
     if X.ndim == 2:
         if not X.shape[1] == 2:
-            raise ValueError("X must have 2 columns or y must be given")
+            raise ValueError("`X` must have 2 columns.")
     elif X.ndim == 1:
-        if y is None or y.ndim != 1 or X.shape[0] != y.shape[0]:
-            raise ValueError("X and y must have the same shape")
+        if y is None:
+            raise ValueError("If `X` is a vector, `y` should be provided.")
+
+        y = np.array(y)
+        if y.ndim != 1 or X.shape[0] != y.shape[0]:
+            raise ValueError("`X` and `y` must have the same shape.")
         X = np.column_stack((X, y))
     else:
-        raise ValueError("invalid X")
+        raise ValueError("Invalid `X`.")
 
-    if not X.shape[0] == labels.shape[0]:
-        raise ValueError("incorrect number of labels")
+    return X
+
+
+def plot_scatter(X, y=None, labels=None, **kwargs):
+    """
+    Draws a scatter plot
+
+
+    Parameters
+    ----------
+
+    X : array_like
+        Either a two-column matrix that gives the *x* and *y* coordinates of the points
+        or a vector of length *n*. In the latter case, `y` must be a
+        vector of length *n* as well.
+
+    y : None or array_like
+        The *y* coordinates of the *n* points in the case where `X` is a vector.
+
+    labels : None or array_like
+        A vector of *n* integer labels that correspond to each point in `X`,
+        that gives its plot style.
+
+    **kwargs : Collection properties
+        Further arguments to `matplotlib.pyplot.scatter`.
+
+
+    Notes
+    -----
+
+    If `X` is a two-column matrix, then ``plot_scatter(X)``
+    is equivalent to ``plot_scatter(X[:,0], X[:,1])``.
+
+    Unlike in `matplotlib.pyplot.scatter`,
+    for any fixed ``j``, all points ``X[i,:]`` such that ``labels[i] == j``
+    are always drawn in the same way, no matter the ``max(labels)``.
+    In particular, labels 0, 1, 2, and 3 correspond to
+    black, red, green, and blue, respectively.
+
+    This function was inspired by the ``plot()`` function
+    from the R package ``graphics``.
+
+
+    Examples
+    --------
+
+    .. plot::
+
+        An example scatter plots where each point is assigned one of
+        two distinct labels:
+
+        >>> np.random.seed(123)
+        >>> n = np.r_[100, 50]
+        >>> X = np.r_[np.random.randn(n[0], 2), np.random.randn(n[1], 2)+2.0]
+        >>> l = np.repeat([0, 1], n)
+        >>> genieclust.plots.plot_scatter(X, labels=l)
+        >>> plt.show()
+
+
+    .. plot::
+
+        Here are the first 10 plotting styles:
+
+        >>> ncol = len(genieclust.plots.col)
+        >>> nmrk = len(genieclust.plots.mrk)
+        >>> mrk_recycled = np.tile(
+        ...     genieclust.plots.mrk,
+        ...     int(np.ceil(ncol/nmrk)))[:ncol]
+        >>> for i in range(10):
+        >>>     plt.text(i, 0, i, horizontalalignment="center")
+        ...     plt.plot(
+        ...         i, 1, marker=mrk_recycled[i],
+        ...         color=genieclust.plots.col[i],
+        ...         markersize=25)
+        >>> plt.title("Plotting styles for labels=0,1,...,9")
+        >>> plt.ylim(-3,4)
+        >>> plt.axis("off")
+        >>> plt.show()
+
+    """
+    X = _get_xy(X, y)
+
+    if labels is None:
+        labels = np.repeat(0, X.shape[0])
+    else:
+        labels = np.array(labels)
+    if labels.ndim != 1 or X.shape[0] != labels.shape[0]:
+        raise ValueError("Incorrect shape of `labels`.")
+
     for i in np.unique(labels): # 0 is black, 1 is red, etc.
         plt.scatter(X[labels==i,0], X[labels==i,1],
             c=col[(i) % len(col)], marker=mrk[(i) % len(mrk)], **kwargs)
 
 
 
-def plot_segments(X, pairs, style="k-", **kwargs):
+def plot_segments(pairs, X, y=None, style="k-", **kwargs):
     """
-    Draws a set of disjoint line segments given by
-    (X[pairs[i,0],0], X[pairs[i,0],1])--(X[pairs[i,1],0], X[pairs[i,1],1]),
-    i = 0, ...., pairs.shape[0]-1.
-
-    Calls `matplotlib.pyplot.plot()` once => it's fast.
+    Draws a set of disjoint line segments
 
 
-    Parameters:
+    Parameters
     ----------
 
-    X : ndarray, shape (n, 2)
-        A two-column matrix giving the X and Y coordinates of the points.
+    pairs : array_like
+        A two-column matrix that gives the pairs of indices
+        defining the line segments to draw.
 
-    pairs : ndarray, shape (m, 2)
-        A two-column matrix, giving the pairs of indices
-        defining the line segments.
+    X : array_like
+        Either a two-column matrix that gives the *x* and *y* coordinates of the points
+        or a vector of length *n*. In the latter case, `y` must be a
+        vector of length *n* as well.
 
-    style: see `matplotlib.pyplot.plot()`
+    y : None or array_like
+        The *y* coordinates of the *n* points in the case where `X` is a vector.
+
+    style:
+        See `matplotlib.pyplot.plot`.
 
     **kwargs : Collection properties
-        Further arguments to `matplotlib.pyplot.plot()`.
+        Further arguments to `matplotlib.pyplot.plot`.
+
+
+    Notes
+    -----
+
+    The function draws a set of disjoint line segments from
+    ``(X[pairs[i,0],0], X[pairs[i,0],1])`` to
+    ``(X[pairs[i,1],0], X[pairs[i,1],1])``
+    for all ``i`` from ``0`` to ``pairs.shape[0]-1``.
+
+    `matplotlib.pyplot.plot` is called only once.
+    Therefore, you can expect it to be pretty pretty fast.
+
+
+    Examples
+    --------
+
+    .. plot::
+
+        Plotting the convex hull of a point set:
+
+        >>> import scipy.spatial
+        >>> np.random.seed(123)
+        >>> X = np.random.randn(100, 2)
+        >>> hull = scipy.spatial.ConvexHull(X)
+        >>> genieclust.plots.plot_scatter(X)
+        >>> genieclust.plots.plot_segments(hull.simplices, X, style="r--")
+        >>> plt.show()
+
+
+    .. plot::
+
+        Plotting the minimum spanning tree:
+
+        >>> np.random.seed(123)
+        >>> X = np.random.randn(100, 2)
+        >>> mst = genieclust.internal.mst_from_distance(X, "euclidean")
+        >>> genieclust.plots.plot_scatter(X)
+        >>> genieclust.plots.plot_segments(mst[1], X, style="m-.")
+        >>> plt.axis("equal")
+        >>> plt.show()
+
+
+
     """
-    if not X.shape[1] == 2: raise ValueError("X must have 2 columns")
-    if not pairs.shape[1] == 2: raise ValueError("pairs must have 2 columns")
+    X = _get_xy(X, y)
+
+    pairs = np.array(pairs)
+    if pairs.ndim != 2 or pairs.shape[1] != 2:
+        raise ValueError("`pairs` must be a matrix with 2 columns.")
 
     xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()

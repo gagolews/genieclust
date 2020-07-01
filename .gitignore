@@ -15,3 +15,4 @@ pytest/__pycache__
 src/*.o
 src/*.so
 devel/sphinx/_build
+devel/sphinx/_api

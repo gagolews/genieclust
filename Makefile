@@ -17,6 +17,7 @@ pytest: python
 	pytest
 
 sphinx: python
+	rm -rf devel/sphinx/_build/
 	cd devel/sphinx && make html && cd ../../
 	rm -rf docs/
 	mkdir docs/

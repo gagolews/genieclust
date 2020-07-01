@@ -1,10 +1,14 @@
 # `genieclust` Python and R Package
 
+> **Genie++ outputs meaningful clusters and is fast even for large data sets.**
+
+**TODO**:  Full documentation and tutorials are available at
+https://genieclust.gagolewski.com/.
+
+
 
 
 ## The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
-
-> **Genie outputs meaningful clusters and is fast even for large data sets.**
 
 A reimplementation of **Genie** - a robust and outlier resistant
 clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
@@ -88,10 +92,11 @@ Other goodies:
 
 
 
-## Examples and Tutorials
+## Examples, Tutorials, and Documentation
 
 
-The Python language version of `genieclust` has a familiar `scikit-learn` look-and-feel:
+The Python language version of `genieclust` has
+a familiar `scikit-learn`-like look-and-feel:
 
 ```python
 import genieclust
@@ -110,16 +115,8 @@ cutree(h, k=2)
 # or genie(X, k=2)
 ```
 
-
-**TODO**: For more illustrations, use cases and details, make sure to check out:
-
--   [The Genie Algorithm - Basic Use](https://github.com/gagolews/genieclust/blob/master/tutorials/example_genie_basic.ipynb)
--   [The Genie Algorithm with Noise Points Detection](https://github.com/gagolews/genieclust/blob/master/tutorials/example_noisy.ipynb)
--   [Plotting Dendrograms](https://github.com/gagolews/genieclust/blob/master/tutorials/dendrogram.md)
--   [Comparing Different Hierarchical Linkage Methods on Toy Datasets - A `scikit-learn` Example](https://github.com/gagolews/genieclust/blob/master/tutorials/sklearn_toy_example.md)
--   [Auxiliary Plotting Functions](https://github.com/gagolews/genieclust/blob/master/tutorials/plots.md)
-
-
+Check out tutorials and the package documentation at
+https://genieclust.gagolewski.com/.
 
 
 

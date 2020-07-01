@@ -1,5 +1,5 @@
 """
-Genieclust Python Package
+genieclust Python Package
 
 Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 
@@ -18,8 +18,7 @@ from . import plots
 from . import inequity
 from . import tools
 from . import compare_partitions
-from . import genie # this import should be deprecated
+#from . import genie # this import should be deprecated
 from .genie import *
-
 
 __version__ = '0.9.1'

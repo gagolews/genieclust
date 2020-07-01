@@ -1,5 +1,8 @@
-# The Genie++ Clustering Algorithm
-#
+"""
+The Genie++ Clustering Algorithm
+"""
+
+
 # Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -12,7 +15,9 @@
 # You should have received a copy of the License along with this program.
 # If not, see <https://www.gnu.org/licenses/>.
 
-import os, sys, math
+import os
+import sys
+import math
 import numpy as np
 import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
@@ -34,19 +39,27 @@ except ImportError:
     mlpack = None
 
 
+
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+
 class GenieBase(BaseEstimator, ClusterMixin):
     """
-    Base class for Genie and GIc.
+    Base class for Genie and GIc
     """
 
-    def __init__(self,
+    def __init__(
+            self,
             M,
             affinity,
             exact,
             cast_float32,
             use_mlpack,
-            verbose
-        ):
+            verbose):
+        # # # # # # # # # # # #
         super().__init__()
         self.M = M
         self.affinity = affinity
@@ -63,6 +76,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self._nn_ind_     = None
         self._d_core_     = None
         self._last_state_ = None
+
 
 
     def _postprocess(self, M, postprocess):
@@ -107,7 +121,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         """
         Determines the minimum spanning trees and other thingies.
 
-        See the documentation of overloaded methods for more details:
+        See the documentation of the overloaded methods for more details:
         `Genie.fit`, `GIc.fit`.
 
 
@@ -346,10 +360,15 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
 
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+
 class Genie(GenieBase):
     """
-    The Genie++ hierarchical clustering algorithm with optional smoothing and
-    noise point detection (if `M`>1).
+    Genie++ hierarchical clustering algorithm
 
 
     Parameters
@@ -483,8 +502,10 @@ class Genie(GenieBase):
     Notes
     -----
 
-    A reimplementation of Genie - a robust and outlier resistant
-    clustering algorithm [1]_, originally published as an R package `genie`.
+    A reimplementation of **Genie** - a robust and outlier resistant
+    hierarchical clustering algorithm [1]_, originally published
+    as an R package ``genie``. Features optional smoothing and
+    noise point detection (if `M`>1).
 
     The Genie algorithm is based on a minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
@@ -500,7 +521,7 @@ class Genie(GenieBase):
     The clustering can also be computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric),
     which is used in the definition of the HDBSCAN* algorithm [2]_.
-    If M>1, then the mutual reachability
+    If `M` > 1, then the mutual reachability
     distance :math:`m(i,j)` with smoothing factor M is used instead of the
     chosen "raw" distance d(i,j). It holds
     :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
@@ -551,7 +572,8 @@ class Genie(GenieBase):
        2015, 5:1–5:51. doi:10.1145/2733381.
     """
 
-    def __init__(self,
+    def __init__(
+            self,
             n_clusters=2,
             gini_threshold=0.3,
             M=1,
@@ -562,8 +584,8 @@ class Genie(GenieBase):
             exact=True,
             cast_float32=True,
             use_mlpack="auto",
-            verbose=False
-        ):
+            verbose=False):
+        # # # # # # # # # # # #
         super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
 
         self.n_clusters = n_clusters
@@ -672,11 +694,16 @@ class Genie(GenieBase):
 
 
 
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+
 class GIc(GenieBase):
     """
-    GIc (Genie+Information Criterion)
-    Information-Theoretic Hierarchical Clustering Algorithm
-    (**EXPERIMENTAL**)
+    (**EXPERIMENTAL**) GIc hierarchical clustering algorithm
+
 
 
     Parameters
@@ -729,18 +756,21 @@ class GIc(GenieBase):
     Notes
     -----
 
-    Computes a `n_clusters`-partition based on a pre-computed MST
-    maximising (heuristically) the information criterion [2]_.
+    GIc (Genie+Information Criterion) is an Information-Theoretic
+    Hierarchical Clustering Algorithm. It computes an `n_clusters`-partition
+    based on a pre-computed minimums spanning tree. Clusters are merged
+    so as to maximise (heuristically) the information
+    criterion discussed in [2]_.
 
-    GIc has been proposed by Anna Cena in [1]_ and was inspired
+    GIc was proposed by Anna Cena in [1]_ and was inspired
     by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_.
 
     GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
     which follows a divisive scheme). It greedily selects for merging
     a pair of clusters that maximises the information criterion [2]_.
     By default, the initial partition is determined by considering
-    the intersection of clusterings found by multiple runs of the Genie method
-    with thresholds [0.1, 0.3, 0.5, 0.7].
+    the intersection of the clusterings found by multiple runs of
+    the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7].
 
 
     References
@@ -760,7 +790,8 @@ class GIc(GenieBase):
 
 
     """
-    def __init__(self,
+    def __init__(
+            self,
             n_clusters=2,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             add_clusters=0,
@@ -773,8 +804,8 @@ class GIc(GenieBase):
             exact=True,
             cast_float32=True,
             use_mlpack="auto",
-            verbose=False
-        ):
+            verbose=False):
+        # # # # # # # # # # # #
         super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
 
         self.n_clusters = n_clusters

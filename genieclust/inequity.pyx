@@ -6,9 +6,11 @@
 # cython: language_level=3
 
 
+"""
+Inequity (Inequality) Measures
+"""
 
-# Inequity (Inequality) Measures
-#
+
 # Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -42,20 +44,19 @@ cdef T square(T x):
 
 cpdef double gini_index(T[:] x, bint is_sorted=False):
     """
-    gini_index(x, is_sorted=False)
+    genieclust.inequity.gini_index(x, is_sorted=False)
 
-    The normalised Gini index.
-
+    Computes the normalised Gini index
 
 
     Parameters
     ----------
 
-    x : array_like, shape (n,)
+    x : ndarray
         Input vector with non-negative elements.
 
     is_sorted : bool
-        Indicates if x is already sorted increasingly.
+        Indicates if `x` is already sorted increasingly.
 
 
     Returns
@@ -68,7 +69,7 @@ cpdef double gini_index(T[:] x, bint is_sorted=False):
     See Also
     --------
 
-    bonferroni_index : The normalised Bonferroni index
+    genieclust.inequity.bonferroni_index : The normalised Bonferroni index
 
 
     Notes
@@ -116,9 +117,32 @@ cpdef double gini_index(T[:] x, bint is_sorted=False):
     References
     ----------
 
-    .. [1]
-        Gini C., *Variabilita e Mutabilita*,
+    .. [1] : Gini C., *Variabilita e Mutabilita*,
         Tipografia di Paolo Cuppini, Bologna, 1912.
+
+
+    Examples
+    --------
+
+    No inequality (perfect equality):
+
+    >>> genieclust.inequity.gini_index(np.r_[2, 2,  2, 2, 2])
+    0.0
+
+    One has it all (total inequity):
+
+    >>> genieclust.inequity.gini_index(np.r_[0, 0, 10, 0, 0])
+    1.0
+
+    Give to the poor, take away from the rich:
+
+    >>> genieclust.inequity.gini_index(np.r_[7, 0,  3, 0, 0])
+    0.85
+
+    Robinhood even more:
+
+    >>> genieclust.inequity.gini_index(np.r_[6, 0,  3, 1, 0])
+    0.75
     """
 
     if not is_sorted: x = np.sort(x)
@@ -128,19 +152,19 @@ cpdef double gini_index(T[:] x, bint is_sorted=False):
 
 cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     """
-    bonferroni_index(x, is_sorted=False)
+    genieclust.bonferroni_index(x, is_sorted=False)
 
-    The normalised Bonferroni index
+    Computes the normalised Bonferroni index
 
 
     Parameters
     ----------
 
-    x : array_like, shape (n,)
+    x : ndarray
         Input vector with non-negative elements.
 
     is_sorted : bool
-        Indicates if x is already sorted increasingly.
+        Indicates if `x` is already sorted increasingly.
 
 
     Returns
@@ -153,7 +177,7 @@ cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     See Also
     --------
 
-    gini_index : The normalised Gini index
+    genieclust.inequity.gini_index : The normalised Gini index
 
 
     Notes
@@ -177,9 +201,32 @@ cpdef double bonferroni_index(T[:] x, bint is_sorted=False):
     References
     ----------
 
-    .. [1]
-        Bonferroni C., *Elementi di Statistica Generale*, Libreria Seber,
+    .. [1] : Bonferroni C., *Elementi di Statistica Generale*, Libreria Seber,
         Firenze, 1930.
+
+
+    Examples
+    --------
+
+    No inequality (perfect equality):
+
+    >>> genieclust.inequity.bonferroni_index(np.r_[2, 2,  2, 2, 2])
+    0.0
+
+    One has it all (total inequity):
+
+    >>> genieclust.inequity.bonferroni_index(np.r_[0, 0, 10, 0, 0])
+    1.0
+
+    Give to the poor, take away from the rich:
+
+    >>> genieclust.inequity.bonferroni_index(np.r_[7, 0,  3, 0, 0])
+    0.91
+
+    Robinhood even more:
+
+    >>> genieclust.inequity.bonferroni_index(np.r_[6, 0,  3, 1, 0])
+    0.83
     """
 
     if not is_sorted: x = np.sort(x)

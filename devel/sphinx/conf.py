@@ -19,6 +19,8 @@ import os
 import sphinx_rtd_theme
 import genieclust
 import sphinx
+import matplotlib.sphinxext
+import IPython.sphinxext
 
 # -- Project information -----------------------------------------------------
 
@@ -39,6 +41,7 @@ github_project_url = "https://github.com/gagolews/genieclust/"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.inheritance_diagram',
@@ -64,6 +67,17 @@ todo_include_todos = True
 
 source_suffix = ['.rst', '.md']
 
+plot_include_source = True
+plot_html_show_source_link = False
+plot_pre_code = """
+import numpy as np
+import genieclust
+import matplotlib.pyplot as plt
+"""
+
+# https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html
+autosummary_imported_members = True
+autosummary_generate = True
 
 # -- Options for HTML output -------------------------------------------------
 

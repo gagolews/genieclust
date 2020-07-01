@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>genieclust.plots &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="genieclust.inequity" href="genieclust_inequity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.plots</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a> &raquo;</li>
+        
+      <li>genieclust.plots</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/genieclust_plots.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-genieclust.plots">
+<span id="genieclust-plots"></span><h1>genieclust.plots<a class="headerlink" href="#module-genieclust.plots" title="Permalink to this headline">¶</a></h1>
+<p>Various plotting functions</p>
+<dl class="py function">
+<dt id="genieclust.plots.plot_scatter">
+<code class="sig-prename descclassname">genieclust.plots.</code><code class="sig-name descname">plot_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">labels</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.plots.plot_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a scatter plot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">array_like</span></dt><dd><p>Either a two-column matrix that gives the <em>x</em> and <em>y</em> coordinates of the points
+or a vector of length <em>n</em>. In the latter case, <cite>y</cite> must be a
+vector of length <em>n</em> as well.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">None or array_like</span></dt><dd><p>The <em>y</em> coordinates of the <em>n</em> points in the case where <cite>X</cite> is a vector.</p>
+</dd>
+<dt><strong>labels</strong><span class="classifier">None or array_like</span></dt><dd><p>A vector of <em>n</em> integer labels that correspond to each point in <cite>X</cite>,
+that gives its plot style.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">Collection properties</span></dt><dd><p>Further arguments to <cite>matplotlib.pyplot.scatter</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If <cite>X</cite> is a two-column matrix, then <code class="docutils literal notranslate"><span class="pre">plot_scatter(X)</span></code>
+is equivalent to <code class="docutils literal notranslate"><span class="pre">plot_scatter(X[:,0],</span> <span class="pre">X[:,1])</span></code>.</p>
+<p>Unlike in <cite>matplotlib.pyplot.scatter</cite>,
+for any fixed <code class="docutils literal notranslate"><span class="pre">j</span></code>, all points <code class="docutils literal notranslate"><span class="pre">X[i,:]</span></code> such that <code class="docutils literal notranslate"><span class="pre">labels[i]</span> <span class="pre">==</span> <span class="pre">j</span></code>
+are always drawn in the same way, no matter the <code class="docutils literal notranslate"><span class="pre">max(labels)</span></code>.
+In particular, labels 0, 1, 2, and 3 correspond to
+black, red, green, and blue, respectively.</p>
+<p>This function was inspired by the <code class="docutils literal notranslate"><span class="pre">plot()</span></code> function
+from the R package <code class="docutils literal notranslate"><span class="pre">graphics</span></code>.</p>
+<p class="rubric">Examples</p>
+<p>An example scatter plots where each point is assigned one of
+two distinct labels:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mf">2.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">l</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//genieclust_plots-1.png">png</a>, <a class="reference external" href=".//genieclust_plots-1.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-1.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/genieclust_plots-1.png" src="_images/genieclust_plots-1.png" />
+</div>
+<p>Here are the first 10 plotting styles:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ncol</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">col</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nmrk</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">mrk</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mrk_recycled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">mrk</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ncol</span><span class="o">/</span><span class="n">nmrk</span><span class="p">)))[:</span><span class="n">ncol</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">mrk_recycled</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="n">color</span><span class="o">=</span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
+<span class="gp">... </span>        <span class="n">markersize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Plotting styles for labels=0,1,...,9&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//genieclust_plots-2.png">png</a>, <a class="reference external" href=".//genieclust_plots-2.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-2.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/genieclust_plots-2.png" src="_images/genieclust_plots-2.png" />
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.plots.plot_segments">
+<code class="sig-prename descclassname">genieclust.plots.</code><code class="sig-name descname">plot_segments</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pairs</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">style</span><span class="o">=</span><span class="default_value">'k-'</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.plots.plot_segments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Draws a set of disjoint line segments</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>pairs</strong><span class="classifier">array_like</span></dt><dd><p>A two-column matrix that gives the pairs of indices
+defining the line segments to draw.</p>
+</dd>
+<dt><strong>X</strong><span class="classifier">array_like</span></dt><dd><p>Either a two-column matrix that gives the <em>x</em> and <em>y</em> coordinates of the points
+or a vector of length <em>n</em>. In the latter case, <cite>y</cite> must be a
+vector of length <em>n</em> as well.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">None or array_like</span></dt><dd><p>The <em>y</em> coordinates of the <em>n</em> points in the case where <cite>X</cite> is a vector.</p>
+</dd>
+<dt><strong>style:</strong></dt><dd><p>See <cite>matplotlib.pyplot.plot</cite>.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">Collection properties</span></dt><dd><p>Further arguments to <cite>matplotlib.pyplot.plot</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The function draws a set of disjoint line segments from
+<code class="docutils literal notranslate"><span class="pre">(X[pairs[i,0],0],</span> <span class="pre">X[pairs[i,0],1])</span></code> to
+<code class="docutils literal notranslate"><span class="pre">(X[pairs[i,1],0],</span> <span class="pre">X[pairs[i,1],1])</span></code>
+for all <code class="docutils literal notranslate"><span class="pre">i</span></code> from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">pairs.shape[0]-1</span></code>.</p>
+<p><cite>matplotlib.pyplot.plot</cite> is called only once.
+Therefore, you can expect it to be pretty pretty fast.</p>
+<p class="rubric">Examples</p>
+<p>Plotting the convex hull of a point set:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">scipy.spatial</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hull</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_segments</span><span class="p">(</span><span class="n">hull</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;r--&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//genieclust_plots-3.png">png</a>, <a class="reference external" href=".//genieclust_plots-3.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-3.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/genieclust_plots-3.png" src="_images/genieclust_plots-3.png" />
+</div>
+<p>Plotting the minimum spanning tree:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">123</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mst</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">internal</span><span class="o">.</span><span class="n">mst_from_distance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_segments</span><span class="p">(</span><span class="n">mst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;m-.&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//genieclust_plots-4.png">png</a>, <a class="reference external" href=".//genieclust_plots-4.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-4.pdf">pdf</a>)</p>
+<div class="figure align-default">
+<img alt="_images/genieclust_plots-4.png" src="_images/genieclust_plots-4.png" />
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="genieclust_inequity.html" class="btn btn-neutral float-left" title="genieclust.inequity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

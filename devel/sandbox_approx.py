@@ -29,9 +29,10 @@ import gc
 np.random.seed(12345)
 #plt.rcParams["figure.figsize"] = (8,4)
 
-X, labels_true, dataset = load_dataset("sipu/worms_64", benchmarks_path)
+X, labels_true, dataset = load_dataset("mnist/digits", benchmarks_path)
 labels_true = [l-1 for l in labels_true] # noise class==-1
 
+print(X.shape)
 
 #n = 1_000_000
 #d = 10
@@ -106,6 +107,16 @@ out = genieclust.internal.genie_from_mst(mst_d, mst_i,
     n_clusters=n_clusters, new_merge=False)["labels"]
 t12 = time.time()
 print("t_py_approx=%.3f" % (t12-t02))
+
+print(genieclust.compare_partitions.confusion_matrix(out, labels_true))
+print(genieclust.compare_partitions.compare_partitions2(out, labels_true)["ar"])
+
+
+out = genieclust.internal.genie_from_mst(mst_d, mst_i,
+    n_clusters=n_clusters, new_merge=False, gini_threshold=0.1)["labels"]
+print("t_py_approx=%.3f" % (t12-t02))
+
+print(genieclust.compare_partitions.confusion_matrix(out, labels_true))
 print(genieclust.compare_partitions.compare_partitions2(out, labels_true)["ar"])
 
 
