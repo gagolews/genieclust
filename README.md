@@ -29,9 +29,11 @@ it often outperforms other clustering approaches
 such as K-means, BIRCH, average, Ward and complete linkage
 on [benchmark data](https://github.com/gagolews/clustering_benchmarks_v1).
 
-Genie is also pretty fast -- determining the whole cluster hierarchy
+Genie is also pretty fast — determining the whole cluster hierarchy
 for datasets of 10M points in low dimensional Euclidean spaces or
 100K points in high dimensional ones takes 1-2 minutes.
+There's also an approximate version, based on `nmslib`, that
+is even faster and supports, amongst others, sparse or string inputs.
 
 It allows clustering with respect to mutual reachability distances
 so that it can act as a noise point detector or a robustified version of
@@ -60,16 +62,16 @@ Contributors for the original R package `genie`:
 
 Implemented algorithms include:
 
--   Genie++ -- a reimplementation of the original Genie algorithm
-    (with a `scikit-learn`-compatible interface; Gagolewski et al., 2016)
+-   Genie++ — a reimplementation of the original Genie algorithm
+    (with a `scikit-learn`-compatible interface; Gagolewski et al., 2016);
 
--   Genie+HDBSCAN\* -- our robustified (Geniefied) retake on the HDBSCAN\*
+-   Genie+HDBSCAN\* — our robustified (Geniefied) retake on the HDBSCAN\*
     (Campello et al., 2015) method that detects noise points in data
-    and outputs clusters of predefined sizes
+    and outputs clusters of predefined sizes;
 
--   *(Python only, experimental preview)* Genie+Ic (GIc) -- Cena's (2018)
+-   *(Python only, experimental preview)* Genie+Ic (GIc) — Cena's (2018)
     algorithm to minimise the information theoretic criterion discussed
-    by Mueller et al. (2012)
+    by Mueller et al. (2012).
 
 See classes `genieclust.Genie` and `genieclust.GIc` (Python)
 or functions `gclust()` and `genieclust()` (R).
@@ -77,17 +79,18 @@ or functions `gclust()` and `genieclust()` (R).
 
 Other goodies:
 
--   Inequity measures (the normalised Gini and Bonferroni index)
+-   Inequity measures (the normalised Gini and Bonferroni index);
 
 -   unctions to compare partitions
     (adjusted&unadjusted Rand,
     adjusted&unadjusted Fowlkes-Mallows (FM),
     adjusted&normalised&unadjusted mutual information (MI) scores,
-    normalised accuracy and pair sets index (PSI))
+    normalised accuracy and pair sets index (PSI));
 
--   *(Python only)* Union-find (disjoint sets) data structures (with extensions)
+-   *(Python only)* Union-find (disjoint sets)
+    data structures (with extensions);
 
--   *(Python only)* Useful R-like plotting functions
+-   *(Python only)* Useful R-like plotting functions.
 
 
 
