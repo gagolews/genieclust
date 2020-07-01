@@ -3,7 +3,7 @@
 #VPATH="/home/gagolews/Python/genieclust"
 
 
-.PHONY: python pytest py-check r r-check testthat r-build sphinx
+.PHONY: python py-test py-check r r-check r r-build sphinx
 
 all: r python
 
@@ -13,8 +13,9 @@ all: r python
 python:
 	python3 setup.py install --user
 
-pytest: python
+py-test: python
 	pytest
+	cd devel/sphinx && make doctest && cd ../../
 
 sphinx: python
 	rm -rf devel/sphinx/_build/
@@ -38,7 +39,7 @@ r:
 r-check: r
 	Rscript -e 'devtools::check()'
 
-testthat: r
+r-test: r
 	Rscript -e 'options(width=120); source("devel/testthat.R")'
 
 

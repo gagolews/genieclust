@@ -38,6 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="genieclust.tools" href="genieclust_tools.html" />
     <link rel="prev" title="genieclust.inequity" href="genieclust_inequity.html" /> 
 </head>
 
@@ -93,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
 </ul>
@@ -204,7 +206,7 @@ two distinct labels:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="mf">2.0</span><span class="p">]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">l</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">n</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">l</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>                                   
 </pre></div>
 </div>
 <p>(<a class="reference external" href=".//genieclust_plots-1.png">png</a>, <a class="reference external" href=".//genieclust_plots-1.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-1.pdf">pdf</a>)</p>
@@ -217,16 +219,17 @@ two distinct labels:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mrk_recycled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span>
 <span class="gp">... </span>    <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">mrk</span><span class="p">,</span>
 <span class="gp">... </span>    <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">ncol</span><span class="o">/</span><span class="n">nmrk</span><span class="p">)))[:</span><span class="n">ncol</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
-<span class="gp">&gt;&gt;&gt; </span>    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
-<span class="gp">... </span>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
-<span class="gp">... </span>        <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">mrk_recycled</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="n">color</span><span class="o">=</span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-<span class="gp">... </span>        <span class="n">markersize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Plotting styles for labels=0,1,...,9&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>                               
+<span class="gp">... </span>    <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span>                                     
+<span class="gp">... </span>        <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>    
+<span class="gp">... </span>    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>                                     
+<span class="gp">... </span>        <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">mrk_recycled</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>             
+<span class="gp">... </span>        <span class="n">color</span><span class="o">=</span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">col</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>            
+<span class="gp">... </span>        <span class="n">markersize</span><span class="o">=</span><span class="mi">25</span><span class="p">)</span>                            
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Plotting styles for labels=0,1,...,9&quot;</span><span class="p">)</span> 
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>                                    
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;off&quot;</span><span class="p">)</span>                                   
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>                                        
 </pre></div>
 </div>
 <p>(<a class="reference external" href=".//genieclust_plots-2.png">png</a>, <a class="reference external" href=".//genieclust_plots-2.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-2.pdf">pdf</a>)</p>
@@ -273,7 +276,7 @@ Therefore, you can expect it to be pretty pretty fast.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hull</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">ConvexHull</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_segments</span><span class="p">(</span><span class="n">hull</span><span class="o">.</span><span class="n">simplices</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;r--&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>                                 
 </pre></div>
 </div>
 <p>(<a class="reference external" href=".//genieclust_plots-3.png">png</a>, <a class="reference external" href=".//genieclust_plots-3.hires.png">hires.png</a>, <a class="reference external" href=".//genieclust_plots-3.pdf">pdf</a>)</p>
@@ -286,7 +289,7 @@ Therefore, you can expect it to be pretty pretty fast.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mst</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">internal</span><span class="o">.</span><span class="n">mst_from_distance</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="s2">&quot;euclidean&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_segments</span><span class="p">(</span><span class="n">mst</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">X</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;m-.&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>                          
 <span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -305,6 +308,8 @@ Therefore, you can expect it to be pretty pretty fast.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="genieclust_tools.html" class="btn btn-neutral float-right" title="genieclust.tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="genieclust_inequity.html" class="btn btn-neutral float-left" title="genieclust.inequity" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

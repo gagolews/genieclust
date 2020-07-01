@@ -37,9 +37,6 @@ cython_modules = {
     ],
     "genieclust.tools": [
         os.path.join("genieclust", "tools.pyx")
-    ],
-    "genieclust.deprecated": [
-        os.path.join("genieclust", "deprecated.pyx")
     ]
 }
 

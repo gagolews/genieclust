@@ -12,37 +12,39 @@
 
 
 A reimplementation of **Genie** - a robust and outlier resistant
-clustering algorithm,
-originally published as an R package
+clustering algorithm, originally published as an R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
 The Genie algorithm is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Just like single linkage, it consumes the edges
-of the MST in increasing order of weights. However, it prevents
-the formation of clusters of highly imbalanced sizes; once the Gini index
+of the MST in increasing order of weights. However, it **prevents
+the formation of clusters of highly imbalanced sizes**; once the Gini index
 of the cluster size distribution raises above an assumed threshold,
 a point group of the smallest size is forced to merge with its nearest
 neighbouring cluster.
 
 Genie's appealing simplicity goes hand in hand with its usability;
-it often outperforms other clustering approaches
-such as K-means, BIRCH, average, Ward and complete linkage
+it **often outperforms other clustering approaches**
+such as K-means, BIRCH, or average, Ward, and complete linkage
 on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
 
-Genie is also pretty fast -- determining the whole cluster hierarchy
+Genie is also **very fast** — determining the whole cluster hierarchy
 for datasets of 10M points in low dimensional Euclidean spaces or
 100K points in high dimensional ones takes 1-2 minutes.
+There's also an approximate version, based on `nmslib`, that
+is even faster and supports, amongst others, sparse or string inputs.
 
-It allows clustering with respect to mutual reachability distances
-so that it can act as a noise point detector or a robustified version of
-HDBSCAN* (that is able to detect a predefined number of
-clusters and hence it doesn't dependent on the DBSCAN's somehow
-difficult-to-set `eps` parameter).
+It also allows clustering with respect to mutual reachability distances
+so that it can act as a **noise point detector** or a
+robustified version of `HDBSCAN\*` that is able to detect a predefined
+number of clusters and hence it doesn't dependent on the `DBSCAN`'s somehow
+difficult-to-set `eps` parameter.
 
 
 
-Source code is available at
+**TODO**: The `genieclust` package is available for Python (PyPI--link)
+and R (CRAN--link). Its source code is available at
 `https://github.com/gagolews/genieclust <https://github.com/gagolews/genieclust>`_.
 
 

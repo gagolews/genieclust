@@ -162,30 +162,32 @@
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
 <p>A reimplementation of <strong>Genie</strong> - a robust and outlier resistant
-clustering algorithm,
-originally published as an R package
+clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
 <p>The Genie algorithm is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Just like single linkage, it consumes the edges
-of the MST in increasing order of weights. However, it prevents
-the formation of clusters of highly imbalanced sizes; once the Gini index
+of the MST in increasing order of weights. However, it <strong>prevents
+the formation of clusters of highly imbalanced sizes</strong>; once the Gini index
 of the cluster size distribution raises above an assumed threshold,
 a point group of the smallest size is forced to merge with its nearest
 neighbouring cluster.</p>
 <p>Genie’s appealing simplicity goes hand in hand with its usability;
-it often outperforms other clustering approaches
-such as K-means, BIRCH, average, Ward and complete linkage
+it <strong>often outperforms other clustering approaches</strong>
+such as K-means, BIRCH, or average, Ward, and complete linkage
 on <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1/">benchmark data</a>.</p>
-<p>Genie is also pretty fast – determining the whole cluster hierarchy
+<p>Genie is also <strong>very fast</strong> — determining the whole cluster hierarchy
 for datasets of 10M points in low dimensional Euclidean spaces or
-100K points in high dimensional ones takes 1-2 minutes.</p>
-<p>It allows clustering with respect to mutual reachability distances
-so that it can act as a noise point detector or a robustified version of
-HDBSCAN* (that is able to detect a predefined number of
-clusters and hence it doesn’t dependent on the DBSCAN’s somehow
-difficult-to-set <cite>eps</cite> parameter).</p>
-<p>Source code is available at
+100K points in high dimensional ones takes 1-2 minutes.
+There’s also an approximate version, based on <cite>nmslib</cite>, that
+is even faster and supports, amongst others, sparse or string inputs.</p>
+<p>It also allows clustering with respect to mutual reachability distances
+so that it can act as a <strong>noise point detector</strong> or a
+robustified version of <cite>HDBSCAN*</cite> that is able to detect a predefined
+number of clusters and hence it doesn’t dependent on the <cite>DBSCAN</cite>’s somehow
+difficult-to-set <cite>eps</cite> parameter.</p>
+<p><strong>TODO</strong>: The <cite>genieclust</cite> package is available for Python (PyPI–link)
+and R (CRAN–link). Its source code is available at
 <a class="reference external" href="https://github.com/gagolews/genieclust">https://github.com/gagolews/genieclust</a>.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
@@ -194,6 +196,7 @@ difficult-to-set <cite>eps</cite> parameter).</p>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
 </ul>

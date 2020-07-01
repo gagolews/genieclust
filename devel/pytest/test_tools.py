@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import genieclust
 from genieclust.tools import *
 
 # np.random.seed(123)
@@ -8,16 +9,16 @@ def test_argsort():
 
         x = np.arange(n)
         t0 = time.time()
-        y1a = argsort(x, False)
+        y1a = genieclust.tools._argsort(x, False)
         print("(ascending)  n=%18d: %10.3fs" % (n, time.time()-t0), end="\t")
         t0 = time.time()
         y2a = np.argsort(x)
         print("%10.3fs" % (time.time()-t0,))
         assert np.all(y1a == y2a)
 
-        x = np.arange(n)[::-1].copy()
+        x = np.arange(n)[::-1]
         t0 = time.time()
-        y1b = argsort(x, False)
+        y1b = genieclust.tools._argsort(x, False)
         print("(descending)                       %10.3fs" % (time.time()-t0,), end="\t")
         t0 = time.time()
         y2b = np.argsort(x)
@@ -26,7 +27,7 @@ def test_argsort():
 
         x = np.round(np.random.rand(n), 5)
         t0 = time.time()
-        y1c = argsort(x, True)
+        y1c = genieclust.tools._argsort(x, True)
         print("(random-stable)                    %10.3fs" % (time.time()-t0,), end="\t")
         t0 = time.time()
         y2c = np.argsort(x, kind="mergesort")
@@ -46,7 +47,7 @@ def test_argkmin():
             print("%10.3fs" % (time.time()-t0,))
             assert y1a == y2a
 
-            x = np.arange(n)[::-1].copy()
+            x = np.arange(n)[::-1]
             t0 = time.time()
             y1b = argkmin(x, k)
             print("(descending)                       %10.3fs" % (time.time()-t0,), end="\t")
@@ -104,7 +105,7 @@ def test_cummax():
 
 if __name__ == "__main__":
     print("\n\nargsort\n")
-    test_argsort()
+    testgenieclust.tools._argsort()
     print("\n\nargkmin\n")
     test_argkmin()
     print("\n\ncummin\n")

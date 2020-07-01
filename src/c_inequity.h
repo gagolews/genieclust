@@ -65,7 +65,10 @@ double Cgini_sorted(const T* x, ssize_t n)
         t += x[n-i];
         s += (n-2.0*i+1.0)*x[n-i];
     }
-    return s/(n-1.0)/t;
+    s = s/(n-1.0)/t;
+    if (s > 1.0) return 1.0;
+    else if (s < 0.0) return 0.0;
+    else return s;
 }
 
 
@@ -108,7 +111,10 @@ double Cbonferroni_sorted(const T* x, ssize_t n)
         t += x[n-i];
         s += (n-c)*x[n-i];
     }
-    return s/(n-1.0)/t;
+    s = s/(n-1.0)/t;
+    if (s > 1.0) return 1.0;
+    else if (s < 0.0) return 0.0;
+    else return s;
 }
 
 // #cpdef np.float64_t coefvar(np.ndarray[T] x, bint is_sorted=False):

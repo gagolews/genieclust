@@ -8,4 +8,4 @@ Python Package `genieclust` Reference
     genieclust_genie
     genieclust_inequity
     genieclust_plots
-
+    genieclust_tools

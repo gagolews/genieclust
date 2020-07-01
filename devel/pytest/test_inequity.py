@@ -42,5 +42,10 @@ def test_inequity():
             assert abs(xb1 - xb2) < 1e-9
             assert abs(xb1 - xb3) < 1e-9
 
+            if n > 2:
+                x = np.sort(x)
+                assert gini_index(x[::2],True) == gini_index(np.array(x[::2]))
+                assert bonferroni_index(x[::2], True) == bonferroni_index(np.array(x[::2]))
+
 if __name__ == "__main__":
     test_inequity()

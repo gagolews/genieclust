@@ -104,7 +104,7 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
         >>> X = np.r_[np.random.randn(n[0], 2), np.random.randn(n[1], 2)+2.0]
         >>> l = np.repeat([0, 1], n)
         >>> genieclust.plots.plot_scatter(X, labels=l)
-        >>> plt.show()
+        >>> plt.show()                                   # doctest: +SKIP
 
 
     .. plot::
@@ -116,16 +116,17 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
         >>> mrk_recycled = np.tile(
         ...     genieclust.plots.mrk,
         ...     int(np.ceil(ncol/nmrk)))[:ncol]
-        >>> for i in range(10):
-        >>>     plt.text(i, 0, i, horizontalalignment="center")
-        ...     plt.plot(
-        ...         i, 1, marker=mrk_recycled[i],
-        ...         color=genieclust.plots.col[i],
-        ...         markersize=25)
-        >>> plt.title("Plotting styles for labels=0,1,...,9")
-        >>> plt.ylim(-3,4)
-        >>> plt.axis("off")
-        >>> plt.show()
+        >>> for i in range(10):                               # doctest: +SKIP
+        ...     plt.text(                                     # doctest: +SKIP
+        ...         i, 0, i, horizontalalignment="center")    # doctest: +SKIP
+        ...     plt.plot(                                     # doctest: +SKIP
+        ...         i, 1, marker=mrk_recycled[i],             # doctest: +SKIP
+        ...         color=genieclust.plots.col[i],            # doctest: +SKIP
+        ...         markersize=25)                            # doctest: +SKIP
+        >>> plt.title("Plotting styles for labels=0,1,...,9") # doctest: +SKIP
+        >>> plt.ylim(-3,4)                                    # doctest: +SKIP
+        >>> plt.axis("off")                                   # doctest: +SKIP
+        >>> plt.show()                                        # doctest: +SKIP
 
     """
     X = _get_xy(X, y)
@@ -195,7 +196,7 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
         >>> hull = scipy.spatial.ConvexHull(X)
         >>> genieclust.plots.plot_scatter(X)
         >>> genieclust.plots.plot_segments(hull.simplices, X, style="r--")
-        >>> plt.show()
+        >>> plt.show()                                 # doctest: +SKIP
 
 
     .. plot::
@@ -207,8 +208,8 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
         >>> mst = genieclust.internal.mst_from_distance(X, "euclidean")
         >>> genieclust.plots.plot_scatter(X)
         >>> genieclust.plots.plot_segments(mst[1], X, style="m-.")
-        >>> plt.axis("equal")
-        >>> plt.show()
+        >>> plt.axis("equal")                          # doctest: +SKIP
+        >>> plt.show()                                 # doctest: +SKIP
 
 
 

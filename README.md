@@ -26,7 +26,7 @@ neighbouring cluster.
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it often outperforms other clustering approaches
-such as K-means, BIRCH, average, Ward and complete linkage
+such as K-means, BIRCH, average, Ward, and complete linkage
 on [benchmark data](https://github.com/gagolews/clustering_benchmarks_v1).
 
 Genie is also pretty fast — determining the whole cluster hierarchy

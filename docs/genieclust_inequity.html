@@ -94,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.inequity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
 </ul>
@@ -173,7 +174,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>Input vector with non-negative elements.</p>
+<dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>A vector with non-negative elements.</p>
 </dd>
 <dt><strong>is_sorted</strong><span class="classifier">bool</span></dt><dd><p>Indicates if <cite>x</cite> is already sorted increasingly.</p>
 </dd>
@@ -212,22 +213,22 @@ Firenze, 1930.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>No inequality (perfect equality):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.0</span>
 </pre></div>
 </div>
 <p>One has it all (total inequity):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">1.0</span>
 </pre></div>
 </div>
 <p>Give to the poor, take away from the rich:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.91</span>
 </pre></div>
 </div>
 <p>Robinhood even more:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.83</span>
 </pre></div>
 </div>
@@ -240,7 +241,7 @@ Firenze, 1930.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>Input vector with non-negative elements.</p>
+<dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>A vector with non-negative elements.</p>
 </dd>
 <dt><strong>is_sorted</strong><span class="classifier">bool</span></dt><dd><p>Indicates if <cite>x</cite> is already sorted increasingly.</p>
 </dd>
@@ -297,22 +298,22 @@ Tipografia di Paolo Cuppini, Bologna, 1912.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>No inequality (perfect equality):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.0</span>
 </pre></div>
 </div>
 <p>One has it all (total inequity):</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">1.0</span>
 </pre></div>
 </div>
 <p>Give to the poor, take away from the rich:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.85</span>
 </pre></div>
 </div>
 <p>Robinhood even more:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span>  <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
 <span class="go">0.75</span>
 </pre></div>
 </div>
