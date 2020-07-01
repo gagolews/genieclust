@@ -122,22 +122,24 @@ class GenieBase(BaseEstimator, ClusterMixin):
         Determines the minimum spanning trees and other thingies.
 
         See the documentation of the overloaded methods for more details:
-        `Genie.fit`, `GIc.fit`.
+        `genieclust.Genie.fit`, `genieclust.GIc.fit`.
 
 
         Parameters
         ----------
 
-        X :
-            See `Genie.fit`.
+        X : object
+            See `genieclust.Genie.fit`.
         y : None
-            See `Genie.fit`.
+            See `genieclust.Genie.fit`.
 
 
         Returns
         -------
 
-        `self`
+        self
+            Object the method was called on.
+
         """
         cur_state = dict()
         cur_state["X"] = id(X)
@@ -335,23 +337,24 @@ class GenieBase(BaseEstimator, ClusterMixin):
     def fit_predict(self, X, y=None):
         """
         Compute the `n_clusters`-partition and return the predicted labels,
-        see `fit`.
+        see `genieclust.Genie.fit`.
 
 
         Parameters
         ----------
 
-        X : numpy.ndarray
-            See `fit`.
+        X : object
+            See `genieclust.Genie.fit`.
         y : None
-            See `fit`.
+            See `genieclust.Genie.fit`.
 
 
         Returns
         -------
 
-        labels_ : numpy.ndarray
+        labels_ : ndarray
             `self.labels_` attribute.
+
         """
         self.fit(X)
         return self.labels_
@@ -379,7 +382,7 @@ class Genie(GenieBase):
         and approximations used (see parameter `exact`), the actual
         partition cardinality can be smaller.
         `n_clusters` equal to 1 can act as a noise point/outlier detector
-        (if `M`>1 and `postprocess` is not ``"all"``).
+        (if `M` > 1 and `postprocess` is not ``"all"``).
         `n_clusters` equal to 0 computes the whole dendrogram but doesn't
         generate any particular cuts.
     gini_threshold : float
@@ -388,29 +391,30 @@ class Genie(GenieBase):
         Threshold of 1.0 disables the correction.
         Low thresholds highly penalise the formation of small clusters.
     M : int
-        Smoothing factor. `M`=1 gives the original Genie algorithm.
+        Smoothing factor. `M` = 1 gives the original Genie algorithm.
     affinity : {'euclidean', 'l2', 'manhattan', 'l1', 'cityblock', 'cosine', 'precomputed'}
         Metric used to compute the linkage. One of:
         ``"euclidean"`` (synonym: ``"l2"``),
-        "manhattan" (a.k.a. "l1" and "cityblock"), "cosine" or "precomputed".
+        ``"manhattan"`` (a.k.a. ``"l1"`` and ``"cityblock"``),
+        ``"cosine"``, or ``"precomputed"``.
         If "precomputed", a n_samples*(n_samples-1)/2 distance vector
         or a square-form distance
-        matrix is needed on input (argument X) for the fit() method,
-        see `scipy.spatial.distance.pdist()` or
-        `scipy.spatial.distance.squareform()`, amongst others.
+        matrix is needed on input (argument `X`) for the `fit` method,
+        see `scipy.spatial.distance.pdist` or
+        `scipy.spatial.distance.squareform`, amongst others.
     compute_full_tree : bool
         If False, only a partial hierarchy is determined so that
-        at most n_clusters are generated. Saves some time if you think you know
+        at most `n_clusters` are generated. Saves some time if you think you know
         how many clusters are there, but are you *really* sure about that?
     compute_all_cuts : bool
         If True, n_clusters-partition and all the more coarse-grained
         ones will be determined; in such a case, the `labels_` attribute
         will be a matrix/
     postprocess : {'boundary', 'none', 'all'}
-        In effect only if M>1. By default, only "boundary" points are merged
+        In effect only if `M` > 1. By default, only "boundary" points are merged
         with their nearest "core" points (A point is a boundary point if it is
         a noise point and it's amongst its adjacent vertex's
-        M-1 nearest neighbours). To force a classical
+        `M` - 1 nearest neighbours). To force a classical
         n_clusters-partition of a data set (with no notion of noise),
         choose "all".
     exact : bool
@@ -425,29 +429,29 @@ class Genie(GenieBase):
         at a cost of greater memory usage)? Note that `nmslib`
         (used when `exact` is ``False``) requires ``float32`` data anyway.
     use_mlpack : bool or "auto", default="auto"
-        Use ``mlpack.emst()`` for computing the Euclidean minimum spanning tree?
+        Use `mlpack.emst` for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
         only affinity='euclidean' is supported (and M=1).
-        By default, we rely on mlpack if it's installed and n_features <= 6.
+        By default, we rely on `mlpack` if it's installed and `n_features` <= 6.
         Otherwise, we use our own parallelised implementation of Prim's
-        algorithm (environment variable `OMP_NUM_THREADS` controls
+        algorithm (environment variable ``OMP_NUM_THREADS`` controls
         the number of threads used).
     verbose : bool, default=False
-        Whether to print diagnostic messages and progress information on stderr.
+        Whether to print diagnostic messages and progress information on ``stderr``.
 
 
     Attributes
     ----------
 
-    labels_ : numpy.ndarray
+    labels_ : ndarray
         shape (n_samples,) or (<=n_clusters+1, n_samples), or None
-        If `n_clusters`=0, no `labels_` are generated (None).
-        If `compute_all_cuts`=``True`` (the default), these are the detected
+        If `n_clusters` = 0, no `labels_` are generated (``None``).
+        If `compute_all_cuts` = ``True`` (the default), these are the detected
         cluster labels of each point: an integer vector with ``labels_[i]``
-        denoting the cluster id (in {0, ..., `n_clusters`-1}) of the i-th object.
-        If `M`>1, noise points are labelled ``-1`` (unless taken care of in the
+        denoting the cluster id (in {0, ..., `n_clusters` - 1}) of the i-th object.
+        If `M` > 1, noise points are labelled -1 (unless taken care of in the
         postprocessing stage).
-        Otherwise, i.e., if `compute_all_cuts`=``False``,
+        Otherwise, i.e., if `compute_all_cuts` = ``False``,
         all partitions of cardinality down to n_clusters (if `n_samples`
         and the number of noise points allows) are determined.
         In such a case, ``labels_[j,i]`` denotes the cluster id of the i-th
@@ -455,8 +459,8 @@ class Genie(GenieBase):
         We assume that a 0- and 1- partition only distinguishes between
         noise- and non-noise points, however, no postprocessing
         is conducted on the 0-partition (there might be points with
-        labels -1 even if `postprocess`=``"all"``).
-        Note that the approximate method (`exact`=``False``) might fail
+        labels -1 even if `postprocess` = ``"all"``).
+        Note that the approximate method (`exact` = ``False``) might fail
         to determine the fine-grained clusters (if the approximate
         neighbour graph is disconnected) and then the first few rows
         might be identical.
@@ -469,12 +473,12 @@ class Genie(GenieBase):
         The number of points in the fitted dataset.
     n_features_ : int or None
         The number of features in the fitted dataset.
-    is_noise_ : numpy.ndarray, shape (n_samples,) or None
+    is_noise_ : ndarray, shape (n_samples,) or None
         ``is_noise_[i]`` is True iff the i-th point is a noise one;
-        For M=1, all points are no-noise ones.
-        Points are marked as noise even if `postprocess`=``"all"``.
+        For `M` = 1, all points are no-noise ones.
+        Points are marked as noise even if `postprocess` equals ``"all"``.
         Note that boundary points are also marked as noise points.
-    children_ : numpy.ndarray, shape (n_samples-1, 2)
+    children_ : ndarray, shape (n_samples-1, 2)
         The i-th row provides the information on the clusters merged at
         the i-th iteration. Noise points are merged first, with
         the corresponding ``distances_[i]`` of 0.
@@ -482,20 +486,20 @@ class Genie(GenieBase):
         `scipy.cluster.hierarchy.linkage`. Together with `distances_` and
         `counts_`, this forms the linkage matrix that can be used for
         plotting the dendrogram.
-        Only available if `compute_full_tree`=``True``.
-    distances_ : numpy.ndarray, shape (n_samples-1,)
-        Distance between the two clusters merged at the i-th iteration.
+        Only available if `compute_full_tree` = ``True``.
+    distances_ : ndarray, shape (n_samples-1,)
+        Distance between the two clusters merged at the *i*-th iteration.
         As Genie does not guarantee that that distances are
         ordered increasingly (do not panic, there are some other hierarchical
         clustering linkages that also violate the ultrametricity property),
         these are corrected by applying
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
         See the description of ``Z[i,2]`` in `scipy.cluster.hierarchy.linkage`.
-        Only available if `compute_full_tree`=``True``.
-    counts_ : numpy.ndarray, shape (n_samples-1,)
+        Only available if `compute_full_tree` is ``True``.
+    counts_ : ndarray, shape (n_samples-1,)
         Number of elements in a cluster created at the i-th iteration.
         See the description of ``Z[i,3]`` in `scipy.cluster.hierarchy.linkage`.
-        Only available if `compute_full_tree`=``True``.
+        Only available if `compute_full_tree` is ``True``.
 
 
 
@@ -505,7 +509,7 @@ class Genie(GenieBase):
     A reimplementation of **Genie** - a robust and outlier resistant
     hierarchical clustering algorithm [1]_, originally published
     as an R package ``genie``. Features optional smoothing and
-    noise point detection (if `M`>1).
+    noise point detection (if `M` > 1).
 
     The Genie algorithm is based on a minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
@@ -520,27 +524,27 @@ class Genie(GenieBase):
 
     The clustering can also be computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric),
-    which is used in the definition of the HDBSCAN* algorithm [2]_.
+    which is used in the definition of the *HDBSCAN\** algorithm [2]_.
     If `M` > 1, then the mutual reachability
     distance :math:`m(i,j)` with smoothing factor M is used instead of the
-    chosen "raw" distance d(i,j). It holds
+    chosen "raw" distance :math:`d(i,j)`. It holds
     :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
-    where :math:`c(i)` is :math:`d(i,k)` with k being the (M-1)-th nearest
-    neighbour of i. This makes "noise" and "boundary" points being
-    "pulled away" from each other.
+    where :math:`c(i)` is :math:`d(i,k)` with :math:`k`
+    being the (`M` - 1)-th nearest neighbour of :math:`i`.
+    This makes "noise" and "boundary" points being "pulled away" from each other.
 
-    The Genie correction together with the smoothing factor M>1 (note that
-    M==2 corresponds to the original distance) gives a robustified version of
+    The Genie correction together with the smoothing factor `M` > 1 (note that
+    `M` = 2 corresponds to the original distance) gives a robustified version of
     the HDBSCAN* algorithm that is able to detect a predefined number of
-    clusters. Hence it does not dependent on the DBSCAN's somehow magical
-    `eps` parameter or the HDBSCAN's `min_cluster_size` one.
+    clusters. Hence it does not dependent on the *DBSCAN*'s somehow magical
+    ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
 
 
     The algorithm has O(n_samples*sqrt(n_samples)) time complexity
     given a minimum spanning tree of the pairwise distance graph.
     Unless we use MLPACK (or other variations, see Parameters),
     our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
-    will be called to compute an MST, which generally takes O(n^2) time
+    will be called to compute an MST, which generally takes :math:`O(n^2)` time
     (environment variable ``OMP_NUM_THREADS`` controls the number of threads).
     MLPACK (see Python package `mlpack`) is a very fast alternative
     in the case of Euclidean spaces of (very) low dimensionality and M=1.
@@ -607,28 +611,17 @@ class Genie(GenieBase):
 
     def fit(self, X, y=None):
         """
-        Perform clustering of the given dataset.
-
-        Refer to the `labels_` and `n_clusters_` attributes for the result.
+        Perform clustering of the dataset
 
 
         Parameters
         ----------
 
-        X : numpy.ndarray or scipy.sparse.csr_matrix
-            , shape (n_samples, n_features)  or
-                (n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)
-            A matrix defining n_samples in a vector space with n_features.
-            Hint: it might be a good idea to standardise or at least
-            normalise the coordinates of the
-            input data points by calling
-            `X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order="C", copy=False)`
-            so that the dataset is centred at 0 and
-            has total variance of 1. This way the method becomes
-            translation and scale invariant.
-            However, if affinity="precomputed", then X is assumed to define
-            all pairwise distances between n_samples
-            (either in form of a distance vector or square distance matrix).
+        X : ndarray or sparse.csr_matrix
+            A matrix defining `n_samples` in a vector space with `n_features`
+            or, if `affinity` is ``"precomputed"``,
+            a distance vector or a square distance matrix
+            giving the pairwise distances between `n_samples`.
         y : None
             Ignored.
 
@@ -636,7 +629,28 @@ class Genie(GenieBase):
         Returns
         -------
 
-        `self`
+        self
+            Object the method was called on.
+
+
+        Notes
+        -----
+
+        Refer to the `labels_` and `n_clusters_` attributes for the result.
+
+        It might be a good idea to standardise or at least anyhow "normalise"
+        the coordinates of the input data points by calling, for instance,
+        ``X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)``
+        so that the dataset is centred at 0 and
+        has total variance of 1. This way the method becomes
+        translation and scale invariant.
+
+        For `affinity` of ``"precomputed"``,
+        a distance vector of shape ``(n_samples*(n_samples-1)/2, )``
+        can be generated by a call to `scipy.spatial.distance.pdist`.
+        In turn, square distance matrix of shape ``(n_samples, n_samples)``
+        can be created with `scipy.spatial.distance.squareform.
+
         """
         super().fit(X, y)
         cur_state = self._last_state_
@@ -750,7 +764,7 @@ class GIc(GenieBase):
     Attributes
     ----------
 
-    See class `Genie`.
+    See class `genieclust.Genie`.
 
 
     Notes
@@ -829,16 +843,13 @@ class GIc(GenieBase):
 
     def fit(self, X, y=None):
         """
-        Perform clustering of the given dataset.
-
-        Refer to the `labels_` and `n_clusters_` attributes for the result.
-
+        Perform clustering of the given dataset
 
         Parameters
         ----------
 
-        X : numpy.ndarray
-            See `Genie.fit`.
+        X : ndarray
+            See `genieclust.Genie.fit`.
         y : None
             Ignored.
 
@@ -846,7 +857,14 @@ class GIc(GenieBase):
         Returns
         -------
 
-        `self`
+        self
+            Object the method was called on.
+
+        Notes
+        -----
+
+        Refer to the `labels_` and `n_clusters_` attributes for the result.
+
         """
         super().fit(X, y)
         cur_state = self._last_state_

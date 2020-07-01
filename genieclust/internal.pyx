@@ -6,6 +6,14 @@
 # cython: language_level=3
 
 
+## TODO: we are not exposing these functions (at least, officially),
+## TODO: hence, they are not included in the online manual.
+## TODO: Otherwise, the docstrings should be cleaned up
+## TODO: and formatted so as to conform to the numpydoc guidelines.
+## TODO: (volunteers needed) Cheers.
+
+
+
 """
 Internal functions
 """

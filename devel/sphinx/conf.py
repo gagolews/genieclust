@@ -43,7 +43,7 @@ github_project_url = "https://github.com/gagolews/genieclust/"
 extensions = [
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
+    #'sphinx.ext.autosummary',
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.doctest',
     'sphinx.ext.todo',
@@ -76,8 +76,8 @@ import matplotlib.pyplot as plt
 """
 
 # https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html
-autosummary_imported_members = True
-autosummary_generate = True
+#autosummary_imported_members = True
+#autosummary_generate = True
 
 # -- Options for HTML output -------------------------------------------------
 

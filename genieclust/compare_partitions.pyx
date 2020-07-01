@@ -6,6 +6,11 @@
 # cython: language_level=3
 
 
+"""
+External cluster validity measures (partition similarity scores)
+"""
+
+
 # Adjusted- and Nonadjusted Rand Score,
 # Adjusted- and Nonadjusted Fowlkes-Mallows Score,
 # Adjusted-, Normalised and Nonadjusted Mutual Information Score,
@@ -54,14 +59,14 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     Nice if C actually summarises clustering results,
     where actual labels do not matter.
 
-    Parameters:
+    Parameters
     ----------
 
     C : ndarray, shape (xc,yc)
         a c_contiguous confusion matrix
 
 
-    Returns:
+    Returns
     -------
 
     C_normalized: ndarray, shape(xc,yc)
@@ -79,14 +84,14 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     Computes the confusion matrix (as a dense matrix)
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
         two small-int vectors of the same lengths
 
 
-    Returns:
+    Returns
     -------
 
     C : ndarray, shape (xc, yc)
@@ -122,7 +127,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     where actual labels do not matter.
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -130,7 +135,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     C : ndarray, shape (xc, yc)
@@ -197,7 +202,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
 
 
-    References:
+    References
     ----------
 
     Hubert L., Arabie P., Comparing Partitions,
@@ -218,14 +223,14 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
 
 
-    Parameters:
+    Parameters
     ----------
 
     C : ndarray, shape (xc, yc)
         a confusion matrix, xc <= yc
 
 
-    Returns:
+    Returns
     -------
 
     scores : dict
@@ -257,7 +262,7 @@ cpdef dict compare_partitions2(x, y):
     Calls compare_partitions(confusion_matrix(x, y)).
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -265,7 +270,7 @@ cpdef dict compare_partitions2(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     scores : dict
@@ -284,14 +289,14 @@ cpdef double adjusted_rand_score(x, y):
     For more details, see compare_partitions().
 
 
-    References:
+    References
     ----------
 
     Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -299,7 +304,7 @@ cpdef double adjusted_rand_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -327,14 +332,14 @@ cpdef double rand_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -342,7 +347,7 @@ cpdef double rand_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -366,14 +371,14 @@ cpdef double adjusted_fm_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -381,7 +386,7 @@ cpdef double adjusted_fm_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     --------
 
     score : double
@@ -410,13 +415,13 @@ cpdef double fm_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Hubert L., Arabie P., Comparing Partitions,
     Journal of Classification 2(1), 1985, 193-218
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -424,7 +429,7 @@ cpdef double fm_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -446,7 +451,7 @@ cpdef double mi_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Vinh N.X., Epps J., Bailey J.,
@@ -454,7 +459,7 @@ cpdef double mi_score(x, y):
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -462,7 +467,7 @@ cpdef double mi_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -485,7 +490,7 @@ cpdef double normalized_mi_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Vinh N.X., Epps J., Bailey J.,
@@ -493,7 +498,7 @@ cpdef double normalized_mi_score(x, y):
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -501,7 +506,7 @@ cpdef double normalized_mi_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -523,7 +528,7 @@ cpdef double adjusted_mi_score(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Vinh N.X., Epps J., Bailey J.,
@@ -531,7 +536,7 @@ cpdef double adjusted_mi_score(x, y):
     Variants, properties, normalization and correction for chance,
     Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -539,7 +544,7 @@ cpdef double adjusted_mi_score(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -573,7 +578,7 @@ cpdef double normalized_accuracy(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
@@ -585,7 +590,7 @@ cpdef double normalized_accuracy(x, y):
     doi:10.1109/TKDE.2016.2551240
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -593,7 +598,7 @@ cpdef double normalized_accuracy(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double
@@ -626,7 +631,7 @@ cpdef double pair_sets_index(x, y):
 
 
 
-    References:
+    References
     ----------
 
     Rezaei M., Franti P., Set matching measures for external cluster validity,
@@ -635,7 +640,7 @@ cpdef double pair_sets_index(x, y):
 
 
 
-    Parameters:
+    Parameters
     ----------
 
     x, y : ndarray, shape (n,)
@@ -643,7 +648,7 @@ cpdef double pair_sets_index(x, y):
         two partitions of the same set
 
 
-    Returns:
+    Returns
     -------
 
     score : double

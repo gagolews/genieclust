@@ -177,7 +177,7 @@
 and approximations used (see parameter <cite>exact</cite>), the actual
 partition cardinality can be smaller.
 <cite>n_clusters</cite> equal to 1 can act as a noise point/outlier detector
-(if <cite>M</cite>&gt;1 and <cite>postprocess</cite> is not <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>).
+(if <cite>M</cite> &gt; 1 and <cite>postprocess</cite> is not <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>).
 <cite>n_clusters</cite> equal to 0 computes the whole dendrogram but doesn’t
 generate any particular cuts.</p>
 </dd>
@@ -186,29 +186,30 @@ the Gini index of the cluster size distribution.
 Threshold of 1.0 disables the correction.
 Low thresholds highly penalise the formation of small clusters.</p>
 </dd>
-<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>Smoothing factor. <a href="#id1"><span class="problematic" id="id2">`</span></a>M`=1 gives the original Genie algorithm.</p>
+<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>Smoothing factor. <cite>M</cite> = 1 gives the original Genie algorithm.</p>
 </dd>
 <dt><strong>affinity</strong><span class="classifier">{‘euclidean’, ‘l2’, ‘manhattan’, ‘l1’, ‘cityblock’, ‘cosine’, ‘precomputed’}</span></dt><dd><p>Metric used to compute the linkage. One of:
 <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>),
-“manhattan” (a.k.a. “l1” and “cityblock”), “cosine” or “precomputed”.
+<code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>),
+<code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>.
 If “precomputed”, a n_samples*(n_samples-1)/2 distance vector
 or a square-form distance
-matrix is needed on input (argument X) for the fit() method,
-see <cite>scipy.spatial.distance.pdist()</cite> or
-<cite>scipy.spatial.distance.squareform()</cite>, amongst others.</p>
+matrix is needed on input (argument <cite>X</cite>) for the <cite>fit</cite> method,
+see <cite>scipy.spatial.distance.pdist</cite> or
+<cite>scipy.spatial.distance.squareform</cite>, amongst others.</p>
 </dd>
 <dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>If False, only a partial hierarchy is determined so that
-at most n_clusters are generated. Saves some time if you think you know
+at most <cite>n_clusters</cite> are generated. Saves some time if you think you know
 how many clusters are there, but are you <em>really</em> sure about that?</p>
 </dd>
 <dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>If True, n_clusters-partition and all the more coarse-grained
 ones will be determined; in such a case, the <cite>labels_</cite> attribute
 will be a matrix/</p>
 </dd>
-<dt><strong>postprocess</strong><span class="classifier">{‘boundary’, ‘none’, ‘all’}</span></dt><dd><p>In effect only if M&gt;1. By default, only “boundary” points are merged
+<dt><strong>postprocess</strong><span class="classifier">{‘boundary’, ‘none’, ‘all’}</span></dt><dd><p>In effect only if <cite>M</cite> &gt; 1. By default, only “boundary” points are merged
 with their nearest “core” points (A point is a boundary point if it is
 a noise point and it’s amongst its adjacent vertex’s
-M-1 nearest neighbours). To force a classical
+<cite>M</cite> - 1 nearest neighbours). To force a classical
 n_clusters-partition of a data set (with no notion of noise),
 choose “all”.</p>
 </dd>
@@ -223,24 +224,24 @@ which gives the time complexity of O(n_samples*n_samples*n_features).</p>
 at a cost of greater memory usage)? Note that <cite>nmslib</cite>
 (used when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) requires <code class="docutils literal notranslate"><span class="pre">float32</span></code> data anyway.</p>
 </dd>
-<dt><strong>use_mlpack</strong><span class="classifier">bool or “auto”, default=”auto”</span></dt><dd><p>Use <code class="docutils literal notranslate"><span class="pre">mlpack.emst()</span></code> for computing the Euclidean minimum spanning tree?
+<dt><strong>use_mlpack</strong><span class="classifier">bool or “auto”, default=”auto”</span></dt><dd><p>Use <cite>mlpack.emst</cite> for computing the Euclidean minimum spanning tree?
 Might be faster for lower-dimensional spaces. As the name suggests,
 only affinity=’euclidean’ is supported (and M=1).
-By default, we rely on mlpack if it’s installed and n_features &lt;= 6.
+By default, we rely on <cite>mlpack</cite> if it’s installed and <cite>n_features</cite> &lt;= 6.
 Otherwise, we use our own parallelised implementation of Prim’s
-algorithm (environment variable <cite>OMP_NUM_THREADS</cite> controls
+algorithm (environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> controls
 the number of threads used).</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether to print diagnostic messages and progress information on stderr.</p>
+<dt><strong>verbose</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether to print diagnostic messages and progress information on <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>A reimplementation of <strong>Genie</strong> - a robust and outlier resistant
-hierarchical clustering algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id3">[1]</a>, originally published
+hierarchical clustering algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id1">[1]</a>, originally published
 as an R package <code class="docutils literal notranslate"><span class="pre">genie</span></code>. Features optional smoothing and
-noise point detection (if <cite>M</cite>&gt;1).</p>
+noise point detection (if <cite>M</cite> &gt; 1).</p>
 <p>The Genie algorithm is based on a minimum spanning tree (MST) of the
 pairwise distance graph of a given point set.
 Just like single linkage, it consumes the edges
@@ -252,24 +253,24 @@ Its appealing simplicity goes hand in hand with its usability;
 Genie often outperforms other clustering approaches on benchmark data.</p>
 <p>The clustering can also be computed with respect to the
 mutual reachability distance (based, e.g., on the Euclidean metric),
-which is used in the definition of the HDBSCAN* algorithm <a class="reference internal" href="#r6050e59d50fb-2" id="id4">[2]</a>.
+which is used in the definition of the <em>HDBSCAN*</em> algorithm <a class="reference internal" href="#r6050e59d50fb-2" id="id2">[2]</a>.
 If <cite>M</cite> &gt; 1, then the mutual reachability
 distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor M is used instead of the
-chosen “raw” distance d(i,j). It holds
+chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds
 <span class="math notranslate nohighlight">\(m(i,j)=\max(d(i,j), c(i), c(j))\)</span>,
-where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i,k)\)</span> with k being the (M-1)-th nearest
-neighbour of i. This makes “noise” and “boundary” points being
-“pulled away” from each other.</p>
-<p>The Genie correction together with the smoothing factor M&gt;1 (note that
-M==2 corresponds to the original distance) gives a robustified version of
+where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i,k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span>
+being the (<cite>M</cite> - 1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>.
+This makes “noise” and “boundary” points being “pulled away” from each other.</p>
+<p>The Genie correction together with the smoothing factor <cite>M</cite> &gt; 1 (note that
+<cite>M</cite> = 2 corresponds to the original distance) gives a robustified version of
 the HDBSCAN* algorithm that is able to detect a predefined number of
-clusters. Hence it does not dependent on the DBSCAN’s somehow magical
-<cite>eps</cite> parameter or the HDBSCAN’s <cite>min_cluster_size</cite> one.</p>
+clusters. Hence it does not dependent on the <em>DBSCAN</em>’s somehow magical
+<code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or the <em>HDBSCAN</em>’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
 <p>The algorithm has O(n_samples*sqrt(n_samples)) time complexity
 given a minimum spanning tree of the pairwise distance graph.
 Unless we use MLPACK (or other variations, see Parameters),
 our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
-will be called to compute an MST, which generally takes O(n^2) time
+will be called to compute an MST, which generally takes <span class="math notranslate nohighlight">\(O(n^2)\)</span> time
 (environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> controls the number of threads).
 MLPACK (see Python package <cite>mlpack</cite>) is a very fast alternative
 in the case of Euclidean spaces of (very) low dimensionality and M=1.</p>
@@ -283,30 +284,30 @@ Departures from ultrametricity are corrected by applying
 <code class="docutils literal notranslate"><span class="pre">Z[:,2]</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(Z[::-1,2])[::-1]</span></code>.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="r6050e59d50fb-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dt class="label" id="r6050e59d50fb-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p>Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 <em>Information Sciences</em> <strong>363</strong>, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
 </dd>
-<dt class="label" id="r6050e59d50fb-2"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
+<dt class="label" id="r6050e59d50fb-2"><span class="brackets"><a class="fn-backref" href="#id2">2</a></span></dt>
 <dd><p>Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,
-<em>ACM Transactions on Knowledge Discovery from Data</em> <a href="#id5"><span class="problematic" id="id6">**</span></a>10**(1),
+<em>ACM Transactions on Knowledge Discovery from Data</em> <a href="#id3"><span class="problematic" id="id4">**</span></a>10**(1),
 2015, 5:1–5:51. doi:10.1145/2733381.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>labels_</strong><span class="classifier">numpy.ndarray</span></dt><dd><p>shape (n_samples,) or (&lt;=n_clusters+1, n_samples), or None
-If <cite>n_clusters`=0, no `labels_</cite> are generated (None).
-If <cite>compute_all_cuts`=``True`</cite> (the default), these are the detected
+<dt><strong>labels_</strong><span class="classifier">ndarray</span></dt><dd><p>shape (n_samples,) or (&lt;=n_clusters+1, n_samples), or None
+If <cite>n_clusters</cite> = 0, no <cite>labels_</cite> are generated (<code class="docutils literal notranslate"><span class="pre">None</span></code>).
+If <cite>compute_all_cuts</cite> = <code class="docutils literal notranslate"><span class="pre">True</span></code> (the default), these are the detected
 cluster labels of each point: an integer vector with <code class="docutils literal notranslate"><span class="pre">labels_[i]</span></code>
-denoting the cluster id (in {0, …, <cite>n_clusters</cite>-1}) of the i-th object.
-If <cite>M</cite>&gt;1, noise points are labelled <code class="docutils literal notranslate"><span class="pre">-1</span></code> (unless taken care of in the
+denoting the cluster id (in {0, …, <cite>n_clusters</cite> - 1}) of the i-th object.
+If <cite>M</cite> &gt; 1, noise points are labelled -1 (unless taken care of in the
 postprocessing stage).
-Otherwise, i.e., if <cite>compute_all_cuts`=``False`</cite>,
+Otherwise, i.e., if <cite>compute_all_cuts</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>,
 all partitions of cardinality down to n_clusters (if <cite>n_samples</cite>
 and the number of noise points allows) are determined.
 In such a case, <code class="docutils literal notranslate"><span class="pre">labels_[j,i]</span></code> denotes the cluster id of the i-th
@@ -314,8 +315,8 @@ point in a j-partition.
 We assume that a 0- and 1- partition only distinguishes between
 noise- and non-noise points, however, no postprocessing
 is conducted on the 0-partition (there might be points with
-labels -1 even if <cite>postprocess`=`</cite>”all”<code class="docutils literal notranslate"><span class="pre">).</span>
-<span class="pre">Note</span> <span class="pre">that</span> <span class="pre">the</span> <span class="pre">approximate</span> <span class="pre">method</span> <span class="pre">(`exact`=``False</span></code>) might fail
+labels -1 even if <cite>postprocess</cite> = <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>).
+Note that the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>) might fail
 to determine the fine-grained clusters (if the approximate
 neighbour graph is disconnected) and then the first few rows
 might be identical.</p>
@@ -329,32 +330,32 @@ requested, for instance, if there are many noise points.</p>
 </dd>
 <dt><strong>n_features_</strong><span class="classifier">int or None</span></dt><dd><p>The number of features in the fitted dataset.</p>
 </dd>
-<dt><strong>is_noise_</strong><span class="classifier">numpy.ndarray, shape (n_samples,) or None</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">is_noise_[i]</span></code> is True iff the i-th point is a noise one;
-For M=1, all points are no-noise ones.
-Points are marked as noise even if <cite>postprocess`=`</cite>”all”<a href="#id9"><span class="problematic" id="id10">``</span></a>.
+<dt><strong>is_noise_</strong><span class="classifier">ndarray, shape (n_samples,) or None</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">is_noise_[i]</span></code> is True iff the i-th point is a noise one;
+For <cite>M</cite> = 1, all points are no-noise ones.
+Points are marked as noise even if <cite>postprocess</cite> equals <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>.
 Note that boundary points are also marked as noise points.</p>
 </dd>
-<dt><strong>children_</strong><span class="classifier">numpy.ndarray, shape (n_samples-1, 2)</span></dt><dd><p>The i-th row provides the information on the clusters merged at
+<dt><strong>children_</strong><span class="classifier">ndarray, shape (n_samples-1, 2)</span></dt><dd><p>The i-th row provides the information on the clusters merged at
 the i-th iteration. Noise points are merged first, with
 the corresponding <code class="docutils literal notranslate"><span class="pre">distances_[i]</span></code> of 0.
 See the description of <code class="docutils literal notranslate"><span class="pre">Z[i,0]</span></code> and <code class="docutils literal notranslate"><span class="pre">Z[i,1]</span></code> in
 <cite>scipy.cluster.hierarchy.linkage</cite>. Together with <cite>distances_</cite> and
 <cite>counts_</cite>, this forms the linkage matrix that can be used for
 plotting the dendrogram.
-Only available if <cite>compute_full_tree`=``True`</cite>.</p>
+Only available if <cite>compute_full_tree</cite> = <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
-<dt><strong>distances_</strong><span class="classifier">numpy.ndarray, shape (n_samples-1,)</span></dt><dd><p>Distance between the two clusters merged at the i-th iteration.
+<dt><strong>distances_</strong><span class="classifier">ndarray, shape (n_samples-1,)</span></dt><dd><p>Distance between the two clusters merged at the <em>i</em>-th iteration.
 As Genie does not guarantee that that distances are
 ordered increasingly (do not panic, there are some other hierarchical
 clustering linkages that also violate the ultrametricity property),
 these are corrected by applying
 <code class="docutils literal notranslate"><span class="pre">distances_</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(distances_[::-1])[::-1]</span></code>.
 See the description of <code class="docutils literal notranslate"><span class="pre">Z[i,2]</span></code> in <cite>scipy.cluster.hierarchy.linkage</cite>.
-Only available if <cite>compute_full_tree`=``True`</cite>.</p>
+Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
-<dt><strong>counts_</strong><span class="classifier">numpy.ndarray, shape (n_samples-1,)</span></dt><dd><p>Number of elements in a cluster created at the i-th iteration.
+<dt><strong>counts_</strong><span class="classifier">ndarray, shape (n_samples-1,)</span></dt><dd><p>Number of elements in a cluster created at the i-th iteration.
 See the description of <code class="docutils literal notranslate"><span class="pre">Z[i,3]</span></code> in <cite>scipy.cluster.hierarchy.linkage</cite>.
-Only available if <cite>compute_full_tree`=``True`</cite>.</p>
+Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -367,10 +368,10 @@ Only available if <cite>compute_full_tree`=``True`</cite>.</p>
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#genieclust.Genie.fit" title="genieclust.Genie.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(self, X[, y])</p></td>
-<td><p>Perform clustering of the given dataset.</p></td>
+<td><p>Perform clustering of the dataset</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(self, X[, y])</p></td>
-<td><p>Compute the <cite>n_clusters</cite>-partition and return the predicted labels, see <cite>fit</cite>.</p></td>
+<td><p>Compute the <cite>n_clusters</cite>-partition and return the predicted labels, see <cite>genieclust.Genie.fit</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>
@@ -383,26 +384,14 @@ Only available if <cite>compute_full_tree`=``True`</cite>.</p>
 <dl class="py method">
 <dt id="genieclust.Genie.fit">
 <code class="sig-name descname">fit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Perform clustering of the given dataset.</p>
-<p>Refer to the <cite>labels_</cite> and <cite>n_clusters_</cite> attributes for the result.</p>
-<dl class="field-list">
+<dd><p>Perform clustering of the dataset</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>X</strong><span class="classifier">numpy.ndarray or scipy.sparse.csr_matrix</span></dt><dd><dl class="simple">
-<dt>, shape (n_samples, n_features)  or</dt><dd><p>(n_samples*(n_samples-1)/2, ) or (n_samples, n_samples)</p>
-</dd>
-</dl>
-<p>A matrix defining n_samples in a vector space with n_features.
-Hint: it might be a good idea to standardise or at least
-normalise the coordinates of the
-input data points by calling
-<cite>X = ((X-X.mean(axis=0))/X.std(axis=None, ddof=1)).astype(np.float32, order=”C”, copy=False)</cite>
-so that the dataset is centred at 0 and
-has total variance of 1. This way the method becomes
-translation and scale invariant.
-However, if affinity=”precomputed”, then X is assumed to define
-all pairwise distances between n_samples
-(either in form of a distance vector or square distance matrix).</p>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">ndarray or sparse.csr_matrix</span></dt><dd><p>A matrix defining <cite>n_samples</cite> in a vector space with <cite>n_features</cite>
+or, if <cite>affinity</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>,
+a distance vector or a square distance matrix
+giving the pairwise distances between <cite>n_samples</cite>.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
 </dd>
@@ -410,10 +399,24 @@ all pairwise distances between n_samples
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><cite>self</cite></dt><dd></dd>
+<dt>self</dt><dd><p>Object the method was called on.</p>
+</dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Refer to the <cite>labels_</cite> and <cite>n_clusters_</cite> attributes for the result.</p>
+<p>It might be a good idea to standardise or at least anyhow “normalise”
+the coordinates of the input data points by calling, for instance,
+<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">=</span> <span class="pre">(X-X.mean(axis=0))/X.std(axis=None,</span> <span class="pre">ddof=1)</span></code>
+so that the dataset is centred at 0 and
+has total variance of 1. This way the method becomes
+translation and scale invariant.</p>
+<p>For <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>,
+a distance vector of shape <code class="docutils literal notranslate"><span class="pre">(n_samples*(n_samples-1)/2,</span> <span class="pre">)</span></code>
+can be generated by a call to <cite>scipy.spatial.distance.pdist</cite>.
+In turn, square distance matrix of shape <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_samples)</span></code>
+can be created with <a href="#id7"><span class="problematic" id="id8">`</span></a>scipy.spatial.distance.squareform.</p>
 </dd></dl>
 
 </dd></dl>
