@@ -10,7 +10,7 @@
 \alias{adjusted_mi_score}
 \alias{normalized_accuracy}
 \alias{pair_sets_index}
-\title{Pairwise Partition Similarity Scores (External Cluster Validity Measures)}
+\title{Pairwise Partition Similarity Scores}
 \usage{
 adjusted_rand_score(x, y = NULL)
 
@@ -44,7 +44,7 @@ A single real value giving the similarity score.
 }
 \description{
 Let \code{x} and \code{y} represent two partitions of a set of \code{n}
-elements into \code{K} and \code{L}, respectively,
+elements into \eqn{K} and \eqn{L}, respectively,
 nonempty and pairwise disjoint subsets,
 e.g., two clusterings of a dataset with \code{n} observations
 represented as label vectors.
@@ -63,16 +63,17 @@ represent the same 2-partition.
 \code{rand_score()} gives the Rand score (the "probability" of agreement
 between the two partitions) and
 \code{adjusted_rand_score()} is its version corrected for chance,
-its expected value is 0.0 for two independent partitions.
+see (Hubert, Arabie, 1985),
+its expected value is 0.0 given two independent partitions.
 Due to the adjustment, the resulting index might also be negative
 for some inputs.
 
 Similarly, \code{fm_score()} gives the Fowlkes-Mallows (FM) score
-and \code{adjusted_fm_score()} is its adjusted-for-chance version.
+and \code{adjusted_fm_score()} is its adjusted-for-chance version,
+see (Hubert, Arabie, 1985).
 
 Note that both the (unadjusted) Rand and FM scores are bounded from below
-by \eqn{1/(K+1)}, where K is the number of clusters (unique labels
-in \code{x} and \code{y}), hence their adjusted versions are preferred.
+by \eqn{1/(K+1)} if \eqn{K=L}, hence their adjusted versions are preferred.
 
 \code{mi_score()}, \code{adjusted_mi_score()} and
 \code{normalized_mi_score()} are information-theoretic

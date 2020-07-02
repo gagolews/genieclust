@@ -218,16 +218,16 @@
 <h1>R Package <em>genieclust</em> Reference<a class="headerlink" href="#r-package-genieclust-reference" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="adjusted-rand-score">
 <h2>adjusted_rand_score<a class="headerlink" href="#adjusted-rand-score" title="Permalink to this headline">¶</a></h2>
-<p>Pairwise Partition Similarity Scores (External Cluster Validity
-Measures)</p>
+<p>Pairwise Partition Similarity Scores</p>
 <div class="section" id="description">
 <h3>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
 <p>Let <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> represent two partitions of a set of <code class="docutils literal notranslate"><span class="pre">n</span></code> elements
-into <code class="docutils literal notranslate"><span class="pre">K</span></code> and <code class="docutils literal notranslate"><span class="pre">L</span></code> , respectively, nonempty and pairwise disjoint
-subsets, e.g., two clusterings of a dataset with <code class="docutils literal notranslate"><span class="pre">n</span></code> observations
-represented as label vectors. These functions quantify the similarity
-between <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> . They can be used as external cluster validity
-measures, i.e., in the presence of reference (ground-truth) partitions.</p>
+into <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(L\)</span> , respectively, nonempty and pairwise
+disjoint subsets, e.g., two clusterings of a dataset with <code class="docutils literal notranslate"><span class="pre">n</span></code>
+observations represented as label vectors. These functions quantify the
+similarity between <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> . They can be used as external
+cluster validity measures, i.e., in the presence of reference
+(ground-truth) partitions.</p>
 </div>
 <div class="section" id="usage">
 <h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
@@ -281,15 +281,15 @@ are always defined up to a bijection of the set of possible labels,
 e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.</p>
 <p><code class="docutils literal notranslate"><span class="pre">rand_score()</span></code> gives the Rand score (the “probability” of agreement
 between the two partitions) and <code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code> is its version
-corrected for chance, its expected value is 0.0 for two independent
-partitions. Due to the adjustment, the resulting index might also be
-negative for some inputs.</p>
+corrected for chance, see (Hubert, Arabie, 1985), its expected value is
+0.0 given two independent partitions. Due to the adjustment, the
+resulting index might also be negative for some inputs.</p>
 <p>Similarly, <code class="docutils literal notranslate"><span class="pre">fm_score()</span></code> gives the Fowlkes-Mallows (FM) score and
-<code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code> is its adjusted-for-chance version.</p>
+<code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code> is its adjusted-for-chance version, see (Hubert,
+Arabie, 1985).</p>
 <p>Note that both the (unadjusted) Rand and FM scores are bounded from
-below by <span class="math notranslate nohighlight">\(1/(K+1)\)</span> , where K is the number of clusters (unique
-labels in <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> ), hence their adjusted versions are
-preferred.</p>
+below by <span class="math notranslate nohighlight">\(1/(K+1)\)</span> if <span class="math notranslate nohighlight">\(K=L\)</span> , hence their adjusted versions
+are preferred.</p>
 <p><code class="docutils literal notranslate"><span class="pre">mi_score()</span></code> , <code class="docutils literal notranslate"><span class="pre">adjusted_mi_score()</span></code> and <code class="docutils literal notranslate"><span class="pre">normalized_mi_score()</span></code>
 are information-theoretic scores, based on mutual information, see the
 definition of <span class="math notranslate nohighlight">\(AMI_{sum}\)</span> and <span class="math notranslate nohighlight">\(NMI_{sum}\)</span> in (Vinh et al.,

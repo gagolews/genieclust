@@ -4,18 +4,18 @@ R Package *genieclust* Reference
 adjusted_rand_score
 -------------------
 
-Pairwise Partition Similarity Scores (External Cluster Validity
-Measures)
+Pairwise Partition Similarity Scores
 
 Description
 ~~~~~~~~~~~
 
 Let ``x`` and ``y`` represent two partitions of a set of ``n`` elements
-into ``K`` and ``L`` , respectively, nonempty and pairwise disjoint
-subsets, e.g., two clusterings of a dataset with ``n`` observations
-represented as label vectors. These functions quantify the similarity
-between ``x`` and ``y`` . They can be used as external cluster validity
-measures, i.e., in the presence of reference (ground-truth) partitions.
+into :math:`K` and :math:`L` , respectively, nonempty and pairwise
+disjoint subsets, e.g., two clusterings of a dataset with ``n``
+observations represented as label vectors. These functions quantify the
+similarity between ``x`` and ``y`` . They can be used as external
+cluster validity measures, i.e., in the presence of reference
+(ground-truth) partitions.
 
 Usage
 ~~~~~
@@ -61,17 +61,17 @@ e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
 
 ``rand_score()`` gives the Rand score (the “probability” of agreement
 between the two partitions) and ``adjusted_rand_score()`` is its version
-corrected for chance, its expected value is 0.0 for two independent
-partitions. Due to the adjustment, the resulting index might also be
-negative for some inputs.
+corrected for chance, see (Hubert, Arabie, 1985), its expected value is
+0.0 given two independent partitions. Due to the adjustment, the
+resulting index might also be negative for some inputs.
 
 Similarly, ``fm_score()`` gives the Fowlkes-Mallows (FM) score and
-``adjusted_fm_score()`` is its adjusted-for-chance version.
+``adjusted_fm_score()`` is its adjusted-for-chance version, see (Hubert,
+Arabie, 1985).
 
 Note that both the (unadjusted) Rand and FM scores are bounded from
-below by :math:`1/(K+1)` , where K is the number of clusters (unique
-labels in ``x`` and ``y`` ), hence their adjusted versions are
-preferred.
+below by :math:`1/(K+1)` if :math:`K=L` , hence their adjusted versions
+are preferred.
 
 ``mi_score()`` , ``adjusted_mi_score()`` and ``normalized_mi_score()``
 are information-theoretic scores, based on mutual information, see the
