@@ -22,7 +22,7 @@ sphinx: python r
 	Rscript -e "Rd2md::ReferenceManual()"
 	Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \
 		-e "f <- f[which(stringi::stri_detect_regex(f, '^#'))[2]:length(f)];" \
-		-e "f <- stringi::stri_replace_first_regex(f, '^#', '##')" \
+		-e "f <- stringi::stri_replace_first_regex(f, '^(#+) \\u0060?(.*?)\\u0060?\\u0024', '#\\u00241 \\u00242')" \
 		-e "f <- stringi::stri_replace_first_regex(f, 'list\\\\(list\\\\(\"(.*?)\"\\\\), list\\\\(\"(.*?)\"\\\\)\\\\)', '\\u00241.\\u00242')" \
 		-e "f <- c('# R Package *genieclust* Reference', '', f)" \
 		-e "writeLines(f, 'r.md')"

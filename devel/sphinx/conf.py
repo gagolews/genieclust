@@ -73,6 +73,7 @@ plot_pre_code = """
 import numpy as np
 import genieclust
 import matplotlib.pyplot as plt
+np.random.seed(123)
 """
 
 # https://www.sphinx-doc.org/en/master/usage/extensions/autosummary.html

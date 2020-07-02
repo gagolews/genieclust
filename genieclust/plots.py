@@ -99,7 +99,6 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
         An example scatter plots where each point is assigned one of
         two distinct labels:
 
-        >>> np.random.seed(123)
         >>> n = np.r_[100, 50]
         >>> X = np.r_[np.random.randn(n[0], 2), np.random.randn(n[1], 2)+2.0]
         >>> l = np.repeat([0, 1], n)
@@ -191,7 +190,6 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
         Plotting the convex hull of a point set:
 
         >>> import scipy.spatial
-        >>> np.random.seed(123)
         >>> X = np.random.randn(100, 2)
         >>> hull = scipy.spatial.ConvexHull(X)
         >>> genieclust.plots.plot_scatter(X)
@@ -203,7 +201,6 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
 
         Plotting the minimum spanning tree:
 
-        >>> np.random.seed(123)
         >>> X = np.random.randn(100, 2)
         >>> mst = genieclust.internal.mst_from_distance(X, "euclidean")
         >>> genieclust.plots.plot_scatter(X)

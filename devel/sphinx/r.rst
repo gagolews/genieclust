@@ -1,8 +1,8 @@
 R Package *genieclust* Reference
 ================================
 
-``adjusted_rand_score``
------------------------
+adjusted_rand_score
+-------------------
 
 Pairwise Partition Similarity Scores (External Cluster Validity
 Measures)
@@ -131,8 +131,8 @@ Examples
    normalized_accuracy(y_true, y_pred)
    pair_sets_index(y_true, y_pred)
 
-``emst_mlpack``
----------------
+emst_mlpack
+-----------
 
 Euclidean Minimum Spanning Tree
 
@@ -198,8 +198,8 @@ March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree:
 Algorithm, Analysis, and Applications, Proc. ACM SIGKDD’10 (2010)
 603-611, https://mlpack.org/papers/emst.pdf
 
-``gclust``
-----------
+gclust
+------
 
 The Genie++ Hierarchical Clustering Algorithm
 
@@ -440,8 +440,8 @@ Examples
    ## Fast for low-dimensional Euclidean spaces:
    if (require("emstreeR")) h <- gclust(emst_mlpack(X))
 
-``genieclust-package``
-----------------------
+genieclust-package
+------------------
 
 The Genie++ Hierarchical Clustering Algorithm (with Extras)
 
@@ -457,8 +457,8 @@ Author
 
 Marek Gagolewski
 
-``gini_index``
---------------
+gini_index
+----------
 
 Inequity (Inequality) Measures
 
@@ -565,8 +565,8 @@ Examples
    bonferroni_index(c(7, 0, 3, 0, 0))
    bonferroni_index(c(6, 0, 3, 1, 0))
 
-``mst``
--------
+mst
+---
 
 Minimum Spanning Tree of the Pairwise Distance Graph
 
