@@ -60,7 +60,7 @@ Note that partitions are always defined up to a bijection of the set of
 possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 represent the same 2-partition.
 
-\code{rand_score()} gives the Rand score (the `probability' of agreement
+\code{rand_score()} gives the Rand score (the "probability" of agreement
 between the two partitions) and
 \code{adjusted_rand_score()} is its version corrected for chance,
 its expected value is 0.0 for two independent partitions.
@@ -81,15 +81,15 @@ see the definition of \eqn{AMI_{sum}} and \eqn{NMI_{sum}}
 in (Vinh et al., 2010).
 
 \code{normalized_accuracy()} is defined as
-\eqn{(Accuracy(C_\sigma)-1/L)/(1-1/L)}, where \eqn{C_sigma} is a version
+\eqn{(Accuracy(C_\sigma)-1/L)/(1-1/L)}, where \eqn{C_\sigma} is a version
 of the confusion matrix for given \code{x} and \code{y},
-K<=L, with columns permuted based on the solution to the
+\eqn{K \leq L}, with columns permuted based on the solution to the
 Maximal Linear Sum Assignment Problem.
 \eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
 e.g., in (Rendon et al. 2011).
 
 \code{pair_sets_index()} gives the  Pair Sets Index (PSI)
-adjusted for chance (Rezaei, Franti, 2016), K<=L.
+adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 Pairing is based on the solution to the Linear Sum Assignment Problem
 of a transformed version of the confusion matrix.
 }

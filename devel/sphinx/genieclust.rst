@@ -6,6 +6,7 @@ Python Package `genieclust` Reference
     :caption: Modules and Classes:
 
     genieclust_genie
+    genieclust_compare_partitions
     genieclust_inequity
     genieclust_plots
     genieclust_tools

@@ -55,21 +55,38 @@ from . cimport c_compare_partitions
 
 cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     """
-    Applies pivoting to a given confusion matrix.
-    Nice if C actually summarises clustering results,
-    where actual labels do not matter.
+    Applies pivoting to a given confusion matrix
+
 
     Parameters
     ----------
 
-    C : ndarray, shape (xc,yc)
-        a c_contiguous confusion matrix
+    C : ndarray
+        A ``c_contiguous`` confusion matrix (contingency table).
 
 
     Returns
     -------
 
-    C_normalized: ndarray, shape(xc,yc)
+    ndarray
+        A normalised confusion matrix of the same shape as `C`.
+
+
+    Notes
+    -----
+
+    This function permutes the columns of `C` to get the largest
+    elements in each row on the main diagonal.
+
+    This comes in handy whenever C actually summarises the results generated
+    by clustering algorithms, where actual label values do not matter
+    (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
+
+
+    Examples
+    --------
+
+    >>> ...
     """
     cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(C, dtype=np.intp)
     cdef ssize_t xc = C_normalized.shape[0]

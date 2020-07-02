@@ -57,7 +57,7 @@ and R (CRAN--link). Its source code is available at
     :caption: Contents:
 
     genieclust
-
+    r
 
 
 Indices and tables

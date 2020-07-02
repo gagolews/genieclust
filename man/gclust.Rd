@@ -86,14 +86,14 @@ instead of 64-bit precision floating-point arithmetic (up to 2x faster).}
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information.}
 
-\item{k}{the desired number of clusters to detect, \code{k}=1 with \code{M}>1
+\item{k}{the desired number of clusters to detect, \code{k} = 1 with \code{M} > 1
 acts as a noise point detector.}
 
-\item{M}{smoothing factor; M<=2 gives the selected \code{distance};
+\item{M}{smoothing factor; \code{M} <= 2 gives the selected \code{distance};
 otherwise, the mutual reachability distance is used.}
 
 \item{postprocess}{one of \code{"boundary"} (default), \code{"none"}
-or \code{"all"};  in effect only if \code{M}>1.
+or \code{"all"};  in effect only if \code{M} > 1.
 By default, only "boundary" points are merged
 with their nearest "core" points (A point is a boundary point if it is
 a noise point and it's amongst its adjacent vertex's
@@ -102,7 +102,7 @@ k-partition of a data set (with no notion of noise),
 choose "all".}
 
 \item{detect_noise}{whether the minimum spanning tree's leaves
-should be marked as noise points, defaults to \code{TRUE} if \code{M}>1
+should be marked as noise points, defaults to \code{TRUE} if \code{M} > 1
 for compatibility with HDBSCAN*}
 }
 \value{
@@ -111,7 +111,7 @@ returns a list of class \code{hclust},
 see \code{\link[stats]{hclust}}. Use \code{link{cutree}()} to obtain
 an arbitrary k-partition.
 
-\code{genie()} returns a k-partition - a vector with elements in 1,...,k,
+\code{genie()} returns a \code{k}-partition - a vector with elements in 1,...,k,
 whose i-th element denotes the i-th input point's cluster identifier.
 Missing values (\code{NA}) denote noise points (if \code{detect_noise}
 is \code{TRUE}).
@@ -134,14 +134,15 @@ such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
 The clustering can now also be computed with respect to the
 mutual reachability distance (based, e.g., on the Euclidean metric),
 which is used in the definition of the HDBSCAN* algorithm
-(see Campello et al., 2015). If \code{M}>1, then the mutual reachability
-distance m(i,j) with smoothing factor \code{M} is used instead of the
-chosen "raw" distance d(i,j). It holds m(i,j)=max(d(i,j), c(i), c(j)),
-where c(i) is d(i,k) with k being the (M-1)-th nearest neighbour of i.
+(see Campello et al., 2015). If \code{M} > 1, then the mutual reachability
+distance \eqn{m(i,j)} with smoothing factor \code{M} is used instead of the
+chosen "raw" distance \eqn{d(i,j)}. It holds \eqn{m(i,j)=\max(d(i,j), c(i), c(j))},
+where \eqn{c(i)} is \eqn{d(i,k)} with \eqn{k} being the
+(\code{M}-1)-th nearest neighbour of \eqn{i}.
 This makes "noise" and "boundary" points being "pulled away" from each other.
 
-The Genie correction together with the smoothing factor M>1 (note that
-M==2 corresponds to the original distance) gives a robustified version of
+The Genie correction together with the smoothing factor \code{M} > 1 (note that
+\code{M} = 2 corresponds to the original distance) gives a robustified version of
 the HDBSCAN* algorithm that is able to detect a predefined number of
 clusters. Hence it does not dependent on the DBSCAN's somehow magical
 \code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
@@ -155,7 +156,7 @@ If \code{d} is a numeric matrix or an object of class \code{dist},
 takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised,
 environment variable \code{OMP_NUM_THREADS} controls the number of threads
 in use). However, see \code{\link{emst_mlpack}()} for a very fast alternative
-in the case of Euclidean spaces of (very) low dimensionality and \code{M}=1.
+in the case of Euclidean spaces of (very) low dimensionality and \code{M} = 1.
 
 Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
 Therefore, if you want to test different \code{gini_threshold}s,

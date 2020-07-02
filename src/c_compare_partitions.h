@@ -107,8 +107,8 @@ struct CComparePartitionsInfoResult {
  *  so as to have the largest elements in each row on the main diagonal.
  *
  *  This comes in handy whenever C actually summarises the results generated
- *  by clustering algorithms, where actual label values do not matter.
- *
+ *  by clustering algorithms, where actual label values do not matter
+ *  (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
  *
  *
  * @param C [in/out] a c_contiguous confusion matrix of size xc*yc

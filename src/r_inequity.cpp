@@ -57,7 +57,8 @@
 //'          x_{\sigma(n-i+1)}
 //'     }{
 //'     (n-1) \sum_{i=1}^n x_i
-//' }   },
+//'     }.
+//' }
 //'
 //'
 //' Time complexity: \eqn{O(n)} for sorted (increasingly) data.
@@ -87,7 +88,7 @@
 //'
 //' @param x numeric vector of non-negative values
 //'
-//' @return The value of the inequity index, a number in [0,1].
+//' @return The value of the inequity index, a number in \eqn{[0, 1]}.
 //'
 //' @examples
 //' gini_index(c(2, 2, 2, 2, 2))  # no inequality

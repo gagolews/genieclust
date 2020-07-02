@@ -16,7 +16,7 @@ e.g., a data frame with numeric-like columns)}
 An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
-Provides access to an implementation of the Dual-Tree Boruvka
+Provides access to an implementation of the Dual-Tree Borůvka
 algorithm based on kd-trees. It is fast for (very) low-dimensional
 Euclidean spaces. For higher dimensional spaces (say, over 5 features)
 or other metrics,

@@ -17,8 +17,18 @@ py-test: python
 	pytest
 	cd devel/sphinx && make doctest && cd ../../
 
-sphinx: python
+sphinx: python r
 	rm -rf devel/sphinx/_build/
+	Rscript -e "Rd2md::ReferenceManual()"
+	Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \
+		-e "f <- f[which(stringi::stri_detect_regex(f, '^#'))[2]:length(f)];" \
+		-e "f <- stringi::stri_replace_first_regex(f, '^#', '##')" \
+		-e "f <- stringi::stri_replace_first_regex(f, 'list\\\\(list\\\\(\"(.*?)\"\\\\), list\\\\(\"(.*?)\"\\\\)\\\\)', '\\u00241.\\u00242')" \
+		-e "f <- c('# R Package *genieclust* Reference', '', f)" \
+		-e "writeLines(f, 'r.md')"
+	pandoc r.md -o devel/sphinx/r.rst
+	#rstlisttable --in-place devel/sphinx/r.rst
+	rm -f Reference_Manual_genieclust.md r.md
 	cd devel/sphinx && make html && cd ../../
 	rm -rf docs/
 	mkdir docs/

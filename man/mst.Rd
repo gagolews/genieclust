@@ -31,7 +31,7 @@ object of class \code{dist}, see \code{\link[stats]{dist}}.}
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 \code{"cosine"}.}
 
-\item{M}{smoothing factor; \code{M}=1 gives the selected \code{distance};
+\item{M}{smoothing factor; \code{M} = 1 gives the selected \code{distance};
 otherwise, the mutual reachability distance is used.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
@@ -52,7 +52,7 @@ distance between the corresponding points.
 The \code{method} attribute gives the name of the distance used.
 The \code{Labels} attribute gives the labels of all the input points.
 
-If \code{M}>1, the \code{nn} attribute gives the indices of the \code{M}-1
+If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
 nearest neighbours of each point.
 }
 \description{
@@ -61,32 +61,32 @@ algorithm for determining
 a(*) minimum spanning tree (MST) of a complete undirected graph
 representing a set of n points
 with weights given by a pairwise distance matrix.
-}
-\details{
-If \code{d} is a numeric matrix of size n*p,
-the n*(n-1)/2 distances are computed on the fly, so that \eqn{O(n M)}
-memory is used.
 
 (*) Note that there might be multiple minimum trees spanning a given graph.
+}
+\details{
+If \code{d} is a numeric matrix of size \eqn{n*p},
+the \eqn{n*(n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
+memory is used.
 
 The algorithm is parallelised; set the \code{OMP_NUM_THREADS} environment
 variable \code{\link[base]{Sys.setenv}} to control the number of threads
 used.
 
 Time complexity is \eqn{O(n^2)} for the method accepting an object of
-class \code{dist} \eqn{and O(p n^2)} otherwise.
+class \code{dist} and \eqn{O(p n^2)} otherwise.
 
-If M>=2, then the mutual reachability distance m(i,j) with smoothing factor M
-(see Campello et al. 2015)
-is used instead of the chosen "raw" distance d(i,j).
-It holds m(i, j)=max(d(i,j), c(i), c(j)), where c(i) is
-d(i, k) with k being the (M-1)-th nearest neighbour of i
+If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)} with smoothing
+factor \code{M} (see Campello et al. 2015)
+is used instead of the chosen "raw" distance \eqn{d(i,j)}.
+It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
+\eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
 This makes "noise" and "boundary" points being "pulled away" from each other.
 Genie++ clustering algorithm (see \code{\link{gclust}})
 with respect to the mutual reachability distance gains the ability to
 identify some observations are noise points.
 
-Note that the case M=2 corresponds to the original distance, but we are
+Note that the case \code{M} = 2 corresponds to the original distance, but we are
 determining the 1-nearest neighbours separately as well, which is a bit
 suboptimal; you can file a feature request if this makes your data analysis
 tasks too slow.
@@ -115,5 +115,5 @@ ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
 }
 \seealso{
 \code{\link{emst_mlpack}()} for a very fast alternative
-in case of (very) low-dimensional Euclidean spaces (and M=1).
+in case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
 }

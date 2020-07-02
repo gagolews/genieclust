@@ -1,6 +1,14 @@
+<!-- toc -->
+
+July 02, 2020
+
+# DESCRIPTION
+
+```
 Package: genieclust
 Type: Package
-Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
+Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points
+        Detection
 Version: 0.9.1
 Date: 2020-06-28
 Authors@R: c(
@@ -29,15 +37,15 @@ Description: A reimplementation of the Genie algorithm - a robust
 BugReports: https://github.com/gagolews/genieclust/issues
 URL: https://genieclust.gagolewski.com/
 License: AGPL-3
-Imports:
-    Rcpp (>= 1.0.4),
-    stats,
-    utils
-Suggests:
-    datasets,
-    emstreeR
+Imports: Rcpp (>= 1.0.4), stats, utils
+Suggests: datasets, emstreeR
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP, C++11
 RoxygenNote: 7.1.0
 Roxygen: list(markdown = TRUE)
+Author: Marek Gagolewski [aut, cre] (<https://orcid.org/0000-0003-0637-6028>)
+Maintainer: Marek Gagolewski <marek@gagolewski.com>
+Built: R 4.0.1; x86_64-pc-linux-gnu; 2020-07-02 05:15:10 UTC; unix```
+
+

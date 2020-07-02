@@ -1,0 +1,665 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>genieclust.compare_partitions &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="genieclust.inequity" href="genieclust_inequity.html" />
+    <link rel="prev" title="genieclust.Genie" href="genieclust_genie.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a> &raquo;</li>
+        
+      <li>genieclust.compare_partitions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/genieclust_compare_partitions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-genieclust.compare_partitions">
+<span id="genieclust-compare-partitions"></span><h1>genieclust.compare_partitions<a class="headerlink" href="#module-genieclust.compare_partitions" title="Permalink to this headline">¶</a></h1>
+<p>External cluster validity measures (partition similarity scores)</p>
+<dl class="py function">
+<dt id="genieclust.compare_partitions.adjusted_fm_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">adjusted_fm_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_fm_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Fowlkes-Mallows index adjusted for chance,</p>
+<p>See Eqs. (2) and (4)  in (Hubert, Arabie, 1985).</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure;
+by the very definition of this index,
+returned values might be negative.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, 193-218</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.adjusted_mi_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">adjusted_mi_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_mi_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjusted mutual information score (AMI_sum)</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure;
+by definition of this index, returned values might be negative.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+Journal of Machine Learning Research 11, 2010, pp. 2837-2854.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.adjusted_rand_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">adjusted_rand_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_rand_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Rand index adjusted for chance.</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure;
+by the very definition of this index,
+returned values might be negative.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, 193-218</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.compare_partitions">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">compare_partitions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the adjusted and nonadjusted Rand- and FM scores,
+nonadjusted, normalised and adjusted mutual information scores,
+normalised accuracy and pair sets index.</p>
+<p>Let <cite>x</cite> and <cite>y</cite> represent two partitions of a set of n
+elements into K and L, respectively,
+nonempty and pairwise disjoint subsets,
+e.g., two clusterings of a dataset with n observations
+represented as label vectors. Moreover, let C be the confusion
+matrix (with K rows and L columns, K&lt;=L)
+corresponding to <cite>x</cite> and <cite>y</cite>, see also <cite>confusion_matrix()</cite>.
+This function implements scores that quantify the similarity between <cite>x</cite>
+and <cite>y</cite>. They can be used as external cluster
+validity measures, i.e., in the presence of reference (ground-truth)
+partitions.</p>
+<p>Every index except <cite>mi_score()</cite> (which computes the mutual
+information score) outputs 1 given two identical partitions.
+Note that partitions are always defined up to a bijection of the set of
+possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
+represent the same 2-partition.</p>
+<p><cite>rand_score()</cite> gives the Rand score (the <cite>probability’ of agreement
+between the two partitions) and `adjusted_rand_score()</cite> is its version
+corrected for chance, its expected value is 0.0 for two independent
+partitions. Due to the adjustment, the resulting index might also
+be negative for some inputs.</p>
+<p>Similarly, <cite>fm_score()</cite> gives the Fowlkes-Mallows (FM) score
+and <cite>adjusted_fm_score()</cite> is its adjusted-for-chance version.</p>
+<p>Note that both the (unadjusted) Rand and FM scores are bounded from below
+by $1/(K+1)$, where K is the number of clusters (unique labels
+in <cite>x</cite> and <cite>y</cite>), hence their adjusted versions are preferred.</p>
+<p><cite>mi_score()</cite>, <cite>adjusted_mi_score()</cite> and <cite>normalized_mi_score()</cite> are
+information-theoretic scores, based on mutual information,
+see the definition of $AMI_{sum}$ and $NMI_{sum}$
+in (Vinh et al., 2010).</p>
+<p><cite>normalized_accuracy()</cite> is defined as $(Accuracy(<a href="#id3"><span class="problematic" id="id4">C_</span></a>sigma)-1/L)/(1-1/L)$,
+where $C_sigma$ is a version of the confusion matrix for given <cite>x</cite> and <cite>y</cite>,
+K&lt;=L, with columns permuted based on the solution to the
+Maximal Linear Sum Assignment Problem.
+$Accuracy(C[sigma])$ is sometimes referred to as Purity,
+e.g., in (Rendon et al. 2011).</p>
+<p><cite>pair_sets_index()</cite> gives the Pair Sets Index (PSI)
+adjusted for chance (Rezaei, Franti, 2016), K&lt;=L.
+Pairing is based on the solution to the Linear Sum Assignment Problem
+of a transformed version of the confusion matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>C</strong><span class="classifier">ndarray, shape (xc, yc)</span></dt><dd><p>a confusion matrix, xc &lt;= yc</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>scores</strong><span class="classifier">dict</span></dt><dd><p>a dictionary with keys ‘ar’, ‘r’, ‘afm’, ‘fm’, ‘mi’, ‘nmi’, ‘ami’,
+‘nacc’ and ‘psi’,
+giving the following scores: adjusted Rand, Rand,
+adjusted Fowlkes-Mallows, Fowlkes-Mallows
+mutual information, normalised mutual information (NMI_sum),
+adjusted mutual information (AMI_sum),
+normalised accuracy and pair sets index, respectively.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)</p>
+<p>Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
+Internal versus external cluster validation indexes,
+International Journal of Computers and Communications 5(1), 2011, pp. 27-34.</p>
+<p>Rezaei M., Franti P., Set matching measures for external cluster validity,
+IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+doi:10.1109/TKDE.2016.2551240</p>
+<p>Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+Journal of Machine Learning Research 11, 2010, pp. 2837-2854.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.compare_partitions2">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">compare_partitions2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls compare_partitions(confusion_matrix(x, y)).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>scores</strong><span class="classifier">dict</span></dt><dd><p>see compare_partitions().</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.confusion_matrix">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">confusion_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the confusion matrix (as a dense matrix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>C</strong><span class="classifier">ndarray, shape (xc, yc)</span></dt><dd><p>a confusion matrix</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.fm_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">fm_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.fm_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The original Fowlkes-Mallows index (not adjusted for chance)</p>
+<p>The index is bounded from below 1/(K+1), where K is the number of clusters
+(unique labels in <cite>x</cite> and <cite>y</cite>), hence its adjusted version are preferred,
+see <cite>adjusted_fm_score()</cite>.</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, 193-218</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.mi_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">mi_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.mi_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutual information score</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+Journal of Machine Learning Research 11, 2010, pp. 2837-2854.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.normalize_confusion_matrix">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">normalize_confusion_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Applies pivoting to a given confusion matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>C</strong><span class="classifier">ndarray</span></dt><dd><p>A <code class="docutils literal notranslate"><span class="pre">c_contiguous</span></code> confusion matrix (contingency table).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>ndarray</dt><dd><p>A normalised confusion matrix of the same shape as <cite>C</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function permutes the columns of <cite>C</cite> to get the largest
+elements in each row on the main diagonal.</p>
+<p>This comes in handy whenever C actually summarises the results generated
+by clustering algorithms, where actual label values do not matter
+(e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.normalized_accuracy">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">normalized_accuracy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalised Accuracy: (Accuracy(C[sigma])-1/L)/(1-1/L).</p>
+<p>C[sigma] is a version of the confusion matrix for given x and y
+with columns permuted based on the solution to the
+Maximal Linear Sum Assignment Problem.</p>
+<p>Accuracy(C[sigma]) is sometimes referred to as Purity,
+e.g., in (Rendon et al. 2011).</p>
+<p>It is assumed that y represents an L-partition
+and x represents a K-partition and that K&lt;=L.</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
+Internal versus external cluster validation indexes,
+International Journal of Computers and Communications 5(1), 2011, pp. 27-34.</p>
+<p>Rezaei M., Franti P., Set matching measures for external cluster validity,
+IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+doi:10.1109/TKDE.2016.2551240</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.normalized_confusion_matrix">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">normalized_confusion_matrix</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the confusion matrix between x and y
+and applies pivoting. Nice for summarising clustering results,
+where actual labels do not matter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>C</strong><span class="classifier">ndarray, shape (xc, yc)</span></dt><dd><p>a confusion matrix</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.normalized_mi_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">normalized_mi_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_mi_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalised mutual information score (NMI_sum)</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Vinh N.X., Epps J., Bailey J.,
+Information theoretic measures for clusterings comparison:
+Variants, properties, normalization and correction for chance,
+Journal of Machine Learning Research 11, 2010, pp. 2837-2854.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.pair_sets_index">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">pair_sets_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pair Sets Index (PSI) adjusted for chance</p>
+<p>Pairing is based on the solution to the Linear Sum Assignment Problem
+of a transformed version of the confusion matrix.</p>
+<p>It is assumed that y represents an L-partition
+and x represents a K-partition and that K&lt;=L.</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Rezaei M., Franti P., Set matching measures for external cluster validity,
+IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
+doi:10.1109/TKDE.2016.2551240</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="genieclust.compare_partitions.rand_score">
+<code class="sig-prename descclassname">genieclust.compare_partitions.</code><code class="sig-name descname">rand_score</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.rand_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>The original Rand index (not adjusted for chance),
+that yields the <a href="#id1"><span class="problematic" id="id2">`</span></a>probability’ of agreement between the two partitions.</p>
+<p>The index is bounded from below 1/(K+1), where K is the number of clusters
+(unique labels in <cite>x</cite> and <cite>y</cite>), hence its adjusted version are preferred,
+see <cite>adjusted_rand_score()</cite>.</p>
+<p>For more details, see compare_partitions().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>x, y</strong><span class="classifier">ndarray, shape (n,)</span></dt><dd><p>two small-int vectors of the same lengths, representing
+two partitions of the same set</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>score</strong><span class="classifier">double</span></dt><dd><p>partition similarity measure</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>Hubert L., Arabie P., Comparing Partitions,
+Journal of Classification 2(1), 1985, 193-218</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="genieclust_inequity.html" class="btn btn-neutral float-right" title="genieclust.inequity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
