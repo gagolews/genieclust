@@ -1,4 +1,4 @@
-name: Python and R packages
+name: genieclust for Python
 
 on:
   push:
@@ -25,13 +25,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools
-        pip install rpy2 faiss-cpu mlpack
+        sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools python3-dev
+        pip install rpy2 faiss-cpu mlpack nmslib
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
-    - name: Test and check R
-      run: |
-        make r-test
-        make r-check
     - name: Test and check Python
       run: |
         make py-test
@@ -42,4 +38,3 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude devel/ --exclude build/
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --exclude devel/ --exclude build/
-
