@@ -17,5 +17,5 @@ jobs:
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
     - name: Test and check R
       run: |
-        make r-test
-        make r-check
+        sudo make r-test
+        sudo make r-check

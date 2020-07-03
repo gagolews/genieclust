@@ -30,8 +30,8 @@ jobs:
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
     - name: Test and check Python
       run: |
-        make py-test
-        make py-check
+        sudo make py-test
+        sudo make py-check
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
