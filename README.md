@@ -1,5 +1,10 @@
 # `genieclust` Python and R Package
 
+![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
+![genieclust for R](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg)
+
+
+
 > **Genie++ outputs meaningful clusters and is fast even for large data sets.**
 
 **TODO**:  Full documentation and tutorials are available at

@@ -14,7 +14,8 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools',
+            'testthat', 'emstreeR'))"
     - name: Test and check R
       run: |
         sudo make r-test
