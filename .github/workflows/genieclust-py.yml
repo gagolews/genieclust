@@ -26,8 +26,8 @@ jobs:
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
-        pip install flake8 pytest  --upgrade
-        pip install sphinx sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath  --upgrade
+        pip install flake8 pytest --upgrade
+        pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath --upgrade
         pip install rpy2 faiss-cpu mlpack nmslib  ipython jupyter --upgrade
     - name: Test and check Python
       run: |
