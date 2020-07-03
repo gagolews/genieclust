@@ -25,7 +25,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest sphinx sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools python3-dev
+        sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools python3-dev ipython
         pip install rpy2 faiss-cpu mlpack nmslib
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR'))"
     - name: Test and check Python
