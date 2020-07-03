@@ -1,8 +1,5 @@
 import numpy as np
-from genieclust.genie import *
-from genieclust.inequity import *
-from genieclust.compare_partitions import *
-import genieclust.internal
+import genieclust
 import time
 import gc
 
@@ -62,7 +59,7 @@ def test_gic():
 
             assert np.all(np.diff(_gic.distances_)>= 0.0)
             assert len(np.unique(labels_gic[labels_gic>=0])) == K
-            assert adjusted_rand_score(labels_gic, labels_g)>1-1e-6
+            assert genieclust.compare_partitions.adjusted_rand_score(labels_gic, labels_g)>1-1e-6
             print()
 
         for g in [ np.arange(1, 8)/10, np.empty(0)]:
@@ -125,7 +122,7 @@ def test_gic_precomputed():
             res1.n_features_ = X.shape[1]
             res1 = res1.fit_predict(D)+1
             res2 = genieclust.GIc(k, g, exact=True, affinity="euclidean").fit_predict(X)+1
-            ari = adjusted_rand_score(res1, res2)
+            ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")
             assert ari>1.0-1e-12
 
@@ -153,6 +150,8 @@ def test_gic_precomputed():
 
 
 if __name__ == "__main__":
+    print("**Standard**")
     test_gic()
+
     print("**Precomputed**")
     test_gic_precomputed()

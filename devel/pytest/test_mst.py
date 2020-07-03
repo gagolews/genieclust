@@ -3,8 +3,7 @@ import sklearn.neighbors
 import scipy.spatial.distance
 import time
 import gc
-import genieclust.internal
-import genieclust.deprecated
+import genieclust
 
 import os
 if os.path.exists("devel/benchmark_data"):
@@ -100,10 +99,10 @@ def mst_mutreach_check(X, metric='euclidean'):
     D = scipy.spatial.distance.squareform(D)
 
     for M in [2, 5, 25]:
-        d_core     = genieclust.deprecated.core_distance(D, M)
+        d_core     = genieclust.tools._core_distance(D, M)
 
         t0 = time.time()
-        d_mutreach = genieclust.deprecated.mutual_reachability_distance(D, d_core)
+        d_mutreach = genieclust.tools._mutual_reachability_distance(D, d_core)
         mst_d1, mst_i1 = genieclust.internal.mst_from_complete(d_mutreach)
         print("    mutreach1-D %10.3fs" % (time.time()-t0,))
 

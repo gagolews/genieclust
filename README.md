@@ -1,11 +1,12 @@
 # `genieclust` Python and R Package
 
+> **Genie++ outputs meaningful clusters and is fast even for large data sets.**
+
 ![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
 ![genieclust for R](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg)
 
 
 
-> **Genie++ outputs meaningful clusters and is fast even for large data sets.**
 
 **TODO**:  Full documentation and tutorials are available at
 https://genieclust.gagolewski.com/.
@@ -123,7 +124,7 @@ cutree(h, k=2)
 # or genie(X, k=2)
 ```
 
-Check out tutorials and the package documentation at
+Check out the tutorials and the package documentation at
 https://genieclust.gagolewski.com/.
 
 
@@ -233,12 +234,12 @@ Author: PM Larsen. Distributed under the BSD-3-Clause license.
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 *Information Sciences* **363**, 2016, pp. 8-23.
-doi:10.1016/j.ins.2016.05.003
+doi:10.1016/j.ins.2016.05.003.
 
 Cena A., Gagolewski M.,
 Genie+OWA: Robustifying Hierarchical Clustering with OWA-based Linkages,
-*Information Sciences*, 2020,
-in press. doi:10.1016/j.ins.2020.02.025
+*Information Sciences* **520**, 2020, pp. 324-336.
+doi:10.1016/j.ins.2020.02.025.
 
 Cena A.,
 Adaptive hierarchical clustering algorithms based on data aggregation methods,
@@ -252,7 +253,8 @@ doi:10.1145/2733381.
 
 Crouse D.F., On implementing 2D rectangular assignment algorithms,
 *IEEE Transactions on Aerospace and Electronic Systems* **52**(4), 2016,
-pp. 1679-1696, doi:10.1109/TAES.2016.140952.
+pp. 1679-1696.
+doi:10.1109/TAES.2016.140952.
 
 Mueller A., Nowozin S., Lampert C.H.,
 Information Theoretic Clustering using Minimum Spanning Trees,
@@ -271,8 +273,8 @@ Hubert L., Arabie P., Comparing Partitions,
 *Journal of Classification* **2**(1), 1985, pp. 193-218.
 
 Rezaei M., Franti P., Set matching measures for external cluster validity,
-*IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, pp. 2173-2186,
-doi:10.1109/TKDE.2016.2551240
+*IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, pp. 2173-2186.
+doi:10.1109/TKDE.2016.2551240.
 
 Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:

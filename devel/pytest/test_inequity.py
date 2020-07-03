@@ -1,4 +1,5 @@
 import numpy as np
+import genieclust
 from genieclust.inequity import *
 
 # np.random.seed(123)

@@ -234,7 +234,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 pass
 
         if not cur_state["exact"]:
-            #raise NotImplementedError("approximate method not implemented yet")
+            raise NotImplementedError("approximate method not implemented yet")
 
             if cur_state["affinity"] == "precomputed":
                 raise ValueError('exact==False with affinity=="precomputed"')
