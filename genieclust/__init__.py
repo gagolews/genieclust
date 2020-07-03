@@ -18,7 +18,7 @@ from . import plots
 from . import inequity
 from . import tools
 from . import compare_partitions
-#from . import genie # this import should be deprecated
-from .genie import *
+from . import internal
+from .genie import Genie, GIc
 
 __version__ = '0.9.1'

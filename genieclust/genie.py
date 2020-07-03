@@ -40,8 +40,6 @@ except ImportError:
     mlpack = None
 
 
-
-
 ###############################################################################
 ###############################################################################
 ###############################################################################
@@ -63,21 +61,21 @@ class GenieBase(BaseEstimator, ClusterMixin):
             verbose):
         # # # # # # # # # # # #
         super().__init__()
-        self.M = M
-        self.affinity = affinity
-        self.cast_float32 = cast_float32
-        self.exact = exact
+        self.M              = M
+        self.affinity       = affinity
+        self.cast_float32   = cast_float32
+        self.exact          = exact
         self.mlpack_enabled = mlpack_enabled
-        self.verbose = verbose
+        self.verbose        = verbose
 
-        self.n_samples_   = None
-        self.n_features_  = None
-        self._mst_dist_   = None
-        self._mst_ind_    = None
-        self._nn_dist_    = None
-        self._nn_ind_     = None
-        self._d_core_     = None
-        self._last_state_ = None
+        self.n_samples_     = None
+        self.n_features_    = None
+        self._mst_dist_     = None
+        self._mst_ind_      = None
+        self._nn_dist_      = None
+        self._nn_ind_       = None
+        self._d_core_       = None
+        self._last_state_   = None
 
 
 
@@ -94,10 +92,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
         else:
             # duplicate the 1st row (create the "0"-partition that will
             # not be postprocessed):
-            self.labels_ = np.vstack((self.labels_[0,:], self.labels_))
-            start_partition = 1 # do not postprocess the "0"-partition
+            self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
+            start_partition = 1  # do not postprocess the "0"-partition
 
-        self.is_noise_    = (self.labels_[0,:] < 0)
+        self.is_noise_    = (self.labels_[0, :] < 0)
 
         # postprocess labels, if requested to do so
         if M == 1 or postprocess == "none":
@@ -106,13 +104,13 @@ class GenieBase(BaseEstimator, ClusterMixin):
             assert self._nn_ind_ is not None
             assert self._nn_ind_.shape[1] >= M-1
             for i in range(start_partition, self.labels_.shape[0]):
-                self.labels_[i,:] = internal.merge_boundary_points(
-                    self._mst_ind_, self.labels_[i,:],
+                self.labels_[i, :] = internal.merge_boundary_points(
+                    self._mst_ind_, self.labels_[i, :],
                     self._nn_ind_, M)
         elif postprocess == "all":
             for i in range(start_partition, self.labels_.shape[0]):
-                self.labels_[i,:] = internal.merge_noise_points(
-                    self._mst_ind_, self.labels_[i,:])
+                self.labels_[i, :] = internal.merge_noise_points(
+                    self._mst_ind_, self.labels_[i, :])
 
         if reshaped:
             self.labels_.shape = (self.labels_.shape[1],)
@@ -150,7 +148,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                              "cityblock", "cosine", "precomputed")
         cur_state["affinity"] = str(self.affinity).lower()
         if cur_state["affinity"] not in _affinity_options:
-            raise ValueError("affinity should be one of %r"%_affinity_options)
+            raise ValueError("affinity should be one of %r" % _affinity_options)
 
         if cur_state["affinity"] == "l2":
             cur_state["affinity"] = "euclidean"
@@ -159,7 +157,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
-            n_features = self.n_features_ # users must set it manually
+            n_features = self.n_features_  # users must set it manually
             X = X.reshape(X.shape[0], -1)
             if X.shape[1] not in [1, X.shape[0]]:
                 raise ValueError("X must be distance vector "
@@ -213,7 +211,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         d_core   = None
 
         if cur_state["cast_float32"] and cur_state["affinity"] != "precomputed":
-            # faiss supports float32 only
+            # faiss and nmslib support float32 only
             # warning if sparse!!
             X = X.astype(np.float32, order="C", copy=False)
 
@@ -238,62 +236,62 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if not cur_state["exact"]:
             raise NotImplementedError("approximate method not implemented yet")
 
-            if cur_state["affinity"] == "precomputed":
-                raise ValueError('exact==False with affinity=="precomputed"')
+            #  if cur_state["affinity"] == "precomputed":
+            #      raise ValueError('exact==False with affinity=="precomputed"')
+            #
+            #
+            #  assert cur_state["affinity"] == "euclidean"
+            #
+            #  actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
+            #  actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
+            #  actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
+            #
+            #  # t0 = time.time()
+            #  ##nn = sklearn.neighbors.NearestNeighbors(
+            #  ##n_neighbors=actual_n_neighbors, ....**cur_state["nn_params"])
+            #  ##nn_dist, nn_ind = nn.fit(X).kneighbors()
+            #  #nn_dist, nn_ind = internal.knn_from_distance(
+            #  #X, k=actual_n_neighbors, ...metric=metric)
+            #  # print("T=%.3f" % (time.time()-t0), end="\t")
+            #
+            #  # FAISS - `euclidean` and `cosine` only!
+            #
+            #
+            #
+            #  # TODO:  cur_state["metric"], cur_state["metric_params"]
+            #  #t0 = time.time()
+            #  # the slow part:
+            #  nn = faiss.IndexFlatL2(n_features)
+            #  nn.add(X)
+            #  nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1) # TODO: , verbose=cur_state["verbose"]
+            #  #print("T=%.3f" % (time.time()-t0), end="\t")
+            #
+            #
+            #
+            #  # @TODO:::::
+            #  #nn_bad_where = np.where((nn_ind[:, 0]!=np.arange(n_samples)))[0]
+            #  #print(nn_bad_where)
+            #  #print(nn_ind[nn_bad_where, :5])
+            #  #print(X[nn_bad_where, :])
+            #  #assert nn_bad_where.shape[0] == 0
+            #
+            #  # TODO: check cache if rebuild needed
+            #  nn_dist = nn_dist[:, 1:].astype(X.dtype, order="C")
+            #  nn_ind  = nn_ind[:, 1:].astype(np.intp, order="C")
+            #
+            #  if cur_state["M"] > 1:
+            #      # d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+            #      raise NotImplementedError("approximate method not implemented yet")
+            #
+            #  #t0 = time.time()
+            #  # the fast part:
+            #  mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
+            #      stop_disconnected=False, # TODO: test this!!!!
+            #      stop_inexact=False,
+            #      verbose=cur_state["verbose"])
+            #  #print("T=%.3f" % (time.time()-t0), end="\t")
 
-
-            assert cur_state["affinity"] == "euclidean"
-
-            actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
-            actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-            actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
-
-            # t0 = time.time()
-            ##nn = sklearn.neighbors.NearestNeighbors(
-            ##n_neighbors=actual_n_neighbors, ....**cur_state["nn_params"])
-            ##nn_dist, nn_ind = nn.fit(X).kneighbors()
-            #nn_dist, nn_ind = internal.knn_from_distance(
-            #X, k=actual_n_neighbors, ...metric=metric)
-            # print("T=%.3f" % (time.time()-t0), end="\t")
-
-            # FAISS - `euclidean` and `cosine` only!
-
-
-
-            # TODO:  cur_state["metric"], cur_state["metric_params"]
-            #t0 = time.time()
-            # the slow part:
-            nn = faiss.IndexFlatL2(n_features)
-            nn.add(X)
-            nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1) # TODO: , verbose=cur_state["verbose"]
-            #print("T=%.3f" % (time.time()-t0), end="\t")
-
-
-
-            # @TODO:::::
-            #nn_bad_where = np.where((nn_ind[:,0]!=np.arange(n_samples)))[0]
-            #print(nn_bad_where)
-            #print(nn_ind[nn_bad_where,:5])
-            #print(X[nn_bad_where,:])
-            #assert nn_bad_where.shape[0] == 0
-
-            # TODO: check cache if rebuild needed
-            nn_dist = nn_dist[:,1:].astype(X.dtype, order="C")
-            nn_ind  = nn_ind[:,1:].astype(np.intp, order="C")
-
-            if cur_state["M"] > 1:
-                # d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
-                raise NotImplementedError("approximate method not implemented yet")
-
-            #t0 = time.time()
-            # the fast part:
-            mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
-                stop_disconnected=False, # TODO: test this!!!!
-                stop_inexact=False,
-                verbose=cur_state["verbose"])
-            #print("T=%.3f" % (time.time()-t0), end="\t")
-
-        else: # cur_state["exact"]
+        else:  # cur_state["exact"]
             if cur_state["mlpack_enabled"]:
                 assert cur_state["M"] == 1
                 assert cur_state["affinity"] == "euclidean"
@@ -305,20 +303,21 @@ class GenieBase(BaseEstimator, ClusterMixin):
                         #naive=False,
                         copy_all_inputs=False,
                         verbose=cur_state["verbose"])["output"]
-                    mst_dist = _res[:,2].astype(X.dtype, order="C")
-                    mst_ind  = _res[:,:2].astype(np.intp, order="C")
+                    mst_dist = _res[:,  2].astype(X.dtype, order="C")
+                    mst_ind  = _res[:, :2].astype(np.intp, order="C")
             else:
-                if cur_state["M"] >= 2: # else d_core   = None
+                if cur_state["M"] >= 2:  # else d_core   = None
                     # Genie+HDBSCAN --- determine d_core
                     # TODO: mlpack for k-nns?
                     if nn_dist is None or nn_ind is None:
                         nn_dist, nn_ind = internal.knn_from_distance(
-                            X, k=cur_state["M"]-1,
+                            X,
+                            k=cur_state["M"]-1,
                             metric=cur_state["affinity"],
-                            verbose=cur_state["verbose"]) # supports "precomputed"
+                            verbose=cur_state["verbose"])  # supports "precomputed"
 
                     assert nn_dist.shape[1] >= cur_state["M"]-1
-                    d_core = nn_dist[:,cur_state["M"]-2].astype(X.dtype, order="C")
+                    d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
 
                 # Use Prim's algorithm to determine the MST
                 # w.r.t. the distances computed on the fly
@@ -343,7 +342,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
     def fit_predict(self, X, y=None):
         """
-        Apply cluster analysis and return the predicted labels
+        Perform cluster analysis of a dataset and return the predicted labels
 
 
         Parameters
@@ -480,8 +479,8 @@ class Genie(GenieBase):
     n_clusters_ : int
         The number of clusters detected by the algorithm.
         If 0, then `labels_` are not set.
-        Note that the actual number might be larger than the `n_clusters`
-        requested, for instance, if there are many noise points.
+        Note that the actual number might be greater than the requested one,
+        for instance, due to the presence of too many noise points.
     n_samples_ : int
         The number of points in the fitted dataset.
     n_features_ : int or None
@@ -539,7 +538,7 @@ class Genie(GenieBase):
 
     The clustering can also be computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric),
-    which is used in the definition of the *HDBSCAN\** algorithm [2]_.
+    which is used in the definition of the *HDBSCAN\\** algorithm [2]_.
     If `M` > 1, then the mutual reachability
     distance :math:`m(i,j)` with smoothing factor M is used instead of the
     chosen "raw" distance :math:`d(i,j)`. It holds
@@ -574,7 +573,7 @@ class Genie(GenieBase):
     the ultrametricity property (merges might occur at levels that
     are not increasing w.r.t. a between-cluster distance).
     Departures from ultrametricity are corrected by applying
-    ``Z[:,2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
+    ``Z[:, 2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
 
 
     References
@@ -635,13 +634,14 @@ class Genie(GenieBase):
 
     def fit(self, X, y=None):
         """
-        Perform clustering of the dataset
+        Perform cluster analysis of a dataset.
 
 
         Parameters
         ----------
 
-        X : ndarray or sparse.csr_matrix
+        X : object
+            ndarray or sparse.csr_matrix
             A matrix defining `n_samples` in a vector space with `n_features`
             or, if `affinity` is ``"precomputed"``,
             a distance vector or a square distance matrix
@@ -653,8 +653,8 @@ class Genie(GenieBase):
         Returns
         -------
 
-        self
-            Object the method was called on.
+        self : genieclust.Genie
+            The object that the method was called on.
 
 
         Notes
@@ -881,12 +881,13 @@ class GIc(GenieBase):
 
     def fit(self, X, y=None):
         """
-        Perform clustering of the given dataset
+        Perform cluster analysis of a dataset.
+
 
         Parameters
         ----------
 
-        X : ndarray
+        X : object
             See `genieclust.Genie.fit`.
         y : None
             Ignored.
@@ -895,8 +896,15 @@ class GIc(GenieBase):
         Returns
         -------
 
-        self
-            Object the method was called on.
+        self : genieclust.GIc
+            The object that the method was called on.
+
+
+        See also
+        --------
+
+        genieclust.Genie.fit
+
 
         Notes
         -----
@@ -920,7 +928,7 @@ class GIc(GenieBase):
         _postprocess_options = ("boundary", "none", "all")
         cur_state["postprocess"] = str(self.postprocess).lower()
         if cur_state["postprocess"] not in _postprocess_options:
-            raise ValueError("postprocess should be one of %r"%_postprocess_options)
+            raise ValueError("postprocess should be one of %r" % _postprocess_options)
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         cur_state["compute_all_cuts"] = bool(self.compute_all_cuts)
