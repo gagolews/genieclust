@@ -1190,8 +1190,8 @@ cpdef dict genie_from_mst(
         see genieclust.mst.
     n_clusters : int
         Number of clusters the dataset is split into.
-        Use n_clusters==1 to generate the complete hierarchy,
-        see also `compute_full_tree`.
+        If `compute_full_tree` is False, then only partial cluster hierarchy
+        is determined.
     gini_threshold : float
         The threshold for the Genie correction
     noise_leaves : bool
@@ -1201,6 +1201,7 @@ cpdef dict genie_from_mst(
         Compute the whole merge sequence or stop early?
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
+        Implies `compute_full_tree`.
     new_merge : bool
         False for compatibility with the original Genie algorithm
         (R package `genie`). True (EXPERIMENTAL) merges pairs that
@@ -1254,6 +1255,9 @@ cpdef dict genie_from_mst(
 
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, new_merge)
+
+    if compute_all_cuts:
+        compute_full_tree = True
 
     g.apply_genie(1 if compute_full_tree else n_clusters, gini_threshold)
 
@@ -1338,10 +1342,10 @@ cpdef dict gic_from_mst(
     n_features : double
         number of features in the data set
         [can be fractional if you know what you're doing]
-    n_clusters : int, default=1
+    n_clusters : int
         Number of clusters the dataset is split into.
-        Use n_clusters==1 to generate the complete hierarchy,
-        see also `compute_full_tree`.
+        If `compute_full_tree` is False, then only partial cluster hierarchy
+        is determined.
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
     gini_thresholds : ndarray or None for the default
@@ -1359,6 +1363,7 @@ cpdef dict gic_from_mst(
         Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the whole merge sequence or stop early?
+        Implies compute_full_tree.
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
 
@@ -1403,6 +1408,9 @@ cpdef dict gic_from_mst(
 
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+
+    if compute_all_cuts:
+        compute_full_tree = True
 
     g.apply_gic(1 if compute_full_tree else n_clusters,
                 n_clusters-1+add_clusters if compute_full_tree else add_clusters,

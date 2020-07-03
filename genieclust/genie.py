@@ -53,11 +53,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
     def __init__(
             self,
+            *,
             M,
             affinity,
             exact,
             cast_float32,
-            use_mlpack,
+            mlpack_enabled,
             verbose):
         # # # # # # # # # # # #
         super().__init__()
@@ -65,7 +66,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.affinity = affinity
         self.cast_float32 = cast_float32
         self.exact = exact
-        self.use_mlpack = use_mlpack
+        self.mlpack_enabled = mlpack_enabled
         self.verbose = verbose
 
         self.n_samples_   = None
@@ -180,23 +181,23 @@ class GenieBase(BaseEstimator, ClusterMixin):
         cur_state["cast_float32"] = bool(self.cast_float32)
         cur_state["verbose"] = bool(self.verbose)
 
-        if self.use_mlpack == "auto":
+        if self.mlpack_enabled == "auto":
             if mlpack is not None and \
                     cur_state["affinity"] == "euclidean" and \
                     n_features <= 6 and \
                     cur_state["M"] == 1:
-                cur_state["use_mlpack"] = True
+                cur_state["mlpack_enabled"] = True
             else:
-                cur_state["use_mlpack"] = False
+                cur_state["mlpack_enabled"] = False
 
         else:
-            cur_state["use_mlpack"] = bool(self.use_mlpack)
+            cur_state["mlpack_enabled"] = bool(self.mlpack_enabled)
 
-        if cur_state["use_mlpack"] and mlpack is None:
+        if cur_state["mlpack_enabled"] and mlpack is None:
             raise ValueError("package mlpack is not available")
-        if cur_state["use_mlpack"] and cur_state["affinity"] != "euclidean":
+        if cur_state["mlpack_enabled"] and cur_state["affinity"] != "euclidean":
             raise ValueError("mlpack can only be used with affinity=='euclidean'")
-        if cur_state["use_mlpack"] and cur_state["M"] != 1:
+        if cur_state["mlpack_enabled"] and cur_state["M"] != 1:
             raise ValueError("mlpack can only be used with M=1")
 
 
@@ -292,12 +293,17 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #print("T=%.3f" % (time.time()-t0), end="\t")
 
         else: # cur_state["exact"]
-            if cur_state["use_mlpack"]:
+            if cur_state["mlpack_enabled"]:
                 assert cur_state["M"] == 1
                 assert cur_state["affinity"] == "euclidean"
 
                 if mst_dist is None or mst_ind is None:
-                    _res = mlpack.emst(input=X, verbose=cur_state["verbose"])["output"]
+                    _res = mlpack.emst(
+                        input=X,
+                        #leaf_size=...,
+                        #naive=False,
+                        copy_all_inputs=False,
+                        verbose=cur_state["verbose"])["output"]
                     mst_dist = _res[:,2].astype(X.dtype, order="C")
                     mst_ind  = _res[:,:2].astype(np.intp, order="C")
             else:
@@ -403,13 +409,14 @@ class Genie(GenieBase):
         see `scipy.spatial.distance.pdist` or
         `scipy.spatial.distance.squareform`, amongst others.
     compute_full_tree : bool
-        If False, only a partial hierarchy is determined so that
-        at most `n_clusters` are generated. Saves some time if you think you know
-        how many clusters are there, but are you *really* sure about that?
+        If True, a complete hierarchy is determined
+        TODO: makes sense only if `M` = 1, for plotting of dendrograms
+        TODO: `children_`, `distances_`, `counts_`
     compute_all_cuts : bool
         If True, n_clusters-partition and all the more coarse-grained
         ones will be determined; in such a case, the `labels_` attribute
-        will be a matrix/
+        will be a matrix.
+        TODO: for approximate method the obtained clusterings maybe more fine-grained
     postprocess : {'boundary', 'none', 'all'}
         In effect only if `M` > 1. By default, only "boundary" points are merged
         with their nearest "core" points (A point is a boundary point if it is
@@ -428,7 +435,7 @@ class Genie(GenieBase):
         (for efficiency reasons; decreases the run-time ~2x times
         at a cost of greater memory usage)? Note that `nmslib`
         (used when `exact` is ``False``) requires ``float32`` data anyway.
-    use_mlpack : bool or "auto", default="auto"
+    mlpack_enabled : bool or "auto", default="auto"
         Use `mlpack.emst` for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
         only affinity='euclidean' is supported (and M=1).
@@ -487,6 +494,7 @@ class Genie(GenieBase):
         `counts_`, this forms the linkage matrix that can be used for
         plotting the dendrogram.
         Only available if `compute_full_tree` = ``True``.
+        `M` = 1  only
     distances_ : ndarray, shape (n_samples-1,)
         Distance between the two clusters merged at the *i*-th iteration.
         As Genie does not guarantee that that distances are
@@ -496,11 +504,12 @@ class Genie(GenieBase):
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
         See the description of ``Z[i,2]`` in `scipy.cluster.hierarchy.linkage`.
         Only available if `compute_full_tree` is ``True``.
+        `M` = 1 only
     counts_ : ndarray, shape (n_samples-1,)
         Number of elements in a cluster created at the i-th iteration.
         See the description of ``Z[i,3]`` in `scipy.cluster.hierarchy.linkage`.
         Only available if `compute_full_tree` is ``True``.
-
+        `M` = 1 only
 
 
     Notes
@@ -582,18 +591,24 @@ class Genie(GenieBase):
     def __init__(
             self,
             n_clusters=2,
+            *,
             gini_threshold=0.3,
             M=1,
             affinity="euclidean",
-            compute_full_tree=True,
+            exact=True,
+            compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
-            exact=True,
             cast_float32=True,
-            use_mlpack="auto",
+            mlpack_enabled="auto",
+            #mlpack_leaf_size=1 Leaf size in the kd-tree. According to the mlpack manual, leaves of size 1 give the best performance at the cost of greater memory requirements.
+            #nmslib_params_init=dict(method="hnsw") #`space` forbidden
+            #nmslib_params_index=dict(post=2) #`indexThreadQty` forbidden
+            #nmslib_params_query=dict()
             verbose=False):
         # # # # # # # # # # # #
-        super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
+        super().__init__(
+            M=M, affinity=affinity, exact=exact, cast_float32=cast_float32, mlpack_enabled=mlpack_enabled, verbose=verbose)
 
         self.n_clusters = n_clusters
         self.gini_threshold = gini_threshold
@@ -681,7 +696,7 @@ class Genie(GenieBase):
         res = internal.genie_from_mst(self._mst_dist_, self._mst_ind_,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            noise_leaves=(cur_state["M"]>1),
+            noise_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
 
@@ -696,7 +711,7 @@ class Genie(GenieBase):
         if self.labels_ is not None:
             self._postprocess(cur_state["M"], cur_state["postprocess"])
 
-        if cur_state["compute_full_tree"]:
+        if cur_state["compute_full_tree"] and cur_state["M"] == 1:
             Z = internal.get_linkage_matrix(self._links_,
                 self._mst_dist_, self._mst_ind_)
             self.children_    = Z["children"]
@@ -758,7 +773,7 @@ class GIc(GenieBase):
         See `genieclust.Genie`.
     cast_float32 : bool, default=True
         See `genieclust.Genie`.
-    use_mlpack : bool or "auto", default="auto"
+    mlpack_enabled : bool or "auto", default="auto"
         See `genieclust.Genie`.
     verbose : bool, default=False
         See `genieclust.Genie`.
@@ -821,20 +836,23 @@ class GIc(GenieBase):
     def __init__(
             self,
             n_clusters=2,
+            *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
-            add_clusters=0,
-            n_features=None,
             M=1,
             affinity="euclidean",
-            compute_full_tree=True,
+            exact=True,
+            compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
-            exact=True,
+            add_clusters=0,
+            n_features=None,
             cast_float32=True,
-            use_mlpack="auto",
+            mlpack_enabled="auto",
+            # TODO: Genie..............
             verbose=False):
         # # # # # # # # # # # #
-        super().__init__(M, affinity, exact, cast_float32, use_mlpack, verbose)
+        super().__init__(
+            M=M, affinity=affinity, exact=exact, cast_float32=cast_float32, mlpack_enabled=mlpack_enabled, verbose=verbose)
 
         self.n_clusters = n_clusters
         self.n_features = n_features
@@ -922,7 +940,7 @@ class GIc(GenieBase):
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
-            noise_leaves=(cur_state["M"]>1),
+            noise_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
 
@@ -939,7 +957,7 @@ class GIc(GenieBase):
             self._postprocess(cur_state["M"], cur_state["postprocess"])
 
 
-        if cur_state["compute_full_tree"]:
+        if cur_state["compute_full_tree"] and cur_state["M"] == 1:
             Z = internal.get_linkage_matrix(self._links_,
                 self._mst_dist_, self._mst_ind_)
             self.children_    = Z["children"]

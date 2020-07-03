@@ -23,7 +23,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest sphinx
+        pip install flake8 pytest sphinx sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         sudo apt -y install python3-rpy2 libmlpack-dev r-cran-devtools python3-dev
         pip install rpy2 faiss-cpu mlpack nmslib
