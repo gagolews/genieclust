@@ -1,6 +1,17 @@
 Python Package `genieclust` Reference
 =====================================
 
+
+.. autosummary::
+
+    genieclust.Genie
+    genieclust.compare_partitions
+    genieclust.inequity
+    genieclust.plots
+    genieclust.tools
+
+
+
 .. toctree::
     :maxdepth: 2
     :caption: Modules and Classes:

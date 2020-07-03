@@ -94,9 +94,9 @@ cpdef np.ndarray[ssize_t] cummin(T[:] x):
 
     genieclust.tools.cummax : Cumulative maximum
 
-    np.cumsum : Cumulative sum
+    numpy.cumsum : Cumulative sum
 
-    np.cumprod : Cumulative product
+    numpy.cumprod : Cumulative product
 
 
     Examples
@@ -147,9 +147,9 @@ cpdef np.ndarray[ssize_t] cummax(T[:] x):
 
     genieclust.tools.cummin : Cumulative minimum
 
-    np.cumsum : Cumulative sum
+    numpy.cumsum : Cumulative sum
 
-    np.cumprod : Cumulative product
+    numpy.cumprod : Cumulative product
 
 
     Examples
