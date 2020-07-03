@@ -271,8 +271,6 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     Notes
     -----
 
-
-
     Let `x` and `y` represent two partitions of the same set with :math:`n`
     elements into :math:`K` and :math:`L`, respectively,
     nonempty and pairwise disjoint subsets,

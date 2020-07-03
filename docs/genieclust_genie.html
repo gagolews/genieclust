@@ -170,7 +170,7 @@
 <h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="genieclust.Genie">
-<em class="property">class </em><code class="sig-prename descclassname">genieclust.</code><code class="sig-name descname">Genie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_clusters</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="n">gini_threshold</span><span class="o">=</span><span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">M</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">affinity</span><span class="o">=</span><span class="default_value">'euclidean'</span></em>, <em class="sig-param"><span class="n">compute_full_tree</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_all_cuts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">postprocess</span><span class="o">=</span><span class="default_value">'boundary'</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cast_float32</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">use_mlpack</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">genieclust.</code><code class="sig-name descname">Genie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_clusters</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">gini_threshold</span><span class="o">=</span><span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">M</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">affinity</span><span class="o">=</span><span class="default_value">'euclidean'</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_full_tree</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compute_all_cuts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">postprocess</span><span class="o">=</span><span class="default_value">'boundary'</span></em>, <em class="sig-param"><span class="n">cast_float32</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">mlpack_enabled</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Genie++ hierarchical clustering algorithm</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -200,13 +200,14 @@ matrix is needed on input (argument <cite>X</cite>) for the <cite>fit</cite> met
 see <cite>scipy.spatial.distance.pdist</cite> or
 <cite>scipy.spatial.distance.squareform</cite>, amongst others.</p>
 </dd>
-<dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>If False, only a partial hierarchy is determined so that
-at most <cite>n_clusters</cite> are generated. Saves some time if you think you know
-how many clusters are there, but are you <em>really</em> sure about that?</p>
+<dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>If True, a complete hierarchy is determined
+TODO: makes sense only if <cite>M</cite> = 1, for plotting of dendrograms
+TODO: <cite>children_</cite>, <cite>distances_</cite>, <cite>counts_</cite></p>
 </dd>
 <dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>If True, n_clusters-partition and all the more coarse-grained
 ones will be determined; in such a case, the <cite>labels_</cite> attribute
-will be a matrix/</p>
+will be a matrix.
+TODO: for approximate method the obtained clusterings maybe more fine-grained</p>
 </dd>
 <dt><strong>postprocess</strong><span class="classifier">{‘boundary’, ‘none’, ‘all’}</span></dt><dd><p>In effect only if <cite>M</cite> &gt; 1. By default, only “boundary” points are merged
 with their nearest “core” points (A point is a boundary point if it is
@@ -226,7 +227,7 @@ which gives the time complexity of O(n_samples*n_samples*n_features).</p>
 at a cost of greater memory usage)? Note that <cite>nmslib</cite>
 (used when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>) requires <code class="docutils literal notranslate"><span class="pre">float32</span></code> data anyway.</p>
 </dd>
-<dt><strong>use_mlpack</strong><span class="classifier">bool or “auto”, default=”auto”</span></dt><dd><p>Use <cite>mlpack.emst</cite> for computing the Euclidean minimum spanning tree?
+<dt><strong>mlpack_enabled</strong><span class="classifier">bool or “auto”, default=”auto”</span></dt><dd><p>Use <cite>mlpack.emst</cite> for computing the Euclidean minimum spanning tree?
 Might be faster for lower-dimensional spaces. As the name suggests,
 only affinity=’euclidean’ is supported (and M=1).
 By default, we rely on <cite>mlpack</cite> if it’s installed and <cite>n_features</cite> &lt;= 6.
@@ -345,7 +346,8 @@ See the description of <code class="docutils literal notranslate"><span class="p
 <cite>scipy.cluster.hierarchy.linkage</cite>. Together with <cite>distances_</cite> and
 <cite>counts_</cite>, this forms the linkage matrix that can be used for
 plotting the dendrogram.
-Only available if <cite>compute_full_tree</cite> = <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+Only available if <cite>compute_full_tree</cite> = <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<cite>M</cite> = 1  only</p>
 </dd>
 <dt><strong>distances_</strong><span class="classifier">ndarray, shape (n_samples-1,)</span></dt><dd><p>Distance between the two clusters merged at the <em>i</em>-th iteration.
 As Genie does not guarantee that that distances are
@@ -354,11 +356,13 @@ clustering linkages that also violate the ultrametricity property),
 these are corrected by applying
 <code class="docutils literal notranslate"><span class="pre">distances_</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(distances_[::-1])[::-1]</span></code>.
 See the description of <code class="docutils literal notranslate"><span class="pre">Z[i,2]</span></code> in <cite>scipy.cluster.hierarchy.linkage</cite>.
-Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<cite>M</cite> = 1 only</p>
 </dd>
 <dt><strong>counts_</strong><span class="classifier">ndarray, shape (n_samples-1,)</span></dt><dd><p>Number of elements in a cluster created at the i-th iteration.
 See the description of <code class="docutils literal notranslate"><span class="pre">Z[i,3]</span></code> in <cite>scipy.cluster.hierarchy.linkage</cite>.
-Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+Only available if <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+<cite>M</cite> = 1 only</p>
 </dd>
 </dl>
 </dd>
@@ -374,7 +378,7 @@ Only available if <cite>compute_full_tree</cite> is <code class="docutils litera
 <td><p>Perform clustering of the dataset</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(self, X[, y])</p></td>
-<td><p>Compute the <cite>n_clusters</cite>-partition and return the predicted labels, see <cite>genieclust.Genie.fit</cite>.</p></td>
+<td><p>Apply cluster analysis and return the predicted labels</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>(self[, deep])</p></td>
 <td><p>Get parameters for this estimator.</p></td>

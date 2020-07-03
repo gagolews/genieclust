@@ -15,6 +15,7 @@ The Genie++ Clustering Algorithm
 # You should have received a copy of the License along with this program.
 # If not, see <https://www.gnu.org/licenses/>.
 
+
 import os
 import sys
 import math
@@ -342,8 +343,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
     def fit_predict(self, X, y=None):
         """
-        Compute the `n_clusters`-partition and return the predicted labels,
-        see `genieclust.Genie.fit`.
+        Apply cluster analysis and return the predicted labels
 
 
         Parameters
@@ -360,6 +360,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         labels_ : ndarray
             `self.labels_` attribute.
+
+
+        See also
+        --------
+
+        genieclust.Genie.fit
 
         """
         self.fit(X)
