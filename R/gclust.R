@@ -103,7 +103,7 @@
 #'     acts as a noise point detector.
 #' @param detect_noise whether the minimum spanning tree's leaves
 #'     should be marked as noise points, defaults to \code{TRUE} if \code{M} > 1
-#'     for compatibility with HDBSCAN*
+#'     for compatibility with HDBSCAN*.
 #' @param M smoothing factor; \code{M} <= 2 gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used.
 #' @param postprocess one of \code{"boundary"} (default), \code{"none"}
@@ -137,12 +137,12 @@
 #' @references
 #' Gagolewski M., Bartoszuk M., Cena A.,
 #' Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-#' \emph{Information Sciences} 363, 2016, pp. 8-23.
+#' \emph{Information Sciences} 363, 2016, 8-23.
 #'
 #' Campello R., Moulavi D., Zimek A., Sander J.,
 #' Hierarchical density estimates for data clustering, visualization,
 #' and outlier detection,
-#' ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+#' ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
 #'
 #'
 #' @examples

@@ -201,8 +201,6 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/r.rst.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -312,17 +310,17 @@ version of the confusion matrix.</p>
 <div class="section" id="references">
 <h3>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h3>
 <p>Hubert L., Arabie P., Comparing Partitions, Journal of Classification
-2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)</p>
+2(1), 1985, 193-218, esp. Eqs. (2) and (4).</p>
 <p>Rendon E., Abundez I., Arizmendi A., Quiroz E.M., Internal versus
 external cluster validation indexes, International Journal of Computers
-and Communications 5(1), 2011, pp. 27-34.</p>
+and Communications 5(1), 2011, 27-34.</p>
 <p>Rezaei M., Franti P., Set matching measures for external cluster
 validity, IEEE Transactions on Knowledge and Data Mining 28(8), 2016,
-pp. 2173-2186, doi:10.1109/TKDE.2016.2551240</p>
+2173-2186.</p>
 <p>Vinh N.X., Epps J., Bailey J., Information theoretic measures for
 clusterings comparison: Variants, properties, normalization and
 correction for chance, Journal of Machine Learning Research 11, 2010,
-pp. 2837-2854.</p>
+2837-2854.</p>
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
@@ -397,7 +395,10 @@ compatible with the output of <code class="docutils literal notranslate"><span c
 <span id="id6"></span><h3>References<a class="headerlink" href="#references-1" title="Permalink to this headline">¶</a></h3>
 <p>March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree:
 Algorithm, Analysis, and Applications, Proc. ACM SIGKDD’10 (2010)
-603-611, <a class="reference external" href="https://mlpack.org/papers/emst.pdf">https://mlpack.org/papers/emst.pdf</a></p>
+603-611, <a class="reference external" href="https://mlpack.org/papers/emst.pdf">https://mlpack.org/papers/emst.pdf</a> .</p>
+<p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library, Journal of Open
+Source Software 3(26), 726, 2018.</p>
 </div>
 </div>
 <div class="section" id="gclust">
@@ -561,7 +562,7 @@ notion of noise), choose “all”.</p></td>
 leaves should be marked as noise
 points, defaults to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> if
 <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1 for compatibility with
-HDBSCAN*</p></td>
+HDBSCAN*.</p></td>
 </tr>
 </tbody>
 </table>
@@ -607,10 +608,10 @@ external cluster validity measures (partition similarity scores).</p>
 <span id="id12"></span><h3>References<a class="headerlink" href="#references-2" title="Permalink to this headline">¶</a></h3>
 <p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, Information
-Sciences 363, 2016, pp. 8-23.</p>
+Sciences 363, 2016, 8-23.</p>
 <p>Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density
 estimates for data clustering, visualization, and outlier detection, ACM
-Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.</p>
+Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.</p>
 </div>
 <div class="section" id="examples-1">
 <span id="id13"></span><h3>Examples<a class="headerlink" href="#examples-1" title="Permalink to this headline">¶</a></h3>
@@ -685,8 +686,8 @@ vectors (perfect equity), the indices yield values of 0. Vectors with
 all elements but one equal to 0 (perfect inequity), are assigned scores
 of 1. Both indices follow the Pigou-Dalton principle (are Schur-convex):
 setting <span class="math notranslate nohighlight">\(x_i = x_i - h\)</span> and <span class="math notranslate nohighlight">\(x_j = x_j + h\)</span> with
-<span class="math notranslate nohighlight">\(h &gt; 0\)</span> and x_i - h &gt;= x_j + h (taking from the “rich” and giving
-to the “poor”) decreases the inequity.</p>
+<span class="math notranslate nohighlight">\(h &gt; 0\)</span> and <span class="math notranslate nohighlight">\(x_i - h \geq x_j + h\)</span> (taking from the “rich”
+and giving to the “poor”) decreases the inequity.</p>
 <p>These indices have applications in economics, amongst others. The Gini
 clustering algorithm uses the Gini index as a measure of the inequality
 of cluster sizes.</p>
@@ -812,7 +813,7 @@ messages and progress information.</p></td>
 </div>
 <div class="section" id="details-4">
 <span id="id25"></span><h3>Details<a class="headerlink" href="#details-4" title="Permalink to this headline">¶</a></h3>
-<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n*p\)</span> , the <span class="math notranslate nohighlight">\(n*(n-1)/2\)</span>
+<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n p\)</span> , the <span class="math notranslate nohighlight">\(n (n-1)/2\)</span>
 distances are computed on the fly, so that <span class="math notranslate nohighlight">\(O(n M)\)</span> memory is
 used.</p>
 <p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment

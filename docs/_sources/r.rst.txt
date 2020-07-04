@@ -99,20 +99,20 @@ References
 ~~~~~~~~~~
 
 Hubert L., Arabie P., Comparing Partitions, Journal of Classification
-2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
 Rendon E., Abundez I., Arizmendi A., Quiroz E.M., Internal versus
 external cluster validation indexes, International Journal of Computers
-and Communications 5(1), 2011, pp. 27-34.
+and Communications 5(1), 2011, 27-34.
 
 Rezaei M., Franti P., Set matching measures for external cluster
 validity, IEEE Transactions on Knowledge and Data Mining 28(8), 2016,
-pp. 2173-2186, doi:10.1109/TKDE.2016.2551240
+2173-2186.
 
 Vinh N.X., Epps J., Bailey J., Information theoretic measures for
 clusterings comparison: Variants, properties, normalization and
 correction for chance, Journal of Machine Learning Research 11, 2010,
-pp. 2837-2854.
+2837-2854.
 
 Examples
 ~~~~~~~~
@@ -196,7 +196,11 @@ References
 
 March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree:
 Algorithm, Analysis, and Applications, Proc. ACM SIGKDD’10 (2010)
-603-611, https://mlpack.org/papers/emst.pdf
+603-611, https://mlpack.org/papers/emst.pdf .
+
+Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library, Journal of Open
+Source Software 3(26), 726, 2018.
 
 gclust
 ------
@@ -354,7 +358,7 @@ Arguments
 |                               | leaves should be marked as noise     |
 |                               | points, defaults to ``TRUE`` if      |
 |                               | ``M`` > 1 for compatibility with     |
-|                               | HDBSCAN\*                            |
+|                               | HDBSCAN*.                            |
 +-------------------------------+--------------------------------------+
 
 .. _details-2:
@@ -413,11 +417,11 @@ References
 
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, Information
-Sciences 363, 2016, pp. 8-23.
+Sciences 363, 2016, 8-23.
 
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density
 estimates for data clustering, visualization, and outlier detection, ACM
-Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
 
 .. _examples-1:
 
@@ -502,8 +506,8 @@ vectors (perfect equity), the indices yield values of 0. Vectors with
 all elements but one equal to 0 (perfect inequity), are assigned scores
 of 1. Both indices follow the Pigou-Dalton principle (are Schur-convex):
 setting :math:`x_i = x_i - h` and :math:`x_j = x_j + h` with
-:math:`h > 0` and x_i - h >= x_j + h (taking from the “rich” and giving
-to the “poor”) decreases the inequity.
+:math:`h > 0` and :math:`x_i - h \geq x_j + h` (taking from the “rich”
+and giving to the “poor”) decreases the inequity.
 
 These indices have applications in economics, amongst others. The Gini
 clustering algorithm uses the Gini index as a measure of the inequality
@@ -644,7 +648,7 @@ Arguments
 Details
 ~~~~~~~
 
-If ``d`` is a numeric matrix of size :math:`n*p` , the :math:`n*(n-1)/2`
+If ``d`` is a numeric matrix of size :math:`n p` , the :math:`n (n-1)/2`
 distances are computed on the fly, so that :math:`O(n M)` memory is
 used.
 

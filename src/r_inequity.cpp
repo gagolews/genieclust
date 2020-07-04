@@ -33,7 +33,7 @@
 //' are assigned scores of 1.
 //' Both indices follow the Pigou-Dalton principle (are Schur-convex):
 //' setting \eqn{x_i = x_i - h} and \eqn{x_j = x_j + h} with \eqn{h > 0}
-//' and {x_i - h >=  x_j + h} (taking from the "rich" and
+//' and \eqn{x_i - h \geq  x_j + h} (taking from the "rich" and
 //' giving to the "poor") decreases the inequity.
 //'
 //' These indices have applications in economics, amongst others.

@@ -31,5 +31,9 @@ If the \code{emstreeR} package is not available, an error is generated.
 \references{
 March W.B., Ram P., Gray A.G.,
 Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}
+Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}.
+
+Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library,
+Journal of Open Source Software 3(26), 726, 2018.
 }

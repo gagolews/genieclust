@@ -7,7 +7,7 @@
 
 
 """
-Inequity (Inequality) Measures
+Inequity (inequality) measures
 """
 
 

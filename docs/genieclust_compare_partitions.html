@@ -153,8 +153,6 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/genieclust_compare_partitions.rst.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -345,7 +343,8 @@ possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 represent the same 2-partition.</p>
 <p><cite>rand_score</cite> gives the Rand score (the “probability” of agreement
 between the two partitions) and <cite>adjusted_rand_score</cite> is its version
-corrected for chance <a class="reference internal" href="#rb28289ab3e3a-1" id="id1">[1]</a>: its expected value is 0.0 for two independent
+corrected for chance <a class="reference internal" href="#rb28289ab3e3a-1" id="id1">[1]</a> (especially Eqs. (2) and (4) therein):
+its expected value is 0.0 for two independent
 partitions. Due to the adjustment, the resulting index might also
 be negative for some inputs.</p>
 <p>Similarly, <cite>fm_score</cite> gives the Fowlkes-Mallows (FM) score
@@ -372,25 +371,24 @@ of a transformed version of the confusion matrix.</p>
 <dl class="citation">
 <dt class="label" id="rb28289ab3e3a-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id2">2</a>)</span></dt>
 <dd><p>Hubert L., Arabie P., Comparing Partitions,
-<em>Journal of Classification</em>2(1), 1985, pp. 193-218,
-especially Eqs. (2) and (4).</p>
+<em>Journal of Classification</em> 2(1), 1985, 193-218.</p>
 </dd>
 <dt class="label" id="rb28289ab3e3a-2"><span class="brackets"><a class="fn-backref" href="#id4">2</a></span></dt>
 <dd><p>Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
 Internal versus external cluster validation indexes,
 <em>International Journal of Computers and Communications</em> 5(1), 2011,
-pp. 27-34.</p>
+27-34.</p>
 </dd>
 <dt class="label" id="rb28289ab3e3a-3"><span class="brackets"><a class="fn-backref" href="#id5">3</a></span></dt>
 <dd><p>Rezaei M., Franti P., Set matching measures for external cluster validity,
 <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016,
-pp. 2173-2186. doi:10.1109/TKDE.2016.2551240.</p>
+2173-2186. doi:10.1109/TKDE.2016.2551240.</p>
 </dd>
 <dt class="label" id="rb28289ab3e3a-4"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
 <dd><p>Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
-<em>Journal of Machine Learning Research</em> 11, 2010, pp. 2837-2854.</p>
+<em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>

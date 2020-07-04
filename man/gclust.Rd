@@ -103,7 +103,7 @@ choose "all".}
 
 \item{detect_noise}{whether the minimum spanning tree's leaves
 should be marked as noise points, defaults to \code{TRUE} if \code{M} > 1
-for compatibility with HDBSCAN*}
+for compatibility with HDBSCAN*.}
 }
 \value{
 \code{gclust()} computes the whole clustering hierarchy; it
@@ -188,12 +188,12 @@ if (require("emstreeR")) h <- gclust(emst_mlpack(X))
 \references{
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-\emph{Information Sciences} 363, 2016, pp. 8-23.
+\emph{Information Sciences} 363, 2016, 8-23.
 
 Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,
-ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
 }
 \seealso{
 \code{\link{mst}()} for the minimum spanning tree routines.

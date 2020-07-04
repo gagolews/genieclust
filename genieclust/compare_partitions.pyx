@@ -296,7 +296,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
     `rand_score` gives the Rand score (the "probability" of agreement
     between the two partitions) and `adjusted_rand_score` is its version
-    corrected for chance [1]_: its expected value is 0.0 for two independent
+    corrected for chance [1]_ (especially Eqs. (2) and (4) therein):
+    its expected value is 0.0 for two independent
     partitions. Due to the adjustment, the resulting index might also
     be negative for some inputs.
 
@@ -332,25 +333,24 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
     .. [1]
         Hubert L., Arabie P., Comparing Partitions,
-        *Journal of Classification*\ 2(1), 1985, pp. 193-218,
-        especially Eqs. (2) and (4).
+        *Journal of Classification* 2(1), 1985, 193-218.
 
     .. [2]
         Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
         Internal versus external cluster validation indexes,
         *International Journal of Computers and Communications* 5(1), 2011,
-        pp. 27-34.
+        27-34.
 
     .. [3]
         Rezaei M., Franti P., Set matching measures for external cluster validity,
         *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016,
-        pp. 2173-2186. doi:10.1109/TKDE.2016.2551240.
+        2173-2186. doi:10.1109/TKDE.2016.2551240.
 
     .. [4]
         Vinh N.X., Epps J., Bailey J.,
         Information theoretic measures for clusterings comparison:
         Variants, properties, normalization and correction for chance,
-        *Journal of Machine Learning Research* 11, 2010, pp. 2837-2854.
+        *Journal of Machine Learning Research* 11, 2010, 2837-2854.
 
 
 

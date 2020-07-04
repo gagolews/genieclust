@@ -27,8 +27,8 @@
 #' (*) Note that there might be multiple minimum trees spanning a given graph.
 #'
 #' @details
-#' If \code{d} is a numeric matrix of size \eqn{n*p},
-#' the \eqn{n*(n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
+#' If \code{d} is a numeric matrix of size \eqn{n p},
+#' the \eqn{n (n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
 #' memory is used.
 #'
 #'
@@ -194,7 +194,11 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @references
 #' March W.B., Ram P., Gray A.G.,
 #' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-#' Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}
+#' Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}.
+#'
+#' Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+#' mlpack 3: A fast, flexible machine learning library,
+#' Journal of Open Source Software 3(26), 726, 2018.
 #'
 #' @export
 emst_mlpack <- function(X, verbose=FALSE)

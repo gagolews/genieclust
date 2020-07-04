@@ -336,9 +336,9 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         n data points in a feature space of dimensionality d
         or pairwise distances between n points
     metric : string
-        one of `"euclidean"` (a.k.a. `"l2"`),
-        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`),
-        `"cosine"` or `"precomputed"`.
+        one of ``"euclidean"`` (a.k.a. ``"l2"``),
+        ``"manhattan"`` (synonyms: ``"cityblock"``, ``"l1"``),
+        ``"cosine"`` (a.k.a. ``"cosinesimil"``), or ``"precomputed"``.
         More metrics/distances might be supported in future versions.
     d_core : c_contiguous ndarray of length n; optional (default=None)
         core distances for computing the mutual reachability distance
@@ -375,7 +375,7 @@ cpdef tuple mst_from_distance(floatT[:,::1] X,
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
-    elif metric == "cosine":
+    elif metric == "cosine" or metric == "cosinesimil":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
     elif metric == "precomputed":
         if d == 1:
@@ -422,9 +422,9 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
     k : int < n
         number of nearest neighbours
     metric : string
-        one of `"euclidean"` (a.k.a. `"l2"`),
-        `"manhattan"` (synonyms: `"cityblock"`, `"l1"`),
-        `"cosine"` or `"precomputed"`.
+        one of ``"euclidean"`` (a.k.a. ``"l2"``),
+        ``"manhattan"`` (synonyms: ``"cityblock"``, ``"l1"``),
+        ``"cosine"`` (a.k.a. ``"cosinesimil"``), or ``"precomputed"``.
         More metrics/distances might be supported in future versions.
     d_core : c_contiguous ndarray of length n; optional (default=None)
         core distances for computing the mutual reachability distance
@@ -461,7 +461,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
-    elif metric == "cosine":
+    elif metric == "cosine" or metric == "cosinesimil":
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
     elif metric == "precomputed":
         if d == 1:

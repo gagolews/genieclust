@@ -143,20 +143,19 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
 //'
 //' @references
 //' Hubert L., Arabie P., Comparing Partitions,
-//' Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
+//' Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 //'
 //' Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
 //' Internal versus external cluster validation indexes,
-//' International Journal of Computers and Communications 5(1), 2011, pp. 27-34.
+//' International Journal of Computers and Communications 5(1), 2011, 27-34.
 //'
 //' Rezaei M., Franti P., Set matching measures for external cluster validity,
-//' IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
-//' doi:10.1109/TKDE.2016.2551240
+//' IEEE Transactions on Knowledge and Data Mining 28(8), 2016, 2173-2186.
 //'
 //' Vinh N.X., Epps J., Bailey J.,
 //' Information theoretic measures for clusterings comparison:
 //' Variants, properties, normalization and correction for chance,
-//' Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
+//' Journal of Machine Learning Research 11, 2010, 2837-2854.
 //'
 //'
 //' @param x an integer vector of length n (or an object coercible to)

@@ -16,14 +16,14 @@ https://genieclust.gagolewski.com/.
 
 ## The *Genie*++ Hierarchical Clustering Algorithm (with Extras)
 
-A reimplementation of **Genie** - a robust and outlier resistant
+A faster and more powerful version of **Genie** - a robust and outlier resistant
 clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
 originally published as an R package
 [`genie`](https://cran.r-project.org/web/packages/genie/).
 
 The Genie algorithm is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
-Just like single linkage, it consumes the edges
+Just like the single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it prevents
 the formation of clusters of highly imbalanced sizes; once the Gini index
 of the cluster size distribution raises above an assumed threshold,
@@ -186,6 +186,7 @@ python3 setup.py install --user
 
 
 
+
 #### Development Version
 
 To fetch and compile the most recent development version of the package from
@@ -198,6 +199,12 @@ devtools::install_github("gagolews/genieclust")
 ```
 
 
+
+### Other
+
+Note that the core functionality is implemented in form of a header-only C++
+library, hence it might be relatively easily adapted for use in other
+environments.
 
 
 ## License
@@ -230,53 +237,65 @@ Author: PM Larsen. Distributed under the BSD-3-Clause license.
 
 ## References
 
-
 Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-*Information Sciences* **363**, 2016, pp. 8-23.
+*Information Sciences* **363**, 2016, 8-23.
 doi:10.1016/j.ins.2016.05.003.
 
 Cena A., Gagolewski M.,
 Genie+OWA: Robustifying Hierarchical Clustering with OWA-based Linkages,
-*Information Sciences* **520**, 2020, pp. 324-336.
+*Information Sciences* **520**, 2020, 324-336.
 doi:10.1016/j.ins.2020.02.025.
 
 Cena A.,
-Adaptive hierarchical clustering algorithms based on data aggregation methods,
+*Adaptive hierarchical clustering algorithms based on data aggregation methods*,
 PhD Thesis, Systems Research Institute, Polish Academy of Sciences, 2018.
 
 Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,
-*ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
+*ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1-5:51.
 doi:10.1145/2733381.
 
 Crouse D.F., On implementing 2D rectangular assignment algorithms,
 *IEEE Transactions on Aerospace and Electronic Systems* **52**(4), 2016,
-pp. 1679-1696.
+1679-1696.
 doi:10.1109/TAES.2016.140952.
 
 Mueller A., Nowozin S., Lampert C.H.,
 Information Theoretic Clustering using Minimum Spanning Trees,
-*DAGM-OAGM* 2012.
+*DAGM-OAGM*, 2012.
+
+Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library,
+*Journal of Open Source Software* **3**(26), 726, 2018.
+doi:10.21105/joss.00726.
+
+March W.B., Ram P., Gray A.G.,
+Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+*Proc. ACM SIGKDD'10*, 2010, 603-611.
+
+Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+*Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
+https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
 
 Jarník V., O jistém problému minimálním,
-*Práce Moravské Přírodovědecké Společnosti* **6**, 1930, pp. 57–63.
+*Práce Moravské Přírodovědecké Společnosti* **6**, 1930, 57-63.
 
 Olson C.F., Parallel algorithms for hierarchical clustering,
-*Parallel Comput.* **21**, 1995, pp. 1313–1325.
+*Parallel Computing* **21**(8), 1995, 1313-1325.
 
 Prim R., Shortest connection networks and some generalizations,
-*Bell Syst. Tech. J.* **36**, 1957, pp. 1389–1401.
+*The Bell System Technical Journal* **36**(6), 1957, 1389-1401.
 
 Hubert L., Arabie P., Comparing Partitions,
-*Journal of Classification* **2**(1), 1985, pp. 193-218.
+*Journal of Classification* **2**(1), 1985, 193-218.
 
 Rezaei M., Franti P., Set matching measures for external cluster validity,
-*IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, pp. 2173-2186.
+*IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, 2173-2186.
 doi:10.1109/TKDE.2016.2551240.
 
 Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
-*Journal of Machine Learning Research* **11**, 2010, pp. 2837-2854.
+*Journal of Machine Learning Research* **11**, 2010, 2837-2854.

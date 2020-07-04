@@ -23,9 +23,7 @@ import numpy as np
 import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
-# import scipy.spatial.distance
-# import sklearn.neighbors
-# import warnings
+import warnings
 
 
 try:
@@ -172,16 +170,20 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["postprocess"] not in _postprocess_options:
             raise ValueError("`postprocess` should be one of %r" % _postprocess_options)
 
-        _affinity_options = ("euclidean", "l2", "manhattan", "l1",
-                             "cityblock", "cosine", "precomputed")
+        _affinity_options = ("l2", "euclidean", "l1", "manhattan",
+                             "cityblock", "cosine", "cosinesimil", "precomputed")
         cur_state["affinity"] = str(self._affinity).lower()
         if cur_state["affinity"] not in _affinity_options:
             raise ValueError("`affinity` should be one of %r" % _affinity_options)
 
-        if cur_state["affinity"] == "l2":
-            cur_state["affinity"] = "euclidean"
-        if cur_state["affinity"] in ["l1", "cityblock"]:
-            cur_state["affinity"] = "manhattan"
+        if cur_state["affinity"] in ["euclidean"]:
+            cur_state["affinity"] = "l2"
+        elif cur_state["affinity"] in ["manhattan", "cityblock"]:
+            cur_state["affinity"] = "l1"
+        elif cur_state["affinity"] in ["chebyshev", "maximum"]:
+            cur_state["affinity"] = "linf"
+        elif cur_state["affinity"] in ["cosine"]:
+            cur_state["affinity"] = "cosinesimil"
 
         cur_state["M"] = int(self._M)
         if cur_state["M"] < 1:
@@ -227,7 +229,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         if cur_state["mlpack_enabled"] == "auto":
             if mlpack is not None and \
-                    cur_state["affinity"] == "euclidean" and \
+                    cur_state["affinity"] == "l2" and \
                     X.shape[1] <= 6 and \
                     cur_state["M"] == 1:
                 cur_state["mlpack_enabled"] = True
@@ -237,8 +239,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         if cur_state["mlpack_enabled"] and mlpack is None:
             raise ValueError("Package `mlpack` is not available.")
-        if cur_state["mlpack_enabled"] and cur_state["affinity"] != "euclidean":
-            raise ValueError("`mlpack` can only be used with `affinity` = 'euclidean'.")
+        if cur_state["mlpack_enabled"] and cur_state["affinity"] != "l2":
+            raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
         if cur_state["mlpack_enabled"] and cur_state["M"] != 1:
             raise ValueError("`mlpack` can only be used with `M` = 1.")
 
@@ -277,12 +279,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         if not cur_state["exact"]:
             raise NotImplementedError("Approximate method not implemented yet.")
-
+            # TODO: warn if warnings.warn("The number of connected components......") #53
             #  if cur_state["affinity"] == "precomputed":
             #      raise ValueError('exact==False with affinity=="precomputed"')
             #
             #
-            #  assert cur_state["affinity"] == "euclidean"
+            #  assert cur_state["affinity"] == "l2"
             #
             #  actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
             #  actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
@@ -296,7 +298,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #  #X, k=actual_n_neighbors, ...metric=metric)
             #  # print("T=%.3f" % (time.time()-t0), end="\t")
             #
-            #  # FAISS - `euclidean` and `cosine` only!
+            #  # FAISS - `l2` and `cosinesimil` only!
             #
             #
             #
@@ -336,7 +338,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         else:  # cur_state["exact"]
             if cur_state["mlpack_enabled"]:
                 assert cur_state["M"] == 1
-                assert cur_state["affinity"] == "euclidean"
+                assert cur_state["affinity"] == "l2"
 
                 if mst_dist is None or mst_ind is None:
                     _res = mlpack.emst(
@@ -353,10 +355,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     # TODO: mlpack for k-nns?
                     if nn_dist is None or nn_ind is None:
                         nn_dist, nn_ind = internal.knn_from_distance(
-                            X,
+                            X, # if not c_contiguous, raises an error
                             k=cur_state["M"]-1,
-                            metric=cur_state["affinity"],
-                            verbose=cur_state["verbose"])  # supports "precomputed"
+                            metric=cur_state["affinity"], # supports "precomputed"
+                            verbose=cur_state["verbose"])
 
                     assert nn_dist.shape[1] >= cur_state["M"]-1
                     d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
@@ -364,11 +366,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 # Use Prim's algorithm to determine the MST
                 # w.r.t. the distances computed on the fly
                 if mst_dist is None or mst_ind is None:
-                    mst_dist, mst_ind = internal.mst_from_distance(X,
+                    mst_dist, mst_ind = internal.mst_from_distance(
+                        X, # if not c_contiguous, raises an error
                         metric=cur_state["affinity"],
                         d_core=d_core,
-                        verbose=cur_state["verbose"]
-                    )
+                        verbose=cur_state["verbose"])
 
         # this might be an "intristic" dimensionality:
         self.n_features_  = cur_state["n_features"]
@@ -443,9 +445,9 @@ class Genie(GenieBase):
         Smoothing factor. `M` = 1 gives the original Genie algorithm.
     affinity : str
         Metric used to compute the linkage. One of:
-        ``"euclidean"`` (synonym: ``"l2"``),
-        ``"manhattan"`` (a.k.a. ``"l1"`` and ``"cityblock"``),
-        ``"cosine"``, or ``"precomputed"``.
+        ``"l2"`` (or ``"euclidean"``),
+        ``"l1"`` (or ``"manhattan"``, ``"cityblock"``),
+        ``"cosinesimil"`` (or ``"cosine"``), or ``"precomputed"``.
         If ``"precomputed"``, a :math:`n (n-1)/2` distance vector
         or a square-form distance matrix is needed on input (argument `X`)
         for the `fit` method, see `scipy.spatial.distance.pdist` or
@@ -453,6 +455,7 @@ class Genie(GenieBase):
     compute_full_tree : bool
         If True, a complete hierarchy is determined
         TODO: makes sense only if `M` = 1, for plotting of dendrograms
+        TODO: only if exact
         TODO: `children_`, `distances_`, `counts_`
     compute_all_cuts : bool
         If True, `n_clusters`-partition and all the more coarse-grained
@@ -472,6 +475,7 @@ class Genie(GenieBase):
         based on an approximate nearest neighbours graph found by
         `nmslib`. Otherwise, the algorithm will need to inspect all pairwise distances,
         which gives the time complexity of :math:`O(d n^2)`.
+        Otherwise [3]_
     cast_float32 : bool
         Allow casting input data to a ``float32`` dense matrix
         (for efficiency reasons; decreases the run-time ~2x times
@@ -480,7 +484,7 @@ class Genie(GenieBase):
     mlpack_enabled : "auto" or bool
         Use `mlpack.emst` for computing the Euclidean minimum spanning tree?
         Might be faster for lower-dimensional spaces. As the name suggests,
-        only affinity='euclidean' is supported (and M=1).
+        only affinity='l2' is supported (and M=1).
         By default, we rely on `mlpack` if it's installed and `n_features` <= 6.
         Otherwise, we use our own parallelised implementation of Prim's
         algorithm (environment variable ``OMP_NUM_THREADS`` controls
@@ -523,6 +527,7 @@ class Genie(GenieBase):
         If 0, then `labels_` are not set.
         Note that the actual number might be greater than the requested one,
         for instance, due to the presence of too many noise points.
+        TODO when exact=False
     n_samples_ : int
         The number of points in the fitted dataset.
     n_features_ : int or None
@@ -552,11 +557,18 @@ class Genie(GenieBase):
         See the description of ``Z[i,2]`` in `scipy.cluster.hierarchy.linkage`.
         Only available if `compute_full_tree` is ``True``.
         `M` = 1 only
+        According to the algorithm's original definition,
+        the resulting partition tree (dendrogram) might violate
+        the ultrametricity property (merges might occur at levels that
+        are not increasing w.r.t. a between-cluster distance).
+        Departures from ultrametricity are corrected by applying
+        ``Z[:, 2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
     counts_ : ndarray, shape (n_samples-1,)
         Number of elements in a cluster created at the i-th iteration.
         See the description of ``Z[i,3]`` in `scipy.cluster.hierarchy.linkage`.
         Only available if `compute_full_tree` is ``True``.
         `M` = 1 only
+
 
 
     Notes
@@ -569,7 +581,7 @@ class Genie(GenieBase):
 
     The Genie algorithm is based on a minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
-    Just like single linkage, it consumes the edges
+    Just like the single linkage, it consumes the edges
     of the MST in increasing order of weights. However, it prevents
     the formation of clusters of highly imbalanced sizes; once the Gini index
     of the cluster size distribution raises above an assumed threshold,
@@ -577,45 +589,52 @@ class Genie(GenieBase):
     Its appealing simplicity goes hand in hand with its usability;
     Genie often outperforms other clustering approaches on benchmark data.
 
-
-    The clustering can also be computed with respect to the
-    mutual reachability distance (based, e.g., on the Euclidean metric),
-    which is used in the definition of the *HDBSCAN\\** algorithm [2]_.
-    If `M` > 1, then the mutual reachability
-    distance :math:`m(i,j)` with smoothing factor M is used instead of the
-    chosen "raw" distance :math:`d(i,j)`. It holds
-    :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
-    where :math:`c(i)` is :math:`d(i,k)` with :math:`k`
-    being the (`M` - 1)-th nearest neighbour of :math:`i`.
-    This makes "noise" and "boundary" points being "pulled away" from each other.
-
-    The Genie correction together with the smoothing factor `M` > 1 (note that
-    `M` = 2 corresponds to the original distance) gives a robustified version of
-    the HDBSCAN* algorithm that is able to detect a predefined number of
-    clusters. Hence it does not dependent on the *DBSCAN*'s somehow magical
-    ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
-
-
-    The algorithm has :math:`O(n \\sqrt{n})` time complexity
+    The Genie algorithm itself has :math:`O(n \\sqrt{n})` time complexity
     given a minimum spanning tree of the pairwise distance graph.
-    Unless we use MLPACK (or other variations, see Parameters),
-    our parallelised implementation of a Jarník (Prim/Dijkstra)-like method
-    will be called to compute an MST, which generally takes :math:`O(n^2)` time
-    (environment variable ``OMP_NUM_THREADS`` controls the number of threads).
-    MLPACK (see Python package `mlpack`) is a very fast alternative
-    in the case of Euclidean spaces of (very) low dimensionality and M=1.
+    Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
+    method will be called to compute an MST, which takes :math:`O(d n^2)` time.
+    However, `MLPACK` (see Python package `mlpack`) [4]_ provides a very fast
+    alternative in the case of Euclidean spaces of (very) low dimensionality
+    and `M` = 1, see [5]_ and the `mlpack_enabled` parameter.
+    Moreover, in the approximate method (`exact` = ``False``) we apply
+    the Kruskal algorithm on the nearest neighbour graph determined
+    by `nmslib` [3]_. Albeit this only gives *some* sort of a spanning *forest*,
+    such a data structure turns out to be very suitable for our clustering task
+    (note that the set of connected components will determine the top
+    level of the identified cluster hierarchy).
 
 
 
-    Note that as in the case of all the distance-based methods,
-    the standardisation of the input features is definitely worth giving a try.
+    The Genie correction together with the smoothing factor `M` > 1
+    gives a robustified version of the HDBSCAN\\* [2]_ algorithm that,
+    contrary to its predecessor, is able to detect a *predefined* number of
+    clusters. Hence, it is independent of the *DBSCAN*'s somehow magical
+    ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
+    If `M` > 1, then the minimum spanning tree is computed with respect to the
+    mutual reachability distance (based, e.g., on the Euclidean metric).
+    Formally, the distance :math:`m(i,j)` is used instead of the
+    chosen "raw" distance, :math:`d(i,j)`. It holds
+    :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
+    where the "core" distance :math:`c(i)` is given by
+    :math:`d(i,k)` with :math:`k` being the (`M` - 1)-th nearest neighbour
+    of :math:`i`. This makes "noise" and "boundary" points being "pulled away"
+    from each other, however, note that `M` = 2 corresponds to the
+    original distance. During the clustering procedure, all leaves of the MST
+    do not take part in the clustering process. They may be merged
+    with the nearest clusters during the postprocessing stage,
+    or left marked as "noise"
+    observations.
 
-    According to the algorithm's original definition,
-    the resulting partition tree (dendrogram) might violate
-    the ultrametricity property (merges might occur at levels that
-    are not increasing w.r.t. a between-cluster distance).
-    Departures from ultrametricity are corrected by applying
-    ``Z[:, 2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
+
+
+
+
+
+
+    :Environment variables:
+        OMP_NUM_THREADS
+            Controls the number of threads used for computing the minimum
+            spanning tree (not supported by `mlpack`).
 
 
     References
@@ -624,7 +643,7 @@ class Genie(GenieBase):
     .. [1]
         Gagolewski M., Bartoszuk M., Cena A.,
         Genie: A new, fast, and outlier-resistant hierarchical
-        clustering algorithm, *Information Sciences* 363, 2016, pp. 8-23.
+        clustering algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
 
     .. [2]
@@ -633,6 +652,23 @@ class Genie(GenieBase):
         and outlier detection,
         *ACM Transactions on Knowledge Discovery from Data* 10(1),
         2015, 5:1–5:51. doi:10.1145/2733381.
+
+    .. [3]
+        Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+        *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
+        https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
+
+    .. [4]
+        Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+        mlpack 3: A fast, flexible machine learning library,
+        *Journal of Open Source Software* 3(26), 726, 2018.
+        doi:10.21105/joss.00726.
+
+    .. [5]
+        March W.B., Ram P., Gray A.G.,
+        Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+        *Proc. ACM SIGKDD'10*, 2010, 603-611.
+
     """
 
     def __init__(
@@ -641,13 +677,14 @@ class Genie(GenieBase):
             *,
             gini_threshold=0.3,
             M=1,
-            affinity="euclidean",
+            affinity="l2",
             exact=True,
             compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
             cast_float32=True,
             mlpack_enabled="auto",
+            #nmslib_n_neighbors="auto",
             #mlpack_leaf_size=1 Leaf size in the kd-tree. According to the mlpack manual, leaves of size 1 give the best performance at the cost of greater memory requirements.
             #nmslib_params_init=dict(method="hnsw") #`space` forbidden
             #nmslib_params_index=dict(post=2) #`indexThreadQty` forbidden
@@ -692,11 +729,8 @@ class Genie(GenieBase):
         ----------
 
         X : object
-            ndarray or sparse.csr_matrix
-            A matrix defining :math:`n` in a vector space with :math:`d`
-            or, if `affinity` is ``"precomputed"``,
-            a distance vector or a square distance matrix
-            giving the pairwise distances between the :math:`n` objects.
+            Typically a matrix with ``n_samples`` rows and ``n_features``
+            columns, see below for more details and options.
         y : None
             Ignored.
 
@@ -708,23 +742,62 @@ class Genie(GenieBase):
             The object that the method was called on.
 
 
+        See also
+        --------
+
+        genieclust.Genie.fit_predict
+
+
         Notes
         -----
 
         Refer to the `labels_` and `n_clusters_` attributes for the result.
 
-        It might be a good idea to standardise or at least anyhow "normalise"
-        the coordinates of the input data points by calling, for instance,
-        ``X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)``
-        so that the dataset is centred at 0 and
-        has total variance of 1. This way the method becomes
-        translation and scale invariant.
 
-        For `affinity` of ``"precomputed"``,
-        a distance vector of length ``n_samples*(n_samples-1)/2``
-        can be generated by a call to `scipy.spatial.distance.pdist`.
-        In turn, square distance matrix of shape ``(n_samples, n_samples)``
-        can be created with `scipy.spatial.distance.squareform`.
+        Acceptable `X` types depend whether we use the exact or the approximate
+        method.
+
+        `X` when `exact` = ``True``
+            For `affinity` of ``"precomputed"``, `X` should either
+            be a distance vector of length ``n_samples*(n_samples-1)/2``
+            (see `scipy.spatial.distance.pdist`) or a square distance matrix
+            of shape ``(n_samples, n_samples)``
+            (see `scipy.spatial.distance.squareform`).
+
+            Otherwise, `X` should be real-valued matrix (dense, ``numpy.ndarray``)
+            with ``n_samples`` rows and ``n_features`` columns.
+
+            In the latter case, it might be a good idea to standardise
+            or at least somehow preprocess the coordinates of the input data
+            points by calling, for instance,
+            ``X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)``
+            so that the dataset is centred at 0 and has total variance of 1.
+            This way the method becomes translation and scale invariant.
+            What's more, if data are recorded with small precision (say, up
+            to few decimal digits), adding a tiny bit of Gaussian noise will
+            assure the solution is unique (note that this generally applies
+            to other distance-based clustering algorithms as well).
+
+        `X` when `exact` = ``False``
+            The approximate method relies on `nmslib` for locating the
+            nearest neighbours. Therefore, it supports all datatypes
+            described in https://github.com/nmslib/nmslib/blob/master/manual/spaces.md.
+            Depending on the chosen `affinity`, `X` may hence be
+            a real-valued ``numpy.ndarray`` matrix with ``n_samples`` rows
+            and ``n_features`` columns,
+            a ``scipy.sparse.csr_matrix`` object, or
+            an array of ASCII strings.
+
+
+
+        References
+        ----------
+
+        .. [1]
+            Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+            *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
+            https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
+
 
         """
         cur_state = self._check_params()  # re-check, they might have changed
@@ -777,11 +850,11 @@ class GIc(GenieBase):
         See `genieclust.Genie`.
     compute_all_cuts : bool
         See `genieclust.Genie`.
-        Note that for GIc if `compute_all_cuts` is ``True``,
+        Note that if `compute_all_cuts` is ``True``,
         then the i-th cut in the hierarchy behaves as if
         `add_clusters` was equal to ``n_clusters-i``.
         In other words, the returned cuts will not be the same
-        as those obtained by calling GIc numerous times, each time
+        as those obtained by multiple calls to GIc, each time
         with different `n_clusters` and constant `add_clusters` requested.
     postprocess : {"boundary", "none", "all"}
         See `genieclust.Genie`.
@@ -794,11 +867,12 @@ class GIc(GenieBase):
     verbose : bool
         See `genieclust.Genie`.
     gini_thresholds : array_like
+        A list of Gini index thresholds between 0 and 1.
         The GIc algorithm optimises the information criterion
         in an agglomerative way, starting from the intersection
         of the clusterings returned by
-        Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i]),
-        for all i=0,...,len(gini_thresholds)-1.
+        ``Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i])``,
+        for all ``i`` from ``0`` to ``len(gini_thresholds)-1``.
     add_clusters : int
         Number of additional clusters to work with internally.
     n_features : float or None
@@ -825,7 +899,7 @@ class GIc(GenieBase):
 
     GIc (Genie+Information Criterion) is an Information-Theoretic
     Hierarchical Clustering Algorithm. It computes an `n_clusters`-partition
-    based on a pre-computed minimums spanning tree. Clusters are merged
+    based on a pre-computed minimum spanning tree. Clusters are merged
     so as to maximise (heuristically) the information
     criterion discussed in [2]_.
 
@@ -855,7 +929,7 @@ class GIc(GenieBase):
     .. [3]
         Gagolewski M., Bartoszuk M., Cena A.,
         Genie: A new, fast, and outlier-resistant hierarchical clustering
-        algorithm, *Information Sciences* 363, 2016, pp. 8-23.
+        algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
 
 
@@ -866,7 +940,7 @@ class GIc(GenieBase):
             *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             M=1,
-            affinity="euclidean",
+            affinity="l2",
             exact=True,
             compute_full_tree=False,
             compute_all_cuts=False,
@@ -940,11 +1014,16 @@ class GIc(GenieBase):
 
         genieclust.Genie.fit
 
+        genieclust.GIc.fit_predict
+
 
         Notes
         -----
 
         Refer to the `labels_` and `n_clusters_` attributes for the result.
+
+        Note that for `affinity` of ``"precomputed"``, the `n_features`
+        parameter must be set explicitly.
 
         """
         cur_state = self._check_params()  # re-check, they might have changed

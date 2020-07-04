@@ -137,9 +137,13 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
     if labels.ndim != 1 or X.shape[0] != labels.shape[0]:
         raise ValueError("Incorrect shape of `labels`.")
 
-    for i in np.unique(labels): # 0 is black, 1 is red, etc.
-        plt.scatter(X[labels==i,0], X[labels==i,1],
-            c=col[(i) % len(col)], marker=mrk[(i) % len(mrk)], **kwargs)
+    for i in np.unique(labels):  # 0 is black, 1 is red, etc.
+        plt.scatter(
+            X[labels == i, 0],
+            X[labels == i, 1],
+            c=col[(i) % len(col)],
+            marker=mrk[(i) % len(mrk)],
+            **kwargs)
 
 
 
@@ -217,6 +221,6 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
     if pairs.ndim != 2 or pairs.shape[1] != 2:
         raise ValueError("`pairs` must be a matrix with 2 columns.")
 
-    xcoords = np.insert(X[pairs.ravel(),0].reshape(-1,2), 2, None, 1).ravel()
-    ycoords = np.insert(X[pairs.ravel(),1].reshape(-1,2), 2, None, 1).ravel()
+    xcoords = np.insert(X[pairs.ravel(), 0].reshape(-1, 2), 2, None, 1).ravel()
+    ycoords = np.insert(X[pairs.ravel(), 1].reshape(-1, 2), 2, None, 1).ravel()
     plt.plot(xcoords, ycoords, style, **kwargs)

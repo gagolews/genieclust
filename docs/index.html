@@ -143,8 +143,6 @@
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -162,12 +160,12 @@
 <div><p><strong>Genie outputs meaningful clusters and is fast even for large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p>A reimplementation of <strong>Genie</strong> - a robust and outlier resistant
+<p>A faster and more powerful version of <strong>Genie</strong> - a robust and outlier resistant
 clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
-<p>The Genie algorithm is based on a minimum spanning tree (MST) of the
+<p>The Genie algorithm <a class="footnote-reference brackets" href="#id4" id="id1">1</a> is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
-Just like single linkage, it consumes the edges
+Just like the single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it <strong>prevents
 the formation of clusters of highly imbalanced sizes</strong>; once the Gini index
 of the cluster size distribution raises above an assumed threshold,
@@ -180,16 +178,38 @@ on <a class="reference external" href="https://github.com/gagolews/clustering_be
 <p>Genie is also <strong>very fast</strong> — determining the whole cluster hierarchy
 for datasets of 10M points in low dimensional Euclidean spaces or
 100K points in high dimensional ones takes 1-2 minutes.
-There’s also an approximate version, based on <cite>nmslib</cite>, that
-is even faster and supports, amongst others, sparse or string inputs.</p>
+There’s also an approximate version, based on <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id6" id="id2">3</a>, that
+is even faster and supports, amongst others, sparse or string inputs.
+Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
+(large datasets with any number of clusters to detect) for data
+that fit into memory.</p>
 <p>It also allows clustering with respect to mutual reachability distances
 so that it can act as a <strong>noise point detector</strong> or a
-robustified version of <cite>HDBSCAN*</cite> that is able to detect a predefined
+robustified version of <cite>HDBSCAN*</cite> <a class="footnote-reference brackets" href="#id5" id="id3">2</a> that is able to detect a predefined
 number of clusters and hence it doesn’t dependent on the <cite>DBSCAN</cite>’s somehow
 difficult-to-set <cite>eps</cite> parameter.</p>
-<p><strong>TODO</strong>: The <cite>genieclust</cite> package is available for Python (PyPI–link)
-and R (CRAN–link). Its source code is available at
-<a class="reference external" href="https://github.com/gagolews/genieclust">https://github.com/gagolews/genieclust</a>.</p>
+<p>The Python language version of <cite>genieclust</cite> has
+a familiar <cite>scikit-learn</cite>-like look-and-feel:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
+<span class="n">X</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># some data</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>R’s interface is compatible with <code class="docutils literal notranslate"><span class="pre">hclust()</span></code>, but there is more.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">&lt;-</span> <span class="kc">...</span> <span class="c1"># some data</span>
+<span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="c1"># plot cluster dendrogram</span>
+<span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="m">2</span><span class="p">)</span>
+<span class="c1"># or genie(X, k=2)</span>
+</pre></div>
+</div>
+<p><strong>TODO</strong>: The <cite>genieclust</cite> package is available for Python (PyPI–link, how to install)
+and R (CRAN–link, how to install). Its source code can be downloaded from
+<a class="reference external" href="https://github.com/gagolews/genieclust">https://github.com/gagolews/genieclust</a>.
+Note that the core functionality is implemented in form of a header-only C++
+library, hence it might be relatively easily adapted for use in other
+environments.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
@@ -213,8 +233,31 @@ and R (CRAN–link). Its source code is available at
 </ul>
 </div>
 </div>
+<div class="section" id="references">
+<h1>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h1>
+<dl class="footnote brackets">
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+<em>Information Sciences</em> 363, 2016, 8-23.
+doi:10.1016/j.ins.2016.05.003.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Campello R., Moulavi D., Zimek A., Sander J.,
+Hierarchical density estimates for data clustering, visualization,
+and outlier detection,
+<em>ACM Transactions on Knowledge Discovery from Data</em> 10(1), 2015, 5:1-5:51.
+doi:10.1145/2733381.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dd><p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+<em>Non-metric space library (NMSLIB) manual</em>, version 2.0, 2019.
+<a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf</a>.</p>
+</dd>
+</dl>
+</div>
 <div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<h1>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
 <li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
 <li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
