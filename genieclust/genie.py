@@ -163,9 +163,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
         cur_state["exact"]             = bool(self._exact)
 
         cur_state["compute_full_tree"] = bool(self._compute_full_tree)
-        if cur_state["compute_full_tree"] and not (M == 1 and exact):
-           cur_state["compute_full_tree"] = False
-           warnings.warn("`compute_full_tree` is only available when `M` = 1 "
+        if cur_state["compute_full_tree"] and \
+                not (cur_state["M"] == 1 and cur_state["exact"]):
+            cur_state["compute_full_tree"] = False
+            warnings.warn("`compute_full_tree` is only available when `M` = 1 "
                          "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self._compute_all_cuts)
@@ -812,12 +813,6 @@ class Genie(GenieBase):
 
         self : genieclust.Genie
             The object that the method was called on.
-
-
-        See also
-        --------
-
-        genieclust.Genie.fit_predict
 
 
         Notes
