@@ -68,7 +68,7 @@ verbose = True
 #   other = space-separated numbers
 t02 = time.time()
 # data_type=nmslib.DataType.DENSE_VECTOR|OBJECT_AS_STRING|SPARSE_VECTOR
-# dtype = nmslib.DistType.FLOAT|INT
+# dtype = nmslib.DistType.FLOAT|INT use FLOAT except for `leven`
 # https://github.com/nmslib/nmslib/blob/master/manual/methods.md
 # https://github.com/nmslib/nmslib/blob/master/manual/spaces.md
 nmslib_params_init = dict(method='hnsw', space='l2')# data_type, dtype

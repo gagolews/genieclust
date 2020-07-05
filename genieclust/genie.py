@@ -60,6 +60,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             postprocess,
             cast_float32,
             mlpack_enabled,
+            mlpack_leaf_size,
             verbose):
         # # # # # # # # # # # #
         super().__init__()
@@ -73,6 +74,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self._postprocess       = postprocess
         self._cast_float32      = cast_float32
         self._mlpack_enabled    = mlpack_enabled
+        self._mlpack_leaf_size  = mlpack_leaf_size
         self._verbose           = verbose
 
         self.n_samples_        = None
@@ -182,22 +184,30 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["postprocess"] not in _postprocess_options:
             raise ValueError("`postprocess` should be one of %r" % _postprocess_options)
 
-        _affinity_options = ("l2", "euclidean", "l1", "manhattan",
-                             "cityblock", "cosine", "cosinesimil", "precomputed")
         cur_state["affinity"] = str(self._affinity).lower()
-        if cur_state["affinity"] not in _affinity_options:
-            raise ValueError("`affinity` should be one of %r" % _affinity_options)
-
-        if cur_state["affinity"] in ["euclidean"]:
+        if cur_state["affinity"] in ["euclidean", "lp:p=2"]:
             cur_state["affinity"] = "l2"
-        elif cur_state["affinity"] in ["manhattan", "cityblock"]:
+        elif cur_state["affinity"] in ["euclidean_sparse"]:
+            cur_state["affinity"] = "l2_sparse"
+        elif cur_state["affinity"] in ["manhattan", "cityblock", "lp:p=1"]:
             cur_state["affinity"] = "l1"
-        elif cur_state["affinity"] in ["chebyshev", "maximum"]:
+        elif cur_state["affinity"] in ["manhattan_sparse", "cityblock_sparse"]:
+            cur_state["affinity"] = "l1_sparse"
+        elif cur_state["affinity"] in ["chebyshev", "maximum", "lp:p=inf"]:
             cur_state["affinity"] = "linf"
+        elif cur_state["affinity"] in ["chebyshev_sparse", "maximum_sparse"]:
+            cur_state["affinity"] = "linf_sparse"
         elif cur_state["affinity"] in ["cosine"]:
             cur_state["affinity"] = "cosinesimil"
+        elif cur_state["affinity"] in ["cosine_sparse"]:
+            cur_state["affinity"] = "cosinesimil_sparse"
+        elif cur_state["affinity"] in ["cosine_sparse_fast"]:
+            cur_state["affinity"] = "cosinesimil_sparse_fast"
 
-
+        _affinity_exact_options = ("l2", "euclidean", "l1", "manhattan",
+            "cityblock", "cosine", "cosinesimil", "precomputed")
+        if cur_state["exact"] and cur_state["affinity"] not in _affinity_exact_options:
+            raise ValueError("`affinity` should be one of %r" % _affinity_exact_options)
 
         if type(self._mlpack_enabled) is str:
             cur_state["mlpack_enabled"] = str(self._mlpack_enabled).lower()
@@ -205,6 +215,15 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 raise ValueError("`mlpack_enabled` must be one of: 'auto', True, False.")
         else:
             cur_state["mlpack_enabled"] = bool(self._mlpack_enabled)
+
+        cur_state["mlpack_leaf_size"] = int(self._mlpack_leaf_size)  # mlpack will check this
+
+
+        #type(nmslib_params_init) is dict
+        #cur_state["nmslib_params_init"] = self._nmslib_params_init.copy()
+        #OMP.....
+        #space....
+        #indexThreadQty....
 
         # this is more like an inherent dimensionality for GIc
         cur_state["n_features"] = self._n_features   # users can set this manually
@@ -216,12 +235,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
         return cur_state
 
 
+    def _get_mst_exact(self, X, cur_state):
 
-
-    def _get_mst(self, X, cur_state):
-        cur_state["X"] = id(X)
-
-        n_samples  = X.shape[0]
         if cur_state["affinity"] == "precomputed":
             X = X.reshape(X.shape[0], -1)
             if X.shape[1] not in [1, X.shape[0]]:
@@ -231,28 +246,34 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     "`scipy.spatial.distance.squareform`.")
             if X.shape[1] == 1:
                 # from a very advanced and sophisticated quadratic equation:
-                n_samples = int(round((math.sqrt(1.0+8.0*n_samples)+1.0)/2.0))
+                n_samples = int(round((math.sqrt(1.0+8.0*X.shape[0])+1.0)/2.0))
                 assert n_samples*(n_samples-1)//2 == X.shape[0]
+            else:
+                n_samples  = X.shape[0]
+        else:
+            if cur_state["cast_float32"]:
+                if scipy.sparse.isspmatrix(X):
+                    raise ValueError("Sparse matrices are (currently) only "
+                                    "supported when `exact` is False")
+                X = np.array(X, dtype=np.float32, order="C", copy=False, ndmin=2)
 
-        if cur_state["n_features"] < 0 and cur_state["affinity"] != "precomputed":
-            cur_state["n_features"] = X.shape[1]
+            n_samples  = X.shape[0]
+            if cur_state["n_features"] < 0:
+                cur_state["n_features"] = X.shape[1]
 
         if cur_state["mlpack_enabled"] == "auto":
-            if mlpack is not None and \
+            cur_state["mlpack_enabled"] = mlpack is not None and \
                     cur_state["affinity"] == "l2" and \
                     X.shape[1] <= 6 and \
-                    cur_state["M"] == 1:
-                cur_state["mlpack_enabled"] = True
-            else:
-                cur_state["mlpack_enabled"] = False
+                    cur_state["M"] == 1
 
-
-        if cur_state["mlpack_enabled"] and mlpack is None:
-            raise ValueError("Package `mlpack` is not available.")
-        if cur_state["mlpack_enabled"] and cur_state["affinity"] != "l2":
-            raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
-        if cur_state["mlpack_enabled"] and cur_state["M"] != 1:
-            raise ValueError("`mlpack` can only be used with `M` = 1.")
+        if cur_state["mlpack_enabled"]:
+            if mlpack is None:
+                raise ValueError("Package `mlpack` is not available.")
+            elif cur_state["affinity"] != "l2":
+                raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
+            elif cur_state["M"] != 1:
+                raise ValueError("`mlpack` can only be used with `M` = 1.")
 
         if cur_state["verbose"]:
             print("[genieclust] Initialising data.", file=sys.stderr)
@@ -262,13 +283,6 @@ class GenieBase(BaseEstimator, ClusterMixin):
         nn_dist  = None
         nn_ind   = None
         d_core   = None
-
-        if cur_state["cast_float32"] and cur_state["affinity"] != "precomputed":
-            # faiss and nmslib support float32 only
-            # warning if sparse!!
-            # this is not needed if cache is used!
-            X = X.astype(np.float32, order="C", copy=False)
-
 
         if self._last_state_ is not None and \
                 cur_state["X"]            == self._last_state_["X"] and \
@@ -284,112 +298,132 @@ class GenieBase(BaseEstimator, ClusterMixin):
             elif cur_state["M"] < self._last_state_["M"]:
                 nn_dist  = self._nn_dist_
                 nn_ind   = self._nn_ind_
-            else:
-                pass
 
-        if not cur_state["exact"]:
-            raise NotImplementedError("Approximate method not implemented yet.")
-            # TODO: warn if warnings.warn("The number of connected components......") #53
-            #  if cur_state["affinity"] == "precomputed":
-            #      raise ValueError('exact==False with affinity=="precomputed"')
-            #
-            #
-            #  assert cur_state["affinity"] == "l2"
-            #
-            #  actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
-            #  actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
-            #  actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
-            #
-            #  # t0 = time.time()
-            #  ##nn = sklearn.neighbors.NearestNeighbors(
-            #  ##n_neighbors=actual_n_neighbors, ....**cur_state["nn_params"])
-            #  ##nn_dist, nn_ind = nn.fit(X).kneighbors()
-            #  #nn_dist, nn_ind = internal.knn_from_distance(
-            #  #X, k=actual_n_neighbors, ...metric=metric)
-            #  # print("T=%.3f" % (time.time()-t0), end="\t")
-            #
-            #  # FAISS - `l2` and `cosinesimil` only!
-            #
-            #
-            #
-            #  # TODO:  cur_state["metric"], cur_state["metric_params"]
-            #  #t0 = time.time()
-            #  # the slow part:
-            #  nn = faiss.IndexFlatL2(cur_state["n_features"])
-            #  nn.add(X)
-            #  nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1) # TODO: , verbose=cur_state["verbose"]
-            #  #print("T=%.3f" % (time.time()-t0), end="\t")
-            #
-            #
-            #
-            #  # @TODO:::::
-            #  #nn_bad_where = np.where((nn_ind[:, 0]!=np.arange(n_samples)))[0]
-            #  #print(nn_bad_where)
-            #  #print(nn_ind[nn_bad_where, :5])
-            #  #print(X[nn_bad_where, :])
-            #  #assert nn_bad_where.shape[0] == 0
-            #
-            #  # TODO: check cache if rebuild needed
-            #  nn_dist = nn_dist[:, 1:].astype(X.dtype, order="C")
-            #  nn_ind  = nn_ind[:, 1:].astype(np.intp, order="C")
-            #
-            #  if cur_state["M"] > 1:
-            #      # d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
-            #      raise NotImplementedError("approximate method not implemented yet")
-            #
-            #  #t0 = time.time()
-            #  # the fast part:
-            #  mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
-            #      stop_disconnected=False, # TODO: test this!!!!
-            #      stop_inexact=False,
-            #      verbose=cur_state["verbose"])
-            #  #print("T=%.3f" % (time.time()-t0), end="\t")
+        if cur_state["mlpack_enabled"]:
+            assert cur_state["M"] == 1
+            assert cur_state["affinity"] == "l2"
 
-        else:  # cur_state["exact"]
-            if cur_state["mlpack_enabled"]:
-                assert cur_state["M"] == 1
-                assert cur_state["affinity"] == "l2"
-
-                if mst_dist is None or mst_ind is None:
-                    _res = mlpack.emst(
-                        input=X,
-                        #leaf_size=...,
-                        #naive=False,
-                        copy_all_inputs=False,
-                        verbose=cur_state["verbose"])["output"]
-                    mst_dist = _res[:,  2].astype(X.dtype, order="C")
-                    mst_ind  = _res[:, :2].astype(np.intp, order="C")
-            else:
-                if cur_state["M"] >= 2:  # else d_core   = None
-                    # Genie+HDBSCAN --- determine d_core
-                    # TODO: mlpack for k-nns?
-                    if nn_dist is None or nn_ind is None:
-                        nn_dist, nn_ind = internal.knn_from_distance(
-                            X, # if not c_contiguous, raises an error
-                            k=cur_state["M"]-1,
-                            metric=cur_state["affinity"], # supports "precomputed"
-                            verbose=cur_state["verbose"])
-
-                    assert nn_dist.shape[1] >= cur_state["M"]-1
-                    d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
-
-                # Use Prim's algorithm to determine the MST
-                # w.r.t. the distances computed on the fly
-                if mst_dist is None or mst_ind is None:
-                    mst_dist, mst_ind = internal.mst_from_distance(
-                        X, # if not c_contiguous, raises an error
-                        metric=cur_state["affinity"],
-                        d_core=d_core,
+            if mst_dist is None or mst_ind is None:
+                _res = mlpack.emst(
+                    input=X,
+                    leaf_size=cur_state["mlpack_leaf_size"],
+                    naive=False,
+                    copy_all_inputs=False,
+                    verbose=cur_state["verbose"])["output"]
+                mst_dist = _res[:,  2].astype(X.dtype, order="C")
+                mst_ind  = _res[:, :2].astype(np.intp, order="C")
+        else:
+            if cur_state["M"] >= 2:  # else d_core   = None
+                # Genie+HDBSCAN --- determine d_core
+                # TODO: mlpack for k-nns?
+                if nn_dist is None or nn_ind is None:
+                    nn_dist, nn_ind = internal.knn_from_distance(
+                        X,  # if not c_contiguous, raises an error
+                        k=cur_state["M"]-1,
+                        metric=cur_state["affinity"],  # supports "precomputed"
                         verbose=cur_state["verbose"])
 
-        # this might be an "intrinsic" dimensionality:
-        self.n_features_  = cur_state["n_features"]
+                assert nn_dist.shape[1] >= cur_state["M"]-1
+                d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+
+            # Use Prim's algorithm to determine the MST
+            # w.r.t. the distances computed on the fly
+            if mst_dist is None or mst_ind is None:
+                mst_dist, mst_ind = internal.mst_from_distance(
+                    X, # if not c_contiguous, raises an error
+                    metric=cur_state["affinity"],
+                    d_core=d_core,
+                    verbose=cur_state["verbose"])
+
         self.n_samples_   = n_samples
         self._mst_dist_   = mst_dist
         self._mst_ind_    = mst_ind
         self._nn_dist_    = nn_dist
         self._nn_ind_     = nn_ind
         self._d_core_     = d_core
+
+        return cur_state
+
+
+    def _get_mst_approx(self, X, cur_state):
+        #
+        # if scipy.sparse.isspmatrix(X):
+        # scipy.sparse.csr_matrix(X, dtype=np.float32, copy=False)
+
+        if cur_state["affinity"] == "precomputed":
+           raise ValueError("`affinity` of 'precomputed' can only be used "
+                "with `exact` = True")
+
+        raise NotImplementedError("Approximate method not implemented yet.")
+        # TODO: warn if warnings.warn("The number of connected components......") #53
+        #  if cur_state["affinity"] == "precomputed":
+        #      raise ValueError('exact==False with affinity=="precomputed"')
+        #
+        #
+        #  assert cur_state["affinity"] == "l2"
+        #
+        #  actual_n_neighbors = min(32, int(math.ceil(math.sqrt(n_samples))))
+        #  actual_n_neighbors = max(actual_n_neighbors, cur_state["M"]-1)
+        #  actual_n_neighbors = min(n_samples-1, actual_n_neighbors)
+        #
+        #  # t0 = time.time()
+        #  ##nn = sklearn.neighbors.NearestNeighbors(
+        #  ##n_neighbors=actual_n_neighbors, ....**cur_state["nn_params"])
+        #  ##nn_dist, nn_ind = nn.fit(X).kneighbors()
+        #  #nn_dist, nn_ind = internal.knn_from_distance(
+        #  #X, k=actual_n_neighbors, ...metric=metric)
+        #  # print("T=%.3f" % (time.time()-t0), end="\t")
+        #
+        #  # FAISS - `l2` and `cosinesimil` only!
+        #
+        #
+        #
+        #  # TODO:  cur_state["metric"], cur_state["metric_params"]
+        #  #t0 = time.time()
+        #  # the slow part:
+        #  nn = faiss.IndexFlatL2(cur_state["n_features"])
+        #  nn.add(X)
+        #  nn_dist, nn_ind = nn.search(X, actual_n_neighbors+1) # TODO: , verbose=cur_state["verbose"]
+        #  #print("T=%.3f" % (time.time()-t0), end="\t")
+        #
+        #
+        #
+        #  # @TODO:::::
+        #  #nn_bad_where = np.where((nn_ind[:, 0]!=np.arange(n_samples)))[0]
+        #  #print(nn_bad_where)
+        #  #print(nn_ind[nn_bad_where, :5])
+        #  #print(X[nn_bad_where, :])
+        #  #assert nn_bad_where.shape[0] == 0
+        #
+        #  # TODO: check cache if rebuild needed
+        #  nn_dist = nn_dist[:, 1:].astype(X.dtype, order="C")
+        #  nn_ind  = nn_ind[:, 1:].astype(np.intp, order="C")
+        #
+        #  if cur_state["M"] > 1:
+        #      # d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+        #      raise NotImplementedError("approximate method not implemented yet")
+        #
+        #  #t0 = time.time()
+        #  # the fast part:
+        #  mst_dist, mst_ind = internal.mst_from_nn(nn_dist, nn_ind,
+        #      stop_disconnected=False, # TODO: test this!!!!
+        #      stop_inexact=False,
+        #      verbose=cur_state["verbose"])
+        #  #print("T=%.3f" % (time.time()-t0), end="\t")
+
+        return cur_state
+
+
+    def _get_mst(self, X, cur_state):
+        cur_state["X"] = id(X)
+
+        if cur_state["exact"]:
+            cur_state = self._get_mst_exact(X, cur_state)
+        else:
+            cur_state = self._get_mst_approx(X, cur_state)
+
+        # this might be an "intrinsic" dimensionality:
+        self.n_features_  = cur_state["n_features"]
         self._last_state_ = cur_state  # will be modified in-place further on
 
         return cur_state
@@ -534,17 +568,20 @@ class Genie(GenieBase):
         (however, see `mlpack_enabled`) but only needs `O(n)` memory.
 
         If `exact` is ``False``, the minimum spanning tree is approximated
-        based on an approximate :math:`k`\ -nearest neighbours graph found by
+        based on an approximate :math:`k`\\ -nearest neighbours graph found by
         `nmslib` [3]_. This is typically very fast but requires
         :math:`O(k n)` memory.
 
     cast_float32 : bool
         Whether casting of data type to ``float32`` is allowed.
 
-        This is for efficiency reasons; it decreases the run-time ca. 2 times
-        at a cost of greater memory usage.
+        If `exact` is ``True``, this is for efficiency reasons;
+        it decreases the run-time ca. 2 times at a cost of greater memory use.
         Note that `nmslib` (used when `exact` is ``False``)
         *requires* ``float32`` data anyway.
+
+        By setting `cast_float32` to ``False`` a user assures themself
+        that the inputs are of acceptable form.
 
     mlpack_enabled : "auto" or bool
         Whether `mlpack.emst` should be used for computing the Euclidean
@@ -554,6 +591,12 @@ class Genie(GenieBase):
         only affinity='l2' is supported (and `M` = 1).
         By default, we rely on `mlpack` if it is installed and
         `n_features` <= 6.
+
+    mlpack_leaf_size : int
+        Leaf size in the kd-tree when `mlpack.emst` is used.
+
+        According to the `mlpack` manual, leaves of size 1 give the best
+        performance at the cost of greater memory use.
 
     verbose : bool
         Whether to print diagnostic messages and progress information
@@ -756,11 +799,11 @@ class Genie(GenieBase):
             postprocess="boundary",
             cast_float32=True,
             mlpack_enabled="auto",
-            #nmslib_n_neighbors="auto",
-            #mlpack_leaf_size=1 Leaf size in the kd-tree. According to the mlpack manual, leaves of size 1 give the best performance at the cost of greater memory requirements.
-            #nmslib_params_init=dict(method="hnsw") #`space` forbidden see [3]_ and https://github.com/nmslib/nmslib/blob/master/manual/methods.md
-            #nmslib_params_index=dict(post=2) #`indexThreadQty` forbidden
-            #nmslib_params_query=dict()
+            mlpack_leaf_size=1,
+            nmslib_n_neighbors="auto",
+            nmslib_params_init=dict(method="hnsw"), #`space` forbidden see [3]_ and https://github.com/nmslib/nmslib/blob/master/manual/methods.md
+            nmslib_params_index=dict(post=2), #`indexThreadQty` forbidden
+            nmslib_params_query=dict(),
             verbose=False):
         # # # # # # # # # # # #
         super().__init__(
@@ -773,6 +816,7 @@ class Genie(GenieBase):
             postprocess=postprocess,
             cast_float32=cast_float32,
             mlpack_enabled=mlpack_enabled,
+            mlpack_leaf_size=mlpack_leaf_size,
             verbose=verbose)
 
         self._gini_threshold = gini_threshold
@@ -832,7 +876,8 @@ class Genie(GenieBase):
             of shape ``(n_samples, n_samples)``
             (see `scipy.spatial.distance.squareform`).
 
-            Otherwise, `X` should be real-valued matrix (dense, ``numpy.ndarray``)
+            Otherwise, `X` should be real-valued matrix
+            (dense ``numpy.ndarray``, or an object coercible to)
             with ``n_samples`` rows and ``n_features`` columns.
 
             In the latter case, it might be a good idea to standardise
@@ -1032,6 +1077,7 @@ class GIc(GenieBase):
             n_features=None,
             cast_float32=True,
             mlpack_enabled="auto",
+            mlpack_leaf_size=1,
             # TODO: Genie..............
             verbose=False):
         # # # # # # # # # # # #
@@ -1045,6 +1091,7 @@ class GIc(GenieBase):
             postprocess=postprocess,
             cast_float32=cast_float32,
             mlpack_enabled=mlpack_enabled,
+            mlpack_leaf_size=mlpack_leaf_size,
             verbose=verbose)
 
         self._gini_thresholds = gini_thresholds
