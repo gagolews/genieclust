@@ -139,10 +139,10 @@ setuptools.setup(
           "sklearn"
       ],
     download_url="https://github.com/gagolews/genieclust",
-    url="http://www.gagolewski.com/software/genieclust/",
+    url="https://genieclust.gagolewski.com/",
     project_urls={
         "Bug Tracker":   "https://github.com/gagolews/genieclust/issues",
-        "Documentation": "https://github.com/gagolews/genieclust",
+        "Documentation": "https://genieclust.gagolewski.com/",
         "Source Code":   "https://github.com/gagolews/genieclust",
     },
     packages=setuptools.find_packages(),

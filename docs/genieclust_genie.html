@@ -168,7 +168,7 @@
 <h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="genieclust.Genie">
-<em class="property">class </em><code class="sig-prename descclassname">genieclust.</code><code class="sig-name descname">Genie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_clusters</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">gini_threshold</span><span class="o">=</span><span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">M</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">affinity</span><span class="o">=</span><span class="default_value">'l2'</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_full_tree</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compute_all_cuts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">postprocess</span><span class="o">=</span><span class="default_value">'boundary'</span></em>, <em class="sig-param"><span class="n">cast_float32</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">mlpack_enabled</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mlpack_leaf_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">nmslib_n_neighbors</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">nmslib_params_init</span><span class="o">=</span><span class="default_value">{'method': 'hnsw'}</span></em>, <em class="sig-param"><span class="n">nmslib_params_index</span><span class="o">=</span><span class="default_value">{'post': 2}</span></em>, <em class="sig-param"><span class="n">nmslib_params_query</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">genieclust.</code><code class="sig-name descname">Genie</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_clusters</span><span class="o">=</span><span class="default_value">2</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">gini_threshold</span><span class="o">=</span><span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">M</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">affinity</span><span class="o">=</span><span class="default_value">'l2'</span></em>, <em class="sig-param"><span class="n">exact</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">compute_full_tree</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">compute_all_cuts</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">postprocess</span><span class="o">=</span><span class="default_value">'boundary'</span></em>, <em class="sig-param"><span class="n">cast_float32</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">mlpack_enabled</span><span class="o">=</span><span class="default_value">'auto'</span></em>, <em class="sig-param"><span class="n">mlpack_leaf_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">nmslib_n_neighbors</span><span class="o">=</span><span class="default_value">64</span></em>, <em class="sig-param"><span class="n">nmslib_params_init</span><span class="o">=</span><span class="default_value">{'method': 'hnsw'}</span></em>, <em class="sig-param"><span class="n">nmslib_params_index</span><span class="o">=</span><span class="default_value">{'post': 2}</span></em>, <em class="sig-param"><span class="n">nmslib_params_query</span><span class="o">=</span><span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Genie++ hierarchical clustering algorithm</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -179,6 +179,16 @@ can act as a noise point/outlier detector.
 The approximate method (see parameter <cite>exact</cite>) can sometimes
 fail to detect the coarsest-grained partitions; in such a case,
 more clusters might be returned (with a warning).</p>
+</dd>
+<dt><strong>gini_threshold</strong><span class="classifier">float</span></dt><dd><p>Threshold for the Genie correction in [0,1].</p>
+<p>The Gini index is used to quantify the inequality of the cluster
+size distribution. Low thresholds highly penalise the formation
+of small clusters. Threshold of 1.0 disables the correction
+and for <cite>M</cite> = 1 makes the method be equivalent to the single
+linkage algorithm.</p>
+<p>The algorithm tends to be <em>stable</em> with respect to small changes
+to the threshold — they do not tend to affect the output clustering.
+Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth giving a try.</p>
 </dd>
 <dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>Smoothing factor for the mutual reachability distance <a class="reference internal" href="#r6050e59d50fb-6" id="id1">[6]</a>.</p>
 <p><cite>M</cite> = 1 gives the original Genie algorithm  <a class="reference internal" href="#r6050e59d50fb-1" id="id2">[1]</a> (with no noise point
@@ -219,6 +229,15 @@ for instance:
 </li>
 </ul>
 </dd>
+<dt><strong>exact</strong><span class="classifier">bool</span></dt><dd><p>Whether to compute the minimum spanning tree exactly or rather
+estimate it based on an approximate near-neighbour graph.</p>
+<p>The exact method has time complexity of <span class="math notranslate nohighlight">\(O(d n^2)\)</span> <a class="reference internal" href="#r6050e59d50fb-2" id="id4">[2]</a>
+(however, see <cite>mlpack_enabled</cite>) but only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
+<p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the minimum spanning tree is approximated
+based on an approximate <span class="math notranslate nohighlight">\(k\)</span>-nearest neighbours graph found by
+<cite>nmslib</cite> <a class="reference internal" href="#r6050e59d50fb-5" id="id5">[5]</a>. This is typically very fast but requires
+<span class="math notranslate nohighlight">\(O(k n)\)</span> memory.</p>
+</dd>
 <dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>Whether to determine the whole cluster hierarchy and the
 linkage matrix.</p>
 <p>Only available if <cite>M</cite> = 1 and <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
@@ -242,16 +261,7 @@ of a data set (with no notion of noise), choose <code class="docutils literal no
 Furthermore, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> leaves all leaves, i.e., noise points
 (including the boundary ones) as-is.</p>
 </dd>
-<dt><strong>exact</strong><span class="classifier">bool</span></dt><dd><p>Whether to compute the minimum spanning tree exactly or rather
-estimate it based on an approximate near-neighbour graph.</p>
-<p>The exact method has time complexity of <span class="math notranslate nohighlight">\(O(d n^2)\)</span> <a class="reference internal" href="#r6050e59d50fb-2" id="id4">[2]</a>
-(however, see <cite>mlpack_enabled</cite>) but only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
-<p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the minimum spanning tree is approximated
-based on an approximate <span class="math notranslate nohighlight">\(k\)</span>-nearest neighbours graph found by
-<cite>nmslib</cite> <a class="reference internal" href="#r6050e59d50fb-5" id="id5">[5]</a>. This is typically very fast but requires
-<span class="math notranslate nohighlight">\(O(k n)\)</span> memory.</p>
-</dd>
-<dt><strong>cast_float32</strong><span class="classifier">bool</span></dt><dd><p>Whether casting of data type to <code class="docutils literal notranslate"><span class="pre">float32</span></code> is allowed.</p>
+<dt><strong>cast_float32</strong><span class="classifier">bool</span></dt><dd><p>Whether casting of data type to <code class="docutils literal notranslate"><span class="pre">float32</span></code> is to be performed.</p>
 <p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it decreases the run-time ca. 2 times
 at a cost of greater memory use. Otherwise, note that <cite>nmslib</cite>
 <em>requires</em> <code class="docutils literal notranslate"><span class="pre">float32</span></code> data anyway when using dense or sparse
@@ -260,7 +270,8 @@ numeric matrix inputs.</p>
 that the inputs are of acceptable form.</p>
 </dd>
 <dt><strong>mlpack_enabled</strong><span class="classifier">“auto” or bool</span></dt><dd><p>Whether <cite>mlpack.emst</cite> should be used for computing the Euclidean
-minimum spanning tree instead of the Jarník-Prim algorithm.</p>
+minimum spanning tree instead of the Jarník-Prim algorithm
+when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 <p>Often fast for very low-dimensional spaces. As the name suggests,
 only <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">'l2'</span></code> is supported (and <cite>M</cite> = 1).
 By default, we rely on <cite>mlpack</cite> if it is installed and
@@ -270,15 +281,30 @@ By default, we rely on <cite>mlpack</cite> if it is installed and
 <p>According to the <cite>mlpack</cite> manual, leaves of size 1 give the best
 performance at the cost of greater memory use.</p>
 </dd>
+<dt><strong>nmslib_n_neighbors</strong><span class="classifier">int</span></dt><dd><p>The number of approximate nearest neighbours used to estimate
+the minimum spanning tree when when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>If the number of nearest neighbours is too small, the nearest
+neighbour graph might be disconnected and the number of obtained
+clusters might be greater than the requested one.</p>
+</dd>
+<dt><strong>nmslib_params_init</strong><span class="classifier">dict</span></dt><dd><p>A dictionary of parameters to be passed to <cite>nmslib.init</cite>
+when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+<p>See <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/methods.md">https://github.com/nmslib/nmslib/blob/master/manual/methods.md</a>,
+<a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/spaces.md">https://github.com/nmslib/nmslib/blob/master/manual/spaces.md</a>
+and <a class="reference external" href="https://nmslib.github.io/nmslib/">https://nmslib.github.io/nmslib/</a>
+for more details. The <cite>space</cite>, <cite>data_type</cite>, and <cite>dtype</cite> parameters
+will be set based on the chosen <cite>affinity</cite> and the input <cite>X</cite>.</p>
+</dd>
+<dt><strong>nmslib_params_index</strong><span class="classifier">dict</span></dt><dd><p>A dictionary of parameters to be passed to <cite>index.createIndex</cite>,
+where <cite>index</cite> is the object constructed with <cite>nmslib.init</cite>.</p>
+<p>The <cite>indexThreadQty</cite> parameter will be set based on the
+<code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable.</p>
+</dd>
+<dt><strong>nmslib_params_query</strong><span class="classifier">dict</span></dt><dd><p>A dictionary of parameters to be passed to <cite>index.setQueryTimeParams</cite>,
+where <cite>index</cite> is the object constructed with <cite>nmslib.init</cite>.</p>
+</dd>
 <dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Whether to print diagnostic messages and progress information
 on <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
-</dd>
-<dt><strong>gini_threshold</strong><span class="classifier">float</span></dt><dd><p>Threshold for the Genie correction in [0,1].</p>
-<p>The Gini index is used to quantify the inequality of the cluster
-size distribution. Low thresholds highly penalise the formation
-of small clusters. Threshold of 1.0 disables the correction
-and for <cite>M</cite> = 1 makes the method be equivalent to the single
-linkage algorithm.</p>
 </dd>
 </dl>
 </dd>
@@ -400,7 +426,8 @@ detected can be larger.</p>
 </dd>
 <dt><strong>n_clusters_</strong><span class="classifier">int</span></dt><dd><p>The actual number of clusters detected by the algorithm.</p>
 <p>As we argued above, the approximate method might sometimes yield
-a more fine-grained partition than the requested one (with a warning).</p>
+a more fine-grained partition than the requested one (with a warning).
+Moreover, there might be too many noise points in the dataset.</p>
 </dd>
 <dt><strong>n_samples_</strong><span class="classifier">int</span></dt><dd><p>The number of points in the fitted dataset.</p>
 </dd>

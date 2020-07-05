@@ -56,7 +56,8 @@ X = X.astype(np.float32, order="C", copy=False)
 labels_true = labels_true[0]
 n_clusters = int(len(np.unique(labels_true))-(np.min(labels_true)==-1))
 import nmslib
-num_neighbours = min(64, int(math.sqrt(X.shape[0])))
+nmslib_n_neighbors = 64
+num_neighbours = min(X.shape[0]-1, max(1, int(nmslib_n_neighbors)))
 num_threads = 4 # set to OMP_***....
 verbose = True
 
