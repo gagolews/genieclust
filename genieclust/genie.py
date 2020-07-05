@@ -81,7 +81,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.n_features_       = None
         self.n_clusters_       = 0  # should not be confused with self.n_clusters
         self.labels_           = None
-        self.is_noise_         = None
+        #self.is_noise_         = None
         self.children_         = None
         self.distances_        = None
         self.counts_           = None
@@ -100,7 +100,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
     def _postprocess_outputs(self, res, cur_state):
         """
-        (internal) Updates `self.labels_` and `self.is_noise_`
+        (internal) Updates `self.labels_`
         """
         if cur_state["verbose"]:
             print("[genieclust] Postprocessing the outputs.", file=sys.stderr)
@@ -123,7 +123,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
                 start_partition = 1  # do not postprocess the "0"-partition
 
-            self.is_noise_    = (self.labels_[0, :] < 0)
+            #self.is_noise_    = (self.labels_[0, :] < 0)
 
             # postprocess labels, if requested to do so
             if cur_state["M"] < 2 or cur_state["postprocess"] == "none":
@@ -488,9 +488,9 @@ class Genie(GenieBase):
         more clusters might be returned (with a warning).
 
     M : int
-        Smoothing factor for the mutual reachability distance [2]_.
+        Smoothing factor for the mutual reachability distance [6]_.
 
-        `M` = 1 gives the original Genie algorithm (with no noise point
+        `M` = 1 gives the original Genie algorithm  [1]_ (with no noise point
         detection) with respect to the chosen affinity as-is.
 
     affinity : str
@@ -509,7 +509,7 @@ class Genie(GenieBase):
 
         *   For `exact` = ``False``:
 
-            Any dissimilarity supported by `nmslib`, see [3]_ and
+            Any dissimilarity supported by `nmslib`, see [5]_ and
             https://github.com/nmslib/nmslib/blob/master/manual/spaces.md,
             for instance:
             ``"l2"``,
@@ -564,21 +564,21 @@ class Genie(GenieBase):
         Whether to compute the minimum spanning tree exactly or rather
         estimate it based on an approximate near-neighbour graph.
 
-        The exact method has time complexity of :math:`O(d n^2)`
-        (however, see `mlpack_enabled`) but only needs `O(n)` memory.
+        The exact method has time complexity of :math:`O(d n^2)` [2]_
+        (however, see `mlpack_enabled`) but only needs :math:`O(n)` memory.
 
         If `exact` is ``False``, the minimum spanning tree is approximated
         based on an approximate :math:`k`\\ -nearest neighbours graph found by
-        `nmslib` [3]_. This is typically very fast but requires
+        `nmslib` [5]_. This is typically very fast but requires
         :math:`O(k n)` memory.
 
     cast_float32 : bool
         Whether casting of data type to ``float32`` is allowed.
 
-        If `exact` is ``True``, this is for efficiency reasons;
-        it decreases the run-time ca. 2 times at a cost of greater memory use.
-        Note that `nmslib` (used when `exact` is ``False``)
-        *requires* ``float32`` data anyway.
+        If `exact` is ``True``, it decreases the run-time ca. 2 times
+        at a cost of greater memory use. Otherwise, note that `nmslib`
+        *requires* ``float32`` data anyway when using dense or sparse
+        numeric matrix inputs.
 
         By setting `cast_float32` to ``False`` a user assures themself
         that the inputs are of acceptable form.
@@ -588,7 +588,7 @@ class Genie(GenieBase):
         minimum spanning tree instead of the Jarník-Prim algorithm.
 
         Often fast for very low-dimensional spaces. As the name suggests,
-        only affinity='l2' is supported (and `M` = 1).
+        only `affinity` of ``'l2'`` is supported (and `M` = 1).
         By default, we rely on `mlpack` if it is installed and
         `n_features` <= 6.
 
@@ -616,27 +616,27 @@ class Genie(GenieBase):
     ----------
 
     labels_ : ndarray
-        shape (n_samples,) or (<=n_clusters+1, n_samples), or None
-        If `n_clusters` = 0, no `labels_` are generated (``None``).
-        If `compute_all_cuts` = ``True`` (the default), these are the detected
-        cluster labels of each point: an integer vector with ``labels_[i]``
-        denoting the cluster id (in {0, ..., `n_clusters` - 1}) of the i-th object.
+        Detected cluster labels.
+
+        If `compute_all_cuts` is ``False`` (the default),
+        this is an integer vector such that ``labels_[i]`` gives
+        the cluster ID (between 0 and `n_clusters_` - 1) of the i-th object.
         If `M` > 1, noise points are labelled -1 (unless taken care of in the
         postprocessing stage).
-        Otherwise, i.e., if `compute_all_cuts` = ``False``,
-        all partitions of cardinality down to n_clusters (if `n_samples`
-        and the number of noise points allows) are determined.
-        In such a case, ``labels_[j,i]`` denotes the cluster id of the i-th
-        point in a j-partition.
-        We assume that a 0- and 1- partition only distinguishes between
-        noise- and non-noise points, however, no postprocessing
-        is conducted on the 0-partition (there might be points with
-        labels -1 even if `postprocess` = ``"all"``).
 
-        TODO: Note that the approximate method (`exact` = ``False``) might fail
+        Otherwise, i.e., if `compute_all_cuts` is ``True``,
+        all partitions of cardinality down to `n_clusters`
+        are determined; ``labels_[j,i]`` denotes the cluster ID of the i-th
+        point in a j-partition. We assume that both the 0- and 1- partition
+        distinguishes only between noise- and non-noise points,
+        however, no postprocessing is conducted on the 0-partition
+        (there might be points with labels of -1 even if `postprocess`
+        is ``"all"``).
+
+        Note that the approximate method (`exact` of ``False``) might fail
         to determine the fine-grained clusters (if the approximate
-        neighbour graph is disconnected) and then the first few rows
-        might be identical.
+        neighbour graph is disconnected) - the actual number of clusters
+        detected can be larger.
 
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
@@ -647,47 +647,34 @@ class Genie(GenieBase):
     n_samples_ : int
         The number of points in the fitted dataset.
 
-    n_features_ : int or None
+    n_features_ : int
         The number of features in the fitted dataset.
 
-    is_noise_ : ndarray, shape (n_samples,) or None
-        ``is_noise_[i]`` is True iff the i-th point is a noise one;
-        For `M` = 1, all points are no-noise ones.
-        Points are marked as noise even if `postprocess` equals ``"all"``.
-        Note that boundary points are also marked as noise points.
+        If the information is not available, it is be set to -1.
 
-    children_ : ndarray, shape (n_samples-1, 2)
-        The i-th row provides the information on the clusters merged at
-        the i-th iteration. Noise points are merged first, with
-        the corresponding ``distances_[i]`` of 0.
-        See the description of ``Z[i,0]`` and ``Z[i,1]`` in
-        `scipy.cluster.hierarchy.linkage`. Together with `distances_` and
-        `counts_`, this forms the linkage matrix that can be used for
+    children_ : None or ndarray
+        If `compute_full_tree` is ``True``, this is a matrix whose
+        i-th row provides the information on the clusters merged in
+        the i-th iteration. See the description of ``Z[:,0]`` and ``Z[:,1]``
+        in `scipy.cluster.hierarchy.linkage`. Together with `distances_` and
+        `counts_`, this constitutes the linkage matrix that can be used for
         plotting the dendrogram.
-        Available only if `compute_full_tree` is set to ``True``.
 
-    distances_ : ndarray, shape (n_samples-1,)
-        Distance between the two clusters merged at the *i*-th iteration.
-        As Genie does not guarantee that that distances are
-        ordered increasingly (do not panic, there are some other hierarchical
-        clustering linkages that also violate the ultrametricity property),
+    distances_ : None or ndarray
+        If `compute_full_tree` is ``True``, this is a vector that gives
+        the distance between two clusters merged in each iteration,
+        see the description of ``Z[:,2]`` in `scipy.cluster.hierarchy.linkage`.
+
+        As the original Genie algorithm does not guarantee that that distances
+        are ordered increasingly (there are other hierarchical
+        clustering linkages that violate the ultrametricity property as well),
         these are corrected by applying
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
-        See the description of ``Z[i,2]`` in `scipy.cluster.hierarchy.linkage`.
 
-        According to the algorithm's original definition,
-        the resulting partition tree (dendrogram) might violate
-        the ultrametricity property (merges might occur at levels that
-        are not increasing w.r.t. a between-cluster distance).
-        Departures from ultrametricity are corrected by applying
-        ``Z[:, 2] = genieclust.tools.cummin(Z[::-1,2])[::-1]``.
-
-        Available only if `compute_full_tree` is set to ``True``.
-
-    counts_ : ndarray, shape (n_samples-1,)
-        Number of elements in a cluster created at the i-th iteration.
-        See the description of ``Z[i,3]`` in `scipy.cluster.hierarchy.linkage`.
-        Available only if `compute_full_tree` is set to ``True``.
+    counts_ : None or ndarray
+        If `compute_full_tree` is ``True``, this is a vector giving
+        the number of elements in a cluster created in each iteration.
+        See the description of ``Z[:,3]`` in `scipy.cluster.hierarchy.linkage`.
 
 
 
@@ -700,7 +687,7 @@ class Genie(GenieBase):
     much faster and now features optional smoothing and noise
     point detection (if `M` > 1).
 
-    The Genie algorithm is based on a minimum spanning tree (MST) of the
+    Genie is based on a minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
     Just like the single linkage, it consumes the edges
     of the MST in increasing order of weights. However, it prevents
@@ -714,19 +701,19 @@ class Genie(GenieBase):
     and :math:`O(n)` memory complexity provided that a minimum spanning
     tree of the pairwise distance graph is given.
     Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-    method will be called to compute an MST, which takes :math:`O(d n^2)` time.
-    However, `mlpack` [4]_ provides a very fast
+    method [2]_ will be called to compute an MST, which takes :math:`O(d n^2)` time.
+    However, `mlpack` [3]_ provides a very fast
     alternative in the case of Euclidean spaces of (very) low dimensionality
-    and `M` = 1, see [5]_ and the `mlpack_enabled` parameter.
+    and `M` = 1, see [4]_ and the `mlpack_enabled` parameter.
     Moreover, in the approximate method (`exact` = ``False``) we apply
     the Kruskal algorithm on the near-neighbour graph determined
-    by `nmslib` [3]_. Albeit this only gives *some* sort of a spanning *forest*,
+    by `nmslib` [5]_. Albeit this only gives *some* sort of a spanning *forest*,
     such a data structure turns out to be very suitable for our clustering task
     (note that the set of connected components will determine the top
     level of the identified cluster hierarchy).
 
     The Genie correction together with the smoothing factor `M` > 1
-    gives a robustified version of the HDBSCAN\\* [2]_ algorithm that,
+    gives a robustified version of the HDBSCAN\\* [6]_ algorithm that,
     contrary to its predecessor, is able to detect a *predefined* number of
     clusters. Hence, it is independent of the *DBSCAN*'s somehow magical
     ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
@@ -742,8 +729,7 @@ class Genie(GenieBase):
     original distance. During the clustering procedure, all leaves of the MST
     do not take part in the clustering process. They may be merged
     with the nearest clusters during the postprocessing stage,
-    or left marked as "noise"
-    observations.
+    or left marked as "noise" observations.
 
 
     :Environment variables:
@@ -761,28 +747,32 @@ class Genie(GenieBase):
         clustering algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
 
-    .. [2]
-        Campello R., Moulavi D., Zimek A., Sander J.,
-        Hierarchical density estimates for data clustering, visualization,
-        and outlier detection,
-        *ACM Transactions on Knowledge Discovery from Data* 10(1),
-        2015, 5:1–5:51. doi:10.1145/2733381.
+    .. [2] Olson C.F., Parallel algorithms for hierarchical clustering,
+        *Parallel Computing* 21(8), 1995, 1313-1325.
+        doi:10.1016/0167-8191(95)00017-I.
 
     .. [3]
-        Naidan B., Boytsov L., Malkov Y.,  Novak D.,
-        *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
-        https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
-
-    .. [4]
         Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
         mlpack 3: A fast, flexible machine learning library,
         *Journal of Open Source Software* 3(26), 726, 2018.
         doi:10.21105/joss.00726.
 
-    .. [5]
+    .. [4]
         March W.B., Ram P., Gray A.G.,
         Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
         *Proc. ACM SIGKDD'10*, 2010, 603-611.
+
+    .. [5]
+        Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+        *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
+        https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
+
+    .. [6]
+        Campello R., Moulavi D., Zimek A., Sander J.,
+        Hierarchical density estimates for data clustering, visualization,
+        and outlier detection,
+        *ACM Transactions on Knowledge Discovery from Data* 10(1),
+        2015, 5:1–5:51. doi:10.1145/2733381.
 
     """
 
@@ -801,7 +791,7 @@ class Genie(GenieBase):
             mlpack_enabled="auto",
             mlpack_leaf_size=1,
             nmslib_n_neighbors="auto",
-            nmslib_params_init=dict(method="hnsw"), #`space` forbidden see [3]_ and https://github.com/nmslib/nmslib/blob/master/manual/methods.md
+            nmslib_params_init=dict(method="hnsw"), #`space` forbidden see and https://github.com/nmslib/nmslib/blob/master/manual/methods.md
             nmslib_params_index=dict(post=2), #`indexThreadQty` forbidden
             nmslib_params_query=dict(),
             verbose=False):

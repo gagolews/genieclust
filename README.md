@@ -284,12 +284,14 @@ Jarník V., O jistém problému minimálním,
 
 Olson C.F., Parallel algorithms for hierarchical clustering,
 *Parallel Computing* **21**(8), 1995, 1313-1325.
+doi:10.1016/0167-8191(95)00017-I.
 
 Prim R., Shortest connection networks and some generalizations,
 *The Bell System Technical Journal* **36**(6), 1957, 1389-1401.
 
 Hubert L., Arabie P., Comparing Partitions,
 *Journal of Classification* **2**(1), 1985, 193-218.
+doi:10.1007/BF01908075.
 
 Rezaei M., Franti P., Set matching measures for external cluster validity,
 *IEEE Transactions on Knowledge and Data Mining* **28**(8), 2016, 2173-2186.
