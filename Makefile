@@ -17,7 +17,10 @@ py-test: python
 	pytest
 	cd devel/sphinx && make doctest && cd ../../
 
-sphinx: python r
+rmd:
+	cd devel/sphinx/rmd && make && cd ../../../
+
+sphinx: python r rmd
 	rm -rf devel/sphinx/_build/
 	Rscript -e "Rd2md::ReferenceManual()"
 	Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \

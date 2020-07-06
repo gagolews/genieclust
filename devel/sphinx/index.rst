@@ -82,6 +82,8 @@ environments.
     :maxdepth: 2
     :caption: Contents:
 
+    rmd/sklearn_toy_example
+
     genieclust
     r
 

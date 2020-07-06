@@ -1,25 +1,18 @@
----
-title: "Genieclust Tutorial"
-subtitle: "Comparing Different Hierarchical Linkage Methods on Toy Datasets"
-author: "Marek Gagolewski"
----
-
+# Comparing Different Algorithms on Toy Datasets
 
 There's a nice example at the
 [scikit-learn](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html)
-website that shows characteristics of different hierarchical
+website that shows the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
 on larger data and with the Genie algorithm in the game.
 
 
 
-```{r hello,echo=FALSE}
-library("reticulate")
-use_python("/usr/bin/python3")
-```
 
 
-```{python imports,results="hide"}
+
+
+```python
 import time
 import warnings
 
@@ -35,10 +28,12 @@ np.random.seed(0)
 ```
 
 
-Generate datasets. Note that in the [original script](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html),
-`n_samples` was set to `1500`.
+First, we generate the datasets. Note that in the
+[original script](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html),
+`n_samples` was set to 1500.
 
-```{python generate_data,results="hide"}
+
+```python
 n_samples = 10000
 noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5,
                                       noise=.05)
@@ -59,9 +54,10 @@ varied = datasets.make_blobs(n_samples=n_samples,
                              random_state=random_state)
 ```
 
-Run the clustering and plot.
+Then we run the clustering procedures and plot the results.
 
-```{python clustering,results="hide"}
+
+```python
 # Set up cluster parameters
 plt.figure(figsize=(9 * 1.3 + 2, 14.5))
 plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
@@ -152,6 +148,7 @@ for i_dataset, (dataset, algo_params) in enumerate(datasets):
 plt.show()
 ```
 
+![Outputs of different clustering algorithms](figures_sklearn_toy_example/clustering-1.png)
 
-The out-of-the-box Genie algorithms seems to generate the most
-meaningful partitions. Moreover, it's the fastest.
+It seems that the out-of-the-box Genie algorithm not only generates the most
+meaningful partitions but also it's the fastest.

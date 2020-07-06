@@ -65,7 +65,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 todo_include_todos = True
 
-source_suffix = ['.rst', '.md']
+source_suffix = ['.rst']
 
 plot_include_source = True
 plot_html_show_source_link = False
