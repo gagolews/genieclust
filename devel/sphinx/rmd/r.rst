@@ -83,7 +83,7 @@ obtained partition with the ``rworldmap`` package:
    mapdata <- data.frame(Country=dimnames(X)[[1]], Cluster=y_pred)
    mapdata <- joinCountryData2Map(mapdata, joinCode="NAME", nameJoinColumn="Country")
    mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
-       missingCountryCol="white", colourPalette=palette.colors(3, "Okabe-Ito"),
+       missingCountryCol="white", colourPalette=palette.colors(3, "R4"),
        mapTitle="")
 
 .. figure:: figures_r/ssi-map-1.png

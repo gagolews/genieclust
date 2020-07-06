@@ -82,6 +82,7 @@ environments.
     :caption: Examples and Tutorials
 
     rmd/sklearn_toy_example
+    rmd/benchmarks_ar
     rmd/r
 
 .. toctree::
