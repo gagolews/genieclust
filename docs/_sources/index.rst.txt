@@ -68,29 +68,40 @@ R's interface is compatible with ``hclust()``, but there is more.
     # or genie(X, k=2)
 
 
-**TODO**: The `genieclust` package is available for Python (PyPI--link, how to install)
-and R (CRAN--link, how to install). Its source code can be downloaded from
+The `genieclust` package is available for Python (**TODO**: PyPI--link, how to install)
+and R (**TODO**: CRAN--link, how to install). Its source code is distributed
+under the open source GNU AGPL v3 license and can be downloaded from
 `https://github.com/gagolews/genieclust <https://github.com/gagolews/genieclust>`_.
 Note that the core functionality is implemented in form of a header-only C++
 library, hence it might be relatively easily adapted for use in other
 environments.
 
 
+.. toctree::
+    :maxdepth: 2
+    :caption: Examples and Tutorials
 
+    rmd/sklearn_toy_example
+    rmd/r
 
 .. toctree::
     :maxdepth: 2
-    :caption: Contents:
-
-    rmd/sklearn_toy_example
+    :caption: API Documentation
 
     genieclust
     r
 
+.. toctree::
+    :maxdepth: 2
+    :caption: External Links
+
+    Source code (GitHub) <https://github.com/gagolews/genieclust>
+    Issues and Splendid Ideas Tracker <https://github.com/gagolews/genieclust/issues>
+
 
 
 References
-==========
+----------
 
 .. [1]
     Gagolewski M., Bartoszuk M., Cena A.,
@@ -113,7 +124,7 @@ References
 
 
 Indices and Tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`

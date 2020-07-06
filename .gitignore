@@ -16,3 +16,4 @@ src/*.o
 src/*.so
 devel/sphinx/_build
 devel/sphinx/_api
+cache-*

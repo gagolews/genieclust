@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Python Package genieclust Reference" href="../genieclust.html" />
+    <link rel="next" title="R Interface Examples" href="r.html" />
     <link rel="prev" title="genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" href="../index.html" /> 
 </head>
 
@@ -88,11 +88,20 @@
               
             
             
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Comparing Different Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
 </ul>
 
             
@@ -163,6 +172,7 @@
 website that shows the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
 on larger data and with the Genie algorithm in the game.</p>
+<p><strong>TL;DR — the figure is at the bottom.</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 
@@ -174,10 +184,10 @@ on larger data and with the Genie algorithm in the game.</p>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span><span class="p">,</span> <span class="n">islice</span>
 <span class="kn">import</span> <span class="nn">genieclust</span>
 
-<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>First, we generate the datasets. Note that in the <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">original
+<p>First we generate the datasets. Note that in the <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">original
 script</a>,
 <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> was set to 1500.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span>
@@ -232,6 +242,7 @@ script</a>,
     <span class="c1"># ============</span>
     <span class="c1"># Create cluster objects</span>
     <span class="c1"># ============</span>
+    <span class="n">genie</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">])</span>
     <span class="n">ward</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">AgglomerativeClustering</span><span class="p">(</span>
         <span class="n">n_clusters</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">],</span> <span class="n">linkage</span><span class="o">=</span><span class="s1">&#39;ward&#39;</span><span class="p">)</span>
     <span class="n">complete</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">AgglomerativeClustering</span><span class="p">(</span>
@@ -240,14 +251,13 @@ script</a>,
         <span class="n">n_clusters</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">],</span> <span class="n">linkage</span><span class="o">=</span><span class="s1">&#39;average&#39;</span><span class="p">)</span>
     <span class="n">single</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">AgglomerativeClustering</span><span class="p">(</span>
         <span class="n">n_clusters</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">],</span> <span class="n">linkage</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">)</span>
-    <span class="n">genie</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;n_clusters&#39;</span><span class="p">])</span>
 
     <span class="n">clustering_algorithms</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="s1">&#39;Genie&#39;</span><span class="p">,</span> <span class="n">genie</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Single Linkage&#39;</span><span class="p">,</span> <span class="n">single</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Average Linkage&#39;</span><span class="p">,</span> <span class="n">average</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Complete Linkage&#39;</span><span class="p">,</span> <span class="n">complete</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;Ward Linkage&#39;</span><span class="p">,</span> <span class="n">ward</span><span class="p">),</span>
-        <span class="p">(</span><span class="s1">&#39;Genie&#39;</span><span class="p">,</span> <span class="n">genie</span><span class="p">),</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">algorithm</span> <span class="ow">in</span> <span class="n">clustering_algorithms</span><span class="p">:</span>
@@ -307,7 +317,7 @@ most meaningful partitions but also it’s the fastest.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="../genieclust.html" class="btn btn-neutral float-right" title="Python Package genieclust Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="r.html" class="btn btn-neutral float-right" title="R Interface Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../index.html" class="btn btn-neutral float-left" title="genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

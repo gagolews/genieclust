@@ -7,6 +7,8 @@ website that shows the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
 on larger data and with the Genie algorithm in the game.
 
+**TL;DR — the figure is at the bottom.**
+
 .. code:: python
 
    import time
@@ -20,9 +22,9 @@ on larger data and with the Genie algorithm in the game.
    from itertools import cycle, islice
    import genieclust
 
-   np.random.seed(0)
+   np.random.seed(1234)
 
-First, we generate the datasets. Note that in the `original
+First we generate the datasets. Note that in the `original
 script <https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html>`__,
 ``n_samples`` was set to 1500.
 
@@ -82,6 +84,7 @@ Then we run the clustering procedures and plot the results.
        # ============
        # Create cluster objects
        # ============
+       genie = genieclust.Genie(n_clusters=params['n_clusters'])
        ward = cluster.AgglomerativeClustering(
            n_clusters=params['n_clusters'], linkage='ward')
        complete = cluster.AgglomerativeClustering(
@@ -90,14 +93,13 @@ Then we run the clustering procedures and plot the results.
            n_clusters=params['n_clusters'], linkage='average')
        single = cluster.AgglomerativeClustering(
            n_clusters=params['n_clusters'], linkage='single')
-       genie = genieclust.Genie(n_clusters=params['n_clusters'])
 
        clustering_algorithms = (
+           ('Genie', genie),
            ('Single Linkage', single),
            ('Average Linkage', average),
            ('Complete Linkage', complete),
            ('Ward Linkage', ward),
-           ('Genie', genie),
        )
 
        for name, algorithm in clustering_algorithms:

@@ -1,0 +1,348 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>R Interface Examples &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Python Package genieclust Reference" href="../genieclust.html" />
+    <link rel="prev" title="Comparing Different Algorithms on Toy Datasets" href="sklearn_toy_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Different Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>R Interface Examples</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="r-interface-examples">
+<h1>R Interface Examples<a class="headerlink" href="#r-interface-examples" title="Permalink to this headline">¶</a></h1>
+<p>The R package <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> (<strong>TODO</strong>) <em>will</em> be available on CRAN. To
+install it, call:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># TODO: install.packages(&quot;genieclust&quot;)</span>
+<span class="n">devtools</span><span class="o">::</span><span class="nf">install_github</span><span class="p">(</span><span class="s">&quot;gagolews/genieclust&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Below are a few basic examples on how to interact with the package
+(partially based on Marek’s <a class="reference external" href="https://lmlcr.gagolewski.com">forthcoming
+book</a>).</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s consider the Sustainable Society Indices Dataset (see
+<a class="reference external" href="http://www.ssfindex.com/">http://www.ssfindex.com/</a>) that measures the Human, Environmental, and
+Economic Wellbeing in each country based on 7 categories on the scale
+<span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
+<span class="n">ssi</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span> <span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi[</span><span class="p">,</span><span class="m">-1</span><span class="n">]</span><span class="p">)</span>    <span class="c1"># everything except the Country (1st) column</span>
+<span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="n">[[1]]</span> <span class="o">&lt;-</span> <span class="n">ssi[</span><span class="p">,</span><span class="m">1</span><span class="n">]</span> <span class="c1"># set row names</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># preview</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
+<span class="c1">## Albania     9.605769                     7.959609            6.992649         6.634251         4.621681   2.102542 3.056494</span>
+<span class="c1">## Algeria     9.021185                     7.336496            4.203906         5.277173         2.662674   3.074134 6.154272</span>
+<span class="c1">## Angola      5.972848                     5.692808            2.140138         6.759396         6.212197   1.898812 3.753476</span>
+<span class="c1">## Argentina   9.831955                     8.350592            3.895167         5.453451         3.300326   6.389867 5.340636</span>
+<span class="c1">## Armenia     9.446943                     7.420523            6.289224         6.436303         2.854317   2.434233 3.829620</span>
+<span class="c1">## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> has an interface compatible with the R’s workhorse for
+hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>. Yet, for efficiency
+reasons, it’s better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code> with the input
+matrix directly:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
+<span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##</span>
+<span class="c1">## Call:</span>
+<span class="c1">## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)</span>
+<span class="c1">##</span>
+<span class="c1">## Cluster method   : Genie(0.3)</span>
+<span class="c1">## Distance         : euclidean</span>
+<span class="c1">## Number of objects: 154</span>
+</pre></div>
+</div>
+<p>In order to extract a desired <em>k</em>-partition, we can call
+<code class="docutils literal notranslate"><span class="pre">stats::cutree()</span></code>:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
+<span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="m">25</span><span class="p">)</span>  <span class="c1"># preview</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia</span>
+<span class="c1">##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1</span>
+</pre></div>
+</div>
+<p>This gives the cluster ID allocated to each country. Let’s depict the
+obtained partition with the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span>  <span class="c1"># see the package&#39;s manual for details</span>
+<span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="n">[[1]]</span><span class="p">,</span> <span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
+<span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
+<span class="nf">mapCountryData</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">nameColumnToPlot</span><span class="o">=</span><span class="s">&quot;Cluster&quot;</span><span class="p">,</span> <span class="n">catMethod</span><span class="o">=</span><span class="s">&quot;categorical&quot;</span><span class="p">,</span>
+    <span class="n">missingCountryCol</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">,</span> <span class="n">colourPalette</span><span class="o">=</span><span class="nf">palette.colors</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="s">&quot;Okabe-Ito&quot;</span><span class="p">),</span>
+    <span class="n">mapTitle</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id1">
+<img alt="Countries grouped w.r.t. the SSI categories." src="../_images/ssi-map-1.png" />
+<p class="caption"><span class="caption-text">Countries grouped w.r.t. the SSI categories.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>We can compute, e.g., the average indicators in each identified group:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">mean</span><span class="p">))</span><span class="n">[</span><span class="m">-1</span><span class="p">,</span> <span class="n">]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
+<span class="c1">## BasicNeeds                   9.067901 5.268879 9.817850</span>
+<span class="c1">## PersonalDevelopmentAndHealth 7.508130 5.931156 8.299537</span>
+<span class="c1">## WellBalancedSociety          4.886885 2.868176 6.827154</span>
+<span class="c1">## NaturalResources             5.663252 7.004013 6.374348</span>
+<span class="c1">## ClimateAndEnergy             3.624147 7.081801 3.594718</span>
+<span class="c1">## Transition                   4.074894 2.630009 7.340152</span>
+<span class="c1">## Economy                      5.512709 3.541081 4.274155</span>
+</pre></div>
+</div>
+<p>Plotting of dendrograms is also possible. For greater readability, we’ll
+restrict ourselves to a smaller sample, say, to the 37 members of the
+<a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span> <span class="s">&quot;Austria&quot;</span><span class="p">,</span> <span class="s">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s">&quot;Canada&quot;</span><span class="p">,</span> <span class="s">&quot;Chile&quot;</span><span class="p">,</span> <span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
+<span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s">&quot;Finland&quot;</span><span class="p">,</span> <span class="s">&quot;France&quot;</span><span class="p">,</span> <span class="s">&quot;Germany&quot;</span><span class="p">,</span>
+<span class="s">&quot;Greece&quot;</span><span class="p">,</span> <span class="s">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s">&quot;Israel&quot;</span><span class="p">,</span> <span class="s">&quot;Italy&quot;</span><span class="p">,</span> <span class="s">&quot;Japan&quot;</span><span class="p">,</span>
+<span class="s">&quot;Korea, South&quot;</span><span class="p">,</span> <span class="s">&quot;Latvia&quot;</span><span class="p">,</span> <span class="s">&quot;Lithuania&quot;</span><span class="p">,</span> <span class="s">&quot;Luxembourg&quot;</span><span class="p">,</span> <span class="s">&quot;Mexico&quot;</span><span class="p">,</span> <span class="s">&quot;Netherlands&quot;</span><span class="p">,</span>
+<span class="s">&quot;New Zealand&quot;</span><span class="p">,</span> <span class="s">&quot;Norway&quot;</span><span class="p">,</span> <span class="s">&quot;Poland&quot;</span><span class="p">,</span> <span class="s">&quot;Portugal&quot;</span><span class="p">,</span> <span class="s">&quot;Slovak Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Slovenia&quot;</span><span class="p">,</span>
+<span class="s">&quot;Spain&quot;</span><span class="p">,</span> <span class="s">&quot;Sweden&quot;</span><span class="p">,</span> <span class="s">&quot;Switzerland&quot;</span><span class="p">,</span> <span class="s">&quot;Turkey&quot;</span><span class="p">,</span> <span class="s">&quot;United Kingdom&quot;</span><span class="p">,</span> <span class="s">&quot;United States&quot;</span><span class="p">)</span>
+<span class="n">X_oecd</span> <span class="o">&lt;-</span> <span class="n">X</span><span class="nf">[dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="n">[[1]]</span> <span class="o">%in%</span> <span class="n">oecd</span><span class="p">,</span> <span class="n">]</span>
+</pre></div>
+</div>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">h_oecd</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id2">
+<img alt="Cluster dendrogram for the OECD countries." src="../_images/ssi-oecd-dendrogram-1.png" />
+<p class="caption"><span class="caption-text">Cluster dendrogram for the OECD countries.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Final notes:</p>
+<ul class="simple">
+<li><p>If we are only interested in a specific partition, calling
+<code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be a little faster than referring to
+<code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> also features partition similarity scores (such as the
+Adjusted Rand or the Pair Sets Index) that can be used as external
+cluster validity measures.</p></li>
+</ul>
+<p>For more details, refer to the package’s documentation. Don’t forget to
+check out the Python examples regarding noise point detection,
+benchmarking, timing, etc.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../genieclust.html" class="btn btn-neutral float-right" title="Python Package genieclust Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Different Algorithms on Toy Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

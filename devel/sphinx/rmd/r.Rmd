@@ -1,0 +1,140 @@
+# R Interface Examples
+
+The R package `genieclust` (**TODO**) *will* be available on CRAN.
+To install it, call:
+
+```{r install, eval=FALSE}
+# TODO: install.packages("genieclust")
+devtools::install_github("gagolews/genieclust")
+```
+
+
+Below are a few basic examples on how to interact with the package
+(partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)).
+
+
+```{r load}
+library("genieclust")
+```
+
+```{r hello,echo=FALSE}
+# library("reticulate")
+# use_python("/usr/bin/python3")
+library("knitr")
+options(width=1000)
+
+opts_chunk$set(
+    fig.path='figures_r/',
+    cache.path='cache_r/',
+    autodep=FALSE,
+    cache=TRUE,
+    fig.width=10,
+    fig.height=4,
+    dpi=300,
+    dev="CairoPNG",
+    dev.args=list(bg="transparent",pointsize=12)
+)
+
+source("graphics_hacks.R")
+set.seed(123)
+```
+
+
+Let's consider the Sustainable Society Indices Dataset
+(see http://www.ssfindex.com/)
+that measures the Human, Environmental,  and Economic Wellbeing
+in each country based on 7 categories on the scale $[0, 10]$.
+
+```{r ssi-load}
+# see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
+ssi <- read.csv("ssi_2016_categories.csv", comment.char="#")
+X <- as.matrix(ssi[,-1])    # everything except the Country (1st) column
+dimnames(X)[[1]] <- ssi[,1] # set row names
+head(X)  # preview
+```
+
+
+`genieclust` has an interface compatible with the R's workhorse
+for hierarchical clustering, `stats::hclust()`.
+Yet, for efficiency reasons, it's better to feed `genieclust::glust()`
+with the input matrix directly:
+
+
+```{r dist-gclust}
+# faster than gclust(dist(X)):
+h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
+print(h)
+```
+
+In order to extract a desired *k*-partition, we can call `stats::cutree()`:
+
+```{r cutree}
+y_pred <- cutree(h, k=3)
+sample(y_pred, 25)  # preview
+```
+
+This gives the cluster ID allocated to each country.
+Let's depict the obtained partition with the `rworldmap` package:
+
+```{r ssi-map,echo=-c(1,2,7),results="hide",message=FALSE,fig.cap="Countries grouped w.r.t. the SSI categories."}
+par(ann=FALSE)  # no axes
+par(mar=c(0, 0, 0, 0))  # no figure margins
+library("rworldmap")  # see the package's manual for details
+mapdata <- data.frame(Country=dimnames(X)[[1]], Cluster=y_pred)
+mapdata <- joinCountryData2Map(mapdata, joinCode="NAME", nameJoinColumn="Country")
+mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
+    missingCountryCol="white", colourPalette=palette.colors(3, "Okabe-Ito"),
+    mapTitle="")
+```
+
+
+We can compute, e.g., the average indicators in each identified group:
+
+```{r ssi-colmeans}
+t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
+```
+
+
+Plotting of dendrograms is also possible.
+For greater readability, we'll restrict ourselves to a smaller sample, say,
+to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
+
+```{r ssi-oecd}
+oecd <- c("Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia",
+"Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany",
+"Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Japan",
+"Korea, South", "Latvia", "Lithuania", "Luxembourg", "Mexico", "Netherlands",
+"New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia",
+"Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")
+X_oecd <- X[dimnames(X)[[1]] %in% oecd, ]
+```
+
+
+```{r ssi-oecd-dendrogram, echo=-1, fig.cap="Cluster dendrogram for the OECD countries."}
+par(mar=c(0.5, 2, 0.5, 0.5))
+h_oecd <- gclust(X_oecd)
+plot(h_oecd)
+```
+
+
+
+
+Final notes:
+
+* If we are only interested in a specific partition,
+calling `genie()` directly will be a little faster than referring to
+`cutree(gclust(...))`.
+
+* `genieclust` also features partition similarity scores
+(such as the Adjusted Rand or the Pair Sets Index) that can be used as
+external cluster validity measures.
+
+For more details, refer to the package's documentation.
+Don't forget to check out the Python examples regarding noise point detection,
+benchmarking, timing, etc.
+
+
+
+
+
+
