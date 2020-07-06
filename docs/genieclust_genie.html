@@ -192,7 +192,9 @@ Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth giving a try.</p>
 </dd>
 <dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>Smoothing factor for the mutual reachability distance <a class="reference internal" href="#r6050e59d50fb-6" id="id1">[6]</a>.</p>
 <p><cite>M</cite> = 1 gives the original Genie algorithm  <a class="reference internal" href="#r6050e59d50fb-1" id="id2">[1]</a> (with no noise point
-detection) with respect to the chosen affinity as-is.</p>
+detection) with respect to the chosen affinity as-is. Note that
+for <cite>M &gt; 1</cite> we need additionally <span class="math notranslate nohighlight">\(O(M n)\)</span> working memory
+for storing of points’ nearest neighbours.</p>
 </dd>
 <dt><strong>affinity</strong><span class="classifier">str</span></dt><dd><p>Metric used to compute the linkage.</p>
 <ul>
@@ -286,6 +288,7 @@ the minimum spanning tree when when <cite>exact</cite> is <code class="docutils 
 <p>If the number of nearest neighbours is too small, the nearest
 neighbour graph might be disconnected and the number of obtained
 clusters might be greater than the requested one.</p>
+<p><cite>nmslib_n_neighbors</cite> must not be less than <cite>M</cite> - 1.</p>
 </dd>
 <dt><strong>nmslib_params_init</strong><span class="classifier">dict</span></dt><dd><p>A dictionary of parameters to be passed to <cite>nmslib.init</cite>
 when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>

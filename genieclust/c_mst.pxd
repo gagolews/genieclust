@@ -59,19 +59,22 @@ cdef extern from "../src/c_mst.h":
 
 
 
-    cdef cppclass CMstTriple[T]:
-        CMstTriple(ssize_t i1, ssize_t i2, T d, bint order=False)
+    # cdef cppclass CMstTriple[T]:
+    #     CMstTriple(ssize_t i1, ssize_t i2, T d, bint order=False)
+
+    # ssize_t Cmst_from_nn_list[T](
+    #     CMstTriple[T]* nns, ssize_t c,
+    #     ssize_t n, T* mst_dist, ssize_t* mst_ind, bint verbose) except +
 
 
-    ssize_t Cmst_from_nn_list[T](CMstTriple[T]* nns, ssize_t c,
-        ssize_t n, T* mst_dist, ssize_t* mst_ind, bint verbose) except +
+    ssize_t Cmst_from_nn[T](
+        T* dist, ssize_t* ind, const T* d_core, ssize_t n, ssize_t k,
+        T* mst_dist, ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
 
+    void Cknn_from_complete[T](
+        CDistance[T]* D, ssize_t n, ssize_t k,
+        T* dist, ssize_t* ind, bint verbose) except +
 
-    ssize_t Cmst_from_nn[T](T* dist, ssize_t* ind, ssize_t n, ssize_t k,
-             T* mst_dist, ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
-
-    void Cknn_from_complete[T](CDistance[T]* D, ssize_t n, ssize_t k,
-             T* dist, ssize_t* ind, bint verbose) except +
-
-    void Cmst_from_complete[T](CDistance[T]* D, ssize_t n,
-             T* mst_dist, ssize_t* mst_ind, bint verbose) except +
+    void Cmst_from_complete[T](
+        CDistance[T]* D, ssize_t n,
+        T* mst_dist, ssize_t* mst_ind, bint verbose) except +

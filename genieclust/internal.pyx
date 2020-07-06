@@ -43,7 +43,7 @@ import numpy as np
 cimport libc.math
 from libcpp cimport bool
 from libcpp.vector cimport vector
-
+from numpy.math cimport INFINITY
 
 
 ctypedef fused T:
@@ -71,25 +71,79 @@ from . cimport c_genie
 
 
 
-
 ################################################################################
 # Minimum Spanning Tree Algorithms:
 # (a) Prim-Jarník's for Complete Undirected Graphs,
-# (b) Kruskal's for k-NN graphs.
+# (b) Kruskal's for k-NN graphs,
+# and auxiliary functions.
 ################################################################################
 
 
 
+cpdef np.ndarray[floatT] get_d_core(
+    floatT[:,::1] dist,
+    ssize_t[:,::1] ind,
+    ssize_t M):
+    """
+    Get "core" distance = distance to the (M-1)-th nearest neighbour
+    (if available, otherwise, distance to the furthest away one at hand).
 
 
-cpdef tuple mst_from_nn_list(list nns,
-        ssize_t k_max=0,
-        bint stop_disconnected=True,
-        bint verbose=False):
-    """Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
-    using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+    Parameters
+    ----------
 
-    See `mst_from_nn` for more details.
+    dist : a c_contiguous ndarray, shape (n,k)
+        dist[i,:] is sorted nondecreasingly for all i,
+        dist[i,j] gives the weight of the edge {i, ind[i,j]}
+    ind : a c_contiguous ndarray, shape (n,k)
+        edge definition, interpreted as {i, ind[i,j]};
+        -1 denotes a "missing value"
+    M : int
+        "smoothing factor"
+
+
+    Returns
+    -------
+
+    ndarray
+        of length dist.shape[0]
+    """
+
+    cdef ssize_t n = dist.shape[0]
+    cdef ssize_t k = dist.shape[1]
+
+    if not (ind.shape[0] == n and ind.shape[1] == k):
+        raise ValueError("shapes of dist and ind must match")
+
+    if M-2 >= k:
+        raise ValueError("too few nearest neighbours provided")
+
+    cdef np.ndarray[floatT] d_core = np.empty(n,
+        dtype=np.float32 if floatT is float else np.float64)
+
+    #Python equivalent if all NNs are available:
+    #assert nn_dist.shape[1] >= cur_state["M"]-1
+    #d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+
+    cdef ssize_t i, j
+    for i in range(n):
+        j = M-2
+        while ind[i, j] < 0:
+            j -= 1
+            if j < 0: raise ValueError("no nearest neighbours provided")
+        d_core[i] = dist[i, j]
+
+    return d_core
+
+
+
+cpdef tuple nn_list_to_matrix(
+    list nns,
+    ssize_t k_max):
+    """
+    Converts a list of (<=k_max)-nearest neighbours
+    to a matrix of k_max nearest neighbours which can be fed as input
+    to `mst_from_nn`.
 
 
     Parameters
@@ -102,29 +156,25 @@ cpdef tuple mst_from_nn_list(list nns,
         (for compatibility with nmslib).
     k_max : int
         If k_max > 0, O(n*k_max) space will be reserved for auxiliary data.
-    stop_disconnected : bool
-        raise an exception if the input graph is not connected
-    verbose: bool
-        whether to print diagnostic messages
+
 
     Returns
     -------
 
-    pair : tuple
-        See `mst_from_nn`.
+    tuple
+        `nn_dist`, `nn_ind`; unused elements (last items in each row)
+        will be filled with INFINITY and -1, respectively.
     """
     cdef ssize_t n = len(nns)
     cdef np.ndarray[int]   nn_i
     cdef np.ndarray[float] nn_d
-    cdef ssize_t k
-    cdef ssize_t i, j
+
+    cdef np.ndarray[ssize_t,ndim=2] ret_nn_ind  = np.empty((n, k_max), dtype=np.intp)
+    cdef np.ndarray[float,ndim=2]  ret_nn_dist = np.empty((n, k_max), dtype=np.float32)
+
+    cdef ssize_t i, j, k, l
     cdef ssize_t i1, i2
     cdef float d
-
-    cdef vector[ c_mst.CMstTriple[float] ] nns2
-    if k_max > 0:
-        nns2.reserve(n*k_max)
-
 
     for i in range(n):
         nn_i = nns[i][0]
@@ -133,31 +183,107 @@ cpdef tuple mst_from_nn_list(list nns,
         if nn_d.shape[0] != k:
             raise ValueError("nns has arrays of different lengths as elements")
 
+        l = 0
         for j in range(k):
-            i1 = i
             i2 = nn_i[j]
             d = nn_d[j]
-            if i2 >= 0 and i1 != i2:
-                nns2.push_back( c_mst.CMstTriple[float](i1, i2, d) )
+            if i2 >= 0 and i != i2:
+                if l >= k_max: raise ValueError("`k_max` is too small")
+                ret_nn_ind[i, l]  = i2
+                ret_nn_dist[i, l] = d
+                if l > 0 and ret_nn_dist[i, l] < ret_nn_dist[i, l-1]:
+                    raise ValueError("nearest neighbours not sorted")
+                l += 1
 
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[float]          mst_dist = np.empty(n-1, dtype=np.float32)
+        while l < k_max:
+            ret_nn_ind[i, l]  = -1
+            ret_nn_dist[i, l] = INFINITY
+            l += 1
 
-    cdef ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
-            &mst_dist[0], &mst_ind[0,0], verbose)
-
-    if stop_disconnected and n_edges < n-1:
-        raise ValueError("graph is disconnected")
-
-    return mst_dist, mst_ind
+    return ret_nn_dist, ret_nn_ind
 
 
 
+# cpdef tuple mst_from_nn_list(list nns,
+#         ssize_t k_max=0,
+#         bint stop_disconnected=True,
+#         bint verbose=False):
+#     """
+#     Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
+#     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+#
+#     See `mst_from_nn` for more details.
+#
+#
+#     Parameters
+#     ----------
+#
+#     nns : list of length n
+#         Each nns[i] should be a pair of c_contiguous ndarrays.
+#         An edge {i, nns[i][0][j]} has weight nns[i][1][j].
+#         Each nns[i][0] is of type int32 and nns[i][1] of type float32
+#         (for compatibility with nmslib).
+#     k_max : int
+#         If k_max > 0, O(n*k_max) space will be reserved for auxiliary data.
+#     stop_disconnected : bool
+#         raise an exception if the input graph is not connected
+#     verbose: bool
+#         whether to print diagnostic messages
+#
+#     Returns
+#     -------
+#
+#     pair : tuple
+#         See `mst_from_nn`.
+#     """
+#     cdef ssize_t n = len(nns)
+#     cdef np.ndarray[int]   nn_i
+#     cdef np.ndarray[float] nn_d
+#     cdef ssize_t k
+#     cdef ssize_t i, j
+#     cdef ssize_t i1, i2
+#     cdef float d
+#
+#     cdef vector[ c_mst.CMstTriple[float] ] nns2
+#     if k_max > 0:
+#         nns2.reserve(n*k_max)
+#
+#
+#     for i in range(n):
+#         nn_i = nns[i][0]
+#         nn_d = nns[i][1]
+#         k = nn_i.shape[0]
+#         if nn_d.shape[0] != k:
+#             raise ValueError("nns has arrays of different lengths as elements")
+#
+#         for j in range(k):
+#             i1 = i
+#             i2 = nn_i[j]
+#             d = nn_d[j]
+#             if i2 >= 0 and i1 != i2:
+#                 nns2.push_back( c_mst.CMstTriple[float](i1, i2, d) )
+#
+#     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+#     cdef np.ndarray[float]          mst_dist = np.empty(n-1, dtype=np.float32)
+#
+#     cdef ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
+#             &mst_dist[0], &mst_ind[0,0], verbose)
+#
+#     if stop_disconnected and n_edges < n-1:
+#         raise ValueError("graph is disconnected")
+#
+#     return mst_dist, mst_ind
+#
 
-cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
-        bint stop_disconnected=True,
-        bint stop_inexact=False,
-        bint verbose=False):
+
+
+cpdef tuple mst_from_nn(
+    floatT[:,::1] dist,
+    ssize_t[:,::1] ind,
+    floatT[::1] d_core=None,
+    bint stop_disconnected=True,
+    bint stop_inexact=False,
+    bint verbose=False):
     """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbour graph
     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
 
@@ -178,6 +304,8 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         dist[i,j] gives the weight of the edge {i, ind[i,j]}
     ind : a c_contiguous ndarray, shape (n,k)
         edge definition, interpreted as {i, ind[i,j]}
+    d_core : c_contiguous ndarray of length n; optional (default=None)
+        core distances for computing the mutual reachability distance
     stop_disconnected : bool
         raise an exception if the input graph is not connected
     verbose: bool
@@ -202,12 +330,11 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
         are set to -1, where c is the number of connected components
         in the resulting minimum spanning forest.
     """
-    if not (dist.shape[0] == ind.shape[0] and
-            dist.shape[1] == ind.shape[1]):
-        raise ValueError("shapes of dist and ind must match")
-
     cdef ssize_t n = dist.shape[0]
     cdef ssize_t k = dist.shape[1]
+
+    if not (ind.shape[0] == n and ind.shape[1] == k):
+        raise ValueError("shapes of dist and ind must match")
 
     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
@@ -215,8 +342,16 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
 
     cdef bool maybe_inexact
 
-    cdef ssize_t n_edges = c_mst.Cmst_from_nn(&dist[0,0], &ind[0,0], n, k,
-             &mst_dist[0], &mst_ind[0,0], &maybe_inexact, verbose)
+    cdef floatT* d_core_ptr = NULL
+    if d_core is not None:
+        if not (d_core.shape[0] == n):
+            raise ValueError("shapes of dist and d_core must match")
+        d_core_ptr = &d_core[0]
+    cdef ssize_t n_edges = c_mst.Cmst_from_nn(
+        &dist[0,0], &ind[0,0],
+        d_core_ptr,
+        n, k,
+        &mst_dist[0], &mst_ind[0,0], &maybe_inexact, verbose)
 
     if stop_disconnected and n_edges < n-1:
         raise ValueError("graph is disconnected")
@@ -229,7 +364,9 @@ cpdef tuple mst_from_nn(floatT[:,::1] dist, ssize_t[:,::1] ind,
 
 
 
-cpdef tuple mst_from_complete(floatT[:,::1] X, bint verbose=False): # [:,::1]==c_contiguous
+cpdef tuple mst_from_complete(
+    floatT[:,::1] X,
+    bint verbose=False): # [:,::1]==c_contiguous
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
     with weights given by a symmetric n*n matrix
@@ -303,8 +440,11 @@ cpdef tuple mst_from_complete(floatT[:,::1] X, bint verbose=False): # [:,::1]==c
 
 
 
-cpdef tuple mst_from_distance(floatT[:,::1] X,
-       str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
+cpdef tuple mst_from_distance(
+    floatT[:,::1] X,
+    str metric="euclidean",
+    floatT[::1] d_core=None,
+    bint verbose=False):
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
@@ -555,7 +695,7 @@ cpdef np.ndarray[ssize_t] merge_boundary_points(
         Class -1 denotes the `noise' cluster.
     nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
         nn_ind[i,:] gives the indices of the i-th point's
-        nearest neighbours.
+        nearest neighbours; -1 indicates a "missing value"
     M : int
         smoothing factor, M>=2
 

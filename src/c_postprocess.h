@@ -39,7 +39,7 @@
  *  @param num_edges number of rows in ind (edges)
  *  @param nn c_contiguous matrix of size n*num_neighbours;
  *     nn[i,:] gives the indices of the i-th point's
- *      nearest neighbours.
+ *     nearest neighbours; -1 indicates a "missing value"
  *  @param num_neighbours number of columns in nn
  *  @param M smoothing factor, 2 <= M < num_neighbours
  *  @param c [in/out] c_contiguous vector of length n, where
@@ -85,6 +85,7 @@ void Cmerge_boundary_points(
 
         //c[u] = -1; // it's negative anyway
         for (ssize_t j=0; j<M-1; ++j) {
+            // -1s are ignored (they should be at the end of the array btw)
             if (nn[v*num_neighbours+j] == u) {
                 // yes, it's a boundary point
                 c[u] = c[v];

@@ -348,8 +348,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                         metric=cur_state["affinity"],  # supports "precomputed"
                         verbose=cur_state["verbose"])
 
-                assert nn_dist.shape[1] >= cur_state["M"]-1
-                d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+                d_core = internal.get_d_core(nn_dist, nn_ind, cur_state["M"])
 
             # Use Prim's algorithm to determine the MST
             # w.r.t. the distances computed on the fly
@@ -425,9 +424,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             X.shape[0]-1,
             max(1, cur_state["nmslib_n_neighbors"]))
 
-        cur_state["nmslib_params_init"]
-        cur_state["nmslib_params_index"]
-        cur_state["nmslib_params_query"]
+        if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:
+            raise ValueError("Increase `nmslib_n_neighbors` or decrease `M`.")
 
         mst_dist = None
         mst_ind  = None
@@ -443,20 +441,20 @@ class GenieBase(BaseEstimator, ClusterMixin):
         index.setQueryTimeParams(cur_state["nmslib_params_query"])
         nns = index.knnQueryBatch(
             X,
-            k=cur_state["nmslib_n_neighbors"]+1,
+            k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
             num_threads=n_threads)
         index = None  # no longer needed
 
 
+        nn_dist, nn_ind = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
+        nns = None  # no longer needed
         if cur_state["M"] > 1:
-            #self._nn_dist_    = nn_dist
-            #self._nn_ind_     = nn_ind
-            #self._d_core_     = d_core
-            raise NotImplementedError("Approximate method with `M` > 1not implemented yet.")
+            d_core = internal.get_d_core(nn_dist, nn_ind, cur_state["M"])
 
-        mst_dist, mst_ind = internal.mst_from_nn_list(
-            nns,
-            k_max=cur_state["nmslib_n_neighbors"]+1,
+        mst_dist, mst_ind = internal.mst_from_nn(
+            nn_dist,
+            nn_ind,
+            d_core,
             stop_disconnected=False,
             verbose=cur_state["verbose"])
         # We can have a forest here...
@@ -564,7 +562,9 @@ class Genie(GenieBase):
         Smoothing factor for the mutual reachability distance [6]_.
 
         `M` = 1 gives the original Genie algorithm  [1]_ (with no noise point
-        detection) with respect to the chosen affinity as-is.
+        detection) with respect to the chosen affinity as-is. Note that
+        for `M > 1` we need additionally :math:`O(M n)` working memory
+        for storing of points' nearest neighbours.
 
     affinity : str
         Metric used to compute the linkage.
@@ -680,6 +680,8 @@ class Genie(GenieBase):
         If the number of nearest neighbours is too small, the nearest
         neighbour graph might be disconnected and the number of obtained
         clusters might be greater than the requested one.
+
+        `nmslib_n_neighbors` must not be less than `M` - 1.
 
     nmslib_params_init : dict
         A dictionary of parameters to be passed to `nmslib.init`
