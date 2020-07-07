@@ -71,22 +71,22 @@ class GenieBase(BaseEstimator, ClusterMixin):
             verbose):
         # # # # # # # # # # # #
         super().__init__()
-        self._n_clusters          = n_clusters
-        self._n_features          = None  # can be overwritten by GIc
-        self._M                   = M
-        self._affinity            = affinity
-        self._exact               = exact
-        self._compute_full_tree   = compute_full_tree
-        self._compute_all_cuts    = compute_all_cuts
-        self._postprocess         = postprocess
-        self._cast_float32        = cast_float32
-        self._mlpack_enabled      = mlpack_enabled
-        self._mlpack_leaf_size    = mlpack_leaf_size
-        self._nmslib_n_neighbors  = nmslib_n_neighbors
-        self._nmslib_params_init  = nmslib_params_init
-        self._nmslib_params_index = nmslib_params_index
-        self._nmslib_params_query = nmslib_params_query
-        self._verbose             = verbose
+        self.n_clusters          = n_clusters
+        self.n_features          = None  # can be overwritten by GIc
+        self.M                   = M
+        self.affinity            = affinity
+        self.exact               = exact
+        self.compute_full_tree   = compute_full_tree
+        self.compute_all_cuts    = compute_all_cuts
+        self.postprocess         = postprocess
+        self.cast_float32        = cast_float32
+        self.mlpack_enabled      = mlpack_enabled
+        self.mlpack_leaf_size    = mlpack_leaf_size
+        self.nmslib_n_neighbors  = nmslib_n_neighbors
+        self.nmslib_params_init  = nmslib_params_init
+        self.nmslib_params_index = nmslib_params_index
+        self.nmslib_params_query = nmslib_params_query
+        self.verbose             = verbose
 
         self.n_samples_           = None
         self.n_features_          = None
@@ -177,33 +177,33 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state is None:
             cur_state = dict()
 
-        cur_state["M"] = int(self._M)
+        cur_state["M"] = int(self.M)
         if cur_state["M"] < 1:
             raise ValueError("`M` must be > 0.")
 
-        cur_state["exact"]             = bool(self._exact)
+        cur_state["exact"]             = bool(self.exact)
 
-        cur_state["compute_full_tree"] = bool(self._compute_full_tree)
+        cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
                 not (cur_state["M"] == 1 and cur_state["exact"]):
             cur_state["compute_full_tree"] = False
             warnings.warn("`compute_full_tree` is only available when `M` = 1 "
                           "and `exact` is True")
 
-        cur_state["compute_all_cuts"]  = bool(self._compute_all_cuts)
-        cur_state["cast_float32"]      = bool(self._cast_float32)
-        cur_state["verbose"]           = bool(self._verbose)
+        cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
+        cur_state["cast_float32"]      = bool(self.cast_float32)
+        cur_state["verbose"]           = bool(self.verbose)
 
-        cur_state["n_clusters"] = int(self._n_clusters)
+        cur_state["n_clusters"] = int(self.n_clusters)
         if cur_state["n_clusters"] < 0:
             raise ValueError("n_clusters must be >= 0")
 
         _postprocess_options = ("boundary", "none", "all")
-        cur_state["postprocess"] = str(self._postprocess).lower()
+        cur_state["postprocess"] = str(self.postprocess).lower()
         if cur_state["postprocess"] not in _postprocess_options:
             raise ValueError("`postprocess` should be one of %r" % _postprocess_options)
 
-        cur_state["affinity"] = str(self._affinity).lower()
+        cur_state["affinity"] = str(self.affinity).lower()
         if cur_state["affinity"] in ["euclidean", "lp:p=2"]:
             cur_state["affinity"] = "l2"
         elif cur_state["affinity"] in ["euclidean_sparse"]:
@@ -229,32 +229,32 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["exact"] and cur_state["affinity"] not in _affinity_exact_options:
             raise ValueError("`affinity` should be one of %r" % _affinity_exact_options)
 
-        if type(self._mlpack_enabled) is str:
-            cur_state["mlpack_enabled"] = str(self._mlpack_enabled).lower()
+        if type(self.mlpack_enabled) is str:
+            cur_state["mlpack_enabled"] = str(self.mlpack_enabled).lower()
             if cur_state["mlpack_enabled"] != "auto":
                 raise ValueError("`mlpack_enabled` must be one of: 'auto', True, False.")
         else:
-            cur_state["mlpack_enabled"] = bool(self._mlpack_enabled)
+            cur_state["mlpack_enabled"] = bool(self.mlpack_enabled)
 
-        cur_state["mlpack_leaf_size"] = int(self._mlpack_leaf_size)  # mlpack will check this
+        cur_state["mlpack_leaf_size"] = int(self.mlpack_leaf_size)  # mlpack will check this
 
 
-        cur_state["nmslib_n_neighbors"] = int(self._nmslib_n_neighbors)
+        cur_state["nmslib_n_neighbors"] = int(self.nmslib_n_neighbors)
 
-        if type(self._nmslib_params_init) is not dict:
+        if type(self.nmslib_params_init) is not dict:
             raise ValueError("`nmslib_params_init` must be a `dict`.")
-        cur_state["nmslib_params_init"] = self._nmslib_params_init.copy()
+        cur_state["nmslib_params_init"] = self.nmslib_params_init.copy()
 
-        if type(self._nmslib_params_index) is not dict:
+        if type(self.nmslib_params_index) is not dict:
             raise ValueError("`nmslib_params_index` must be a `dict`.")
-        cur_state["nmslib_params_index"] = self._nmslib_params_index.copy()
+        cur_state["nmslib_params_index"] = self.nmslib_params_index.copy()
 
-        if type(self._nmslib_params_query) is not dict:
+        if type(self.nmslib_params_query) is not dict:
             raise ValueError("`nmslib_params_query` must be a `dict`.")
-        cur_state["nmslib_params_query"] = self._nmslib_params_query.copy()
+        cur_state["nmslib_params_query"] = self.nmslib_params_query.copy()
 
         # this is more like an inherent dimensionality for GIc
-        cur_state["n_features"] = self._n_features   # users can set this manually
+        cur_state["n_features"] = self.n_features   # users can set this manually
         if cur_state["n_features"] is not None:      # only GIc needs this
             cur_state["n_features"] = max(1.0, float(cur_state["n_features"]))
         else:
@@ -911,7 +911,7 @@ class Genie(GenieBase):
             nmslib_params_query=nmslib_params_query,
             verbose=verbose)
 
-        self._gini_threshold = gini_threshold
+        self.gini_threshold = gini_threshold
         self._new_merge = False  # experimental, likely to be removed (#51)
 
         self._check_params()
@@ -922,7 +922,7 @@ class Genie(GenieBase):
     def _check_params(self, cur_state=None):
         cur_state = super()._check_params(cur_state)
 
-        cur_state["gini_threshold"] = float(self._gini_threshold)
+        cur_state["gini_threshold"] = float(self.gini_threshold)
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("`gini_threshold` not in [0,1].")
 
@@ -1222,9 +1222,9 @@ class GIc(GenieBase):
             nmslib_params_query=nmslib_params_query,
             verbose=verbose)
 
-        self._gini_thresholds = gini_thresholds
-        self._n_features      = n_features
-        self._add_clusters    = add_clusters
+        self.gini_thresholds = gini_thresholds
+        self.n_features      = n_features
+        self.add_clusters    = add_clusters
 
         self._check_params()
 
@@ -1233,11 +1233,11 @@ class GIc(GenieBase):
     def _check_params(self, cur_state=None):
         cur_state = super()._check_params(cur_state)
 
-        cur_state["add_clusters"] = int(self._add_clusters)
+        cur_state["add_clusters"] = int(self.add_clusters)
         if cur_state["add_clusters"] < 0:
             raise ValueError("`add_clusters` must be non-negative.")
 
-        cur_state["gini_thresholds"] = np.array(self._gini_thresholds)
+        cur_state["gini_thresholds"] = np.array(self.gini_thresholds)
         for g in cur_state["gini_thresholds"]:
             if not (0.0 <= g <= 1.0):
                 raise ValueError("All elements in `gini_thresholds` "
@@ -1291,7 +1291,7 @@ class GIc(GenieBase):
 
         if cur_state["n_features"] < 1:  # _get_mst sets this
             # this shouldn't happen in normal use
-            raise ValueError("Please set the `_n_features` attribute manually.")
+            raise ValueError("Please set the `n_features` attribute manually.")
 
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with GIc.", file=sys.stderr)

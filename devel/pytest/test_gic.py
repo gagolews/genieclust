@@ -135,7 +135,7 @@ def test_gic_precomputed():
         g = np.arange(1, 8)/10
         res1 = genieclust.GIc(K, gini_thresholds=g, exact=True, affinity="precomputed",
             compute_all_cuts=True, M=20)
-        res1._n_features = X.shape[1]
+        res1.n_features = X.shape[1]
         res1 = res1.fit_predict(D)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
