@@ -81,6 +81,7 @@ environments.
     :maxdepth: 2
     :caption: Examples and Tutorials
 
+    rmd/basics
     rmd/sklearn_toy_example
     rmd/benchmarks_ar
     rmd/r

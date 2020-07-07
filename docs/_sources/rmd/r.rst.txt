@@ -1,26 +1,20 @@
 R Interface Examples
 ====================
 
-The R package ``genieclust`` (**TODO**) *will* be available on CRAN. To
-install it, call:
+The R package ``genieclust`` (**TODO**) *will* be available on CRAN. To install it, call:
 
 .. code:: r
 
    # TODO: install.packages("genieclust")
    devtools::install_github("gagolews/genieclust")
 
-Below are a few basic examples on how to interact with the package
-(partially based on Marek’s `forthcoming
-book <https://lmlcr.gagolewski.com>`__).
+Below are a few basic examples on how to interact with the package (partially based on Marek’s `forthcoming book <https://lmlcr.gagolewski.com>`__).
 
 .. code:: r
 
    library("genieclust")
 
-Let’s consider the Sustainable Society Indices Dataset (see
-http://www.ssfindex.com/) that measures the Human, Environmental, and
-Economic Wellbeing in each country based on 7 categories on the scale
-:math:`[0, 10]`.
+Let’s consider the Sustainable Society Indices Dataset (see http://www.ssfindex.com/) that measures the Human, Environmental, and Economic Wellbeing in each country based on 7 categories on the scale :math:`[0, 10]`.
 
 .. code:: r
 
@@ -40,10 +34,7 @@ Economic Wellbeing in each country based on 7 categories on the scale
    ## Armenia     9.446943                     7.420523            6.289224         6.436303         2.854317   2.434233 3.829620
    ## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052
 
-``genieclust`` has an interface compatible with the R’s workhorse for
-hierarchical clustering, ``stats::hclust()``. Yet, for efficiency
-reasons, it’s better to feed ``genieclust::glust()`` with the input
-matrix directly:
+``genieclust`` has an interface compatible with the R’s workhorse for hierarchical clustering, ``stats::hclust()``. Yet, for efficiency reasons, it’s better to feed ``genieclust::glust()`` with the input matrix directly:
 
 .. code:: r
 
@@ -61,8 +52,7 @@ matrix directly:
    ## Distance         : euclidean 
    ## Number of objects: 154
 
-In order to extract a desired *k*-partition, we can call
-``stats::cutree()``:
+In order to extract a desired *k*-partition, we can call ``stats::cutree()``:
 
 .. code:: r
 
@@ -74,8 +64,7 @@ In order to extract a desired *k*-partition, we can call
    ##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d'Ivoire        Panama       Tunisia 
    ##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1
 
-This gives the cluster ID allocated to each country. Let’s depict the
-obtained partition with the ``rworldmap`` package:
+This gives the cluster ID allocated to each country. Let’s depict the obtained partition with the ``rworldmap`` package:
 
 .. code:: r
 
@@ -108,9 +97,7 @@ We can compute, e.g., the average indicators in each identified group:
    ## Transition                   4.074894 2.630009 7.340152
    ## Economy                      5.512709 3.541081 4.274155
 
-Plotting of dendrograms is also possible. For greater readability, we’ll
-restrict ourselves to a smaller sample, say, to the 37 members of the
-`OECD <https://en.wikipedia.org/wiki/OECD>`__:
+Plotting of dendrograms is also possible. For greater readability, we’ll restrict ourselves to a smaller sample, say, to the 37 members of the `OECD <https://en.wikipedia.org/wiki/OECD>`__:
 
 .. code:: r
 
@@ -134,14 +121,8 @@ restrict ourselves to a smaller sample, say, to the 37 members of the
 
 Final notes:
 
--  If we are only interested in a specific partition, calling
-   ``genie()`` directly will be a little faster than referring to
-   ``cutree(gclust(...))``.
+-  If we are only interested in a specific partition, calling ``genie()`` directly will be a little faster than referring to ``cutree(gclust(...))``.
 
--  ``genieclust`` also features partition similarity scores (such as the
-   Adjusted Rand or the Pair Sets Index) that can be used as external
-   cluster validity measures.
+-  ``genieclust`` also features partition similarity scores (such as the Adjusted Rand or the Pair Sets Index) that can be used as external cluster validity measures.
 
-For more details, refer to the package’s documentation. Don’t forget to
-check out the Python examples regarding noise point detection,
-benchmarking, timing, etc.
+For more details, refer to the package’s documentation. Don’t forget to check out the Python examples regarding noise point detection, benchmarking, timing, etc.
