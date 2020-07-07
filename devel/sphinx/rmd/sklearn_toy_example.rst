@@ -1,11 +1,7 @@
 Comparing Different Algorithms on Toy Datasets
 ==============================================
 
-There’s a nice example at the
-`scikit-learn <https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html>`__
-website that shows the characteristics of different hierarchical
-clustering methods on 2D toy datasets. Below we re-run this illustration
-on larger data and with the Genie algorithm in the game.
+There’s a nice example at the `scikit-learn <https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html>`__ website that shows the characteristics of different hierarchical clustering methods on 2D toy datasets. Below we re-run this illustration on larger data and with the Genie algorithm in the game.
 
 **TL;DR — the figure is at the bottom.**
 
@@ -24,9 +20,7 @@ on larger data and with the Genie algorithm in the game.
 
    np.random.seed(1234)
 
-First we generate the datasets. Note that in the `original
-script <https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html>`__,
-``n_samples`` was set to 1500.
+First we generate the datasets. Note that in the `original script <https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html>`__, ``n_samples`` was set to 1500.
 
 .. code:: python
 
@@ -147,5 +141,4 @@ Then we run the clustering procedures and plot the results.
 
    Outputs of different clustering algorithms
 
-It seems that the out-of-the-box Genie algorithm not only generates the
-most meaningful partitions but also it’s the fastest.
+It seems that the out-of-the-box Genie algorithm not only generates the most meaningful partitions but also it’s the fastest.

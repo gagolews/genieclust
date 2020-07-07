@@ -1,0 +1,190 @@
+# Benchmarks - Detailed Results
+
+We have summarised the AR-index scores based on the datasets from
+the [Benchmark Suite for Clustering Algorithms - Version 1](https://github.com/gagolews/clustering_benchmarks_v1) above.
+In this section we present raw and more detailed results for
+some other partition similarity measures implemented in the *genieclust* package --
+adjusted Rand, Fowlkes-Mallows, adjusted and normalised mutual information, normalised accuracy (purity)
+and pair sets index, see the API documentation of `genieclust.compare_partitions` for more details.
+In each case, score of 1.0 denotes perfect agreement between the clustering
+results and the reference partitions.
+
+
+
+```{r hello,echo=FALSE}
+library("reticulate")
+library("knitr")
+use_python("/usr/bin/python3")
+library("knitr")
+
+opts_chunk$set(
+    fig.path='figures_benchmarks_details/',
+    cache.path='cache_benchmarks_details/',
+    autodep=FALSE,
+    dev.args=list(dpi=300),
+    cache=FALSE
+)
+```
+
+
+```{python imports,results="hide",echo=FALSE}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os.path, glob, re
+import scipy.stats
+#from natsort import natsorted
+#import genieclust
+import sklearn.metrics
+import seaborn as sns
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("min_rows", 200)
+plt.style.use("seaborn-whitegrid")
+plt.rcParams["figure.dpi"] = 300
+plt.rcParams["savefig.transparent"] = True
+plt.rcParams["savefig.format"] = 'png'
+plt.rcParams["savefig.bbox"] = 'tight'
+plt.rcParams["figure.figsize"] = (9,7)
+
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+
+
+# Load results file:
+res  = pd.read_csv("v1-scores.csv")
+dims = pd.read_csv("v1-dims.csv")
+
+# ari, afm can be negative --> replace negative indexes with 0.0
+res.iloc[:,4:] = res.iloc[:,4:].transform(lambda x: np.maximum(x, 0.0), axis=1)
+
+res = res.loc[res.method.isin([
+    "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
+    "fastcluster_complete", "fastcluster_centroid", "fastcluster_average",
+    "fastcluster_ward", "sklearn_kmeans", "sklearn_gm", "sklearn_spectral_Arbf_G5",
+    "sklearn_birch_T0.01_BF100"]), :]
+
+res["method"] = res["method"].map({
+    "Genie_G0.1": "Genie_0.1",
+    "Genie_G0.3": "Genie_0.3",
+    "Genie_G1.0": "single",
+    "ITM": "ITM",
+    "Genie_G0.5": "Genie_0.5",
+    "fastcluster_complete": "complete",
+    "fastcluster_average": "average",
+    "fastcluster_centroid": "centroid",
+    "fastcluster_ward": "ward",
+    "sklearn_kmeans": "kmeans",
+    "sklearn_gm": "gauss_mix",
+    "sklearn_spectral_Arbf_G5": "spectral_rbf_5",
+    "sklearn_birch_T0.01_BF100": "birch_0.01",
+    })
+```
+
+
+Small Datasets
+--------------
+
+
+```{python prepare_small,results="hide",echo=FALSE}
+# We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
+# Subset: not g2mg, not h2mg
+res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
+
+# Subset: [large datasets]
+res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n<=10_000]), :]
+
+res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
+
+
+
+# For each dataset, method, compute maximal scores across
+# all available true (reference) labels (if there alternative labellings
+# of a given dataset):
+res_max = res2.groupby(["dataset", "method"]).max().\
+    reset_index().drop(["labels"], axis=1)
+#res_max.head()
+```
+
+
+
+
+```{python det_small,echo=FALSE,results="asis",fig.cap=""}
+for similarity_measure in ["ar", "fm", "ami", "nmi", "nacc", "psi"]:
+    print("### ", similarity_measure, "\n\n")
+
+    print("Summary statistics for %s:\n\n" % similarity_measure)
+
+    print(res_max.set_index(["dataset", "method"])[similarity_measure].unstack().\
+    describe().T.round(2).to_markdown())
+
+    print("Ranks for %s (best=1):\n\n" % similarity_measure)
+
+    r = lambda x: scipy.stats.rankdata(-x, method="min")
+    print(res_max.set_index(["dataset", "method"])[similarity_measure].unstack().\
+    round(2).T.apply(r).T.describe().T.round(1).to_markdown())
+
+    print("Raw results for %s:\n\n" % similarity_measure)
+
+    print(res_max.set_index(["dataset", "method"])[similarity_measure].unstack().round(2).to_markdown())
+```
+
+
+### Summary
+
+Medians and means of the partition similarity scores
+(read row-wise, in groups of 2 columns):
+
+```{python indices_small,echo=FALSE,results='hide',fig.cap="Heat map of median and mean similarity scores"}
+sns.heatmap(res_max.groupby("method")[["ar", "fm", "ami", "nmi", "nacc", "psi"]].\
+aggregate([np.median, np.mean]), annot=True, vmin=0.5, vmax=1.0, fmt=".2f")
+plt.yticks(rotation=0)
+plt.xticks(rotation=45)
+plt.xlabel('')
+plt.ylabel('')
+plt.show()
+```
+
+
+
+
+Large Datasets
+--------------
+
+```{python prepare_large,results="hide",echo=FALSE}
+# We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
+# Subset: not g2mg, not h2mg
+res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
+
+# Subset: [large datasets]
+res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n>10_000]), :]
+
+res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
+
+
+
+# For each dataset, method, compute maximal scores across
+# all available true (reference) labels (if there alternative labellings
+# of a given dataset):
+res_max = res2.groupby(["dataset", "method"]).max().\
+    reset_index().drop(["labels"], axis=1)
+#res_max.head()
+```
+
+
+```{python det_large,echo=FALSE,results="asis",fig.cap=""}
+<<det_small>>
+```
+
+
+
+### Summary
+
+
+
+Medians and means of the partition similarity scores:
+
+```{python indices_large,echo=FALSE,results='hide',fig.cap="Heat map of median and mean similarity scores"}
+<<indices_small>>
+```
+

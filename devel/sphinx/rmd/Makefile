@@ -1,7 +1,8 @@
 FILES_RMD = \
 	sklearn_toy_example.Rmd \
 	r.Rmd \
-	benchmarks_ar.Rmd
+	benchmarks_ar.Rmd \
+	benchmarks_details.Rmd
 
 
 RMD_MD_OUTPUTS=$(patsubst %.Rmd,%.md,$(FILES_RMD))

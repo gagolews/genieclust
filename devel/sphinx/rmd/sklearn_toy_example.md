@@ -28,6 +28,10 @@ np.random.seed(1234)
 ```
 
 
+
+
+
+
 First we generate the datasets. Note that in the
 [original script](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html),
 `n_samples` was set to 1500.

@@ -104,6 +104,10 @@
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
 </ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks - Detailed Results</a></li>
+</ul>
 
             
           
@@ -168,11 +172,7 @@
             
   <div class="section" id="comparing-different-algorithms-on-toy-datasets">
 <h1>Comparing Different Algorithms on Toy Datasets<a class="headerlink" href="#comparing-different-algorithms-on-toy-datasets" title="Permalink to this headline">¶</a></h1>
-<p>There’s a nice example at the
-<a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">scikit-learn</a>
-website that shows the characteristics of different hierarchical
-clustering methods on 2D toy datasets. Below we re-run this illustration
-on larger data and with the Genie algorithm in the game.</p>
+<p>There’s a nice example at the <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">scikit-learn</a> website that shows the characteristics of different hierarchical clustering methods on 2D toy datasets. Below we re-run this illustration on larger data and with the Genie algorithm in the game.</p>
 <p><strong>TL;DR — the figure is at the bottom.</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
@@ -188,9 +188,7 @@ on larger data and with the Genie algorithm in the game.</p>
 <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1234</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>First we generate the datasets. Note that in the <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">original
-script</a>,
-<code class="docutils literal notranslate"><span class="pre">n_samples</span></code> was set to 1500.</p>
+<p>First we generate the datasets. Note that in the <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">original script</a>, <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> was set to 1500.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n_samples</span> <span class="o">=</span> <span class="mi">10000</span>
 <span class="n">noisy_circles</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">make_circles</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">factor</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span>
                                       <span class="n">noise</span><span class="o">=.</span><span class="mo">05</span><span class="p">)</span>
@@ -306,8 +304,7 @@ script</a>,
 <img alt="Outputs of different clustering algorithms" src="../_images/clustering-1.png" />
 <p class="caption"><span class="caption-text">Outputs of different clustering algorithms</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
-<p>It seems that the out-of-the-box Genie algorithm not only generates the
-most meaningful partitions but also it’s the fastest.</p>
+<p>It seems that the out-of-the-box Genie algorithm not only generates the most meaningful partitions but also it’s the fastest.</p>
 </div>
 
 

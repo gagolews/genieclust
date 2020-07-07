@@ -18,7 +18,8 @@ opts_chunk$set(
     fig.path='figures_sklearn_toy_example/',
     cache.path='cache_sklearn_toy_example/',
     autodep=FALSE,
-    cache=TRUE
+    dev.args=list(dpi=300),
+    cache=FALSE
 )
 ```
 
@@ -36,6 +37,19 @@ from itertools import cycle, islice
 import genieclust
 
 np.random.seed(1234)
+```
+
+
+
+```{python imports2,results="hide",echo=FALSE}
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+#pd.set_option("min_rows", 200)
+plt.style.use("seaborn-whitegrid")
+plt.rcParams["figure.dpi"] = 300
+plt.rcParams["savefig.transparent"] = True
+plt.rcParams["savefig.format"] = 'png'
+plt.rcParams["savefig.bbox"] = 'tight'
+plt.rcParams["figure.figsize"] = (9,7)
 ```
 
 

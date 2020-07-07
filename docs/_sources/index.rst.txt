@@ -99,7 +99,11 @@ environments.
     Source code (GitHub) <https://github.com/gagolews/genieclust>
     Issues and Splendid Ideas Tracker <https://github.com/gagolews/genieclust/issues>
 
+.. toctree::
+    :maxdepth: 2
+    :caption: Appendix
 
+    rmd/benchmarks_details
 
 References
 ----------
