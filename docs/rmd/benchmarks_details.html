@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Benchmarks - Detailed Results &mdash; genieclust 0.9.1 documentation</title>
+  <title>Benchmarks — Detailed Results &mdash; genieclust 0.9.1 documentation</title>
   
 
   
@@ -106,7 +106,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarks - Detailed Results</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarks — Detailed Results</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#small-datasets">Small Datasets</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#ar">ar</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#fm">fm</a></li>
@@ -118,13 +118,13 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#large-datasets">Large Datasets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#ar-1">ar</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#fm-1">fm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#ami-1">ami</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nmi-1">nmi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#nacc-1">nacc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#psi-1">psi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#summary-1">Summary</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">ar</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">fm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">ami</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">nmi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">nacc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">psi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">Summary</a></li>
 </ul>
 </li>
 </ul>
@@ -175,7 +175,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Benchmarks - Detailed Results</li>
+      <li>Benchmarks — Detailed Results</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -193,27 +193,35 @@
            <div itemprop="articleBody">
             
   <div class="section" id="benchmarks-detailed-results">
-<h1>Benchmarks - Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this headline">¶</a></h1>
-<p>We have summarised the AR-index scores based on the datasets from the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms - Version 1</a> above. In this section we present raw and more detailed results for some other partition similarity measures implemented in the <em>genieclust</em> package – adjusted Rand, Fowlkes-Mallows, adjusted and normalised mutual information, normalised accuracy (purity) and pair sets index, see the API documentation of <code class="docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code> for more details. In each case, score of 1.0 denotes perfect agreement between the clustering results and the reference partitions.</p>
+<h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this headline">¶</a></h1>
+<p>We have summarised the AR-index scores based on the datasets from
+the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms – Version 1</a> above.
+In this section we present raw and more detailed results for
+some other partition similarity measures implemented in the <cite>genieclust</cite>
+package — adjusted Rand, Fowlkes-Mallows, adjusted and normalised mutual
+information, normalised accuracy (purity) and pair sets index, see the API
+documentation of <cite>genieclust.compare_partitions</cite> for more details.
+In each case, score of 1.0 denotes perfect agreement between the clustering
+results and the reference partitions.</p>
 <div class="section" id="small-datasets">
 <h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="ar">
 <h3>ar<a class="headerlink" href="#ar" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for ar:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 31%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -357,21 +365,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for ar (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -515,14 +523,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for ar:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -530,11 +538,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -1651,10 +1659,11 @@
 </div>
 <div class="section" id="fm">
 <h3>fm<a class="headerlink" href="#fm" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for fm:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
@@ -1662,10 +1671,9 @@
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -1809,21 +1817,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for fm (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -1967,14 +1975,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for fm:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -1982,11 +1990,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -3103,10 +3111,11 @@
 </div>
 <div class="section" id="ami">
 <h3>ami<a class="headerlink" href="#ami" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for ami:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
@@ -3114,10 +3123,9 @@
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -3261,21 +3269,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for ami (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -3419,14 +3427,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for ami:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -3434,11 +3442,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -4555,10 +4563,11 @@
 </div>
 <div class="section" id="nmi">
 <h3>nmi<a class="headerlink" href="#nmi" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for nmi:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
@@ -4566,10 +4575,9 @@
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -4713,21 +4721,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for nmi (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -4871,14 +4879,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for nmi:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -4886,11 +4894,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -6007,10 +6015,11 @@
 </div>
 <div class="section" id="nacc">
 <h3>nacc<a class="headerlink" href="#nacc" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for nacc:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
@@ -6018,10 +6027,9 @@
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -6165,21 +6173,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for nacc (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -6323,14 +6331,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for nacc:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -6338,11 +6346,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -7459,10 +7467,11 @@
 </div>
 <div class="section" id="psi">
 <h3>psi<a class="headerlink" href="#psi" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for psi:</p>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 30%" />
+<col style="width: 25%" />
+<col style="width: 12%" />
 <col style="width: 11%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
@@ -7470,10 +7479,9 @@
 <col style="width: 9%" />
 <col style="width: 9%" />
 <col style="width: 9%" />
-<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -7617,21 +7625,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for psi (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 34%" />
+<col style="width: 25%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
+<col style="width: 11%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -7775,14 +7783,14 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for psi:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 16%" />
+<col style="width: 15%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
 <col style="width: 7%" />
-<col style="width: 4%" />
+<col style="width: 3%" />
 <col style="width: 6%" />
 <col style="width: 8%" />
 <col style="width: 7%" />
@@ -7790,11 +7798,11 @@
 <col style="width: 7%" />
 <col style="width: 5%" />
 <col style="width: 5%" />
-<col style="width: 10%" />
+<col style="width: 11%" />
 <col style="width: 4%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -8911,23 +8919,24 @@
 </div>
 <div class="section" id="summary">
 <h3>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
-<p>Medians and means of the partition similarity scores (read row-wise, in groups of 2 columns):</p>
+<p>Medians and means of the partition similarity scores
+(read row-wise, in groups of 2 columns):</p>
 <div class="figure align-default" id="id8">
-<img alt="Heat map of median and mean similarity scores" src="../_images/indices_small-1.png" />
+<a class="reference internal image-reference" href="../_images/benchmarks_details_indices_small_1.png"><img alt="../_images/benchmarks_details_indices_small_1.png" src="../_images/benchmarks_details_indices_small_1.png" style="width: 15cm;" /></a>
 <p class="caption"><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 </div>
 <div class="section" id="large-datasets">
 <h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="ar-1">
-<span id="id1"></span><h3>ar<a class="headerlink" href="#ar-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for ar:</p>
+<div class="section" id="id1">
+<h3>ar<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -8936,7 +8945,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9030,21 +9039,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for ar (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9138,21 +9147,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for ar:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -9227,14 +9236,14 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="fm-1">
-<span id="id2"></span><h3>fm<a class="headerlink" href="#fm-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for fm:</p>
+<div class="section" id="id2">
+<h3>fm<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -9243,7 +9252,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9337,21 +9346,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for fm (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9445,21 +9454,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for fm:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -9534,14 +9543,14 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="ami-1">
-<span id="id3"></span><h3>ami<a class="headerlink" href="#ami-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for ami:</p>
+<div class="section" id="id3">
+<h3>ami<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -9550,7 +9559,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9644,21 +9653,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for ami (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9752,21 +9761,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for ami:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -9841,14 +9850,14 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="nmi-1">
-<span id="id4"></span><h3>nmi<a class="headerlink" href="#nmi-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for nmi:</p>
+<div class="section" id="id4">
+<h3>nmi<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -9857,7 +9866,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9951,21 +9960,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for nmi (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10059,21 +10068,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for nmi:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10148,14 +10157,14 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="nacc-1">
-<span id="id5"></span><h3>nacc<a class="headerlink" href="#nacc-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for nacc:</p>
+<div class="section" id="id5">
+<h3>nacc<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -10164,7 +10173,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10258,21 +10267,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for nacc (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10366,21 +10375,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for nacc:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10455,14 +10464,14 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="psi-1">
-<span id="id6"></span><h3>psi<a class="headerlink" href="#psi-1" title="Permalink to this headline">¶</a></h3>
-<p>Summary statistics for psi:</p>
+<div class="section" id="id6">
+<h3>psi<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
 <col style="width: 12%" />
-<col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
 <col style="width: 10%" />
@@ -10471,7 +10480,7 @@
 <col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10565,21 +10574,21 @@
 </tr>
 </tbody>
 </table>
-<p>Ranks for psi (best=1):</p>
+<p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 25%" />
-<col style="width: 14%" />
-<col style="width: 11%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
+<col style="width: 17%" />
+<col style="width: 13%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10673,21 +10682,21 @@
 </tr>
 </tbody>
 </table>
-<p>Raw results for psi:</p>
+<p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 19%" />
+<col style="width: 16%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 13%" />
 <col style="width: 6%" />
 <col style="width: 12%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
+<col style="width: 10%" />
+<col style="width: 10%" />
+<col style="width: 7%" />
 </colgroup>
 <thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10762,11 +10771,11 @@
 </tbody>
 </table>
 </div>
-<div class="section" id="summary-1">
-<span id="id7"></span><h3>Summary<a class="headerlink" href="#summary-1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Summary<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>Medians and means of the partition similarity scores:</p>
 <div class="figure align-default" id="id9">
-<img alt="Heat map of median and mean similarity scores" src="../_images/indices_large-1.png" />
+<a class="reference internal image-reference" href="../_images/benchmarks_details_indices_large_1.png"><img alt="../_images/benchmarks_details_indices_large_1.png" src="../_images/benchmarks_details_indices_large_1.png" style="width: 15cm;" /></a>
 <p class="caption"><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
 </div>
