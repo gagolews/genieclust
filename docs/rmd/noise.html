@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Clustering with Noise Points Detection &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Benchmarks" href="benchmarks_ar.html" />
+    <link rel="prev" title="Comparing Algorithms on Toy Datasets" href="sklearn_toy_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Clustering with Noise Points Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#smoothing-factor">Smoothing Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">HDBSCAN*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Clustering with Noise Points Detection</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="clustering-with-noise-points-detection">
+<h1>Clustering with Noise Points Detection<a class="headerlink" href="#clustering-with-noise-points-detection" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">genieclust</span>
+</pre></div>
+</div>
+<p>Let’s load an example data set that can be found
+the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>’s
+package project site:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;hdbscan&quot;</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.data.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.labels0.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_true</span><span class="p">[</span><span class="n">labels_true</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>Note that labels equal to -1 denote noise points.</p>
+<p>Here are the “reference” labels as identified by an expert (of course,
+each dataset might reveal many different clusterings that a user might
+find useful for whatever their goal is):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n=</span><span class="si">%d</span><span class="s2">, true n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_clusters</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id7">
+<a class="reference internal image-reference" href="../_images/noise_noise-scatter_1.png"><img alt="../_images/noise_noise-scatter_1.png" src="../_images/noise_noise-scatter_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<div class="section" id="smoothing-factor">
+<h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>genieclust</cite> package allows for clustering with respect
+to a mutual reachability distance,
+<span class="math notranslate nohighlight">\(d_M\)</span>,
+known from the HDBSCAN* algorithm <a class="footnote-reference brackets" href="#id6" id="id1">2</a>.
+It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
+controls how eagerly we tend to classify points as noise.</p>
+<p>Contrary to an excellent implementation of HDBSCAN*
+that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
+package and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <a class="footnote-reference brackets" href="#id5" id="id3">1</a> algorithm under the hood.
+This means we can ask for any number of clusters and get what we asked for.
+Moreover, we can easily switch between partitions
+of finer or coarser granularity.</p>
+<p>Here are the effects of playing with the <cite>M</cite> parameters
+(we keep the default <cite>gini_threshold</cite>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Ms</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Ms</span><span class="p">)):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">genie</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">Ms</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_genie</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(gini_threshold=</span><span class="si">%g</span><span class="s2">, M=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id8">
+<a class="reference internal image-reference" href="../_images/noise_noise-Genie1_1.png"><img alt="../_images/noise_noise-Genie1_1.png" src="../_images/noise_noise-Genie1_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="id4">
+<h2>HDBSCAN*<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<p>Here are the results returned by <cite>hdbscan</cite> with default parameters:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
+<span class="n">labels_hdbscan</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+    <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">min_samples</span> <span class="ow">or</span> <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id9">
+<a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN1_1.png"><img alt="../_images/noise_noise-HDBSCAN1_1.png" src="../_images/noise_noise-HDBSCAN1_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+<p>By tuning <cite>min_cluster_size</cite> and/or <cite>min_samples</cite> (which corresponds to our <cite>M</cite> parameter;
+by the way, <cite>min_samples</cite> defaults to <cite>min_cluster_size</cite> if not provided explicitly),
+we can obtain a partition that is even closer to the reference one:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mcss</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
+<span class="n">mss</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mcss</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mss</span><span class="p">)):</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">(</span><span class="n">min_cluster_size</span><span class="o">=</span><span class="n">mcss</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">min_samples</span><span class="o">=</span><span class="n">mss</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+        <span class="n">labels_hdbscan</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">mss</span><span class="p">)</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">min_samples</span> <span class="ow">or</span> <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id10">
+<a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN2_1.png"><img alt="../_images/noise_noise-HDBSCAN2_1.png" src="../_images/noise_noise-HDBSCAN2_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,  Genie: A new, fast and
+outlier-resistant hierarchical clustering algorithm,
+<em>Information Sciences</em> 363, 2016, 8-23. doi:10.1016/j.ins.2016.05.003.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Campello R., Moulavi D., Zimek A., Sander J.,
+Hierarchical density estimates for data clustering, visualization,
+and outlier detection,
+<em>ACM Transactions on Knowledge Discovery from Data</em> 10(1), 2015, 5:1-5:51.
+doi:10.1145/2733381.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="benchmarks_ar.html" class="btn btn-neutral float-right" title="Benchmarks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Algorithms on Toy Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

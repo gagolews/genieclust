@@ -83,6 +83,7 @@ environments.
 
     rmd/basics
     rmd/sklearn_toy_example
+    rmd/noise
     rmd/benchmarks_ar
     rmd/r
 
