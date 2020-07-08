@@ -17,10 +17,8 @@ results and the reference partitions.
 
 
 
-
 Small Datasets
 --------------
-
 
 
 
@@ -827,7 +825,6 @@ Medians and means of the partition similarity scores
 
 Large Datasets
 --------------
-
 
 
 

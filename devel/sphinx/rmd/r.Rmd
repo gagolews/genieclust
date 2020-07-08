@@ -24,10 +24,10 @@ library("knitr")
 options(width=1000)
 
 opts_chunk$set(
-    fig.path='figures_r/',
-    cache.path='cache_r/',
+    fig.path='figures/r_',
+    cache.path='cache/r_',
     autodep=FALSE,
-    cache=TRUE,
+    cache=FALSE,
     fig.width=10,
     fig.height=4,
     dpi=300,

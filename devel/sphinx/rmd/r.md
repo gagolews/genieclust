@@ -96,7 +96,7 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
     mapTitle="")
 ```
 
-![Countries grouped w.r.t. the SSI categories.](figures_r/ssi-map-1.png)
+![Countries grouped w.r.t. the SSI categories.](figures/r_ssi-map-1.png)
 
 
 We can compute, e.g., the average indicators in each identified group:
@@ -140,7 +140,7 @@ h_oecd <- gclust(X_oecd)
 plot(h_oecd)
 ```
 
-![Cluster dendrogram for the OECD countries.](figures_r/ssi-oecd-dendrogram-1.png)
+![Cluster dendrogram for the OECD countries.](figures/r_ssi-oecd-dendrogram-1.png)
 
 
 

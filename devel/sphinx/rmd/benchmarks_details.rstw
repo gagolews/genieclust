@@ -13,10 +13,7 @@ results and the reference partitions.
 
 
 
-<<imports,results="hide",echo=False>>=
-import pweave
-
-from tabulate import tabulate
+<<imports,results="hidden",echo=False>>=
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,6 +23,8 @@ import scipy.stats
 #import genieclust
 import sklearn.metrics
 import seaborn as sns
+import pweave
+from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
 plt.style.use("seaborn-whitegrid")
@@ -93,7 +92,7 @@ Small Datasets
 --------------
 
 
-<<prepare_small,results="hide",echo=False>>=
+<<prepare_small,results="hidden",echo=False>>=
 # We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
 # Subset: not g2mg, not h2mg
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
@@ -143,7 +142,7 @@ plt.show()
 Large Datasets
 --------------
 
-<<prepare_large,results="hide",echo=False>>=
+<<prepare_large,results="hidden",echo=False>>=
 # We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
 # Subset: not g2mg, not h2mg
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]

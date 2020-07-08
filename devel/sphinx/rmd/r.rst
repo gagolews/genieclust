@@ -75,7 +75,7 @@ This gives the cluster ID allocated to each country. Let’s depict the obtained
        missingCountryCol="white", colourPalette=palette.colors(3, "R4"),
        mapTitle="")
 
-.. figure:: figures_r/ssi-map-1.png
+.. figure:: figures/r_ssi-map-1.png
    :alt: Countries grouped w.r.t. the SSI categories.
 
    Countries grouped w.r.t. the SSI categories.
@@ -114,7 +114,7 @@ Plotting of dendrograms is also possible. For greater readability, we’ll restr
    h_oecd <- gclust(X_oecd)
    plot(h_oecd)
 
-.. figure:: figures_r/ssi-oecd-dendrogram-1.png
+.. figure:: figures/r_ssi-oecd-dendrogram-1.png
    :alt: Cluster dendrogram for the OECD countries.
 
    Cluster dendrogram for the OECD countries.

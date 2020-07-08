@@ -1,11 +1,11 @@
 FILES_RMD = \
-	sklearn_toy_example.Rmd \
-	r.Rmd \
-	benchmarks_ar.Rmd \
-	basics.Rmd
+	r.Rmd
 
 
 FILES_RSTW = \
+	basics.rstw              \
+	benchmarks_ar.rstw       \
+	sklearn_toy_example.rstw \
 	benchmarks_details.rstw
 
 
