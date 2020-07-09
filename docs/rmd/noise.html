@@ -94,7 +94,7 @@
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Clustering with Noise Points Detection</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#smoothing-factor">Smoothing Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#id4">HDBSCAN*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#a-comparision-with-hdbscan">A Comparision with HDBSCAN*</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -186,48 +186,41 @@
 </pre></div>
 </div>
 <p>Let’s load an example data set that can be found
-the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>’s
-package project site:</p>
+the on <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
+package’s project site:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;hdbscan&quot;</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.data.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.labels0.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
 <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_true</span><span class="p">[</span><span class="n">labels_true</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">]))</span>
 </pre></div>
 </div>
-<p>Note that labels equal to -1 denote noise points.</p>
 <p>Here are the “reference” labels as identified by an expert (of course,
 each dataset might reveal many different clusterings that a user might
-find useful for whatever their goal is):</p>
+find useful for whatever their goal is).
+Labels -1 denote noise points (light grey markers).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n=</span><span class="si">%d</span><span class="s2">, true n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_clusters</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id7">
+<div class="figure align-default" id="id6">
 <a class="reference internal image-reference" href="../_images/noise_noise-scatter_1.png"><img alt="../_images/noise_noise-scatter_1.png" src="../_images/noise_noise-scatter_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
 <div class="section" id="smoothing-factor">
 <h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Permalink to this headline">¶</a></h2>
 <p>The <cite>genieclust</cite> package allows for clustering with respect
 to a mutual reachability distance,
 <span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <a class="footnote-reference brackets" href="#id6" id="id1">2</a>.
+known from the HDBSCAN* algorithm <a class="footnote-reference brackets" href="#id5" id="id1">2</a>.
 It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
-<p>Contrary to an excellent implementation of HDBSCAN*
-that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
-here we still have the hierarchical Genie <a class="footnote-reference brackets" href="#id5" id="id3">1</a> algorithm under the hood.
-This means we can ask for any number of clusters and get what we asked for.
-Moreover, we can easily switch between partitions
-of finer or coarser granularity.</p>
-<p>Here are the effects of playing with the <cite>M</cite> parameters
+<p>Here are the effects of playing with the <cite>M</cite> parameter
 (we keep the default <cite>gini_threshold</cite>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Ms</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Ms</span><span class="p">)):</span>
-    <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">genie</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">Ms</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">Ms</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
     <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_genie</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
@@ -236,13 +229,61 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id8">
+<div class="figure align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie1_1.png"><img alt="../_images/noise_noise-Genie1_1.png" src="../_images/noise_noise-Genie1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+<p>For a more natural look-and-feel, it can be a good idea to first identify
+the noise points with Genie, remove them from the data set (or at least
+temporarily disable), and then apply the clustering procedure once again
+(did we mention that our algorithm is fast?)
+but now with respect to the original distance (here: Euclidean):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step 1: Noise point identification</span>
+<span class="n">g1</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">labels_noise</span> <span class="o">=</span> <span class="n">g1</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">non_noise</span> <span class="o">=</span> <span class="p">(</span><span class="n">labels_noise</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="c1"># True == non-noise point</span>
+<span class="c1"># Step 2: Clustering of non-noise points:</span>
+<span class="n">g2</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
+<span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g2</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">non_noise</span><span class="p">,</span> <span class="p">:])</span>
+<span class="c1"># Replace old labels with the new ones:</span>
+<span class="n">labels_noise</span><span class="p">[</span><span class="n">non_noise</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_genie</span>
+<span class="c1"># Scatter plot:</span>
+<span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_noise</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(gini_threshold=</span><span class="si">%g</span><span class="s2">, noise points removed first; M=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g2</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">,</span> <span class="n">g1</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id8">
+<a class="reference internal image-reference" href="../_images/noise_noise-Genie2_1.png"><img alt="../_images/noise_noise-Genie2_1.png" src="../_images/noise_noise-Genie2_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+<p>However, contrary to an excellent implementation of HDBSCAN*
+that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
+package and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <a class="footnote-reference brackets" href="#id4" id="id3">1</a> algorithm under the hood.
+This means we can ask for any number of clusters and get what we asked for.
+Moreover, we can easily switch between partitions
+of finer or coarser granularity.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ncs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ncs</span><span class="p">)):</span>
+    <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">ncs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+    <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">non_noise</span><span class="p">,</span> <span class="p">:])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">labels_noise</span><span class="p">[</span><span class="n">non_noise</span><span class="p">]</span> <span class="o">=</span> <span class="n">labels_genie</span>
+    <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_noise</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="figure align-default" id="id9">
+<a class="reference internal image-reference" href="../_images/noise_noise-Genie3_1.png"><img alt="../_images/noise_noise-Genie3_1.png" src="../_images/noise_noise-Genie3_1.png" style="width: 15cm;" /></a>
+<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
 </div>
-<div class="section" id="id4">
-<h2>HDBSCAN*<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="a-comparision-with-hdbscan">
+<h2>A Comparision with HDBSCAN*<a class="headerlink" href="#a-comparision-with-hdbscan" title="Permalink to this headline">¶</a></h2>
 <p>Here are the results returned by <cite>hdbscan</cite> with default parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
 </pre></div>
@@ -256,9 +297,9 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id9">
+<div class="figure align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN1_1.png"><img alt="../_images/noise_noise-HDBSCAN1_1.png" src="../_images/noise_noise-HDBSCAN1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 <p>By tuning <cite>min_cluster_size</cite> and/or <cite>min_samples</cite> (which corresponds to our <cite>M</cite> parameter;
 by the way, <cite>min_samples</cite> defaults to <cite>min_cluster_size</cite> if not provided explicitly),
@@ -277,20 +318,21 @@ we can obtain a partition that is even closer to the reference one:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id10">
+<div class="figure align-default" id="id11">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN2_1.png"><img alt="../_images/noise_noise-HDBSCAN2_1.png" src="../_images/noise_noise-HDBSCAN2_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
+<p>Neat.</p>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
+<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
 <dd><p>Gagolewski M., Bartoszuk M., Cena A.,  Genie: A new, fast and
 outlier-resistant hierarchical clustering algorithm,
 <em>Information Sciences</em> 363, 2016, 8-23. doi:10.1016/j.ins.2016.05.003.</p>
 </dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
 <dd><p>Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,

@@ -339,7 +339,7 @@ This makes the resulting partitions more stable.
 
     ncl = range(2, 8)
     for i in range(len(ncl)):
-        g = genieclust.genie.Genie(n_clusters=ncl[i])
+        g = genieclust.Genie(n_clusters=ncl[i])
         labels_genie = g.fit_predict(X)
         plt.subplot(3, 2, i+1)
         genieclust.plots.plot_scatter(X, labels=labels_genie)

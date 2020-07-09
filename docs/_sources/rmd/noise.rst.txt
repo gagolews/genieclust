@@ -20,8 +20,8 @@ Clustering with Noise Points Detection
 
 
 Let's load an example data set that can be found
-the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_'s
-package project site:
+the on `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
+package's project site:
 
 
 .. code:: python
@@ -34,11 +34,12 @@ package project site:
 
 
 
-Note that labels equal to -1 denote noise points.
+
 
 Here are the "reference" labels as identified by an expert (of course,
 each dataset might reveal many different clusterings that a user might
-find useful for whatever their goal is):
+find useful for whatever their goal is).
+Labels -1 denote noise points (light grey markers).
 
 
 .. code:: python
@@ -69,15 +70,7 @@ known from the HDBSCAN\* algorithm [2]_.
 It is parameterised with *a smoothing factor*, ``M``, which
 controls how eagerly we tend to classify points as noise.
 
-Contrary to an excellent implementation of HDBSCAN\*
-that is featured in the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
-package and which also relies on a minimum spanning tree w.r.t. :math:`d_M`,
-here we still have the hierarchical Genie [1]_ algorithm under the hood.
-This means we can ask for any number of clusters and get what we asked for.
-Moreover, we can easily switch between partitions
-of finer or coarser granularity.
-
-Here are the effects of playing with the `M` parameters
+Here are the effects of playing with the `M` parameter
 (we keep the default `gini_threshold`):
 
 
@@ -85,7 +78,7 @@ Here are the effects of playing with the `M` parameters
 
     Ms = [2, 5, 10, 25]
     for i in range(len(Ms)):
-        g = genieclust.genie.Genie(n_clusters=n_clusters, M=Ms[i])
+        g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
         labels_genie = g.fit_predict(X)
         plt.subplot(2, 2, i+1)
         genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
@@ -101,10 +94,74 @@ Here are the effects of playing with the `M` parameters
 
 
 
+For a more natural look-and-feel, it can be a good idea to first identify
+the noise points with Genie, remove them from the data set (or at least
+temporarily disable), and then apply the clustering procedure once again
+(did we mention that our algorithm is fast?)
+but now with respect to the original distance (here: Euclidean):
 
 
-HDBSCAN\*
----------
+.. code:: python
+
+    # Step 1: Noise point identification
+    g1 = genieclust.Genie(n_clusters=n_clusters, M=50)
+    labels_noise = g1.fit_predict(X)
+    non_noise = (labels_noise >= 0) # True == non-noise point
+    # Step 2: Clustering of non-noise points:
+    g2 = genieclust.Genie(n_clusters=n_clusters)
+    labels_genie = g2.fit_predict(X[non_noise, :])
+    # Replace old labels with the new ones:
+    labels_noise[non_noise] = labels_genie
+    # Scatter plot:
+    genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
+    plt.title("(gini_threshold=%g, noise points removed first; M=%d)"%(g2.gini_threshold, g1.M))
+    plt.axis("equal")
+    plt.show()
+
+
+.. figure:: figures/noise_noise-Genie2_1.png
+   :width: 15 cm
+
+   Labels predicted by Genie when noise points were removed from the dataset.
+
+
+
+
+However, contrary to an excellent implementation of HDBSCAN\*
+that is featured in the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
+package and which also relies on a minimum spanning tree w.r.t. :math:`d_M`,
+here we still have the hierarchical Genie [1]_ algorithm under the hood.
+This means we can ask for any number of clusters and get what we asked for.
+Moreover, we can easily switch between partitions
+of finer or coarser granularity.
+
+
+
+.. code:: python
+
+    ncs = [5, 6, 7, 8, 10, 15]
+    for i in range(len(ncs)):
+        g = genieclust.Genie(n_clusters=ncs[i])
+        labels_genie = g.fit_predict(X[non_noise, :])
+        plt.subplot(3, 2, i+1)
+        labels_noise[non_noise] = labels_genie
+        genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
+        plt.title("(n_clusters=%d)"%(g.n_clusters))
+        plt.axis("equal")
+    plt.show()
+
+
+.. figure:: figures/noise_noise-Genie3_1.png
+   :width: 15 cm
+
+   Labels predicted by Genie when noise points were removed from the dataset.
+
+
+
+
+
+A Comparision with HDBSCAN\*
+----------------------------
 
 
 Here are the results returned by `hdbscan` with default parameters:
@@ -165,6 +222,8 @@ we can obtain a partition that is even closer to the reference one:
    Labels predicted by HDBSCAN\*.
 
 
+
+Neat.
 
 
 
