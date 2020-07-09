@@ -433,31 +433,52 @@ class GenieBase(BaseEstimator, ClusterMixin):
         nn_ind   = None
         d_core   = None
 
-        index = nmslib.init(**cur_state["nmslib_params_init"])
-        index.addDataPointBatch(X)
-        index.createIndex(
-            cur_state["nmslib_params_index"],
-            print_progress=cur_state["verbose"])
-        index.setQueryTimeParams(cur_state["nmslib_params_query"])
-        nns = index.knnQueryBatch(
-            X,
-            k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
-            num_threads=n_threads)
-        index = None  # no longer needed
 
+        if self._last_state_ is not None and \
+                cur_state["X"]                  == self._last_state_["X"] and \
+                cur_state["affinity"]           == self._last_state_["affinity"] and \
+                cur_state["exact"]              == self._last_state_["exact"] and \
+                cur_state["nmslib_n_neighbors"] == self._last_state_["nmslib_n_neighbors"] and \
+                cur_state["nmslib_params_init"] == self._last_state_["nmslib_params_init"] and \
+                cur_state["nmslib_params_index"] == self._last_state_["nmslib_params_index"] and \
+                cur_state["nmslib_params_query"] == self._last_state_["nmslib_params_query"]:
 
-        nn_dist, nn_ind = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
-        nns = None  # no longer needed
+            if cur_state["M"] == self._last_state_["M"]:
+                mst_dist = self._mst_dist_
+                mst_ind  = self._mst_ind_
+                nn_dist  = self._nn_dist_
+                nn_ind   = self._nn_ind_
+            elif cur_state["M"] < self._last_state_["M"]:
+                nn_dist  = self._nn_dist_
+                nn_ind   = self._nn_ind_
+
+        if nn_dist is None or nn_ind is None:
+            index = nmslib.init(**cur_state["nmslib_params_init"])
+            index.addDataPointBatch(X)
+            index.createIndex(
+                cur_state["nmslib_params_index"],
+                print_progress=cur_state["verbose"])
+            index.setQueryTimeParams(cur_state["nmslib_params_query"])
+            nns = index.knnQueryBatch(
+                X,
+                k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
+                num_threads=n_threads)
+            index = None  # no longer needed
+            nn_dist, nn_ind = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
+            nns = None  # no longer needed
+
         if cur_state["M"] > 1:
             d_core = internal.get_d_core(nn_dist, nn_ind, cur_state["M"])
 
-        mst_dist, mst_ind = internal.mst_from_nn(
-            nn_dist,
-            nn_ind,
-            d_core,
-            stop_disconnected=False,
-            verbose=cur_state["verbose"])
-        # We can have a forest here...
+
+        if mst_dist is None or mst_ind is None:
+            mst_dist, mst_ind = internal.mst_from_nn(
+                nn_dist,
+                nn_ind,
+                d_core,
+                stop_disconnected=False,
+                verbose=cur_state["verbose"])
+            # We can have a forest here...
 
         self.n_samples_   = n_samples
         self._mst_dist_   = mst_dist
