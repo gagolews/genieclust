@@ -146,7 +146,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
     cdef ssize_t yc = (ymax-ymin+1)
 
-    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 10000
+    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 1000000
     if xc*yc > CONFUSION_MATRIX_MAXSIZE:
         raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
