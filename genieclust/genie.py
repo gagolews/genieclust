@@ -435,11 +435,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
         if self._last_state_ is not None and \
-                cur_state["X"]                  == self._last_state_["X"] and \
-                cur_state["affinity"]           == self._last_state_["affinity"] and \
-                cur_state["exact"]              == self._last_state_["exact"] and \
-                cur_state["nmslib_n_neighbors"] == self._last_state_["nmslib_n_neighbors"] and \
-                cur_state["nmslib_params_init"] == self._last_state_["nmslib_params_init"] and \
+                cur_state["X"]                   == self._last_state_["X"] and \
+                cur_state["affinity"]            == self._last_state_["affinity"] and \
+                cur_state["exact"]               == self._last_state_["exact"] and \
+                cur_state["nmslib_n_neighbors"]  == self._last_state_["nmslib_n_neighbors"] and \
+                cur_state["nmslib_params_init"]  == self._last_state_["nmslib_params_init"] and \
                 cur_state["nmslib_params_index"] == self._last_state_["nmslib_params_index"] and \
                 cur_state["nmslib_params_query"] == self._last_state_["nmslib_params_query"]:
 

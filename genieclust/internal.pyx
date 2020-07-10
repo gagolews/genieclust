@@ -68,8 +68,8 @@ from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
 
-
-
+cimport openmp
+import os
 
 ################################################################################
 # Minimum Spanning Tree Algorithms:
@@ -78,6 +78,10 @@ from . cimport c_genie
 # and auxiliary functions.
 ################################################################################
 
+cdef void _openmp_set_num_threads():
+    cdef int nt = int(os.getenv('OMP_NUM_THREADS',
+                                openmp.omp_get_max_threads()))
+    openmp.omp_set_num_threads(nt)
 
 
 cpdef np.ndarray[floatT] get_d_core(
@@ -431,6 +435,7 @@ cpdef tuple mst_from_complete(
         assert d == n
         D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
 
+    _openmp_set_num_threads()
     c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if D:  del D
@@ -530,6 +535,7 @@ cpdef tuple mst_from_distance(
         D2 = D # must be deleted separately
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
+    _openmp_set_num_threads()
     c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if D:  del D
@@ -616,6 +622,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
         D2 = D # must be deleted separately
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
+    _openmp_set_num_threads()
     c_mst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0], verbose)
 
     if D:  del D

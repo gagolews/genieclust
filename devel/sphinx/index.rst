@@ -85,6 +85,7 @@ environments.
     rmd/sklearn_toy_example
     rmd/noise
     rmd/benchmarks_ar
+    rmd/timings
     rmd/r
 
 .. toctree::
@@ -106,6 +107,9 @@ environments.
     :caption: Appendix
 
     rmd/benchmarks_details
+
+
+
 
 References
 ----------

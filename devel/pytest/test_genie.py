@@ -29,8 +29,8 @@ def test_genie(metric='euclidean'):
     for dataset in ["bigger", "s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
-            n = 10000
-            d = 2
+            n = 10_000
+            d = 10
             K = 2
             X = np.random.normal(size=(n,d))
             labels = np.random.choice(np.r_[0:K], n)
@@ -54,6 +54,18 @@ def test_genie(metric='euclidean'):
         #t11 = time.time()
         #print("t_hdbscan=%.3f" % (t11-t01), end="\t")
 
+        if dataset == "bigger" and X.shape[1] > 6:
+            os.environ["OMP_NUM_THREADS"] = '1'
+            t01 = time.time()
+            genieclust.Genie(2, affinity=metric).fit_predict(X)+1
+            t11 = time.time()
+            print("(1 thread ) t_py=%.3f" % (t11-t01))
+
+            os.environ["OMP_NUM_THREADS"] = '12'
+            t01 = time.time()
+            genieclust.Genie(2, affinity=metric).fit_predict(X)+1
+            t11 = time.time()
+            print("(12 threads) t_py=%.3f" % (t11-t01))
 
         for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
             gc.collect()

@@ -1,0 +1,94 @@
+How Fast Is It?
+===============
+
+
+**TODO: under construction.**
+
+We consider the "larger" datasets (70000-105600 observations,
+see section on Benchmark Results for discussion)
+from the
+`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ [1]_.
+
+Comparison with k-means from `scikit-learn <https://scikit-learn.org/>`_ version 0.23.1
+(`sklearn.cluster.KMeans`)
+for different number of threads (default is to use all CPU core).
+Note that `n_init` defaults to 10.
+
+
+Median of 10 run times
+
+GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64
+CPU: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M Cache, 6 Cores, 12 Threads)
+MemTotal:       16242084 kB
+
+
+
+<<imports,results="hidden",echo=False>>=
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os.path, glob, re
+import scipy.stats
+#from natsort import natsorted
+#import genieclust
+import sklearn.metrics
+import seaborn as sns
+import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("min_rows", 200)
+plt.style.use("seaborn-whitegrid")
+
+
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+# Load results file:
+res  = pd.read_csv("v1-timings.csv") # see timings.py
+dims = pd.read_csv("v1-dims.csv")
+
+#res = res.loc[res.method.isin([
+#    "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
+#    "fastcluster_complete", "fastcluster_centroid", "fastcluster_average",
+#    "fastcluster_ward", "sklearn_kmeans", "sklearn_gm", "sklearn_spectral_Arbf_G5",
+#    "sklearn_birch_T0.01_BF100"]), :]
+#
+
+
+#res["method"] = res["method"].map({
+#    "Genie_G0.1": "Genie_0.1",
+#    "Genie_G0.3": "Genie_0.3",
+#    "Genie_G1.0": "single",
+#    "ITM": "ITM",
+#    "Genie_G0.5": "Genie_0.5",
+#    "fastcluster_complete": "complete",
+#    "fastcluster_average": "average",
+#    "fastcluster_centroid": "centroid",
+#    "fastcluster_ward": "ward",
+#    "sklearn_kmeans": "kmeans",
+#    "sklearn_gm": "gauss_mix",
+#    "sklearn_spectral_Arbf_G5": "spectral_rbf_5",
+#    "sklearn_birch_T0.01_BF100": "birch_0.01",
+#    })
+@
+
+
+<<imports,results="hidden",echo=False>>=
+res2 = res.loc[res.method.str.contains("_t[148]$"), "dataset":"t"]
+res2 = res2.groupby(["dataset", "method", "n_clusters"]).t.min().reset_index()
+print(res2)
+
+dataset="mnist/digits"
+sns.lineplot(x="n_clusters", y="t", hue="method", data=res2.loc[res2.dataset==dataset,:], ci=None)
+plt.xscale("log")
+@
+
+
+
+
+References
+----------
+
+.. [1]
+    Gagolewski M., Cena A. (Eds.), *Benchmark Suite for Clustering Algorithms — Version 1*,
+    2020. https://github.com/gagolews/clustering_benchmarks_v1. doi:10.5281/zenodo.3815066.

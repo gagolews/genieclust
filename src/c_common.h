@@ -34,6 +34,9 @@
 
 #ifdef _OPENMP
 #include <omp.h>
+#define OPENMP_ENABLED 1
+#else
+#define OPENMP_ENABLED 0
 #endif
 
 #ifndef GENIECLUST_ASSERT
