@@ -57,15 +57,29 @@ def test_genie(metric='euclidean'):
         if dataset == "bigger" and X.shape[1] > 6:
             os.environ["OMP_NUM_THREADS"] = '1'
             t01 = time.time()
-            genieclust.Genie(2, affinity=metric).fit_predict(X)+1
+            g = genieclust.Genie(2, affinity=metric)
+            g.fit_predict(X)+1
             t11 = time.time()
             print("(1 thread ) t_py=%.3f" % (t11-t01))
 
             os.environ["OMP_NUM_THREADS"] = '12'
             t01 = time.time()
-            genieclust.Genie(2, affinity=metric).fit_predict(X)+1
+            g = genieclust.Genie(2, affinity=metric)
+            g.fit_predict(X)+1
             t11 = time.time()
             print("(12 threads) t_py=%.3f" % (t11-t01))
+
+            t01 = time.time()
+            g.gini_threshold = 0.1
+            g.fit_predict(X)+1
+            t11 = time.time()
+            print("(reuse     ) t_py=%.3f" % (t11-t01))
+
+            t01 = time.time()
+            g.n_clusters = 100
+            g.fit_predict(X)+1
+            t11 = time.time()
+            print("(reuse     ) t_py=%.3f" % (t11-t01))
 
         for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
             gc.collect()
@@ -185,11 +199,11 @@ def test_genie_precomputed():
 
 
 if __name__ == "__main__":
-    print("**Precomputed**")
-    test_genie_precomputed()
-
     print("**Euclidean**")
     test_genie('euclidean')
 
     print("**Manhattan**")
     test_genie('manhattan')
+
+    print("**Precomputed**")
+    test_genie_precomputed()

@@ -396,9 +396,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if "indexThreadQty" in cur_state["nmslib_params_index"]:
             warnings.warn("Set `indexThreadQty` via the OMP_NUM_THREADS "
                           "environment variable.")
-        n_threads = max(1, int(os.environ.get("OMP_NUM_THREADS", 1)))
-        cur_state["nmslib_params_index"]["indexThreadQty"] = n_threads
 
+        if os.getenv("OMP_NUM_THREADS"):
+            n_threads = max(1, int(os.getenv("OMP_NUM_THREADS")))
+            cur_state["nmslib_params_index"]["indexThreadQty"] = n_threads
+        else:
+            n_threads = 0
 
         if "space" in cur_state["nmslib_params_init"]:
             warnings.warn("Set `space` via the `affinity` parameter.")
