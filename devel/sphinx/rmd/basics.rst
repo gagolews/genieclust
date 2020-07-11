@@ -92,12 +92,7 @@ In particular, an object of class `Genie` is equipped with the
 
 .. code::
 
-    Genie(M=1, affinity='l2', cast_float32=True, compute_all_cuts=False,
-          compute_full_tree=False, exact=True, gini_threshold=0.3,
-          mlpack_enabled='auto', mlpack_leaf_size=1, n_clusters=2,
-          nmslib_n_neighbors=64, nmslib_params_index={'post': 2},
-          nmslib_params_init={'method': 'hnsw'}, nmslib_params_query={},
-          postprocess='boundary', verbose=False)
+    Genie()
     
 
 

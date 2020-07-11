@@ -58,7 +58,20 @@ import gc
 # https://github.com/gagolews/clustering_benchmarks_v1
 benchmarks_path = "/home/gagolews/Projects/clustering_benchmarks_v1"
 
-datasets    = ["wut/trajectories", "sipu/birch1", "sipu/birch2", "sipu/worms_2", "sipu/worms_64", "mnist/digits", "mnist/fashion"]
+datasets    = [
+    "g2mg/g2mg_8_30",
+    "g2mg/g2mg_16_30",
+    "g2mg/g2mg_32_30",
+    "g2mg/g2mg_64_30",
+    "g2mg/g2mg_128_30",
+    "wut/trajectories",
+    "sipu/birch1",
+    "sipu/birch2",
+    "sipu/worms_2",
+    "sipu/worms_64",
+    "mnist/digits",
+    "mnist/fashion"
+    ]
 
 ofname = "v1-timings.csv"
 
@@ -87,16 +100,15 @@ def Genie_with_n_threads(X, n_clusters, n_threads, **kwargs):
     return g
 
 
-def register_result(dataset, method, n_clusters, t, labels_pred=None, labels_true=None):
+def register_result(dataset, method, n_clusters, n_threads, t):
     res = dict(
-        time=time.time(),
+        timestamp=time.time(),
         dataset=dataset,
         method=method,
         n_clusters=n_clusters,
-        t=t
+        n_threads=n_threads,
+        elapsed_time=t
     )
-    if labels_true is not None:
-        res = {**res, **genieclust.compare_partitions.compare_partitions2(labels_pred, labels_true)}
     return res
 
 
@@ -106,28 +118,29 @@ def get_timing(dataset):
 
     res = list()
     n_clusterss = [10, 100, 1000]
-    n_threadss = [1, 4, 8]
+    n_threadss = [1, 3, 6, 12]
     gini_thresholds = [0.1, 0.3, 0.5]
 
     for n_clusters in n_clusterss:
         for n_threads in n_threadss:
             gc.collect()
-            t0 = time.time()
-            kmeans_with_n_threads(X, n_clusters, n_threads=n_threads)
-            t1 = time.time()
-            res.append(register_result(dataset, "sklearn_kmeans_t%d"%n_threads, n_clusters, t1-t0))
-            print(res[-1])
 
             t0 = time.time()
             last_g_exact = Genie_with_n_threads(X, n_clusters, n_threads=n_threads)
             t1 = time.time()
-            res.append(register_result(dataset, "Genie_0.3_t%d"%n_threads, n_clusters, t1-t0))
+            res.append(register_result(dataset, "Genie_0.3", n_clusters, n_threads, t1-t0))
             print(res[-1])
 
             t0 = time.time()
-            last_g_approx = Genie_with_n_threads(X, n_clusters, n_threads=n_threads, exact=False)
+            Genie_with_n_threads(X, n_clusters, n_threads=n_threads, exact=False)
             t1 = time.time()
-            res.append(register_result(dataset, "Genie_0.3_t%d_approx"%n_threads, n_clusters, t1-t0))
+            res.append(register_result(dataset, "Genie_0.3_approx", n_clusters, n_threads, t1-t0))
+            print(res[-1])
+
+            t0 = time.time()
+            kmeans_with_n_threads(X, n_clusters, n_threads=n_threads)
+            t1 = time.time()
+            res.append(register_result(dataset, "sklearn_kmeans", n_clusters, n_threads, t1-t0))
             print(res[-1])
 
     # test the "cached" version of Genie(exact=True):
@@ -139,7 +152,7 @@ def get_timing(dataset):
             last_g_exact.n_clusters     = n_clusters
             labels_true = last_g_exact.fit_predict(X)
             t1 = time.time()
-            res.append(register_result(dataset, "Genie_%.1f_tx"%gini_threshold, n_clusters, t1-t0))
+            res.append(register_result(dataset, "Genie_%.1f"%gini_threshold, n_clusters, 0, t1-t0))
             print(res[-1])
 
     return res
@@ -154,10 +167,8 @@ def get_timing(dataset):
 
 if __name__ == "__main__":
     print(sklearn.__version__)
-    # uname -a
-
-    for dataset in datasets:
-        for iter in range(10):
+    for iter in range(3):
+        for dataset in datasets:
             np.random.seed(iter+1)
             res = get_timing(dataset)
             res_df = pd.DataFrame(res)

@@ -11,6 +11,11 @@ documentation of `genieclust.compare_partitions` for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.
 
+At the preprocessing stage, features with variance of 0 were removed.
+Every dataset has been centred at **0** and scaled so that is has total
+variance of 1. Then, a tiny bit of Gaussian noise has been added to each
+item. Clustering is performed with respect to the Euclidean distance
+(wherever applicable).
 
 
 <<imports,results="hidden",echo=False>>=
@@ -27,7 +32,11 @@ import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
-plt.style.use("seaborn-whitegrid")
+plt.style.use("bmh")
+plt.rcParams.update({
+    'font.size': 9,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
 
 #``````````````````````````````````````````````````````````````````````````````
 #``````````````````````````````````````````````````````````````````````````````

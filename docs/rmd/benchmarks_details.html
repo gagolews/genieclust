@@ -93,6 +93,7 @@
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -204,6 +205,11 @@ information, normalised accuracy (purity) and pair sets index, see the API
 documentation of <cite>genieclust.compare_partitions</cite> for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.</p>
+<p>At the preprocessing stage, features with variance of 0 were removed.
+Every dataset has been centred at <strong>0</strong> and scaled so that is has total
+variance of 1. Then, a tiny bit of Gaussian noise has been added to each
+item. Clustering is performed with respect to the Euclidean distance
+(wherever applicable).</p>
 <div class="section" id="small-datasets">
 <h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="ar">

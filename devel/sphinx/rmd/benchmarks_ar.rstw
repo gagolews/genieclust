@@ -44,7 +44,11 @@ import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
-plt.style.use("seaborn-whitegrid")
+plt.style.use("bmh")
+plt.rcParams.update({
+    'font.size': 9,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
 
 
 #``````````````````````````````````````````````````````````````````````````````
@@ -174,7 +178,7 @@ res_max = res2.groupby(["dataset", "method"]).max().\
 
 
 
-<<plot_small,echo=False,caption="Distribution of the AR-index for each algorithm (small datasets).">>=
+<<plot_small,echo=False,caption="Distribution of the AR-index for each algorithm (small datasets).", f_size=(8,13)>>=
 do_plot(res_max)
 @
 
@@ -225,7 +229,7 @@ res_max = res2.groupby(["dataset", "method"]).max().\
 
 
 
-<<plot_large,echo=False,caption="Distribution of the AR-index for each algorithm (large datasets).">>=
+<<plot_large,echo=False,caption="Distribution of the AR-index for each algorithm (large datasets).", f_size=(8,8)>>=
 do_plot(res_max)
 @
 

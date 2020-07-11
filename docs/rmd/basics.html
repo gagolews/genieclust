@@ -100,6 +100,7 @@
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -232,12 +233,7 @@ In particular, an object of class <cite>Genie</cite> is equipped with the
 <span class="k">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Genie</span><span class="p">(</span><span class="n">M</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s1">&#39;l2&#39;</span><span class="p">,</span> <span class="n">cast_float32</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_all_cuts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-      <span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">gini_threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
-      <span class="n">mlpack_enabled</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span> <span class="n">mlpack_leaf_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-      <span class="n">nmslib_n_neighbors</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">nmslib_params_index</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;post&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">},</span>
-      <span class="n">nmslib_params_init</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;hnsw&#39;</span><span class="p">},</span> <span class="n">nmslib_params_query</span><span class="o">=</span><span class="p">{},</span>
-      <span class="n">postprocess</span><span class="o">=</span><span class="s1">&#39;boundary&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Genie</span><span class="p">()</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>

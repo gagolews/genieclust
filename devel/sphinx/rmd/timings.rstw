@@ -1,5 +1,5 @@
-How Fast Is It?
-===============
+Timings
+=======
 
 
 **TODO: under construction.**
@@ -7,23 +7,25 @@ How Fast Is It?
 We consider the "larger" datasets (70000-105600 observations,
 see section on Benchmark Results for discussion)
 from the
-`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ [1]_.
+`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ [1]_. Features with variance of 0 were removed,
+datasets were centred at **0** and scaled so that they have total variance is 1.
+Tiny bit of Gaussian noise was added to each observation.
+Clustering is performed with respect to the Euclidean distance.
 
 Comparison with k-means from `scikit-learn <https://scikit-learn.org/>`_ version 0.23.1
 (`sklearn.cluster.KMeans`)
-for different number of threads (default is to use all CPU core).
+for different number of threads (default is to use all available threads).
 Note that `n_init` defaults to 10.
 
+`mlpack`'s emst is used for low-dimensional spaces.
 
-Median of 10 run times
-
-GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64
-CPU: Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M Cache, 6 Cores, 12 Threads)
-MemTotal:       16242084 kB
+Minimum of 3 run times on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M cache, 6 cores, 12 threads)
+and total memory of 16242084 kB.
 
 
 
-<<imports,results="hidden",echo=False>>=
+
+<<timings-imports,results="hidden",echo=False>>=
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -37,7 +39,11 @@ import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
-plt.style.use("seaborn-whitegrid")
+plt.style.use("bmh")
+plt.rcParams.update({
+    'font.size': 9,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
 
 
 #``````````````````````````````````````````````````````````````````````````````
@@ -46,6 +52,8 @@ plt.style.use("seaborn-whitegrid")
 # Load results file:
 res  = pd.read_csv("v1-timings.csv") # see timings.py
 dims = pd.read_csv("v1-dims.csv")
+dims["dataset"] = dims["battery"]+"/"+dims["dataset"]
+dims = dims.loc[:,"dataset":]
 
 #res = res.loc[res.method.isin([
 #    "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
@@ -73,15 +81,58 @@ dims = pd.read_csv("v1-dims.csv")
 @
 
 
-<<imports,results="hidden",echo=False>>=
-res2 = res.loc[res.method.str.contains("_t[148]$"), "dataset":"t"]
-res2 = res2.groupby(["dataset", "method", "n_clusters"]).t.min().reset_index()
-print(res2)
-
-dataset="mnist/digits"
-sns.lineplot(x="n_clusters", y="t", hue="method", data=res2.loc[res2.dataset==dataset,:], ci=None)
-plt.xscale("log")
+<<timings-get-min,results="hidden",echo=False>>=
+res2 = res.loc[(~res.method.str.contains("_approx$")) & (res.n_threads>0), "dataset":]
+res2 = res2.loc[res.dataset.isin(["mnist/digits", "mnist/fashion",
+    "sipu/worms_2", "sipu/worms_64", "sipu/birch1", "sipu/birch2"]), :]
+res2 = res2.groupby(["dataset", "method", "n_clusters", "n_threads"]).\
+    elapsed_time.min().reset_index()
+res2 = pd.merge(res2, dims, on="dataset")
 @
+
+
+Results (in seconds) as a function of the number of clusters to detect (6 threads):
+
+<<timings-summary,results="rst",echo=False>>=
+_dat = res2.loc[res2.n_threads==6,["dataset","n", "d", "method","n_clusters","elapsed_time"]].\
+set_index(["dataset","n", "d", "method","n_clusters"]).unstack().reset_index().round(2)
+_dat.columns = [l0 if not l1 else l1 for l0, l1 in _dat.columns]
+which_repeated = (_dat.dataset.shift(1) == _dat.dataset)
+_dat.loc[which_repeated, "dataset"] = ""
+_dat["n"] = _dat["n"].astype(str)
+_dat.loc[which_repeated, "n"] = ""
+_dat["d"] = _dat["d"].astype(str)
+_dat.loc[which_repeated, "d"] = ""
+print(tabulate(_dat, _dat.columns, tablefmt="rst", showindex=False), "\n\n")
+@
+
+
+
+Number of threads (jobs):
+
+<<timings-plot,results="hidden",echo=False>>=
+dataset="mnist/digits"
+sns.lineplot(x="n_clusters", y="elapsed_time", hue="method", style="n_threads", data=res2.loc[res2.dataset==dataset,:], markers=True)
+plt.title("%s (n=%d, d=%d)" %(dataset, dims.loc[dims.dataset==dataset,"n"], dims.loc[dims.dataset==dataset,"d"]))
+plt.xscale("log")
+plt.ylim(0, 2000)
+plt.show()
+@
+
+**TODO**: for Genie, the number of clusters to extract does not affect
+the run-time. Genie itself has :math:`O(n \sqrt{n})` time complexity.
+
+**TODO**: mention cache, show timings — once we determine the MST,
+we can play with different `gini_threshold`\ s for "free".
+
+
+The effect of the curse of dimensionality is clearly visible -- clustering
+in very low-dimensional Euclidean spaces is extremely fast.
+Then the timings become grow linearly as a function of dimensionality, `d` --
+:math:`O(d n^2)` time is needed.
+
+Importantly, the algorithm only needs :math:`O(n)` memory.
+
 
 
 

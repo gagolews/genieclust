@@ -7,7 +7,8 @@ FILES_RSTW = \
 	benchmarks_ar.rstw       \
 	sklearn_toy_example.rstw \
 	benchmarks_details.rstw  \
-	noise.rstw
+	noise.rstw               \
+	timings.rstw
 
 
 RMD_MD_OUTPUTS=$(patsubst %.Rmd,%.md,$(FILES_RMD))

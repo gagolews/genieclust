@@ -1,0 +1,394 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Timings &mdash; genieclust 0.9.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="R Interface Examples" href="r.html" />
+    <link rel="prev" title="Benchmarks" href="benchmarks_ar.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Timings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Timings</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="timings">
+<h1>Timings<a class="headerlink" href="#timings" title="Permalink to this headline">¶</a></h1>
+<p><strong>TODO: under construction.</strong></p>
+<p>We consider the “larger” datasets (70000-105600 observations,
+see section on Benchmark Results for discussion)
+from the
+<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a> <a class="footnote-reference brackets" href="#id2" id="id1">1</a>. Features with variance of 0 were removed,
+datasets were centred at <strong>0</strong> and scaled so that they have total variance is 1.
+Tiny bit of Gaussian noise was added to each observation.
+Clustering is performed with respect to the Euclidean distance.</p>
+<p>Comparison with k-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> version 0.23.1
+(<cite>sklearn.cluster.KMeans</cite>)
+for different number of threads (default is to use all available threads).
+Note that <cite>n_init</cite> defaults to 10.</p>
+<p><cite>mlpack</cite>’s emst is used for low-dimensional spaces.</p>
+<p>Minimum of 3 run times on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
+and total memory of 16242084 kB.</p>
+<p>Results (in seconds) as a function of the number of clusters to detect (6 threads):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 24%" />
+<col style="width: 11%" />
+<col style="width: 5%" />
+<col style="width: 25%" />
+<col style="width: 11%" />
+<col style="width: 11%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<th class="head"><p>n</p></th>
+<th class="head"><p>d</p></th>
+<th class="head"><p>method</p></th>
+<th class="head"><p>10</p></th>
+<th class="head"><p>100</p></th>
+<th class="head"><p>1000</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>mnist/digits</p></td>
+<td><p>70000</p></td>
+<td><p>719</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>429.79</p></td>
+<td><p>430.09</p></td>
+<td><p>429.98</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>26.3</p></td>
+<td><p>217.62</p></td>
+<td><p>1691.68</p></td>
+</tr>
+<tr class="row-even"><td><p>mnist/fashion</p></td>
+<td><p>70000</p></td>
+<td><p>784</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>464.27</p></td>
+<td><p>464.52</p></td>
+<td><p>464.37</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>25.75</p></td>
+<td><p>225.58</p></td>
+<td><p>1745.88</p></td>
+</tr>
+<tr class="row-even"><td><p>sipu/birch1</p></td>
+<td><p>100000</p></td>
+<td><p>2</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>0.52</p></td>
+<td><p>0.52</p></td>
+<td><p>0.52</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>0.88</p></td>
+<td><p>6.86</p></td>
+<td><p>101.88</p></td>
+</tr>
+<tr class="row-even"><td><p>sipu/birch2</p></td>
+<td><p>100000</p></td>
+<td><p>2</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>0.46</p></td>
+<td><p>0.46</p></td>
+<td><p>0.46</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>0.53</p></td>
+<td><p>5.01</p></td>
+<td><p>61.62</p></td>
+</tr>
+<tr class="row-even"><td><p>sipu/worms_2</p></td>
+<td><p>105600</p></td>
+<td><p>2</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>0.57</p></td>
+<td><p>0.57</p></td>
+<td><p>0.57</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>0.86</p></td>
+<td><p>10.96</p></td>
+<td><p>111.9</p></td>
+</tr>
+<tr class="row-even"><td><p>sipu/worms_64</p></td>
+<td><p>105000</p></td>
+<td><p>64</p></td>
+<td><p>Genie_0.3</p></td>
+<td><p>76.7</p></td>
+<td><p>76.54</p></td>
+<td><p>76.64</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>3.35</p></td>
+<td><p>37.89</p></td>
+<td><p>357.84</p></td>
+</tr>
+</tbody>
+</table>
+<p>Number of threads (jobs):</p>
+<a class="reference internal image-reference" href="../_images/timings_timings-plot_1.png"><img alt="../_images/timings_timings-plot_1.png" src="../_images/timings_timings-plot_1.png" style="width: 15cm;" /></a>
+<p><strong>TODO</strong>: for Genie, the number of clusters to extract does not affect
+the run-time. Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time complexity.</p>
+<p><strong>TODO</strong>: mention cache, show timings — once we determine the MST,
+we can play with different <cite>gini_threshold</cite>s for “free”.</p>
+<p>The effect of the curse of dimensionality is clearly visible – clustering
+in very low-dimensional Euclidean spaces is extremely fast.
+Then the timings become grow linearly as a function of dimensionality, <cite>d</cite> –
+<span class="math notranslate nohighlight">\(O(d n^2)\)</span> time is needed.</p>
+<p>Importantly, the algorithm only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Gagolewski M., Cena A. (Eds.), <em>Benchmark Suite for Clustering Algorithms — Version 1</em>,
+2020. <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">https://github.com/gagolews/clustering_benchmarks_v1</a>. doi:10.5281/zenodo.3815066.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="r.html" class="btn btn-neutral float-right" title="R Interface Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2018-2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

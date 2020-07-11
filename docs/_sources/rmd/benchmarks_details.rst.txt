@@ -11,6 +11,11 @@ documentation of `genieclust.compare_partitions` for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.
 
+At the preprocessing stage, features with variance of 0 were removed.
+Every dataset has been centred at **0** and scaled so that is has total
+variance of 1. Then, a tiny bit of Gaussian noise has been added to each
+item. Clustering is performed with respect to the Euclidean distance
+(wherever applicable).
 
 
 
