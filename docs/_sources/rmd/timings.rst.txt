@@ -19,13 +19,16 @@ Note that `n_init` defaults to 10.
 
 `mlpack`'s emst is used for low-dimensional spaces.
 
-Minimum of 3 run times on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M cache, 6 cores, 12 threads)
+Timings were performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M cache, 6 cores, 12 threads)
 and total memory of 16242084 kB.
 
 
 
 
 
+
+
+Minimum of 3 run times (**TODO**: except mnist/digits and mnist/fashion):
 
 
 
@@ -62,8 +65,10 @@ sipu/worms_64  105000  64   Genie_0.3        76.7    76.54    76.64
 Number of threads (jobs):
 
 
-.. image:: figures/timings_timings-plot_1.png
+.. figure:: figures/timings_timings-plot_1.png
    :width: 15 cm
+
+   Timings [s] as a function of the number of clusters and threads.
 
 
 
@@ -80,6 +85,47 @@ Then the timings become grow linearly as a function of dimensionality, `d` --
 :math:`O(d n^2)` time is needed.
 
 Importantly, the algorithm only needs :math:`O(n)` memory.
+
+
+
+
+Timings as a Function of `n` and `d`
+------------------------------------
+
+Synthetic datasets being two Guassian blobs, each of size `n/2`
+(with i.i.d. coordinates), in a `d`-dimensional space.
+
+Medians of 1,3, or 10 timings (depending on the dataset size), in seconds:
+
+
+
+==================  ===  =======  =======  ========  ========  =========
+method                d    10000    50000    100000    500000    1000000
+==================  ===  =======  =======  ========  ========  =========
+Genie_0.3_mlpack      2     0.04     0.26      0.55      3.03       6.58
+..                    5     0.28     1.96      4.46     28.4       62.75
+..                   10     3.08    35.54     92.87    794.71    2014.59
+Genie_0.3_nomlpack    2     0.16     2.52      9.87    267.76    1657.86
+..                    5     0.14     2.62     11.4     421.46    2997.11
+..                   10     0.15     3.21     12.74    719.33    4388.26
+..                   25     0.28     6.51     26.65   1627.9     7708.23
+..                   50     0.47    11.97     54.52   2646.97   11346.3
+..                  100     1       26.07    132.47   4408.07     nan
+==================  ===  =======  =======  ========  ========  ========= 
+
+
+
+
+By default, `mlpack_enabled` is ``"auto"``, which translates
+to ``True`` if the requested metric in Euclidean, `mlpack` Python package is available
+and `d` is not greater than 6.
+
+
+
+.. figure:: figures/timings_g2mg-plot_1.png
+   :width: 15 cm
+
+   Timings [s] as a function of the dataset size and dimensionality. Note the log-log scale.
 
 
 

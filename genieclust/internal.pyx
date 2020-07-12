@@ -351,6 +351,8 @@ cpdef tuple mst_from_nn(
         if not (d_core.shape[0] == n):
             raise ValueError("shapes of dist and d_core must match")
         d_core_ptr = &d_core[0]
+
+    _openmp_set_num_threads()
     cdef ssize_t n_edges = c_mst.Cmst_from_nn(
         &dist[0,0], &ind[0,0],
         d_core_ptr,
@@ -665,6 +667,7 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
     assert ind.shape[1] == 2
     cdef np.ndarray[ssize_t] deg = np.empty(n, dtype=np.intp)
 
+    _openmp_set_num_threads()
     c_preprocess.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
 
     return deg
@@ -716,6 +719,7 @@ cpdef np.ndarray[ssize_t] merge_boundary_points(
     """
     cdef np.ndarray[ssize_t] cl2 = np.array(c, dtype=np.intp)
 
+    _openmp_set_num_threads()
     c_postprocess.Cmerge_boundary_points(
         &mst_i[0,0], mst_i.shape[0],
         &nn_i[0,0], nn_i.shape[1], M,
@@ -753,6 +757,7 @@ cpdef np.ndarray[ssize_t] merge_noise_points(
     """
     cdef np.ndarray[ssize_t] cl2 = np.array(c, dtype=np.intp)
 
+    _openmp_set_num_threads()
     c_postprocess.Cmerge_noise_points(
         &mst_i[0,0], mst_i.shape[0],
         &cl2[0], cl2.shape[0])
@@ -1400,6 +1405,8 @@ cpdef dict genie_from_mst(
     cdef ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
 
+    _openmp_set_num_threads()
+
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, new_merge)
 
@@ -1552,6 +1559,8 @@ cpdef dict gic_from_mst(
     cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
     cdef ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
+
+    _openmp_set_num_threads()
 
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
