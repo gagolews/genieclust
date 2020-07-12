@@ -18,6 +18,8 @@
 .correct_height <- function(height)
 {
     # correction for the departure from ultrametricity
+    # TODO: allow one choose?
+    # cumsum(height)
     rev(cummin(rev(height)))
 }
 

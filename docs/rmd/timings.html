@@ -96,6 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Timings</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benchmarking-approximate-version">Benchmarking Approximate Version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -198,13 +199,13 @@ and total memory of 16242084 kB.</p>
 <p>Results (in seconds) as a function of the number of clusters to detect (6 threads):</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 24%" />
+<col style="width: 23%" />
 <col style="width: 11%" />
 <col style="width: 5%" />
-<col style="width: 25%" />
+<col style="width: 28%" />
 <col style="width: 11%" />
 <col style="width: 11%" />
-<col style="width: 13%" />
+<col style="width: 12%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>dataset</p></th>
@@ -228,18 +229,34 @@ and total memory of 16242084 kB.</p>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>42.87</p></td>
+<td><p>42.92</p></td>
+<td><p>42.84</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>26.3</p></td>
 <td><p>217.62</p></td>
 <td><p>1691.68</p></td>
 </tr>
-<tr class="row-even"><td><p>mnist/fashion</p></td>
+<tr class="row-odd"><td><p>mnist/fashion</p></td>
 <td><p>70000</p></td>
 <td><p>784</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>464.27</p></td>
 <td><p>464.52</p></td>
 <td><p>464.37</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>38.18</p></td>
+<td><p>38.18</p></td>
+<td><p>38.17</p></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
@@ -260,18 +277,34 @@ and total memory of 16242084 kB.</p>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>2.86</p></td>
+<td><p>2.85</p></td>
+<td><p>2.9</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>0.88</p></td>
 <td><p>6.86</p></td>
 <td><p>101.88</p></td>
 </tr>
-<tr class="row-even"><td><p>sipu/birch2</p></td>
+<tr class="row-odd"><td><p>sipu/birch2</p></td>
 <td><p>100000</p></td>
 <td><p>2</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>0.46</p></td>
 <td><p>0.46</p></td>
 <td><p>0.46</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>3.3</p></td>
+<td><p>3.7</p></td>
+<td><p>3.41</p></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
@@ -292,18 +325,34 @@ and total memory of 16242084 kB.</p>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>3.67</p></td>
+<td><p>3.7</p></td>
+<td><p>3.7</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>0.86</p></td>
 <td><p>10.96</p></td>
 <td><p>111.9</p></td>
 </tr>
-<tr class="row-even"><td><p>sipu/worms_64</p></td>
+<tr class="row-odd"><td><p>sipu/worms_64</p></td>
 <td><p>105000</p></td>
 <td><p>64</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>76.7</p></td>
 <td><p>76.54</p></td>
 <td><p>76.64</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>8.26</p></td>
+<td><p>8.3</p></td>
+<td><p>8.31</p></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
@@ -331,9 +380,10 @@ Then the timings become grow linearly as a function of dimensionality, <cite>d</
 <p>Importantly, the algorithm only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
 <div class="section" id="timings-as-a-function-of-n-and-d">
 <h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Permalink to this headline">¶</a></h2>
-<p>Synthetic datasets being two Guassian blobs, each of size <cite>n/2</cite>
+<p>Synthetic datasets being two Gaussian blobs, each of size <cite>n/2</cite>
 (with i.i.d. coordinates), in a <cite>d</cite>-dimensional space.</p>
-<p>Medians of 1,3, or 10 timings (depending on the dataset size), in seconds:</p>
+<p>Medians of 1,3, or 10 timings (depending on the dataset size), in seconds,
+on 6 threads:</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 30%" />
@@ -355,6 +405,54 @@ Then the timings become grow linearly as a function of dimensionality, <cite>d</
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p>Genie_0.3_approx</p></td>
+<td><p>2</p></td>
+<td><p>0.17</p></td>
+<td><p>0.98</p></td>
+<td><p>2.12</p></td>
+<td><p>14.93</p></td>
+<td><p>33.79</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>5</p></td>
+<td><p>0.2</p></td>
+<td><p>1.3</p></td>
+<td><p>2.87</p></td>
+<td><p>22.75</p></td>
+<td><p>54.66</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>10</p></td>
+<td><p>0.25</p></td>
+<td><p>1.69</p></td>
+<td><p>3.84</p></td>
+<td><p>36.18</p></td>
+<td><p>92.03</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>25</p></td>
+<td><p>0.29</p></td>
+<td><p>1.95</p></td>
+<td><p>5.46</p></td>
+<td><p>62.25</p></td>
+<td><p>158.21</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>50</p></td>
+<td><p>0.36</p></td>
+<td><p>3.15</p></td>
+<td><p>8.15</p></td>
+<td><p>83.15</p></td>
+<td><p>202.32</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>100</p></td>
+<td><p>0.48</p></td>
+<td><p>4.6</p></td>
+<td><p>12.6</p></td>
+<td><p>114.68</p></td>
+<td><p>nan</p></td>
+</tr>
 <tr class="row-even"><td><p>Genie_0.3_mlpack</p></td>
 <td><p>2</p></td>
 <td><p>0.04</p></td>
@@ -430,12 +528,293 @@ Then the timings become grow linearly as a function of dimensionality, <cite>d</
 </tbody>
 </table>
 <p>By default, <cite>mlpack_enabled</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, which translates
-to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the requested metric in Euclidean, <cite>mlpack</cite> Python package is available
+to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the requested metric is Euclidean, <cite>mlpack</cite> Python package is available
 and <cite>d</cite> is not greater than 6.</p>
 <div class="figure align-default" id="id4">
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality. Note the log-log scale.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved within a coffee-break.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
+</div>
+<div class="section" id="benchmarking-approximate-version">
+<h2>Benchmarking Approximate Version<a class="headerlink" href="#benchmarking-approximate-version" title="Permalink to this headline">¶</a></h2>
+<p><strong>TODO:</strong>
+On each benchmark dataset (“small” and “large” altogether)
+we have fired 10 runs of the approximate Genie method <code class="docutils literal notranslate"><span class="pre">exact=False</span></code>.</p>
+<p>A complete list of datasets and thresholds where the approximate method
+yields a difference in AR-indices (AR index of one of 10 runs of the approximate
+method runs minus the AR index for the exact method) detectable at 2 digits of precision:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 21%" />
+<col style="width: 21%" />
+<col style="width: 9%" />
+<col style="width: 8%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+<col style="width: 7%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>dataset</p></th>
+<th class="head"><p>gini_threshold</p></th>
+<th class="head"><p>count</p></th>
+<th class="head"><p>mean</p></th>
+<th class="head"><p>std</p></th>
+<th class="head"><p>min</p></th>
+<th class="head"><p>25%</p></th>
+<th class="head"><p>50%</p></th>
+<th class="head"><p>75%</p></th>
+<th class="head"><p>max</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>sipu/birch2</p></td>
+<td><p>0.7</p></td>
+<td><p>10</p></td>
+<td><p>-0.01</p></td>
+<td><p>0.01</p></td>
+<td><p>-0.02</p></td>
+<td><p>-0.02</p></td>
+<td><p>-0.01</p></td>
+<td><p>-0.01</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>-0.35</p></td>
+<td><p>0.18</p></td>
+<td><p>-0.44</p></td>
+<td><p>-0.44</p></td>
+<td><p>-0.43</p></td>
+<td><p>-0.43</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>sipu/worms_64</p></td>
+<td><p>0.1</p></td>
+<td><p>10</p></td>
+<td><p>-0.03</p></td>
+<td><p>0.01</p></td>
+<td><p>-0.06</p></td>
+<td><p>-0.03</p></td>
+<td><p>-0.02</p></td>
+<td><p>-0.02</p></td>
+<td><p>-0.02</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>0.3</p></td>
+<td><p>10</p></td>
+<td><p>0.02</p></td>
+<td><p>0.01</p></td>
+<td><p>-0.01</p></td>
+<td><p>0.02</p></td>
+<td><p>0.03</p></td>
+<td><p>0.03</p></td>
+<td><p>0.03</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>0.5</p></td>
+<td><p>10</p></td>
+<td><p>0.23</p></td>
+<td><p>0.08</p></td>
+<td><p>0.11</p></td>
+<td><p>0.16</p></td>
+<td><p>0.25</p></td>
+<td><p>0.29</p></td>
+<td><p>0.34</p></td>
+</tr>
+<tr class="row-odd"><td><p>wut/trajectories</p></td>
+<td><p>0.1</p></td>
+<td><p>10</p></td>
+<td><p>-0</p></td>
+<td><p>0.02</p></td>
+<td><p>-0.05</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>0.3</p></td>
+<td><p>10</p></td>
+<td><p>-0</p></td>
+<td><p>0.02</p></td>
+<td><p>-0.05</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>0.5</p></td>
+<td><p>10</p></td>
+<td><p>-0</p></td>
+<td><p>0.02</p></td>
+<td><p>-0.05</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td></td>
+<td><p>0.7</p></td>
+<td><p>10</p></td>
+<td><p>-0</p></td>
+<td><p>0.02</p></td>
+<td><p>-0.05</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>-0.1</p></td>
+<td><p>0.32</p></td>
+<td><p>-1</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>The only noteworthy  difference is for the <code class="docutils literal notranslate"><span class="pre">sipu/birch</span></code> dataset
+where we observe that the approximate method generates worse results
+(although recall that <cite>gini_threshold</cite> of 1 corresponds to the single linkage method).
+Interestingly, for <code class="docutils literal notranslate"><span class="pre">sipu/worms2</span></code>, <cite>gini_threshold</cite> of 0.5 behaves much better.</p>
+<p>Descriptive statistics for AR-indices (for the approximate method we choose
+the median AR in each of the 10 runs):</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 12%" />
+<col style="width: 10%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+<col style="width: 8%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>method</p></th>
+<th class="head"><p>count</p></th>
+<th class="head"><p>mean</p></th>
+<th class="head"><p>std</p></th>
+<th class="head"><p>min</p></th>
+<th class="head"><p>25%</p></th>
+<th class="head"><p>50%</p></th>
+<th class="head"><p>75%</p></th>
+<th class="head"><p>max</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Genie_0.1</p></td>
+<td><p>79</p></td>
+<td><p>0.728</p></td>
+<td><p>0.307</p></td>
+<td><p>0</p></td>
+<td><p>0.516</p></td>
+<td><p>0.844</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genie_0.1_approx</p></td>
+<td><p>79</p></td>
+<td><p>0.728</p></td>
+<td><p>0.307</p></td>
+<td><p>0</p></td>
+<td><p>0.516</p></td>
+<td><p>0.844</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Genie_0.3</p></td>
+<td><p>79</p></td>
+<td><p>0.755</p></td>
+<td><p>0.292</p></td>
+<td><p>0</p></td>
+<td><p>0.555</p></td>
+<td><p>0.9</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genie_0.3_approx</p></td>
+<td><p>79</p></td>
+<td><p>0.755</p></td>
+<td><p>0.292</p></td>
+<td><p>0</p></td>
+<td><p>0.568</p></td>
+<td><p>0.9</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Genie_0.5</p></td>
+<td><p>79</p></td>
+<td><p>0.731</p></td>
+<td><p>0.332</p></td>
+<td><p>0</p></td>
+<td><p>0.531</p></td>
+<td><p>0.844</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genie_0.5_approx</p></td>
+<td><p>79</p></td>
+<td><p>0.734</p></td>
+<td><p>0.326</p></td>
+<td><p>0</p></td>
+<td><p>0.531</p></td>
+<td><p>0.844</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Genie_0.7</p></td>
+<td><p>79</p></td>
+<td><p>0.624</p></td>
+<td><p>0.376</p></td>
+<td><p>0</p></td>
+<td><p>0.264</p></td>
+<td><p>0.719</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genie_0.7_approx</p></td>
+<td><p>79</p></td>
+<td><p>0.624</p></td>
+<td><p>0.376</p></td>
+<td><p>0</p></td>
+<td><p>0.264</p></td>
+<td><p>0.719</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Genie_1.0</p></td>
+<td><p>79</p></td>
+<td><p>0.415</p></td>
+<td><p>0.447</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.174</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Genie_1.0_approx</p></td>
+<td><p>79</p></td>
+<td><p>0.409</p></td>
+<td><p>0.45</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>0.148</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
