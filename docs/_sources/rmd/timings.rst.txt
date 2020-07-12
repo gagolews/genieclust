@@ -93,6 +93,10 @@ Then the timings become grow linearly as a function of dimensionality, `d` --
 Importantly, the algorithm only needs :math:`O(n)` memory.
 
 
+TODO: mention extreme clustering
+
+
+
 
 
 Timings as a Function of `n` and `d`
@@ -143,8 +147,15 @@ and `d` is not greater than 6.
 
 
 
-Benchmarking Approximate Version
---------------------------------
+**TODO:** conclusions
+
+
+
+
+Benchmarking the Approximate Version
+------------------------------------
+
+**TODO:** move to the appendix
 
 **TODO:**
 On each benchmark dataset ("small" and "large" altogether)

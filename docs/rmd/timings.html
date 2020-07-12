@@ -96,7 +96,7 @@
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Timings</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#benchmarking-approximate-version">Benchmarking Approximate Version</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#benchmarking-the-approximate-version">Benchmarking the Approximate Version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -378,6 +378,7 @@ in very low-dimensional Euclidean spaces is extremely fast.
 Then the timings become grow linearly as a function of dimensionality, <cite>d</cite> –
 <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time is needed.</p>
 <p>Importantly, the algorithm only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
+<p>TODO: mention extreme clustering</p>
 <div class="section" id="timings-as-a-function-of-n-and-d">
 <h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Permalink to this headline">¶</a></h2>
 <p>Synthetic datasets being two Gaussian blobs, each of size <cite>n/2</cite>
@@ -534,9 +535,11 @@ and <cite>d</cite> is not greater than 6.</p>
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
 <p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved within a coffee-break.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
+<p><strong>TODO:</strong> conclusions</p>
 </div>
-<div class="section" id="benchmarking-approximate-version">
-<h2>Benchmarking Approximate Version<a class="headerlink" href="#benchmarking-approximate-version" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="benchmarking-the-approximate-version">
+<h2>Benchmarking the Approximate Version<a class="headerlink" href="#benchmarking-the-approximate-version" title="Permalink to this headline">¶</a></h2>
+<p><strong>TODO:</strong> move to the appendix</p>
 <p><strong>TODO:</strong>
 On each benchmark dataset (“small” and “large” altogether)
 we have fired 10 runs of the approximate Genie method <code class="docutils literal notranslate"><span class="pre">exact=False</span></code>.</p>
