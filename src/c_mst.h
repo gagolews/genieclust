@@ -476,8 +476,12 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         GENIECLUST_ASSERT(bestj > 0);
         GENIECLUST_ASSERT(Fnn[bestj] != bestj);
 
-        M[bestjpos] = M[n-i-1]; // don't visit bestj again
         lastj = bestj;          // start from bestj next time
+
+        // M[bestjpos] = M[n-i-1]; // don't visit bestj again
+        // (#62) new version: keep M sorted (more CPU cache-friendly):
+        for (ssize_t j=bestjpos; j<n-i-1; ++j)
+            M[j] = M[j+1];
 
         // and an edge to MST: (smaller index first)
         res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);
