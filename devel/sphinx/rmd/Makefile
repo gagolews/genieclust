@@ -7,6 +7,7 @@ FILES_RSTW = \
 	benchmarks_ar.rstw       \
 	sklearn_toy_example.rstw \
 	benchmarks_details.rstw  \
+	benchmarks_approx.rstw  \
 	noise.rstw               \
 	timings.rstw
 

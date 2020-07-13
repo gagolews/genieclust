@@ -1,13 +1,14 @@
 Benchmarks — Detailed Results
 =============================
 
-We have summarised the AR-index scores based on the datasets from
+In one of the :any:`above sections <benchmarks_ar>`
+2e have summarised the AR indices based on the datasets from
 the `Benchmark Suite for Clustering Algorithms – Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ above.
 In this section we present raw and more detailed results for
 some other partition similarity measures implemented in the `genieclust`
 package — adjusted Rand, Fowlkes-Mallows, adjusted and normalised mutual
 information, normalised accuracy (purity) and pair sets index, see the API
-documentation of `genieclust.compare_partitions` for more details.
+documentation of :mod:`genieclust.compare_partitions` for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.
 

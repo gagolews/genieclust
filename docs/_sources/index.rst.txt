@@ -107,6 +107,7 @@ environments.
     :caption: Appendix
 
     rmd/benchmarks_details
+    rmd/benchmarks_approx
 
 
 

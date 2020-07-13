@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Benchmarks &mdash; genieclust 0.9.1 documentation</title>
+  <title>Benchmarks (How Good Is It?) &mdash; genieclust 0.9.1 documentation</title>
   
 
   
@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Timings" href="timings.html" />
+    <link rel="next" title="Timings (How Fast Is It?)" href="timings.html" />
     <link rel="prev" title="Clustering with Noise Points Detection" href="noise.html" /> 
 </head>
 
@@ -93,13 +93,13 @@
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarks</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Benchmarks (How Good Is It?)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#small-datasets">Small Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#large-datasets">Large Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -115,6 +115,7 @@
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 </ul>
 
             
@@ -161,7 +162,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Benchmarks</li>
+      <li>Benchmarks (How Good Is It?)</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -178,51 +179,53 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="benchmarks">
-<h1>Benchmarks<a class="headerlink" href="#benchmarks" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="benchmarks-how-good-is-it">
+<h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Permalink to this headline">¶</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We consider the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
 <a class="footnote-reference brackets" href="#id19" id="id1">6</a> which aggregates datasets from various sources, including, but not limited
 to <a class="footnote-reference brackets" href="#id15" id="id2">2</a>,  <a class="footnote-reference brackets" href="#id16" id="id3">3</a>,  <a class="footnote-reference brackets" href="#id17" id="id4">4</a>,  <a class="footnote-reference brackets" href="#id20" id="id5">7</a>,  <a class="footnote-reference brackets" href="#id22" id="id6">9</a>,  <a class="footnote-reference brackets" href="#id24" id="id7">11</a>. Ground-truth/reference label
 vectors are provided alongside each dataset. They define the desired number of
-clusters, <cite>K</cite>, and hence only the algorithms that allow for setting
-<code class="docutils literal notranslate"><span class="pre">n_clusters</span></code> explicitly are studied here: agglomerative hierarchical
-methods (average, centroid, complete, single, and Ward linkage, implemented in the
+clusters and hence only the algorithms that allow for setting
+<cite>n_clusters</cite> explicitly are studied here. Namely, we will
+apply a few agglomerative hierarchical
+methods (average, centroid, complete, single, and Ward linkage; implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package), k-means,
 expectation-maximisation (EM) for Gaussian mixtures, BIRCH, spectral
 (implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>),
 <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a><a class="footnote-reference brackets" href="#id23" id="id8">10</a>,
 and Genie  <a class="footnote-reference brackets" href="#id18" id="id9">5</a>.</p>
-<p>The adjusted Rand index (see <a class="footnote-reference brackets" href="#id21" id="id10">8</a>) is used to quantify the agreement between
-the reference and the generated clustering on the scale <span class="math notranslate nohighlight">\([0,1]\)</span>,
+<p>The adjusted Rand index (see <a class="footnote-reference brackets" href="#id21" id="id10">8</a>) will be used to quantify the agreement between
+a reference and a predicted clustering on the scale <span class="math notranslate nohighlight">\([0,1]\)</span>,
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also <a class="footnote-reference brackets" href="#id14" id="id11">1</a> and
 <a class="footnote-reference brackets" href="#id19" id="id12">6</a> for discussion), the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
 <p>For more detailed results based on other partition similarity scores,
-see the Appendix.</p>
+see the <a class="reference internal" href="benchmarks_details.html"><span class="doc">Appendix</span></a>.</p>
 <div class="section" id="small-datasets">
 <h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this headline">¶</a></h2>
-<p>As some of the algorithms failed to converge within reasonable time limits,
-in this part we restrict ourselves to the datasets with up to 10000 observations.
-As suggested in the suite description,
-we omit the “parametric” Gaussian-distributed batteries <code class="docutils literal notranslate"><span class="pre">h2mg</span></code> and <code class="docutils literal notranslate"><span class="pre">g2mg</span></code>.</p>
+<p>As some of the algorithms tested here have failed to generate a solution
+within reasonable time limits (e.g., spectral clustering),
+in this part we restrict ourselves to the datasets with up to 10,000 observations.
+As suggested in the benchmark suite’s description, we omit the over-populous
+“parametric” Gaussian-distributed batteries <code class="docutils literal notranslate"><span class="pre">h2mg</span></code> and <code class="docutils literal notranslate"><span class="pre">g2mg</span></code>.</p>
 <p>Here are the boxplots of the empirical distributions of the adjusted Rand index.
 We report the results for BIRCH and spectral clustering with parameters
-that lead to the highest average AR-index.</p>
+that lead to the highest average AR score.</p>
 <div class="figure align-default" id="id25">
 <a class="reference internal image-reference" href="../_images/benchmarks_ar_plot_small_1.png"><img alt="../_images/benchmarks_ar_plot_small_1.png" src="../_images/benchmarks_ar_plot_small_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Distribution of the AR-index for each algorithm (small datasets).</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
 </div>
-<p>The Genie algorithm with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 0.3 gives the highest average
-and median AR-index and, at the same time, is subject to the least variability.
+<p>The Genie algorithm with <cite>gini_threshold</cite> of 0.3 gives the highest average
+and median AR index and, at the same time, is subject to the least variability.
 The EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
 method (which is also based on a minimum spanning tree)
-tend to output results of good quality as well.</p>
+tend to output good quality outcomes as well.</p>
 <p>Descriptive statistics for the ranks (for each dataset,
-each algorithm that gets the highest AR-index rounded to 2 decimal digits,
+each algorithm that gets the highest AR index rounded to 2 decimal digits,
 gets a rank of 1); lower ranks are better:</p>
 <table class="docutils align-default">
 <colgroup>
@@ -384,14 +387,14 @@ gets a rank of 1); lower ranks are better:</p>
 </div>
 <div class="section" id="large-datasets">
 <h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this headline">¶</a></h2>
-<p>Below we provide the results for the larger datasets (70000-105600 points).</p>
+<p>Below we provide the results for the larger datasets (70,000-105,600 points).</p>
 <div class="figure align-default" id="id26">
 <a class="reference internal image-reference" href="../_images/benchmarks_ar_plot_large_1.png"><img alt="../_images/benchmarks_ar_plot_large_1.png" src="../_images/benchmarks_ar_plot_large_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Distribution of the AR-index for each algorithm (large datasets).</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
 </div>
 <p>This time, the ITM method and Genie with <cite>gini_threshold</cite> of 0.1 give
 the highest typical scores.</p>
-<p>Descriptive statistics for the ranks (AR-index):</p>
+<p>Descriptive statistics for the ranks (AR index):</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 17%" />
@@ -569,7 +572,7 @@ In: <em>Proc. Workshop on Self-Organizing Maps</em>, Paris, France, 2005, 75-82.
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="timings.html" class="btn btn-neutral float-right" title="Timings" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="timings.html" class="btn btn-neutral float-right" title="Timings (How Fast Is It?)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -38,6 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Benchmarks — Approximate Method" href="benchmarks_approx.html" />
     <link rel="prev" title="R Package genieclust Reference" href="../r.html" /> 
 </head>
 
@@ -92,8 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -131,6 +132,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 </ul>
 
             
@@ -196,13 +198,14 @@
             
   <div class="section" id="benchmarks-detailed-results">
 <h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this headline">¶</a></h1>
-<p>We have summarised the AR-index scores based on the datasets from
+<p>In one of the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">above sections</span></a>
+2e have summarised the AR indices based on the datasets from
 the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms – Version 1</a> above.
 In this section we present raw and more detailed results for
 some other partition similarity measures implemented in the <cite>genieclust</cite>
 package — adjusted Rand, Fowlkes-Mallows, adjusted and normalised mutual
 information, normalised accuracy (purity) and pair sets index, see the API
-documentation of <cite>genieclust.compare_partitions</cite> for more details.
+documentation of <a class="reference internal" href="../genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a> for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.</p>
 <p>At the preprocessing stage, features with variance of 0 were removed.
@@ -10796,6 +10799,8 @@ item. Clustering is performed with respect to the Euclidean distance
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="benchmarks_approx.html" class="btn btn-neutral float-right" title="Benchmarks — Approximate Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="../r.html" class="btn btn-neutral float-left" title="R Package genieclust Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

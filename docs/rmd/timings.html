@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Timings &mdash; genieclust 0.9.1 documentation</title>
+  <title>Timings (How Fast Is It?) &mdash; genieclust 0.9.1 documentation</title>
   
 
   
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="R Interface Examples" href="r.html" />
-    <link rel="prev" title="Benchmarks" href="benchmarks_ar.html" /> 
+    <link rel="prev" title="Benchmarks (How Good Is It?)" href="benchmarks_ar.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -93,10 +93,9 @@
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Timings</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Timings (How Fast Is It?)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#benchmarking-the-approximate-version">Benchmarking the Approximate Version</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
@@ -115,6 +114,7 @@
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 </ul>
 
             
@@ -161,7 +161,7 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Timings</li>
+      <li>Timings (How Fast Is It?)</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -178,14 +178,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="timings">
-<h1>Timings<a class="headerlink" href="#timings" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="timings-how-fast-is-it">
+<h1>Timings (How Fast Is It?)<a class="headerlink" href="#timings-how-fast-is-it" title="Permalink to this headline">¶</a></h1>
 <p><strong>TODO: under construction.</strong></p>
-<p>We consider the “larger” datasets (70000-105600 observations,
+<p>We consider the “larger” datasets (70,000-105,600 observations,
 see section on Benchmark Results for discussion)
 from the
-<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a> <a class="footnote-reference brackets" href="#id2" id="id1">1</a>. Features with variance of 0 were removed,
-datasets were centred at <strong>0</strong> and scaled so that they have total variance is 1.
+<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a> <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.
+Features with variance of 0 were removed,
+datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
 Clustering is performed with respect to the Euclidean distance.</p>
 <p>Comparison with k-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> version 0.23.1
@@ -194,7 +195,7 @@ for different number of threads (default is to use all available threads).
 Note that <cite>n_init</cite> defaults to 10.</p>
 <p><cite>mlpack</cite>’s emst is used for low-dimensional spaces.</p>
 <p>Timings were performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
-and total memory of 16242084 kB.</p>
+and total memory of 16,242,084 kB.</p>
 <p>Minimum of 3 run times (<strong>TODO</strong>: except mnist/digits and mnist/fashion):</p>
 <p>Results (in seconds) as a function of the number of clusters to detect (6 threads):</p>
 <table class="docutils align-default">
@@ -436,23 +437,23 @@ on 6 threads:</p>
 <td><p>1.95</p></td>
 <td><p>5.46</p></td>
 <td><p>62.25</p></td>
-<td><p>158.21</p></td>
+<td><p>158.27</p></td>
 </tr>
 <tr class="row-even"><td></td>
 <td><p>50</p></td>
 <td><p>0.36</p></td>
 <td><p>3.15</p></td>
 <td><p>8.15</p></td>
-<td><p>83.15</p></td>
-<td><p>202.32</p></td>
+<td><p>81.95</p></td>
+<td><p>202.08</p></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td><p>100</p></td>
 <td><p>0.48</p></td>
 <td><p>4.6</p></td>
 <td><p>12.6</p></td>
-<td><p>114.68</p></td>
-<td><p>nan</p></td>
+<td><p>113.37</p></td>
+<td><p>266.64</p></td>
 </tr>
 <tr class="row-even"><td><p>Genie_0.3_mlpack</p></td>
 <td><p>2</p></td>
@@ -515,7 +516,7 @@ on 6 threads:</p>
 <td><p>0.47</p></td>
 <td><p>11.97</p></td>
 <td><p>54.52</p></td>
-<td><p>2646.97</p></td>
+<td><p>2175.3</p></td>
 <td><p>11346.3</p></td>
 </tr>
 <tr class="row-even"><td></td>
@@ -524,7 +525,7 @@ on 6 threads:</p>
 <td><p>26.07</p></td>
 <td><p>132.47</p></td>
 <td><p>4408.07</p></td>
-<td><p>nan</p></td>
+<td><p>16021.8</p></td>
 </tr>
 </tbody>
 </table>
@@ -533,291 +534,9 @@ to <code class="docutils literal notranslate"><span class="pre">True</span></cod
 and <cite>d</cite> is not greater than 6.</p>
 <div class="figure align-default" id="id4">
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved within a coffee-break.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
 </div>
 <p><strong>TODO:</strong> conclusions</p>
-</div>
-<div class="section" id="benchmarking-the-approximate-version">
-<h2>Benchmarking the Approximate Version<a class="headerlink" href="#benchmarking-the-approximate-version" title="Permalink to this headline">¶</a></h2>
-<p><strong>TODO:</strong> move to the appendix</p>
-<p><strong>TODO:</strong>
-On each benchmark dataset (“small” and “large” altogether)
-we have fired 10 runs of the approximate Genie method <code class="docutils literal notranslate"><span class="pre">exact=False</span></code>.</p>
-<p>A complete list of datasets and thresholds where the approximate method
-yields a difference in AR-indices (AR index of one of 10 runs of the approximate
-method runs minus the AR index for the exact method) detectable at 2 digits of precision:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 21%" />
-<col style="width: 9%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>dataset</p></th>
-<th class="head"><p>gini_threshold</p></th>
-<th class="head"><p>count</p></th>
-<th class="head"><p>mean</p></th>
-<th class="head"><p>std</p></th>
-<th class="head"><p>min</p></th>
-<th class="head"><p>25%</p></th>
-<th class="head"><p>50%</p></th>
-<th class="head"><p>75%</p></th>
-<th class="head"><p>max</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>sipu/birch2</p></td>
-<td><p>0.7</p></td>
-<td><p>10</p></td>
-<td><p>-0.01</p></td>
-<td><p>0.01</p></td>
-<td><p>-0.02</p></td>
-<td><p>-0.02</p></td>
-<td><p>-0.01</p></td>
-<td><p>-0.01</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td><p>1</p></td>
-<td><p>10</p></td>
-<td><p>-0.35</p></td>
-<td><p>0.18</p></td>
-<td><p>-0.44</p></td>
-<td><p>-0.44</p></td>
-<td><p>-0.43</p></td>
-<td><p>-0.43</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-even"><td><p>sipu/worms_64</p></td>
-<td><p>0.1</p></td>
-<td><p>10</p></td>
-<td><p>-0.03</p></td>
-<td><p>0.01</p></td>
-<td><p>-0.06</p></td>
-<td><p>-0.03</p></td>
-<td><p>-0.02</p></td>
-<td><p>-0.02</p></td>
-<td><p>-0.02</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td><p>0.3</p></td>
-<td><p>10</p></td>
-<td><p>0.02</p></td>
-<td><p>0.01</p></td>
-<td><p>-0.01</p></td>
-<td><p>0.02</p></td>
-<td><p>0.03</p></td>
-<td><p>0.03</p></td>
-<td><p>0.03</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td><p>0.5</p></td>
-<td><p>10</p></td>
-<td><p>0.23</p></td>
-<td><p>0.08</p></td>
-<td><p>0.11</p></td>
-<td><p>0.16</p></td>
-<td><p>0.25</p></td>
-<td><p>0.29</p></td>
-<td><p>0.34</p></td>
-</tr>
-<tr class="row-odd"><td><p>wut/trajectories</p></td>
-<td><p>0.1</p></td>
-<td><p>10</p></td>
-<td><p>-0</p></td>
-<td><p>0.02</p></td>
-<td><p>-0.05</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td><p>0.3</p></td>
-<td><p>10</p></td>
-<td><p>-0</p></td>
-<td><p>0.02</p></td>
-<td><p>-0.05</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td><p>0.5</p></td>
-<td><p>10</p></td>
-<td><p>-0</p></td>
-<td><p>0.02</p></td>
-<td><p>-0.05</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td><p>0.7</p></td>
-<td><p>10</p></td>
-<td><p>-0</p></td>
-<td><p>0.02</p></td>
-<td><p>-0.05</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td><p>1</p></td>
-<td><p>10</p></td>
-<td><p>-0.1</p></td>
-<td><p>0.32</p></td>
-<td><p>-1</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-</tr>
-</tbody>
-</table>
-<p>The only noteworthy  difference is for the <code class="docutils literal notranslate"><span class="pre">sipu/birch</span></code> dataset
-where we observe that the approximate method generates worse results
-(although recall that <cite>gini_threshold</cite> of 1 corresponds to the single linkage method).
-Interestingly, for <code class="docutils literal notranslate"><span class="pre">sipu/worms2</span></code>, <cite>gini_threshold</cite> of 0.5 behaves much better.</p>
-<p>Descriptive statistics for AR-indices (for the approximate method we choose
-the median AR in each of the 10 runs):</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
-<thead>
-<tr class="row-odd"><th class="head"><p>method</p></th>
-<th class="head"><p>count</p></th>
-<th class="head"><p>mean</p></th>
-<th class="head"><p>std</p></th>
-<th class="head"><p>min</p></th>
-<th class="head"><p>25%</p></th>
-<th class="head"><p>50%</p></th>
-<th class="head"><p>75%</p></th>
-<th class="head"><p>max</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Genie_0.1</p></td>
-<td><p>79</p></td>
-<td><p>0.728</p></td>
-<td><p>0.307</p></td>
-<td><p>0</p></td>
-<td><p>0.516</p></td>
-<td><p>0.844</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.1_approx</p></td>
-<td><p>79</p></td>
-<td><p>0.728</p></td>
-<td><p>0.307</p></td>
-<td><p>0</p></td>
-<td><p>0.516</p></td>
-<td><p>0.844</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.3</p></td>
-<td><p>79</p></td>
-<td><p>0.755</p></td>
-<td><p>0.292</p></td>
-<td><p>0</p></td>
-<td><p>0.555</p></td>
-<td><p>0.9</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.3_approx</p></td>
-<td><p>79</p></td>
-<td><p>0.755</p></td>
-<td><p>0.292</p></td>
-<td><p>0</p></td>
-<td><p>0.568</p></td>
-<td><p>0.9</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.5</p></td>
-<td><p>79</p></td>
-<td><p>0.731</p></td>
-<td><p>0.332</p></td>
-<td><p>0</p></td>
-<td><p>0.531</p></td>
-<td><p>0.844</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.5_approx</p></td>
-<td><p>79</p></td>
-<td><p>0.734</p></td>
-<td><p>0.326</p></td>
-<td><p>0</p></td>
-<td><p>0.531</p></td>
-<td><p>0.844</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.7</p></td>
-<td><p>79</p></td>
-<td><p>0.624</p></td>
-<td><p>0.376</p></td>
-<td><p>0</p></td>
-<td><p>0.264</p></td>
-<td><p>0.719</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.7_approx</p></td>
-<td><p>79</p></td>
-<td><p>0.624</p></td>
-<td><p>0.376</p></td>
-<td><p>0</p></td>
-<td><p>0.264</p></td>
-<td><p>0.719</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_1.0</p></td>
-<td><p>79</p></td>
-<td><p>0.415</p></td>
-<td><p>0.447</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0.174</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_1.0_approx</p></td>
-<td><p>79</p></td>
-<td><p>0.409</p></td>
-<td><p>0.45</p></td>
-<td><p>0</p></td>
-<td><p>0</p></td>
-<td><p>0.148</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-</tr>
-</tbody>
-</table>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
@@ -841,7 +560,7 @@ the median AR in each of the 10 runs):</p>
         <a href="r.html" class="btn btn-neutral float-right" title="R Interface Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
