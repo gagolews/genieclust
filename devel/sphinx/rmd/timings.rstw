@@ -4,26 +4,34 @@ Timings (How Fast Is It?)
 
 **TODO: under construction.**
 
-We consider the "larger" datasets (70,000-105,600 observations,
-see section on Benchmark Results for discussion)
-from the
-`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ [1]_.
-Features with variance of 0 were removed,
-datasets were centred at **0** and scaled so that they have total variance of 1.
-Tiny bit of Gaussian noise was added to each observation.
-Clustering is performed with respect to the Euclidean distance.
+In the :any:`previous section <benchmarks_ar>` we have demonstrated
+that Genie generates *quality* partitions. Now the crucial question is:
+does it do it quickly?
 
-Comparison with k-means from `scikit-learn <https://scikit-learn.org/>`_ version 0.23.1
-(`sklearn.cluster.KMeans`)
-for different number of threads (default is to use all available threads).
-Note that `n_init` defaults to 10.
+Genie will be compared against K-means from `scikit-learn <https://scikit-learn.org/>`_ version 0.23.1
+(`sklearn.cluster.KMeans`) for different number of threads (by default it uses all available resources;
+note that `n_init` defaults to 10) and hierarchical agglomerative algorithms
+with the centroid, median, and Ward linkage as implemented in the
+`fastcluster <http://www.danifold.net/fastcluster.html>`_ package.
 
-`mlpack`'s emst is used for low-dimensional spaces.
 
-Timings were performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M cache, 6 cores, 12 threads)
+The Genie algorithm itself has :math:`O(n \sqrt{n})` time
+and :math:`O(n)` memory complexity provided that a minimum spanning
+tree of the pairwise distance graph is given.
+Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
+method [2]_ will be called to compute an MST, which takes :math:`O(d n^2)` time.
+However, `mlpack.emst <https://www.mlpack.org/>`_ [3]_ provides a very fast
+alternative in the case of Euclidean spaces of (very) low dimensionality,
+see [4]_ and the `mlpack_enabled` parameter, which is used by default
+for datasets with up to :math:`d=6` features.
+Moreover, in the approximate method (`exact` = ``False``) we apply
+the Kruskal algorithm on the near-neighbour graph determined
+by `nmslib` [5]_. Albeit this only gives *some* sort of a spanning *forest*,
+such a data structure :any:`turns out to be very suitable for our clustering task <benchmarks_approx>`\ .
+
+All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
+SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz (12M cache, 6 cores, 12 threads)
 and total memory of 16,242,084 kB.
-
-
 
 
 <<timings-imports,results="hidden",echo=False>>=
@@ -79,12 +87,29 @@ dims = dims.loc[:,"dataset":]
 #    })
 @
 
-Minimum of 3 run times (**TODO**: except mnist/digits and mnist/fashion):
+
+
+
+Large Datasets
+--------------
+
+
+Let's study the algorithm's run times for some of the
+"larger" datasets (70,000-105,600 observations,
+see section on :any:`benchmark results <benchmarks_ar>` for discussion)
+from the
+`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_ [1]_.
+Features with variance of 0 were removed,
+datasets were centred at **0** and scaled so that they have total variance of 1.
+Tiny bit of Gaussian noise was added to each observation.
+Clustering is performed with respect to the Euclidean distance.
+
+
 
 <<timings-get-min,results="hidden",echo=False>>=
 res2 = res.loc[(res.n_threads>0), "dataset":]
 res2 = res2.loc[res.dataset.isin(["mnist/digits", "mnist/fashion",
-    "sipu/worms_2", "sipu/worms_64", "sipu/birch1", "sipu/birch2"]), :]
+    "sipu/worms_2", "sipu/worms_64"]), :]
 res2 = res2.groupby(["dataset", "method", "n_clusters", "n_threads"]).\
     elapsed_time.min().reset_index()
 res2 = pd.merge(res2, dims, on="dataset")
@@ -96,20 +121,35 @@ res2 = pd.merge(res2, dims, on="dataset")
 
 
 
-Results (in seconds) as a function of the number of clusters to detect (6 threads):
+Here are the results (in seconds) when all the 12 threads, except for `fastcluster` which is not parallelised.
+For k-means, the timings are listed as a function of the number of clusters to detect,
+for the other hierarchical methods the run-times are almost identical irrespective of the
+partitioning's cardinality.
 
 <<timings-summary,results="rst",echo=False>>=
-_dat = res2.loc[res2.n_threads==6,["dataset","n", "d", "method","n_clusters","elapsed_time"]].\
-set_index(["dataset","n", "d", "method","n_clusters"]).unstack().reset_index().round(2)
+_dat = res2.loc[(res2.n_threads==12) | res2.method.isin(["fastcluster_median", "fastcluster_centroid", "fastcluster_ward"]), \
+    ["dataset","n", "d", "method","n_clusters","elapsed_time"]].\
+set_index(["dataset","n", "d", "method","n_clusters"]).unstack().reset_index()
+_dat = _dat.round(2)
 _dat.columns = [l0 if not l1 else l1 for l0, l1 in _dat.columns]
+_dat.loc[~_dat.method.isin(["sklearn_kmeans"]), 100] = np.nan
+_dat.loc[~_dat.method.isin(["sklearn_kmeans"]), 1000] = np.nan
 which_repeated = (_dat.dataset.shift(1) == _dat.dataset)
 _dat.loc[which_repeated, "dataset"] = ""
-_dat["n"] = _dat["n"].astype(str)
 _dat.loc[which_repeated, "n"] = ""
-_dat["d"] = _dat["d"].astype(str)
 _dat.loc[which_repeated, "d"] = ""
-print(tabulate(_dat, _dat.columns, tablefmt="rst", showindex=False), "\n\n")
+_dat = tabulate(_dat, _dat.columns, tablefmt="rst", showindex=False)
+_dat = _dat.replace("nan", "")
+print(_dat, "\n\n")
 @
+
+Of course, the K-means algorithm is the fastest.
+However, its performance degrades as K increases
+(**TODO**: extreme clustering)
+
+
+Timings as a Function of the Number of Threads
+----------------------------------------------
 
 
 
@@ -117,7 +157,8 @@ Number of threads (jobs):
 
 <<timings-plot,results="hidden",echo=False,caption="Timings [s] as a function of the number of clusters and threads.">>=
 dataset="mnist/digits"
-sns.lineplot(x="n_clusters", y="elapsed_time", hue="method", style="n_threads", data=res2.loc[res2.dataset==dataset,:], markers=True)
+sns.lineplot(x="n_clusters", y="elapsed_time", hue="method", style="n_threads",
+    data=res2.loc[(res2.dataset==dataset) & (res2.method.isin(["sklearn_kmeans", "Genie_0.3", "Genie_0.3_approx"])),:], markers=True)
 plt.title("%s (n=%d, d=%d)" %(dataset, dims.loc[dims.dataset==dataset,"n"], dims.loc[dims.dataset==dataset,"d"]))
 plt.xscale("log")
 #plt.yscale("log")
@@ -193,3 +234,24 @@ References
 .. [1]
     Gagolewski M., Cena A. (Eds.), *Benchmark Suite for Clustering Algorithms — Version 1*,
     2020. https://github.com/gagolews/clustering_benchmarks_v1. doi:10.5281/zenodo.3815066.
+
+.. [2]
+    Olson C.F., Parallel algorithms for hierarchical clustering,
+    *Parallel Computing* 21(8), 1995, 1313-1325.
+    doi:10.1016/0167-8191(95)00017-I.
+
+.. [3]
+    Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+    mlpack 3: A fast, flexible machine learning library,
+    *Journal of Open Source Software* 3(26), 726, 2018.
+    doi:10.21105/joss.00726.
+
+.. [4]
+    March W.B., Ram P., Gray A.G.,
+    Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+    *Proc. ACM SIGKDD'10*, 2010, 603-611.
+
+.. [5]
+    Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+    *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
+    https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.

@@ -95,6 +95,8 @@
 <li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Timings (How Fast Is It?)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#large-datasets">Large Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#timings-as-a-function-of-the-number-of-threads">Timings as a Function of the Number of Threads</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -181,32 +183,54 @@
   <div class="section" id="timings-how-fast-is-it">
 <h1>Timings (How Fast Is It?)<a class="headerlink" href="#timings-how-fast-is-it" title="Permalink to this headline">¶</a></h1>
 <p><strong>TODO: under construction.</strong></p>
-<p>We consider the “larger” datasets (70,000-105,600 observations,
-see section on Benchmark Results for discussion)
+<p>In the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">previous section</span></a> we have demonstrated
+that Genie generates <em>quality</em> partitions. Now the crucial question is:
+does it do it quickly?</p>
+<p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> version 0.23.1
+(<cite>sklearn.cluster.KMeans</cite>) for different number of threads (by default it uses all available resources;
+note that <cite>n_init</cite> defaults to 10) and hierarchical agglomerative algorithms
+with the centroid, median, and Ward linkage as implemented in the
+<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package.</p>
+<p>The Genie algorithm itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
+and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity provided that a minimum spanning
+tree of the pairwise distance graph is given.
+Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
+method <a class="footnote-reference brackets" href="#id7" id="id1">2</a> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <a class="footnote-reference brackets" href="#id8" id="id2">3</a> provides a very fast
+alternative in the case of Euclidean spaces of (very) low dimensionality,
+see <a class="footnote-reference brackets" href="#id9" id="id3">4</a> and the <cite>mlpack_enabled</cite> parameter, which is used by default
+for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
+Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>) we apply
+the Kruskal algorithm on the near-neighbour graph determined
+by <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id10" id="id4">5</a>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
+<p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
+SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
+and total memory of 16,242,084 kB.</p>
+<div class="section" id="large-datasets">
+<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this headline">¶</a></h2>
+<p>Let’s study the algorithm’s run times for some of the
+“larger” datasets (70,000-105,600 observations,
+see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
 from the
-<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a> <a class="footnote-reference brackets" href="#id2" id="id1">1</a>.
+<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a> <a class="footnote-reference brackets" href="#id6" id="id5">1</a>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
 Clustering is performed with respect to the Euclidean distance.</p>
-<p>Comparison with k-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> version 0.23.1
-(<cite>sklearn.cluster.KMeans</cite>)
-for different number of threads (default is to use all available threads).
-Note that <cite>n_init</cite> defaults to 10.</p>
-<p><cite>mlpack</cite>’s emst is used for low-dimensional spaces.</p>
-<p>Timings were performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
-and total memory of 16,242,084 kB.</p>
-<p>Minimum of 3 run times (<strong>TODO</strong>: except mnist/digits and mnist/fashion):</p>
-<p>Results (in seconds) as a function of the number of clusters to detect (6 threads):</p>
+<p>Here are the results (in seconds) when all the 12 threads, except for <cite>fastcluster</cite> which is not parallelised.
+For k-means, the timings are listed as a function of the number of clusters to detect,
+for the other hierarchical methods the run-times are almost identical irrespective of the
+partitioning’s cardinality.</p>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 23%" />
-<col style="width: 11%" />
+<col style="width: 21%" />
+<col style="width: 10%" />
 <col style="width: 5%" />
-<col style="width: 28%" />
+<col style="width: 32%" />
 <col style="width: 11%" />
+<col style="width: 10%" />
 <col style="width: 11%" />
-<col style="width: 12%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>dataset</p></th>
@@ -223,152 +247,182 @@ and total memory of 16,242,084 kB.</p>
 <td><p>70000</p></td>
 <td><p>719</p></td>
 <td><p>Genie_0.3</p></td>
-<td><p>429.79</p></td>
-<td><p>430.09</p></td>
-<td><p>429.98</p></td>
+<td><p>396.37</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
 <td><p>Genie_0.3_approx</p></td>
-<td><p>42.87</p></td>
-<td><p>42.92</p></td>
-<td><p>42.84</p></td>
+<td><p>42.66</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-even"><td></td>
 <td></td>
 <td></td>
-<td><p>sklearn_kmeans</p></td>
-<td><p>26.3</p></td>
-<td><p>217.62</p></td>
-<td><p>1691.68</p></td>
+<td><p>fastcluster_centroid</p></td>
+<td><p>4170.98</p></td>
+<td></td>
+<td></td>
 </tr>
-<tr class="row-odd"><td><p>mnist/fashion</p></td>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_median</p></td>
+<td><p>3927.93</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_ward</p></td>
+<td><p>4114.05</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>sklearn_kmeans</p></td>
+<td><p>27.61</p></td>
+<td><p>266.17</p></td>
+<td><p>1694.19</p></td>
+</tr>
+<tr class="row-even"><td><p>mnist/fashion</p></td>
 <td><p>70000</p></td>
 <td><p>784</p></td>
 <td><p>Genie_0.3</p></td>
-<td><p>464.27</p></td>
-<td><p>464.52</p></td>
-<td><p>464.37</p></td>
-</tr>
-<tr class="row-even"><td></td>
+<td><p>430.21</p></td>
 <td></td>
 <td></td>
-<td><p>Genie_0.3_approx</p></td>
-<td><p>38.18</p></td>
-<td><p>38.18</p></td>
-<td><p>38.17</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
-<td><p>sklearn_kmeans</p></td>
-<td><p>25.75</p></td>
-<td><p>225.58</p></td>
-<td><p>1745.88</p></td>
-</tr>
-<tr class="row-even"><td><p>sipu/birch1</p></td>
-<td><p>100000</p></td>
-<td><p>2</p></td>
-<td><p>Genie_0.3</p></td>
-<td><p>0.52</p></td>
-<td><p>0.52</p></td>
-<td><p>0.52</p></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
 <td><p>Genie_0.3_approx</p></td>
-<td><p>2.86</p></td>
-<td><p>2.85</p></td>
-<td><p>2.9</p></td>
+<td><p>38.2</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-even"><td></td>
 <td></td>
 <td></td>
 <td><p>sklearn_kmeans</p></td>
-<td><p>0.88</p></td>
-<td><p>6.86</p></td>
-<td><p>101.88</p></td>
+<td><p>23.83</p></td>
+<td><p>243.56</p></td>
+<td><p>1764.05</p></td>
 </tr>
-<tr class="row-odd"><td><p>sipu/birch2</p></td>
-<td><p>100000</p></td>
-<td><p>2</p></td>
-<td><p>Genie_0.3</p></td>
-<td><p>0.46</p></td>
-<td><p>0.46</p></td>
-<td><p>0.46</p></td>
-</tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
-<td><p>Genie_0.3_approx</p></td>
-<td><p>3.3</p></td>
-<td><p>3.7</p></td>
-<td><p>3.41</p></td>
-</tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
-<td><p>sklearn_kmeans</p></td>
-<td><p>0.53</p></td>
-<td><p>5.01</p></td>
-<td><p>61.62</p></td>
-</tr>
-<tr class="row-even"><td><p>sipu/worms_2</p></td>
+<tr class="row-odd"><td><p>sipu/worms_2</p></td>
 <td><p>105600</p></td>
 <td><p>2</p></td>
 <td><p>Genie_0.3</p></td>
-<td><p>0.57</p></td>
-<td><p>0.57</p></td>
-<td><p>0.57</p></td>
+<td><p>0.58</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>Genie_0.3_approx</p></td>
+<td><p>3.15</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
-<td><p>Genie_0.3_approx</p></td>
-<td><p>3.67</p></td>
-<td><p>3.7</p></td>
-<td><p>3.7</p></td>
+<td><p>fastcluster_centroid</p></td>
+<td><p>66.3</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_median</p></td>
+<td><p>64.11</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_ward</p></td>
+<td><p>60.92</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-even"><td></td>
 <td></td>
 <td></td>
 <td><p>sklearn_kmeans</p></td>
-<td><p>0.86</p></td>
-<td><p>10.96</p></td>
-<td><p>111.9</p></td>
+<td><p>1.03</p></td>
+<td><p>12.36</p></td>
+<td><p>117.99</p></td>
 </tr>
 <tr class="row-odd"><td><p>sipu/worms_64</p></td>
 <td><p>105000</p></td>
 <td><p>64</p></td>
 <td><p>Genie_0.3</p></td>
-<td><p>76.7</p></td>
-<td><p>76.54</p></td>
-<td><p>76.64</p></td>
+<td><p>68.64</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-even"><td></td>
 <td></td>
 <td></td>
 <td><p>Genie_0.3_approx</p></td>
-<td><p>8.26</p></td>
-<td><p>8.3</p></td>
-<td><p>8.31</p></td>
+<td><p>6.98</p></td>
+<td></td>
+<td></td>
 </tr>
 <tr class="row-odd"><td></td>
 <td></td>
 <td></td>
+<td><p>fastcluster_centroid</p></td>
+<td><p>4945.91</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_median</p></td>
+<td><p>2854.27</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td></td>
+<td></td>
+<td></td>
+<td><p>fastcluster_ward</p></td>
+<td><p>778.18</p></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td></td>
+<td></td>
+<td></td>
 <td><p>sklearn_kmeans</p></td>
-<td><p>3.35</p></td>
-<td><p>37.89</p></td>
-<td><p>357.84</p></td>
+<td><p>4.18</p></td>
+<td><p>68.21</p></td>
+<td><p>360.28</p></td>
 </tr>
 </tbody>
 </table>
+<p>Of course, the K-means algorithm is the fastest.
+However, its performance degrades as K increases
+(<strong>TODO</strong>: extreme clustering)</p>
+</div>
+<div class="section" id="timings-as-a-function-of-the-number-of-threads">
+<h2>Timings as a Function of the Number of Threads<a class="headerlink" href="#timings-as-a-function-of-the-number-of-threads" title="Permalink to this headline">¶</a></h2>
 <p>Number of threads (jobs):</p>
-<div class="figure align-default" id="id3">
+<div class="figure align-default" id="id11">
 <a class="reference internal image-reference" href="../_images/timings_timings-plot_1.png"><img alt="../_images/timings_timings-plot_1.png" src="../_images/timings_timings-plot_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
 <p><strong>TODO</strong>: for Genie, the number of clusters to extract does not affect
 the run-time. Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time complexity.</p>
@@ -380,6 +434,7 @@ Then the timings become grow linearly as a function of dimensionality, <cite>d</
 <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time is needed.</p>
 <p>Importantly, the algorithm only needs <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
 <p>TODO: mention extreme clustering</p>
+</div>
 <div class="section" id="timings-as-a-function-of-n-and-d">
 <h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Permalink to this headline">¶</a></h2>
 <p>Synthetic datasets being two Gaussian blobs, each of size <cite>n/2</cite>
@@ -532,18 +587,39 @@ on 6 threads:</p>
 <p>By default, <cite>mlpack_enabled</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, which translates
 to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the requested metric is Euclidean, <cite>mlpack</cite> Python package is available
 and <cite>d</cite> is not greater than 6.</p>
-<div class="figure align-default" id="id4">
+<div class="figure align-default" id="id12">
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 </div>
 <p><strong>TODO:</strong> conclusions</p>
 </div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id5">1</a></span></dt>
 <dd><p>Gagolewski M., Cena A. (Eds.), <em>Benchmark Suite for Clustering Algorithms — Version 1</em>,
 2020. <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">https://github.com/gagolews/clustering_benchmarks_v1</a>. doi:10.5281/zenodo.3815066.</p>
+</dd>
+<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id1">2</a></span></dt>
+<dd><p>Olson C.F., Parallel algorithms for hierarchical clustering,
+<em>Parallel Computing</em> 21(8), 1995, 1313-1325.
+doi:10.1016/0167-8191(95)00017-I.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
+<dd><p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library,
+<em>Journal of Open Source Software</em> 3(26), 726, 2018.
+doi:10.21105/joss.00726.</p>
+</dd>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id3">4</a></span></dt>
+<dd><p>March W.B., Ram P., Gray A.G.,
+Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+<em>Proc. ACM SIGKDD’10</em>, 2010, 603-611.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets"><a class="fn-backref" href="#id4">5</a></span></dt>
+<dd><p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+<em>Non-metric space library (NMSLIB) manual</em>, version 2.0, 2019.
+<a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf</a>.</p>
 </dd>
 </dl>
 </div>

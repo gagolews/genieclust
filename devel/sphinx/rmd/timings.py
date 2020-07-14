@@ -39,7 +39,7 @@ SOFTWARE.
 import sys
 import numpy as np
 import pandas as pd
-import scipy.stats
+import scipy.stats, scipy.cluster
 import os.path, glob, re, csv, os
 from natsort import natsorted
 import sklearn, sklearn.metrics
@@ -49,6 +49,7 @@ import sklearn.cluster
 import sklearn.mixture
 import genieclust
 import gc
+import fastcluster
 
 
 # ``````````````````````````````````````````````````````````````````````````````
@@ -100,6 +101,12 @@ def Genie_with_n_threads(X, n_clusters, n_threads, **kwargs):
     return g
 
 
+
+def fastcluster_with_linkage(X, n_clusters, linkage, **kwargs):
+    linkage_matrix = fastcluster.linkage_vector(X, method=linkage)
+    scipy.cluster.hierarchy.cut_tree(linkage_matrix, n_clusters=n_clusters)
+
+
 def register_result(dataset, method, n_clusters, n_threads, t):
     res = dict(
         timestamp=time.time(),
@@ -121,27 +128,39 @@ def get_timing(dataset):
     n_threadss = [1, 3, 6, 12]
     gini_thresholds = [0.1, 0.3, 0.5]
 
-    for n_clusters in n_clusterss:
-        for n_threads in n_threadss:
+    n_clusters = n_clusterss[0]
+    for linkage in ["median", "ward", "centroid"]:
+        t0 = time.time()
+        fastcluster_with_linkage(X, n_clusters, linkage)
+        t1 = time.time()
+        res.append(register_result(dataset, "fastcluster_"+linkage, n_clusters, 1, t1-t0))
+        print(res[-1])
+
+
+    for n_threads in n_threadss:
+        n_clusters = n_clusterss[0]
+
+        t0 = time.time()
+        last_g_exact = Genie_with_n_threads(X, n_clusters, n_threads=n_threads)
+        t1 = time.time()
+        res.append(register_result(dataset, "Genie_0.3", n_clusters, n_threads, t1-t0))
+        print(res[-1])
+
+        t0 = time.time()
+        Genie_with_n_threads(X, n_clusters, n_threads=n_threads, exact=False)
+        t1 = time.time()
+        res.append(register_result(dataset, "Genie_0.3_approx", n_clusters, n_threads, t1-t0))
+        print(res[-1])
+
+        for n_clusters in n_clusterss:
             gc.collect()
-
-            t0 = time.time()
-            last_g_exact = Genie_with_n_threads(X, n_clusters, n_threads=n_threads)
-            t1 = time.time()
-            res.append(register_result(dataset, "Genie_0.3", n_clusters, n_threads, t1-t0))
-            print(res[-1])
-
-            t0 = time.time()
-            Genie_with_n_threads(X, n_clusters, n_threads=n_threads, exact=False)
-            t1 = time.time()
-            res.append(register_result(dataset, "Genie_0.3_approx", n_clusters, n_threads, t1-t0))
-            print(res[-1])
 
             t0 = time.time()
             kmeans_with_n_threads(X, n_clusters, n_threads=n_threads)
             t1 = time.time()
             res.append(register_result(dataset, "sklearn_kmeans", n_clusters, n_threads, t1-t0))
             print(res[-1])
+
 
     # test the "cached" version of Genie(exact=True):
     for n_clusters in n_clusterss:
@@ -169,6 +188,7 @@ if __name__ == "__main__":
     print(sklearn.__version__)
     for iter in range(3):
         for dataset in datasets:
+            print(dataset, iter)
             np.random.seed(iter+1)
             res = get_timing(dataset)
             res_df = pd.DataFrame(res)

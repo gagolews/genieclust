@@ -146,10 +146,24 @@ ward             6     3.3    1.6      1    2.2    3.5    4.8      5
 
 
 
+Summary
+-------
+
+Overall, the Genie algorithm tends to outperform other algorithms considered
+in this study, at least on this rich benchmark battery.
+In [5]_, based on a much smaller sample of reference datasets,
+we have recommended `gini_threshold` of 0.3,
+which is set as the default also in the `genieclust` package.
+However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
+interestingly, the algorithm is quite stable in the sense that
+small changes of this parameter should not affect the generated clusterings
+in a significant way.
 
 
-References
-----------
+
+
+Conclusions
+-----------
 
 .. [1]
     Dasgupta S., Ng V., Single Data, Multiple Clusterings,
