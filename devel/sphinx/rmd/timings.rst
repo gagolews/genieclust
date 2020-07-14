@@ -78,8 +78,11 @@ mnist/digits   70000   719  Genie_0.3              396.37
 ..                          fastcluster_median    3927.93        
 ..                          fastcluster_ward      4114.05        
 ..                          sklearn_kmeans          27.61  266.17  1694.19
-mnist/fashion  70000   784  Genie_0.3              430.21        
+mnist/fashion  70000   784  Genie_0.3              430.07        
 ..                          Genie_0.3_approx        38.2         
+..                          fastcluster_centroid  4486.32        
+..                          fastcluster_median    4384.62        
+..                          fastcluster_ward      4757.32        
 ..                          sklearn_kmeans          23.83  243.56  1764.05
 sipu/worms_2   105600  2    Genie_0.3                0.58        
 ..                          Genie_0.3_approx         3.15        
@@ -94,6 +97,7 @@ sipu/worms_64  105000  64   Genie_0.3               68.64
 ..                          fastcluster_ward       778.18        
 ..                          sklearn_kmeans           4.18   68.21   360.28
 =============  ======  ===  ====================  =======  ======  ======= 
+
 
 
 
