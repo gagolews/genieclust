@@ -176,7 +176,7 @@
   <div class="section" id="genieclust-fast-and-robust-hierarchical-clustering-with-noise-point-detection">
 <h1><cite>genieclust</cite>: Fast and Robust Hierarchical Clustering with Noise Point Detection<a class="headerlink" href="#genieclust-fast-and-robust-hierarchical-clustering-with-noise-point-detection" title="Permalink to this headline">¶</a></h1>
 <blockquote>
-<div><p><strong>Genie outputs meaningful clusters and is fast even for large data sets.</strong></p>
+<div><p><strong>Genie finds meaningful clusters and is fast even for large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
 <p>A faster and more powerful version of <strong>Genie</strong> - a robust and outlier resistant
@@ -195,13 +195,11 @@ it <strong>often outperforms other clustering approaches</strong>
 such as K-means, BIRCH, or average, Ward, and complete linkage
 on <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1/">benchmark data</a>.</p>
 <p>Genie is also <strong>very fast</strong> — determining the whole cluster hierarchy
-for datasets of 10M points in low dimensional Euclidean spaces or
-100K points in high dimensional ones takes 1-2 minutes.
-There’s also an approximate version, based on <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id6" id="id2">3</a>, that
-is even faster and supports, amongst others, sparse or string inputs.
+for datasets of millions of points can be completed within <code class="xref any docutils literal notranslate"><span class="pre">a</span> <span class="pre">coffee</span> <span class="pre">break</span></code>.
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
 (large datasets with any number of clusters to detect) for data
-that fit into memory.</p>
+that fit into memory.
+Thanks to the use of <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id6" id="id2">3</a>, sparse or string inputs are also supported.</p>
 <p>It also allows clustering with respect to mutual reachability distances
 so that it can act as a <strong>noise point detector</strong> or a
 robustified version of <cite>HDBSCAN*</cite> <a class="footnote-reference brackets" href="#id5" id="id3">2</a> that is able to detect a predefined
@@ -227,9 +225,8 @@ a familiar <cite>scikit-learn</cite>-like look-and-feel:</p>
 and R (<strong>TODO</strong>: CRAN–link, how to install). Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 <a class="reference external" href="https://github.com/gagolews/genieclust">https://github.com/gagolews/genieclust</a>.
-Note that the core functionality is implemented in form of a header-only C++
-library, hence it might be relatively easily adapted for use in other
-environments.</p>
+Note that the core functionality is implemented in the form of a header-only C++
+library, hence it might be relatively easily adapted to new environments.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>

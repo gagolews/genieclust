@@ -1,10 +1,17 @@
 # `genieclust` Package NEWS
 
 
-## genieclust 0.9.1 (under development)
+## genieclust 0.9.1 (2020-07-15)
 
 -   [GENERAL] The package has been completely rewritten.
     The core functionality is now implemented in C++ (with OpenMP).
+
+-   [GENERAL] Clustering with respect to HDBSCAN*-like
+    mutual reachability distances is supported.
+
+-   [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
+    distance computations. Euclidean minimum spanning tree can be
+    determined with `mlpack`, which is much faster in low-dimensional spaces.
 
 -   [R] R version is now available.
 
@@ -14,12 +21,6 @@
 -   [PYTHON] Approximate version based on nearest neighbour graphs produced
     by `nmslib` was added.
 
--   [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
-    distance computations. Euclidean minimum spanning tree can be
-    determined with `mlpack`, which is much faster in low-dimensional spaces.
-
--   [GENERAL] Clustering with respect to HDBSCAN*-like
-    mutual reachability distances is supported.
 
 
 

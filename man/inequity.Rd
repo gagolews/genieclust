@@ -34,6 +34,7 @@ These indices have applications in economics, amongst others.
 The Gini clustering algorithm uses the Gini index as a measure
 of the inequality of cluster sizes.
 
+
 The normalised  Gini index is given by:
 \deqn{
     G(x_1,\dots,x_n) = \frac{
@@ -52,6 +53,7 @@ The normalised Bonferroni index is given by:
     (n-1) \sum_{i=1}^n x_i
     }.
 }
+
 
 Time complexity: \eqn{O(n)} for sorted (increasingly) data.
 Otherwise, the vector will be sorted.

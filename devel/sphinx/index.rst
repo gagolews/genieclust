@@ -6,7 +6,7 @@
 `genieclust`: Fast and Robust Hierarchical Clustering with Noise Point Detection
 ================================================================================
 
-    **Genie outputs meaningful clusters and is fast even for large data sets.**
+    **Genie finds meaningful clusters and is fast even for large data sets.**
 
     -- by `Marek Gagolewski <https://www.gagolewski.com/>`_
 
@@ -30,13 +30,11 @@ such as K-means, BIRCH, or average, Ward, and complete linkage
 on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
 
 Genie is also **very fast** — determining the whole cluster hierarchy
-for datasets of 10M points in low dimensional Euclidean spaces or
-100K points in high dimensional ones takes 1-2 minutes.
-There's also an approximate version, based on `nmslib` [3]_, that
-is even faster and supports, amongst others, sparse or string inputs.
+for datasets of millions of points can be completed within :any:`a coffee break <timings>`\ .
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
 (large datasets with any number of clusters to detect) for data
 that fit into memory.
+Thanks to the use of `nmslib` [3]_, sparse or string inputs are also supported.
 
 It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
@@ -72,9 +70,8 @@ The `genieclust` package is available for Python (**TODO**: PyPI--link, how to i
 and R (**TODO**: CRAN--link, how to install). Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 `https://github.com/gagolews/genieclust <https://github.com/gagolews/genieclust>`_.
-Note that the core functionality is implemented in form of a header-only C++
-library, hence it might be relatively easily adapted for use in other
-environments.
+Note that the core functionality is implemented in the form of a header-only C++
+library, hence it might be relatively easily adapted to new environments.
 
 
 .. toctree::

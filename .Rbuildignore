@@ -1,18 +1,18 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^\.pytest_cache
 ^\.git
+^\.ipynb_checkpoints
+^\.pytest_cache
 ^\.nojekyll
 ^\.gitignore$
 ^\.travis\.yml$
-^\.ipynb_checkpoints
 ^benchmark_data
 ^build
 ^devel
 ^dist
+^docs
 ^genieclust
 ^pytest
-^tutorials
 ^README.md$
 ^Makefile$
 ^setup\.py$
@@ -20,4 +20,3 @@
 ^MANIFEST
 ^requirements.txt$
 ^LICENSE$
-^docs

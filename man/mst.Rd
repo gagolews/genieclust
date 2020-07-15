@@ -69,6 +69,7 @@ If \code{d} is a numeric matrix of size \eqn{n p},
 the \eqn{n (n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
 memory is used.
 
+
 The algorithm is parallelised; set the \code{OMP_NUM_THREADS} environment
 variable \code{\link[base]{Sys.setenv}} to control the number of threads
 used.
