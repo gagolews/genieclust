@@ -1,17 +1,16 @@
 Timings (How Fast Is It?)
 =========================
 
-
-**TODO: under construction.**
-
 In the :any:`previous section <benchmarks_ar>` we have demonstrated
 that Genie generates *quality* partitions. Now the crucial question is:
 does it do it quickly?
 
 Genie will be compared against K-means from `scikit-learn <https://scikit-learn.org/>`_ version 0.23.1
-(`sklearn.cluster.KMeans`) for different number of threads (by default it uses all available resources;
-note that `n_init` defaults to 10) and hierarchical agglomerative algorithms
-with the centroid, median, and Ward linkage as implemented in the
+(`sklearn.cluster.KMeans`) for different number of threads
+(by default it uses all available resources;
+note that the number of restarts, `n_init`, defaults to 10)
+and hierarchical agglomerative algorithms
+with the centroid, median, and Ward linkage implemented in the
 `fastcluster <http://www.danifold.net/fastcluster.html>`_ package.
 
 
@@ -22,9 +21,9 @@ Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
 method [2]_ will be called to compute an MST, which takes :math:`O(d n^2)` time.
 However, `mlpack.emst <https://www.mlpack.org/>`_ [3]_ provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see [4]_ and the `mlpack_enabled` parameter, which is used by default
+see [4]_ and the `mlpack_enabled` parameter, which is automatically used
 for datasets with up to :math:`d=6` features.
-Moreover, in the approximate method (`exact` = ``False``) we apply
+Moreover, in the approximate method (`exact` = ``False``), we apply
 the Kruskal algorithm on the near-neighbour graph determined
 by `nmslib` [5]_. Albeit this only gives *some* sort of a spanning *forest*,
 such a data structure :any:`turns out to be very suitable for our clustering task <benchmarks_approx>`\ .
@@ -62,40 +61,41 @@ Clustering is performed with respect to the Euclidean distance.
 
 
 
-Here are the results (in seconds) when all the 12 threads, except for `fastcluster` which is not parallelised.
-For k-means, the timings are listed as a function of the number of clusters to detect,
+Here are the results (in seconds) if 6 threads are requested
+(except for `fastcluster` which is not parallelised).
+For K-means, the timings are listed as a function of the number of clusters to detect,
 for the other hierarchical methods the run-times are almost identical irrespective of the
-partitioning's cardinality.
+partitions' cardinality.
 
 
 
 =============  ======  ===  ====================  =======  ======  =======
 dataset        n       d    method                     10     100     1000
 =============  ======  ===  ====================  =======  ======  =======
-mnist/digits   70000   719  Genie_0.3              396.37        
-..                          Genie_0.3_approx        42.66        
+mnist/digits   70000   719  Genie_0.3              412.72        
+..                          Genie_0.3_approx        42.77        
 ..                          fastcluster_centroid  4170.98        
 ..                          fastcluster_median    3927.93        
 ..                          fastcluster_ward      4114.05        
-..                          sklearn_kmeans          27.61  266.17  1694.19
-mnist/fashion  70000   784  Genie_0.3              430.07        
-..                          Genie_0.3_approx        38.2         
+..                          sklearn_kmeans          26.3   217.62  1691.68
+mnist/fashion  70000   784  Genie_0.3              445.81        
+..                          Genie_0.3_approx        38.02        
 ..                          fastcluster_centroid  4486.32        
 ..                          fastcluster_median    4384.62        
 ..                          fastcluster_ward      4757.32        
-..                          sklearn_kmeans          23.83  243.56  1764.05
-sipu/worms_2   105600  2    Genie_0.3                0.58        
-..                          Genie_0.3_approx         3.15        
+..                          sklearn_kmeans          24.9   225.04  1745.88
+sipu/worms_2   105600  2    Genie_0.3                0.57        
+..                          Genie_0.3_approx         3.67        
 ..                          fastcluster_centroid    66.3         
 ..                          fastcluster_median      64.11        
 ..                          fastcluster_ward        60.92        
-..                          sklearn_kmeans           1.03   12.36   117.99
-sipu/worms_64  105000  64   Genie_0.3               68.64        
-..                          Genie_0.3_approx         6.98        
+..                          sklearn_kmeans           0.86   10.96   111.9
+sipu/worms_64  105000  64   Genie_0.3               76.7         
+..                          Genie_0.3_approx         8.26        
 ..                          fastcluster_centroid  4945.91        
 ..                          fastcluster_median    2854.27        
 ..                          fastcluster_ward       778.18        
-..                          sklearn_kmeans           4.18   68.21   360.28
+..                          sklearn_kmeans           3.35   37.89   357.84
 =============  ======  ===  ====================  =======  ======  ======= 
 
 
@@ -103,41 +103,13 @@ sipu/worms_64  105000  64   Genie_0.3               68.64
 
 
 Of course, the K-means algorithm is the fastest.
-However, its performance degrades as K increases
-(**TODO**: extreme clustering)
-
-
-Timings as a Function of the Number of Threads
-----------------------------------------------
-
-
-
-Number of threads (jobs):
-
-
-.. figure:: figures/timings_timings-plot_1.png
-   :width: 15 cm
-
-   Timings [s] as a function of the number of clusters and threads.
-
-
-
-**TODO**: for Genie, the number of clusters to extract does not affect
-the run-time. Genie itself has :math:`O(n \sqrt{n})` time complexity.
-
-**TODO**: mention cache, show timings — once we determine the MST,
-we can play with different `gini_threshold`\ s for "free".
-
-
-The effect of the curse of dimensionality is clearly visible -- clustering
-in very low-dimensional Euclidean spaces is extremely fast.
-Then the timings become grow linearly as a function of dimensionality, `d` --
-:math:`O(d n^2)` time is needed.
-
-Importantly, the algorithm only needs :math:`O(n)` memory.
-
-
-TODO: mention extreme clustering
+However, its performance degrades as K increases. Hence, it might not be
+a good choice for the so-called *extreme clustering* problems.
+Most importantly, the approximate version of Genie (based on `nmslib`)
+is only slightly slower.
+The exact variant is extremely performant in Euclidean spaces of low dimensionality
+(thanks to `mlpack`) and overall at least 10 times more efficient than the other
+hierarchical algorithms in this study.
 
 
 
@@ -146,10 +118,11 @@ TODO: mention extreme clustering
 Timings as a Function of `n` and `d`
 ------------------------------------
 
-Synthetic datasets being two Gaussian blobs, each of size `n/2`
+In order to study the run-times as a function dataset size and dimensionality,
+let's consider a series of synthetic benchmarks, each with two Gaussian blobs of size `n/2`
 (with i.i.d. coordinates), in a `d`-dimensional space.
 
-Medians of 1,3, or 10 timings (depending on the dataset size), in seconds,
+Here are the medians of 3-10 timings (depending on the dataset size), in seconds,
 on 6 threads:
 
 
@@ -178,8 +151,12 @@ Genie_0.3_nomlpack    2     0.16     2.52      9.87    267.76    1657.86
 
 
 By default, `mlpack_enabled` is ``"auto"``, which translates
-to ``True`` if the requested metric is Euclidean, `mlpack` Python package is available
+to ``True`` if the requested metric is Euclidean,  Python package `mlpack` is available,
 and `d` is not greater than 6.
+The effect of the curse of dimensionality is clearly visible -- clustering
+in very low-dimensional Euclidean spaces is extremely fast.
+On the other hand, the approximate version of Genie can easily cluster
+very large datasets. Only the system's memory limits might become a problem then.
 
 
 
@@ -191,7 +168,86 @@ and `d` is not greater than 6.
 
 
 
-**TODO:** conclusions
+
+
+
+Timings as a Function of the Number of Threads
+----------------------------------------------
+
+Recall that the timings are done on a PC with 6 physical cores.
+Genie turns out to be nicely parallelisable — as evidenced on
+the ``mnist/digits`` dataset:
+
+
+
+.. figure:: figures/timings_timings-plot_1.png
+   :width: 15 cm
+
+   Timings [s] as a function of the number of clusters and threads.
+
+
+
+
+
+
+
+
+
+Summary
+-------
+
+The approximate (`exact` = ``False``) version of Genie is much faster
+than the original one. At the same time, it is still
+:any:`highly compatible <benchmarks_approx>`\ with it
+(at least at higher levels of the cluster hierarchy). Therefore, we
+can safely recommend its use in large problem instances.
+Most importantly, its performance is not much worse than the K-means method
+with small K. Once a complete cluster hierarchy is determined,
+partitioning of any cardinality can be extracted in less than 0.34 s on a 1M dataset.
+Still, even the exact Genie is amongst the fastest clustering algorithms in the pool.
+
+On top of that, we are also allowed to change our mind about the `gini_threshold`
+parameter once the clustering is has been determined. The MST is stored for further
+reference and is not recomputed unless needed. Here are the timings for
+a first run of the algorithm:
+
+
+.. code:: python
+
+    import time, genieclust, numpy as np
+    X = np.loadtxt("worms_2.data.gz", ndmin=2)
+    g = genieclust.Genie(n_clusters=2, gini_threshold=0.3)
+    t0 = time.time()
+    g.fit(X)
+    print("time elapsed - first run: %.3f" % (time.time()-t0))
+
+
+.. code::
+
+    time elapsed - first run: 0.613
+    
+
+
+
+
+Changing some parameters and re-running the cluster search:
+
+
+.. code:: python
+
+    g.set_params(n_clusters=10)
+    g.set_params(gini_threshold=0.1)
+    t0 = time.time()
+    g.fit(X)
+    print("time elapsed - consecutive run: %.3f" % (time.time()-t0))
+
+
+.. code::
+
+    time elapsed - consecutive run: 0.026
+    
+
+
 
 
 References

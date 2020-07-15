@@ -162,8 +162,8 @@ in a significant way.
 
 
 
-Conclusions
------------
+References
+----------
 
 .. [1]
     Dasgupta S., Ng V., Single Data, Multiple Clusterings,

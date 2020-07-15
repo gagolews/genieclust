@@ -235,7 +235,7 @@ A Comparison with HDBSCAN\*
 ---------------------------
 
 Let's also make a comparison against a version of the DBSCAN [4]_, [5]_
-algorithm. The original DBSCAN relies on a somehow magical ``eps`` parameter,
+algorithm. The original DBSCAN relies on a somewhat magical ``eps`` parameter,
 which might be hard to tune in practice. Fortunately,
 the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_ package
 implements its robustified variant [3]_, which makes the algorithm much
