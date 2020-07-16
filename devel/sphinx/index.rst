@@ -83,6 +83,7 @@ library, hence it might be relatively easily adapted to new environments.
     rmd/noise
     rmd/benchmarks_ar
     rmd/timings
+    rmd/sparse
     rmd/r
 
 .. toctree::

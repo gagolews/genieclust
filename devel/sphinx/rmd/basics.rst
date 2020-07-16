@@ -352,6 +352,45 @@ This makes the resulting partitions more stable.
 
 
 
+Dendrograms
+-----------
+
+Plotting of dendrograms is possible with `scipy.cluster.hierarchy`:
+
+
+.. code:: python
+
+    import scipy.cluster.hierarchy
+    g = genieclust.Genie(compute_full_tree=True)
+    g.fit(X)
+    linkage_matrix = np.column_stack([g.children_, g.distances_, g.counts_])
+    scipy.cluster.hierarchy.dendrogram(linkage_matrix,
+        show_leaf_counts=False, no_labels=True)
+    plt.show()
+
+
+.. image:: figures/basics_basics-dendrogram-1_1.png
+   :width: 15 cm
+
+
+
+For a list of graphical parameters, refer to the function's manual:
+
+
+.. code:: python
+
+    scipy.cluster.hierarchy.dendrogram(linkage_matrix,
+        truncate_mode="lastp", p=15, orientation="left")
+    plt.show()
+
+
+.. image:: figures/basics_basics-dendrogram-2_1.png
+   :width: 15 cm
+
+
+
+
+
 
 
 References

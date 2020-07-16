@@ -1,0 +1,119 @@
+Example: Sparse Data and Movie Recommendation
+=============================================
+
+**TODO**: under construction
+
+Movie recommendation based on cosine similarity between films' ratings
+as given by users (two movies considered similar if they get similar reviews)...
+
+<<sparse-example-imports>>=
+import numpy as np
+import scipy.sparse
+import pandas as pd
+@
+
+<<settings,results="hidden",echo=False>>=
+import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("min_rows", 200)
+#plt.style.use("bmh")
+#plt.rcParams.update({
+#    'font.size': 9,
+#    'font.family': 'sans-serif',
+#    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
+@
+
+
+see https://grouplens.org/datasets/movielens/latest/
+
+<<sparse-example-ratings>>=
+ratings = pd.read_csv("ml-9-2018-small/ratings.csv")
+ratings["movieId"] -= 1
+ratings["userId"] -= 1
+old_movieId_map = np.unique(ratings["movieId"])
+ratings["movieId"] = np.searchsorted(old_movieId_map, ratings["movieId"])
+ratings.head()
+@
+
+<<sparse-example-movies>>=
+movies = pd.read_csv("ml-9-2018-small/movies.csv")
+movies["movieId"] -= 1
+movies = movies.loc[movies.movieId.isin(old_movieId_map), :]
+movies["movieId"] = np.searchsorted(old_movieId_map, movies["movieId"])
+movies.head()
+@
+
+
+<<sparse-example-create>>=
+n = ratings.movieId.max()+1
+d = ratings.userId.max()+1
+X = scipy.sparse.dok_matrix((n,d), dtype=np.float32)
+X[ratings.movieId, ratings.userId] = ratings.rating
+X = X.tocsr()
+print(repr(X))
+@
+
+<<sparse-example-show>>=
+X[:5, :10].todense()
+@
+
+<<sparse-example-cluster>>=
+import genieclust
+g = genieclust.Genie(n_clusters=200, exact=False, affinity="cosinesimil_sparse")
+movies["cluster"] = g.fit_predict(X)
+@
+
+
+<<sparse-example-report>>=
+movies["cluster"] = g.fit_predict(X)
+which_cluster = movies.cluster[movies.title=="Monty Python's The Meaning of Life (1983)"]
+movies.loc[movies.cluster == int(which_cluster)].title.sort_values()
+@
+
+
+
+By the way
+Full MovieLens Dataset  https://grouplens.org/datasets/movielens/latest/
+
+
+time = 144 secs.
+
+<53889x283228 sparse matrix of type '<class 'numpy.float32'>'
+	with 27753444 stored elements in Compressed Sparse Row format>
+
+
+
+500 clusters
+
+.. code::
+
+    13327                       Blackadder Back & Forth (1999)
+    13328                  Blackadder's Christmas Carol (1988)
+    3341                              Creature Comforts (1989)
+    1197       Grand Day Out with Wallace and Gromit, A (1989)
+    2778                            Hard Day's Night, A (1964)
+    2861                                          Help! (1965)
+    2963                              How I Won the War (1967)
+    6006        Monty Python Live at the Hollywood Bowl (1982)
+    1113                Monty Python and the Holy Grail (1975)
+    2703     Monty Python's And Now for Something Completel...
+    1058                   Monty Python's Life of Brian (1979)
+    6698             Monty Python's The Meaning of Life (1983)
+    27284                                  Oliver Twist (1997)
+    2216                                 Producers, The (1968)
+    4716                                   Quadrophenia (1979)
+    6027             Secret Policeman's Other Ball, The (1982)
+    27448                                    The Basket (2000)
+    2792                                          Tommy (1975)
+    10475    Wallace & Gromit in The Curse of the Were-Rabb...
+    732                 Wallace & Gromit: A Close Shave (1995)
+    708      Wallace & Gromit: The Best of Aardman Animatio...
+    1125           Wallace & Gromit: The Wrong Trousers (1993)
+    13239    Wallace and Gromit in 'A Matter of Loaf and De...
+    2772                               Yellow Submarine (1968)
+    1250                             Young Frankenstein (1974)
+    Name: title, dtype: object
+
+
+
