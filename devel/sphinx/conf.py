@@ -25,7 +25,7 @@ import IPython.sphinxext
 # -- Project information -----------------------------------------------------
 
 project = 'genieclust'
-copyright = '2018-2020, Marek Gagolewski'
+copyright = '2020, Marek Gagolewski'
 author = 'Marek Gagolewski'
 
 # The full version, including alpha/beta/rc tags

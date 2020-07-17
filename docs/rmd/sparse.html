@@ -177,15 +177,17 @@
             
   <div class="section" id="example-sparse-data-and-movie-recommendation">
 <h1>Example: Sparse Data and Movie Recommendation<a class="headerlink" href="#example-sparse-data-and-movie-recommendation" title="Permalink to this headline">¶</a></h1>
-<p><strong>TODO</strong>: under construction</p>
-<p>Movie recommendation based on cosine similarity between films’ ratings
-as given by users (two movies considered similar if they get similar reviews)…</p>
+<p>To illustrate how <em>genieclust</em> handles
+<a class="reference external" href="https://en.wikipedia.org/wiki/Sparse_matrix">sparse data</a>,
+let’s perform a simple exercise in movie recommendation based on
+<a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">MovieLens</a> data.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 </pre></div>
 </div>
-<p>see <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">https://grouplens.org/datasets/movielens/latest/</a></p>
+<p>First we load the <cite>ratings</cite> data frame
+and map the movie IDs to consecutive integers.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;ml-9-2018-small/ratings.csv&quot;</span><span class="p">)</span>
 <span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
 <span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -202,28 +204,24 @@ as given by users (two movies considered similar if they get similar reviews)…
 <span class="mi">4</span>       <span class="mi">0</span>       <span class="mi">46</span>     <span class="mf">5.0</span>  <span class="mi">964982931</span>
 </pre></div>
 </div>
+<p>Then we read the movie meta data and transform the movie IDs
+in the same way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;ml-9-2018-small/movies.csv&quot;</span><span class="p">)</span>
 <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
 <span class="n">movies</span> <span class="o">=</span> <span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">movieId</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">old_movieId_map</span><span class="p">),</span> <span class="p">:]</span>
 <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">old_movieId_map</span><span class="p">,</span> <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">])</span>
-<span class="n">movies</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+<span class="n">movies</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">movieId</span>                               <span class="n">title</span>  \
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">movieId</span>                               <span class="n">title</span>
 <span class="mi">0</span>        <span class="mi">0</span>                    <span class="n">Toy</span> <span class="n">Story</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
 <span class="mi">1</span>        <span class="mi">1</span>                      <span class="n">Jumanji</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
 <span class="mi">2</span>        <span class="mi">2</span>             <span class="n">Grumpier</span> <span class="n">Old</span> <span class="n">Men</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
 <span class="mi">3</span>        <span class="mi">3</span>            <span class="n">Waiting</span> <span class="n">to</span> <span class="n">Exhale</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
 <span class="mi">4</span>        <span class="mi">4</span>  <span class="n">Father</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Bride</span> <span class="n">Part</span> <span class="n">II</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
-
-                                        <span class="n">genres</span>
-<span class="mi">0</span>  <span class="n">Adventure</span><span class="o">|</span><span class="n">Animation</span><span class="o">|</span><span class="n">Children</span><span class="o">|</span><span class="n">Comedy</span><span class="o">|</span><span class="n">Fantasy</span>
-<span class="mi">1</span>                   <span class="n">Adventure</span><span class="o">|</span><span class="n">Children</span><span class="o">|</span><span class="n">Fantasy</span>
-<span class="mi">2</span>                               <span class="n">Comedy</span><span class="o">|</span><span class="n">Romance</span>
-<span class="mi">3</span>                         <span class="n">Comedy</span><span class="o">|</span><span class="n">Drama</span><span class="o">|</span><span class="n">Romance</span>
-<span class="mi">4</span>                                       <span class="n">Comedy</span>
 </pre></div>
 </div>
+<p>Conversion of ratings to a CSR-format sparse matrix:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">movieId</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">userId</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">dok_matrix</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">d</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
@@ -236,6 +234,7 @@ as given by users (two movies considered similar if they get similar reviews)…
         <span class="k">with</span> <span class="mi">100836</span> <span class="n">stored</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">Compressed</span> <span class="n">Sparse</span> <span class="n">Row</span> <span class="nb">format</span><span class="o">&gt;</span>
 </pre></div>
 </div>
+<p>First few observations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -247,11 +246,16 @@ as given by users (two movies considered similar if they get similar reviews)…
 <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Let’s extract 200 clusters with Genie with respect to  cosine similarity between films’ ratings
+as given by users (two movies considered similar if they get similar reviews).
+Sparse inputs are supported by the approximate version of the algorithm
+and require the availability of the <cite>nmslib</cite> package</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;cosinesimil_sparse&quot;</span><span class="p">)</span>
 <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>Here are the members of an example cluster:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">movies</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">which_cluster</span> <span class="o">=</span> <span class="n">movies</span><span class="o">.</span><span class="n">cluster</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">title</span><span class="o">==</span><span class="s2">&quot;Monty Python&#39;s The Meaning of Life (1983)&quot;</span><span class="p">]</span>
 <span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">cluster</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">which_cluster</span><span class="p">)]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
@@ -309,14 +313,12 @@ as given by users (two movies considered similar if they get similar reviews)…
 Name: title, dtype: object
 </pre></div>
 </div>
-<p>By the way
-Full MovieLens Dataset  <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">https://grouplens.org/datasets/movielens/latest/</a></p>
-<p>time = 144 secs.</p>
-<dl class="simple">
-<dt>&lt;53889x283228 sparse matrix of type ‘&lt;class ‘numpy.float32’&gt;’</dt><dd><p>with 27753444 stored elements in Compressed Sparse Row format&gt;</p>
-</dd>
-</dl>
-<p>500 clusters</p>
+<p>The above was performed on an abridged version of the MovieLens dataset.
+The project’s <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">website</a>
+also features a full database that yields a 53889x283228 ratings table
+(with 27753444  non-zero elements) – such a matrix would definitely not fit into our RAM.
+Determining the whole cluster hierarchy takes only 144 secs.
+Here is one of 500 clusters extracted:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>13327                       Blackadder Back &amp; Forth (1999)
 13328                  Blackadder&#39;s Christmas Carol (1988)
 3341                              Creature Comforts (1989)
@@ -368,7 +370,7 @@ Name: title, dtype: object
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2018-2020, Marek Gagolewski
+        &copy; Copyright 2020, Marek Gagolewski
 
     </p>
   </div>

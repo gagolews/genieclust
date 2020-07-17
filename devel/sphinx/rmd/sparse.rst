@@ -1,10 +1,10 @@
 Example: Sparse Data and Movie Recommendation
 =============================================
 
-**TODO**: under construction
-
-Movie recommendation based on cosine similarity between films' ratings
-as given by users (two movies considered similar if they get similar reviews)...
+To illustrate how *genieclust* handles
+`sparse data <https://en.wikipedia.org/wiki/Sparse_matrix>`_,
+let's perform a simple exercise in movie recommendation based on
+`MovieLens <https://grouplens.org/datasets/movielens/latest/>`_ data.
 
 
 .. code:: python
@@ -20,7 +20,8 @@ as given by users (two movies considered similar if they get similar reviews)...
 
 
 
-see https://grouplens.org/datasets/movielens/latest/
+First we load the `ratings` data frame
+and map the movie IDs to consecutive integers.
 
 
 .. code:: python
@@ -45,6 +46,9 @@ see https://grouplens.org/datasets/movielens/latest/
 
 
 
+Then we read the movie meta data and transform the movie IDs
+in the same way:
+
 
 .. code:: python
 
@@ -52,28 +56,23 @@ see https://grouplens.org/datasets/movielens/latest/
     movies["movieId"] -= 1
     movies = movies.loc[movies.movieId.isin(old_movieId_map), :]
     movies["movieId"] = np.searchsorted(old_movieId_map, movies["movieId"])
-    movies.head()
+    movies.iloc[:, :2].head()
 
 
 .. code::
 
-       movieId                               title  \
+       movieId                               title
     0        0                    Toy Story (1995)
     1        1                      Jumanji (1995)
     2        2             Grumpier Old Men (1995)
     3        3            Waiting to Exhale (1995)
     4        4  Father of the Bride Part II (1995)
     
-                                            genres
-    0  Adventure|Animation|Children|Comedy|Fantasy
-    1                   Adventure|Children|Fantasy
-    2                               Comedy|Romance
-    3                         Comedy|Drama|Romance
-    4                                       Comedy
-    
 
 
 
+
+Conversion of ratings to a CSR-format sparse matrix:
 
 
 .. code:: python
@@ -95,6 +94,9 @@ see https://grouplens.org/datasets/movielens/latest/
 
 
 
+First few observations:
+
+
 .. code:: python
 
     X[:5, :10].todense()
@@ -112,6 +114,12 @@ see https://grouplens.org/datasets/movielens/latest/
 
 
 
+Let's extract 200 clusters with Genie with respect to  cosine similarity between films' ratings
+as given by users (two movies considered similar if they get similar reviews).
+Sparse inputs are supported by the approximate version of the algorithm
+and require the availability of the `nmslib` package
+
+
 
 .. code:: python
 
@@ -122,6 +130,7 @@ see https://grouplens.org/datasets/movielens/latest/
 
 
 
+Here are the members of an example cluster:
 
 
 .. code:: python
@@ -189,18 +198,13 @@ see https://grouplens.org/datasets/movielens/latest/
 
 
 
-By the way
-Full MovieLens Dataset  https://grouplens.org/datasets/movielens/latest/
 
-
-time = 144 secs.
-
-<53889x283228 sparse matrix of type '<class 'numpy.float32'>'
-	with 27753444 stored elements in Compressed Sparse Row format>
-
-
-
-500 clusters
+The above was performed on an abridged version of the MovieLens dataset.
+The project's `website <https://grouplens.org/datasets/movielens/latest/>`_
+also features a full database that yields a 53889x283228 ratings table
+(with 27753444  non-zero elements) -- such a matrix would definitely not fit into our RAM.
+Determining the whole cluster hierarchy takes only 144 secs.
+Here is one of 500 clusters extracted:
 
 .. code::
 
