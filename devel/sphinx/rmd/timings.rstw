@@ -14,9 +14,11 @@ with the centroid, median, and Ward linkage implemented in the
 `fastcluster <http://www.danifold.net/fastcluster.html>`_ package.
 
 
-The Genie algorithm itself has :math:`O(n \sqrt{n})` time
-and :math:`O(n)` memory complexity provided that a minimum spanning
-tree of the pairwise distance graph is given.
+
+Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
+pairwise distance graph of an input point set.
+Given the MST (the slow part), Genie itself has :math:`O(n \sqrt{n})` time
+and :math:`O(n)` memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
 method [2]_ will be called to compute an MST, which takes :math:`O(d n^2)` time.
 However, `mlpack.emst <https://www.mlpack.org/>`_ [3]_ provides a very fast

@@ -388,10 +388,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
             else:
                 X = np.array(X, dtype=np.float32, order="C", copy=False, ndmin=2)
 
-        n_samples  = X.shape[0]
+        n_samples  = np.shape(X)[0]
 
-        if cur_state["n_features"] < 0 and X.ndim >= 2:
-            cur_state["n_features"] = X.shape[1]
+        if cur_state["n_features"] < 0 and np.ndim(X) >= 2:
+            cur_state["n_features"] = np.shape(X)[1]
 
         if "indexThreadQty" in cur_state["nmslib_params_index"]:
             warnings.warn("Set `indexThreadQty` via the OMP_NUM_THREADS "
@@ -411,7 +411,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # nmslib.DataType.DENSE_VECTOR|OBJECT_AS_STRING|SPARSE_VECTOR
             if scipy.sparse.isspmatrix(X):
                 data_type = nmslib.DataType.SPARSE_VECTOR
-            elif X.ndim == 2:
+            elif np.ndim(X) == 2:
                 data_type = nmslib.DataType.DENSE_VECTOR
             else:
                 data_type = nmslib.DataType.OBJECT_AS_STRING
@@ -424,7 +424,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 nmslib.DistType.INT
 
         cur_state["nmslib_n_neighbors"] = min(
-            X.shape[0]-1,
+            n_samples-1,
             max(1, cur_state["nmslib_n_neighbors"]))
 
         if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:

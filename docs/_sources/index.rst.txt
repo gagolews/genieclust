@@ -11,18 +11,18 @@
     -- by `Marek Gagolewski <https://www.gagolewski.com/>`_
 
 
-A faster and more powerful version of **Genie** - a robust and outlier resistant
+A faster and more powerful version of **Genie** [1]_ — a robust and outlier resistant
 clustering algorithm, originally published as an R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
-The Genie algorithm [1]_ is based on a minimum spanning tree (MST) of the
-pairwise distance graph of an input point set.
-Just like the single linkage, it consumes the edges
-of the MST in increasing order of weights. However, it **prevents
-the formation of clusters of highly imbalanced sizes**; once the Gini index
-of the cluster size distribution raises above an assumed threshold,
-a point group of the smallest size is forced to merge with its nearest
-neighbouring cluster.
+The idea behind Genie is very simple. First, make each individual
+point the only member of its own cluster. Then, keep merging pairs
+of the closest clusters, one after another. However, to **prevent
+the formation of clusters of highly imbalanced sizes**
+a point group of the smallest size is sometimes matched with its nearest
+neighbours.
+
+
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
@@ -32,7 +32,7 @@ on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
 Genie is also **very fast** — determining the whole cluster hierarchy
 for datasets of millions of points can be completed within :any:`a coffee break <rmd/timings>`\ .
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
-(large datasets with any number of clusters to detect) for data
+(large datasets with any number of clusters to detect) for data (also sparse)
 that fit into memory.
 Thanks to the use of `nmslib` [3]_, sparse or string inputs are also supported.
 
@@ -80,10 +80,11 @@ library, hence it might be relatively easily adapted to new environments.
 
     rmd/basics
     rmd/sklearn_toy_example
-    rmd/noise
     rmd/benchmarks_ar
     rmd/timings
+    rmd/noise
     rmd/sparse
+    rmd/string
     rmd/r
 
 .. toctree::

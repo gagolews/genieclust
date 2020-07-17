@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Example: Sparse Data and Movie Recommendation" href="sparse.html" />
+    <link rel="next" title="Clustering with Noise Points Detection" href="noise.html" />
     <link rel="prev" title="Benchmarks (How Good Is It?)" href="benchmarks_ar.html" /> 
 </head>
 
@@ -92,7 +92,6 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Timings (How Fast Is It?)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#large-datasets">Large Datasets</a></li>
@@ -102,7 +101,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -194,9 +195,10 @@ note that the number of restarts, <cite>n_init</cite>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package.</p>
-<p>The Genie algorithm itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
-and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity provided that a minimum spanning
-tree of the pairwise distance graph is given.
+<p>Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
+pairwise distance graph of an input point set.
+Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
+and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
 method <a class="footnote-reference brackets" href="#id7" id="id1">2</a> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
 However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <a class="footnote-reference brackets" href="#id8" id="id2">3</a> provides a very fast
@@ -645,7 +647,7 @@ a first run of the algorithm:</p>
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - first run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">first</span> <span class="n">run</span><span class="p">:</span> <span class="mf">0.613</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">first</span> <span class="n">run</span><span class="p">:</span> <span class="mf">0.610</span>
 </pre></div>
 </div>
 <p>Changing some parameters and re-running the cluster search:</p>
@@ -656,7 +658,7 @@ a first run of the algorithm:</p>
 <span class="k">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - consecutive run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">consecutive</span> <span class="n">run</span><span class="p">:</span> <span class="mf">0.026</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">time</span> <span class="n">elapsed</span> <span class="o">-</span> <span class="n">consecutive</span> <span class="n">run</span><span class="p">:</span> <span class="mf">0.025</span>
 </pre></div>
 </div>
 </div>
@@ -700,7 +702,7 @@ Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="sparse.html" class="btn btn-neutral float-right" title="Example: Sparse Data and Movie Recommendation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="noise.html" class="btn btn-neutral float-right" title="Clustering with Noise Points Detection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

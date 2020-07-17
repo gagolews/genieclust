@@ -182,7 +182,7 @@ cpdef tuple nn_list_to_matrix(
 
     for i in range(n):
         nn_i = nns[i][0]
-        nn_d = nns[i][1]
+        nn_d = nns[i][1].astype(np.float32, copy=False)
         k = nn_i.shape[0]
         if nn_d.shape[0] != k:
             raise ValueError("nns has arrays of different lengths as elements")

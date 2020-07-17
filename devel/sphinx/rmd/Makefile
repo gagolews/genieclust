@@ -10,6 +10,7 @@ FILES_RSTW = \
 	benchmarks_approx.rstw   \
 	noise.rstw               \
 	sparse.rstw              \
+	string.rstw              \
 	timings.rstw
 
 

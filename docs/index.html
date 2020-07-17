@@ -91,10 +91,11 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="rmd/basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rmd/string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -180,17 +181,15 @@
 <div><p><strong>Genie finds meaningful clusters and is fast even for large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p>A faster and more powerful version of <strong>Genie</strong> - a robust and outlier resistant
+<p>A faster and more powerful version of <strong>Genie</strong> <a class="footnote-reference brackets" href="#id4" id="id1">1</a> — a robust and outlier resistant
 clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
-<p>The Genie algorithm <a class="footnote-reference brackets" href="#id4" id="id1">1</a> is based on a minimum spanning tree (MST) of the
-pairwise distance graph of an input point set.
-Just like the single linkage, it consumes the edges
-of the MST in increasing order of weights. However, it <strong>prevents
-the formation of clusters of highly imbalanced sizes</strong>; once the Gini index
-of the cluster size distribution raises above an assumed threshold,
-a point group of the smallest size is forced to merge with its nearest
-neighbouring cluster.</p>
+<p>The idea behind Genie is very simple. First, make each individual
+point the only member of its own cluster. Then, keep merging pairs
+of the closest clusters, one after another. However, to <strong>prevent
+the formation of clusters of highly imbalanced sizes</strong>
+a point group of the smallest size is sometimes matched with its nearest
+neighbours.</p>
 <p>Genie’s appealing simplicity goes hand in hand with its usability;
 it <strong>often outperforms other clustering approaches</strong>
 such as K-means, BIRCH, or average, Ward, and complete linkage
@@ -198,7 +197,7 @@ on <a class="reference external" href="https://github.com/gagolews/clustering_be
 <p>Genie is also <strong>very fast</strong> — determining the whole cluster hierarchy
 for datasets of millions of points can be completed within <a class="reference internal" href="rmd/timings.html"><span class="doc">a coffee break</span></a>.
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
-(large datasets with any number of clusters to detect) for data
+(large datasets with any number of clusters to detect) for data (also sparse)
 that fit into memory.
 Thanks to the use of <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id6" id="id2">3</a>, sparse or string inputs are also supported.</p>
 <p>It also allows clustering with respect to mutual reachability distances
@@ -240,12 +239,6 @@ library, hence it might be relatively easily adapted to new environments.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#smoothing-factor">Smoothing Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#a-comparision-with-hdbscan">A Comparision with HDBSCAN*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#references">References</a></li>
-</ul>
-</li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_ar.html">Benchmarks (How Good Is It?)</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#small-datasets">Small Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#large-datasets">Large Datasets</a></li>
@@ -261,7 +254,17 @@ library, hence it might be relatively easily adapted to new environments.</p>
 <li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#references">References</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#smoothing-factor">Smoothing Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#a-comparision-with-hdbscan">A Comparision with HDBSCAN*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rmd/string.html">Example: String Data and Grouping of DNA</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rmd/string.html#references">References</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="rmd/r.html">R Interface Examples</a></li>
 </ul>
 </div>

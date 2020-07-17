@@ -99,10 +99,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
@@ -188,9 +189,12 @@
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
-In one of the sections below we shall show
+If this happens, instead of merging two closest clusters, a smallest cluster
+is joined with its nearest neighbour.
+In the following sections we’ll show
 that Genie most often outperforms many other methods
-in terms of clustering quality on benchmark data and speed.</p>
+in terms of clustering <a class="reference internal" href="benchmarks_ar.html"><span class="doc">quality</span></a>
+and <a class="reference internal" href="timings.html"><span class="doc">speed</span></a>.</p>
 <p>Here are a few examples of basic interactions with the Python version
 of the <cite>genieclust</cite> package.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>

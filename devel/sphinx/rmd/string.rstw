@@ -1,0 +1,75 @@
+Example: String Data and Grouping of DNA
+========================================
+
+The *genieclust* package also allows for clustering of character string
+data. Let's perform an example grouping based
+on `Levenshtein's <https://en.wikipedia.org/wiki/Levenshtein_distance>`_ edit
+distance.
+
+<<sparse-example-imports>>=
+import numpy as np
+@
+
+<<settings,results="hidden",echo=False>>=
+import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+#pd.set_option("min_rows", 200)
+#pd.set_option("display.width", 80)
+#pd.set_option("display.max_colwidth", 30)
+#plt.style.use("bmh")
+#plt.rcParams.update({
+#    'font.size': 9,
+#    'font.family': 'sans-serif',
+#    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
+@
+
+
+We'll use one of the benchmark datasets mentioned in [1]_ as an example:
+
+<<string-example-strings>>=
+strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
+strings[:5] # preview
+@
+
+It comes with a set of reference labels, giving the "true" grouping assigned
+by an expert:
+
+<<string-example-labels>>=
+labels_true = np.loadtxt("actg1.labels0.gz", dtype=np.intp)-1
+n_clusters = len(np.unique(labels_true))
+print(n_clusters)
+@
+
+
+Clustering in the string domain requires `nmslib` installed.
+
+<<string-example-cluster>>=
+import genieclust
+g = genieclust.Genie(
+    n_clusters=n_clusters,
+    exact=False, # use nmslib
+    cast_float32=False, # do not convert the string list to a matrix
+    nmslib_params_index=dict(post=0), # faster
+    affinity="leven")
+labels_pred = g.fit_predict(strings)
+@
+
+
+The adjusted Rand index can be used as an external cluster validity metric:
+
+<<string-example-ar>>=
+genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_pred)
+@
+
+This indicates a very high degree of similarity between the reference
+and the obtained clusterings.
+
+
+
+References
+----------
+
+.. [1]
+    Gagolewski M., Cena A. (Eds.), *Benchmark Suite for Clustering Algorithms — Version 1*,
+    2020. https://github.com/gagolews/clustering_benchmarks_v1. doi:10.5281/zenodo.3815066.
