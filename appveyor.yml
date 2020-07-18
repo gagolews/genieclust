@@ -70,8 +70,6 @@ init:
   - "ECHO Python %PYTHON_VERSION% (%PYTHON_ARCH%bit) from %PYTHON%"
   - ECHO "Filesystem root:"
   - ps: "ls \"C:/\""
-  - ECHO "Installed SDKs:"
-  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
 install:
   - "powershell .appveyor\\install.ps1"
