@@ -76,6 +76,7 @@ install:
 
 build: off
 build_script:
+  - "%PYTHON%\\Scripts\\pip.exe install -r requirements.txt"
   - "%WITH_ENV% %PYTHON%\\python.exe setup.py build_ext --inplace %PARALLEL%"
   - "%WITH_ENV% %PYTHON%\\python.exe setup.py bdist_wheel"
 
