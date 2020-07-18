@@ -260,8 +260,8 @@ Naidan B., Boytsov L., Malkov Y., Novak D., *Non-metric space library
 (NMSLIB) manual*, version 2.0, 2019.
 https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
 
-Jarník V., O jistém problému minimálním, *Práce Moravské Přírodovědecké
-Společnosti* **6**, 1930, 57-63.
+Jarník V., O jistem problemu minimalnim, *Prace Moravske Prirodovedecke
+Spolecnosti* **6**, 1930, 57-63.
 
 Olson C.F., Parallel algorithms for hierarchical clustering, *Parallel
 Computing* **21**\ (8), 1995, 1313-1325.
