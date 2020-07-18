@@ -30,7 +30,7 @@ it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
 on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
 
-Genie is also **very fast** — determining the whole cluster hierarchy
+Genie is also **very fast** - determining the whole cluster hierarchy
 for datasets of millions of points can be completed within a coffee break.
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
 (large datasets with any number of clusters to detect) for data (also sparse)
@@ -63,16 +63,16 @@ Python and R Package Features
 
 Implemented algorithms include:
 
--  Genie++ — a reimplementation of the original Genie algorithm (with a
+-  Genie++ - a reimplementation of the original Genie algorithm (with a
    `scikit-learn`-compatible interface; Gagolewski et al., 2016);
 
--  Genie+HDBSCAN\* — our robustified (Geniefied) retake on the HDBSCAN\*
+-  Genie+HDBSCAN\* - our robustified (Geniefied) retake on the HDBSCAN\*
    (Campello et al., 2015) method that detects noise points in data and
    outputs clusters of predefined sizes;
 
--  *(Python only, experimental preview)* Genie+Ic (GIc) — Cena’s (2018)
+-  *(Python only, experimental preview)* Genie+Ic (GIc) - Cena's (2018)
    algorithm to minimise the information theoretic criterion discussed
-   by Mueller et al. (2012).
+   by Mueller et al. (2012).
 
 See classes ``genieclust.Genie`` and ``genieclust.GIc`` (Python) or
 functions ``gclust()`` and ``genieclust()`` (R).
@@ -107,7 +107,7 @@ The Python language version of `genieclust` has a familiar
    g = genieclust.Genie(n_clusters=2)
    labels = g.fit_predict(X)
 
-R’s interface is compatible with ``hclust()``, but there is more.
+R's interface is compatible with ``hclust()``, but there is more.
 
 .. code:: r
 
@@ -177,8 +177,8 @@ Development Version
 
 To fetch and compile the most recent development version of the package
 from github, call (C++11 compiler required; Windows users see
-`Rtools <https://cran.r-project.org/bin/windows/Rtools/>`__, OS X users
-see `Xcode <https://developer.apple.com/xcode/>`__):
+`Rtools <https://cran.r-project.org/bin/windows/Rtools/>`_, OS X users
+see `Xcode <https://developer.apple.com/xcode/>`_):
 
 .. code:: r
 
@@ -253,7 +253,7 @@ mlpack 3: A fast, flexible machine learning library, *Journal of Open
 Source Software* **3**\ (26), 726, 2018. doi:10.21105/joss.00726.
 
 March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree:
-Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD’10*, 2010,
+Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD'10*, 2010,
 603-611.
 
 Naidan B., Boytsov L., Malkov Y., Novak D., *Non-metric space library
