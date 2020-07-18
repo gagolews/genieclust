@@ -185,11 +185,12 @@
 data. Let’s perform an example grouping based
 on <a class="reference external" href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein’s</a> edit
 distance.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
 <p>We’ll use one of the benchmark datasets mentioned in <a class="footnote-reference brackets" href="#id2" id="id1">1</a> as an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">strings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.data.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
+<span class="n">strings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.data.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="n">strings</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># preview</span>
 </pre></div>
 </div>
@@ -204,7 +205,7 @@ distance.</p>
 by an expert:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.labels0.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
 <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_true</span><span class="p">))</span>
-<span class="k">print</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">20</span>
@@ -214,8 +215,8 @@ by an expert:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span>
     <span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span>
-    <span class="n">exact</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="c1"># use nmslib</span>
-    <span class="n">cast_float32</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="c1"># do not convert the string list to a matrix</span>
+    <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># use nmslib</span>
+    <span class="n">cast_float32</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># do not convert the string list to a matrix</span>
     <span class="n">nmslib_params_index</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="c1"># faster</span>
     <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;leven&quot;</span><span class="p">)</span>
 <span class="n">labels_pred</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>

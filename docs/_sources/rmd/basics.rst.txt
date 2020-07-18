@@ -44,6 +44,7 @@ with the true corresponding partition (by an expert).
 
 .. code:: python
 
+    # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
     dataset = "jain"
     # Load an example 2D dataset:
     X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)

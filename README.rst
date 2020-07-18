@@ -125,8 +125,6 @@ https://genieclust.gagolewski.com/.
 Installation
 ------------
 
-   *This package is in beta-stage (development and testing is currently
-   Linux-only).*
 
 Python Version
 ~~~~~~~~~~~~~~
@@ -134,20 +132,18 @@ Python Version
 PyPI
 ^^^^
 
-**TODO** To install via ``pip`` (the current version is a little
-outdated, see `PyPI <https://pypi.org/project/genieclust/>`__):
+To install via ``pip`` (see `PyPI <https://pypi.org/project/genieclust/>`_):
 
 .. code:: bash
 
-   pip3 install genieclust --user # or sudo pip3 install genieclust
+   pip3 install genieclust
 
-**TODO**: Windows builds
-
-**TODO**: OS X builds
 
 The package requires Python 3.6+ together with ``cython`` as well as
 ``numpy``, ``scipy``, ``matplotlib``, and ``sklearn``. Optional
 dependencies: ``mlpack`` and ``nmslib``.
+
+
 
 Development Version
 ^^^^^^^^^^^^^^^^^^^
@@ -168,9 +164,15 @@ R Version
 CRAN
 ^^^^
 
-**TODO**: CRAN
+To install the most recent release, call:
 
-.. _development-version-1:
+.. code:: r
+
+    install.packages("genieclust")
+
+
+See the package entry on `CRAN <https://cran.r-project.org/web/packages/genieclust/>`_.
+
 
 Development Version
 ^^^^^^^^^^^^^^^^^^^

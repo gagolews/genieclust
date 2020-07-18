@@ -47,6 +47,7 @@ Let's load an example benchmark set, ``jain`` [2]_, which  comes along
 with the true corresponding partition (by an expert).
 
 <<basics-load>>=
+# see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
 dataset = "jain"
 # Load an example 2D dataset:
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)

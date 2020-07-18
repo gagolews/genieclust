@@ -197,9 +197,9 @@ in terms of clustering <a class="reference internal" href="benchmarks_ar.html"><
 and <a class="reference internal" href="timings.html"><span class="doc">speed</span></a>.</p>
 <p>Here are a few examples of basic interactions with the Python version
 of the <cite>genieclust</cite> package.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">genieclust</span>
 </pre></div>
 </div>
@@ -207,7 +207,8 @@ of the <cite>genieclust</cite> package.</p>
 <h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this headline">¶</a></h2>
 <p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <a class="footnote-reference brackets" href="#id7" id="id2">2</a>, which  comes along
 with the true corresponding partition (by an expert).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
 <span class="c1"># Load an example 2D dataset:</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.data.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 
@@ -237,7 +238,7 @@ is compatible with the one from the popular
 In particular, an object of class <cite>Genie</cite> is equipped with the
 <cite>fit</cite> and <cite>fit_predict</cite> methods.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Genie</span><span class="p">()</span>
@@ -406,11 +407,11 @@ This makes the resulting partitions more stable.</p>
 <h2>Dendrograms<a class="headerlink" href="#dendrograms" title="Permalink to this headline">¶</a></h2>
 <p>Plotting of dendrograms is possible with <cite>scipy.cluster.hierarchy</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.cluster.hierarchy</span>
-<span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">compute_full_tree</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">linkage_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">children_</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">distances_</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">counts_</span><span class="p">])</span>
 <span class="n">scipy</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">hierarchy</span><span class="o">.</span><span class="n">dendrogram</span><span class="p">(</span><span class="n">linkage_matrix</span><span class="p">,</span>
-    <span class="n">show_leaf_counts</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">no_labels</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">show_leaf_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">no_labels</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>

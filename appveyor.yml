@@ -50,15 +50,6 @@ environment:
       PYTHON_VERSION: "3.5"
       PYTHON_ARCH: "64"
 
-    - PYTHON: "C:\\Python34"
-      PYTHON_VERSION: "3.4"
-      PYTHON_ARCH: "32"
-      PARALLEL: ""
-
-    - PYTHON: "C:\\Python34-x64"
-      PYTHON_VERSION: "3.4"
-      PYTHON_ARCH: "64"
-      PARALLEL: ""
 
 clone_depth: 5
 

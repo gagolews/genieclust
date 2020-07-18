@@ -66,10 +66,12 @@ R's interface is compatible with ``hclust()``, but there is more.
     # or genie(X, k=2)
 
 
-The `genieclust` package is available for Python (**TODO**: PyPI--link, how to install)
-and R (**TODO**: CRAN--link, how to install). Its source code is distributed
+The `genieclust` package is available for Python (via
+`PyPI <https://pypi.org/project/genieclust/>`_\ )
+and R (on `CRAN <https://cran.r-project.org/web/packages/genieclust/>`_\ ).
+Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
-`https://github.com/gagolews/genieclust <https://github.com/gagolews/genieclust>`_.
+`GitHub <https://github.com/gagolews/genieclust>`_.
 Note that the core functionality is implemented in the form of a header-only C++
 library, hence it might be relatively easily adapted to new environments.
 

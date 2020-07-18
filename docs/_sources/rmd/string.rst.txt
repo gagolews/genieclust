@@ -23,6 +23,7 @@ We'll use one of the benchmark datasets mentioned in [1]_ as an example:
 
 .. code:: python
 
+    # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
     strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
     strings[:5] # preview
 

@@ -346,8 +346,8 @@ correction for chance, Journal of Machine Learning Research 11, 2010,
 </div>
 <div class="section" id="examples">
 <h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_true</span> <span class="o">&lt;-</span> <span class="n">iris[[5]]</span>
-<span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">kmeans</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris[1</span><span class="o">:</span><span class="m">4</span><span class="n">]</span><span class="p">),</span> <span class="m">3</span><span class="p">)</span><span class="o">$</span><span class="n">cluster</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_true</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span>
+<span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">kmeans</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span> <span class="m">3</span><span class="p">)</span><span class="o">$</span><span class="n">cluster</span>
 <span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 <span class="nf">rand_score</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span> <span class="c1"># the same</span>
 <span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
@@ -639,12 +639,12 @@ Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.</p>
 <span id="id13"></span><h3>Examples<a class="headerlink" href="#examples-1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
 <span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris[1</span><span class="o">:</span><span class="m">4</span><span class="n">]</span>
+<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
 <span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
-<span class="n">y_test</span> <span class="o">&lt;-</span> <span class="n">iris[</span><span class="p">,</span><span class="m">5</span><span class="n">]</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">iris[</span><span class="p">,</span><span class="m">2</span><span class="n">]</span><span class="p">,</span> <span class="n">iris[</span><span class="p">,</span><span class="m">3</span><span class="n">]</span><span class="p">,</span> <span class="n">col</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
-<span class="n">pch</span><span class="o">=</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">iris[</span><span class="p">,</span><span class="m">5</span><span class="n">]</span><span class="p">),</span> <span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span> <span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
+<span class="n">y_test</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span> <span class="n">iris</span><span class="p">[,</span><span class="m">3</span><span class="p">],</span> <span class="n">col</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+<span class="n">pch</span><span class="o">=</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]),</span> <span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span> <span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
 <span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 <span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
 
@@ -891,7 +891,7 @@ Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.</p>
 <span id="id29"></span><h3>Examples<a class="headerlink" href="#examples-3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
 <span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris[1</span><span class="o">:</span><span class="m">4</span><span class="n">]</span>
+<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
 <span class="n">tree</span> <span class="o">&lt;-</span> <span class="nf">mst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
