@@ -123,7 +123,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="0.9.1",
+    version="0.9.1", # see also genieclust/__init__.py
     description="The Genie++ Hierarchical Clustering Algorithm (with Extras)",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -132,12 +132,16 @@ setuptools.setup(
     maintainer="Marek Gagolewski",
     license="GNU Affero General Public License v3",
     install_requires=[
-          "numpy",
-          "scipy",
-          "cython",
-          "matplotlib",
-          "sklearn"
+        "numpy",
+        "scipy",
+        "cython",
+        "matplotlib",
+        "sklearn"
       ],
+    extras_require={
+        "mlpack": ["mlpack"],
+        "nmslib": ["nmslib"]
+    },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",
     project_urls={
