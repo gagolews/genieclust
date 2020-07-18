@@ -6,8 +6,9 @@
 
 |genieclust for Python| |genieclust for R|
 
-**TODO**: Full documentation and tutorials are available at
-https://genieclust.gagolewski.com/.
+
+Package documentation and tutorials are available at https://genieclust.gagolewski.com/.
+
 
 The *Genie*\ ++ Hierarchical Clustering Algorithm (with Extras)
 ---------------------------------------------------------------
@@ -15,41 +16,47 @@ The *Genie*\ ++ Hierarchical Clustering Algorithm (with Extras)
 A faster and more powerful version of **Genie** - a robust and outlier
 resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
 originally published as an R package
-```genie`` <https://cran.r-project.org/web/packages/genie/>`__.
+*`genie <https://cran.r-project.org/web/packages/genie/>`_*.
 
-The Genie algorithm is based on a minimum spanning tree (MST) of the
-pairwise distance graph of an input point set. Just like the single
-linkage, it consumes the edges of the MST in increasing order of
-weights. However, it prevents the formation of clusters of highly
-imbalanced sizes; once the Gini index of the cluster size distribution
-raises above an assumed threshold, a point group of the smallest size is
-forced to merge with its nearest neighbouring cluster.
+The idea behind Genie is very simple. First, make each individual
+point the only member of its own cluster. Then, keep merging pairs
+of the closest clusters, one after another. However, to **prevent
+the formation of clusters of highly imbalanced sizes**
+a point group of the smallest size is sometimes matched with its nearest
+neighbours.
 
-Genie’s appealing simplicity goes hand in hand with its usability; it
-often outperforms other clustering approaches such as K-means, BIRCH,
-average, Ward, and complete linkage on `benchmark
-data <https://github.com/gagolews/clustering_benchmarks_v1>`__.
+Genie's appealing simplicity goes hand in hand with its usability;
+it **often outperforms other clustering approaches**
+such as K-means, BIRCH, or average, Ward, and complete linkage
+on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
 
-Genie is also pretty fast — determining the whole cluster hierarchy for
-datasets of 10M points in low dimensional Euclidean spaces or 100K
-points in high dimensional ones takes 1-2 minutes. There’s also an
-approximate version, based on ``nmslib``, that is even faster and
-supports, amongst others, sparse or string inputs.
+Genie is also **very fast** — determining the whole cluster hierarchy
+for datasets of millions of points can be completed within a coffee break.
+Therefore, it is perfectly suited for solving of **extreme clustering tasks**
+(large datasets with any number of clusters to detect) for data (also sparse)
+that fit into memory.
+Thanks to the use of `nmslib`, sparse or string inputs are also supported.
 
-It allows clustering with respect to mutual reachability distances so
-that it can act as a noise point detector or a robustified version of
-HDBSCAN\* (that is able to detect a predefined number of clusters and
-hence it doesn’t dependent on the DBSCAN’s somehow difficult-to-set
-``eps`` parameter).
+It also allows clustering with respect to mutual reachability distances
+so that it can act as a **noise point detector** or a
+robustified version of `HDBSCAN\*`  (see Campello et al., 2015)
+that is able to detect a predefined
+number of clusters and hence it doesn't dependent on the `DBSCAN`'s somehow
+difficult-to-set `eps` parameter.
+
+
 
 Author and Contributors
 -----------------------
 
-Author: `Marek Gagolewski <https://www.gagolewski.com>`__
+Author: `Marek Gagolewski <https://www.gagolewski.com>`_
 
-Contributors for the original R package ``genie``:
-`Anna Cena <https://cena.rexamine.com>`__,
-`Maciej Bartoszuk <https://bartoszuk.rexamine.com>`__
+Contributors for the original R package `genie`:
+`Anna Cena <https://cena.rexamine.com>`_,
+`Maciej Bartoszuk <https://bartoszuk.rexamine.com>`_
+
+
+
 
 Python and R Package Features
 -----------------------------
@@ -57,7 +64,7 @@ Python and R Package Features
 Implemented algorithms include:
 
 -  Genie++ — a reimplementation of the original Genie algorithm (with a
-   ``scikit-learn``-compatible interface; Gagolewski et al., 2016);
+   `scikit-learn`-compatible interface; Gagolewski et al., 2016);
 
 -  Genie+HDBSCAN\* — our robustified (Geniefied) retake on the HDBSCAN\*
    (Campello et al., 2015) method that detects noise points in data and
@@ -85,11 +92,13 @@ Other goodies:
 -  *(Python only)* Useful R-like plotting functions.
 
 
+
+
 Examples, Tutorials, and Documentation
 --------------------------------------
 
-The Python language version of ``genieclust`` has a familiar
-``scikit-learn``-like look-and-feel:
+The Python language version of `genieclust` has a familiar
+`scikit-learn`-like look-and-feel:
 
 .. code:: python
 
@@ -110,6 +119,8 @@ R’s interface is compatible with ``hclust()``, but there is more.
 
 Check out the tutorials and the package documentation at
 https://genieclust.gagolewski.com/.
+
+
 
 Installation
 ------------
@@ -149,6 +160,8 @@ To build and install the most recent development version, call:
    cd genieclust
    python3 setup.py install --user
 
+
+
 R Version
 ~~~~~~~~~
 
@@ -171,12 +184,16 @@ see `Xcode <https://developer.apple.com/xcode/>`__):
 
    devtools::install_github("gagolews/genieclust")
 
+
 Other
 ~~~~~
 
 Note that the core functionality is implemented in form of a header-only
 C++ library, hence it might be relatively easily adapted for use in
 other environments.
+
+
+
 
 License
 -------
@@ -200,6 +217,9 @@ The file ``src/c_scipy_rectangular_lsap.h`` is adapted from the
 ``scipy`` project (https://scipy.org/scipylib/), source:
 ``/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp``. Author: PM
 Larsen. Distributed under the BSD-3-Clause license.
+
+
+
 
 References
 ----------
