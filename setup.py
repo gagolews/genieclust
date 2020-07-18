@@ -114,7 +114,8 @@ ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
     depends=glob.glob(os.path.join("src", "c_*.h")) +
-            glob.glob(os.path.join("genieclust", "*.pxd"))
+            glob.glob(os.path.join("genieclust", "*.pxd")),
+    #define_macros=[("NPY_NO_DEPRECATED_API", "NPY_1_7_API_VERSION")]
 )
 
 

@@ -40,7 +40,7 @@ struct __argsort_comparer {
 };
 
 
-/*! Finds an(*) ordering permutation w.r.t. <.
+/*! Finds an(*) ordering permutation w.r.t. \lt.
  *
  *  Both ret and x should be of the same length n;
  *  ret will be overwritten.

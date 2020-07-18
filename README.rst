@@ -16,7 +16,7 @@ The *Genie*\ ++ Hierarchical Clustering Algorithm (with Extras)
 A faster and more powerful version of **Genie** - a robust and outlier
 resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
 originally published as an R package
-`*genie* <https://cran.r-project.org/web/packages/genie/>`_.
+`genie <https://cran.r-project.org/web/packages/genie/>`_.
 
 The idea behind Genie is very simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
