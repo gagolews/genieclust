@@ -6,6 +6,8 @@
 ^\.nojekyll
 ^\.gitignore$
 ^\.travis\.yml$
+^.appveyor
+^appveyor
 ^benchmark_data
 ^build
 ^devel

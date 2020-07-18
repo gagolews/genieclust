@@ -7,7 +7,7 @@ environment:
     # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
     # /E:ON and /V:ON options are not enabled in the batch script interpreter
     # See: https://stackoverflow.com/questions/11267463/compiling-python-modules-on-windows-x64/13751649#13751649
-    WITH_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    WITH_ENV: "cmd /E:ON /V:ON /C .\\.appveyor\\run_with_env.cmd"
     BACKEND: c
     PARALLEL: "-j4"
 
@@ -69,7 +69,7 @@ init:
   - "ECHO Python %PYTHON_VERSION% (%PYTHON_ARCH%bit) from %PYTHON%"
 
 install:
-  - "powershell appveyor\\install.ps1"
+  - "powershell .appveyor\\install.ps1"
   - "%PYTHON%\\python.exe --version"
   - "%PYTHON%\\Scripts\\pip.exe --version"
   - "%PYTHON%\\Scripts\\wheel.exe version"
@@ -83,7 +83,7 @@ artifacts:
   - path: dist\*
 
 cache:
-  - C:\Downloads\Cython -> appveyor\install.ps1
+  - C:\Downloads\Cython -> .appveyor\install.ps1
 
 #on_success:
 #  - TODO: upload the content of dist/*.whl to a public wheelhouse
