@@ -13,7 +13,7 @@
 ^docs
 ^genieclust
 ^pytest
-^README.md$
+^README.rst$
 ^Makefile$
 ^setup\.py$
 ^setup\.cfg$

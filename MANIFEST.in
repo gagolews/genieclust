@@ -1,5 +1,7 @@
-include README.md
+include README.rst
 include LICENSE
 include NEWS
 include src/c_*.h
 include genieclust/c_*.pxd
+include *.in
+include *.txt

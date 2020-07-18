@@ -1,7 +1,7 @@
 # `genieclust` Package NEWS
 
 
-## genieclust 0.9.1 (2020-07-15)
+## genieclust 0.9.1 (2020-07-18)
 
 -   [GENERAL] The package has been completely rewritten.
     The core functionality is now implemented in C++ (with OpenMP).

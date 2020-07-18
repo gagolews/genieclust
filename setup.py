@@ -113,12 +113,12 @@ class genieclust_build_ext(build_ext):
 ext_kwargs = dict(
     include_dirs=[np.get_include()],
     language="c++",
-    depends=glob.glob(os.path.join("src", "*.h")) +
+    depends=glob.glob(os.path.join("src", "c_*.h")) +
             glob.glob(os.path.join("genieclust", "*.pxd"))
 )
 
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -126,7 +126,7 @@ setuptools.setup(
     version="0.9.1", # see also genieclust/__init__.py
     description="The Genie++ Hierarchical Clustering Algorithm (with Extras)",
     long_description=long_description,
-    long_description_content_type="text/markdown",
+    long_description_content_type="text/x-rst",
     author="Marek Gagolewski",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",
