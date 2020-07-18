@@ -1,5 +1,6 @@
 # based on:
 # https://ci.appveyor.com/project/cython/cython
+# https://github.com/ogrisel/python-appveyor-demo/blob/master/appveyor.yml
 
 environment:
 
@@ -67,6 +68,10 @@ branches:
 
 init:
   - "ECHO Python %PYTHON_VERSION% (%PYTHON_ARCH%bit) from %PYTHON%"
+  - ECHO "Filesystem root:"
+  - ps: "ls \"C:/\""
+  - ECHO "Installed SDKs:"
+  - ps: "ls \"C:/Program Files/Microsoft SDKs/Windows\""
 
 install:
   - "powershell .appveyor\\install.ps1"
@@ -76,7 +81,10 @@ install:
 
 build: off
 build_script:
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "%PYTHON%\\Scripts\\pip.exe install --upgrade pip"
   - "%PYTHON%\\Scripts\\pip.exe install -r requirements.txt"
+  - "%WITH_ENV% %PYTHON%\\python.exe setup.py build"
   - "%WITH_ENV% %PYTHON%\\python.exe setup.py build_ext --inplace %PARALLEL%"
   - "%WITH_ENV% %PYTHON%\\python.exe setup.py bdist_wheel"
 
