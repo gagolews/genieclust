@@ -19,6 +19,12 @@ except ImportError:
     genie = None
 
 
+try:
+    import mlpack
+except ImportError:
+    mlpack = None
+
+
 import os
 if os.path.exists("devel/benchmark_data"):
     path = "devel/benchmark_data"
@@ -157,14 +163,15 @@ def test_genie_precomputed():
                 k, gini_threshold=g, exact=True, affinity="precomputed")
             res1 = _res1.fit_predict(D)+1
 
-            _res2 = genieclust.Genie(
-                k, gini_threshold=g, exact=True, compute_full_tree=True,
-                affinity="euclidean", mlpack_enabled=True)
-            res2 = _res2.fit_predict(X)+1
-            ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
-            print("ARI=%.3f" % ari, end="\t")
-            assert ari>1.0-1e-12
-            assert np.all(np.diff(_res2.distances_)>= 0.0)
+            if mlpack is not None:
+                _res2 = genieclust.Genie(
+                    k, gini_threshold=g, exact=True, compute_full_tree=True,
+                    affinity="euclidean", mlpack_enabled=True)
+                res2 = _res2.fit_predict(X)+1
+                ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
+                print("ARI=%.3f" % ari, end="\t")
+                assert ari>1.0-1e-12
+                assert np.all(np.diff(_res2.distances_)>= 0.0)
 
             _res2 = genieclust.Genie(
                 k, gini_threshold=g, exact=True,
