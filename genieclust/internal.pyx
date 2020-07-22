@@ -78,7 +78,7 @@ from . cimport c_genie
 ################################################################################
 
 cdef void _openmp_set_num_threads():
-    c_mst.Comp_set_num_threads(os.getenv("OMP_NUM_THREADS", -1))
+    c_mst.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
 
 
 cpdef np.ndarray[floatT] get_d_core(
