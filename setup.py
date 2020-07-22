@@ -73,7 +73,7 @@ class genieclust_build_ext(build_ext):
             for e in self.extensions:
                 e.extra_compile_args += ['-openmp']
                 e.extra_link_args += ['-openmp']
-        elif sys.platform == "darwin" and 'openmp' in os.getenv('CPPFLAGS', ''):
+        elif sys.platform == "darwin": # and 'openmp' in os.getenv('CPPFLAGS', ''):
             # -fopenmp can't be passed as compile flag when using Apple-clang.
             # OpenMP support has to be enabled during preprocessing.
             #
@@ -86,11 +86,13 @@ class genieclust_build_ext(build_ext):
             # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
             #                          -L/usr/local/opt/libomp/lib -lomp"
             pass
-        else:
+        elif sys.platform == "linux":
             # Default flag for GCC and clang:
             for e in self.extensions:
                 e.extra_compile_args += ['-fopenmp']
                 e.extra_link_args += ['-fopenmp']
+        else:
+            pass
 
         # Old version:
         # c = self.compiler.compiler_type
