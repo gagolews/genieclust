@@ -4,7 +4,7 @@
    **Genie++ outputs meaningful clusters and is fast even on large data
    sets.**
 
-|genieclust for Python| |genieclust for R|
+|genieclust for Python| |genieclust for R| |codecov|
 
 
 Package documentation and tutorials are available at https://genieclust.gagolewski.com/.
@@ -286,4 +286,5 @@ correction for chance, *Journal of Machine Learning Research* **11**,
 
 .. |genieclust for Python| image:: https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg
 .. |genieclust for R| image:: https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg
-
+.. |codecov| image:: https://codecov.io/gh/gagolews/genieclust/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/gagolews/genieclust
