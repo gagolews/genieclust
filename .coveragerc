@@ -1,0 +1,11 @@
+[run]
+include = 
+	*/genieclust/*
+omit = 
+	*/pytest/*
+
+
+[paths]
+source = 
+	genieclust
+	**/site-packages/genieclust

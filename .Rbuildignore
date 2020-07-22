@@ -20,5 +20,7 @@
 ^setup\.py$
 ^setup\.cfg$
 ^MANIFEST
-^requirements.txt$
+^requirements\.txt$
 ^LICENSE$
+^coverage\.xml$
+^\.coverage
