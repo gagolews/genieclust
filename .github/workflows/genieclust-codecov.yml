@@ -27,6 +27,7 @@ jobs:
         pip install -r requirements.txt --upgrade
         pip install flake8 pytest pytest-cov --upgrade
         pip install mlpack nmslib --upgrade
+        python3 setup.py install --user
     - name: Generate coverage report
       run: |
         pytest --cov --cov-report=xml
