@@ -2,16 +2,8 @@ import numpy as np
 import genieclust
 import time
 import gc
-
-
-
 import scipy.spatial.distance
-from rpy2.robjects.packages import importr
-stats = importr("stats")
-genie = importr("genie")
 import numpy as np
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
 
 
 import os

@@ -5,12 +5,21 @@ import gc
 import warnings
 
 import scipy.spatial.distance
-from rpy2.robjects.packages import importr
-stats = importr("stats")
-genie = importr("genie")
 import numpy as np
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+
+
+
+try:
+    import rpy2
+    from rpy2.robjects.packages import importr
+    import rpy2.robjects.numpy2ri
+    rpy2.robjects.numpy2ri.activate()
+    stats = importr("stats")
+    genie = importr("genie")
+except ImportError:
+    rpy2 = None
+    stats = None
+    genie = None
 
 
 import os
@@ -21,7 +30,7 @@ elif os.path.exists("benchmark_data"):
 else:
     path = "../benchmark_data"
 
-test_r = False
+
 verbose = False
 
 # TODO test  -1 <= labels < n_clusters
@@ -89,7 +98,7 @@ def test_genie_approx(metric='euclidean'):
 
                 #assert len(np.unique(res1[res1>=0])) == k
 
-                if test_r and M == 1:
+                if stats is not None and genie is not None and M == 1:
                     t02 = time.time()
                     res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
                     t12 = time.time()
@@ -102,6 +111,8 @@ def test_genie_approx(metric='euclidean'):
                     assert ari>1.0-1e-12
 
                     print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
+
+
 
                 t03 = time.time()
                 res3 = genieclust.Genie(k, gini_threshold=g, exact=False, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1

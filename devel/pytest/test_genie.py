@@ -3,14 +3,21 @@ import genieclust
 import time
 import gc
 
-
 import scipy.spatial.distance
-from rpy2.robjects.packages import importr
-stats = importr("stats")
-genie = importr("genie")
 import numpy as np
-import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+
+try:
+    import rpy2
+    from rpy2.robjects.packages import importr
+    import rpy2.robjects.numpy2ri
+    rpy2.robjects.numpy2ri.activate()
+    stats = importr("stats")
+    genie = importr("genie")
+except ImportError:
+    rpy2 = None
+    stats = None
+    genie = None
+
 
 import os
 if os.path.exists("devel/benchmark_data"):
@@ -99,18 +106,19 @@ def test_genie(metric='euclidean'):
             assert np.all(np.diff(_res1.distances_)>= 0.0)
             assert len(np.unique(res1)) == k
 
-            t02 = time.time()
-            res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
-            t12 = time.time()
-            print("t_r=%.3f" % (t12-t02), end="\t")
-            res2 = np.array(res2, np.intp)
-            assert len(np.unique(res2)) == k
+            if stats is not None and genie is not None:
+                t02 = time.time()
+                res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
+                t12 = time.time()
+                print("t_r=%.3f" % (t12-t02), end="\t")
+                res2 = np.array(res2, np.intp)
+                assert len(np.unique(res2)) == k
 
-            ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
-            print("ARI=%.3f" % ari, end="\t")
-            assert ari>1.0-1e-12
+                ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
+                print("ARI=%.3f" % ari, end="\t")
+                assert ari>1.0-1e-12
 
-            print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
+                print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
 
 
             res1, res2 = None, None

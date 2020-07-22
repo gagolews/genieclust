@@ -23,9 +23,9 @@ jobs:
         python-version: 3.8
     - name: Install dependencies
       run: |
-        pip install --upgrade pip
+        pip install pip wheel cython --upgrade
         pip install -r requirements.txt --upgrade
-        pip install flake8 pytest pytest-cov --upgrade
+        pip install pytest pytest-cov --upgrade
         pip install mlpack nmslib --upgrade
         python3 setup.py install --user
     - name: Generate coverage report
