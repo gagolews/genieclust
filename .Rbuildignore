@@ -22,5 +22,6 @@
 ^MANIFEST
 ^requirements\.txt$
 ^LICENSE$
-^coverage\.xml$
+^coverage
 ^\.coverage
+^codecov

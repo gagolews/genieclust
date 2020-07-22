@@ -73,7 +73,7 @@ class genieclust_build_ext(build_ext):
             for e in self.extensions:
                 e.extra_compile_args += ['-openmp', '-std=c++11']
                 e.extra_link_args += ['-openmp']
-        elif sys.platform == "darwin": # and 'openmp' in os.getenv('CPPFLAGS', ''):
+        elif sys.platform == "darwin":  # and 'openmp' in os.getenv('CPPFLAGS', ''):
             # -fopenmp can't be passed as compile flag when using Apple-clang.
             # OpenMP support has to be enabled during preprocessing.
             #
@@ -128,7 +128,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="0.9.2.dev0", # see also genieclust/__init__.py
+    version="0.9.2",  # see also genieclust/__init__.py
     description="The Genie++ Hierarchical Clustering Algorithm (with Extras)",
     long_description=long_description,
     long_description_content_type="text/x-rst",
