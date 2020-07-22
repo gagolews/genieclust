@@ -1,7 +1,7 @@
 `genieclust` Python and R Package
 =================================
 
-   **Genie++ outputs meaningful clusters and is fast even for large data
+   **Genie++ outputs meaningful clusters and is fast even on large data
    sets.**
 
 |genieclust for Python| |genieclust for R|
