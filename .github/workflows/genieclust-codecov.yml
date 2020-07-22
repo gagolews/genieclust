@@ -21,13 +21,19 @@ jobs:
       uses: actions/setup-python@master
       with:
         python-version: 3.8
-    - name: Install dependencies
+    - name: Install required dependencies
       run: |
         pip install pip wheel cython --upgrade
         pip install -r requirements.txt --upgrade
         pip install pytest pytest-cov --upgrade
-        pip install mlpack nmslib --upgrade
-        python3 setup.py install --user
+    - name: Install optional dependencies
+      continue-on-error: true
+      run: |
+        pip install nmslib --upgrade
+        pip install mlpack --upgrade
+    - name: Install genieclust
+      run: |
+        python setup.py install --user
     - name: Generate coverage report
       run: |
         pytest --cov --cov-report=xml
