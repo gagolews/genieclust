@@ -78,3 +78,6 @@ cdef extern from "../src/c_mst.h":
     void Cmst_from_complete[T](
         CDistance[T]* D, ssize_t n,
         T* mst_dist, ssize_t* mst_ind, bint verbose) except +
+
+
+    void Comp_set_num_threads(ssize_t n_threads)

@@ -3,7 +3,7 @@
 #VPATH="/home/gagolews/Python/genieclust"
 
 
-.PHONY: python py-test py-check r r-check r r-build sphinx
+.PHONY: python py-test py-check r r-check r r-build sphinx clean
 
 all: r python
 
@@ -62,3 +62,12 @@ r-build:
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"))'
 	R CMD INSTALL . --preclean
 	R CMD build .
+
+
+clean:
+	python3 setup.py clean
+	rm -rf genieclust/__pycache__/
+	rm -rf genieclust.egg-info/
+	rm -rf dist/
+	rm -f genieclust/*.cpp
+	rm -f src/*.o src/*.so

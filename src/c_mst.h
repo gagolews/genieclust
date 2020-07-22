@@ -31,6 +31,20 @@
 
 
 
+#ifdef _OPENMP
+void Comp_set_num_threads(ssize_t n_threads) {
+    if (n_threads <= 0)
+        n_threads = omp_get_max_threads();
+    omp_set_num_threads(n_threads);
+}
+#else
+void Comp_set_num_threads(ssize_t /*n_threads*/) {
+    ;
+}
+#endif
+
+
+
 /*! Represents an undirected edge in a weighted graph.
  *  Main purpose: a comparer used to sort MST edges w.r.t. increasing weights
  */

@@ -38,7 +38,7 @@ Internal functions
 cimport cython
 cimport numpy as np
 import numpy as np
-
+import os
 
 cimport libc.math
 from libcpp cimport bool
@@ -68,8 +68,7 @@ from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
 
-cimport openmp
-import os
+
 
 ################################################################################
 # Minimum Spanning Tree Algorithms:
@@ -79,9 +78,7 @@ import os
 ################################################################################
 
 cdef void _openmp_set_num_threads():
-    cdef int nt = int(os.getenv('OMP_NUM_THREADS',
-                                openmp.omp_get_max_threads()))
-    openmp.omp_set_num_threads(nt)
+    c_mst.Comp_set_num_threads(os.getenv("OMP_NUM_THREADS", -1))
 
 
 cpdef np.ndarray[floatT] get_d_core(

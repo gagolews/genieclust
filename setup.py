@@ -63,7 +63,7 @@ class genieclust_build_ext(build_ext):
 
         if sys.platform == "win32" and ('icc' in compiler or 'icl' in compiler):
             for e in self.extensions:
-                e.extra_compile_args += ['/Qopenmp']
+                e.extra_compile_args += ['/Qopenmp', '/Qstd=c++11']
                 e.extra_link_args += ['/Qopenmp']
         elif sys.platform == "win32":
             for e in self.extensions:
@@ -71,7 +71,7 @@ class genieclust_build_ext(build_ext):
                 e.extra_link_args += ['/openmp']
         elif sys.platform == "darwin" and ('icc' in compiler or 'icl' in compiler):
             for e in self.extensions:
-                e.extra_compile_args += ['-openmp']
+                e.extra_compile_args += ['-openmp', '-std=c++11']
                 e.extra_link_args += ['-openmp']
         elif sys.platform == "darwin": # and 'openmp' in os.getenv('CPPFLAGS', ''):
             # -fopenmp can't be passed as compile flag when using Apple-clang.
@@ -85,11 +85,13 @@ class genieclust_build_ext(build_ext):
             # export CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
             # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
             #                          -L/usr/local/opt/libomp/lib -lomp"
+            for e in self.extensions:
+                e.extra_compile_args += ['-std=c++11']
             pass
         elif sys.platform == "linux":
             # Default flag for GCC and clang:
             for e in self.extensions:
-                e.extra_compile_args += ['-fopenmp']
+                e.extra_compile_args += ['-fopenmp', '-std=c++11']
                 e.extra_link_args += ['-fopenmp']
         else:
             pass

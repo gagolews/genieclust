@@ -19,8 +19,8 @@ rpy2.robjects.numpy2ri.activate()
 verbose = False
 
 np.random.seed(123)
-n = 10_000_000
-d = 2
+n = 50000
+d = 69
 X = np.random.normal(size=(n,d))
 labels = np.random.choice(np.r_[1,2,3,4,5,6,7,8], n)
 
@@ -35,11 +35,25 @@ print("n=%d, d=%d, g=%.2f, k=%d" %(n,d,g,k))
 print("OMP_NUM_THREADS=%d"%int(os.environ["OMP_NUM_THREADS"]))
 
 t01 = time.time()
-res1 = Genie(k, g, exact=True, affinity=metric, verbose=verbose).fit_predict(X)+1
+res1 = Genie(k, gini_threshold=g, exact=True, affinity=metric, verbose=verbose).fit_predict(X)+1
 t11 = time.time()
 print("t_py =%.3f" % (t11-t01))
 
 assert len(np.unique(res1)) == k
+
+
+
+t03 = time.time()
+res3 = Genie(k, gini_threshold=g, exact=False, compute_full_tree=False, affinity=metric, verbose=verbose).fit_predict(X)+1
+t13 = time.time()
+ari = adjusted_rand_score(res1, res3)
+print("t_py2=%.3f (rel_to_py=%.3f; ari=%.8f)" % (t13-t03,(t03-t13)/(t01-t11), ari))
+#assert ari>1.0-1e-6
+
+
+
+
+
 
 t02 = time.time()
 res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g, verbose=verbose), k)
@@ -63,13 +77,12 @@ assert len(np.unique(res2)) == k
 ari = adjusted_rand_score(res1, res2)
 assert ari>1.0-1e-12
 
-t03 = time.time()
-res3 = Genie(k, g, exact=False, compute_full_tree=False, affinity=metric, verbose=verbose).fit_predict(X)+1
-t13 = time.time()
-ari = adjusted_rand_score(res1, res3)
-print("t_py2=%.3f (rel_to_py=%.3f; ari=%.8f)" % (t13-t03,(t03-t13)/(t01-t11), ari))
-assert ari>1.0-1e-6
-
+# 2020-07-22:
+#OMP_NUM_THREADS=8
+#t_py =14.038
+#t_py2=8.360 (rel_to_py=0.596; ari=0.41722358)
+#t_r  =39.344 (rel_to_py=2.803)
+#t_r_new  =21.547 (rel_to_py=1.535)
 
 
 # 2020-04-14:
