@@ -285,6 +285,8 @@ correction for chance, *Journal of Machine Learning Research* **11**,
 2010, 2837-2854.
 
 .. |genieclust for Python| image:: https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg
+   :target: https://pypi.org/project/genieclust/
 .. |genieclust for R| image:: https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg
+   :target: https://cran.r-project.org/web/packages/genieclust/
 .. |codecov| image:: https://codecov.io/gh/gagolews/genieclust/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/gagolews/genieclust
