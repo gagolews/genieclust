@@ -42,10 +42,9 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: ./coverage.xml
-        files: ./coverage1.xml,./coverage2.xml
         directory: ./coverage/reports/
         flags: unittests
         env_vars: OS,PYTHON
         name: codecov-umbrella
-        fail_ci_if_error: true
+        fail_ci_if_error: false
         path_to_write_report: ./coverage/codecov_report.gz
