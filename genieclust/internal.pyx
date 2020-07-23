@@ -595,6 +595,9 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
         n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
         assert n*(n-1)//2 == X.shape[0]
 
+    if k >= n:
+        raise ValueError("too many nearest neighbours requested")
+
     cdef ssize_t i
     cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
     cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),

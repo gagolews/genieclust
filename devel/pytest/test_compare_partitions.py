@@ -1,5 +1,11 @@
+import warnings
 import numpy as np
-import sklearn.metrics
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore",category=DeprecationWarning)
+    import sklearn.metrics
+
+
 from genieclust.compare_partitions import *
 
 # compare our C++ implementation (that we can make available in R, Julia etc.!)

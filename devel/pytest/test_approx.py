@@ -4,6 +4,7 @@ import time
 import gc
 import warnings
 
+import scipy.sparse
 import scipy.spatial.distance
 import numpy as np
 
@@ -22,6 +23,18 @@ except ImportError:
     genie = None
 
 
+
+try:
+    import mlpack
+except ImportError:
+    mlpack = None
+
+try:
+    import nmslib
+except ImportError:
+    nmslib = None
+
+
 import os
 if os.path.exists("devel/benchmark_data"):
     path = "devel/benchmark_data"
@@ -31,13 +44,16 @@ else:
     path = "../benchmark_data"
 
 
-verbose = False
+verbose = True  # codecov!
 
 # TODO test  -1 <= labels < n_clusters
 # TODO  different M
 
 
-def test_genie_approx(metric='euclidean'):
+def __test_genie_approx(metric='euclidean'):
+    if nmslib is None: return
+
+
     for dataset in ["t4_8k", "h2mg_64_50"]:#, "bigger"]:#[, "bigger""s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
@@ -54,32 +70,7 @@ def test_genie_approx(metric='euclidean'):
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)
 
-        if dataset == "bigger" and X.shape[1] > 6:
-            os.environ["OMP_NUM_THREADS"] = '1'
-            t01 = time.time()
-            g = genieclust.Genie(2, affinity=metric, exact=False)
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(1 thread ) t_py=%.3f" % (t11-t01))
 
-            os.environ["OMP_NUM_THREADS"] = '12'
-            t01 = time.time()
-            g = genieclust.Genie(2, affinity=metric, exact=False)
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(12 threads) t_py=%.3f" % (t11-t01))
-
-            t01 = time.time()
-            g.gini_threshold = 0.1
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(reuse     ) t_py=%.3f" % (t11-t01))
-
-            t01 = time.time()
-            g.n_clusters = 100
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(reuse     ) t_py=%.3f" % (t11-t01))
 
 
         for M in [1, 2, 25]:
@@ -91,14 +82,17 @@ def test_genie_approx(metric='euclidean'):
 
                 print("%-20s M=%2d g=%.2f n=%7d d=%4d"%(dataset,M,g,X.shape[0],X.shape[1]), end="\t")
 
-                t01 = time.time()
-                res1 = genieclust.Genie(k, gini_threshold=g, exact=True, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1
-                t11 = time.time()
-                print("t_py=%.3f" % (t11-t01), end="\t")
+                if not (metric in ['maximum']):
+                    t01 = time.time()
+                    res1 = genieclust.Genie(k, gini_threshold=g, exact=True, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1
+                    t11 = time.time()
+                    print("t_py=%.3f" % (t11-t01), end="\t")
+                else:
+                    res1 = None
 
                 #assert len(np.unique(res1[res1>=0])) == k
 
-                if stats is not None and genie is not None and M == 1:
+                if stats is not None and genie is not None and M == 1 and not (metric in ['cosine', 'maximum']):
                     t02 = time.time()
                     res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
                     t12 = time.time()
@@ -118,22 +112,66 @@ def test_genie_approx(metric='euclidean'):
                 res3 = genieclust.Genie(k, gini_threshold=g, exact=False, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1
                 t13 = time.time()
                 print("t_py2=%.3f" % (t13-t03), end="\t")
-                print("t_rel=%.3f" % ((t03-t13)/(t01-t11),), end="\t")
 
-                ari = genieclust.compare_partitions.adjusted_rand_score(res1, res3)
-                print("ARI2=%.3f" % ari, end="\t")
-                if ari < 1.0-1e-12:
-                    warnings.warn("(exact=False) ARI=%.3f for dataset=%s, g=%.2f, affinity=%s" %(
-                        ari, dataset, g, metric
-                        ))
+                if res1 is not None:
+                    print("t_rel=%.3f" % ((t03-t13)/(t01-t11),), end="\t")
 
-                res1, res2 = None, None
+                    ari = genieclust.compare_partitions.adjusted_rand_score(res1, res3)
+                    print("ARI2=%.3f" % ari, end="\t")
+                    if ari < 1.0-1e-12:
+                        warnings.warn("(exact=False) ARI=%.3f for dataset=%s, g=%.2f, affinity=%s" %(
+                            ari, dataset, g, metric
+                            ))
+
+                    res1, res2 = None, None
+
                 print("")
 
 
+def test_genie_approx():
+    __test_genie_approx('euclidean')
+    __test_genie_approx('manhattan')
+    __test_genie_approx('cosine')
+    __test_genie_approx('maximum')
+
+
+def __test_sparse(affinity='euclidean_sparse'):
+    if nmslib is None: return
+
+    np.random.seed(123)
+    X = np.random.choice(np.arange(-2.0, 3.0), 1000).reshape(100,-1)
+    X *= np.random.rand(*X.shape)
+
+    X = scipy.sparse.csr_matrix(X)
+
+    genieclust.Genie(affinity=affinity, exact=False).fit(X)
+
+
+def test_sparse():
+    __test_sparse('euclidean_sparse')
+    __test_sparse('manhattan_sparse')
+    __test_sparse('cosine_sparse')
+    __test_sparse('cosine_sparse_fast')
+    __test_sparse('chebyshev_sparse')
+
+
+def __test_string(affinity='leven'):
+    if nmslib is None: return
+
+    np.random.seed(123)
+    X = []
+    for i in range(1, 100):
+        X.append("a"*i)
+
+    genieclust.Genie(affinity=affinity, exact=False, cast_float32=False).fit(X)
+
+
+def test_string():
+    __test_string('leven')
+
+
+
 if __name__ == "__main__":
-    # not yet implemented
-    print("**Euclidean**")
-    test_genie_approx('euclidean')
-    print("**Cosine**")
-    test_genie_approx('cosine')
+    test_genie_approx()
+    test_string()
+    test_sparse()

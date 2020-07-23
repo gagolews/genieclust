@@ -3,6 +3,8 @@
 
 ## genieclust X.X.X (under development)
 
+-   [BUGFIX] [PYTHON] Code coverage CI added. Fixed some minor inconsistencies.
+
 -   ...
 
 
@@ -36,4 +38,4 @@
 
 ## genieclust 0.1a2 (2018-05-23)
 
--   [Python] Initial PyPI release.
+-   [PYTHON] Initial PyPI release.

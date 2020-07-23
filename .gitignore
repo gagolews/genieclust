@@ -19,3 +19,5 @@ devel/sphinx/_api
 cache-*
 coverage.xml
 .coverage
+htmlcov
+

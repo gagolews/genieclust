@@ -38,8 +38,8 @@ else:
 # TODO: compute_full_tree and test cutree
 
 
-def test_genie(metric='euclidean'):
-    for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+def __test_genie(metric='euclidean'):
+    for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50", "bigger"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
             np.random.seed(123)
             n = 10_000
@@ -67,33 +67,6 @@ def test_genie(metric='euclidean'):
         #t11 = time.time()
         #print("t_hdbscan=%.3f" % (t11-t01), end="\t")
 
-        if dataset == "bigger" and X.shape[1] > 6:
-            os.environ["OMP_NUM_THREADS"] = '1'
-            t01 = time.time()
-            g = genieclust.Genie(2, affinity=metric)
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(1 thread ) t_py=%.3f" % (t11-t01))
-
-            os.environ["OMP_NUM_THREADS"] = '12'
-            t01 = time.time()
-            g = genieclust.Genie(2, affinity=metric)
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(12 threads) t_py=%.3f" % (t11-t01))
-
-            t01 = time.time()
-            g.gini_threshold = 0.1
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(reuse     ) t_py=%.3f" % (t11-t01))
-
-            t01 = time.time()
-            g.n_clusters = 100
-            g.fit_predict(X)+1
-            t11 = time.time()
-            print("(reuse     ) t_py=%.3f" % (t11-t01))
-
         for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
             gc.collect()
 
@@ -112,7 +85,7 @@ def test_genie(metric='euclidean'):
             assert np.all(np.diff(_res1.distances_)>= 0.0)
             assert len(np.unique(res1)) == k
 
-            if stats is not None and genie is not None:
+            if stats is not None and genie is not None and metric != 'cosine':
                 t02 = time.time()
                 res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
                 t12 = time.time()
@@ -130,6 +103,17 @@ def test_genie(metric='euclidean'):
             res1, res2 = None, None
             print("")
 
+
+
+def test_genie():
+    print("**Euclidean**")
+    __test_genie('euclidean')
+
+    print("**Manhattan**")
+    __test_genie('manhattan')
+
+    print("**Cosine**")
+    __test_genie('cosine')
 
 
 def test_genie_precomputed():
@@ -214,11 +198,7 @@ def test_genie_precomputed():
 
 
 if __name__ == "__main__":
-    print("**Euclidean**")
-    test_genie('euclidean')
-
-    print("**Manhattan**")
-    test_genie('manhattan')
+    test_genie()
 
     print("**Precomputed**")
     test_genie_precomputed()

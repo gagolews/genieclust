@@ -224,8 +224,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             cur_state["affinity"] = "cosinesimil_sparse_fast"
 
         _affinity_exact_options = (
-            "l2", "euclidean", "l1", "manhattan",
-            "cityblock", "cosine", "cosinesimil", "precomputed")
+            "l2", "l1", "cosinesimil", "precomputed")
         if cur_state["exact"] and cur_state["affinity"] not in _affinity_exact_options:
             raise ValueError("`affinity` should be one of %r" % _affinity_exact_options)
 
@@ -341,6 +340,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
             if cur_state["M"] >= 2:  # else d_core   = None
                 # Genie+HDBSCAN --- determine d_core
                 # TODO: mlpack for k-nns?
+
+                if cur_state["M"]-1 >= X.shape[0]:
+                    raise ValueError("`M` is too large")
+
                 if nn_dist is None or nn_ind is None:
                     nn_dist, nn_ind = internal.knn_from_distance(
                         X,  # if not c_contiguous, raises an error

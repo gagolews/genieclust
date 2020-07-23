@@ -37,6 +37,8 @@ def _get_xy(X, y):
     if X.ndim == 2:
         if not X.shape[1] == 2:
             raise ValueError("`X` must have 2 columns.")
+        if y is not None:
+            raise ValueError("If `X` is a matrix, `y` should not be given.")
     elif X.ndim == 1:
         if y is None:
             raise ValueError("If `X` is a vector, `y` should be provided.")
