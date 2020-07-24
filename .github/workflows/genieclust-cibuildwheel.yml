@@ -21,6 +21,18 @@ jobs:
         with:
           python-version: '3.7'
 
+      - name: Install required dependencies
+        run: |
+          pip install pip wheel cython --upgrade
+          pip install -r requirements.txt --upgrade
+          pip install pytest pytest-cov --upgrade
+
+      - name: Install optional dependencies
+        continue-on-error: true
+        run: |
+          pip install nmslib --upgrade
+          pip install mlpack --upgrade
+
       - name: Install cibuildwheel
         run: |
           python -m pip install cibuildwheel==1.5.5
@@ -44,9 +56,21 @@ jobs:
         with:
           python-version: '3.7'
 
-      - uses: actions/upload-artifact@v2
-        with:
-          path: dist/*.tar.gz
+      - name: Install required dependencies
+        run: |
+          pip install pip wheel cython --upgrade
+          pip install -r requirements.txt --upgrade
+          pip install pytest pytest-cov --upgrade
+
+      - name: Install optional dependencies
+        continue-on-error: true
+        run: |
+          pip install nmslib --upgrade
+          pip install mlpack --upgrade
 
       - name: Build sdist
         run: python setup.py sdist
+
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./dist/*.tar.gz
