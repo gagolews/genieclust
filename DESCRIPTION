@@ -12,12 +12,12 @@ Authors@R: c(
     person("Anna", "Cena", role = c("ctb")),
     person("Peter M.", "Larsen", role = c("ctb"))
     )
-Description: A reimplementation of the Genie algorithm - a robust
+Description: A retake on the Genie algorithm - a robust
     hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
     Now faster and more memory efficient; determining the whole hierarchy
     for datasets of 10M points in low dimensional Euclidean spaces or
-    100K points in high dimensional ones takes 1-2 minutes.
+    100K points in high-dimensional ones takes only 1-2 minutes.
     Allows clustering with respect to mutual reachability distances
     so that it can act as a noise point detector or a robustified version of
     'HDBSCAN*' (that is able to detect a predefined number of
