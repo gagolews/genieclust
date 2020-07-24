@@ -4,6 +4,7 @@ on: workflow_dispatch
 
 env:
     CIBW_SKIP: cp2* pp*
+    CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
 
 jobs:
   build_wheels:
@@ -20,18 +21,6 @@ jobs:
         name: Install Python
         with:
           python-version: '3.7'
-
-      - name: Install required dependencies
-        run: |
-          pip install pip wheel cython --upgrade
-          pip install -r requirements.txt --upgrade
-          pip install pytest pytest-cov --upgrade
-
-      - name: Install optional dependencies
-        continue-on-error: true
-        run: |
-          pip install nmslib --upgrade
-          pip install mlpack --upgrade
 
       - name: Install cibuildwheel
         run: |
@@ -55,12 +44,6 @@ jobs:
         name: Install Python
         with:
           python-version: '3.7'
-
-      - name: Install required dependencies
-        run: |
-          pip install pip wheel cython --upgrade
-          pip install -r requirements.txt --upgrade
-          pip install pytest pytest-cov --upgrade
 
       - name: Install optional dependencies
         continue-on-error: true
