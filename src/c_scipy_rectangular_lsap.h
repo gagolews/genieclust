@@ -12,11 +12,11 @@ pseudocode described in pages 1685-1686 of:
     *IEEE Transactions on Aerospace and Electronic Systems* **52**(4), 2016,
     pp. 1679-1696, doi:10.1109/TAES.2016.140952.
 
-Original author: P.M. Larsen.
+Original author: Peter M. Larsen (https://github.com/pmla/).
 Thanks!!!
 
 Keywords: the Hungarian algorithm, Kuhn-Munkres algorithm,
-a modified Jonker-Volgenant algorithm
+a modified Jonker-Volgenant algorithm.
 
 
 

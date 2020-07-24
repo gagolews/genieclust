@@ -49,11 +49,16 @@ difficult-to-set `eps` parameter.
 Author and Contributors
 -----------------------
 
-Author: `Marek Gagolewski <https://www.gagolewski.com>`_
+Author and Maintainer: `Marek Gagolewski <https://www.gagolewski.com>`_
 
 Contributors for the original R package `genie`:
 `Anna Cena <https://cena.rexamine.com>`_,
 `Maciej Bartoszuk <https://bartoszuk.rexamine.com>`_
+
+Computing of some partition similarity scores (namely, the normalised accuracy
+and pair sets index) is based on an implementation of the shortest augmenting path
+algorithm for the rectangular assignment problem contributed by
+`Peter M. Larsen <https://github.com/pmla/>`_\ .
 
 
 
@@ -217,8 +222,8 @@ received a copy of the License along with this program. If not, see
 
 The file ``src/c_scipy_rectangular_lsap.h`` is adapted from the
 ``scipy`` project (https://scipy.org/scipylib/), source:
-``/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp``. Author: PM
-Larsen. Distributed under the BSD-3-Clause license.
+``/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp``.
+Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 
 
 
