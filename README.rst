@@ -7,7 +7,8 @@
 |genieclust for Python| |genieclust for R| |codecov|
 
 
-Package documentation and tutorials are available at https://genieclust.gagolewski.com/.
+Package documentation and tutorials are available
+at https://genieclust.gagolewski.com/.
 
 
 The *Genie*\ ++ Hierarchical Clustering Algorithm (with Extras)
