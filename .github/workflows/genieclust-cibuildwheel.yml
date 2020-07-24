@@ -1,5 +1,7 @@
 name: wheels
 
+on: workflow_dispatch
+
 env:
     CIBW_SKIP: cp2* pp*
 
