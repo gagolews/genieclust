@@ -21,4 +21,4 @@ from . import compare_partitions
 from . import internal
 from .genie import Genie, GIc
 
-__version__ = '0.9.3'  # see also ../setup.py
+__version__ = '0.9.4.dev0'  # see also ../setup.py

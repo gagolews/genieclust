@@ -1,6 +1,11 @@
 # `genieclust` Package NEWS
 
 
+## genieclust 0.9.4 (under development)
+
+-   ...
+
+
 ## genieclust 0.9.3 (2020-07-25)
 
 -   [BUGFIX] [PYTHON] Code coverage CI added. Fixed some minor inconsistencies.

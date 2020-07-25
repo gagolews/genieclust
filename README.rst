@@ -1,18 +1,16 @@
-`genieclust` Python and R Package
-=================================
-
-   **Genie++ outputs meaningful clusters and is fast even on large data
-   sets.**
+*Genie*\ ++ Fast and Robust Hierarchical Clustering with Noise Point Detection
+==============================================================================
 
 |genieclust for Python| |genieclust for R| |codecov|
 
+   **Genie++ outputs meaningful clusters and is fast even on large data sets.**
 
-Package documentation and tutorials are available
+Package documentation, tutorials, and benchmarks are available
 at https://genieclust.gagolewski.com/.
 
 
-The *Genie*\ ++ Hierarchical Clustering Algorithm (with Extras)
----------------------------------------------------------------
+About
+-----
 
 A faster and more powerful version of **Genie** - a robust and outlier
 resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
@@ -128,8 +126,8 @@ https://genieclust.gagolewski.com/.
 
 
 
-Installation
-------------
+How to Install
+--------------
 
 
 Python Version
@@ -145,7 +143,7 @@ To install via ``pip`` (see `PyPI <https://pypi.org/project/genieclust/>`_):
    pip3 install genieclust
 
 
-The package requires Python 3.6+ together with ``cython`` as well as
+The package requires Python 3.5+ together with ``cython`` as well as
 ``numpy``, ``scipy``, ``matplotlib``, and ``sklearn``. Optional
 dependencies: ``mlpack`` and ``nmslib``.
 
@@ -200,7 +198,7 @@ Note that the core functionality is implemented in form of a header-only
 C++ library, hence it might be relatively easily adapted for use in
 other environments.
 
-
+Any contributions are welcome (e.g., Julia, ...).
 
 
 License

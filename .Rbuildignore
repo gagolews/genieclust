@@ -26,3 +26,4 @@
 ^\.coverage
 ^codecov
 ^htmlcov
+^bibliography\.bib$
