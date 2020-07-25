@@ -1,9 +1,10 @@
 # `genieclust` Package NEWS
 
 
-## genieclust 0.9.3 (2020-07-24)
+## genieclust 0.9.3 (2020-07-25)
 
 -   [BUGFIX] [PYTHON] Code coverage CI added. Fixed some minor inconsistencies.
+    Automated the bdist build chain.
 
 -   [R] Updated DESCRIPTION to meet the CRAN policies.
 
@@ -32,8 +33,6 @@
 
 -   [PYTHON] Approximate version based on nearest neighbour graphs produced
     by `nmslib` was added.
-
-
 
 
 ## genieclust 0.1a2 (2018-05-23)
