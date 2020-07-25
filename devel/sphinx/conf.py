@@ -49,6 +49,8 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
+    'sphinxcontrib.bibtex',
+    'sphinx_rtd_theme',
     'numpydoc'
     #'sphinx.ext.viewcode',
     #'sphinx.ext.imgmath',

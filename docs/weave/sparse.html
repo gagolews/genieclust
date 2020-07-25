@@ -1,0 +1,412 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example: Sparse Data and Movie Recommendation &mdash; genieclust 0.9.4.dev0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Example: String Data and Grouping of DNA" href="string.html" />
+    <link rel="prev" title="Clustering with Noise Points Detection" href="noise.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.4.dev0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Example: Sparse Data and Movie Recommendation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="example-sparse-data-and-movie-recommendation">
+<h1>Example: Sparse Data and Movie Recommendation<a class="headerlink" href="#example-sparse-data-and-movie-recommendation" title="Permalink to this headline">¶</a></h1>
+<p>To illustrate how <em>genieclust</em> handles
+<a class="reference external" href="https://en.wikipedia.org/wiki/Sparse_matrix">sparse data</a>,
+let’s perform a simple exercise in movie recommendation based on
+<a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">MovieLens</a> data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</pre></div>
+</div>
+<p>First we load the <cite>ratings</cite> data frame
+and map the movie IDs to consecutive integers.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratings</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;ml-9-2018-small/ratings.csv&quot;</span><span class="p">)</span>
+<span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+<span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;userId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+<span class="n">old_movieId_map</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">])</span>
+<span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">old_movieId_map</span><span class="p">,</span> <span class="n">ratings</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">])</span>
+<span class="n">ratings</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">userId</span>  <span class="n">movieId</span>  <span class="n">rating</span>  <span class="n">timestamp</span>
+<span class="mi">0</span>       <span class="mi">0</span>        <span class="mi">0</span>     <span class="mf">4.0</span>  <span class="mi">964982703</span>
+<span class="mi">1</span>       <span class="mi">0</span>        <span class="mi">2</span>     <span class="mf">4.0</span>  <span class="mi">964981247</span>
+<span class="mi">2</span>       <span class="mi">0</span>        <span class="mi">5</span>     <span class="mf">4.0</span>  <span class="mi">964982224</span>
+<span class="mi">3</span>       <span class="mi">0</span>       <span class="mi">43</span>     <span class="mf">5.0</span>  <span class="mi">964983815</span>
+<span class="mi">4</span>       <span class="mi">0</span>       <span class="mi">46</span>     <span class="mf">5.0</span>  <span class="mi">964982931</span>
+</pre></div>
+</div>
+<p>Then we read the movie meta data and transform the movie IDs
+in the same way:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;ml-9-2018-small/movies.csv&quot;</span><span class="p">)</span>
+<span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+<span class="n">movies</span> <span class="o">=</span> <span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">movieId</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">old_movieId_map</span><span class="p">),</span> <span class="p">:]</span>
+<span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">old_movieId_map</span><span class="p">,</span> <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">])</span>
+<span class="n">movies</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">movieId</span>                               <span class="n">title</span>
+<span class="mi">0</span>        <span class="mi">0</span>                    <span class="n">Toy</span> <span class="n">Story</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+<span class="mi">1</span>        <span class="mi">1</span>                      <span class="n">Jumanji</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+<span class="mi">2</span>        <span class="mi">2</span>             <span class="n">Grumpier</span> <span class="n">Old</span> <span class="n">Men</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+<span class="mi">3</span>        <span class="mi">3</span>            <span class="n">Waiting</span> <span class="n">to</span> <span class="n">Exhale</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+<span class="mi">4</span>        <span class="mi">4</span>  <span class="n">Father</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Bride</span> <span class="n">Part</span> <span class="n">II</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Conversion of ratings to a CSR-format sparse matrix:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">movieId</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">userId</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">dok_matrix</span><span class="p">((</span><span class="n">n</span><span class="p">,</span><span class="n">d</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">X</span><span class="p">[</span><span class="n">ratings</span><span class="o">.</span><span class="n">movieId</span><span class="p">,</span> <span class="n">ratings</span><span class="o">.</span><span class="n">userId</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratings</span><span class="o">.</span><span class="n">rating</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="mi">9724</span><span class="n">x610</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">of</span> <span class="nb">type</span> <span class="s1">&#39;&lt;class &#39;</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="s1">&#39;&gt;&#39;</span>
+        <span class="k">with</span> <span class="mi">100836</span> <span class="n">stored</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">Compressed</span> <span class="n">Sparse</span> <span class="n">Row</span> <span class="nb">format</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>First few observations:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span><span class="p">([[</span><span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
+        <span class="p">[</span><span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">5.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">3.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">5.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">]],</span>
+<span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s extract 200 clusters with Genie with respect to  cosine similarity between films’ ratings
+as given by users (two movies considered similar if they get similar reviews).
+Sparse inputs are supported by the approximate version of the algorithm
+and require the availability of the <cite>nmslib</cite> package</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;cosinesimil_sparse&quot;</span><span class="p">)</span>
+<span class="n">movies</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here are the members of an example cluster:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">movies</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">which_cluster</span> <span class="o">=</span> <span class="n">movies</span><span class="o">.</span><span class="n">cluster</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">title</span><span class="o">==</span><span class="s2">&quot;Monty Python&#39;s The Meaning of Life (1983)&quot;</span><span class="p">]</span>
+<span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">cluster</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">which_cluster</span><span class="p">)]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2097                                     Airplane! (1980)
+2907                                 Almost Famous (2000)
+1914                                  Analyze This (1999)
+969                             Back to the Future (1985)
+1486                    Back to the Future Part II (1989)
+1487                   Back to the Future Part III (1990)
+2259                          Being John Malkovich (1999)
+2916                                  Best in Show (2000)
+921                            Blues Brothers, The (1980)
+89                                   Bottle Rocket (1996)
+2084                                     Bowfinger (1999)
+2190                                Boys Don&#39;t Cry (1999)
+2888                                     Cell, The (2000)
+955                                      Duck Soup (1933)
+836                     E.T. the Extra-Terrestrial (1982)
+1960                                      Election (1999)
+2036                                Eyes Wide Shut (1999)
+819                           Fish Called Wanda, A (1988)
+1232                               Full Monty, The (1997)
+964                                  Groundhog Day (1993)
+2605                                 High Fidelity (2000)
+1211                     Hunt for Red October, The (1990)
+2382                                      Magnolia (1999)
+863                Monty Python and the Holy Grail (1975)
+2094    Monty Python&#39;s And Now for Something Completel...
+820                   Monty Python&#39;s Life of Brian (1979)
+4581            Monty Python&#39;s The Meaning of Life (1983)
+2892       Naked Gun 2 1/2: The Smell of Fear, The (1991)
+2891    Naked Gun: From the Files of Police Squad!, Th...
+3010                    O Brother, Where Art Thou? (2000)
+1394                                  Out of Sight (1998)
+2443                                 Patriot Games (1992)
+850                    People vs. Larry Flynt, The (1996)
+899                            Princess Bride, The (1987)
+2020                     Run Lola Run (Lola rennt) (1998)
+1796                                      Rushmore (1998)
+1979     Star Wars: Episode I - The Phantom Menace (1999)
+224             Star Wars: Episode IV - A New Hope (1977)
+898     Star Wars: Episode V - The Empire Strikes Back...
+911     Star Wars: Episode VI - Return of the Jedi (1983)
+934                                     Sting, The (1973)
+3015                                 Thirteen Days (2000)
+987                             This Is Spinal Tap (1984)
+2174                                   Three Kings (1999)
+839                                        Top Gun (1986)
+3016                                       Traffic (2000)
+1113                           Waiting for Guffman (1996)
+977                             Young Frankenstein (1974)
+Name: title, dtype: object
+</pre></div>
+</div>
+<p>The above was performed on an abridged version of the MovieLens dataset.
+The project’s <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">website</a>
+also features a full database that yields a 53889x283228 ratings table
+(with 27753444  non-zero elements) – such a matrix would definitely
+not fit into our RAM if it was in the dense form.
+Determining the whole cluster hierarchy takes only 144 secs.
+Here is one of 500 clusters extracted:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>13327                       Blackadder Back &amp; Forth (1999)
+13328                  Blackadder&#39;s Christmas Carol (1988)
+3341                              Creature Comforts (1989)
+1197       Grand Day Out with Wallace and Gromit, A (1989)
+2778                            Hard Day&#39;s Night, A (1964)
+2861                                          Help! (1965)
+2963                              How I Won the War (1967)
+6006        Monty Python Live at the Hollywood Bowl (1982)
+1113                Monty Python and the Holy Grail (1975)
+2703     Monty Python&#39;s And Now for Something Completel...
+1058                   Monty Python&#39;s Life of Brian (1979)
+6698             Monty Python&#39;s The Meaning of Life (1983)
+27284                                  Oliver Twist (1997)
+2216                                 Producers, The (1968)
+4716                                   Quadrophenia (1979)
+6027             Secret Policeman&#39;s Other Ball, The (1982)
+27448                                    The Basket (2000)
+2792                                          Tommy (1975)
+10475    Wallace &amp; Gromit in The Curse of the Were-Rabb...
+732                 Wallace &amp; Gromit: A Close Shave (1995)
+708      Wallace &amp; Gromit: The Best of Aardman Animatio...
+1125           Wallace &amp; Gromit: The Wrong Trousers (1993)
+13239    Wallace and Gromit in &#39;A Matter of Loaf and De...
+2772                               Yellow Submarine (1968)
+1250                             Young Frankenstein (1974)
+Name: title, dtype: object
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="string.html" class="btn btn-neutral float-right" title="Example: String Data and Grouping of DNA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,140 @@
+Benchmarks — Approximate Method
+===============================
+
+In one of the :any:`previous sections <timings>` we have demonstrated that the approximate version
+of the Genie algorithm (:class:`genieclust.Genie(exact=False, ...) <genieclust.Genie>`), i.e.,
+one which relies on `nmslib <https://github.com/nmslib/nmslib/tree/master/python_bindings>`_\ 's
+approximate nearest neighbour search, is much faster than the exact one
+on large, high-dimensional datasets. In particular, we have noted that
+clustering of 1 million points in a 100d Euclidean space
+takes less than 5 minutes on a laptop.
+
+As *fast* does not necessarily mean *meaningful* (tl;dr spoiler alert: in our case, it does),
+let's again consider  all the datasets
+from the `Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
+:cite:`clustering_benchmarks_v1`
+(except the ``h2mg`` and ``g2mg`` batteries). Features with variance of 0 were
+removed, datasets were centred at **0** and scaled so that they have total
+variance of 1. Tiny bit of Gaussian noise was added to each observation.
+Clustering is performed with respect to the Euclidean distance.
+
+
+
+
+
+
+<<bench-approx-imports,results="hidden",echo=False>>=
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os.path, glob, re
+import scipy.stats
+#from natsort import natsorted
+#import genieclust
+import sklearn.metrics
+import seaborn as sns
+import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("min_rows", 200)
+pd.set_option("max_columns", 20)
+#pd.set_option("display.width", 200)
+plt.style.use("bmh")
+plt.rcParams.update({
+    'font.size': 9,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
+
+
+res  = pd.read_csv("v1-timings.csv") # see timings.py
+dims = pd.read_csv("v1-dims.csv")
+dims["dataset"] = dims["battery"]+"/"+dims["dataset"]
+dims = dims.loc[:,"dataset":]
+@
+
+
+
+<<approx-diffs-load,results="hidden",echo=False>>=
+# Load results file:
+res = pd.read_csv("v1-scores-approx.csv")
+# ari, afm can be negative --> replace negative indexes with 0.0
+res.iloc[:,4:] = res.iloc[:,4:].transform(lambda x: np.maximum(x, 0.0), axis=1)
+
+
+# I suggest that g2mg, h2mg and all datasets with n>10000 should
+# be studied separately.
+# Subset: not g2mg, not h2mg
+res = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
+
+# Subset: [large datasets]
+dims = pd.read_csv("v1-dims.csv")
+#res = res.loc[~res.dataset.isin(dims.dataset[dims.n>10_000]), :]
+
+# For each battery, dataset, method, compute maximal scores across
+# all available true (reference) labels (if there alternative labellings
+# of a given dataset):
+res_max = res.groupby(["battery", "dataset", "method"]).max().\
+    reset_index().drop(["labels"], axis=1)
+params = res_max.method.str.extract("^(Genie_([^_]+)(?:_approx)?)(?:_s([0-9]+))?$")
+params.columns = ["method", "gini_threshold", "run"]
+res_max = pd.concat((res_max.drop("method", axis=1), params), axis=1)
+res_max["dataset"] = res_max["battery"] + "/" + res_max["dataset"]
+res_max = res_max.iloc[:, 1:]
+@
+
+
+
+On each benchmark dataset ("small" and "large" altogether)
+we have fired 10 runs of the approximate Genie method (``exact=False``)
+and computed the adjusted Rand (AR) indices to quantify the similarity between the predicted
+outputs and the reference ones.
+
+We've computed the differences between each of the 10 AR indices
+and the AR index for the exact method. Here is the complete list of datasets
+and `gini_threshold`\ s where this discrepancy is seen at least 2 digits of precision:
+
+<<approx-diffs,results="rst",echo=False>>=
+# which similarity measure to report below:
+similarity_measure = "ar"
+
+diffs = \
+res_max.query('run==run').set_index(["dataset", "gini_threshold","run"])[similarity_measure]-\
+res_max.query('run!=run').set_index(["dataset", "gini_threshold"])[similarity_measure].rename(similarity_measure)
+diffs = diffs.reset_index()
+diffs_stats = diffs.groupby(["dataset", "gini_threshold"])[similarity_measure].describe().reset_index()
+_dat = diffs_stats.loc[(np.abs(diffs_stats["min"])>=0.0095)|(np.abs(diffs_stats["max"])>=0.0095),:].round(2)
+#_dat = _dat.drop("count", axis=1)
+which_repeated = (_dat.dataset.shift(1) == _dat.dataset)
+_dat.loc[which_repeated, "dataset"] = ""
+print(tabulate(_dat, _dat.columns, tablefmt="rst", showindex=False), "\n\n")
+@
+
+
+The only noteworthy  difference is for the ``sipu/birch2`` dataset
+where we observe that the approximate method generates worse results
+(although recall that `gini_threshold` of 1 corresponds to the single linkage method).
+Interestingly, for ``sipu/worms_64``, the in-exact algorithm with `gini_threshold`
+of 0.5 yields a much better outcome than the original one.
+
+
+Here are the descriptive statistics for the AR indices across all the datasets
+(for the approximate method we chose the median AR in each of the 10 runs):
+
+<<approx-ar,results="rst",echo=False>>=
+_dat = res_max.groupby(["dataset", "method"])[similarity_measure].\
+    median().reset_index().groupby(["method"]).describe().\
+    round(3).reset_index()
+_dat.columns = [l0 if not l1 else l1 for l0, l1 in _dat.columns]
+
+_dat.method
+
+#which_repeated = (_dat.gini_threshold.shift(1) == _dat.gini_threshold)
+#_dat.loc[which_repeated, "gini_threshold"] = ""
+#_dat = _dat.drop("count", axis=1)
+print(tabulate(_dat, _dat.columns, tablefmt="rst", showindex=False), "\n\n")
+@
+
+
+For the recommended ranges of the `gini_threshold` parameter,
+i.e., between 0.1 and 0.5, we see that the approximate version of Genie
+behaves as good as the original one.

@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Example: String Data and Grouping of DNA &mdash; genieclust 0.9.4.dev0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="R Interface Examples" href="r.html" />
+    <link rel="prev" title="Example: Sparse Data and Movie Recommendation" href="sparse.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.4.dev0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../r.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Example: String Data and Grouping of DNA</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="example-string-data-and-grouping-of-dna">
+<h1>Example: String Data and Grouping of DNA<a class="headerlink" href="#example-string-data-and-grouping-of-dna" title="Permalink to this headline">¶</a></h1>
+<p>The <em>genieclust</em> package also allows for clustering of character string
+data. Let’s perform an example grouping based
+on <a class="reference external" href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein’s</a> edit
+distance.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>We’ll use one of the benchmark datasets mentioned in <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id1">[GBC16]</a>
+as an example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
+<span class="n">strings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.data.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">strings</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># preview</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata&#39;</span><span class="p">,</span>
+<span class="s1">&#39;atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca&#39;</span><span class="p">,</span>
+<span class="s1">&#39;gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg&#39;</span><span class="p">,</span>
+<span class="s1">&#39;gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga&#39;</span><span class="p">,</span>
+<span class="s1">&#39;ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>It comes with a set of reference labels, giving the “true” grouping assigned
+by an expert:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.labels0.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_true</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">20</span>
+</pre></div>
+</div>
+<p>Clustering in the string domain requires the <cite>nmslib</cite> package installed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
+<span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span>
+    <span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span>
+    <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># use nmslib</span>
+    <span class="n">cast_float32</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># do not convert the string list to a matrix</span>
+    <span class="n">nmslib_params_index</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">post</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="c1"># faster</span>
+    <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;leven&quot;</span><span class="p">)</span>
+<span class="n">labels_pred</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">strings</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The adjusted Rand index can be used as an external cluster validity metric:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_pred</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.9352814722212013</span>
+</pre></div>
+</div>
+<p>This indicates a very high degree of similarity between the reference
+and the obtained clusterings.</p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="r.html" class="btn btn-neutral float-right" title="R Interface Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sparse.html" class="btn btn-neutral float-left" title="Example: Sparse Data and Movie Recommendation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

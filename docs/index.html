@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection &mdash; genieclust 0.9.3 documentation</title>
+  <title>genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection &mdash; genieclust 0.9.4.dev0 documentation</title>
   
 
   
@@ -38,7 +38,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Basics" href="rmd/basics.html" /> 
+    <link rel="next" title="Basics" href="weave/basics.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.9.3
+                0.9.4.dev0
               </div>
             
           
@@ -89,14 +89,14 @@
             
               <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rmd/basics.html">Basics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/string.html">Example: String Data and Grouping of DNA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/r.html">R Interface Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
 </ul>
 <p class="caption"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -107,11 +107,14 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a></li>
 </ul>
 
             
@@ -181,8 +184,8 @@
 <div><p><strong>Genie finds meaningful clusters and is fast even on large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p>A faster and more powerful version of <strong>Genie</strong> <a class="footnote-reference brackets" href="#id4" id="id1">1</a> — a robust and outlier resistant
-clustering algorithm, originally published as an R package
+<p>A faster and more powerful version of <strong>Genie</strong> <a class="bibtex reference internal" href="z_bibliography.html#genieins" id="id1">[GBC16]</a> — a robust
+and outlier resistant clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
 <p>The idea behind Genie is very simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
@@ -195,18 +198,19 @@ it <strong>often outperforms other clustering approaches</strong>
 such as K-means, BIRCH, or average, Ward, and complete linkage
 on <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1/">benchmark data</a>.</p>
 <p>Genie is also <strong>very fast</strong> — determining the whole cluster hierarchy
-for datasets of millions of points can be completed within <a class="reference internal" href="rmd/timings.html"><span class="doc">a coffee break</span></a>.
+for datasets of millions of points can be completed within
+<a class="reference internal" href="weave/timings.html"><span class="doc">a coffee break</span></a>.
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
 (large datasets with any number of clusters to detect) for data (also sparse)
 that fit into memory.
-Thanks to the use of <cite>nmslib</cite> <a class="footnote-reference brackets" href="#id6" id="id2">3</a>, sparse or string inputs are also supported.</p>
+Thanks to the use of <cite>nmslib</cite> <a class="bibtex reference internal" href="z_bibliography.html#nmslib" id="id2">[NBMN19]</a>, sparse or string inputs are also supported.</p>
 <p>It also allows clustering with respect to mutual reachability distances
 so that it can act as a <strong>noise point detector</strong> or a
-robustified version of <cite>HDBSCAN*</cite> <a class="footnote-reference brackets" href="#id5" id="id3">2</a> that is able to detect a predefined
+robustified version of <cite>HDBSCAN*</cite> <a class="bibtex reference internal" href="z_bibliography.html#hdbscan" id="id3">[CMZS15]</a> that is able to detect a predefined
 number of clusters and hence it doesn’t dependent on the <cite>DBSCAN</cite>’s somehow
 difficult-to-set <cite>eps</cite> parameter.</p>
 <p>The Python language version of <cite>genieclust</cite> has
-a familiar <cite>scikit-learn</cite>-like look-and-feel:</p>
+a familiar <cite>scikit-learn</cite>-like <a class="bibtex reference internal" href="z_bibliography.html#sklearn-api" id="id4">[BLB+13]</a> look-and-feel:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">X</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># some data</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -232,42 +236,35 @@ library, hence it might be relatively easily adapted to new environments.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rmd/basics.html">Basics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/basics.html#breaking-the-ice">Breaking the Ice</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/basics.html#a-comparison-with-k-means">A Comparison with k-means</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/basics.html#a-comparison-with-hdbscan">A Comparison with HDBSCAN*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/basics.html#dendrograms">Dendrograms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/basics.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weave/basics.html#breaking-the-ice">Breaking the Ice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/basics.html#a-comparison-with-k-means">A Comparison with k-means</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/basics.html#a-comparison-with-hdbscan">A Comparison with HDBSCAN*</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/basics.html#dendrograms">Dendrograms</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_ar.html">Benchmarks (How Good Is It?)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#small-datasets">Small Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#large-datasets">Large Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#summary">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_ar.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_ar.html#small-datasets">Small Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_ar.html#large-datasets">Large Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_ar.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/timings.html">Timings (How Fast Is It?)</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#large-datasets">Large Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#timings-as-a-function-of-the-number-of-threads">Timings as a Function of the Number of Threads</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#summary">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/timings.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weave/timings.html#large-datasets">Large Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/timings.html#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/timings.html#timings-as-a-function-of-the-number-of-threads">Timings as a Function of the Number of Threads</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/timings.html#summary">Summary</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/noise.html">Clustering with Noise Points Detection</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#smoothing-factor">Smoothing Factor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#a-comparision-with-hdbscan">A Comparision with HDBSCAN*</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/noise.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Points Detection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weave/noise.html#smoothing-factor">Smoothing Factor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/noise.html#a-comparision-with-hdbscan">A Comparision with HDBSCAN*</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/string.html">Example: String Data and Grouping of DNA</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/string.html#references">References</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/r.html">R Interface Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -297,44 +294,24 @@ library, hence it might be relatively easily adapted to new environments.</p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_details.html">Benchmarks — Detailed Results</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_details.html#small-datasets">Small Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_details.html#large-datasets">Large Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_details.html#small-datasets">Small Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_details.html#large-datasets">Large Datasets</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="rmd/benchmarks_approx.html">Benchmarks — Approximate Method</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="rmd/benchmarks_approx.html#references">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="z_bibliography.html#see-also">See Also</a></li>
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
-Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-<em>Information Sciences</em> 363, 2016, 8-23.
-doi:10.1016/j.ins.2016.05.003.</p>
-</dd>
-<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
-<dd><p>Campello R., Moulavi D., Zimek A., Sander J.,
-Hierarchical density estimates for data clustering, visualization,
-and outlier detection,
-<em>ACM Transactions on Knowledge Discovery from Data</em> 10(1), 2015, 5:1-5:51.
-doi:10.1145/2733381.</p>
-</dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id2">3</a></span></dt>
-<dd><p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
-<em>Non-metric space library (NMSLIB) manual</em>, version 2.0, 2019.
-<a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf</a>.</p>
-</dd>
-</dl>
 </div>
 <div class="section" id="indices-and-tables">
 <h2>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
@@ -354,7 +331,7 @@ doi:10.1145/2733381.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="rmd/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="weave/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
