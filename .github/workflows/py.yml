@@ -28,7 +28,7 @@ jobs:
         if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
         pip install flake8 pytest --upgrade
         pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex --upgrade
-        pip install rpy2 mlpack nmslib pyweave ipython jupyter tabulate --upgrade
+        pip install rpy2 mlpack nmslib pweave ipython jupyter tabulate --upgrade
     - name: Test and check Python
       run: |
         make py-test
