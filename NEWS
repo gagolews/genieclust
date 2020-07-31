@@ -1,9 +1,9 @@
 # `genieclust` Package NEWS
 
 
-## genieclust 0.9.4 (under development)
+## genieclust 0.9.4 (2020-07-31)
 
--   ...
+-   [BUGFIX] [R] Fix build on Solaris.
 
 
 ## genieclust 0.9.3 (2020-07-25)

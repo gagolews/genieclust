@@ -257,21 +257,21 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
     for (ssize_t i=0; i<xc; ++i) {
         double t = 0.0;
         for (ssize_t j=0; j<yc; ++j) {
-            if (C[i*yc+j] > 0) h_x_y += C[i*yc+j]*log((double)C[i*yc+j]/(double)n);
+            if (C[i*yc+j] > 0) h_x_y += C[i*yc+j]*std::log((double)C[i*yc+j]/(double)n);
             t += C[i*yc+j];
         }
         sum_x[i] = t;
-        if (t > 0) h_y += t*log(t/(double)n);
+        if (t > 0) h_y += t*std::log((double)t/(double)n);
     }
 
     for (ssize_t j=0; j<yc; ++j) {
         double t = 0.0;
         for (ssize_t i=0; i<xc; ++i) {
-            if (C[i*yc+j] > 0) h_x_cond_y += C[i*yc+j]*log(C[i*yc+j]/sum_x[i]);
+            if (C[i*yc+j] > 0) h_x_cond_y += C[i*yc+j]*std::log((double)C[i*yc+j]/sum_x[i]);
             t += C[i*yc+j];
         }
         sum_y[j] = t;
-        if (t > 0) h_x += t*log(t/(double)n);
+        if (t > 0) h_x += t*std::log((double)t/(double)n);
     }
 
     h_x = -h_x/(double)n;
@@ -283,7 +283,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
     for (ssize_t i=0; i<xc; ++i) {
         double fac0 = lgamma(sum_x[i]+1.0)+lgamma(n-sum_x[i]+1.0)-lgamma(n+1.0);
         for (ssize_t j=0; j<yc; ++j) {
-            double fac1 = log(n/sum_x[i]/sum_y[j]);
+            double fac1 = std::log((double)n/sum_x[i]/sum_y[j]);
             double fac2 = fac0+lgamma(sum_y[j]+1.0)+lgamma(n-sum_y[j]+1.0);
 
             for (ssize_t nij=std::max(1.0, sum_x[i]+sum_y[j]-n);
@@ -293,7 +293,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
                 fac3 -= lgamma(sum_x[i]-nij+1.0);
                 fac3 -= lgamma(sum_y[j]-nij+1.0);
                 fac3 -= lgamma(n-sum_x[i]-sum_y[j]+nij+1.0);
-                e_mi += nij*(fac1+log(nij))*exp(fac3);
+                e_mi += nij*(fac1+std::log((double)nij))*exp(fac3);
             }
         }
     }

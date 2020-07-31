@@ -1,12 +1,11 @@
 R Interface Examples
 ====================
 
-The R package ``genieclust`` (**TODO**) *will* be available on the ``CRAN <https://cran.r-project.org/web/packages/genieclust/>``\ \_ repository. To install it, call:
+The R package ``genieclust`` is available on the ``CRAN <https://cran.r-project.org/web/packages/genieclust/>``\ \_ repository. To install it, call:
 
 .. code:: r
 
-   # TODO: install.packages("genieclust")
-   devtools::install_github("gagolews/genieclust")
+   install.packages("genieclust")
 
 Below are a few basic examples on how to interact with the package (partially based on Marek’s `forthcoming book <https://lmlcr.gagolewski.com>`__).
 

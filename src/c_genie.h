@@ -824,16 +824,16 @@ public:
                 }
 
                 double cur_obj = -(cluster_sizes[i1]+cluster_sizes[i2])*(
-                    n_features*log(cluster_d_sums[i1]+cluster_d_sums[i2]+this->mst_d[i])
-                  -(n_features-1.0)*log(cluster_sizes[i1]+cluster_sizes[i2])
+                    n_features*std::log((double)cluster_d_sums[i1]+cluster_d_sums[i2]+this->mst_d[i])
+                  -(n_features-1.0)*std::log((double)cluster_sizes[i1]+cluster_sizes[i2])
                 );
                 cur_obj += cluster_sizes[i1]*(
-                    n_features*log(cluster_d_sums[i1])
-                  -(n_features-1.0)*log(cluster_sizes[i1])
+                    n_features*std::log((double)cluster_d_sums[i1])
+                  -(n_features-1.0)*std::log((double)cluster_sizes[i1])
                 );
                 cur_obj += cluster_sizes[i2]*(
-                    n_features*log(cluster_d_sums[i2])
-                  -(n_features-1.0)*log(cluster_sizes[i2])
+                    n_features*std::log((double)cluster_d_sums[i2])
+                  -(n_features-1.0)*std::log((double)cluster_sizes[i2])
                 );
 
                 GENIECLUST_ASSERT(std::isfinite(cur_obj));

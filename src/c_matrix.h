@@ -66,7 +66,7 @@ public:
         : n(_nrow), d(_ncol), elems(_nrow*_ncol)
     {
         if (_c_order) {
-            for (size_t i; i<_nrow*_ncol; ++i)
+            for (size_t i=0; i<_nrow*_ncol; ++i)
                 elems[i] = (T)(_data[i]);
         }
         else {

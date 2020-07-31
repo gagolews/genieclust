@@ -40,14 +40,14 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
         if (!(Rf_isInteger(x) | Rf_isReal(x)))
             stop("x must be of type numeric");
 
-        IntegerMatrix _C(x);
-        *xc = _C.nrow();
-        *yc = _C.ncol();
+        IntegerMatrix X(x);
+        *xc = X.nrow();
+        *yc = X.ncol();
         std::vector<int> C((*xc)*(*yc));
         ssize_t k=0;
         for (ssize_t i=0; i<*xc; ++i)
             for (ssize_t j=0; j<*yc; ++j)
-                C[k++] = _C(i, j); // Fortran -> C-style
+                C[k++] = X(i, j); // Fortran -> C-style
         return C;
     }
     else {
