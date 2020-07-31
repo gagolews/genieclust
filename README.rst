@@ -5,7 +5,7 @@
 
    **Genie++ outputs meaningful clusters and is fast even on large data sets.**
 
-Package documentation, tutorials, and benchmarks are available
+The package documentation, tutorials, and benchmarks are available
 at https://genieclust.gagolewski.com/.
 
 

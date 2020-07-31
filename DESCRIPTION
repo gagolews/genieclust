@@ -1,7 +1,7 @@
 Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
-Version: 0.9.4
+Version: 0.9.5
 Date: 2020-07-31
 Authors@R: c(
     person("Marek", "Gagolewski",
