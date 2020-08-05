@@ -141,11 +141,11 @@ setuptools.setup(
         "scipy",
         "cython",
         "matplotlib",
-        "sklearn"
+        "sklearn",
+        "nmslib"
       ],
     extras_require={
-        "mlpack": ["mlpack"],
-        "nmslib": ["nmslib"]
+        "mlpack": ["mlpack"]
     },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",

@@ -3,3 +3,4 @@ scipy
 cython
 matplotlib
 sklearn
+nmslib

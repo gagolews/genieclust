@@ -33,7 +33,7 @@ Genie is also **very fast** — determining the whole cluster hierarchy
 for datasets of millions of points can be completed within
 :any:`a coffee break <weave/timings>`\ .
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
-(large datasets with any number of clusters to detect) for data (also sparse)
+(large datasets with any number of clusters to detect) for data
 that fit into memory.
 Thanks to the use of `nmslib` :cite:`nmslib`\ , sparse or string inputs are also supported.
 
