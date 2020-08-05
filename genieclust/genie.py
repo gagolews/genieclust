@@ -25,11 +25,8 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
 import warnings
 
+import nmslib
 
-try:
-    import nmslib
-except ImportError:
-    nmslib = None
 
 
 try:
@@ -373,8 +370,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def _get_mst_approx(self, X, cur_state):
-        if nmslib is None:
-            raise ValueError("Package `nmslib` is not available.")
+        #if nmslib is None:
+        #    raise ValueError("Package `nmslib` is not available.")
 
         if cur_state["affinity"] == "precomputed":
             raise ValueError(

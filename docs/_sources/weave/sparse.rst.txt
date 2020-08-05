@@ -117,7 +117,8 @@ First few observations:
 Let's extract 200 clusters with Genie with respect to  cosine similarity between films' ratings
 as given by users (two movies considered similar if they get similar reviews).
 Sparse inputs are supported by the approximate version of the algorithm
-and require the availability of the `nmslib` package
+which  relies on the
+near-neighbour search routines implemented in the `nmslib` package.
 
 
 
@@ -183,7 +184,6 @@ Here are the members of an example cluster:
     898     Star Wars: Episode V - The Empire Strikes Back...
     911     Star Wars: Episode VI - Return of the Jedi (1983)
     934                                     Sting, The (1973)
-    3015                                 Thirteen Days (2000)
     987                             This Is Spinal Tap (1984)
     2174                                   Three Kings (1999)
     839                                        Top Gun (1986)

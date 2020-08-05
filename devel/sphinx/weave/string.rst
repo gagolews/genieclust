@@ -59,7 +59,8 @@ by an expert:
 
 
 
-Clustering in the string domain requires the `nmslib` package installed.
+Clustering in the string domain relies on the
+near-neighbour search routines implemented in the `nmslib` package.
 
 
 .. code:: python
