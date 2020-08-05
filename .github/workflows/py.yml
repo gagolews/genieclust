@@ -24,7 +24,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y upgrade
-        sudo apt-get -y install python3-rpy2 libmlpack-dev r-cran-devtools python3-dev pandoc
+        sudo apt-get -y install python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'testthat', 'emstreeR', 'Rd2md', 'knitr'))"
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
