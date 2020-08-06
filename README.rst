@@ -68,7 +68,9 @@ Python and R Package Features
 Implemented algorithms include:
 
 -  Genie++ - a reimplementation of the original Genie algorithm (with a
-   `scikit-learn`-compatible interface; Gagolewski et al., 2016);
+   `scikit-learn`-compatible interface; Gagolewski et al., 2016;
+   much faster than the original one; supports approximate disconnected
+   MSTs);
 
 -  Genie+HDBSCAN\* - our robustified (Geniefied) retake on the HDBSCAN\*
    (Campello et al., 2015) method that detects noise points in data and

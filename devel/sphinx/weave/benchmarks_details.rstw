@@ -62,17 +62,17 @@ res = res.loc[res.method.isin([
 res["method"] = res["method"].map({
     "Genie_G0.1": "Genie_0.1",
     "Genie_G0.3": "Genie_0.3",
-    "Genie_G1.0": "single",
+    "Genie_G1.0": "Single linkage",
     "ITM": "ITM",
     "Genie_G0.5": "Genie_0.5",
-    "fastcluster_complete": "complete",
-    "fastcluster_average": "average",
-    "fastcluster_centroid": "centroid",
-    "fastcluster_ward": "ward",
-    "sklearn_kmeans": "kmeans",
-    "sklearn_gm": "gauss_mix",
-    "sklearn_spectral_Arbf_G5": "spectral_rbf_5",
-    "sklearn_birch_T0.01_BF100": "birch_0.01",
+    "fastcluster_complete": "Complete linkage",
+    "fastcluster_average": "Average linkage",
+    "fastcluster_centroid": "Centroid linkage",
+    "fastcluster_ward": "Ward linkage",
+    "sklearn_kmeans": "K-means",
+    "sklearn_gm": "Gaussian mixtures ",
+    "sklearn_spectral_Arbf_G5": "Spectral_RBF_5",
+    "sklearn_birch_T0.01_BF100": "Birch_0.01",
     })
 
 
