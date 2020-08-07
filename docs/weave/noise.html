@@ -210,9 +210,9 @@ Labels -1 denote noise points (light grey markers).</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id4">
+<div class="figure align-default" id="id5">
 <a class="reference internal image-reference" href="../_images/noise_noise-scatter_1.png"><img alt="../_images/noise_noise-scatter_1.png" src="../_images/noise_noise-scatter_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
 </div>
 <div class="section" id="smoothing-factor">
 <h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Permalink to this headline">¶</a></h2>
@@ -235,9 +235,9 @@ controls how eagerly we tend to classify points as noise.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id5">
+<div class="figure align-default" id="id6">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie1_1.png"><img alt="../_images/noise_noise-Genie1_1.png" src="../_images/noise_noise-Genie1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
 <p>For a more natural look-and-feel, it can be a good idea to first identify
 the noise points with Genie, remove them from the data set (or at least
@@ -260,14 +260,14 @@ but now with respect to the original distance (here: Euclidean):</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id6">
+<div class="figure align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie2_1.png"><img alt="../_images/noise_noise-Genie2_1.png" src="../_images/noise_noise-Genie2_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
 </div>
 <p>However, contrary to an excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
-here we still have the hierarchical Genie <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id3">[GBC16]</a> algorithm under the hood.
+package <a class="bibtex reference internal" href="../z_bibliography.html#hdbscanpkg" id="id3">[MHA17]</a> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id4">[GBC16]</a> algorithm under the hood.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>
@@ -283,9 +283,9 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id7">
+<div class="figure align-default" id="id8">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie3_1.png"><img alt="../_images/noise_noise-Genie3_1.png" src="../_images/noise_noise-Genie3_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="a-comparision-with-hdbscan">
@@ -303,9 +303,9 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id8">
+<div class="figure align-default" id="id9">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN1_1.png"><img alt="../_images/noise_noise-HDBSCAN1_1.png" src="../_images/noise_noise-HDBSCAN1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
 </div>
 <p>By tuning <cite>min_cluster_size</cite> and/or <cite>min_samples</cite> (which corresponds to our <cite>M</cite> parameter;
 by the way, <cite>min_samples</cite> defaults to <cite>min_cluster_size</cite> if not provided explicitly),
@@ -324,9 +324,9 @@ we can obtain a partition that is even closer to the reference one:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id9">
+<div class="figure align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN2_1.png"><img alt="../_images/noise_noise-HDBSCAN2_1.png" src="../_images/noise_noise-HDBSCAN2_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </div>
 <p>Neat.</p>
 </div>

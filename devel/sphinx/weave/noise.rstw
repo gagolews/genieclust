@@ -101,7 +101,7 @@ plt.show()
 
 However, contrary to an excellent implementation of HDBSCAN\*
 that is featured in the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
-package and which also relies on a minimum spanning tree w.r.t. :math:`d_M`,
+package :cite:`hdbscanpkg` and which also relies on a minimum spanning tree w.r.t. :math:`d_M`,
 here we still have the hierarchical Genie :cite:`genieins` algorithm under the hood.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions

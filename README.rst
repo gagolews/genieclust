@@ -65,7 +65,7 @@ algorithm for the rectangular assignment problem contributed by
 Python and R Package Features
 -----------------------------
 
-Implemented algorithms include:
+The implemented algorithms include:
 
 -  Genie++ - a reimplementation of the original Genie algorithm (with a
    `scikit-learn`-compatible interface; Gagolewski et al., 2016;
@@ -249,46 +249,12 @@ estimates for data clustering, visualization, and outlier detection,
 *ACM Transactions on Knowledge Discovery from Data* **10**\ (1), 2015,
 5:1-5:51. doi:10.1145/2733381.
 
-Crouse D.F., On implementing 2D rectangular assignment algorithms, *IEEE
-Transactions on Aerospace and Electronic Systems* **52**\ (4), 2016,
-1679-1696. doi:10.1109/TAES.2016.140952.
-
 Mueller A., Nowozin S., Lampert C.H., Information Theoretic Clustering
 using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
 
-Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
-mlpack 3: A fast, flexible machine learning library, *Journal of Open
-Source Software* **3**\ (26), 726, 2018. doi:10.21105/joss.00726.
+See https://genieclust.gagolewski.com/ for more.
 
-March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree:
-Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD'10*, 2010,
-603-611.
 
-Naidan B., Boytsov L., Malkov Y., Novak D., *Non-metric space library
-(NMSLIB) manual*, version 2.0, 2019.
-https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
-
-Jarník V., O jistem problemu minimalnim, *Prace Moravske Prirodovedecke
-Spolecnosti* **6**, 1930, 57-63.
-
-Olson C.F., Parallel algorithms for hierarchical clustering, *Parallel
-Computing* **21**\ (8), 1995, 1313-1325.
-doi:10.1016/0167-8191(95)00017-I.
-
-Prim R., Shortest connection networks and some generalizations, *The
-Bell System Technical Journal* **36**\ (6), 1957, 1389-1401.
-
-Hubert L., Arabie P., Comparing Partitions, *Journal of Classification*
-**2**\ (1), 1985, 193-218. doi:10.1007/BF01908075.
-
-Rezaei M., Franti P., Set matching measures for external cluster
-validity, *IEEE Transactions on Knowledge and Data Mining* **28**\ (8),
-2016, 2173-2186. doi:10.1109/TKDE.2016.2551240.
-
-Vinh N.X., Epps J., Bailey J., Information theoretic measures for
-clusterings comparison: Variants, properties, normalization and
-correction for chance, *Journal of Machine Learning Research* **11**,
-2010, 2837-2854.
 
 .. |genieclust for Python| image:: https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg
    :target: https://pypi.org/project/genieclust/
