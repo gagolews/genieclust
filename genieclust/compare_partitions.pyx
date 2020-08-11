@@ -54,7 +54,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     --------
 
     genieclust.compare_partitions.confusion_matrix :
-        Determine the confusion matrix
+        Determines the confusion matrix
 
 
     Notes
@@ -119,7 +119,7 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     --------
 
     genieclust.compare_partitions.normalize_confusion_matrix :
-        Apply pivoting
+        Applies pivoting
 
 
     Examples
@@ -184,10 +184,10 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     --------
 
     genieclust.compare_partitions.normalize_confusion_matrix :
-        Apply pivoting
+        Applies pivoting
 
     genieclust.compare_partitions.confusion_matrix :
-        Determine the confusion matrix
+        Determines the confusion matrix
 
 
 

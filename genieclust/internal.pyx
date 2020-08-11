@@ -6,16 +6,16 @@
 # cython: language_level=3
 
 
-## TODO: we are not exposing these functions (at least, officially),
-## TODO: hence, they are not included in the online manual.
-## TODO: Otherwise, the docstrings should be cleaned up
-## TODO: and formatted so as to conform to the numpydoc guidelines.
+## We are only exposing some of these functions (at least, officially)
+## in the online manual.
+## Many of the "private" members' docstrings should be cleaned up
+## and formatted so as to conform to the numpydoc guidelines.
 ## TODO: (volunteers needed) Cheers.
 
 
 
 """
-Internal functions
+Internal functions and classes
 """
 
 # Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
@@ -142,29 +142,39 @@ cpdef tuple nn_list_to_matrix(
     list nns,
     ssize_t k_max):
     """
-    Converts a list of (<=k_max)-nearest neighbours
-    to a matrix of k_max nearest neighbours which can be fed as input
-    to `mst_from_nn`.
+    genieclust.internal.nn_list_to_matrix(nns, k_max)
+
+    Converts a list of (<=`k_max`)-nearest neighbours to a matrix of `k_max` NNs
 
 
     Parameters
     ----------
 
-    nns : list of length n
-        Each nns[i] should be a pair of c_contiguous ndarrays.
-        An edge {i, nns[i][0][j]} has weight nns[i][1][j].
-        Each nns[i][0] is of type int32 and nns[i][1] of type float32
-        (for compatibility with nmslib).
+    nns : list
+        Each ``nns[i]`` should be a pair of ``c_contiguous`` `ndarray`\ s.
+        An edge ``{i, nns[i][0][j]}`` has weight ``nns[i][1][j]``.
+        Each ``nns[i][0]`` is of type `int32` and ``nns[i][1]``
+        is of type `float32` (for compatibility with `nmslib`).
     k_max : int
-        If k_max > 0, O(n*k_max) space will be reserved for auxiliary data.
+        If `k_max` is greater than 0, `O(n*k_max)` space will be reserved
+        for auxiliary data.
 
 
     Returns
     -------
 
-    tuple
-        `nn_dist`, `nn_ind`; unused elements (last items in each row)
-        will be filled with INFINITY and -1, respectively.
+    tuple like ``(nn_dist, nn_ind)``
+        See `genieclust.internal.mst_from_nn`.
+        Unused elements (last items in each row)
+        will be filled with ``INFINITY`` and `-1`, respectively.
+
+
+    See also
+    --------
+
+    genieclust.internal.mst_from_nn :
+        Constructs a minimum spanning tree from a near-neighbour matrix
+
     """
     cdef ssize_t n = len(nns)
     cdef np.ndarray[int]   nn_i
@@ -285,51 +295,66 @@ cpdef tuple mst_from_nn(
     bint stop_disconnected=True,
     bint stop_inexact=False,
     bint verbose=False):
-    """Computes a minimum spanning tree(*) of a (<=k)-nearest neighbour graph
-    using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
+    """
+    genieclust.internal.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
 
-    Note that in general, the sum of weights in an MST of the (<=k)-nearest
-    neighbour graph might be greater than the sum of weights in a minimum
-    spanning tree of the complete pairwise distances graph.
+    Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
 
-    (*) or forest, if the input graph is unconnected. However,
-    if stop_disconnected is True, an exception is raised when there is
-    no tree spanning a given (<=k)-nn graph.
 
 
     Parameters
     ----------
 
-    dist : a c_contiguous ndarray, shape (n,k)
-        dist[i,:] is sorted nondecreasingly for all i,
-        dist[i,j] gives the weight of the edge {i, ind[i,j]}
-    ind : a c_contiguous ndarray, shape (n,k)
-        edge definition, interpreted as {i, ind[i,j]}
-    d_core : c_contiguous ndarray of length n; optional (default=None)
-        core distances for computing the mutual reachability distance
+    dist : ndarray
+        A ``c_contiguous`` `ndarray` of shape (n, k).
+        ``dist[i,:]`` is sorted nondecreasingly for all ``i``,
+        ``dist[i,j]`` gives the weight of the edge ``{i, ind[i,j]}``
+    ind : a ``c_contiguous`` ndarray, shape (n,k)
+        Defines edges of the input graph, interpreted as ``{i, ind[i,j]}``.
+    d_core : a ``c_contiguous`` ndarray, shape (n,), or ``None``
+        Core distances for computing the mutual reachability distance,
+        can be ``None``.
     stop_disconnected : bool
-        raise an exception if the input graph is not connected
-    verbose: bool
-        whether to print diagnostic messages
+        Whether to raise an exception if the input graph is not connected.
+    stop_inexact : bool
+        Whether to raise an exception if the return MST is definitely
+        subobtimal.
+    verbose : bool
+        Whether to print diagnostic messages.
 
-    Returns:
+
+    Returns
     -------
 
-    pair : tuple
-        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
-          a) the (n-1)-ary array mst_dist is such that
-          mst_dist[i] gives the weight of the i-th edge;
-          b) mst_ind is a matrix with n-1 rows and 2 columns,
-          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
+    tuple like ``(mst_dist, mst_ind)``
+        Defines the `n-1` edges of the resulting MST.
+        The `(n-1)`-ary array ``mst_dist`` is such that
+        ``mst_dist[i]`` gives the weight of the ``i``-th edge.
+        Moreover, ``mst_ind`` is a matrix with `n-1` rows and 2 columns,
+        where ``{mst_ind[i,0], mst_ind[i,1]}`` defines the ``i``-th edge of the tree.
 
         The results are ordered w.r.t. nondecreasing weights.
-          (and then the 1st, and the the 2nd index).
-          For each i, it holds mst[i,0]<mst[i,1].
+        (and then the 1st, and the the 2nd index).
+        For each ``i``, it holds ``mst_ind[i,0] < mst_ind[i,1]``.
 
-        If stop_disconnected is False, then the weights of the
-        last c-1 edges are set to infinity and the corresponding indices
-        are set to -1, where c is the number of connected components
+        If `stop_disconnected` is ``False``, then the weights of the
+        last `c-1` edges are set to infinity and the corresponding indices
+        are set to -1, where `c` is the number of connected components
         in the resulting minimum spanning forest.
+
+
+
+    See also
+    --------
+
+    Kruskal's algorithm is used.
+
+    Note that in general, the sum of weights in an MST of the (<= k)-nearest
+    neighbour graph might be greater than the sum of weights in a minimum
+    spanning tree of the complete pairwise distances graph.
+
+    If the input graph is unconnected, the result is a forest.
+
     """
     cdef ssize_t n = dist.shape[0]
     cdef ssize_t k = dist.shape[1]
@@ -868,22 +893,28 @@ cdef class DisjointSets:
     """
     Disjoint Sets (Union-Find)
 
-    Represents a partition of the set {0,1,...,n-1}
 
-    Path compression for find() is implemented,
-    but the union() operation is naive (neither
-    it is union by rank nor by size),
-    see https://en.wikipedia.org/wiki/Disjoint-set_data_structure.
-    This is by design, as some other operations in the current
-    package rely on the assumption that the parent id of each
-    element is always <= than itself.
-
-
-    Parameters:
+    Parameters
     ----------
 
     n : ssize_t
         The cardinality of the set whose partitions are generated.
+
+
+    Notes
+    -----
+
+    Represents a partition of the set :math:`\{0,1,...,n-1\}`
+    for some :math:`n`.
+
+    Path compression for `find()` is implemented,
+    but the `union()` operation is naive (neither
+    it is union by rank nor by size),
+    see https://en.wikipedia.org/wiki/Disjoint-set_data_structure.
+    This is by design, as some other operations in the current
+    package rely on the assumption that the parent ID of each
+    element is always <= than itself.
+
     """
     cdef c_disjoint_sets.CDisjointSets ds
 
@@ -893,76 +924,88 @@ cdef class DisjointSets:
     def __len__(self):
         """
         Returns the number of subsets-1,
-        a.k.a. how many calls to union() can we still perform.
+        i.e., how many calls to `union()` we can still perform.
 
-        Returns:
+
+        Returns
         -------
 
-        len : ssize_t
-            A value in {0,...,n-1}.
+        ssize_t
+            A value in `{0,...,n-1}`.
         """
         return self.ds.get_k()-1
 
 
     cpdef ssize_t get_n(self):
         """
-        Returns the number of elements in the set being partitioned.
+        Returns the number of elements in the set being partitioned
         """
         return self.ds.get_n()
 
 
     cpdef ssize_t get_k(self):
         """
-        Returns the current number of subsets.
+        Returns the current number of subsets
         """
         return self.ds.get_k()
 
 
     cpdef ssize_t find(self, ssize_t x):
         """
-        Finds the subset id for a given x.
+        Finds the subset ID for a given `x`
 
 
-        Parameters:
+        Parameters
         ----------
 
         x : ssize_t
-            An integer in {0,...,n-1}, representing an element to find.
+            An integer in `{0,...,n-1}`, representing an element to find.
 
 
-        Returns:
+        Returns
         -------
 
-        parent_x : ssize_t
-            The id of the parent of x.
+        ssize_t
+            The ID of the parent of `x`.
         """
         return self.ds.find(x)
 
 
     cpdef ssize_t union(self, ssize_t x, ssize_t y):
         """
-        Merges the sets containing given x and y.
+        Merges the sets containing given `x` and `y`
 
-        Let px be the parent id of x, and py be the parent id of y.
-        If px < py, then the new parent id of py will be set to py.
-        Otherwise, px will have py as its parent.
 
-        If x and y are already members of the same subset,
-        an exception is thrown.
 
-        Parameters:
+        Parameters
         ----------
 
-        x, y : ssize_t
-            Integers in {0,...,n-1}, representing elements
-            of two sets to merge.
+        x : ssize_t
+            Integer in {0,...,n-1}, representing an element of the first set
+            to be merged.
+
+        y : ssize_t
+            Integer in {0,...,n-1}, representing an element of the second set
+            to be merged.
 
 
-        Returns:
+        Returns
         -------
 
         parent : ssize_t
             The id of the parent of x or y, whichever is smaller.
+
+
+        Notes
+        -----
+
+        Let `px` be the parent ID of `x`, and `py` be the parent ID of `y`.
+        If `px < py`, then the new parent ID of `py` will be set to `py`.
+        Otherwise, `px` will have `py` as its parent.
+
+        If `x` and `y` are members of the same subset,
+        an exception is thrown.
+
         """
 
         return self.ds.merge(x, y)
@@ -970,15 +1013,15 @@ cdef class DisjointSets:
 
     cpdef np.ndarray[ssize_t] to_list(self):
         """
-        Get parent ids of all the elements
+        Gets parent IDs of all the elements
 
 
-        Returns:
+        Returns
         -------
 
-        parents : ndarray, shape (n,)
-            A list m such that m[x] denotes the (recursive) parent id of x,
-            for x=0,1,...,n.
+        ndarray, shape (n,)
+            A list ``m`` such that ``m[x]`` denotes the (recursive) parent ID
+            of `x`, for `x = 0,1,...,n-1`.
         """
         cdef ssize_t i
         cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
@@ -989,16 +1032,16 @@ cdef class DisjointSets:
 
     cpdef np.ndarray[ssize_t] to_list_normalized(self):
         """
-        Get the normalised elements' membership information.
+        Gets the normalised elements' membership information
 
 
-        Returns:
+        Returns
         -------
 
-        set_ids : ndarray, shape (n,)
-            A list m such that m[x] denotes the normalised parent id of x.
-            The resulting values are in {0,1,...,k-1}, where k is the current
-            number of subsets in the partition.
+        ndarray, shape (n,)
+            A list ``m`` such that ``m[x]`` denotes the normalised parent ID
+            of `x`. The resulting values are in `{0,1,...,k-1}`,
+            where `k` is the current number of subsets in the partition.
         """
         cdef ssize_t i, j
         cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
@@ -1015,17 +1058,24 @@ cdef class DisjointSets:
 
     def to_lists(self):
         """
-        Returns a list of lists representing the current partition.
-        This is a slow operation. Do you really need this?
+        Returns a list of lists representing the current partition
 
 
-        Returns:
+
+        Returns
         -------
 
-        partition : list of lists
-            A list of length k, where k is the current number
-            of sets in a partition. Each list element is a list
-            with values in {0,...,n-1}
+        list of lists
+            A list of length `k`, where `k` is the current number
+            of sets in the partition. Each list element is a list
+            with values in `{0,...,n-1}`.
+
+
+        Notes
+        -----
+
+        This is a slow operation. Do you really need it?
+
         """
         cdef ssize_t i
         cdef list tou, out
@@ -1043,7 +1093,7 @@ cdef class DisjointSets:
 
     def __repr__(self):
         """
-        Calls self.to_lists()
+        Calls `self.to_lists()`
         """
         return "DisjointSets("+repr(self.to_lists())+")"
 
@@ -1061,27 +1111,29 @@ cdef class DisjointSets:
 
 cdef class GiniDisjointSets():
     """
-    Augmented disjoint sets (Union-Find) over {0,1,...,n-1}.
-    The class allows to compute the normalised Gini index of the
-    distribution of subset sizes, i.e.,
-    $$
-        G(x_1,\dots,x_k) = \frac{
-        \sum_{i=1}^{n-1} \sum_{j=i+1}^n |x_i-x_j|
-        }{
-        (n-1) \sum_{i=1}^n x_i
-        }.
-    $$
-
-    For a use case, see: Gagolewski M., Bartoszuk M., Cena A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+    Augmented disjoint sets (Union-Find) over `{0,1,...,n-1}`
 
 
-    Parameters:
+
+    Parameters
     ----------
 
     n : ssize_t
         The cardinality of the set whose partitions are generated.
+
+    Notes
+    -----
+
+    The class allows to compute the normalised Gini index of the
+    distribution of subset sizes, i.e.,
+    :math:`G(x_1,\dots,x_k) = \\frac{\\sum_{i=1}^{n-1} \\sum_{j=i+1}^n |x_i-x_j|}{        (n-1) \\sum_{i=1}^n x_i}`\ , where :math:`x_i` is the
+    number of elements in the `i`-th subset in the current
+    partition.
+
+    For a use case, see: Gagolewski M., Bartoszuk M., Cena A.,
+    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+    *Information Sciences* **363**, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+
     """
     cdef c_gini_disjoint_sets.CGiniDisjointSets ds
 
@@ -1091,107 +1143,136 @@ cdef class GiniDisjointSets():
     def __len__(self):
         """
         Returns the number of subsets-1,
-        a.k.a. how many calls to union() can we still perform.
+        i.e., how many calls to `union()` we can still perform.
 
-        Returns:
+
+        Returns
         -------
 
-        len : ssize_t
-            A value in {0,...,n-1}.
+        ssize_t
+            A value in `{0,...,n-1}`.
         """
         return self.ds.get_k()-1
 
 
     cpdef ssize_t get_n(self):
         """
-        Returns the number of elements in the set being partitioned.
+        Returns the number of elements in the set being partitioned
         """
         return self.ds.get_n()
 
 
     cpdef ssize_t get_k(self):
         """
-        Returns the current number of subsets.
+        Returns the current number of subsets
         """
         return self.ds.get_k()
 
 
     cpdef double get_gini(self):
         """
-        Returns the Gini index of the distribution of subsets' sizes.
+        Returns the Gini index of the distribution of subsets' sizes
 
-        Run time: O(1), as the Gini index is updated during a call
-        to union().
+        Notes
+        -----
+
+        Run time is :math:`O(1)`, as the Gini index is updated during
+        each call to `union()`.
         """
         return self.ds.get_gini()
 
 
     cpdef ssize_t get_count(self, ssize_t x):
         """
-        Returns the size of the subset containing x.
+        Returns the size of the subset containing `x`
 
-        Run time: the cost of find(x)
+
+        Parameters
+        ----------
+
+        x : ssize_t
+            An integer in `{0,...,n-1}`, representing an element to find.
+
+        Notes
+        ------
+
+        Run time: the cost of `find(x)`
         """
         return self.ds.get_count(x)
 
 
     cpdef ssize_t get_smallest_count(self):
         """
-        Returns the size of the smallest subset.
+        Returns the size of the smallest subset
 
-        Run time: O(1)
+
+        Notes
+        -----
+
+        Run time is `O(1)`.
         """
         return self.ds.get_smallest_count()
 
 
     cpdef ssize_t find(self, ssize_t x):
         """
-        Finds the subset id for a given x.
+        Finds the subset ID for a given `x`
 
 
-        Parameters:
+        Parameters
         ----------
 
-        x : int
-            An integer in {0,...,n-1}, representing an element to find.
+        x : ssize_t
+            An integer in `{0,...,n-1}`, representing an element to find.
 
 
-        Returns:
+        Returns
         -------
 
-        parent_x : int
-            The id of the parent of x.
+        ssize_t
+            The ID of the parent of `x`.
         """
         return self.ds.find(x)
 
 
     cpdef ssize_t union(self, ssize_t x, ssize_t y):
         """
-        Merges the sets containing given x and y.
-
-        Let px be the parent id of x, and py be the parent id of y.
-        If px < py, then the new parent id of py will be set to py.
-        Otherwise, px will have py as its parent.
-
-        If x and y are already members of the same subset,
-        an exception is thrown.
-
-        Update time: pessimistically O(sqrt(n)).
+        Merges the sets containing given `x` and `y`
 
 
-        Parameters:
+
+        Parameters
         ----------
 
-        x, y : int
-            Integers in {0,...,n-1}, representing elements
-            of two sets to merge.
+        x : ssize_t
+            Integer in {0,...,n-1}, representing an element of the first set
+            to be merged.
+
+        y : ssize_t
+            Integer in {0,...,n-1}, representing an element of the second set
+            to be merged.
 
 
-        Returns:
+        Returns
         -------
 
-        parent : int
+        parent : ssize_t
             The id of the parent of x or y, whichever is smaller.
+
+
+        Notes
+        -----
+
+        Let `px` be the parent ID of `x`, and `py` be the parent ID of `y`.
+        If `px < py`, then the new parent ID of `py` will be set to `py`.
+        Otherwise, `px` will have `py` as its parent.
+
+        If `x` and `y` are members of the same subset,
+        an exception is thrown.
+
+        Update time: pessimistically :math:`O(\\sqrt{n})`,
+        as the Gini index must be recomputed.
+
         """
 
         return self.ds.merge(x, y)
@@ -1200,15 +1281,15 @@ cdef class GiniDisjointSets():
 
     cpdef np.ndarray[ssize_t] to_list(self):
         """
-        Get parent ids of all the elements
+        Gets parent IDs of all the elements
 
 
-        Returns:
+        Returns
         -------
 
-        parents : ndarray, shape (n,)
-            A list m such that m[x] denotes the (recursive) parent id of x,
-            for x=0,1,...,n.
+        ndarray, shape (n,)
+            A list ``m`` such that ``m[x]`` denotes the (recursive) parent ID
+            of `x`, for `x = 0,1,...,n-1`.
         """
         cdef ssize_t i
         cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
@@ -1219,16 +1300,16 @@ cdef class GiniDisjointSets():
 
     cpdef np.ndarray[ssize_t] to_list_normalized(self):
         """
-        Get the normalized elements' membership information.
+        Gets the normalised elements' membership information
 
 
-        Returns:
+        Returns
         -------
 
-        set_ids : ndarray, shape (n,)
-            A list m such that m[x] denotes the normalised parent id of x.
-            The resulting values are in {0,1,...,k-1}, where k is the current
-            number of subsets in the partition.
+        ndarray, shape (n,)
+            A list ``m`` such that ``m[x]`` denotes the normalised parent ID
+            of `x`. The resulting values are in `{0,1,...,k-1}`,
+            where `k` is the current number of subsets in the partition.
         """
         cdef ssize_t i, j
         cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
@@ -1245,16 +1326,24 @@ cdef class GiniDisjointSets():
 
     def to_lists(self):
         """
-        Returns a list of lists representing the current partition.
-        This is a slow operation. Do you really need this?
+        Returns a list of lists representing the current partition
 
-        Returns:
+
+
+        Returns
         -------
 
-        partition : list of lists
-            A list of length k, where k is the current number
-            of sets in a partition. Each list element is a list
-            with values in {0,...,n-1}
+        list of lists
+            A list of length `k`, where `k` is the current number
+            of sets in the partition. Each list element is a list
+            with values in `{0,...,n-1}`.
+
+
+        Notes
+        -----
+
+        This is a slow operation. Do you really need it?
+
         """
         cdef ssize_t i
         cdef list tou, out
@@ -1272,10 +1361,14 @@ cdef class GiniDisjointSets():
 
     def get_counts(self):
         """
-        Generates an array of subsets' sizes.
+        Generates an array of subsets' sizes
+
+        Notes
+        -----
+
         The resulting vector is ordered nondecreasingly.
 
-        Run time: O(k), where k is the current number of subsets.
+        Run time is :math:`O(k)`, where `k` is the current number of subsets.
         """
         cdef ssize_t k = self.ds.get_k()
         cdef np.ndarray[ssize_t] out = np.empty(k, dtype=np.intp)
@@ -1285,7 +1378,7 @@ cdef class GiniDisjointSets():
 
     def __repr__(self):
         """
-        Calls self.to_lists()
+        Calls `self.to_lists()`
         """
         return "GiniDisjointSets("+repr(self.to_lists())+")"
 

@@ -7,6 +7,7 @@ Python Package `genieclust` Reference
     genieclust.Genie
     genieclust.compare_partitions
     genieclust.inequity
+    genieclust.internal
     genieclust.plots
     genieclust.tools
 
@@ -19,5 +20,6 @@ Python Package `genieclust` Reference
     genieclust_genie
     genieclust_compare_partitions
     genieclust_inequity
+    genieclust_internal
     genieclust_plots
     genieclust_tools
