@@ -84,6 +84,10 @@ g = genieclust.Genie(n_clusters=n_clusters)
 labels_genie = g.fit_predict(X)
 @
 
+:See also: Documentation of the :class:`genieclust.Genie`\ class.
+
+
+
 Plotting of the discovered partition:
 
 <<basics-plot-pred,results="hidden",caption="Labels predicted by Genie.">>=
@@ -261,3 +265,12 @@ scipy.cluster.hierarchy.dendrogram(linkage_matrix,
     truncate_mode="lastp", p=15, orientation="left")
 plt.show()
 @
+
+
+
+
+Further Reading
+---------------
+
+For more details, refer to the package's API reference
+manual: :class:`genieclust.Genie`\ .

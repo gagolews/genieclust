@@ -1,8 +1,3 @@
-.. genieclust documentation master file, created by
-   sphinx-quickstart on Sun Jun 28 11:34:56 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 `genieclust`: Fast and Robust Hierarchical Clustering with Noise Point Detection
 ================================================================================
 
@@ -27,7 +22,7 @@ neighbours.
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
-on `benchmark data <https://github.com/gagolews/clustering_benchmarks_v1/>`_.
+on :any:`benchmark data <weave/benchmarks_ar>`\ .
 
 Genie is also **very fast** — determining the whole cluster hierarchy
 for datasets of millions of points can be completed within
@@ -35,9 +30,10 @@ for datasets of millions of points can be completed within
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
 (large datasets with any number of clusters to detect) for data
 that fit into memory.
-Thanks to the use of `nmslib` :cite:`nmslib`\ , sparse or string inputs are also supported.
+Thanks to the use of `nmslib` :cite:`nmslib`\ ,
+sparse or string inputs are also supported.
 
-It also allows clustering with respect to mutual reachability distances
+Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
 robustified version of `HDBSCAN\*` :cite:`hdbscan` that is able to detect a predefined
 number of clusters and hence it doesn't dependent on the `DBSCAN`'s somehow
@@ -74,7 +70,8 @@ Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 `GitHub <https://github.com/gagolews/genieclust>`_.
 Note that the core functionality is implemented in the form of a header-only C++
-library, hence it might be relatively easily adapted to new environments.
+library, hence it might be relatively easily adapted to new environments —
+any contributions are welcome.
 
 
 .. toctree::

@@ -13,7 +13,7 @@ About
 -----
 
 A faster and more powerful version of **Genie** - a robust and outlier
-resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
+resistant clustering algorithm (see Gagolewski, Bartoszuk, and Cena, 2016),
 originally published as an R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
@@ -50,7 +50,7 @@ Author and Contributors
 
 Author and Maintainer: `Marek Gagolewski <https://www.gagolewski.com>`_
 
-Contributors for the original R package `genie`:
+Contributors of the code from the original R package `genie`:
 `Anna Cena <https://cena.rexamine.com>`_,
 `Maciej Bartoszuk <https://bartoszuk.rexamine.com>`_
 

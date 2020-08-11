@@ -96,6 +96,10 @@ In particular, an object of class `Genie` is equipped with the
 
 
 
+:See also: Documentation of the :class:`genieclust.Genie`\ class.
+
+
+
 Plotting of the discovered partition:
 
 
@@ -197,7 +201,7 @@ So we shouldn't be much surprised with this result.
 
 .. code::
 
-    array([[197,  79],
+    array([[196,  80],
            [  1,  96]])
     
 
@@ -212,7 +216,7 @@ So we shouldn't be much surprised with this result.
 
 .. code::
 
-    0.3241080446115835
+    0.31809375561973835
     
 
 
@@ -379,3 +383,12 @@ For a list of graphical parameters, refer to the function's manual:
    :width: 15 cm
 
 
+
+
+
+
+Further Reading
+---------------
+
+For more details, refer to the package's API reference
+manual: :class:`genieclust.Genie`\ .

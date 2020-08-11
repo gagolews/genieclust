@@ -95,6 +95,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#a-comparison-with-k-means">A Comparison with k-means</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#a-comparison-with-hdbscan">A Comparison with HDBSCAN*</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dendrograms">Dendrograms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further Reading</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -243,6 +244,11 @@ In particular, an object of class <cite>Genie</cite> is equipped with the
 <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">See also</dt>
+<dd class="field-odd"><p>Documentation of the <a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>class.</p>
+</dd>
+</dl>
 <p>Plotting of the discovered partition:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_genie</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Genie (gini_threshold=</span><span class="si">%g</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="n">g</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">)</span>
@@ -301,7 +307,7 @@ So we shouldn’t be much surprised with this result.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">normalized_confusion_matrix</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mi">197</span><span class="p">,</span>  <span class="mi">79</span><span class="p">],</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mi">196</span><span class="p">,</span>  <span class="mi">80</span><span class="p">],</span>
        <span class="p">[</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">96</span><span class="p">]])</span>
 </pre></div>
 </div>
@@ -309,7 +315,7 @@ So we shouldn’t be much surprised with this result.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.3241080446115835</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.31809375561973835</span>
 </pre></div>
 </div>
 <p>The adjusted Rand score of <span class="math notranslate nohighlight">\(\sim 0.3\)</span> indicates a far-from-perfect fit.</p>
@@ -419,6 +425,11 @@ This makes the resulting partitions more stable.</p>
 </pre></div>
 </div>
 <a class="reference internal image-reference" href="../_images/basics_basics-dendrogram-2_1.png"><img alt="../_images/basics_basics-dendrogram-2_1.png" src="../_images/basics_basics-dendrogram-2_1.png" style="width: 15cm;" /></a>
+</div>
+<div class="section" id="further-reading">
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this headline">¶</a></h2>
+<p>For more details, refer to the package’s API reference
+manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>.</p>
 </div>
 </div>
 
