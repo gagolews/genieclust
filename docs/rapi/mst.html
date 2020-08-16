@@ -1,0 +1,360 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>mst: Minimum Spanning Tree of the Pairwise Distance Graph &mdash; genieclust 0.9.5.dev0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://genieclust.gagolewski.comrapi/mst.html"/>
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Benchmarks — Detailed Results" href="../weave/benchmarks_details.html" />
+    <link rel="prev" title="inequity: Inequity (Inequality) Measures" href="inequity.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.5.dev0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: Pairwise Partition Similarity Scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: The Genie++ Hierarchical Clustering Algorithm</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inequity.html">inequity: Inequity (Inequality) Measures</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#details">Details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
+        
+      <li>mst: Minimum Spanning Tree of the Pairwise Distance Graph</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="../weave/benchmarks_details.html" class="btn btn-neutral float-right" title="Benchmarks — Detailed Results" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="inequity.html" class="btn btn-neutral float-left" title="inequity: Inequity (Inequality) Measures" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+  </div>
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
+<h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<p>An parallelised implementation of a Jarník (Prim/Dijkstra)-like algorithm for determining a(*) minimum spanning tree (MST) of a complete undirected graph representing a set of n points with weights given by a pairwise distance matrix.</p>
+<p>(*) Note that there might be multiple minimum trees spanning a given graph.</p>
+</div>
+<div class="section" id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">mst</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+
+<span class="c1">## Default S3 method:</span>
+<span class="nf">mst</span><span class="p">(</span>
+  <span class="n">d</span><span class="p">,</span>
+  <span class="n">distance</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s">&quot;l2&quot;</span><span class="p">,</span> <span class="s">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s">&quot;cityblock&quot;</span><span class="p">,</span> <span class="s">&quot;l1&quot;</span><span class="p">,</span> <span class="s">&quot;cosine&quot;</span><span class="p">),</span>
+  <span class="n">M</span> <span class="o">=</span> <span class="m">1L</span><span class="p">,</span>
+  <span class="n">cast_float32</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
+  <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
+  <span class="kc">...</span>
+<span class="p">)</span>
+
+<span class="c1">## S3 method for class &#39;dist&#39;</span>
+<span class="nf">mst</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="m">1L</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="arguments">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 89%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
+<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
+<td><p>further arguments passed to or from other methods.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
+<td><p>metric used to compute the linkage, one of: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
+<td><p>smoothing factor; <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1 gives the selected <code class="docutils literal notranslate"><span class="pre">distance</span></code>; otherwise, the mutual reachability distance is used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cast_float32</span></code></p></td>
+<td><p>logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster).</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<td><p>logical; whether to print diagnostic messages and progress information.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <em>n p</em>, the <em>n (n-1)/2</em> distances are computed on the fly, so that <em>O(n M)</em> memory is used.</p>
+<p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code> to control the number of threads used.</p>
+<p>Time complexity is <em>O(n^2)</em> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <em>O(p n^2)</em> otherwise.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference external" href="gclust.html">gclust</a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
+<p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
+</div>
+<div class="section" id="value">
+<h2>Value<a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h2>
+<p>Matrix of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> with n-1 rows and 3 columns: <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code> and <code class="docutils literal notranslate"><span class="pre">dist</span></code>. It holds <code class="docutils literal notranslate"><span class="pre">from</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">to</span></code>. Moreover, <code class="docutils literal notranslate"><span class="pre">dist</span></code> is sorted nondecreasingly. The i-th row gives the i-th edge of the MST. <code class="docutils literal notranslate"><span class="pre">(from[i],</span> <span class="pre">to[i])</span></code> defines the vertices (in 1,…,n) and <code class="docutils literal notranslate"><span class="pre">dist[i]</span></code> gives the weight, i.e., the distance between the corresponding points.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">method</span></code> attribute gives the name of the distance used. The <code class="docutils literal notranslate"><span class="pre">Labels</span></code> attribute gives the labels of all the input points.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, the <code class="docutils literal notranslate"><span class="pre">nn</span></code> attribute gives the indices of the <code class="docutils literal notranslate"><span class="pre">M</span></code>-1 nearest neighbours of each point.</p>
+</div>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>Jarník V., O jistém problému minimálním, Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.</p>
+<p>Olson C.F., Parallel algorithms for hierarchical clustering, Parallel Comput. 21 (1995) 1313–1325.</p>
+<p>Prim R., Shortest connection networks and some generalisations, Bell Syst. Tech. J. 36 (1957) 1389–1401.</p>
+<p>Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.</p>
+</div>
+<div class="section" id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="emst_mlpack.html">emst_mlpack()</a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
+<span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
+<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
+<span class="n">tree</span> <span class="o">&lt;-</span> <span class="nf">mst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../weave/benchmarks_details.html" class="btn btn-neutral float-right" title="Benchmarks — Detailed Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="inequity.html" class="btn btn-neutral float-left" title="inequity: Inequity (Inequality) Measures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

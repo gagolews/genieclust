@@ -20,7 +20,11 @@ py-test: python
 weave:
 	cd devel/sphinx/weave && make && cd ../../../
 
-sphinx: python r weave
+rd2rst:
+	#devtools::install_github('gagolews/Rd2rst')
+	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('genieclust')" && cd ../../
+
+sphinx: python r weave rd2rst
 	rm -rf devel/sphinx/_build/
 	Rscript -e "Rd2md::ReferenceManual()"
 	Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \
@@ -48,7 +52,7 @@ r:
 	R CMD INSTALL .
 	# AVOID ADDING THE -O0 flag!!!
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
-	R CMD INSTALL .
+	R CMD INSTALL . --html
 
 r-check: r
 	Rscript -e 'devtools::check()'

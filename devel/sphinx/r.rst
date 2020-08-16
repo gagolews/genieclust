@@ -705,13 +705,13 @@ Seealso
 References
 ~~~~~~~~~~
 
-V. Jarník, O jistém problému minimálním, Práce Moravské Přírodovědecké
+Jarník V., O jistém problému minimálním, Práce Moravské Přírodovědecké
 Společnosti 6 (1930) 57–63.
 
-C.F. Olson, Parallel algorithms for hierarchical clustering, Parallel
+Olson C.F., Parallel algorithms for hierarchical clustering, Parallel
 Comput. 21 (1995) 1313–1325.
 
-R. Prim, Shortest connection networks and some generalisations, Bell
+Prim R., Shortest connection networks and some generalisations, Bell
 Syst. Tech. J. 36 (1957) 1389–1401.
 
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density

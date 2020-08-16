@@ -92,7 +92,7 @@ any contributions are welcome.
     :caption: API Documentation
 
     genieclust
-    r
+    rapi
 
 .. toctree::
     :maxdepth: 2
