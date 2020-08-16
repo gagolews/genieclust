@@ -2,8 +2,8 @@ Timings (How Fast Is It?)
 =========================
 
 In the :any:`previous section <benchmarks_ar>` we have demonstrated
-that Genie generates *quality* partitions. Now the crucial question is:
-does it do it quickly?
+that Genie generates partitions of high *quality*. Now the crucial question is:
+does it do this quickly?
 
 Genie will be compared against K-means from `scikit-learn <https://scikit-learn.org/>`_
 :cite:`sklearn` version 0.23.1
@@ -229,7 +229,7 @@ a first run of the algorithm:
 
 .. code::
 
-    time elapsed - first run: 0.601
+    time elapsed - first run: 0.589
     
 
 

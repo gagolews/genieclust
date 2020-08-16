@@ -1,6 +1,6 @@
 /*  Common functions, macros, includes
  *
- *  Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
+ *  Copyleft (C) 2018-2020, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License
@@ -10,7 +10,7 @@
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU Affero General Public License Version 3 for more details.
  *  You should have received a copy of the License along with this program.
- *  If not, see <https://www.gnu.org/licenses/>.
+ *  If this is not the case, refer to <https://www.gnu.org/licenses/>.
  */
 
 
