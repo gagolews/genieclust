@@ -14,12 +14,13 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
   
   
-    <link rel="canonical" href="https://genieclust.gagolewski.comweave/basics.html"/>
+    <link rel="canonical" href="https://genieclust.gagolewski.com/weave/basics.html"/>
   
 
   
@@ -219,8 +220,8 @@ of the <cite>genieclust</cite> package.</p>
 </div>
 <div class="section" id="breaking-the-ice">
 <h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this headline">¶</a></h2>
-<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <a class="bibtex reference internal" href="../z_bibliography.html#jain" id="id2">[JL05]</a>, which  comes along
-with the true corresponding partition (by an expert).</p>
+<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <a class="bibtex reference internal" href="../z_bibliography.html#jain" id="id2">[JL05]</a>, which  comes
+with the true corresponding partition (as assigned by experts).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
 <span class="c1"># Load an example 2D dataset:</span>
@@ -279,8 +280,8 @@ one by computing, for example, the confusion matrix.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">normalized_confusion_matrix</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_genie</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mi">276</span><span class="p">,</span>   <span class="mi">0</span><span class="p">],</span>
-       <span class="p">[</span>  <span class="mi">0</span><span class="p">,</span>  <span class="mi">97</span><span class="p">]])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[276,   0],</span>
+<span class="c1">##        [  0,  97]])</span>
 </pre></div>
 </div>
 <p>The above confusion matrix can be summarised by means of partition
@@ -289,7 +290,7 @@ similarity measures, like the Adjusted Rand Index (<code class="docutils literal
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_genie</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.0</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 1.0</span>
 </pre></div>
 </div>
 <p>Which of course denotes a perfect match between these two.</p>
@@ -318,15 +319,15 @@ So we shouldn’t be much surprised with this result.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">normalized_confusion_matrix</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="mi">196</span><span class="p">,</span>  <span class="mi">80</span><span class="p">],</span>
-       <span class="p">[</span>  <span class="mi">1</span><span class="p">,</span>  <span class="mi">96</span><span class="p">]])</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[197,  79],</span>
+<span class="c1">##        [  1,  96]])</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># A cluster similarity measure for k-means:</span>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.31809375561973835</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 0.3241080446115835</span>
 </pre></div>
 </div>
 <p>The adjusted Rand score of <span class="math notranslate nohighlight">\(\sim 0.3\)</span> indicates a far-from-perfect fit.</p>
@@ -369,7 +370,7 @@ of the obtained clusters. Its default value is set to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span><span class="o">.</span><span class="n">min_cluster_size</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">5</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 5</span>
 </pre></div>
 </div>
 <p>Unfortunately, we cannot easily guess how many clusters will be generated

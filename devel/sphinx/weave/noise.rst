@@ -2,7 +2,7 @@ Clustering with Noise Points Detection
 ======================================
 
 
-.. code:: python
+.. code-block:: python
 
     import numpy as np
     import pandas as pd
@@ -22,7 +22,7 @@ the on `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
 package's project site:
 
 
-.. code:: python
+.. code-block:: python
 
     dataset = "hdbscan"
     X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
@@ -40,7 +40,7 @@ find useful for whatever their goal is).
 Labels -1 denote noise points (light grey markers).
 
 
-.. code:: python
+.. code-block:: python
 
     genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5)
     plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
@@ -72,7 +72,7 @@ Here are the effects of playing with the `M` parameter
 (we keep the default `gini_threshold`):
 
 
-.. code:: python
+.. code-block:: python
 
     Ms = [2, 5, 10, 25]
     for i in range(len(Ms)):
@@ -99,7 +99,7 @@ temporarily disable), and then apply the clustering procedure once again
 but now with respect to the original distance (here: Euclidean):
 
 
-.. code:: python
+.. code-block:: python
 
     # Step 1: Noise point identification
     g1 = genieclust.Genie(n_clusters=n_clusters, M=50)
@@ -135,7 +135,7 @@ of finer or coarser granularity.
 
 
 
-.. code:: python
+.. code-block:: python
 
     ncs = [5, 6, 7, 8, 10, 15]
     for i in range(len(ncs)):
@@ -165,7 +165,7 @@ A Comparision with HDBSCAN\*
 Here are the results returned by `hdbscan` with default parameters:
 
 
-.. code:: python
+.. code-block:: python
 
     import hdbscan
 
@@ -173,7 +173,7 @@ Here are the results returned by `hdbscan` with default parameters:
 
 
 
-.. code:: python
+.. code-block:: python
 
     h = hdbscan.HDBSCAN()
     labels_hdbscan = h.fit_predict(X)
@@ -198,7 +198,7 @@ we can obtain a partition that is even closer to the reference one:
 
 
 
-.. code:: python
+.. code-block:: python
 
     mcss = [5, 10, 25]
     mss = [5, 10]

@@ -2,7 +2,6 @@ Basics
 ======
 
 
-
 *Genie* :cite:`genieins` is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
@@ -43,8 +42,8 @@ plt.rcParams.update({
 Breaking the Ice
 ----------------
 
-Let's load an example benchmark set, ``jain`` :cite:`jain`\ , which  comes along
-with the true corresponding partition (by an expert).
+Let's load an example benchmark set, ``jain`` :cite:`jain`\ , which  comes
+with the true corresponding partition (as assigned by experts).
 
 <<basics-load>>=
 # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave

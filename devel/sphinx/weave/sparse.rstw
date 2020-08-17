@@ -103,32 +103,32 @@ Here is one of 500 clusters extracted:
 
 .. code::
 
-    13327                       Blackadder Back & Forth (1999)
-    13328                  Blackadder's Christmas Carol (1988)
-    3341                              Creature Comforts (1989)
-    1197       Grand Day Out with Wallace and Gromit, A (1989)
-    2778                            Hard Day's Night, A (1964)
-    2861                                          Help! (1965)
-    2963                              How I Won the War (1967)
-    6006        Monty Python Live at the Hollywood Bowl (1982)
-    1113                Monty Python and the Holy Grail (1975)
-    2703     Monty Python's And Now for Something Completel...
-    1058                   Monty Python's Life of Brian (1979)
-    6698             Monty Python's The Meaning of Life (1983)
-    27284                                  Oliver Twist (1997)
-    2216                                 Producers, The (1968)
-    4716                                   Quadrophenia (1979)
-    6027             Secret Policeman's Other Ball, The (1982)
-    27448                                    The Basket (2000)
-    2792                                          Tommy (1975)
-    10475    Wallace & Gromit in The Curse of the Were-Rabb...
-    732                 Wallace & Gromit: A Close Shave (1995)
-    708      Wallace & Gromit: The Best of Aardman Animatio...
-    1125           Wallace & Gromit: The Wrong Trousers (1993)
-    13239    Wallace and Gromit in 'A Matter of Loaf and De...
-    2772                               Yellow Submarine (1968)
-    1250                             Young Frankenstein (1974)
-    Name: title, dtype: object
+    ## 13327                       Blackadder Back & Forth (1999)
+    ## 13328                  Blackadder's Christmas Carol (1988)
+    ## 3341                              Creature Comforts (1989)
+    ## 1197       Grand Day Out with Wallace and Gromit, A (1989)
+    ## 2778                            Hard Day's Night, A (1964)
+    ## 2861                                          Help! (1965)
+    ## 2963                              How I Won the War (1967)
+    ## 6006        Monty Python Live at the Hollywood Bowl (1982)
+    ## 1113                Monty Python and the Holy Grail (1975)
+    ## 2703     Monty Python's And Now for Something Completel...
+    ## 1058                   Monty Python's Life of Brian (1979)
+    ## 6698             Monty Python's The Meaning of Life (1983)
+    ## 27284                                  Oliver Twist (1997)
+    ## 2216                                 Producers, The (1968)
+    ## 4716                                   Quadrophenia (1979)
+    ## 6027             Secret Policeman's Other Ball, The (1982)
+    ## 27448                                    The Basket (2000)
+    ## 2792                                          Tommy (1975)
+    ## 10475    Wallace & Gromit in The Curse of the Were-Rabb...
+    ## 732                 Wallace & Gromit: A Close Shave (1995)
+    ## 708      Wallace & Gromit: The Best of Aardman Animatio...
+    ## 1125           Wallace & Gromit: The Wrong Trousers (1993)
+    ## 13239    Wallace and Gromit in 'A Matter of Loaf and De...
+    ## 2772                               Yellow Submarine (1968)
+    ## 1250                             Young Frankenstein (1974)
+    ## Name: title, dtype: object
 
 
 

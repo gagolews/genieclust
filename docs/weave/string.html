@@ -14,12 +14,13 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
   
   
-    <link rel="canonical" href="https://genieclust.gagolewski.comweave/string.html"/>
+    <link rel="canonical" href="https://genieclust.gagolewski.com/weave/string.html"/>
   
 
   
@@ -196,21 +197,19 @@
 data. Let’s perform an example grouping based
 on <a class="reference external" href="https://en.wikipedia.org/wiki/Levenshtein_distance">Levenshtein’s</a> edit
 distance.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-</pre></div>
-</div>
 <p>We’ll use one of the benchmark datasets mentioned in <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id1">[GBC16]</a>
 as an example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd</span>
 <span class="n">strings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;actg1.data.gz&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 <span class="n">strings</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata&#39;</span><span class="p">,</span>
-<span class="s1">&#39;atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca&#39;</span><span class="p">,</span>
-<span class="s1">&#39;gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg&#39;</span><span class="p">,</span>
-<span class="s1">&#39;gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga&#39;</span><span class="p">,</span>
-<span class="s1">&#39;ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc&#39;</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## [&#39;tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata&#39;,</span>
+<span class="c1">## &#39;atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca&#39;,</span>
+<span class="c1">## &#39;gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg&#39;,</span>
+<span class="c1">## &#39;gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga&#39;,</span>
+<span class="c1">## &#39;ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc&#39;]</span>
 </pre></div>
 </div>
 <p>It comes with a set of reference labels, giving the “true” grouping assigned
@@ -220,7 +219,7 @@ by an expert:</p>
 <span class="nb">print</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">20</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 20</span>
 </pre></div>
 </div>
 <p>Clustering in the string domain relies on the
@@ -239,7 +238,7 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_pred</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.9352814722212013</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 0.9352814722212013</span>
 </pre></div>
 </div>
 <p>This indicates a very high degree of similarity between the reference

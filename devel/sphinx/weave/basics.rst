@@ -2,7 +2,6 @@ Basics
 ======
 
 
-
 *Genie* :cite:`genieins` is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
@@ -21,7 +20,7 @@ of the `genieclust` package.
 
 
 
-.. code:: python
+.. code-block:: python
 
     import numpy as np
     import pandas as pd
@@ -38,11 +37,11 @@ of the `genieclust` package.
 Breaking the Ice
 ----------------
 
-Let's load an example benchmark set, ``jain`` :cite:`jain`\ , which  comes along
-with the true corresponding partition (by an expert).
+Let's load an example benchmark set, ``jain`` :cite:`jain`\ , which  comes
+with the true corresponding partition (as assigned by experts).
 
 
-.. code:: python
+.. code-block:: python
 
     # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
     dataset = "jain"
@@ -63,7 +62,7 @@ with the true corresponding partition (by an expert).
 A scatter plot of the dataset together with the reference labels:
 
 
-.. code:: python
+.. code-block:: python
 
     genieclust.plots.plot_scatter(X, labels=labels_true)
     plt.title("%s (n=%d, true n_clusters=%d)" % (dataset, X.shape[0], n_clusters))
@@ -88,7 +87,7 @@ In particular, an object of class `Genie` is equipped with the
 
 
 
-.. code:: python
+.. code-block:: python
 
     g = genieclust.Genie(n_clusters=n_clusters)
     labels_genie = g.fit_predict(X)
@@ -103,7 +102,7 @@ In particular, an object of class `Genie` is equipped with the
 Plotting of the discovered partition:
 
 
-.. code:: python
+.. code-block:: python
 
     genieclust.plots.plot_scatter(X, labels=labels_genie)
     plt.title("Genie (gini_threshold=%g)" % g.gini_threshold)
@@ -126,17 +125,16 @@ one by computing, for example, the confusion matrix.
 
 
 
-.. code:: python
+.. code-block:: python
 
     # Compute the confusion matrix (with pivoting)
     genieclust.compare_partitions.normalized_confusion_matrix(labels_true, labels_genie)
 
 
-.. code::
+::
 
-    array([[276,   0],
-           [  0,  97]])
-    
+    ## array([[276,   0],
+    ##        [  0,  97]])
 
 
 
@@ -144,16 +142,15 @@ The above confusion matrix can be summarised by means of partition
 similarity measures, like the Adjusted Rand Index (``ar``).
 
 
-.. code:: python
+.. code-block:: python
 
     # See also: sklearn.metrics.adjusted_rand_score()
     genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_genie)
 
 
-.. code::
+::
 
-    1.0
-    
+    ## 1.0
 
 
 
@@ -168,7 +165,7 @@ For the sake of comparison, let's apply the k-means algorithm on the same datase
 
 
 
-.. code:: python
+.. code-block:: python
 
     import sklearn.cluster
     km = sklearn.cluster.KMeans(n_clusters=n_clusters)
@@ -193,31 +190,29 @@ So we shouldn't be much surprised with this result.
 
 
 
-.. code:: python
+.. code-block:: python
 
     # Compute the confusion matrix for the k-means output:
     genieclust.compare_partitions.normalized_confusion_matrix(labels_true, labels_kmeans)
 
 
-.. code::
+::
 
-    array([[196,  80],
-           [  1,  96]])
-    
-
+    ## array([[197,  79],
+    ##        [  1,  96]])
 
 
 
-.. code:: python
+
+.. code-block:: python
 
     # A cluster similarity measure for k-means:
     genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_kmeans)
 
 
-.. code::
+::
 
-    0.31809375561973835
-    
+    ## 0.3241080446115835
 
 
 
@@ -241,7 +236,7 @@ Here are the clustering results with the ``min_cluster_size`` parameter
 of 3, 5, 10, and 15:
 
 
-.. code:: python
+.. code-block:: python
 
     import hdbscan
     mcs = [3, 5, 10, 15]
@@ -275,15 +270,14 @@ In HDBSCAN\*,  ``min_cluster_size`` affects the "granularity"
 of the obtained clusters. Its default value is set to:
 
 
-.. code:: python
+.. code-block:: python
 
     hdbscan.HDBSCAN().min_cluster_size
 
 
-.. code::
+::
 
-    5
-    
+    ## 5
 
 
 
@@ -292,7 +286,7 @@ by this method. At a first glance, it would seem that ``min_cluster_size``
 should lie somewhere between 10 and 15, but...
 
 
-.. code:: python
+.. code-block:: python
 
     mcs = range(10, 16)
     for i in range(len(mcs)):
@@ -325,7 +319,7 @@ into two subgroups.
 This makes the resulting partitions more stable.
 
 
-.. code:: python
+.. code-block:: python
 
     ncl = range(2, 8)
     for i in range(len(ncl)):
@@ -353,7 +347,7 @@ Dendrograms
 Plotting of dendrograms is possible with `scipy.cluster.hierarchy`:
 
 
-.. code:: python
+.. code-block:: python
 
     import scipy.cluster.hierarchy
     g = genieclust.Genie(compute_full_tree=True)
@@ -372,7 +366,7 @@ Plotting of dendrograms is possible with `scipy.cluster.hierarchy`:
 For a list of graphical parameters, refer to the function's manual:
 
 
-.. code:: python
+.. code-block:: python
 
     scipy.cluster.hierarchy.dendrogram(linkage_matrix,
         truncate_mode="lastp", p=15, orientation="left")

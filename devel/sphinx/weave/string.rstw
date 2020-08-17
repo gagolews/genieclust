@@ -6,13 +6,15 @@ data. Let's perform an example grouping based
 on `Levenshtein's <https://en.wikipedia.org/wiki/Levenshtein_distance>`_ edit
 distance.
 
-<<sparse-example-imports>>=
-import numpy as np
-@
+We'll use one of the benchmark datasets mentioned in :cite:`genieins`
+as an example:
+
+
 
 <<settings,results="hidden",echo=False>>=
 import pweave
 from tabulate import tabulate
+import numpy as np
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 #pd.set_option("min_rows", 200)
 #pd.set_option("display.width", 80)
@@ -25,10 +27,9 @@ np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 @
 
 
-We'll use one of the benchmark datasets mentioned in :cite:`genieins`
-as an example:
 
 <<string-example-strings>>=
+import numpy as np
 # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
 strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
 strings[:5] # preview

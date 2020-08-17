@@ -26,7 +26,7 @@ RSTW_RST_OUTPUTS=$(patsubst %.rstw,%.rst,$(FILES_RSTW))
 	pandoc -f markdown+grid_tables --wrap=none "$<" -o "$@"
 
 %.rst: %.rstw
-	pweave "$<" -o "$@"
+	./pweave_custom.py "$<" "$@"
 
 
 all : rmd rstw

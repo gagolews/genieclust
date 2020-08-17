@@ -88,10 +88,9 @@ autosummary_generate = True
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
-pygments_style = 'sphinx'
 
 html_theme_options = {
-    'canonical_url': 'https://genieclust.gagolewski.com',
+    'canonical_url': 'https://genieclust.gagolewski.com/',
     'prev_next_buttons_location': 'both',
     #'style_nav_header_background': '#ff704d',
     #'display_github': True,
@@ -105,9 +104,11 @@ html_show_sourcelink = False
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_css_files = ['css/custom.css']
 
 numpydoc_use_plots = True
 
 
 doctest_global_setup = plot_pre_code
 
+pygments_style = 'colorful'

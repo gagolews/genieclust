@@ -6,37 +6,32 @@ data. Let's perform an example grouping based
 on `Levenshtein's <https://en.wikipedia.org/wiki/Levenshtein_distance>`_ edit
 distance.
 
-
-.. code:: python
-
-    import numpy as np
-
-
-
-
-
-
-
-
 We'll use one of the benchmark datasets mentioned in :cite:`genieins`
 as an example:
 
 
-.. code:: python
 
+
+
+
+
+
+
+.. code-block:: python
+
+    import numpy as np
     # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
     strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
     strings[:5] # preview
 
 
-.. code::
+::
 
-    ['tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata',
-    'atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca',
-    'gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg',
-    'gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga',
-    'ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc']
-    
+    ## ['tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata',
+    ## 'atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca',
+    ## 'gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg',
+    ## 'gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga',
+    ## 'ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc']
 
 
 
@@ -44,17 +39,16 @@ It comes with a set of reference labels, giving the "true" grouping assigned
 by an expert:
 
 
-.. code:: python
+.. code-block:: python
 
     labels_true = np.loadtxt("actg1.labels0.gz", dtype=np.intp)-1
     n_clusters = len(np.unique(labels_true))
     print(n_clusters)
 
 
-.. code::
+::
 
-    20
-    
+    ## 20
 
 
 
@@ -63,7 +57,7 @@ Clustering in the string domain relies on the
 near-neighbour search routines implemented in the `nmslib` package.
 
 
-.. code:: python
+.. code-block:: python
 
     import genieclust
     g = genieclust.Genie(
@@ -81,15 +75,14 @@ near-neighbour search routines implemented in the `nmslib` package.
 The adjusted Rand index can be used as an external cluster validity metric:
 
 
-.. code:: python
+.. code-block:: python
 
     genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_pred)
 
 
-.. code::
+::
 
-    0.9352814722212013
-    
+    ## 0.9352814722212013
 
 
 

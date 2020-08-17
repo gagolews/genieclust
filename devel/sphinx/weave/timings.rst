@@ -217,7 +217,7 @@ reference and is not recomputed unless needed. Here are the timings for
 a first run of the algorithm:
 
 
-.. code:: python
+.. code-block:: python
 
     import time, genieclust, numpy as np
     X = np.loadtxt("worms_2.data.gz", ndmin=2)
@@ -227,10 +227,9 @@ a first run of the algorithm:
     print("time elapsed - first run: %.3f" % (time.time()-t0))
 
 
-.. code::
+::
 
-    time elapsed - first run: 0.589
-    
+    ## time elapsed - first run: 0.715
 
 
 
@@ -238,7 +237,7 @@ a first run of the algorithm:
 Changing some parameters and re-running the cluster search:
 
 
-.. code:: python
+.. code-block:: python
 
     g.set_params(n_clusters=10)
     g.set_params(gini_threshold=0.1)
@@ -247,10 +246,9 @@ Changing some parameters and re-running the cluster search:
     print("time elapsed - consecutive run: %.3f" % (time.time()-t0))
 
 
-.. code::
+::
 
-    time elapsed - consecutive run: 0.025
-    
+    ## time elapsed - consecutive run: 0.031
 
 
 

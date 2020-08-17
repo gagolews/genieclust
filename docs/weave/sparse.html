@@ -14,12 +14,13 @@
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
   
   
-    <link rel="canonical" href="https://genieclust.gagolewski.comweave/sparse.html"/>
+    <link rel="canonical" href="https://genieclust.gagolewski.com/weave/sparse.html"/>
   
 
   
@@ -211,12 +212,12 @@ and map the movie IDs to consecutive integers.</p>
 <span class="n">ratings</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">userId</span>  <span class="n">movieId</span>  <span class="n">rating</span>  <span class="n">timestamp</span>
-<span class="mi">0</span>       <span class="mi">0</span>        <span class="mi">0</span>     <span class="mf">4.0</span>  <span class="mi">964982703</span>
-<span class="mi">1</span>       <span class="mi">0</span>        <span class="mi">2</span>     <span class="mf">4.0</span>  <span class="mi">964981247</span>
-<span class="mi">2</span>       <span class="mi">0</span>        <span class="mi">5</span>     <span class="mf">4.0</span>  <span class="mi">964982224</span>
-<span class="mi">3</span>       <span class="mi">0</span>       <span class="mi">43</span>     <span class="mf">5.0</span>  <span class="mi">964983815</span>
-<span class="mi">4</span>       <span class="mi">0</span>       <span class="mi">46</span>     <span class="mf">5.0</span>  <span class="mi">964982931</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##    userId  movieId  rating  timestamp</span>
+<span class="c1">## 0       0        0     4.0  964982703</span>
+<span class="c1">## 1       0        2     4.0  964981247</span>
+<span class="c1">## 2       0        5     4.0  964982224</span>
+<span class="c1">## 3       0       43     5.0  964983815</span>
+<span class="c1">## 4       0       46     5.0  964982931</span>
 </pre></div>
 </div>
 <p>Then we read the movie meta data and transform the movie IDs
@@ -228,12 +229,12 @@ in the same way:</p>
 <span class="n">movies</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>   <span class="n">movieId</span>                               <span class="n">title</span>
-<span class="mi">0</span>        <span class="mi">0</span>                    <span class="n">Toy</span> <span class="n">Story</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
-<span class="mi">1</span>        <span class="mi">1</span>                      <span class="n">Jumanji</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
-<span class="mi">2</span>        <span class="mi">2</span>             <span class="n">Grumpier</span> <span class="n">Old</span> <span class="n">Men</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
-<span class="mi">3</span>        <span class="mi">3</span>            <span class="n">Waiting</span> <span class="n">to</span> <span class="n">Exhale</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
-<span class="mi">4</span>        <span class="mi">4</span>  <span class="n">Father</span> <span class="n">of</span> <span class="n">the</span> <span class="n">Bride</span> <span class="n">Part</span> <span class="n">II</span> <span class="p">(</span><span class="mi">1995</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##    movieId                               title</span>
+<span class="c1">## 0        0                    Toy Story (1995)</span>
+<span class="c1">## 1        1                      Jumanji (1995)</span>
+<span class="c1">## 2        2             Grumpier Old Men (1995)</span>
+<span class="c1">## 3        3            Waiting to Exhale (1995)</span>
+<span class="c1">## 4        4  Father of the Bride Part II (1995)</span>
 </pre></div>
 </div>
 <p>Conversion of ratings to a CSR-format sparse matrix:</p>
@@ -245,20 +246,20 @@ in the same way:</p>
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="mi">9724</span><span class="n">x610</span> <span class="n">sparse</span> <span class="n">matrix</span> <span class="n">of</span> <span class="nb">type</span> <span class="s1">&#39;&lt;class &#39;</span><span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="s1">&#39;&gt;&#39;</span>
-        <span class="k">with</span> <span class="mi">100836</span> <span class="n">stored</span> <span class="n">elements</span> <span class="ow">in</span> <span class="n">Compressed</span> <span class="n">Sparse</span> <span class="n">Row</span> <span class="nb">format</span><span class="o">&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## &lt;9724x610 sparse matrix of type &#39;&lt;class &#39;numpy.float32&#39;&gt;&#39;</span>
+<span class="c1">##         with 100836 stored elements in Compressed Sparse Row format&gt;</span>
 </pre></div>
 </div>
 <p>First few observations:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">matrix</span><span class="p">([[</span><span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.5</span><span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
-        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
-        <span class="p">[</span><span class="mf">4.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">5.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
-        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">3.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">],</span>
-        <span class="p">[</span><span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">5.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">,</span> <span class="mf">0.</span> <span class="p">]],</span>
-<span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## matrix([[4. , 0. , 0. , 0. , 4. , 0. , 4.5, 0. , 0. , 0. ],</span>
+<span class="c1">##         [0. , 0. , 0. , 0. , 0. , 4. , 0. , 4. , 0. , 0. ],</span>
+<span class="c1">##         [4. , 0. , 0. , 0. , 0. , 5. , 0. , 0. , 0. , 0. ],</span>
+<span class="c1">##         [0. , 0. , 0. , 0. , 0. , 3. , 0. , 0. , 0. , 0. ],</span>
+<span class="c1">##         [0. , 0. , 0. , 0. , 0. , 5. , 0. , 0. , 0. , 0. ]],</span>
+<span class="c1">## dtype=float32)</span>
 </pre></div>
 </div>
 <p>Let’s extract 200 clusters with Genie with respect to  cosine similarity between films’ ratings
@@ -277,54 +278,54 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 <span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">cluster</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">which_cluster</span><span class="p">)]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>2097                                     Airplane! (1980)
-2907                                 Almost Famous (2000)
-1914                                  Analyze This (1999)
-969                             Back to the Future (1985)
-1486                    Back to the Future Part II (1989)
-1487                   Back to the Future Part III (1990)
-2259                          Being John Malkovich (1999)
-2916                                  Best in Show (2000)
-921                            Blues Brothers, The (1980)
-89                                   Bottle Rocket (1996)
-2084                                     Bowfinger (1999)
-2190                                Boys Don&#39;t Cry (1999)
-2888                                     Cell, The (2000)
-955                                      Duck Soup (1933)
-836                     E.T. the Extra-Terrestrial (1982)
-1960                                      Election (1999)
-2036                                Eyes Wide Shut (1999)
-819                           Fish Called Wanda, A (1988)
-1232                               Full Monty, The (1997)
-964                                  Groundhog Day (1993)
-2605                                 High Fidelity (2000)
-1211                     Hunt for Red October, The (1990)
-2382                                      Magnolia (1999)
-863                Monty Python and the Holy Grail (1975)
-2094    Monty Python&#39;s And Now for Something Completel...
-820                   Monty Python&#39;s Life of Brian (1979)
-4581            Monty Python&#39;s The Meaning of Life (1983)
-2892       Naked Gun 2 1/2: The Smell of Fear, The (1991)
-2891    Naked Gun: From the Files of Police Squad!, Th...
-3010                    O Brother, Where Art Thou? (2000)
-1394                                  Out of Sight (1998)
-2443                                 Patriot Games (1992)
-850                    People vs. Larry Flynt, The (1996)
-899                            Princess Bride, The (1987)
-2020                     Run Lola Run (Lola rennt) (1998)
-1796                                      Rushmore (1998)
-1979     Star Wars: Episode I - The Phantom Menace (1999)
-224             Star Wars: Episode IV - A New Hope (1977)
-898     Star Wars: Episode V - The Empire Strikes Back...
-911     Star Wars: Episode VI - Return of the Jedi (1983)
-934                                     Sting, The (1973)
-987                             This Is Spinal Tap (1984)
-2174                                   Three Kings (1999)
-839                                        Top Gun (1986)
-3016                                       Traffic (2000)
-1113                           Waiting for Guffman (1996)
-977                             Young Frankenstein (1974)
-Name: title, dtype: object
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 2097                                     Airplane! (1980)</span>
+<span class="c1">## 2907                                 Almost Famous (2000)</span>
+<span class="c1">## 1914                                  Analyze This (1999)</span>
+<span class="c1">## 969                             Back to the Future (1985)</span>
+<span class="c1">## 1486                    Back to the Future Part II (1989)</span>
+<span class="c1">## 1487                   Back to the Future Part III (1990)</span>
+<span class="c1">## 2259                          Being John Malkovich (1999)</span>
+<span class="c1">## 2916                                  Best in Show (2000)</span>
+<span class="c1">## 921                            Blues Brothers, The (1980)</span>
+<span class="c1">## 89                                   Bottle Rocket (1996)</span>
+<span class="c1">## 2084                                     Bowfinger (1999)</span>
+<span class="c1">## 2190                                Boys Don&#39;t Cry (1999)</span>
+<span class="c1">## 2888                                     Cell, The (2000)</span>
+<span class="c1">## 955                                      Duck Soup (1933)</span>
+<span class="c1">## 836                     E.T. the Extra-Terrestrial (1982)</span>
+<span class="c1">## 1960                                      Election (1999)</span>
+<span class="c1">## 2036                                Eyes Wide Shut (1999)</span>
+<span class="c1">## 819                           Fish Called Wanda, A (1988)</span>
+<span class="c1">## 1232                               Full Monty, The (1997)</span>
+<span class="c1">## 964                                  Groundhog Day (1993)</span>
+<span class="c1">## 2605                                 High Fidelity (2000)</span>
+<span class="c1">## 1211                     Hunt for Red October, The (1990)</span>
+<span class="c1">## 2382                                      Magnolia (1999)</span>
+<span class="c1">## 863                Monty Python and the Holy Grail (1975)</span>
+<span class="c1">## 2094    Monty Python&#39;s And Now for Something Completel...</span>
+<span class="c1">## 820                   Monty Python&#39;s Life of Brian (1979)</span>
+<span class="c1">## 4581            Monty Python&#39;s The Meaning of Life (1983)</span>
+<span class="c1">## 2892       Naked Gun 2 1/2: The Smell of Fear, The (1991)</span>
+<span class="c1">## 2891    Naked Gun: From the Files of Police Squad!, Th...</span>
+<span class="c1">## 3010                    O Brother, Where Art Thou? (2000)</span>
+<span class="c1">## 1394                                  Out of Sight (1998)</span>
+<span class="c1">## 2443                                 Patriot Games (1992)</span>
+<span class="c1">## 850                    People vs. Larry Flynt, The (1996)</span>
+<span class="c1">## 899                            Princess Bride, The (1987)</span>
+<span class="c1">## 2020                     Run Lola Run (Lola rennt) (1998)</span>
+<span class="c1">## 1796                                      Rushmore (1998)</span>
+<span class="c1">## 1979     Star Wars: Episode I - The Phantom Menace (1999)</span>
+<span class="c1">## 224             Star Wars: Episode IV - A New Hope (1977)</span>
+<span class="c1">## 898     Star Wars: Episode V - The Empire Strikes Back...</span>
+<span class="c1">## 911     Star Wars: Episode VI - Return of the Jedi (1983)</span>
+<span class="c1">## 934                                     Sting, The (1973)</span>
+<span class="c1">## 987                             This Is Spinal Tap (1984)</span>
+<span class="c1">## 2174                                   Three Kings (1999)</span>
+<span class="c1">## 839                                        Top Gun (1986)</span>
+<span class="c1">## 3016                                       Traffic (2000)</span>
+<span class="c1">## 1113                           Waiting for Guffman (1996)</span>
+<span class="c1">## 977                             Young Frankenstein (1974)</span>
+<span class="c1">## Name: title, dtype: object</span>
 </pre></div>
 </div>
 <p>The above was performed on an abridged version of the MovieLens dataset.
@@ -334,32 +335,32 @@ also features a full database that yields a 53889x283228 ratings table
 not fit into our RAM if it was in the dense form.
 Determining the whole cluster hierarchy takes only 144 secs.
 Here is one of 500 clusters extracted:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>13327                       Blackadder Back &amp; Forth (1999)
-13328                  Blackadder&#39;s Christmas Carol (1988)
-3341                              Creature Comforts (1989)
-1197       Grand Day Out with Wallace and Gromit, A (1989)
-2778                            Hard Day&#39;s Night, A (1964)
-2861                                          Help! (1965)
-2963                              How I Won the War (1967)
-6006        Monty Python Live at the Hollywood Bowl (1982)
-1113                Monty Python and the Holy Grail (1975)
-2703     Monty Python&#39;s And Now for Something Completel...
-1058                   Monty Python&#39;s Life of Brian (1979)
-6698             Monty Python&#39;s The Meaning of Life (1983)
-27284                                  Oliver Twist (1997)
-2216                                 Producers, The (1968)
-4716                                   Quadrophenia (1979)
-6027             Secret Policeman&#39;s Other Ball, The (1982)
-27448                                    The Basket (2000)
-2792                                          Tommy (1975)
-10475    Wallace &amp; Gromit in The Curse of the Were-Rabb...
-732                 Wallace &amp; Gromit: A Close Shave (1995)
-708      Wallace &amp; Gromit: The Best of Aardman Animatio...
-1125           Wallace &amp; Gromit: The Wrong Trousers (1993)
-13239    Wallace and Gromit in &#39;A Matter of Loaf and De...
-2772                               Yellow Submarine (1968)
-1250                             Young Frankenstein (1974)
-Name: title, dtype: object
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 13327                       Blackadder Back &amp; Forth (1999)</span>
+<span class="c1">## 13328                  Blackadder&#39;s Christmas Carol (1988)</span>
+<span class="c1">## 3341                              Creature Comforts (1989)</span>
+<span class="c1">## 1197       Grand Day Out with Wallace and Gromit, A (1989)</span>
+<span class="c1">## 2778                            Hard Day&#39;s Night, A (1964)</span>
+<span class="c1">## 2861                                          Help! (1965)</span>
+<span class="c1">## 2963                              How I Won the War (1967)</span>
+<span class="c1">## 6006        Monty Python Live at the Hollywood Bowl (1982)</span>
+<span class="c1">## 1113                Monty Python and the Holy Grail (1975)</span>
+<span class="c1">## 2703     Monty Python&#39;s And Now for Something Completel...</span>
+<span class="c1">## 1058                   Monty Python&#39;s Life of Brian (1979)</span>
+<span class="c1">## 6698             Monty Python&#39;s The Meaning of Life (1983)</span>
+<span class="c1">## 27284                                  Oliver Twist (1997)</span>
+<span class="c1">## 2216                                 Producers, The (1968)</span>
+<span class="c1">## 4716                                   Quadrophenia (1979)</span>
+<span class="c1">## 6027             Secret Policeman&#39;s Other Ball, The (1982)</span>
+<span class="c1">## 27448                                    The Basket (2000)</span>
+<span class="c1">## 2792                                          Tommy (1975)</span>
+<span class="c1">## 10475    Wallace &amp; Gromit in The Curse of the Were-Rabb...</span>
+<span class="c1">## 732                 Wallace &amp; Gromit: A Close Shave (1995)</span>
+<span class="c1">## 708      Wallace &amp; Gromit: The Best of Aardman Animatio...</span>
+<span class="c1">## 1125           Wallace &amp; Gromit: The Wrong Trousers (1993)</span>
+<span class="c1">## 13239    Wallace and Gromit in &#39;A Matter of Loaf and De...</span>
+<span class="c1">## 2772                               Yellow Submarine (1968)</span>
+<span class="c1">## 1250                             Young Frankenstein (1974)</span>
+<span class="c1">## Name: title, dtype: object</span>
 </pre></div>
 </div>
 </div>
