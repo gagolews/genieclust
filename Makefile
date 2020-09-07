@@ -57,7 +57,7 @@ r:
 	R CMD INSTALL . --html
 
 r-check: r
-	Rscript -e 'devtools::check()'
+	Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'
 
 r-test: r
 	Rscript -e 'options(width=120); source("devel/testthat.R")'
