@@ -148,7 +148,7 @@ setuptools.setup(
         "scipy",
         "cython",
         "matplotlib",
-        "sklearn",
+        "scikit-learn",
         "nmslib"
       ],
     extras_require={
