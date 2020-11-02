@@ -147,7 +147,7 @@ To install via ``pip`` (see `PyPI <https://pypi.org/project/genieclust/>`_):
 
 
 The package requires Python 3.5+ together with ``cython`` as well as
-``numpy``, ``scipy``, ``matplotlib``, ``nmslib``, and ``sklearn``. Optional
+``numpy``, ``scipy``, ``matplotlib``, ``nmslib``, and ``scikit-learn``. Optional
 dependency: ``mlpack``.
 
 
