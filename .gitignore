@@ -1,3 +1,4 @@
+devel/data/pbmc3k_raw.h5ad
 *.kate-swp
 .vscode
 .pytest_cache

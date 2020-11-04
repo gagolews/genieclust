@@ -315,24 +315,24 @@ ssize_t Cmst_from_nn(
 
 /*! Determine the first k nearest neighbours of each point.
  *
- *  Exactly n*(n-1) distance computations are performed.
+ *  Exactly n*(n-1)/2 distance computations are performed.
  *
  *  It is assumed that each query point is not its own neighbour.
  *
- * Worst-case time complexity: O(n*(n-1)/2*d*k)
+ *  Worst-case time complexity: O(n*(n-1)/2*d*k)
  *
  *
- * @param D a callable CDistance object such that a call to
- *        <T*>D(j, <ssize_t*>M, ssize_t l) returns an n-ary array
- *        with the distances from the j-th point to l points whose indices
- *        are given in array M
- * @param n number of points
- * @param k number of nearest neighbours,
- * @param dist [out]  a c_contiguous array, shape (n,k),
- *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
- * @param ind [out]   a c_contiguous array, shape (n,k),
- *        (undirected) edge definition, interpreted as {i, ind[i,j]}
- * @param verbose output diagnostic/progress messages?
+ *  @param D a callable CDistance object such that a call to
+ *         <T*>D(j, <ssize_t*>M, ssize_t l) returns an n-ary array
+ *         with the distances from the j-th point to l points whose indices
+ *         are given in array M
+ *  @param n number of points
+ *  @param k number of nearest neighbours,
+ *  @param dist [out]  a c_contiguous array, shape (n,k),
+ *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
+ *  @param ind [out]   a c_contiguous array, shape (n,k),
+ *         (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *  @param verbose output diagnostic/progress messages?
  */
 template <class T>
 void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,

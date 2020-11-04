@@ -202,7 +202,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         _postprocess_options = ("boundary", "none", "all")
         cur_state["postprocess"] = str(self.postprocess).lower()
         if cur_state["postprocess"] not in _postprocess_options:
-            raise ValueError("`postprocess` should be one of %r" % _postprocess_options)
+            raise ValueError("`postprocess` should be one of %s" % repr(_postprocess_options))
 
         cur_state["affinity"] = str(self.affinity).lower()
         if cur_state["affinity"] in ["euclidean", "lp:p=2"]:
@@ -227,7 +227,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         _affinity_exact_options = (
             "l2", "l1", "cosinesimil", "precomputed")
         if cur_state["exact"] and cur_state["affinity"] not in _affinity_exact_options:
-            raise ValueError("`affinity` should be one of %r" % _affinity_exact_options)
+            raise ValueError("`affinity` should be one of %s" % repr(_affinity_exact_options))
 
         if type(self.mlpack_enabled) is str:
             cur_state["mlpack_enabled"] = str(self.mlpack_enabled).lower()
