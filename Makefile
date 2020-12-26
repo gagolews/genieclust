@@ -56,18 +56,18 @@ r:
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
 	R CMD INSTALL . --html
 
-r-check: r
-	Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'
-
 r-test: r
 	Rscript -e 'options(width=120); source("devel/tinytest.R")'
 
 r-build:
 	Rscript -e 'Rcpp::compileAttributes()'
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"))'
-	R CMD INSTALL . --preclean
-	R CMD build .
+	cd .. && R CMD INSTALL genieclust --preclean --html
+	cd .. && R CMD build genieclust
 
+r-check: r-build
+	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --as-cran
+	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
 
 clean:
 	python3 setup.py clean
