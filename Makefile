@@ -66,7 +66,7 @@ r-build:
 	cd .. && R CMD build genieclust
 
 r-check: r-build
-	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --as-cran
+	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --as-cran --no-manual
 	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
 
 clean:

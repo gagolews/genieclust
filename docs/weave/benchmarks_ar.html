@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Benchmarks (How Good Is It?) &mdash; genieclust 0.9.5 documentation</title>
+  <title>Benchmarks (How Good Is It?) &mdash; genieclust 0.9.6.dev0 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.9.5
+                0.9.6.dev0
               </div>
             
           
@@ -200,24 +200,24 @@
 <h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Permalink to this headline">¶</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We consider the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<a class="bibtex reference internal" href="../z_bibliography.html#clustering-benchmarks-v1" id="id1">[G+20]</a> which aggregates datasets from various sources,
-including, but not limited to <a class="bibtex reference internal" href="../z_bibliography.html#uci" id="id2">[DG19]</a><a class="bibtex reference internal" href="../z_bibliography.html#kmsix" id="id3">[FS18]</a><a class="bibtex reference internal" href="../z_bibliography.html#fcps" id="id4">[Ult05]</a><a class="bibtex reference internal" href="../z_bibliography.html#graves" id="id5">[GP10]</a><a class="bibtex reference internal" href="../z_bibliography.html#chameleon" id="id6">[KHK99]</a><a class="bibtex reference internal" href="../z_bibliography.html#xnn" id="id7">[FMIZ16]</a>.
+<a class="bibtex reference internal" href="../z_bibliography.html#clustering-benchmarks-v1" id="id1">[9]</a> which aggregates datasets from various sources,
+including, but not limited to <a class="bibtex reference internal" href="../z_bibliography.html#uci" id="id2">[10]</a><a class="bibtex reference internal" href="../z_bibliography.html#kmsix" id="id3">[11]</a><a class="bibtex reference internal" href="../z_bibliography.html#fcps" id="id4">[12]</a><a class="bibtex reference internal" href="../z_bibliography.html#graves" id="id5">[13]</a><a class="bibtex reference internal" href="../z_bibliography.html#chameleon" id="id6">[14]</a><a class="bibtex reference internal" href="../z_bibliography.html#xnn" id="id7">[15]</a>.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study
 the algorithms that allow for setting of <cite>n_clusters</cite> explicitly.</p>
 <p>We will apply a few agglomerative hierarchical
 methods (average, centroid, complete, single, and Ward linkage; implemented in the
-<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <a class="bibtex reference internal" href="../z_bibliography.html#fastclusterpkg" id="id8">[Mul13]</a>),
+<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <a class="bibtex reference internal" href="../z_bibliography.html#fastclusterpkg" id="id8">[16]</a>),
 k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
-(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <a class="bibtex reference internal" href="../z_bibliography.html#sklearn" id="id9">[PVG+11]</a>),
-<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <a class="bibtex reference internal" href="../z_bibliography.html#itm" id="id10">[MNL12]</a>,
-and Genie <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id11">[GBC16]</a>.</p>
-<p>The adjusted Rand index (see <a class="bibtex reference internal" href="../z_bibliography.html#comparing-partitions" id="id12">[HA85]</a>) will be used
+(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <a class="bibtex reference internal" href="../z_bibliography.html#sklearn" id="id9">[6]</a>),
+<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <a class="bibtex reference internal" href="../z_bibliography.html#itm" id="id10">[17]</a>,
+and Genie <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id11">[1]</a>.</p>
+<p>The adjusted Rand index (see <a class="bibtex reference internal" href="../z_bibliography.html#comparing-partitions" id="id12">[18]</a>) will be used
 to quantify the agreement between
 a reference and a predicted clustering on the scale [0,1],
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also
-<a class="bibtex reference internal" href="../z_bibliography.html#sdmc" id="id13">[DN09]</a> and <a class="bibtex reference internal" href="../z_bibliography.html#clustering-benchmarks-v1" id="id14">[G+20]</a> for discussion),
+<a class="bibtex reference internal" href="../z_bibliography.html#sdmc" id="id13">[19]</a> and <a class="bibtex reference internal" href="../z_bibliography.html#clustering-benchmarks-v1" id="id14">[9]</a> for discussion),
 the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
@@ -247,7 +247,7 @@ Moreover, Gaussian mixtures used <cite>n_init=100</cite>.</p>
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
-<a class="bibtex reference internal" href="../z_bibliography.html#itm" id="id16">[MNL12]</a> method (which is also based on a minimum spanning tree)
+<a class="bibtex reference internal" href="../z_bibliography.html#itm" id="id16">[17]</a> method (which is also based on a minimum spanning tree)
 tend to output good quality outcomes as well.</p>
 <p>Descriptive statistics for the ranks (for each dataset,
 each algorithm that gets the highest AR index rounded to 2 decimal digits,
@@ -532,7 +532,7 @@ the highest typical scores.</p>
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>Overall, the Genie algorithm tends to outperform other algorithms considered
 in this study, at least on this rich benchmark battery.
-In <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id17">[GBC16]</a>, based on a much smaller sample of reference datasets,
+In <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id17">[1]</a>, based on a much smaller sample of reference datasets,
 we have recommended <cite>gini_threshold</cite> of 0.3,
 which is set as the default also in the <cite>genieclust</cite> package.
 However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.

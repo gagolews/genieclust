@@ -1,0 +1,62 @@
+{
+    "cited": {
+        "index": [
+            "genieins",
+            "nmslib",
+            "hdbscan",
+            "sklearn_api"
+        ],
+        "weave/basics": [
+            "genieins",
+            "jain",
+            "sklearn",
+            "sklearn_api",
+            "predbscan",
+            "dbscan",
+            "hdbscan"
+        ],
+        "weave/benchmarks_approx": [
+            "clustering_benchmarks_v1"
+        ],
+        "weave/benchmarks_ar": [
+            "clustering_benchmarks_v1",
+            "uci",
+            "kmsix",
+            "fcps",
+            "graves",
+            "chameleon",
+            "xnn",
+            "fastclusterpkg",
+            "sklearn",
+            "itm",
+            "genieins",
+            "comparing_partitions",
+            "sdmc"
+        ],
+        "weave/benchmarks_details": [
+            "clustering_benchmarks_v1",
+            "fm",
+            "comparing_partitions",
+            "nmi",
+            "psi"
+        ],
+        "weave/noise": [
+            "hdbscan",
+            "hdbscanpkg",
+            "genieins"
+        ],
+        "weave/string": [
+            "genieins"
+        ],
+        "weave/timings": [
+            "sklearn",
+            "fastclusterpkg",
+            "olson",
+            "mlpack",
+            "emst",
+            "nmslib",
+            "clustering_benchmarks_v1",
+            "extreme"
+        ]
+    }
+}
