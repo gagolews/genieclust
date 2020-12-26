@@ -15,8 +15,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y upgrade
-        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'devtools', 'tinytest', 'emstreeR'))"
+        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev r-cran-devtools
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'emstreeR'))"
     - name: Test and check R
       run: |
         sudo make r-test
