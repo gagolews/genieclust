@@ -21,7 +21,7 @@ weave:
 	cd devel/sphinx/weave && make && cd ../../../
 
 rd2rst:
-	#devtools::install_github('gagolews/Rd2rst')
+	# https://github.com/gagolews/Rd2rst
 	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('genieclust')" && cd ../../
 
 #rapiold:
@@ -66,8 +66,9 @@ r-build:
 	cd .. && R CMD build genieclust
 
 r-check: r-build
-	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --as-cran --no-manual
 	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
+	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual #  --as-cran
+	make clean
 
 clean:
 	python3 setup.py clean
