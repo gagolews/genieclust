@@ -18,9 +18,9 @@ Usage
 Arguments
 ~~~~~~~~~
 
-+-------+---------------------------------------+
-| ``x`` | numeric vector of non-negative values |
-+-------+---------------------------------------+
+===== =====================================
+``x`` numeric vector of non-negative values
+===== =====================================
 
 Details
 ~~~~~~~
@@ -72,4 +72,3 @@ Examples
    bonferroni_index(c(0, 0, 10, 0, 0))
    bonferroni_index(c(7, 0, 3, 0, 0))
    bonferroni_index(c(6, 0, 3, 1, 0))
-

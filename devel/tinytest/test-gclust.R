@@ -1,6 +1,5 @@
-library("testthat")
+library("tinytest")
 library("genieclust")
-context("gclust")
 
 
 verbose <- FALSE
@@ -20,7 +19,7 @@ if (require("genie")) {
     #for (k in 2:20) expect_equal(adjusted_rand_score(cutree(h1, k), cutree(h2, k)), 1.0)
 }
 
-if (require("emstreeR")) {
+if (suppressMessages(require("emstreeR"))) {
     print(system.time(h2 <- gclust(emst_mlpack(X, verbose=verbose), verbose=verbose)))
     #for (k in 2:20) expect_equal(adjusted_rand_score(cutree(h1, k), cutree(h2, k)), 1.0)
 }

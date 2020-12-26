@@ -212,9 +212,9 @@ emst_mlpack <- function(X, verbose=FALSE)
     if (requireNamespace("emstreeR", quietly=TRUE)) {
 
         if (!verbose)
-            capture.output({mst <- emstreeR::mlpack_mst(X)})
+            capture.output({mst <- emstreeR:::mlpack_mst(X)})
         else
-            mst <- emstreeR::mlpack_mst(X)
+            mst <- emstreeR:::mlpack_mst(X)
 
         structure(t(mst),
             class="mst",

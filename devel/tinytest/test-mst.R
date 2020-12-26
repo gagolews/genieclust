@@ -1,6 +1,6 @@
-library("testthat")
+library("tinytest")
 library("genieclust")
-context("mst")
+
 
 
 set.seed(123)

@@ -60,8 +60,7 @@ r-check: r
 	Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'
 
 r-test: r
-	Rscript -e 'options(width=120); source("devel/testthat.R")'
-
+	Rscript -e 'options(width=120); source("devel/tinytest.R")'
 
 r-build:
 	Rscript -e 'Rcpp::compileAttributes()'

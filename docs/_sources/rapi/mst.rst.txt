@@ -92,4 +92,3 @@ Examples
    data("iris")
    X <- iris[1:4]
    tree <- mst(X)
-

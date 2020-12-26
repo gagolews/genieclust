@@ -87,4 +87,3 @@ Examples
    adjusted_mi_score(y_true, y_pred)
    normalized_accuracy(y_true, y_pred)
    pair_sets_index(y_true, y_pred)
-

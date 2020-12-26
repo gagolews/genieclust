@@ -1,6 +1,8 @@
 `genieclust`: Fast and Robust Hierarchical Clustering with Noise Point Detection
 ================================================================================
 
+
+
     **Genie finds meaningful clusters and is fast even on large data sets.**
 
     -- by `Marek Gagolewski <https://www.gagolewski.com/>`_

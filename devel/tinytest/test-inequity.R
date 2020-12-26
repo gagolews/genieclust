@@ -1,6 +1,6 @@
-library("testthat")
+library("tinytest")
 library("genieclust")
-context("inequity")
+
 
 # More thorough tests are performed by pytest
 

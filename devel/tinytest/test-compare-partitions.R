@@ -1,6 +1,5 @@
-library("testthat")
+library("tinytest")
 library("genieclust")
-context("compare-partitions")
 
 # More thorough tests are performed by pytest
 

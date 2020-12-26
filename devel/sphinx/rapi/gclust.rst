@@ -147,4 +147,3 @@ Examples
 
    # Fast for low-dimensional Euclidean spaces:
    if (require("emstreeR")) h <- gclust(emst_mlpack(X))
-

@@ -48,7 +48,7 @@ difficult-to-set `eps` parameter.
 Author and Contributors
 -----------------------
 
-Author and Maintainer: `Marek Gagolewski <https://www.gagolewski.com>`_
+Author and maintainer: `Marek Gagolewski <https://www.gagolewski.com>`_
 
 Contributors of the code from the original R package `genie`:
 `Anna Cena <https://cena.rexamine.com>`_,
