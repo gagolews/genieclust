@@ -114,4 +114,4 @@ doctest_global_setup = plot_pre_code
 pygments_style = 'colorful'
 
 bibtex_bibfiles = ['bibliography.bib']
-bibtex_default_style = 'unsrt'
+bibtex_default_style = 'alpha'

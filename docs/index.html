@@ -194,7 +194,7 @@
 <div><p><strong>Genie finds meaningful clusters and is fast even on large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p>A faster and more powerful version of <strong>Genie</strong> <a class="bibtex reference internal" href="z_bibliography.html#genieins" id="id1">[1]</a> — a robust
+<p>A faster and more powerful version of <strong>Genie</strong> <a class="bibtex reference internal" href="z_bibliography.html#genieins" id="id1">[GBC16]</a> — a robust
 and outlier resistant clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
 <p>The idea behind Genie is very simple. First, make each individual
@@ -213,15 +213,15 @@ for datasets of millions of points can be completed within
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
 (large datasets with any number of clusters to detect) for data
 that fit into memory.
-Thanks to the use of <cite>nmslib</cite> <a class="bibtex reference internal" href="z_bibliography.html#nmslib" id="id2">[2]</a>,
+Thanks to the use of <cite>nmslib</cite> <a class="bibtex reference internal" href="z_bibliography.html#nmslib" id="id2">[NBMN19]</a>,
 sparse or string inputs are also supported.</p>
 <p>Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a <strong>noise point detector</strong> or a
-robustified version of <cite>HDBSCAN*</cite> <a class="bibtex reference internal" href="z_bibliography.html#hdbscan" id="id3">[3]</a> that is able to detect a predefined
+robustified version of <cite>HDBSCAN*</cite> <a class="bibtex reference internal" href="z_bibliography.html#hdbscan" id="id3">[CMZS15]</a> that is able to detect a predefined
 number of clusters and hence it doesn’t dependent on the <cite>DBSCAN</cite>’s somehow
 difficult-to-set <cite>eps</cite> parameter.</p>
 <p>The Python language version of <cite>genieclust</cite> has
-a familiar <cite>scikit-learn</cite>-like <a class="bibtex reference internal" href="z_bibliography.html#sklearn-api" id="id4">[4]</a> look-and-feel:</p>
+a familiar <cite>scikit-learn</cite>-like <a class="bibtex reference internal" href="z_bibliography.html#sklearn-api" id="id4">[B+13]</a> look-and-feel:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">X</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># some data</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>

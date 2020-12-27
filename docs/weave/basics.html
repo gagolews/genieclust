@@ -200,7 +200,7 @@
             
   <div class="section" id="basics">
 <h1>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h1>
-<p><em>Genie</em> <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id1">[1]</a> is an agglomerative hierarchical clustering
+<p><em>Genie</em> <a class="bibtex reference internal" href="../z_bibliography.html#genieins" id="id1">[GBC16]</a> is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
@@ -220,7 +220,7 @@ of the <cite>genieclust</cite> package.</p>
 </div>
 <div class="section" id="breaking-the-ice">
 <h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this headline">¶</a></h2>
-<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <a class="bibtex reference internal" href="../z_bibliography.html#jain" id="id2">[5]</a>, which  comes
+<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <a class="bibtex reference internal" href="../z_bibliography.html#jain" id="id2">[JL05]</a>, which  comes
 with the true corresponding partition (as assigned by experts).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
@@ -249,9 +249,9 @@ with the true corresponding partition (as assigned by experts).</p>
 <p>Let’s apply the Genie algorithm (with the default/recommended
 <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> parameter value). The <cite>genieclust</cite> package’s interface
 is compatible with the one from the popular
-<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <a class="bibtex reference internal" href="../z_bibliography.html#sklearn" id="id3">[6]</a>.
+<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <a class="bibtex reference internal" href="../z_bibliography.html#sklearn" id="id3">[P+11]</a>.
 In particular, an object of class <cite>Genie</cite> is equipped with the
-<cite>fit</cite> and <cite>fit_predict</cite> methods  <a class="bibtex reference internal" href="../z_bibliography.html#sklearn-api" id="id4">[4]</a>.</p>
+<cite>fit</cite> and <cite>fit_predict</cite> methods  <a class="bibtex reference internal" href="../z_bibliography.html#sklearn-api" id="id4">[B+13]</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
 <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
@@ -335,10 +335,10 @@ So we shouldn’t be much surprised with this result.</p>
 <div class="section" id="a-comparison-with-hdbscan">
 <h2>A Comparison with HDBSCAN*<a class="headerlink" href="#a-comparison-with-hdbscan" title="Permalink to this headline">¶</a></h2>
 <p>Let’s also make a comparison against a version of the DBSCAN
-<a class="bibtex reference internal" href="../z_bibliography.html#predbscan" id="id5">[7]</a><a class="bibtex reference internal" href="../z_bibliography.html#dbscan" id="id6">[8]</a> algorithm. The original DBSCAN relies on a somewhat
+<a class="bibtex reference internal" href="../z_bibliography.html#predbscan" id="id5">[Lin73]</a><a class="bibtex reference internal" href="../z_bibliography.html#dbscan" id="id6">[EKSX96]</a> algorithm. The original DBSCAN relies on a somewhat
 magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter, which might be hard to tune in practice. Fortunately,
 the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a> package
-implements its robustified variant <a class="bibtex reference internal" href="../z_bibliography.html#hdbscan" id="id7">[3]</a>, which makes the algorithm much
+implements its robustified variant <a class="bibtex reference internal" href="../z_bibliography.html#hdbscan" id="id7">[CMZS15]</a>, which makes the algorithm much
 more user-friendly.</p>
 <p>Here are the clustering results with the <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameter
 of 3, 5, 10, and 15:</p>
