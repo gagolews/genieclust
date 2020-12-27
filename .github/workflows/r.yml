@@ -15,10 +15,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y upgrade
-        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev
+        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'emstreeR', 'roxygen2'))"
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
     - name: Test and check R
       run: |
         sudo make r-test
