@@ -3,6 +3,8 @@
 
 ## genieclust 0.9.6 (under development)
 
+-   [Python] Python >= 3.7 is now required (implied by `numpy`).
+
 -   ... (nothing yet) ...
 
 
