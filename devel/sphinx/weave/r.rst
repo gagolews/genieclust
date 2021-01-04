@@ -1,7 +1,7 @@
 R Interface Examples
 ====================
 
-The R package ``genieclust`` is available on the ``CRAN <https://cran.r-project.org/web/packages/genieclust/>``\ \_ repository. To install it, call:
+The latest stable release of the R package ``genieclust`` is available from the `CRAN <https://cran.r-project.org/web/packages/genieclust/>`__ repository. To install it, call:
 
 .. code:: r
 
