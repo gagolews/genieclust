@@ -207,7 +207,7 @@ Any contributions are welcome (e.g., Julia, ...).
 License
 -------
 
-Copyright (C) 2018-2020 Marek Gagolewski (https://www.gagolewski.com)
+Copyright (C) 2018-2021 Marek Gagolewski (https://www.gagolewski.com)
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
