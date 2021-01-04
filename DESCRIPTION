@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
 Version: 0.9.6
-Date: 2021-01-04
+Date: 2021-01-05
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -37,9 +37,8 @@ Imports:
     stats,
     utils
 Suggests:
-    datasets,
-    emstreeR
-LinkingTo: Rcpp
+    datasets
+LinkingTo: Rcpp, RcppArmadillo, RcppMLPACK
 Encoding: UTF-8
 SystemRequirements: OpenMP, C++11
 RoxygenNote: 7.1.1

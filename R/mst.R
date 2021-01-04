@@ -2,7 +2,7 @@
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020, Marek Gagolewski <https://www.gagolewski.com>           #
+#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -177,17 +177,11 @@ registerS3method("mst", "dist",    "mst.dist")
 #'
 #' @description
 #' Provides access to an implementation of the Dual-Tree Borůvka
-#' algorithm based on kd-trees. It is fast for (very) low-dimensional
+#' algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional
 #' Euclidean spaces. For higher dimensional spaces (say, over 5 features)
-#' or other metrics,
-#' use the parallelised Prim-like algorithm implemented in \code{\link{mst}()}.
+#' or other metrics, use the parallelised Prim-like algorithm implemented
+#' in \code{\link{mst}()}.
 #'
-#'
-#' @details
-#' Calls \code{emstreeR::mlpack_mst()} and converts the result
-#' so that it is compatible with the output of \code{\link{mst}()}.
-#'
-#' If the \code{emstreeR} package is not available, an error is generated.
 #'
 #' @param X a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns)
@@ -209,20 +203,16 @@ registerS3method("mst", "dist",    "mst.dist")
 emst_mlpack <- function(X, verbose=FALSE)
 {
     X <- as.matrix(X)
-    if (requireNamespace("emstreeR", quietly=TRUE)) {
 
-        if (!verbose)
-            capture.output({mst <- emstreeR:::mlpack_mst(X)})
-        else
-            mst <- emstreeR:::mlpack_mst(X)
+    if (!verbose)
+        capture.output({mst <- .emst_mlpack(X)})
+    else
+        mst <- .emst_mlpack(X)
 
-        structure(t(mst),
-            class="mst",
-            method="euclidean",
-            Labels=dimnames(X)[[1]]
-        )
-
-    } else {
-        stop("emstreeR` package is not installed.")
-    }
+    structure(
+        mst,
+        class="mst",
+        method="euclidean",
+        Labels=dimnames(X)[[1]]
+    )
 }

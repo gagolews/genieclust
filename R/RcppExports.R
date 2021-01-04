@@ -149,6 +149,10 @@ pair_sets_index <- function(x, y = NULL) {
     .Call(`_genieclust_pair_sets_index`, x, y)
 }
 
+.emst_mlpack <- function(X) {
+    .Call(`_genieclust___emst_mlpack`, X)
+}
+
 .gclust <- function(mst, gini_threshold, verbose) {
     .Call(`_genieclust___gclust`, mst, gini_threshold, verbose)
 }

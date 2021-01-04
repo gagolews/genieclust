@@ -1,6 +1,6 @@
 /*  The Genie++ Clustering Algorithm - R Wrapper
  *
- *  Copyleft (C) 2018-2020, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2018-2021, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License
@@ -12,35 +12,6 @@
  *  You should have received a copy of the License along with this program.
  *  If this is not the case, refer to <https://www.gnu.org/licenses/>.
  */
-
-
-// //[[Rcpp::depends(RcppMLPACK)]]
-// #include <RcppMLPACK.h>
-
-//     if (use_mlpack) {
-//         if (distance != "euclidean" && distance != "l2")
-//             stop("`use_mlpack` can only be used with Euclidean distance");
-//
-//         std::vector<ssize_t> mst_i((n-1)*2);
-//         std::vector<double>  mst_d(n-1);
-//
-//         //mlpack::Log::Info.ignoreInput = !verbose;
-//         //mlpack::Log::Warn.ignoreInput = !verbose;
-//
-//         arma::Mat<double> X2(REAL(SEXP(X)), n, d, /*copy_aux_mem=*/true, /*strict=*/true);
-//         mlpack::emst::DualTreeBoruvka<> boruvka(X2.t());
-//         arma::mat mst;
-//         boruvka.ComputeMST(mst);
-//         for (ssize_t i=0; i<n-1; ++i) {
-//             mst_d[i]     = (double)mst(2, i);
-//             mst_i[i*2+0] = (ssize_t)mst(0, i); // edges are sorted
-//             mst_i[i*2+1] = (ssize_t)mst(1, i);
-//         }
-//
-//         ret = __gclust<double>(mst_i, mst_d, n, gini_threshold, verbose);
-//     }
-
-
 
 
 #include "c_common.h"
@@ -107,7 +78,7 @@ void __generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
 }
 
 
-/* This function was originally part of our `genie` package for R */
+/* Originally, this function was part of our `genie` package for R */
 void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 {
    std::vector< std::list<double> > relord(n+1);

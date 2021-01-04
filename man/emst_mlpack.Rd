@@ -17,16 +17,10 @@ An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
 Provides access to an implementation of the Dual-Tree Borůvka
-algorithm based on kd-trees. It is fast for (very) low-dimensional
+algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional
 Euclidean spaces. For higher dimensional spaces (say, over 5 features)
-or other metrics,
-use the parallelised Prim-like algorithm implemented in \code{\link{mst}()}.
-}
-\details{
-Calls \code{emstreeR::mlpack_mst()} and converts the result
-so that it is compatible with the output of \code{\link{mst}()}.
-
-If the \code{emstreeR} package is not available, an error is generated.
+or other metrics, use the parallelised Prim-like algorithm implemented
+in \code{\link{mst}()}.
 }
 \references{
 March W.B., Ram P., Gray A.G.,

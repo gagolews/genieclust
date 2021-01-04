@@ -23,14 +23,11 @@ expect_true(all(t2[,1] < t2[,2]))
 expect_true(all(diff(t2[,3])>=0))
 
 
-
-if (require("emstreeR")) {
-    print(system.time(t2 <- emst_mlpack(X)))
-    expect_equal(t1[,1], t2[,1])
-    expect_equal(t1[,2], t2[,2])
+print(system.time(t2 <- emst_mlpack(X)))
+expect_equal(t1[,1], t2[,1])
+expect_equal(t1[,2], t2[,2])
 #     print(abs(sum(t1[,3])-sum(t2[,3])))
-    expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-12)
-}
+expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-12)
 
 
 
@@ -50,7 +47,7 @@ for (M in c(1, 5, 10)) {
 #         print(abs(sum(t1[,3])-sum(t2[,3])))
         expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-12)
 
-        if (distance == "euclidean" && M == 1 && require("emstreeR")) {
+        if (distance == "euclidean" && M == 1) {
             t2 <- emst_mlpack(X)
             expect_equal(t1[,1], t2[,1])
             expect_equal(t1[,2], t2[,2])

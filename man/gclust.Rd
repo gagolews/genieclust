@@ -182,7 +182,7 @@ adjusted_rand_score(y_test, y_pred)
 pair_sets_index(y_test, y_pred)
 
 # Fast for low-dimensional Euclidean spaces:
-if (require("emstreeR")) h <- gclust(emst_mlpack(X))
+h <- gclust(emst_mlpack(X))
 
 }
 \references{

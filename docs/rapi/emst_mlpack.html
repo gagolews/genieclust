@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>emst_mlpack: Euclidean Minimum Spanning Tree &mdash; genieclust 0.9.6.dev0 documentation</title>
+  <title>emst_mlpack: Euclidean Minimum Spanning Tree &mdash; genieclust 0.9.6 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.9.6.dev0
+                0.9.6
               </div>
             
           
@@ -111,7 +111,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#details">Details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 </ul>
@@ -213,7 +212,7 @@
 <h1>emst_mlpack: Euclidean Minimum Spanning Tree<a class="headerlink" href="#emst-mlpack-euclidean-minimum-spanning-tree" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in <a class="reference external" href="mst.html">mst()</a>.</p>
+<p>Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in <a class="reference external" href="mst.html">mst()</a>.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
@@ -237,11 +236,6 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
-<p>Calls <code class="docutils literal notranslate"><span class="pre">emstreeR::mlpack_mst()</span></code> and converts the result so that it is compatible with the output of <a class="reference external" href="mst.html">mst()</a>.</p>
-<p>If the <code class="docutils literal notranslate"><span class="pre">emstreeR</span></code> package is not available, an error is generated.</p>
 </div>
 <div class="section" id="value">
 <h2>Value<a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h2>
@@ -275,7 +269,7 @@
   <div role="contentinfo">
     <p>
         
-        &copy; Copyright 2020, Marek Gagolewski
+        &copy; Copyright 2021, Marek Gagolewski
 
     </p>
   </div>

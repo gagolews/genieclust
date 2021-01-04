@@ -16,7 +16,7 @@ jobs:
         sudo apt-get update
         sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'emstreeR', 'roxygen2'))"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'RcppArmadillo', 'RcppMLPACK', 'roxygen2'))"
     - name: Test and check R
       run: |
         sudo make r-test

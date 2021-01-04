@@ -4,7 +4,7 @@ emst_mlpack: Euclidean Minimum Spanning Tree
 Description
 ~~~~~~~~~~~
 
-Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in `mst() <mst.html>`__.
+Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in `mst() <mst.html>`__.
 
 Usage
 ~~~~~
@@ -21,13 +21,6 @@ Arguments
 +-------------+------------------------------------------------------------------------------------------------+
 | ``verbose`` | logical; whether to print diagnostic messages                                                  |
 +-------------+------------------------------------------------------------------------------------------------+
-
-Details
-~~~~~~~
-
-Calls ``emstreeR::mlpack_mst()`` and converts the result so that it is compatible with the output of `mst() <mst.html>`__.
-
-If the ``emstreeR`` package is not available, an error is generated.
 
 Value
 ~~~~~

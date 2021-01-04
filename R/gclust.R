@@ -2,7 +2,7 @@
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020, Marek Gagolewski <https://www.gagolewski.com>           #
+#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -165,7 +165,7 @@
 #' pair_sets_index(y_test, y_pred)
 #'
 #' # Fast for low-dimensional Euclidean spaces:
-#' if (require("emstreeR")) h <- gclust(emst_mlpack(X))
+#' h <- gclust(emst_mlpack(X))
 #'
 #' @rdname gclust
 #' @export
