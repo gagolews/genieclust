@@ -23,25 +23,25 @@
 // Euclidean MST via MLPACK
 // Calls RcppMLPACK::DualTreeBoruvka::ComputeMST
 // [[Rcpp::export(".emst_mlpack")]]
-Rcpp::NumericMatrix __emst_mlpack(Rcpp::NumericMatrix X)
+Rcpp::NumericMatrix dot_emst_mlpack(Rcpp::NumericMatrix X)
 {
     ssize_t n = X.nrow();
     ssize_t d = X.ncol();
 
-    // Let _X = transpose(X)
-    arma::Mat<double> _X(d, n);
+    // Let aX = transpose(X)
+    arma::Mat<double> aX(d, n);
     for (ssize_t i=0; i<n; ++i)
         for (ssize_t j=0; j<d; ++j)
-            _X(j, i) = X(i, j);
+            aX(j, i) = X(i, j);
 
-    arma::Mat<double> _ret;
-    mlpack::emst::DualTreeBoruvka<>(_X).ComputeMST(_ret);
+    arma::Mat<double> aret;
+    mlpack::emst::DualTreeBoruvka<>(aX).ComputeMST(aret);
 
     Rcpp::NumericMatrix ret(n-1, 3);
     for (ssize_t i=0; i<n-1; ++i) {
-        ret(i, 0) = _ret(0, i)+1; // lesser edge index (0-based -> 1-based)
-        ret(i, 1) = _ret(1, i)+1; // greater edge index
-        ret(i, 2) = _ret(2, i);   // distance between the pair of points
+        ret(i, 0) = aret(0, i)+1; // lesser edge index (0-based -> 1-based)
+        ret(i, 1) = aret(1, i)+1; // greater edge index
+        ret(i, 2) = aret(2, i);   // distance between the pair of points
         GENIECLUST_ASSERT(ret(i, 0) < ret(i, 1));
         GENIECLUST_ASSERT(i == 0 || ret(i-1, 2) <= ret(i, 2));
     }

@@ -115,33 +115,48 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// __emst_mlpack
-Rcpp::NumericMatrix __emst_mlpack(Rcpp::NumericMatrix X);
-RcppExport SEXP _genieclust___emst_mlpack(SEXP XSEXP) {
+// dot_emst_mlpack
+Rcpp::NumericMatrix dot_emst_mlpack(Rcpp::NumericMatrix X);
+RcppExport SEXP _genieclust_dot_emst_mlpack(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type X(XSEXP);
-    rcpp_result_gen = Rcpp::wrap(__emst_mlpack(X));
+    rcpp_result_gen = Rcpp::wrap(dot_emst_mlpack(X));
     return rcpp_result_gen;
 END_RCPP
 }
-// __gclust
-List __gclust(NumericMatrix mst, double gini_threshold, bool verbose);
-RcppExport SEXP _genieclust___gclust(SEXP mstSEXP, SEXP gini_thresholdSEXP, SEXP verboseSEXP) {
+// dot_mst_default
+NumericMatrix dot_mst_default(NumericMatrix X, String distance, int M, bool cast_float32, bool verbose);
+RcppExport SEXP _genieclust_dot_mst_default(SEXP XSEXP, SEXP distanceSEXP, SEXP MSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type mst(mstSEXP);
-    Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(__gclust(mst, gini_threshold, verbose));
+    rcpp_result_gen = Rcpp::wrap(dot_mst_default(X, distance, M, cast_float32, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// __genie
-IntegerVector __genie(NumericMatrix mst, int k, double gini_threshold, String postprocess, bool detect_noise, bool verbose);
-RcppExport SEXP _genieclust___genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP postprocessSEXP, SEXP detect_noiseSEXP, SEXP verboseSEXP) {
+// dot_mst_dist
+NumericMatrix dot_mst_dist(NumericVector d, int M, bool verbose);
+RcppExport SEXP _genieclust_dot_mst_dist(SEXP dSEXP, SEXP MSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(dot_mst_dist(d, M, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dot_genie
+IntegerVector dot_genie(NumericMatrix mst, int k, double gini_threshold, String postprocess, bool detect_noise, bool verbose);
+RcppExport SEXP _genieclust_dot_genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP postprocessSEXP, SEXP detect_noiseSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -151,35 +166,20 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< String >::type postprocess(postprocessSEXP);
     Rcpp::traits::input_parameter< bool >::type detect_noise(detect_noiseSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(__genie(mst, k, gini_threshold, postprocess, detect_noise, verbose));
+    rcpp_result_gen = Rcpp::wrap(dot_genie(mst, k, gini_threshold, postprocess, detect_noise, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
-// mst_default
-NumericMatrix mst_default(NumericMatrix X, String distance, int M, bool cast_float32, bool verbose);
-RcppExport SEXP _genieclust_mst_default(SEXP XSEXP, SEXP distanceSEXP, SEXP MSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
+// dot_gclust
+List dot_gclust(NumericMatrix mst, double gini_threshold, bool verbose);
+RcppExport SEXP _genieclust_dot_gclust(SEXP mstSEXP, SEXP gini_thresholdSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
-    Rcpp::traits::input_parameter< int >::type M(MSEXP);
-    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type mst(mstSEXP);
+    Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(mst_default(X, distance, M, cast_float32, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// mst_dist
-NumericMatrix mst_dist(NumericVector d, int M, bool verbose);
-RcppExport SEXP _genieclust_mst_dist(SEXP dSEXP, SEXP MSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< int >::type M(MSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(mst_dist(d, M, verbose));
+    rcpp_result_gen = Rcpp::wrap(dot_gclust(mst, gini_threshold, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -216,11 +216,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
-    {"_genieclust___emst_mlpack", (DL_FUNC) &_genieclust___emst_mlpack, 1},
-    {"_genieclust___gclust", (DL_FUNC) &_genieclust___gclust, 3},
-    {"_genieclust___genie", (DL_FUNC) &_genieclust___genie, 6},
-    {"_genieclust_mst_default", (DL_FUNC) &_genieclust_mst_default, 5},
-    {"_genieclust_mst_dist", (DL_FUNC) &_genieclust_mst_dist, 3},
+    {"_genieclust_dot_emst_mlpack", (DL_FUNC) &_genieclust_dot_emst_mlpack, 1},
+    {"_genieclust_dot_mst_default", (DL_FUNC) &_genieclust_dot_mst_default, 5},
+    {"_genieclust_dot_mst_dist", (DL_FUNC) &_genieclust_dot_mst_dist, 3},
+    {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
+    {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},
     {"_genieclust_bonferroni_index", (DL_FUNC) &_genieclust_bonferroni_index, 1},
     {NULL, NULL, 0}

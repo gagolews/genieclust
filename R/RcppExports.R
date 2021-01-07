@@ -150,23 +150,23 @@ pair_sets_index <- function(x, y = NULL) {
 }
 
 .emst_mlpack <- function(X) {
-    .Call(`_genieclust___emst_mlpack`, X)
-}
-
-.gclust <- function(mst, gini_threshold, verbose) {
-    .Call(`_genieclust___gclust`, mst, gini_threshold, verbose)
-}
-
-.genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {
-    .Call(`_genieclust___genie`, mst, k, gini_threshold, postprocess, detect_noise, verbose)
+    .Call(`_genieclust_dot_emst_mlpack`, X)
 }
 
 .mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
-    .Call(`_genieclust_mst_default`, X, distance, M, cast_float32, verbose)
+    .Call(`_genieclust_dot_mst_default`, X, distance, M, cast_float32, verbose)
 }
 
 .mst.dist <- function(d, M = 1L, verbose = FALSE) {
-    .Call(`_genieclust_mst_dist`, d, M, verbose)
+    .Call(`_genieclust_dot_mst_dist`, d, M, verbose)
+}
+
+.genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {
+    .Call(`_genieclust_dot_genie`, mst, k, gini_threshold, postprocess, detect_noise, verbose)
+}
+
+.gclust <- function(mst, gini_threshold, verbose) {
+    .Call(`_genieclust_dot_gclust`, mst, gini_threshold, verbose)
 }
 
 #' @title Inequity (Inequality) Measures

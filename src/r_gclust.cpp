@@ -28,7 +28,7 @@ using namespace Rcpp;
 
 
 /* This function was originally part of our `genie` package for R */
-void __generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
+void internal_generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
 {
     std::vector<ssize_t> elements(n+1, 0);
     std::vector<ssize_t> parents(n+1, 0);
@@ -79,7 +79,7 @@ void __generate_merge(ssize_t n, NumericMatrix links, NumericMatrix merge)
 
 
 /* Originally, this function was part of our `genie` package for R */
-void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
+void internal_generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 {
    std::vector< std::list<double> > relord(n+1);
    ssize_t clusterNumber = 1;
@@ -106,161 +106,8 @@ void __generate_order(ssize_t n, NumericMatrix merge, NumericVector order)
 }
 
 
-
-// [[Rcpp::export(".gclust")]]
-List __gclust(
-        NumericMatrix mst,
-        double gini_threshold,
-        bool verbose)
-{
-    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
-
-    if (gini_threshold < 0.0 || gini_threshold > 1.0)
-        stop("`gini_threshold` must be in [0, 1]");
-
-    ssize_t n = mst.nrow()+1;
-    matrix<ssize_t> mst_i(n-1, 2);
-    std::vector<double>  mst_d(n-1);
-
-    for (ssize_t i=0; i<n-1; ++i) {
-        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
-        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
-        mst_d[i] = mst(i, 2);
-    }
-
-    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
-    g.apply_genie(1, gini_threshold);
-
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
-
-    std::vector<ssize_t> links(n-1);
-    g.get_links(links.data());
-
-
-
-    NumericMatrix links2(n-1, 2);
-    NumericVector height(n-1, NA_REAL);
-    ssize_t k = 0;
-    for (ssize_t i=0; i<n-1; ++i) {
-        if (links[i] >= 0) {
-            links2(k, 0) = mst_i(links[i], 0) + 1;
-            links2(k, 1) = mst_i(links[i], 1) + 1;
-            height(k) = mst_d[ links[i] ];
-            ++k;
-        }
-    }
-    for (; k<n-1; ++k) {
-        links2(k, 0) = links2(k, 1) = NA_REAL;
-    }
-
-
-    NumericMatrix merge(n-1, 2);
-    __generate_merge(n, links2, merge);
-
-    NumericVector order(n, NA_REAL);
-    __generate_order(n, merge, order);
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-
-    return List::create(
-        _["merge"]  = merge,
-        _["height"] = height,
-        _["order"]  = order
-    );
-}
-
-
-
-
-
-// [[Rcpp::export(".genie")]]
-IntegerVector __genie(
-        NumericMatrix mst,
-        int k,
-        double gini_threshold,
-        String postprocess,
-        bool detect_noise,
-        bool verbose)
-{
-    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
-
-    if (gini_threshold < 0.0 || gini_threshold > 1.0)
-        stop("`gini_threshold` must be in [0, 1]");
-
-    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn")))
-        stop("`nn` attribute of the MST not set; unable to proceed with this postprocessing action");
-
-    ssize_t n = mst.nrow()+1;
-
-    if (k < 1 || k > n) stop("invalid requested number of clusters, `k`");
-
-    matrix<ssize_t> mst_i(n-1, 2);
-    std::vector<double>  mst_d(n-1);
-
-    for (ssize_t i=0; i<n-1; ++i) {
-        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
-        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
-        mst_d[i] = mst(i, 2);
-    }
-
-    CGenie<double> g(mst_d.data(), mst_i.data(), n, detect_noise);
-    g.apply_genie(k, gini_threshold);
-
-
-
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
-
-    std::vector<ssize_t> __res(n);
-    ssize_t k_detected = g.get_labels(k, __res.data());
-
-    if (k_detected != k)
-        Rf_warning("Number of clusters detected is different than the requested one due to the presence of noise points.");
-
-    if (detect_noise && postprocess == "boundary") {
-        NumericMatrix nn_r = mst.attr("nn");
-        GENIECLUST_ASSERT(nn_r.nrow() == n);
-        ssize_t M = nn_r.ncol()+1;
-        GENIECLUST_ASSERT(M < n);
-        matrix<ssize_t> nn_i(n, M-1);
-        for (ssize_t i=0; i<n; ++i) {
-            for (ssize_t j=0; j<M-1; ++j) {
-                GENIECLUST_ASSERT(nn_r(i,j) >= 1);
-                GENIECLUST_ASSERT(nn_r(i,j) <= n);
-                nn_i(i,j) = (ssize_t)nn_r(i,j)-1; // 0-based indexing
-            }
-        }
-
-        Cmerge_boundary_points(mst_i.data(), n-1, nn_i.data(),
-                               M-1, M, __res.data(), n);
-    }
-    else if (detect_noise && postprocess == "all") {
-        Cmerge_noise_points(mst_i.data(), n-1, __res.data(), n);
-    }
-
-    IntegerVector res(n);
-    for (ssize_t i=0; i<n; ++i) {
-        if (__res[i] < 0) res[i] = NA_INTEGER; // noise point
-        else res[i] = __res[i] + 1;
-    }
-
-    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-
-    return res;
-}
-
-
-
-
-
-
-
-
-
-
 template<typename T>
-NumericMatrix __compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
+NumericMatrix internal_compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
 {
     if (M < 1 || M >= n-1)
         stop("`M` must be an integer in [1, n-1)");
@@ -318,8 +165,9 @@ NumericMatrix __compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool verbose)
 
 
 
+
 template<typename T>
-NumericMatrix __mst_default(
+NumericMatrix internal_mst_default(
     NumericMatrix X,
     String distance,
     ssize_t M,
@@ -341,7 +189,7 @@ NumericMatrix __mst_default(
     else
         stop("given `distance` is not supported (yet)");
 
-    ret = __compute_mst<T>(D, n, M, verbose);
+    ret = internal_compute_mst<T>(D, n, M, verbose);
     delete D;
 
     if (distance == "euclidean" || distance == "l2") {
@@ -359,7 +207,7 @@ NumericMatrix __mst_default(
 
 
 // [[Rcpp::export(".mst.default")]]
-NumericMatrix mst_default(
+NumericMatrix dot_mst_default(
     NumericMatrix X,
     String distance="euclidean",
     int M=1,
@@ -367,15 +215,15 @@ NumericMatrix mst_default(
     bool verbose=false)
 {
     if (cast_float32)
-        return __mst_default<float >(X, distance, M, verbose);
+        return internal_mst_default<float >(X, distance, M, verbose);
     else
-        return __mst_default<double>(X, distance, M, verbose);
+        return internal_mst_default<double>(X, distance, M, verbose);
 }
 
 
 
 // [[Rcpp::export(".mst.dist")]]
-NumericMatrix mst_dist(
+NumericMatrix dot_mst_dist(
     NumericVector d,
     int M=1,
     bool verbose=false)
@@ -385,5 +233,147 @@ NumericMatrix mst_dist(
 
     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
 
-    return __compute_mst<double>(&D, n, M, verbose);
+    return internal_compute_mst<double>(&D, n, M, verbose);
 }
+
+
+
+// [[Rcpp::export(".genie")]]
+IntegerVector dot_genie(
+        NumericMatrix mst,
+        int k,
+        double gini_threshold,
+        String postprocess,
+        bool detect_noise,
+        bool verbose)
+{
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
+
+    if (gini_threshold < 0.0 || gini_threshold > 1.0)
+        stop("`gini_threshold` must be in [0, 1]");
+
+    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn")))
+        stop("`nn` attribute of the MST not set; unable to proceed with this postprocessing action");
+
+    ssize_t n = mst.nrow()+1;
+
+    if (k < 1 || k > n) stop("invalid requested number of clusters, `k`");
+
+    matrix<ssize_t> mst_i(n-1, 2);
+    std::vector<double>  mst_d(n-1);
+
+    for (ssize_t i=0; i<n-1; ++i) {
+        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
+        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_d[i] = mst(i, 2);
+    }
+
+    CGenie<double> g(mst_d.data(), mst_i.data(), n, detect_noise);
+    g.apply_genie(k, gini_threshold);
+
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
+
+    std::vector<ssize_t> xres(n);
+    ssize_t k_detected = g.get_labels(k, xres.data());
+
+    if (k_detected != k)
+        Rf_warning("Number of clusters detected is different than the requested one due to the presence of noise points.");
+
+    if (detect_noise && postprocess == "boundary") {
+        NumericMatrix nn_r = mst.attr("nn");
+        GENIECLUST_ASSERT(nn_r.nrow() == n);
+        ssize_t M = nn_r.ncol()+1;
+        GENIECLUST_ASSERT(M < n);
+        matrix<ssize_t> nn_i(n, M-1);
+        for (ssize_t i=0; i<n; ++i) {
+            for (ssize_t j=0; j<M-1; ++j) {
+                GENIECLUST_ASSERT(nn_r(i,j) >= 1);
+                GENIECLUST_ASSERT(nn_r(i,j) <= n);
+                nn_i(i,j) = (ssize_t)nn_r(i,j)-1; // 0-based indexing
+            }
+        }
+
+        Cmerge_boundary_points(mst_i.data(), n-1, nn_i.data(),
+                               M-1, M, xres.data(), n);
+    }
+    else if (detect_noise && postprocess == "all") {
+        Cmerge_noise_points(mst_i.data(), n-1, xres.data(), n);
+    }
+
+    IntegerVector res(n);
+    for (ssize_t i=0; i<n; ++i) {
+        if (xres[i] < 0) res[i] = NA_INTEGER; // noise point
+        else res[i] = xres[i] + 1;
+    }
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+    return res;
+}
+
+
+
+// [[Rcpp::export(".gclust")]]
+List dot_gclust(
+        NumericMatrix mst,
+        double gini_threshold,
+        bool verbose)
+{
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
+
+    if (gini_threshold < 0.0 || gini_threshold > 1.0)
+        stop("`gini_threshold` must be in [0, 1]");
+
+    ssize_t n = mst.nrow()+1;
+    matrix<ssize_t> mst_i(n-1, 2);
+    std::vector<double>  mst_d(n-1);
+
+    for (ssize_t i=0; i<n-1; ++i) {
+        mst_i(i, 0) = (ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
+        mst_i(i, 1) = (ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_d[i] = mst(i, 2);
+    }
+
+    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
+    g.apply_genie(1, gini_threshold);
+
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
+
+    std::vector<ssize_t> links(n-1);
+    g.get_links(links.data());
+
+
+
+    NumericMatrix links2(n-1, 2);
+    NumericVector height(n-1, NA_REAL);
+    ssize_t k = 0;
+    for (ssize_t i=0; i<n-1; ++i) {
+        if (links[i] >= 0) {
+            links2(k, 0) = mst_i(links[i], 0) + 1;
+            links2(k, 1) = mst_i(links[i], 1) + 1;
+            height(k) = mst_d[ links[i] ];
+            ++k;
+        }
+    }
+    for (; k<n-1; ++k) {
+        links2(k, 0) = links2(k, 1) = NA_REAL;
+    }
+
+
+    NumericMatrix merge(n-1, 2);
+    internal_generate_merge(n, links2, merge);
+
+    NumericVector order(n, NA_REAL);
+    internal_generate_order(n, merge, order);
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+    return List::create(
+        _["merge"]  = merge,
+        _["height"] = height,
+        _["order"]  = order
+    );
+}
+

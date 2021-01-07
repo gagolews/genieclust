@@ -95,6 +95,7 @@ any contributions are welcome.
 
     genieclust
     rapi
+    news
 
 .. toctree::
     :maxdepth: 2

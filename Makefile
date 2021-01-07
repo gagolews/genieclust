@@ -24,6 +24,9 @@ rd2rst:
 	# https://github.com/gagolews/Rd2rst
 	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('genieclust')" && cd ../../
 
+news:
+	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
+
 #rapiold:
 	#Rscript -e "Rd2md::ReferenceManual()"
 	#Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \
@@ -36,7 +39,7 @@ rd2rst:
 	##rstlisttable --in-place devel/sphinx/r.rst
 	#rm -f Reference_Manual_genieclust.md r.md
 
-sphinx: python r weave rd2rst
+sphinx: python r weave rd2rst news
 	rm -rf devel/sphinx/_build/
 	cd devel/sphinx && make html && cd ../../
 	rm -rf docs/
@@ -67,7 +70,7 @@ r-build:
 
 r-check: r-build
 	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
-	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual #  --as-cran
+	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual --as-cran
 
 clean:
 	python3 setup.py clean

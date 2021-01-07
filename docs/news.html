@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>What’s New in genieclust &mdash; genieclust 0.9.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+  
+  
+    <link rel="canonical" href="https://genieclust.gagolewski.com/news.html"/>
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Benchmarks — Detailed Results" href="weave/benchmarks_details.html" />
+    <link rel="prev" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" href="rapi/mst.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.9.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">What’s New in <em>genieclust</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-8-2021-01-08">genieclust 0.9.8 (2021-01-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-7-2021-01-07">genieclust 0.9.7 (2021-01-07)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-6-2021-01-05">genieclust 0.9.6 (2021-01-05)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-5-2021-01-04">genieclust 0.9.5 (2021-01-04)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-4-2020-07-31">genieclust 0.9.4 (2020-07-31)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-3-2020-07-25">genieclust 0.9.3 (2020-07-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-2-2020-07-22">genieclust 0.9.2 (2020-07-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-1-2020-07-18">genieclust 0.9.1 (2020-07-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-0-1a2-2018-05-23">genieclust 0.1a2 (2018-05-23)</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">External Links</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>What’s New in <em>genieclust</em></li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="weave/benchmarks_details.html" class="btn btn-neutral float-right" title="Benchmarks — Detailed Results" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rapi/mst.html" class="btn btn-neutral float-left" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+  </div>
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="whats-new-in-genieclust">
+<h1>What’s New in <em>genieclust</em><a class="headerlink" href="#whats-new-in-genieclust" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="genieclust-0-9-8-2021-01-08">
+<h2>genieclust 0.9.8 (2021-01-08)<a class="headerlink" href="#genieclust-0-9-8-2021-01-08" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Bugfix] [R] Fixed build errors on Solaris: <code class="docutils literal notranslate"><span class="pre">_X</span></code> is a reserved
+identifier.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-7-2021-01-07">
+<h2>genieclust 0.9.7 (2021-01-07)<a class="headerlink" href="#genieclust-0-9-7-2021-01-07" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Python] Python &gt;= 3.7 is now required (implied by <code class="docutils literal notranslate"><span class="pre">numpy</span></code>).</p></li>
+<li><p>[R] Use <code class="docutils literal notranslate"><span class="pre">RcppMLPACK</span></code> directly instead of via a wrapper,
+<code class="docutils literal notranslate"><span class="pre">emstreeR</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-6-2021-01-05">
+<h2>genieclust 0.9.6 (2021-01-05)<a class="headerlink" href="#genieclust-0-9-6-2021-01-05" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Python] Python &gt;= 3.7 is now required (implied by <code class="docutils literal notranslate"><span class="pre">numpy</span></code>).</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-5-2021-01-04">
+<h2>genieclust 0.9.5 (2021-01-04)<a class="headerlink" href="#genieclust-0-9-5-2021-01-04" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Python] <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> is now required.</p></li>
+<li><p>[R] Switched to <code class="docutils literal notranslate"><span class="pre">tinytest</span></code> for unit testing.</p></li>
+<li><p>[R] Fixed the examples that relied on the amended API of
+<code class="docutils literal notranslate"><span class="pre">emstreeR</span></code>.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-4-2020-07-31">
+<h2>genieclust 0.9.4 (2020-07-31)<a class="headerlink" href="#genieclust-0-9-4-2020-07-31" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Bugfix] [R] Fix build on Solaris.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-3-2020-07-25">
+<h2>genieclust 0.9.3 (2020-07-25)<a class="headerlink" href="#genieclust-0-9-3-2020-07-25" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Bugfix] [Python] Code coverage CI added. Fixed some minor
+inconsistencies. Automated the <code class="docutils literal notranslate"><span class="pre">bdist</span></code> build chain.</p></li>
+<li><p>[R] Updated DESCRIPTION to meet the CRAN policies.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-2-2020-07-22">
+<h2>genieclust 0.9.2 (2020-07-22)<a class="headerlink" href="#genieclust-0-9-2-2020-07-22" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[BUGFIX] [Python] Fixed broken build script for OS X with no OpenMP.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-9-1-2020-07-18">
+<h2>genieclust 0.9.1 (2020-07-18)<a class="headerlink" href="#genieclust-0-9-1-2020-07-18" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[General] The package has been completely rewritten. The core
+functionality is now implemented in C++ (with OpenMP).</p></li>
+<li><p>[General] Clustering with respect to HDBSCAN*-like mutual
+reachability distances is supported.</p></li>
+<li><p>[General] The parallelised Jarnik-Prim algorithm now supports
+on-the-fly distance computations. Euclidean minimum spanning tree can
+be determined with <code class="docutils literal notranslate"><span class="pre">mlpack</span></code>, which is much faster in
+low-dimensional spaces.</p></li>
+<li><p>[R] R version is now available.</p></li>
+<li><p>[Python] [Experimental] The GIc algorithm proposed by Anna Cena in
+her 2018 PhD thesis was added.</p></li>
+<li><p>[Python] Approximate version based on nearest neighbour graphs
+produced by <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> was added.</p></li>
+</ul>
+</div>
+<div class="section" id="genieclust-0-1a2-2018-05-23">
+<h2>genieclust 0.1a2 (2018-05-23)<a class="headerlink" href="#genieclust-0-1a2-2018-05-23" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[Python] Initial PyPI release.</p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="weave/benchmarks_details.html" class="btn btn-neutral float-right" title="Benchmarks — Detailed Results" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rapi/mst.html" class="btn btn-neutral float-left" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2021, Marek Gagolewski
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

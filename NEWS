@@ -1,9 +1,9 @@
-# `genieclust` Package NEWS
+# What's New in *genieclust*
 
 
-## genieclust 0.9.8 (2021-xx-xx)
+## genieclust 0.9.8 (2021-01-08)
 
--   ...
+-   [Bugfix] [R] Fixed build errors on Solaris: `_X` is a reserved identifier.
 
 
 ## genieclust 0.9.7 (2021-01-07)
@@ -22,19 +22,19 @@
 
 -   [Python] `nmslib` is now required.
 
--   [R] switched to `tinytest` for unit testing.
+-   [R] Switched to `tinytest` for unit testing.
 
--   [R] fixed the examples that relied on a now-changed API of `emstreeR`.
+-   [R] Fixed the examples that relied on the amended API of `emstreeR`.
 
 
 ## genieclust 0.9.4 (2020-07-31)
 
--   [BUGFIX] [R] Fix build on Solaris.
+-   [Bugfix] [R] Fix build on Solaris.
 
 
 ## genieclust 0.9.3 (2020-07-25)
 
--   [BUGFIX] [PYTHON] Code coverage CI added. Fixed some minor inconsistencies.
+-   [Bugfix] [Python] Code coverage CI added. Fixed some minor inconsistencies.
     Automated the `bdist` build chain.
 
 -   [R] Updated DESCRIPTION to meet the CRAN policies.
@@ -42,30 +42,30 @@
 
 ## genieclust 0.9.2 (2020-07-22)
 
--   [BUGFIX] [PYTHON] Fixed broken build script for OS X with no OpenMP.
+-   [BUGFIX] [Python] Fixed broken build script for OS X with no OpenMP.
 
 
 ## genieclust 0.9.1 (2020-07-18)
 
--   [GENERAL] The package has been completely rewritten.
+-   [General] The package has been completely rewritten.
     The core functionality is now implemented in C++ (with OpenMP).
 
--   [GENERAL] Clustering with respect to HDBSCAN*-like
+-   [General] Clustering with respect to HDBSCAN*-like
     mutual reachability distances is supported.
 
--   [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
+-   [General] The parallelised Jarnik-Prim algorithm now supports on-the-fly
     distance computations. Euclidean minimum spanning tree can be
     determined with `mlpack`, which is much faster in low-dimensional spaces.
 
 -   [R] R version is now available.
 
--   [PYTHON] [EXPERIMENTAL] The GIc algorithm proposed by Anna Cena
+-   [Python] [Experimental] The GIc algorithm proposed by Anna Cena
     in her 2018 PhD thesis was added.
 
--   [PYTHON] Approximate version based on nearest neighbour graphs produced
+-   [Python] Approximate version based on nearest neighbour graphs produced
     by `nmslib` was added.
 
 
 ## genieclust 0.1a2 (2018-05-23)
 
--   [PYTHON] Initial PyPI release.
+-   [Python] Initial PyPI release.

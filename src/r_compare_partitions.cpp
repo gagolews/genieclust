@@ -31,7 +31,7 @@ using namespace Rcpp;
  *  @return flat, contiguous c_style vector representing the contingency table
  *   with xc rows and yc columns
  */
-std::vector<int> __get_contingency_matrix(RObject x, RObject y,
+std::vector<int> get_contingency_matrix(RObject x, RObject y,
                                           ssize_t* xc, ssize_t* yc)
 {
     if (Rf_isMatrix(x)) {
@@ -58,29 +58,29 @@ std::vector<int> __get_contingency_matrix(RObject x, RObject y,
         if (!(Rf_isInteger(x) | Rf_isReal(x) | Rf_isLogical(x) | Rf_isFactor(x)))
             stop("y must be of type numeric");
 
-        IntegerVector _x(x);
-        IntegerVector _y(y);
+        IntegerVector rx(x);
+        IntegerVector ry(y);
 
-        ssize_t n = _x.size();
-        if (_y.size() != n)
+        ssize_t n = rx.size();
+        if (ry.size() != n)
             stop("x and y must be of equal lengths");
 
         for (ssize_t i=0; i<n; ++i) {
-            if (_x[i] == NA_INTEGER || _y[i] == NA_INTEGER)
+            if (rx[i] == NA_INTEGER || ry[i] == NA_INTEGER)
                 stop("missing values not allowed");
         }
 
         int xmin, xmax;
-        Cminmax(INTEGER(SEXP(_x)), n, &xmin, &xmax);
+        Cminmax(INTEGER(SEXP(rx)), n, &xmin, &xmax);
         *xc = (xmax-xmin+1);
 
         int ymin, ymax;
-        Cminmax(INTEGER(SEXP(_y)), n, &ymin, &ymax);
+        Cminmax(INTEGER(SEXP(ry)), n, &ymin, &ymax);
         *yc = (ymax-ymin+1);
 
         std::vector<int> C((*xc)*(*yc));
         Ccontingency_table(C.data(), *xc, *yc,
-            xmin, ymin, INTEGER(SEXP(_x)), INTEGER(SEXP(_y)), n);
+            xmin, ymin, INTEGER(SEXP(rx)), INTEGER(SEXP(ry)), n);
         return C;
     }
 }
@@ -188,7 +188,7 @@ double adjusted_rand_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_pairs(C.data(), xc, yc).ar;
@@ -202,7 +202,7 @@ double rand_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_pairs(C.data(), xc, yc).r;
@@ -216,7 +216,7 @@ double adjusted_fm_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_pairs(C.data(), xc, yc).afm;
@@ -230,7 +230,7 @@ double fm_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_pairs(C.data(), xc, yc).fm;
@@ -244,7 +244,7 @@ double mi_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_info(C.data(), xc, yc).mi;
@@ -259,7 +259,7 @@ double normalized_mi_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_info(C.data(), xc, yc).nmi;
@@ -274,7 +274,7 @@ double adjusted_mi_score(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_info(C.data(), xc, yc).ami;
@@ -289,7 +289,7 @@ double normalized_accuracy(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_nacc(C.data(), xc, yc);
@@ -303,7 +303,7 @@ double pair_sets_index(RObject x, RObject y=R_NilValue)
 {
     ssize_t xc, yc;
     std::vector<int> C(
-        __get_contingency_matrix(x, y, &xc, &yc)
+        get_contingency_matrix(x, y, &xc, &yc)
     );
 
     return Ccompare_partitions_psi(C.data(), xc, yc);
