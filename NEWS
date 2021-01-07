@@ -1,6 +1,11 @@
 # `genieclust` Package NEWS
 
 
+## genieclust 0.9.8 (2021-xx-xx)
+
+-   ...
+
+
 ## genieclust 0.9.7 (2021-01-07)
 
 -   [Python] Python >= 3.7 is now required (implied by `numpy`).
