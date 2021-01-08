@@ -4,36 +4,18 @@ What’s New in *genieclust*
 genieclust 0.9.8 (2021-01-08)
 -----------------------------
 
--  [Bugfix] [R] Fixed build errors on Solaris: ``_X`` is a reserved
-   identifier.
-
-genieclust 0.9.7 (2021-01-07)
------------------------------
-
 -  [Python] Python >= 3.7 is now required (implied by ``numpy``).
-
--  [R] Use ``RcppMLPACK`` directly instead of via a wrapper,
-   ``emstreeR``.
-
-genieclust 0.9.6 (2021-01-05)
------------------------------
-
--  [Python] Python >= 3.7 is now required (implied by ``numpy``).
-
-genieclust 0.9.5 (2021-01-04)
------------------------------
 
 -  [Python] ``nmslib`` is now required.
 
--  [R] Switched to ``tinytest`` for unit testing.
+-  [R] Use ``RcppMLPACK`` directly; remove dependency on ``emstreeR``.
 
--  [R] Fixed the examples that relied on the amended API of
-   ``emstreeR``.
+-  [R] Switched to ``tinytest`` for unit testing.
 
 genieclust 0.9.4 (2020-07-31)
 -----------------------------
 
--  [Bugfix] [R] Fix build on Solaris.
+-  [Bugfix] [R] Fix build errors on Solaris.
 
 genieclust 0.9.3 (2020-07-25)
 -----------------------------
