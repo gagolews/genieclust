@@ -7,7 +7,7 @@
 """
 Apply Genie on g2mg-sets of different sizes and measure the run-times.
 
-Copyright (C) 2020, Marek Gagolewski, https://www.gagolewski.com
+Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

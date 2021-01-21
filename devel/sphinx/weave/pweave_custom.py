@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
-# Marek's output hooks hacks
+# ########################################################################## #
+#  Marek's output hooks hacks                                                #
+#  Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>     #
+# ########################################################################## #
 
 import sys
 import pweave
@@ -11,11 +14,10 @@ if len(sys.argv) != 3:
     sys.exit()
 
 
-
 doc = pweave.Pweb(sys.argv[1], informat=None, doctype="sphinx",
-            kernel="python3", output=sys.argv[2], figdir="figures",
-            mimetype=None
-            )
+    kernel="python3", output=sys.argv[2], figdir="figures",
+    mimetype=None
+)
 
 doc.documentationmode = False
 pweave.rcParams["usematplotlib"] = True
@@ -29,12 +31,11 @@ class PwebSphinxFormatter2(pweave.PwebSphinxFormatter):
         self.formatdict["indent"] = '    ## '
 
 
-#doc.formatter = PwebSphinxFormatter2(True)
-#doc.formatter.formatdict["indent"] = '    ## '
+# doc.formatter = PwebSphinxFormatter2(True)
+# doc.formatter.formatdict["indent"] = '    ## '
 
 
-
-# ugly ugly hacks :))
+# ugly nasty filthy hacks :))
 
 def format_text_result2(self, text, chunk):
     chunk["result"] = text
@@ -44,21 +45,19 @@ def format_text_result2(self, text, chunk):
     if "%s" in chunk["termstart"]:
         chunk["termstart"] = chunk["termstart"] % self.language
 
-
-    #Other things than term
+    # Other things than term
     if chunk['results'] == 'verbatim':
         if len(chunk['result'].strip()) > 0:
             if chunk["wrap"] is True or chunk['wrap'] == 'results' or chunk['wrap'] == 'output':
                 chunk['result'] = self._wrap(chunk["result"])
             chunk['result'] = "\n%s\n" % chunk["result"].rstrip()
-            chunk['result'] = self._indent2(chunk['result']) ########################!!!
-            #chunk["result"] = self.fix_linefeeds(chunk['result'])
+            chunk['result'] = self._indent2(chunk['result'])  # !!!!!!!!!
+            # chunk["result"] = self.fix_linefeeds(chunk['result'])
             result += '%(outputstart)s%(result)s%(outputend)s' % chunk
     elif chunk['results'] != 'verbatim':
         result += self.fix_linefeeds(text)
 
     return(result)
-
 
 
 def _indent2(self, text):
@@ -67,13 +66,10 @@ def _indent2(self, text):
         text = "\n" + text
     if text.endswith("\n"):
         text = text[:-1]
-    return text.replace('\n', '\n' + self.formatdict['indent']+"## ")########################!!!
-
+    return text.replace('\n', '\n' + self.formatdict['indent'] + "## ")  # !!!!
 
 
 doc.formatter.__class__.format_text_result = format_text_result2
 doc.formatter.__class__._indent2 = _indent2
-
-
 
 doc.weave()

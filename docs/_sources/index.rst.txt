@@ -38,7 +38,7 @@ sparse or string inputs are also supported.
 Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
 robustified version of `HDBSCAN\*` :cite:`hdbscan` that is able to detect a predefined
-number of clusters and hence it doesn't dependent on the `DBSCAN`'s somehow
+number of clusters and hence it doesn't dependent on the `DBSCAN`'s somewhat
 difficult-to-set `eps` parameter.
 
 

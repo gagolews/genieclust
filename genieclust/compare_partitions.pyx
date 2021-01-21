@@ -13,7 +13,7 @@ Partition similarity scores
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020, Marek Gagolewski <https://www.gagolewski.com>           #
+#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #

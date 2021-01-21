@@ -8,7 +8,7 @@ A reimplementation of *Genie* - a robust and outlier resistant clustering algori
 
 The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see Campello et al., 2015). If ``M`` > 1, then the mutual reachability distance *m(i,j)* with smoothing factor ``M`` is used instead of the chosen "raw" distance *d(i,j)*. It holds *m(i,j)=\max(d(i,j), c(i), c(j))*, where *c(i)* is *d(i,k)* with *k* being the (``M``-1)-th nearest neighbour of *i*. This makes "noise" and "boundary" points being "pulled away" from each other.
 
-The Genie correction together with the smoothing factor ``M`` > 1 (note that ``M`` = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN\* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN's somehow magical ``eps`` parameter or the HDBSCAN's ``min_cluster_size`` one.
+The Genie correction together with the smoothing factor ``M`` > 1 (note that ``M`` = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN\* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN's somewhat magical ``eps`` parameter or the HDBSCAN's ``min_cluster_size`` one.
 
 Usage
 ~~~~~

@@ -40,7 +40,7 @@ It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
 robustified version of `HDBSCAN\*`  (see Campello et al., 2015)
 that is able to detect a predefined
-number of clusters and hence it doesn't dependent on the `DBSCAN`'s somehow
+number of clusters and hence it doesn't dependent on the `DBSCAN`'s somewhat
 difficult-to-set `eps` parameter.
 
 

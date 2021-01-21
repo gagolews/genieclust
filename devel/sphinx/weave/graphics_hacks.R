@@ -1,11 +1,12 @@
 options(encoding="UTF-8")
+
 # ############################################################################ #
 #   Marek's R graphics package style hacks                                     #
 #   aka "you don't need ggplot2 to look cool"                                  #
 #                                                                              #
 #   Don't try this at home, kids!!!                                            #
 #                                                                              #
-#   Copyleft (C) 2020, Marek Gagolewski <https://www.gagolewski.com>           #
+#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #

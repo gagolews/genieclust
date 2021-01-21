@@ -62,7 +62,7 @@
 #' The Genie correction together with the smoothing factor \code{M} > 1 (note that
 #' \code{M} = 2 corresponds to the original distance) gives a robustified version of
 #' the HDBSCAN* algorithm that is able to detect a predefined number of
-#' clusters. Hence it does not dependent on the DBSCAN's somehow magical
+#' clusters. Hence it does not dependent on the DBSCAN's somewhat magical
 #' \code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
 #'
 #'

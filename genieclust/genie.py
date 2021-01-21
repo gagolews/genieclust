@@ -841,7 +841,7 @@ class Genie(GenieBase):
     The Genie correction together with the smoothing factor `M` > 1
     gives a robustified version of the HDBSCAN\\* [6]_ algorithm that,
     contrary to its predecessor, is able to detect a *predefined* number of
-    clusters. Hence, it is independent of the *DBSCAN*'s somehow magical
+    clusters. Hence, it is independent of the *DBSCAN*'s somewhat magical
     ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
     If `M` > 1, then the minimum spanning tree is computed with respect to the
     mutual reachability distance (based, e.g., on the Euclidean metric).
