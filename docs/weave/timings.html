@@ -116,7 +116,7 @@
 </ul>
 <p class="caption"><span class="caption-text">External Links</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Issues and Splendid Ideas Tracker</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a></li>
@@ -204,27 +204,27 @@
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
 <p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<a class="bibtex reference internal" href="../z_bibliography.html#sklearn" id="id1">[P+11]</a> version 0.23.1
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id25"><span>P+11</span></a>]</span> version 0.23.1
 (<cite>sklearn.cluster.KMeans</cite>) for different number of threads
 (by default it uses all available resources;
 note that the number of restarts, <cite>n_init</cite>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
-<a class="bibtex reference internal" href="../z_bibliography.html#fastclusterpkg" id="id2">[Mul13]</a>.</p>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id10"><span>Mul13</span></a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-method  <a class="bibtex reference internal" href="../z_bibliography.html#olson" id="id3">[Ols95]</a> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <a class="bibtex reference internal" href="../z_bibliography.html#mlpack" id="id4">[CEL+18]</a> provides a very fast
+method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id8"><span>Ols95</span></a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id13"><span>CEL+18</span></a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <a class="bibtex reference internal" href="../z_bibliography.html#emst" id="id5">[MRG10]</a> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id14"><span>MRG10</span></a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
 Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <a class="bibtex reference internal" href="../z_bibliography.html#nmslib" id="id6">[NBMN19]</a>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id15"><span>NBMN19</span></a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
 such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
@@ -236,7 +236,7 @@ and total memory of 16,242,084 kB.</p>
 see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
 from the
 <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<a class="bibtex reference internal" href="../z_bibliography.html#clustering-benchmarks-v1" id="id7">[G+20]</a>.
+<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id23"><span>G+20</span></a>]</span>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
@@ -463,7 +463,7 @@ partitions’ cardinality.</p>
 </table>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <a class="bibtex reference internal" href="../z_bibliography.html#extreme" id="id8">[KMKM17]</a>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id19"><span>KMKM17</span></a>]</span>)
 problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality

@@ -101,7 +101,7 @@ any contributions are welcome.
     :maxdepth: 2
     :caption: External Links
 
-    Source code (GitHub) <https://github.com/gagolews/genieclust>
+    Source Code (GitHub) <https://github.com/gagolews/genieclust>
     Issues and Splendid Ideas Tracker <https://github.com/gagolews/genieclust/issues>
     PyPI <https://pypi.org/project/genieclust/>
     CRAN <https://cran.r-project.org/web/packages/genieclust/>
