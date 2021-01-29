@@ -1,6 +1,11 @@
 # What's New in *genieclust*
 
 
+## genieclust 0.9.9 (2021-XX-XX)
+
+-  ...
+
+
 ## genieclust 0.9.8 (2021-01-08)
 
 -   [Python] Python >= 3.7 is now required (implied by `numpy`).

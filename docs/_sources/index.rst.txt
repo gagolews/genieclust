@@ -102,9 +102,10 @@ any contributions are welcome.
     :caption: External Links
 
     Source Code (GitHub) <https://github.com/gagolews/genieclust>
-    Issues and Splendid Ideas Tracker <https://github.com/gagolews/genieclust/issues>
-    PyPI <https://pypi.org/project/genieclust/>
-    CRAN <https://cran.r-project.org/web/packages/genieclust/>
+    Bug Tracker and Feature Suggestions <https://github.com/gagolews/genieclust/issues>
+    PyPI Entry <https://pypi.org/project/genieclust/>
+    CRAN Entry <https://cran.r-project.org/web/packages/genieclust/>
+    Author's Homepage <https://www.gagolewski.com/>
 
 .. toctree::
     :maxdepth: 2
