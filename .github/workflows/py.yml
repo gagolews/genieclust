@@ -25,13 +25,17 @@ jobs:
         sudo apt-get update
         sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'RcppArmadillo', 'RcppMLPACK', 'knitr', 'roxygen2'))"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild'))"
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
         pip install flake8 pytest --upgrade
         pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex --upgrade
-        pip install rpy2 mlpack pweave ipython jupyter tabulate --upgrade
+        pip install rpy2 pweave ipython jupyter tabulate --upgrade
+    - name: Install optional dependencies
+      continue-on-error: true
+      run: |
+        pip install mlpack --upgrade
     - name: Test and check Python
       run: |
         make py-test
