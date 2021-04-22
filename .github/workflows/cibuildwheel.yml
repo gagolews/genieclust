@@ -3,9 +3,9 @@ name: wheels
 on: workflow_dispatch
 
 env:
-    CIBW_SKIP: cp2* pp* cp35* cp36*
+    # nmslib does not build on 32bit Windows
+    CIBW_SKIP: cp2* pp* cp35* cp36* cp37-win32 cp38-win32 cp39-win32 cp39-win_amd64
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
-    CIBW_ARCHS_WINDOWS: auto64
 
 jobs:
   build_wheels:

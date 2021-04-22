@@ -149,7 +149,7 @@ setuptools.setup(
         "cython",
         "matplotlib",
         "scikit-learn",
-        "nmslib"
+        "nmslib"  # nmslib does not build on 32bit Windows...
       ],
     extras_require={
         "mlpack": ["mlpack"]  # as of 2021-04-22, mlpack is not available for Python 3.9

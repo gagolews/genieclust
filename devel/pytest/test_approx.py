@@ -128,11 +128,7 @@ def __test_genie_approx(metric='euclidean'):
                 print("")
 
 
-def test_genie_approx():
-    __test_genie_approx('euclidean')
-    __test_genie_approx('manhattan')
-    __test_genie_approx('cosine')
-    __test_genie_approx('maximum')
+
 
 
 def __test_sparse(affinity='euclidean_sparse'):
@@ -147,12 +143,7 @@ def __test_sparse(affinity='euclidean_sparse'):
     genieclust.Genie(affinity=affinity, exact=False).fit(X)
 
 
-def test_sparse():
-    __test_sparse('euclidean_sparse')
-    __test_sparse('manhattan_sparse')
-    __test_sparse('cosine_sparse')
-    __test_sparse('cosine_sparse_fast')
-    __test_sparse('chebyshev_sparse')
+
 
 
 def __test_string(affinity='leven'):
@@ -165,6 +156,21 @@ def __test_string(affinity='leven'):
 
     genieclust.Genie(affinity=affinity, exact=False, cast_float32=False).fit(X)
 
+
+
+def test_genie_approx():
+    __test_genie_approx('euclidean')
+    __test_genie_approx('manhattan')
+    __test_genie_approx('cosine')
+    __test_genie_approx('maximum')
+
+
+def test_sparse():
+    __test_sparse('euclidean_sparse')
+    __test_sparse('manhattan_sparse')
+    __test_sparse('cosine_sparse')
+    __test_sparse('cosine_sparse_fast')
+    __test_sparse('chebyshev_sparse')
 
 def test_string():
     __test_string('leven')
