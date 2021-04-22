@@ -33,7 +33,7 @@ version = genieclust.__version__
 release = version
 
 github_project_url = "https://github.com/gagolews/genieclust/"
-
+html_baseurl = "https://genieclust.gagolewski.com/"
 
 # -- General configuration ---------------------------------------------------
 
@@ -90,7 +90,6 @@ autosummary_generate = True
 html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    'canonical_url': 'https://genieclust.gagolewski.com/',
     'prev_next_buttons_location': 'both',
     #'style_nav_header_background': '#ff704d',
     #'display_github': True,
