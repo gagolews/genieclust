@@ -36,6 +36,5 @@
 #' @importFrom stats hclust
 #' @importFrom stats cutree
 #' @importFrom stats dist
-#' @importFrom mlpack emst
 #' @importFrom utils capture.output
 invisible(NULL)

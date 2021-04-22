@@ -3,24 +3,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>emst_mlpack: Euclidean Minimum Spanning Tree &mdash; genieclust 0.9.9.dev0 documentation</title>
+  <title>emst_mlpack: Euclidean Minimum Spanning Tree &mdash; genieclust 1.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
+
   
   
     <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/emst_mlpack.html"/>
+  
+
   
 
   
@@ -33,8 +37,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -56,7 +58,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+            <a href="../index.html" class="icon icon-home"> genieclust
           
 
           
@@ -66,7 +68,7 @@
             
             
               <div class="version">
-                0.9.9.dev0
+                1.0.0
               </div>
             
           
@@ -121,7 +123,7 @@
 <li class="toctree-l2"><a class="reference internal" href="mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What’s New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">External Links</span></p>
 <ul>
@@ -176,6 +178,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -189,7 +193,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -198,10 +202,10 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="gclust.html" class="btn btn-neutral float-right" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="gclust.html" class="btn btn-neutral float-right" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
       
       
-        <a href="comparing_partitions.html" class="btn btn-neutral float-left" title="comparing_partitions: Pairwise Partition Similarity Scores" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="comparing_partitions.html" class="btn btn-neutral float-left" title="comparing_partitions: Pairwise Partition Similarity Scores" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
       
   </div>
   
@@ -214,11 +218,11 @@
 <h1>emst_mlpack: Euclidean Minimum Spanning Tree<a class="headerlink" href="#emst-mlpack-euclidean-minimum-spanning-tree" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p>Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in <a class="reference external" href="mst.html">mst()</a>.</p>
+<p>Provides access to the implementation of the Dual-Tree Borůvka algorithm from the <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> package (if available). It is based on kd-trees and is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in <a class="reference external" href="mst.html">mst()</a>.</p>
 </div>
 <div class="section" id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">leaf_size</span> <span class="o">=</span> <span class="m">1</span><span class="p">,</span> <span class="n">naive</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -226,12 +230,18 @@
 <h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 12%" />
-<col style="width: 88%" />
+<col style="width: 14%" />
+<col style="width: 86%" />
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
 <td><p>a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">leaf_size</span></code></p></td>
+<td><p>size of leaves in the kd-tree, controls the trade-off between speed and memory consumption</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">naive</span></code></p></td>
+<td><p>logical; whether to use the naive, quadratic-time algorithm</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
 <td><p>logical; whether to print diagnostic messages</p></td>
@@ -255,37 +265,29 @@
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="gclust.html" class="btn btn-neutral float-right" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="comparing_partitions.html" class="btn btn-neutral float-left" title="comparing_partitions: Pairwise Partition Similarity Scores" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="gclust.html" class="btn btn-neutral float-right" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="comparing_partitions.html" class="btn btn-neutral float-left" title="comparing_partitions: Pairwise Partition Similarity Scores" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2021, Marek Gagolewski
+        &#169; Copyright 2018-2021, Marek Gagolewski.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

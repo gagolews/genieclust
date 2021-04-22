@@ -177,8 +177,8 @@ registerS3method("mst", "dist",    "mst.dist")
 #'
 #' @description
 #' Provides access to the implementation of the Dual-Tree Borůvka
-#' algorithm based on kd-trees from the \code{mlpack} package.
-#' It is fast for (very) low-dimensional
+#' algorithm from the \code{mlpack} package (if available).
+#' It is based on kd-trees and is fast for (very) low-dimensional
 #' Euclidean spaces. For higher dimensional spaces (say, over 5 features)
 #' or other metrics, use the parallelised Prim-like algorithm implemented
 #' in \code{\link{mst}()}.
@@ -208,7 +208,13 @@ emst_mlpack <- function(X, leaf_size=1, naive=FALSE, verbose=FALSE)
 {
     X <- as.matrix(X)
 
-    mst <- emst(X, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+    if (!requireNamespace("mlpack", quietly=TRUE)) {
+        warning("Package `mlpack` is not installed. Using mst() instead.")
+        return(mst.default(X, verbose=verbose, cast_float32=FALSE))
+    }
+
+    mst <- mlpack::emst(X, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+
     mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
     mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
     stopifnot(mst[, 1] < mst[, 2])

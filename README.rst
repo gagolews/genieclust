@@ -20,9 +20,8 @@ originally included in the R package
 The idea behind Genie is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
-the formation of clusters of highly imbalanced sizes**
-a point group of the smallest size is sometimes matched with its nearest
-neighbours.
+the formation of clusters of highly imbalanced sizes** a point group of
+the smallest size will sometimes be matched with its nearest neighbours.
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
@@ -67,10 +66,9 @@ Python and R Package Features
 
 The implemented algorithms include:
 
--  Genie++ - a reimplementation of the original Genie algorithm (with a
-   `scikit-learn`-compatible interface; Gagolewski et al., 2016;
-   much faster than the original one; supports approximate disconnected
-   MSTs);
+-  Genie++ - a reimplementation of the original Genie algorithm
+    with a `scikit-learn`-compatible interface (Gagolewski et al., 2016);
+    much faster than the original one; supports approximate disconnected MSTs;
 
 -  Genie+HDBSCAN\* - our robustified (Geniefied) retake on the HDBSCAN\*
    (Campello et al., 2015) method that detects noise points in data and
@@ -147,21 +145,12 @@ To install via ``pip`` (see `PyPI <https://pypi.org/project/genieclust/>`_):
 
 
 The package requires Python 3.7+ together with ``cython`` as well as
-``numpy``, ``scipy``, ``matplotlib``, ``nmslib``, and ``scikit-learn``. Optional
-dependency: ``mlpack``.
+``numpy``, ``scipy``, ``matplotlib``, ``nmslib``, and ``scikit-learn``.
+Optional dependency: ``mlpack``.
 
 
 
-Development Version
-^^^^^^^^^^^^^^^^^^^
 
-To build and install the most recent development version, call:
-
-.. code:: bash
-
-   git clone https://github.com/gagolews/genieclust.git
-   cd genieclust
-   python3 setup.py install --user
 
 
 
@@ -181,27 +170,16 @@ To install the most recent release, call:
 See the package entry on `CRAN <https://cran.r-project.org/web/packages/genieclust/>`_.
 
 
-Development Version
-^^^^^^^^^^^^^^^^^^^
-
-To fetch and compile the most recent development version of the package
-from github, call (C++11 compiler required; Windows users see
-`Rtools <https://cran.r-project.org/bin/windows/Rtools/>`_, OS X users
-see `Xcode <https://developer.apple.com/xcode/>`_):
-
-.. code:: r
-
-   devtools::install_github("gagolews/genieclust")
 
 
 Other
 ~~~~~
 
 Note that the core functionality is implemented in form of a header-only
-C++ library, hence it might be relatively easily adapted for use in
+C++ library, so it might be relatively easily adapted for use in
 other environments.
 
-Any contributions are welcome (e.g., Julia, ...).
+Any contributions are welcome (e.g., Julia, Matlab, ...).
 
 
 License

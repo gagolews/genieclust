@@ -4,7 +4,7 @@ comparing_partitions: Pairwise Partition Similarity Scores
 Description
 ~~~~~~~~~~~
 
-Let ``x`` and ``y`` represent two partitions of a set of ``n`` elements into *K* and *L*, respectively, nonempty and pairwise disjoint subsets, e.g., two clusterings of a dataset with ``n`` observations represented as label vectors. These functions quantify the similarity between ``x`` and ``y``. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
+Let ``x`` and ``y`` represent two partitions of a set of *n* elements into, respectively, *K* and *L* nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with *n* observations specified by two vectors of labels. The functions described in this section quantify the similarity between ``x`` and ``y``. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
 
 Usage
 ~~~~~

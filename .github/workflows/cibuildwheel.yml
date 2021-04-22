@@ -49,7 +49,6 @@ jobs:
       - name: Install optional dependencies
         continue-on-error: true
         run: |
-          pip install nmslib --upgrade
           pip install mlpack --upgrade
 
       - name: Build sdist

@@ -1,7 +1,7 @@
 R Interface Examples
 ====================
 
-The latest stable release of the R package ``genieclust`` is available from the `CRAN <https://cran.r-project.org/web/packages/genieclust/>`__ repository. To install it, call:
+The latest stable release of the R package ``genieclust`` is available from the `CRAN <https://cran.r-project.org/web/packages/genieclust/>`__ repository. We can install it by calling:
 
 .. code:: r
 
@@ -33,7 +33,7 @@ Let’s consider the Sustainable Society Indices Dataset (see http://www.ssfinde
    ## Armenia     9.446943                     7.420523            6.289224         6.436303         2.854317   2.434233 3.829620
    ## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052
 
-``genieclust`` has an interface compatible with the R’s workhorse for hierarchical clustering, ``stats::hclust()``. Yet, for efficiency reasons, it’s better to feed ``genieclust::glust()`` with the input matrix directly:
+``genieclust`` has an interface compatible with R’s workhorse for hierarchical clustering, ``stats::hclust()``. Yet, for efficiency reasons, it’s better to feed ``genieclust::glust()`` with the input matrix directly:
 
 .. code:: r
 
@@ -120,7 +120,7 @@ Plotting of dendrograms is also possible. For greater readability, we’ll restr
 
 Final notes:
 
--  If we are only interested in a specific partition, calling ``genie()`` directly will be a little faster than referring to ``cutree(gclust(...))``.
+-  If we are only interested in a specific partition, calling ``genie()`` directly will be slightly faster than referring to ``cutree(gclust(...))``.
 
 -  ``genieclust`` also features partition similarity scores (such as the Adjusted Rand or the Pair Sets Index) that can be used as external cluster validity measures.
 

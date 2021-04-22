@@ -35,10 +35,10 @@ License: AGPL-3
 Imports:
     Rcpp (>= 1.0.4),
     stats,
-    utils,
-    mlpack
+    utils
 Suggests:
-    datasets
+    datasets,
+    mlpack
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP, C++11

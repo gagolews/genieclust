@@ -277,11 +277,11 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     -----
 
     Let `x` and `y` represent two partitions of the same set with :math:`n`
-    elements into :math:`K` and :math:`L`, respectively,
-    nonempty and pairwise disjoint subsets,
-    e.g., two clusterings of a dataset with :math:`n` observations
-    represented as label vectors. Moreover, let `C` be the confusion
-    matrix (with :math:`K` rows and :math:`L` columns, :math:`K \\leq L`)
+    elements into, respectively, :math:`K` and :math:`L`
+    nonempty and pairwise disjoint subsets.
+    For instance, these can be two clusterings of a dataset with :math:`n`
+    observations specified as vectors of labels. Moreover, let `C` be the
+    confusion matrix (with :math:`K` rows and :math:`L` columns, :math:`K \\leq L`)
     corresponding to `x` and `y`, see also
     `genieclust.compare_partitions.confusion_matrix`.
 

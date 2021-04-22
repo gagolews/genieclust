@@ -72,7 +72,7 @@ r-build:
 
 r-check: r-build
 	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
-	cd .. && R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual --as-cran
+	cd .. && _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual --as-cran
 
 clean:
 	python3 setup.py clean

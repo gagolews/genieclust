@@ -3,24 +3,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection &mdash; genieclust 0.9.9.dev0 documentation</title>
+  <title>Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection &mdash; genieclust 1.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
 
   
   
+
   
   
     <link rel="canonical" href="https://genieclust.gagolewski.com/index.html"/>
+  
+
   
 
   
@@ -33,8 +37,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -55,7 +57,7 @@
           
 
           
-            <a href="#" class="icon icon-home" alt="Documentation Home"> genieclust
+            <a href="#" class="icon icon-home"> genieclust
           
 
           
@@ -65,7 +67,7 @@
             
             
               <div class="version">
-                0.9.9.dev0
+                1.0.0
               </div>
             
           
@@ -105,7 +107,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="news.html">What’s New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">External Links</span></p>
 <ul>
@@ -160,6 +162,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -171,7 +175,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -180,7 +184,7 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="weave/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="weave/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
       
       
   </div>
@@ -196,14 +200,14 @@
 <div><p><strong>Genie finds meaningful clusters and is fast even on large data sets.</strong></p>
 <p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p>A faster and more powerful version of <strong>Genie</strong> <span id="id1">[<a class="reference internal" href="z_bibliography.html#id2"><span>GBC16</span></a>]</span> — a robust
+<p>A faster and more powerful version of <strong>Genie</strong> <span id="id1">[<a class="reference internal" href="z_bibliography.html#id2">GBC16</a>]</span> — a robust
 and outlier resistant clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
 <p>The idea behind Genie is beautifully simple. First, make each individual
-point the only member of its own cluster. Then, keep merging pairs
+point the sole member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to <strong>prevent
 the formation of clusters of highly imbalanced sizes</strong>
-a point group of the smallest size is sometimes matched with its nearest
+a point group of the smallest size will sometimes be matched with its nearest
 neighbours.</p>
 <p>Genie’s appealing simplicity goes hand in hand with its usability;
 it <strong>often outperforms other clustering approaches</strong>
@@ -215,22 +219,22 @@ for datasets of millions of points can be completed within
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
 (large datasets with any number of clusters to detect) for data
 that fit into memory.
-Thanks to the use of <cite>nmslib</cite> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id15"><span>NBMN19</span></a>]</span>,
+Thanks to the use of <cite>nmslib</cite> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id15">NBMN19</a>]</span>,
 sparse or string inputs are also supported.</p>
 <p>Genie also allows clustering with respect to mutual reachability distances
-so that it can act as a <strong>noise point detector</strong> or a
-robustified version of <cite>HDBSCAN*</cite> <span id="id3">[<a class="reference internal" href="z_bibliography.html#id5"><span>CMZS15</span></a>]</span> that is able to detect a predefined
-number of clusters and hence it doesn’t dependent on the <cite>DBSCAN</cite>’s somewhat
+so that it can act as a <strong>noise point detector</strong> or a robustified version
+of <cite>HDBSCAN*</cite> <span id="id3">[<a class="reference internal" href="z_bibliography.html#id5">CMZS15</a>]</span> that is able to detect a predefined
+number of clusters and so it doesn’t dependent on the <cite>DBSCAN</cite>’s somewhat
 difficult-to-set <cite>eps</cite> parameter.</p>
 <p>The Python language version of <cite>genieclust</cite> has
-a familiar <cite>scikit-learn</cite>-like <span id="id4">[<a class="reference internal" href="z_bibliography.html#id24"><span>B+13</span></a>]</span> look-and-feel:</p>
+a familiar <cite>scikit-learn</cite>-like <span id="id4">[<a class="reference internal" href="z_bibliography.html#id24">B+13</a>]</span> look-and-feel:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">X</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># some data</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>R’s interface is compatible with <code class="docutils literal notranslate"><span class="pre">hclust()</span></code>, but there is more.</p>
+<p>The R language interface is compatible with <code class="docutils literal notranslate"><span class="pre">hclust()</span></code>, but there is more.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">&lt;-</span> <span class="kc">...</span> <span class="c1"># some data</span>
 <span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="nf">plot</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="c1"># plot cluster dendrogram</span>
@@ -244,9 +248,9 @@ and R (on <a class="reference external" href="https://cran.r-project.org/web/pac
 Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 <a class="reference external" href="https://github.com/gagolews/genieclust">GitHub</a>.
-Note that the core functionality is implemented in the form of a header-only C++
-library, hence it may relatively easily be adapted to new environments —
-any contributions are welcome.</p>
+The core functionality is implemented in the form of a header-only C++
+library, so it may relatively easily be adapted to new environments —
+any contributions are welcome (Julia, Matlab, etc.).</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -303,8 +307,8 @@ any contributions are welcome.</p>
 <li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="news.html">What’s New in <em>genieclust</em></a><ul>
-<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-9-2021-xx-xx">genieclust 0.9.9 (2021-XX-XX)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-1-0-0-2021-04-22">genieclust 1.0.0 (2021-04-22)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-8-2021-01-08">genieclust 0.9.8 (2021-01-08)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-4-2020-07-31">genieclust 0.9.4 (2020-07-31)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-3-2020-07-25">genieclust 0.9.3 (2020-07-25)</a></li>
@@ -355,35 +359,28 @@ any contributions are welcome.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="weave/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
+        <a href="weave/basics.html" class="btn btn-neutral float-right" title="Basics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2021, Marek Gagolewski
+        &#169; Copyright 2018-2021, Marek Gagolewski.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

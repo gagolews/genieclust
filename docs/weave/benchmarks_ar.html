@@ -3,24 +3,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Benchmarks (How Good Is It?) &mdash; genieclust 0.9.9.dev0 documentation</title>
+  <title>Benchmarks (How Good Is It?) &mdash; genieclust 1.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
+
   
   
     <link rel="canonical" href="https://genieclust.gagolewski.com/weave/benchmarks_ar.html"/>
+  
+
   
 
   
@@ -33,8 +37,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -56,7 +58,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+            <a href="../index.html" class="icon icon-home"> genieclust
           
 
           
@@ -66,7 +68,7 @@
             
             
               <div class="version">
-                0.9.9.dev0
+                1.0.0
               </div>
             
           
@@ -111,7 +113,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What’s New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">External Links</span></p>
 <ul>
@@ -166,6 +168,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -177,7 +181,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -186,10 +190,10 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="timings.html" class="btn btn-neutral float-right" title="Timings (How Fast Is It?)" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="timings.html" class="btn btn-neutral float-right" title="Timings (How Fast Is It?)" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
       
       
-        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Algorithms on Toy Datasets" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Algorithms on Toy Datasets" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
       
   </div>
   
@@ -202,24 +206,24 @@
 <h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Permalink to this headline">¶</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We consider the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id23"><span>G+20</span></a>]</span> which aggregates datasets from various sources,
-including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id27"><span>DG19</span></a>,<a class="reference internal" href="../z_bibliography.html#id28"><span>FS18</span></a>,<a class="reference internal" href="../z_bibliography.html#id30"><span>Ult05</span></a>,<a class="reference internal" href="../z_bibliography.html#id31"><span>GP10</span></a>,<a class="reference internal" href="../z_bibliography.html#id33"><span>KHK99</span></a>,<a class="reference internal" href="../z_bibliography.html#id32"><span>FMIZ16</span></a>]</span>.
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id23">G+20</a>]</span> which aggregates datasets from various sources,
+including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id27">DG19</a>, <a class="reference internal" href="../z_bibliography.html#id32">FMIZ16</a>, <a class="reference internal" href="../z_bibliography.html#id28">FS18</a>, <a class="reference internal" href="../z_bibliography.html#id31">GP10</a>, <a class="reference internal" href="../z_bibliography.html#id33">KHK99</a>, <a class="reference internal" href="../z_bibliography.html#id30">Ult05</a>]</span>.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study
 the algorithms that allow for setting of <cite>n_clusters</cite> explicitly.</p>
 <p>We will apply a few agglomerative hierarchical
 methods (average, centroid, complete, single, and Ward linkage; implemented in the
-<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id10"><span>Mul13</span></a>]</span>),
+<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id10">Mul13</a>]</span>),
 k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
-(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id25"><span>P+11</span></a>]</span>),
-<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id6"><span>MNL12</span></a>]</span>,
-and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id2"><span>GBC16</span></a>]</span>.</p>
-<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id9"><span>HA85</span></a>]</span>) will be used
+(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id25">P+11</a>]</span>),
+<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id6">MNL12</a>]</span>,
+and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id2">GBC16</a>]</span>.</p>
+<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id9">HA85</a>]</span>) will be used
 to quantify the agreement between
 a reference and a predicted clustering on the scale [0,1],
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id26"><span>DN09</span></a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id23"><span>G+20</span></a>]</span> for discussion),
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id26">DN09</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id23">G+20</a>]</span> for discussion),
 the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
@@ -249,7 +253,7 @@ Moreover, Gaussian mixtures used <cite>n_init=100</cite>.</p>
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
-<span id="id11">[<a class="reference internal" href="../z_bibliography.html#id6"><span>MNL12</span></a>]</span> method (which is also based on a minimum spanning tree)
+<span id="id11">[<a class="reference internal" href="../z_bibliography.html#id6">MNL12</a>]</span> method (which is also based on a minimum spanning tree)
 tend to output good quality outcomes as well.</p>
 <p>Descriptive statistics for the ranks (for each dataset,
 each algorithm that gets the highest AR index rounded to 2 decimal digits,
@@ -534,7 +538,7 @@ the highest typical scores.</p>
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h2>
 <p>Overall, the Genie algorithm tends to outperform other algorithms considered
 in this study, at least on this rich benchmark battery.
-In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id2"><span>GBC16</span></a>]</span>, based on a much smaller sample of reference datasets,
+In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id2">GBC16</a>]</span>, based on a much smaller sample of reference datasets,
 we have recommended <cite>gini_threshold</cite> of 0.3,
 which is set as the default also in the <cite>genieclust</cite> package.
 However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
@@ -549,37 +553,29 @@ in a significant way.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="timings.html" class="btn btn-neutral float-right" title="Timings (How Fast Is It?)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Algorithms on Toy Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="timings.html" class="btn btn-neutral float-right" title="Timings (How Fast Is It?)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-left" title="Comparing Algorithms on Toy Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2021, Marek Gagolewski
+        &#169; Copyright 2018-2021, Marek Gagolewski.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

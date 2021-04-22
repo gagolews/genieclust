@@ -120,9 +120,6 @@ double gini_index(Rcpp::NumericVector x)
 }
 
 
-
-
-
 //' @rdname inequity
 //' @export
 // [[Rcpp::export]]
@@ -141,4 +138,3 @@ double bonferroni_index(Rcpp::NumericVector x)
 
     return Cbonferroni_sorted(REAL(SEXP(x)), n);
 }
-

@@ -2,7 +2,7 @@
 
 The latest stable release of the R package `genieclust` is available from the
 [CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
-To install it, call:
+We can install it by calling:
 
 
 ```r
@@ -24,7 +24,7 @@ library("genieclust")
 
 Let's consider the Sustainable Society Indices Dataset
 (see http://www.ssfindex.com/)
-that measures the Human, Environmental,  and Economic Wellbeing
+that measures the Human, Environmental, and Economic Wellbeing
 in each country based on 7 categories on the scale $[0, 10]$.
 
 
@@ -47,7 +47,7 @@ head(X)  # preview
 ```
 
 
-`genieclust` has an interface compatible with the R's workhorse
+`genieclust` has an interface compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`.
 Yet, for efficiency reasons, it's better to feed `genieclust::glust()`
 with the input matrix directly:
@@ -148,7 +148,7 @@ plot(h_oecd)
 Final notes:
 
 * If we are only interested in a specific partition,
-calling `genie()` directly will be a little faster than referring to
+calling `genie()` directly will be slightly faster than referring to
 `cutree(gclust(...))`.
 
 * `genieclust` also features partition similarity scores

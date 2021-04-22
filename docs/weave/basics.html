@@ -3,24 +3,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Basics &mdash; genieclust 0.9.9.dev0 documentation</title>
+  <title>Basics &mdash; genieclust 1.0.0 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
 
   
   
+
   
   
     <link rel="canonical" href="https://genieclust.gagolewski.com/weave/basics.html"/>
+  
+
   
 
   
@@ -33,7 +37,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
@@ -56,7 +59,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> genieclust
+            <a href="../index.html" class="icon icon-home"> genieclust
           
 
           
@@ -66,7 +69,7 @@
             
             
               <div class="version">
-                0.9.9.dev0
+                1.0.0
               </div>
             
           
@@ -113,7 +116,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What’s New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">External Links</span></p>
 <ul>
@@ -168,6 +171,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -179,7 +184,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
         
       </li>
     
@@ -188,10 +193,10 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="sklearn_toy_example.html" class="btn btn-neutral float-right" title="Comparing Algorithms on Toy Datasets" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-right" title="Comparing Algorithms on Toy Datasets" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
       
       
-        <a href="../index.html" class="btn btn-neutral float-left" title="Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
       
   </div>
   
@@ -202,7 +207,7 @@
             
   <div class="section" id="basics">
 <h1>Basics<a class="headerlink" href="#basics" title="Permalink to this headline">¶</a></h1>
-<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id2"><span>GBC16</span></a>]</span> is an agglomerative hierarchical clustering
+<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id2">GBC16</a>]</span> is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
@@ -222,7 +227,7 @@ of the <cite>genieclust</cite> package.</p>
 </div>
 <div class="section" id="breaking-the-ice">
 <h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this headline">¶</a></h2>
-<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id20"><span>JL05</span></a>]</span>, which  comes
+<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id20">JL05</a>]</span>, which  comes
 with the true corresponding partition (as assigned by experts).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
@@ -251,9 +256,9 @@ with the true corresponding partition (as assigned by experts).</p>
 <p>Let’s apply the Genie algorithm (with the default/recommended
 <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> parameter value). The <cite>genieclust</cite> package’s interface
 is compatible with the one from the popular
-<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id25"><span>P+11</span></a>]</span>.
+<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id25">P+11</a>]</span>.
 In particular, an object of class <cite>Genie</cite> is equipped with the
-<cite>fit</cite> and <cite>fit_predict</cite> methods  <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id24"><span>B+13</span></a>]</span>.</p>
+<cite>fit</cite> and <cite>fit_predict</cite> methods  <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id24">B+13</a>]</span>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
 <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
@@ -337,10 +342,10 @@ So we shouldn’t be much surprised with this result.</p>
 <div class="section" id="a-comparison-with-hdbscan">
 <h2>A Comparison with HDBSCAN*<a class="headerlink" href="#a-comparison-with-hdbscan" title="Permalink to this headline">¶</a></h2>
 <p>Let’s also make a comparison against a version of the DBSCAN
-<span id="id5">[<a class="reference internal" href="../z_bibliography.html#id21"><span>Lin73</span></a>,<a class="reference internal" href="../z_bibliography.html#id22"><span>EKSX96</span></a>]</span> algorithm. The original DBSCAN relies on a somewhat
+<span id="id5">[<a class="reference internal" href="../z_bibliography.html#id22">EKSX96</a>, <a class="reference internal" href="../z_bibliography.html#id21">Lin73</a>]</span> algorithm. The original DBSCAN relies on a somewhat
 magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter, which might be hard to tune in practice. Fortunately,
 the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a> package
-implements its robustified variant <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id5"><span>CMZS15</span></a>]</span>, which makes the algorithm much
+implements its robustified variant <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id5">CMZS15</a>]</span>, which makes the algorithm much
 more user-friendly.</p>
 <p>Here are the clustering results with the <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameter
 of 3, 5, 10, and 15:</p>
@@ -452,37 +457,29 @@ manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="sklearn_toy_example.html" class="btn btn-neutral float-right" title="Comparing Algorithms on Toy Datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../index.html" class="btn btn-neutral float-left" title="Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="sklearn_toy_example.html" class="btn btn-neutral float-right" title="Comparing Algorithms on Toy Datasets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../index.html" class="btn btn-neutral float-left" title="Python and R Package genieclust: Fast and Robust Hierarchical Clustering with Noise Point Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2021, Marek Gagolewski
+        &#169; Copyright 2018-2021, Marek Gagolewski.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 

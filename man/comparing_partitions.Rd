@@ -43,13 +43,13 @@ or NULL (if x is an K*L confusion matrix)}
 A single real value giving the similarity score.
 }
 \description{
-Let \code{x} and \code{y} represent two partitions of a set of \code{n}
-elements into \eqn{K} and \eqn{L}, respectively,
-nonempty and pairwise disjoint subsets,
-e.g., two clusterings of a dataset with \code{n} observations
-represented as label vectors.
-These functions quantify the similarity between \code{x}
-and \code{y}. They can be used as external cluster
+Let \code{x} and \code{y} represent two partitions of a set of \eqn{n}
+elements into, respectively, \eqn{K} and \eqn{L}
+nonempty and pairwise disjoint subsets.
+For instance, these can be two clusterings of a dataset with
+\eqn{n} observations specified by two vectors of labels.
+The functions described in this section quantify the similarity between
+\code{x} and \code{y}. They can be used as external cluster
 validity measures, i.e., in the presence of reference (ground-truth)
 partitions.
 }

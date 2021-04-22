@@ -4,6 +4,7 @@
 ## genieclust 1.0.0 (2021-04-22)
 
 -  [R] Use `mlpack` instead of `RcppMLPACK` (#72).
+   This package is merely suggested, not dependent upon.
 
 
 ## genieclust 0.9.8 (2021-01-08)

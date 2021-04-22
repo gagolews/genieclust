@@ -22,8 +22,8 @@ An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
 Provides access to the implementation of the Dual-Tree Borůvka
-algorithm based on kd-trees from the \code{mlpack} package.
-It is fast for (very) low-dimensional
+algorithm from the \code{mlpack} package (if available).
+It is based on kd-trees and is fast for (very) low-dimensional
 Euclidean spaces. For higher dimensional spaces (say, over 5 features)
 or other metrics, use the parallelised Prim-like algorithm implemented
 in \code{\link{mst}()}.

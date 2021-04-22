@@ -4,23 +4,27 @@ emst_mlpack: Euclidean Minimum Spanning Tree
 Description
 ~~~~~~~~~~~
 
-Provides access to an implementation of the Dual-Tree Borůvka algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in `mst() <mst.html>`__.
+Provides access to the implementation of the Dual-Tree Borůvka algorithm from the ``mlpack`` package (if available). It is based on kd-trees and is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in `mst() <mst.html>`__.
 
 Usage
 ~~~~~
 
 .. code-block:: r
 
-   emst_mlpack(X, verbose = FALSE)
+   emst_mlpack(X, leaf_size = 1, naive = FALSE, verbose = FALSE)
 
 Arguments
 ~~~~~~~~~
 
-+-------------+------------------------------------------------------------------------------------------------+
-| ``X``       | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) |
-+-------------+------------------------------------------------------------------------------------------------+
-| ``verbose`` | logical; whether to print diagnostic messages                                                  |
-+-------------+------------------------------------------------------------------------------------------------+
++---------------+------------------------------------------------------------------------------------------------+
+| ``X``         | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) |
++---------------+------------------------------------------------------------------------------------------------+
+| ``leaf_size`` | size of leaves in the kd-tree, controls the trade-off between speed and memory consumption     |
++---------------+------------------------------------------------------------------------------------------------+
+| ``naive``     | logical; whether to use the naive, quadratic-time algorithm                                    |
++---------------+------------------------------------------------------------------------------------------------+
+| ``verbose``   | logical; whether to print diagnostic messages                                                  |
++---------------+------------------------------------------------------------------------------------------------+
 
 Value
 ~~~~~

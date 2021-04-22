@@ -1,0 +1,25 @@
+bibentry(
+    bibtype = "manual",
+    title   = "genieclust: Fast and robust hierarchical clustering with noise point detection",
+    author  = personList(
+        as.person("Marek Gagolewski")
+    ),
+    year    = sub("-.*", "", meta$Date),
+    note    = sprintf("R package version %s", meta$Version),
+    url     = "https://genieclust.gagolewski.com"
+)
+
+bibentry(
+    bibtype      = "article",
+    title        = "Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm",
+    author       = personList(
+        as.person("Marek Gagolewski"),
+        as.person("Maciej Bartoszuk"),
+        as.person("Anna Cena")
+    ),
+    journal      = "Information Sciences",
+    year         = "2016",
+    volume       = "363",
+    pages        = "8--23",
+    doi          = "10.1016/j.ins.2016.05.003"
+)
