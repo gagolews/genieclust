@@ -2,5 +2,5 @@ numpy
 scipy
 cython
 matplotlib
-sklearn
+scikit-learn
 nmslib

@@ -1,9 +1,9 @@
-*Genie*\ ++ Fast and Robust Hierarchical Clustering with Noise Point Detection
-==============================================================================
+*Genie*: Fast and Robust Hierarchical Clustering with Noise Point Detection
+===========================================================================
 
 |genieclust for Python| |genieclust for R| |codecov|
 
-   **Genie++ outputs meaningful clusters and is fast even on large data sets.**
+   **Genie outputs meaningful clusters and is fast even on large data sets.**
 
 Documentation, tutorials, and benchmarks are available
 at https://genieclust.gagolewski.com/.
@@ -17,7 +17,7 @@ resistant clustering algorithm (see Gagolewski, Bartoszuk, and Cena, 2016),
 originally included in the R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
-The idea behind Genie is very simple. First, make each individual
+The idea behind Genie is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes**

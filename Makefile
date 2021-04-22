@@ -1,7 +1,5 @@
 # (C) 2020-2021 Marek Gagolewski, https://www.gagolewski.com
 
-#VPATH="/home/gagolews/Python/genieclust"
-
 
 .PHONY: python py-test py-check r r-check r r-build sphinx clean
 
@@ -49,8 +47,12 @@ sphinx: python r weave rd2rst news
 	touch docs/.nojekyll
 
 py-check: python
-	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --exclude=devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials
-	flake8 . --count --exit-zero --max-complexity=10 --ignore=E121,E123,E126,E226,E24,E704,W503,W504,E221,E303,E265 --max-line-length=127 --statistics  --exclude=devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials
+	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics \
+		--exclude=devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials
+	flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 \
+		--statistics  \
+		--exclude=devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials \
+		--ignore=E121,E123,E126,E226,E24,E704,W503,W504,E221,E303,E265
 
 r:
 	Rscript -e 'Rcpp::compileAttributes()'

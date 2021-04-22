@@ -4,11 +4,16 @@
 \alias{emst_mlpack}
 \title{Euclidean Minimum Spanning Tree}
 \usage{
-emst_mlpack(X, verbose = FALSE)
+emst_mlpack(X, leaf_size = 1, naive = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{X}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns)}
+
+\item{leaf_size}{size of leaves in the kd-tree,
+controls the trade-off between speed and memory consumption}
+
+\item{naive}{logical; whether to use the naive, quadratic-time algorithm}
 
 \item{verbose}{logical; whether to print diagnostic messages}
 }
@@ -16,8 +21,9 @@ e.g., a data frame with numeric-like columns)}
 An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
-Provides access to an implementation of the Dual-Tree Borůvka
-algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional
+Provides access to the implementation of the Dual-Tree Borůvka
+algorithm based on kd-trees from the \code{mlpack} package.
+It is fast for (very) low-dimensional
 Euclidean spaces. For higher dimensional spaces (say, over 5 features)
 or other metrics, use the parallelised Prim-like algorithm implemented
 in \code{\link{mst}()}.

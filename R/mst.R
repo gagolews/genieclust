@@ -176,8 +176,9 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @title Euclidean Minimum Spanning Tree
 #'
 #' @description
-#' Provides access to an implementation of the Dual-Tree Borůvka
-#' algorithm based on kd-trees from MLPACK. It is fast for (very) low-dimensional
+#' Provides access to the implementation of the Dual-Tree Borůvka
+#' algorithm based on kd-trees from the \code{mlpack} package.
+#' It is fast for (very) low-dimensional
 #' Euclidean spaces. For higher dimensional spaces (say, over 5 features)
 #' or other metrics, use the parallelised Prim-like algorithm implemented
 #' in \code{\link{mst}()}.
@@ -185,6 +186,9 @@ registerS3method("mst", "dist",    "mst.dist")
 #'
 #' @param X a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns)
+#' @param leaf_size size of leaves in the kd-tree,
+#'     controls the trade-off between speed and memory consumption
+#' @param naive logical; whether to use the naive, quadratic-time algorithm
 #' @param verbose logical; whether to print diagnostic messages
 #'
 #' @return
@@ -200,14 +204,15 @@ registerS3method("mst", "dist",    "mst.dist")
 #' Journal of Open Source Software 3(26), 726, 2018.
 #'
 #' @export
-emst_mlpack <- function(X, verbose=FALSE)
+emst_mlpack <- function(X, leaf_size=1, naive=FALSE, verbose=FALSE)
 {
     X <- as.matrix(X)
 
-    if (!verbose)
-        capture.output({mst <- .emst_mlpack(X)})
-    else
-        mst <- .emst_mlpack(X)
+    mst <- emst(X, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+    mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
+    mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
+    stopifnot(mst[, 1] < mst[, 2])
+    stopifnot(!is.unsorted(mst[, 3]))
 
     structure(
         mst,

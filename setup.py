@@ -135,7 +135,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="0.9.9.dev0",  # see also genieclust/__init__.py; e.g., 0.9.4.dev0
+    version="1.0.0",  # see also genieclust/__init__.py; e.g., 0.9.4.dev0
     description="The Genie++ Hierarchical Clustering Algorithm (with Extras)",
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -152,7 +152,7 @@ setuptools.setup(
         "nmslib"
       ],
     extras_require={
-        "mlpack": ["mlpack"]
+        "mlpack": ["mlpack"]  # as of 2021-04-22, mlpack is not available for Python 3.9
     },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",
@@ -177,7 +177,7 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: GNU Affero General Public License v3",
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Topic :: Scientific/Engineering",
     ],
     cmdclass={

@@ -12,10 +12,10 @@ and outlier resistant clustering algorithm, originally published as an R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
 The idea behind Genie is beautifully simple. First, make each individual
-point the only member of its own cluster. Then, keep merging pairs
+point the sole member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes**
-a point group of the smallest size is sometimes matched with its nearest
+a point group of the smallest size will sometimes be matched with its nearest
 neighbours.
 
 
@@ -35,9 +35,9 @@ Thanks to the use of `nmslib` :cite:`nmslib`\ ,
 sparse or string inputs are also supported.
 
 Genie also allows clustering with respect to mutual reachability distances
-so that it can act as a **noise point detector** or a
-robustified version of `HDBSCAN\*` :cite:`hdbscan` that is able to detect a predefined
-number of clusters and hence it doesn't dependent on the `DBSCAN`'s somewhat
+so that it can act as a **noise point detector** or a robustified version
+of `HDBSCAN\*` :cite:`hdbscan` that is able to detect a predefined
+number of clusters and so it doesn't dependent on the `DBSCAN`'s somewhat
 difficult-to-set `eps` parameter.
 
 
@@ -53,7 +53,7 @@ a familiar `scikit-learn`-like :cite:`sklearn_api` look-and-feel:
     labels = g.fit_predict(X)
 
 
-R's interface is compatible with ``hclust()``, but there is more.
+The R language interface is compatible with ``hclust()``, but there is more.
 
 .. code-block:: r
 
@@ -70,9 +70,9 @@ and R (on `CRAN <https://cran.r-project.org/web/packages/genieclust/>`_\ ).
 Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 `GitHub <https://github.com/gagolews/genieclust>`_.
-Note that the core functionality is implemented in the form of a header-only C++
-library, hence it may relatively easily be adapted to new environments —
-any contributions are welcome.
+The core functionality is implemented in the form of a header-only C++
+library, so it may relatively easily be adapted to new environments —
+any contributions are welcome (Julia, Matlab, etc.).
 
 
 .. toctree::
