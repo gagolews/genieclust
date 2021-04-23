@@ -136,7 +136,7 @@ def show_ranks(res_max):
 
 def do_plot(res_max):
     # which similarity measure to report below:
-    __order=res_max.groupby("method")[similarity_measure].mean().sort_values().index
+    __order=res_max.groupby("method")[similarity_measure].mean().sort_values(ascending=False).index
     plt.rcParams["figure.figsize"] = (9,7)
     sns.boxplot(y="method", x=similarity_measure, data=res_max,
                 order=__order,

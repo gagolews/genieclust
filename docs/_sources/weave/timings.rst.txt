@@ -229,7 +229,7 @@ a first run of the algorithm:
 
 ::
 
-    ## time elapsed - first run: 0.715
+    ## time elapsed - first run: 13.850
 
 
 
@@ -248,7 +248,7 @@ Changing some parameters and re-running the cluster search:
 
 ::
 
-    ## time elapsed - consecutive run: 0.031
+    ## time elapsed - consecutive run: 0.030
 
 
 
