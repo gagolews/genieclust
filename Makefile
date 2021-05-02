@@ -1,7 +1,9 @@
-# (C) 2020-2021 Marek Gagolewski, https://www.gagolewski.com
+# Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>
 
 
 .PHONY: python py-test py-check r r-check r r-build sphinx clean
+
+PKGNAME="genieclust"
 
 all: r python
 
@@ -20,22 +22,11 @@ weave:
 
 rd2rst:
 	# https://github.com/gagolews/Rd2rst
-	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('genieclust')" && cd ../../
+	# TODO: if need be, you can also use MyST in the future
+	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('${PKGNAME}')" && cd ../../
 
 news:
 	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
-
-#rapiold:
-	#Rscript -e "Rd2md::ReferenceManual()"
-	#Rscript -e "f <- readLines('Reference_Manual_genieclust.md');" \
-	#	-e "f <- f[which(stringi::stri_detect_regex(f, '^#'))[2]:length(f)];" \
-	#	-e "f <- stringi::stri_replace_first_regex(f, '^(#+) \\u0060?(.*?)\\u0060?\\u0024', '#\\u00241 \\u00242')" \
-	#	-e "f <- stringi::stri_replace_first_regex(f, 'list\\\\(list\\\\(\"(.*?)\"\\\\), list\\\\(\"(.*?)\"\\\\)\\\\)', '\\u00241.\\u00242')" \
-	#	-e "f <- c('# R Package *genieclust* Reference', '', f)" \
-	#	-e "writeLines(f, 'r.md')"
-	#pandoc r.md -o devel/sphinx/r.rst
-	##rstlisttable --in-place devel/sphinx/r.rst
-	#rm -f Reference_Manual_genieclust.md r.md
 
 sphinx: python r weave rd2rst news
 	rm -rf devel/sphinx/_build/
@@ -54,25 +45,23 @@ py-check: python
 		--exclude=devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials \
 		--ignore=E121,E123,E126,E226,E24,E704,W503,W504,E221,E303,E265
 
-r:
+r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
-	R CMD INSTALL .
-	# AVOID ADDING THE -O0 flag!!!
 	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
+
+r: r-autoconf
 	R CMD INSTALL . --html
 
 r-test: r
-	Rscript -e 'options(width=120); source("devel/tinytest.R")'
+	Rscript -e 'source("devel/tinytest.R")'
 
 r-build:
-	Rscript -e 'Rcpp::compileAttributes()'
-	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"))'
-	cd .. && R CMD INSTALL genieclust --preclean --html
-	cd .. && R CMD build genieclust
+	cd .. && R CMD INSTALL ${PKGNAME} --preclean --html
+	cd .. && R CMD build ${PKGNAME}
+	make lcean
 
 r-check: r-build
-	#Rscript -e 'devtools::check(cran=TRUE, remote=TRUE, manual=TRUE)'  # avoid redundant dependencies
-	cd .. && _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t genieclust*.tar.gz | head -1` --no-manual --as-cran
+	cd .. && _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t ${PKGNAME}*.tar.gz | head -1` --no-manual --as-cran
 
 clean:
 	python3 setup.py clean
@@ -80,4 +69,8 @@ clean:
 	rm -rf genieclust.egg-info/
 	rm -rf dist/
 	rm -f genieclust/*.cpp
-	rm -f src/*.o src/*.so
+	find src -name '*.o' -exec rm {} \;
+	find src -name '*.so' -exec rm {} \;
+
+purge: clean
+	rm -f man/*.Rd
