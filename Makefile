@@ -56,9 +56,7 @@ r-test: r
 	Rscript -e 'source("devel/tinytest.R")'
 
 r-build:
-	cd .. && R CMD INSTALL ${PKGNAME} --preclean --html
 	cd .. && R CMD build ${PKGNAME}
-	make lcean
 
 r-check: r-build
 	cd .. && _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t ${PKGNAME}*.tar.gz | head -1` --no-manual --as-cran
