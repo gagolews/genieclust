@@ -1,6 +1,6 @@
-
-
 <!DOCTYPE html>
+
+
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
@@ -108,6 +108,7 @@
 <li class="toctree-l1"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">What Is New in <em>genieclust</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#genieclust-1-x-y-under-development">genieclust 1.x.y (under development)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#genieclust-1-0-0-2021-04-22">genieclust 1.0.0 (2021-04-22)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-8-2021-01-08">genieclust 0.9.8 (2021-01-08)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#genieclust-0-9-4-2020-07-31">genieclust 0.9.4 (2020-07-31)</a></li>
@@ -207,6 +208,13 @@
             
   <div class="section" id="what-is-new-in-genieclust">
 <h1>What Is New in <em>genieclust</em><a class="headerlink" href="#what-is-new-in-genieclust" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="genieclust-1-x-y-under-development">
+<h2>genieclust 1.x.y (under development)<a class="headerlink" href="#genieclust-1-x-y-under-development" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[GENERAL] A paper on the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package has appeared in
+<em>SoftwareX</em>, see <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">https://doi.org/10.1016/j.softx.2021.100722</a>.</p></li>
+</ul>
+</div>
 <div class="section" id="genieclust-1-0-0-2021-04-22">
 <h2>genieclust 1.0.0 (2021-04-22)<a class="headerlink" href="#genieclust-1-0-0-2021-04-22" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
@@ -226,13 +234,13 @@ merely suggested, not dependent upon.</p></li>
 <div class="section" id="genieclust-0-9-4-2020-07-31">
 <h2>genieclust 0.9.4 (2020-07-31)<a class="headerlink" href="#genieclust-0-9-4-2020-07-31" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[Bugfix] [R] Fix build errors on Solaris.</p></li>
+<li><p>[BUGFIX] [R] Fix build errors on Solaris.</p></li>
 </ul>
 </div>
 <div class="section" id="genieclust-0-9-3-2020-07-25">
 <h2>genieclust 0.9.3 (2020-07-25)<a class="headerlink" href="#genieclust-0-9-3-2020-07-25" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[Bugfix] [Python] Add code coverage CI. Fix some minor
+<li><p>[BUGFIX] [Python] Add code coverage CI. Fix some minor
 inconsistencies. Automate the <code class="docutils literal notranslate"><span class="pre">bdist</span></code> build chain.</p></li>
 <li><p>[R] Update DESCRIPTION to meet the CRAN policies.</p></li>
 </ul>
@@ -246,11 +254,11 @@ inconsistencies. Automate the <code class="docutils literal notranslate"><span c
 <div class="section" id="genieclust-0-9-1-2020-07-18">
 <h2>genieclust 0.9.1 (2020-07-18)<a class="headerlink" href="#genieclust-0-9-1-2020-07-18" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[General] The package has been completely rewritten. The core
+<li><p>[GENERAL] The package has been completely rewritten. The core
 functionality is now implemented in C++ (with OpenMP).</p></li>
-<li><p>[General] Clustering with respect to HDBSCAN*-like mutual
+<li><p>[GENERAL] Clustering with respect to HDBSCAN*-like mutual
 reachability distances is supported.</p></li>
-<li><p>[General] The parallelised Jarnik-Prim algorithm now supports
+<li><p>[GENERAL] The parallelised Jarnik-Prim algorithm now supports
 on-the-fly distance computations. Euclidean minimum spanning tree can
 be determined with <code class="docutils literal notranslate"><span class="pre">mlpack</span></code>, which is much faster in
 low-dimensional spaces.</p></li>

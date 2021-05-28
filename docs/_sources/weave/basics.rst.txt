@@ -14,7 +14,7 @@ in terms of clustering :any:`quality <benchmarks_ar>`
 and :any:`speed <timings>`.
 
 Here are a few examples of basic interactions with the Python version
-of the `genieclust` package.
+of the `genieclust` :cite:`genieclust` package.
 
 
 

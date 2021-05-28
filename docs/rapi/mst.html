@@ -1,6 +1,6 @@
-
-
 <!DOCTYPE html>
+
+
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
@@ -251,7 +251,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
-<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <code class="docutils literal notranslate"><span class="pre">dist</span></code>.</p></td>
+<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-patched/library/stats/html/dist.html">dist</a>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
 <td><p>further arguments passed to or from other methods.</p></td>
@@ -276,7 +276,7 @@
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <em>n p</em>, the <em>n (n-1)/2</em> distances are computed on the fly, so that <em>O(n M)</em> memory is used.</p>
 <p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code> to control the number of threads used.</p>
 <p>Time complexity is <em>O(n^2)</em> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <em>O(p n^2)</em> otherwise.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference external" href="gclust.html">gclust</a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference external" href="https://genieclust.gagolewski.com/rapi/gclust.html">gclust</a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
 <p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
 </div>
 <div class="section" id="value">
@@ -294,7 +294,7 @@
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="emst_mlpack.html">emst_mlpack()</a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
+<p><a class="reference external" href="https://genieclust.gagolewski.com/rapi/emst_mlpack.html">emst_mlpack</a>() for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>

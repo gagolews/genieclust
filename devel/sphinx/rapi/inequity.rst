@@ -2,28 +2,28 @@ inequity: Inequity (Inequality) Measures
 ========================================
 
 Description
-~~~~~~~~~~~
+-----------
 
 ``gini_index()`` gives the normalised Gini index and ``bonferroni_index()`` implements the Bonferroni index.
 
 Usage
-~~~~~
+-----
 
-.. code-block:: r
+.. code:: r
 
    gini_index(x)
 
    bonferroni_index(x)
 
 Arguments
-~~~~~~~~~
+---------
 
 ===== =====================================
 ``x`` numeric vector of non-negative values
 ===== =====================================
 
 Details
-~~~~~~~
+-------
 
 Both indices can be used to quantify the "inequity" of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. Both indices follow the Pigou-Dalton principle (are Schur-convex): setting *x_i = x_i - h* and *x_j = x_j + h* with *h > 0* and *x_i - h ≥q x_j + h* (taking from the "rich" and giving to the "poor") decreases the inequity.
 
@@ -46,12 +46,12 @@ In particular, for ordered inputs, it holds:
 where *σ* is an ordering permutation of *(x_1,…,x_n)*.
 
 Value
-~~~~~
+-----
 
 The value of the inequity index, a number in *[0, 1]*.
 
 References
-~~~~~~~~~~
+----------
 
 Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.
 
@@ -60,9 +60,9 @@ Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant 
 Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
 
 Examples
-~~~~~~~~
+--------
 
-.. code-block:: r
+.. code:: r
 
    gini_index(c(2, 2, 2, 2, 2))  # no inequality
    gini_index(c(0, 0, 10, 0, 0)) # one has it all

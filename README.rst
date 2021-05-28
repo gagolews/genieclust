@@ -211,6 +211,14 @@ Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 References
 ----------
 
+> When using *genieclust* in research publications, please
+> cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
+> as specified below. Thank you.
+
+
+Gagolewski M., genieclust: Fast and robust hierarchical clustering,
+*SoftwareX* **15**, 2021, 100722. doi:10.1016/j.softx.2021.100722.
+
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, *Information
 Sciences* **363**, 2016, 8-23. doi:10.1016/j.ins.2016.05.003.

@@ -1,6 +1,6 @@
-
-
 <!DOCTYPE html>
+
+
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
@@ -237,7 +237,7 @@ Labels -1 denote noise points (light grey markers).</p>
 <p>The <cite>genieclust</cite> package allows for clustering with respect
 to a mutual reachability distance,
 <span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id5">CMZS15</a>]</span>.
+known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8">CMZS15</a>]</span>.
 It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
 <p>Here are the effects of playing with the <cite>M</cite> parameter
@@ -284,8 +284,8 @@ but now with respect to the original distance (here: Euclidean):</p>
 </div>
 <p>However, contrary to an excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id34">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
-here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id2">GBC16</a>]</span> algorithm under the hood.
+package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id37">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id5">GBC16</a>]</span> algorithm under the hood.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>

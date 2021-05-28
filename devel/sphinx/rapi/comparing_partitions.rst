@@ -2,14 +2,14 @@ comparing_partitions: Pairwise Partition Similarity Scores
 ==========================================================
 
 Description
-~~~~~~~~~~~
+-----------
 
 Let ``x`` and ``y`` represent two partitions of a set of *n* elements into, respectively, *K* and *L* nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with *n* observations specified by two vectors of labels. The functions described in this section quantify the similarity between ``x`` and ``y``. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
 
 Usage
-~~~~~
+-----
 
-.. code-block:: r
+.. code:: r
 
    adjusted_rand_score(x, y = NULL)
 
@@ -30,7 +30,7 @@ Usage
    pair_sets_index(x, y = NULL)
 
 Arguments
-~~~~~~~~~
+---------
 
 +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | ``x`` | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set, or a confusion matrix with K rows and L columns (see ``table(x, y)``) |
@@ -39,7 +39,7 @@ Arguments
 +-------+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 Details
-~~~~~~~
+-------
 
 Every index except ``mi_score()`` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a bijection of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
 
@@ -56,12 +56,12 @@ Note that both the (unadjusted) Rand and FM scores are bounded from below by *1/
 ``pair_sets_index()`` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016), *K ≤q L*. Pairing is based on the solution to the Linear Sum Assignment Problem of a transformed version of the confusion matrix.
 
 Value
-~~~~~
+-----
 
 A single real value giving the similarity score.
 
 References
-~~~~~~~~~~
+----------
 
 Hubert L., Arabie P., Comparing Partitions, Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
@@ -72,9 +72,9 @@ Rezaei M., Franti P., Set matching measures for external cluster validity, IEEE 
 Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, Journal of Machine Learning Research 11, 2010, 2837-2854.
 
 Examples
-~~~~~~~~
+--------
 
-.. code-block:: r
+.. code:: r
 
    y_true <- iris[[5]]
    y_pred <- kmeans(as.matrix(iris[1:4]), 3)$cluster

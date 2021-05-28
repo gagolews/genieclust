@@ -1,8 +1,18 @@
 References
 ==========
 
-.. bibliography:: bibliography.bib
+How to Cite
+-----------
 
+When using *genieclust* in research publications, please
+cite :cite:`genieclust` and :cite:`genieins`
+as specified below. Thank you.
+
+
+Bibliography
+------------
+
+.. bibliography:: bibliography.bib
 
 
 See Also

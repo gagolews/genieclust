@@ -7,7 +7,8 @@ Python and R Package `genieclust`: Fast and Robust Hierarchical Clustering with 
     -- by `Marek Gagolewski <https://www.gagolewski.com/>`_
 
 
-A faster and more powerful version of **Genie** :cite:`genieins` — a robust
+`genieclust` :cite:`genieclust` brings
+a faster and more powerful version of **Genie** :cite:`genieins` — a robust
 and outlier resistant clustering algorithm, originally published as an R package
 `genie <https://cran.r-project.org/web/packages/genie/>`_.
 
@@ -17,8 +18,6 @@ of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes**
 a point group of the smallest size will sometimes be matched with its nearest
 neighbours.
-
-
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**

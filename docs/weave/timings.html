@@ -1,6 +1,6 @@
-
-
 <!DOCTYPE html>
+
+
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
@@ -209,27 +209,27 @@
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
 <p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id25">P+11</a>]</span> version 0.23.1
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id28">P+11</a>]</span> version 0.23.1
 (<cite>sklearn.cluster.KMeans</cite>) for different number of threads
 (by default it uses all available resources;
 note that the number of restarts, <cite>n_init</cite>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
-<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id10">Mul13</a>]</span>.</p>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id13">Mul13</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id8">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id13">CEL+18</a>]</span> provides a very fast
+method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id11">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id16">CEL+18</a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id14">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id17">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
 Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id15">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id18">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
 such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
@@ -241,7 +241,7 @@ and total memory of 16,242,084 kB.</p>
 see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
 from the
 <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id23">G+20</a>]</span>.
+<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id26">G+20</a>]</span>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
@@ -468,7 +468,7 @@ partitions’ cardinality.</p>
 </table>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id19">KMKM17</a>]</span>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id22">KMKM17</a>]</span>)
 problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality

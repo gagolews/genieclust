@@ -1,12 +1,14 @@
 bibentry(
-    bibtype = "manual",
-    title   = "genieclust: Fast and robust hierarchical clustering with noise point detection",
-    author  = personList(
+    bibtype      = "article",
+    title        = "genieclust: Fast and robust hierarchical clustering",
+    author       = personList(
         as.person("Marek Gagolewski")
     ),
-    year    = sub("-.*", "", meta$Date),
-    note    = sprintf("R package version %s", meta$Version),
-    url     = "https://genieclust.gagolewski.com"
+    journal      = "SoftwareX",
+    year         = "2021",
+    volume       = "15",
+    pages        = "100722",
+    doi          = "10.1016/j.softx.2021.100722"
 )
 
 bibentry(
