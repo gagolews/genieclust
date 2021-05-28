@@ -211,9 +211,9 @@ Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 References
 ----------
 
-> When using *genieclust* in research publications, please
-> cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
-> as specified below. Thank you.
+    When using *genieclust* in research publications, please
+    cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
+    as specified below. Thank you.
 
 
 Gagolewski M., genieclust: Fast and robust hierarchical clustering,
