@@ -25,8 +25,10 @@ import matplotlib.colors
 import numpy as np
 
 
+# Using the (new in v4.0.0) default R pallette - more accessible
+
 # module globals:
-col = ["k", "r", "g", "b", "c", "m", "y"]                                   + \
+col = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5C710"] + \
     [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab10").colors]  + \
     [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20").colors]  + \
     [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20b").colors] + \

@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // adjusted_rand_score
 double adjusted_rand_score(RObject x, RObject y);
 RcppExport SEXP _genieclust_adjusted_rand_score(SEXP xSEXP, SEXP ySEXP) {
