@@ -9,5 +9,8 @@
 See \code{\link{genie}()} for more details.
 }
 \author{
-Marek Gagolewski
+\href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
+}
+\seealso{
+The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 }

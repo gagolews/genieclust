@@ -119,6 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#details">Details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#author-s">Author(s)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
@@ -220,8 +221,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <p>::: {.container}</p>
-<div class="section" id="gclust-the-genie-hierarchical-clustering-algorithm">
+  <div class="section" id="gclust-the-genie-hierarchical-clustering-algorithm">
 <h1>gclust: The Genie++ Hierarchical Clustering Algorithm<a class="headerlink" href="#gclust-the-genie-hierarchical-clustering-algorithm" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -344,6 +344,10 @@
 <p><code class="docutils literal notranslate"><span class="pre">gclust()</span></code> computes the whole clustering hierarchy; it returns a list of class <code class="docutils literal notranslate"><span class="pre">hclust</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html"><code class="docutils literal notranslate"><span class="pre">hclust</span></code></a>. Use <code class="docutils literal notranslate"><span class="pre">link{cutree}()</span></code> to obtain an arbitrary k-partition.</p>
 <p><code class="docutils literal notranslate"><span class="pre">genie()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">k</span></code>-partition - a vector with elements in 1,…,k, whose i-th element denotes the i-th input point’s cluster identifier. Missing values (<code class="docutils literal notranslate"><span class="pre">NA</span></code>) denote noise points (if <code class="docutils literal notranslate"><span class="pre">detect_noise</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>).</p>
 </div>
+<div class="section" id="author-s">
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
+</div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23.</p>
@@ -351,6 +355,7 @@
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p><a class="reference internal" href="mst.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> for the minimum spanning tree routines.</p>
 <p><a class="reference internal" href="comparing_partitions.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code></span></a> (amongst others) for external cluster validity measures (partition similarity scores).</p>
 </div>
@@ -375,7 +380,6 @@
 <span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 </pre></div>
 </div>
-<p>:::</p>
 </div>
 </div>
 

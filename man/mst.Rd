@@ -115,6 +115,11 @@ and outlier detection,
 ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
 }
 \seealso{
+The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
+
 \code{\link{emst_mlpack}()} for a very fast alternative
 in case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
+}
+\author{
+\href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
 }

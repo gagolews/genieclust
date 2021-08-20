@@ -89,3 +89,9 @@ Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
 Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
 }
+\author{
+\href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
+}
+\seealso{
+The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
+}

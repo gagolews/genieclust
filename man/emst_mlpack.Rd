@@ -37,3 +37,9 @@ Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
 mlpack 3: A fast, flexible machine learning library,
 Journal of Open Source Software 3(26), 726, 2018.
 }
+\author{
+\href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
+}
+\seealso{
+The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
+}

@@ -1,4 +1,3 @@
-::: {.container}
 # gclust: The Genie++ Hierarchical Clustering Algorithm
 
 ## Description
@@ -101,6 +100,10 @@ According to the algorithm\'s original definition, the resulting partition tree 
 
 `genie()` returns a `k`-partition - a vector with elements in 1,\...,k, whose i-th element denotes the i-th input point\'s cluster identifier. Missing values (`NA`) denote noise points (if `detect_noise` is `TRUE`).
 
+## Author(s)
+
+[Marek Gagolewski](https://www.gagolewski.com/) and other contributors
+
 ## References
 
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, *Information Sciences* 363, 2016, 8-23.
@@ -108,6 +111,8 @@ Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant 
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1--5:51.
 
 ## See Also
+
+The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
 
 [`mst()`](mst.md) for the minimum spanning tree routines.
 
@@ -139,4 +144,3 @@ pair_sets_index(y_test, y_pred)
 # Fast for low-dimensional Euclidean spaces:
 h <- gclust(emst_mlpack(X))
 ```
-:::

@@ -1,4 +1,3 @@
-::: {.container}
 # mst: Minimum Spanning Tree of the Pairwise Distance Graph
 
 ## Description
@@ -57,6 +56,10 @@ The `method` attribute gives the name of the distance used. The `Labels` attribu
 
 If `M` \> 1, the `nn` attribute gives the indices of the `M`-1 nearest neighbours of each point.
 
+## Author(s)
+
+[Marek Gagolewski](https://www.gagolewski.com/) and other contributors
+
 ## References
 
 Jarník V., O jistém problému minimálním, Práce Moravské Přírodovědecké Společnosti 6 (1930) 57--63.
@@ -68,6 +71,8 @@ Prim R., Shortest connection networks and some generalisations, Bell Syst. Tech.
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1--5:51.
 
 ## See Also
+
+The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
 
 [`emst_mlpack()`](emst_mlpack.md) for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and `M` = 1).
 
@@ -82,4 +87,3 @@ data("iris")
 X <- iris[1:4]
 tree <- mst(X)
 ```
-:::

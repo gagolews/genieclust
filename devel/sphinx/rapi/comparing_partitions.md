@@ -1,4 +1,3 @@
-::: {.container}
 # comparing\_partitions: Pairwise Partition Similarity Scores
 
 ## Description
@@ -54,6 +53,10 @@ Note that both the (unadjusted) Rand and FM scores are bounded from below by *1/
 
 A single real value giving the similarity score.
 
+## Author(s)
+
+[Marek Gagolewski](https://www.gagolewski.com/) and other contributors
+
 ## References
 
 Hubert L., Arabie P., Comparing Partitions, Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
@@ -63,6 +66,10 @@ Rendon E., Abundez I., Arizmendi A., Quiroz E.M., Internal versus external clust
 Rezaei M., Franti P., Set matching measures for external cluster validity, IEEE Transactions on Knowledge and Data Mining 28(8), 2016, 2173-2186.
 
 Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, Journal of Machine Learning Research 11, 2010, 2837-2854.
+
+## See Also
+
+The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
 
 ## Examples
 
@@ -91,4 +98,3 @@ normalized_accuracy(y_true, y_pred)
 pair_sets_index(y_true, y_pred)
 ## [1] 0.7568238
 ```
-:::

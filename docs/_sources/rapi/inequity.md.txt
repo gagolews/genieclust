@@ -1,4 +1,3 @@
-::: {.container}
 # inequity: Inequity (Inequality) Measures
 
 ## Description
@@ -45,6 +44,10 @@ where *σ* is an ordering permutation of *(x\_1,...,x\_n)*.
 
 The value of the inequity index, a number in *\[0, 1\]*.
 
+## Author(s)
+
+[Marek Gagolewski](https://www.gagolewski.com/) and other contributors
+
 ## References
 
 Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.
@@ -52,6 +55,10 @@ Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
 Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
+
+## See Also
+
+The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
 
 ## Examples
 
@@ -76,4 +83,3 @@ bonferroni_index(c(7, 0, 3, 0, 0))
 bonferroni_index(c(6, 0, 3, 1, 0))
 ## [1] 0.8333333
 ```
-:::

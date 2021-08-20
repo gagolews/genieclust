@@ -122,6 +122,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#details">Details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#value">Value</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#author-s">Author(s)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#references">References</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
@@ -220,8 +221,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <p>::: {.container}</p>
-<div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
+  <div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
 <h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -291,6 +291,10 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">method</span></code> attribute gives the name of the distance used. The <code class="docutils literal notranslate"><span class="pre">Labels</span></code> attribute gives the labels of all the input points.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, the <code class="docutils literal notranslate"><span class="pre">nn</span></code> attribute gives the indices of the <code class="docutils literal notranslate"><span class="pre">M</span></code>-1 nearest neighbours of each point.</p>
 </div>
+<div class="section" id="author-s">
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
+</div>
 <div class="section" id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <p>Jarník V., O jistém problému minimálním, Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.</p>
@@ -300,6 +304,7 @@
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+<p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p><a class="reference internal" href="emst_mlpack.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
 </div>
 <div class="section" id="examples">
@@ -310,7 +315,6 @@
 <span class="n">tree</span> <span class="o">&lt;-</span> <span class="nf">mst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>:::</p>
 </div>
 </div>
 

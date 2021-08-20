@@ -28,9 +28,11 @@ weave-examples:
 	devel/sphinx/fix-code-blocks.sh devel/sphinx/rapi
 
 news:
-	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
+	cd devel/sphinx && cp ../../NEWS news.md
+# 	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
 
 sphinx: python r weave rd2myst news weave-examples
+	# TODO: update to the new build chain (see stringi)
 	rm -rf devel/sphinx/_build/
 	cd devel/sphinx && make html && cd ../../
 	@echo "*** Browse the generated documentation at"\
@@ -52,7 +54,7 @@ py-check: python
 
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
-	Rscript -e 'roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"), load_code=roxygen2::load_installed)'
+	Rscript -e 'source("devel/roxygen2-patch.R"); roxygen2::roxygenise(roclets=c("rd", "collate", "namespace", "vignette"))'
 
 r: r-autoconf
 	R CMD INSTALL . --html
