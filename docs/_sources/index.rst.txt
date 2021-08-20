@@ -76,6 +76,14 @@ any contributions are welcome (Julia, Matlab, etc.).
 
 .. toctree::
     :maxdepth: 2
+    :caption: genieclust
+    :hidden:
+
+    About <self>
+
+
+.. toctree::
+    :maxdepth: 2
     :caption: Examples and Tutorials
 
     weave/basics
@@ -96,7 +104,7 @@ any contributions are welcome (Julia, Matlab, etc.).
     news
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: External Links
 
     Source Code (GitHub) <https://github.com/gagolews/genieclust>

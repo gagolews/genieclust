@@ -92,7 +92,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+              <p class="caption"><span class="caption-text">genieclust</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -216,7 +220,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
+  <p>::: {.container}</p>
+<div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
 <h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
@@ -244,28 +249,29 @@
 </div>
 <div class="section" id="arguments">
 <h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 89%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
-<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-patched/library/stats/html/dist.html">dist</a>.</p></td>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p></p></th>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
+<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html"><code class="docutils literal notranslate"><span class="pre">dist</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
 <td><p>further arguments passed to or from other methods.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
 <td><p>metric used to compute the linkage, one of: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
 <td><p>smoothing factor; <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1 gives the selected <code class="docutils literal notranslate"><span class="pre">distance</span></code>; otherwise, the mutual reachability distance is used.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cast_float32</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cast_float32</span></code></p></td>
 <td><p>logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster).</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
 <td><p>logical; whether to print diagnostic messages and progress information.</p></td>
 </tr>
 </tbody>
@@ -274,9 +280,9 @@
 <div class="section" id="details">
 <h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <em>n p</em>, the <em>n (n-1)/2</em> distances are computed on the fly, so that <em>O(n M)</em> memory is used.</p>
-<p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code> to control the number of threads used.</p>
+<p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a> to control the number of threads used.</p>
 <p>Time complexity is <em>O(n^2)</em> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <em>O(p n^2)</em> otherwise.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference external" href="https://genieclust.gagolewski.com/rapi/gclust.html">gclust</a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=\max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
 <p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
 </div>
 <div class="section" id="value">
@@ -294,7 +300,7 @@
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference external" href="https://genieclust.gagolewski.com/rapi/emst_mlpack.html">emst_mlpack</a>() for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
+<p><a class="reference internal" href="emst_mlpack.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
 </div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
@@ -304,6 +310,7 @@
 <span class="n">tree</span> <span class="o">&lt;-</span> <span class="nf">mst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>:::</p>
 </div>
 </div>
 

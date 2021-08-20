@@ -37,6 +37,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -93,7 +94,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+              <p class="caption"><span class="caption-text">genieclust</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -199,15 +204,21 @@
             
   <div class="section" id="r-interface-examples">
 <h1>R Interface Examples<a class="headerlink" href="#r-interface-examples" title="Permalink to this headline">¶</a></h1>
-<p>The latest stable release of the R package <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> is available from the <a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a> repository. We can install it by calling:</p>
+<p>The latest stable release of the R package <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> is available from the
+<a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a> repository.
+We can install it by calling:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Below are a few basic examples on how to interact with the package (partially based on Marek’s <a class="reference external" href="https://lmlcr.gagolewski.com">forthcoming book</a>).</p>
+<p>Below are a few basic examples on how to interact with the package
+(partially based on Marek’s <a class="reference external" href="https://lmlcr.gagolewski.com">forthcoming book</a>).</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Let’s consider the Sustainable Society Indices Dataset (see <a class="reference external" href="http://www.ssfindex.com/">http://www.ssfindex.com/</a>) that measures the Human, Environmental, and Economic Wellbeing in each country based on 7 categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
+<p>Let’s consider the Sustainable Society Indices Dataset
+(see http://www.ssfindex.com/)
+that measures the Human, Environmental, and Economic Wellbeing
+in each country based on 7 categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">ssi</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span> <span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span>    <span class="c1"># everything except the Country (1st) column</span>
@@ -224,18 +235,21 @@
 <span class="c1">## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> has an interface compatible with R’s workhorse for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>. Yet, for efficiency reasons, it’s better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code> with the input matrix directly:</p>
+<p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> has an interface compatible with R’s workhorse
+for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>.
+Yet, for efficiency reasons, it’s better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code>
+with the input matrix directly:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
 <span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
 <span class="c1">## Call:</span>
 <span class="c1">## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)</span>
-<span class="c1">##</span>
-<span class="c1">## Cluster method   : Genie(0.3)</span>
-<span class="c1">## Distance         : euclidean</span>
+<span class="c1">## </span>
+<span class="c1">## Cluster method   : Genie(0.3) </span>
+<span class="c1">## Distance         : euclidean </span>
 <span class="c1">## Number of objects: 154</span>
 </pre></div>
 </div>
@@ -244,11 +258,12 @@
 <span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="m">25</span><span class="p">)</span>  <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
 <span class="c1">##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1</span>
 </pre></div>
 </div>
-<p>This gives the cluster ID allocated to each country. Let’s depict the obtained partition with the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
+<p>This gives the cluster ID allocated to each country.
+Let’s depict the obtained partition with the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span>  <span class="c1"># see the package&#39;s manual for details</span>
 <span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span> <span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
 <span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
@@ -257,10 +272,7 @@
     <span class="n">mapTitle</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id1">
-<img alt="Countries grouped w.r.t. the SSI categories." src="../_images/r_ssi-map-1.png" />
-<p class="caption"><span class="caption-text">Countries grouped w.r.t. the SSI categories.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
+<p><img alt="Countries grouped w.r.t. the SSI categories." src="../_images/r_ssi-map-1.png" /></p>
 <p>We can compute, e.g., the average indicators in each identified group:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
@@ -275,7 +287,9 @@
 <span class="c1">## Economy                      5.512709 3.541081 4.274155</span>
 </pre></div>
 </div>
-<p>Plotting of dendrograms is also possible. For greater readability, we’ll restrict ourselves to a smaller sample, say, to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
+<p>Plotting of dendrograms is also possible.
+For greater readability, we’ll restrict ourselves to a smaller sample, say,
+to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span> <span class="s">&quot;Austria&quot;</span><span class="p">,</span> <span class="s">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s">&quot;Canada&quot;</span><span class="p">,</span> <span class="s">&quot;Chile&quot;</span><span class="p">,</span> <span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s">&quot;Finland&quot;</span><span class="p">,</span> <span class="s">&quot;France&quot;</span><span class="p">,</span> <span class="s">&quot;Germany&quot;</span><span class="p">,</span>
 <span class="s">&quot;Greece&quot;</span><span class="p">,</span> <span class="s">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s">&quot;Israel&quot;</span><span class="p">,</span> <span class="s">&quot;Italy&quot;</span><span class="p">,</span> <span class="s">&quot;Japan&quot;</span><span class="p">,</span>
@@ -289,16 +303,19 @@
 <span class="nf">plot</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id2">
-<img alt="Cluster dendrogram for the OECD countries." src="../_images/r_ssi-oecd-dendrogram-1.png" />
-<p class="caption"><span class="caption-text">Cluster dendrogram for the OECD countries.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<p><img alt="Cluster dendrogram for the OECD countries." src="../_images/r_ssi-oecd-dendrogram-1.png" /></p>
 <p>Final notes:</p>
 <ul class="simple">
-<li><p>If we are only interested in a specific partition, calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to <code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> also features partition similarity scores (such as the Adjusted Rand or the Pair Sets Index) that can be used as external cluster validity measures.</p></li>
+<li><p>If we are only interested in a specific partition,
+calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to
+<code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> also features partition similarity scores
+(such as the Adjusted Rand or the Pair Sets Index) that can be used as
+external cluster validity measures.</p></li>
 </ul>
-<p>For more details, refer to the package’s documentation. Don’t forget to check out the Python examples regarding noise point detection, benchmarking, timing, etc.</p>
+<p>For more details, refer to the package’s documentation.
+Don’t forget to check out the Python examples regarding noise point detection,
+benchmarking, timing, etc.</p>
 </div>
 
 

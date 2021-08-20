@@ -41,6 +41,7 @@ html_baseurl = "https://genieclust.gagolewski.com/"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'myst_parser',
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -67,7 +68,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 todo_include_todos = True
 
-source_suffix = ['.rst']
+source_suffix = ['.md', '.rst']
 
 plot_include_source = True
 plot_html_show_source_link = False

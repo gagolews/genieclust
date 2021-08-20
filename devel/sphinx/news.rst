@@ -7,6 +7,9 @@ genieclust 1.x.y (under development)
 -  [GENERAL] A paper on the ``genieclust`` package has appeared in
    *SoftwareX*, see https://doi.org/10.1016/j.softx.2021.100722.
 
+-  [Python] ``plot_scatter`` now uses a more accessible default palette
+   (from R 4.0.0).
+
 genieclust 1.0.0 (2021-04-22)
 -----------------------------
 

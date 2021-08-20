@@ -5,7 +5,7 @@ In one of the :any:`above sections <benchmarks_ar>`
 we have summarised the AR indices based on the datasets from
 the `Benchmark Suite for Clustering Algorithms – Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
 :cite:`clustering_benchmarks_v1`.
-In this section we present raw and more detailed results for
+In this section we present more detailed results for
 some other partition similarity measures implemented in the `genieclust`
 package — Fowlkes–Mallows :cite:`fm`, adjusted Rand :cite:`comparing_partitions`,
 adjusted and normalised mutual information :cite:`nmi`,
@@ -20,6 +20,7 @@ variance of 1. Then, a tiny bit of Gaussian noise has been added to each
 item. Clustering is performed with respect to the Euclidean distance
 (wherever applicable).
 
+All raw results can be found `here <https://github.com/gagolews/clustering_results_v1/>`_.
 
 <<imports,results="hidden",echo=False>>=
 import numpy as np

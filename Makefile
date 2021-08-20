@@ -20,17 +20,21 @@ py-test: python
 weave:
 	cd devel/sphinx/weave && make && cd ../../../
 
-rd2rst:
-	# https://github.com/gagolews/Rd2rst
-	# TODO: if need be, you can also use MyST in the future
-	cd devel/sphinx && Rscript -e "Rd2rst::Rd2rst('${PKGNAME}')" && cd ../../
+rd2myst:
+	cd devel/sphinx && Rscript -e "Rd2rst::Rd2myst('${PKGNAME}')"
+
+weave-examples:
+	cd devel/sphinx/rapi && Rscript -e "Rd2rst::weave_examples('${PKGNAME}', '.')"
+	devel/sphinx/fix-code-blocks.sh devel/sphinx/rapi
 
 news:
 	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
 
-sphinx: python r weave rd2rst news
+sphinx: python r weave rd2myst news weave-examples
 	rm -rf devel/sphinx/_build/
 	cd devel/sphinx && make html && cd ../../
+	@echo "*** Browse the generated documentation at"\
+	    "file://`pwd`/devel/sphinx/_build/html/index.html"
 	rm -rf docs/
 	mkdir docs/
 	cp -rf devel/sphinx/_build/html/* docs/

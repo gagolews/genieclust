@@ -5,7 +5,7 @@ In one of the :any:`above sections <benchmarks_ar>`
 we have summarised the AR indices based on the datasets from
 the `Benchmark Suite for Clustering Algorithms – Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
 :cite:`clustering_benchmarks_v1`.
-In this section we present raw and more detailed results for
+In this section we present more detailed results for
 some other partition similarity measures implemented in the `genieclust`
 package — Fowlkes–Mallows :cite:`fm`, adjusted Rand :cite:`comparing_partitions`,
 adjusted and normalised mutual information :cite:`nmi`,
@@ -20,6 +20,7 @@ variance of 1. Then, a tiny bit of Gaussian noise has been added to each
 item. Clustering is performed with respect to the Euclidean distance
 (wherever applicable).
 
+All raw results can be found `here <https://github.com/gagolews/clustering_results_v1/>`_.
 
 
 
@@ -664,7 +665,7 @@ wut/isolation                        0.03          0.04                0.03     
 wut/labirynth                        0.5           0.59                0.43                0.46                  0.65         0.55         0.61         0.72   0.72       0.44              0.72              0.51            0.46
 wut/mk1                              1             1                   1                   0.98                  1            1            1            1      0.68       1                 0.5               1               1
 wut/mk2                              0.07          0.11                0.07                0.09                  0.09         1            1            1      1          0.09              1                 0.08            0.07
-wut/mk3                              0.5           0.92                0.5                 0.92                  0.94         0.88         0.88         0.58   0.68       0.94              0.01              0.93            0.93
+wut/mk3                              0.5           0.92                0.5                 0.92                  0.94         0.88         0.88         0.58   0.68       0.94              0                 0.93            0.93
 wut/mk4                              0.18          0.31                0.21                0.42                  0.55         1            1            1      0.74       0.37              1                 0.39            0.36
 wut/olympic                          0.27          0.26                0.31                0.21                  0.2          0.32         0.29         0.25   0.36       0.22              0                 0.26            0.21
 wut/smile                            0.99          0.71                0.99                0.83                  0.54         0.63         1            1      0.58       0.72              1                 1               0.77
@@ -674,7 +675,7 @@ wut/trapped_lovers                   0.25          0.29                0.26     
 wut/twosplashes                      0.05          0.53                0.05                0.47                  0.82         0.71         0.71         0.71   0.86       0.53              0.01              0.53            0.44
 wut/windows                          0.35          0.34                0.28                0.19                  0.42         0.31         0.35         1      0.33       0.3               1                 0.18            0.31
 wut/x1                               1             1                   1                   1                     1            1            1            1      1          1                 1                 1               1
-wut/x2                               0.41          0.31                0.41                0.33                  0.84         0.84         0.84         0.33   0.84       0.33              0.1               0.42            0.31
+wut/x2                               0.41          0.31                0.41                0.32                  0.84         0.84         0.84         0.32   0.84       0.32              0.1               0.42            0.31
 wut/x3                               0.55          0.94                0.55                0.7                   0.95         0.94         0.5          0.5    0.69       0.93              0.15              0.58            0.96
 wut/z1                               0.32          0.27                0.37                0.36                  0.11         0.5          0.5          0.3    0.5        0.31              0.06              0.33            0.27
 wut/z2                               0.59          0.67                0.59                0.59                  1            0.66         0.7          0.81   0.65       0.64              0.86              0.99            0.57
