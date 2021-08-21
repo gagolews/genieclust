@@ -21,7 +21,7 @@ controls the trade-off between speed and memory consumption}
 An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
-Provides access to the implementation of the Dual-Tree Borůvka
+Provides access to the implementation of the Dual-Tree Boruvka
 algorithm from the \code{mlpack} package (if available).
 It is based on kd-trees and is fast for (very) low-dimensional
 Euclidean spaces. For higher dimensional spaces (say, over 5 features)

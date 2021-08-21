@@ -1,5 +1,5 @@
 /*  Minimum Spanning Tree Algorithms:
- *  a. Prim-Jarník's for Complete Undirected Graphs,
+ *  a. Prim-Jarnik's for Complete Undirected Graphs,
  *  b. Kruskal's for k-NN graphs.
  *
  *  Copyleft (C) 2018-2021, Marek Gagolewski <https://www.gagolewski.com>
@@ -402,7 +402,7 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
 
 
 
-/*! A Jarník (Prim/Dijkstra)-like algorithm for determining
+/*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
  *  a(*) minimum spanning tree (MST) of a complete undirected graph
  *  with weights given by, e.g., a symmetric n*n matrix.
  *
@@ -416,16 +416,16 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
  *
  *  M. Gagolewski, M. Bartoszuk, A. Cena,
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
- *  Information Sciences 363 (2016) 8–23.
+ *  Information Sciences 363 (2016) 8-23.
  *
- *  V. Jarník, O jistém problému minimálním,
- *  Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+ *  V. Jarnik, O jistem problemu minimalnim,
+ *  Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
  *
  *  C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21 (1995) 1313–1325.
+ *  Parallel Comput. 21 (1995) 1313-1325.
  *
  *  R. Prim, Shortest connection networks and some generalisations,
- *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
+ *  Bell Syst. Tech. J. 36 (1957) 1389-1401.
  *
  *
  * @param D a callable CDistance object such that a call to

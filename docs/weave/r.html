@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>R Interface Examples &mdash; genieclust 1.0.0 documentation</title>
+  <title>R Interface Examples &mdash; genieclust</title>
   
 
   
@@ -36,8 +36,6 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -113,15 +111,15 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">External Links</span></p>
+<p class="caption"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
@@ -150,7 +148,7 @@
 
       <div class="wy-nav-content">
         
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
         
           
 
@@ -218,7 +216,7 @@ We can install it by calling:</p>
 <p>Let’s consider the Sustainable Society Indices Dataset
 (see http://www.ssfindex.com/)
 that measures the Human, Environmental, and Economic Wellbeing
-in each country based on 7 categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
+in each country based on 7 categories on the scale $[0, 10]$.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">ssi</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span> <span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span>    <span class="c1"># everything except the Country (1st) column</span>
@@ -226,7 +224,7 @@ in each country based on 7 categories on the scale <span class="math notranslate
 <span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
 <span class="c1">## Albania     9.605769                     7.959609            6.992649         6.634251         4.621681   2.102542 3.056494</span>
 <span class="c1">## Algeria     9.021185                     7.336496            4.203906         5.277173         2.662674   3.074134 6.154272</span>
 <span class="c1">## Angola      5.972848                     5.692808            2.140138         6.759396         6.212197   1.898812 3.753476</span>
@@ -244,7 +242,7 @@ with the input matrix directly:</p>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
 <span class="c1">## Call:</span>
 <span class="c1">## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)</span>
 <span class="c1">## </span>
@@ -258,7 +256,7 @@ with the input matrix directly:</p>
 <span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="m">25</span><span class="p">)</span>  <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
 <span class="c1">##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1</span>
 </pre></div>
 </div>
@@ -277,7 +275,7 @@ Let’s depict the obtained partition with the <code class="docutils literal not
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
 <span class="c1">## BasicNeeds                   9.067901 5.268879 9.817850</span>
 <span class="c1">## PersonalDevelopmentAndHealth 7.508130 5.931156 8.299537</span>
 <span class="c1">## WellBalancedSociety          4.886885 2.868176 6.827154</span>
@@ -333,6 +331,9 @@ benchmarking, timing, etc.</p>
   <div role="contentinfo">
     <p>
         &#169; Copyright 2018-2021, Marek Gagolewski.
+      <span class="lastupdated">
+        Last updated on 2021-08-21T17:24:12+1000.
+      </span>
 
     </p>
   </div>

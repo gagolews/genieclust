@@ -101,17 +101,17 @@ any contributions are welcome (Julia, Matlab, etc.).
 
     genieclust
     rapi
-    news
 
 .. toctree::
     :maxdepth: 1
-    :caption: External Links
+    :caption: Other
 
     Source Code (GitHub) <https://github.com/gagolews/genieclust>
     Bug Tracker and Feature Suggestions <https://github.com/gagolews/genieclust/issues>
     PyPI Entry <https://pypi.org/project/genieclust/>
     CRAN Entry <https://cran.r-project.org/web/packages/genieclust/>
     Author's Homepage <https://www.gagolewski.com/>
+    news
 
 .. toctree::
     :maxdepth: 2

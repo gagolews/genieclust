@@ -193,7 +193,7 @@ Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
 and outlier detection,
-ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1–5:51.
+ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1-5:51.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

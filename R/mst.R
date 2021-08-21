@@ -23,7 +23,7 @@
 #' @title Minimum Spanning Tree of the Pairwise Distance Graph
 #'
 #' @description
-#' An parallelised implementation of a Jarník (Prim/Dijkstra)-like
+#' An parallelised implementation of a Jarnik (Prim/Dijkstra)-like
 #' algorithm for determining
 #' a(*) minimum spanning tree (MST) of a complete undirected graph
 #' representing a set of n points
@@ -66,19 +66,19 @@
 #'
 #'
 #' @references
-#' Jarník V., O jistém problému minimálním,
-#' Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+#' V. Jarnik, O jistem problemu minimalnim,
+#' Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
 #'
 #' Olson C.F., Parallel algorithms for hierarchical clustering,
-#' Parallel Comput. 21 (1995) 1313–1325.
+#' Parallel Comput. 21 (1995) 1313-1325.
 #'
 #' Prim R., Shortest connection networks and some generalisations,
-#' Bell Syst. Tech. J. 36 (1957) 1389–1401.
+#' Bell Syst. Tech. J. 36 (1957) 1389-1401.
 #'
 #' Campello R., Moulavi D., Zimek A., Sander J.,
 #' Hierarchical density estimates for data clustering, visualization,
 #' and outlier detection,
-#' ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1–5:51.
+#' ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.
 #'
 #'
 #' @param d either a numeric matrix (or an object coercible to one,
@@ -176,7 +176,7 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @title Euclidean Minimum Spanning Tree
 #'
 #' @description
-#' Provides access to the implementation of the Dual-Tree Borůvka
+#' Provides access to the implementation of the Dual-Tree Boruvka
 #' algorithm from the \code{mlpack} package (if available).
 #' It is based on kd-trees and is fast for (very) low-dimensional
 #' Euclidean spaces. For higher dimensional spaces (say, over 5 features)

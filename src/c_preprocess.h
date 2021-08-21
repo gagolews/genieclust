@@ -52,7 +52,7 @@ void Cget_graph_node_degrees(
         ssize_t u = ind[2*i+0];
         ssize_t v = ind[2*i+1];
         if (u<0 || v<0)
-            continue; // represents a no-edge → ignore
+            continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
             throw std::domain_error("All elements must be <= n");
         if (u == v)

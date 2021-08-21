@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Basics &mdash; genieclust 1.0.0 documentation</title>
+  <title>Basics &mdash; genieclust</title>
   
 
   
@@ -120,15 +120,15 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">External Links</span></p>
+<p class="caption"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
@@ -157,7 +157,7 @@
 
       <div class="wy-nav-content">
         
-        <div class="rst-content">
+        <div class="rst-content style-external-links">
         
           
 
@@ -291,7 +291,7 @@ one by computing, for example, the confusion matrix.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">normalized_confusion_matrix</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_genie</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[276,   0],</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[276,   0],</span>
 <span class="c1">##        [  0,  97]])</span>
 </pre></div>
 </div>
@@ -301,7 +301,7 @@ similarity measures, like the Adjusted Rand Index (<code class="docutils literal
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_genie</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 1.0</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## 1.0</span>
 </pre></div>
 </div>
 <p>Which of course denotes a perfect match between these two.</p>
@@ -330,7 +330,7 @@ So we shouldn’t be much surprised with this result.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">normalized_confusion_matrix</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[197,  79],</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## array([[197,  79],</span>
 <span class="c1">##        [  1,  96]])</span>
 </pre></div>
 </div>
@@ -338,7 +338,7 @@ So we shouldn’t be much surprised with this result.</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">compare_partitions</span><span class="o">.</span><span class="n">adjusted_rand_score</span><span class="p">(</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">labels_kmeans</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 0.3241080446115835</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## 0.3241080446115835</span>
 </pre></div>
 </div>
 <p>The adjusted Rand score of <span class="math notranslate nohighlight">\(\sim 0.3\)</span> indicates a far-from-perfect fit.</p>
@@ -381,7 +381,7 @@ of the obtained clusters. Its default value is set to:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span><span class="o">.</span><span class="n">min_cluster_size</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1">## 5</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## 5</span>
 </pre></div>
 </div>
 <p>Unfortunately, we cannot easily guess how many clusters will be generated
@@ -471,6 +471,9 @@ manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.
   <div role="contentinfo">
     <p>
         &#169; Copyright 2018-2021, Marek Gagolewski.
+      <span class="lastupdated">
+        Last updated on 2021-08-21T17:24:12+1000.
+      </span>
 
     </p>
   </div>
