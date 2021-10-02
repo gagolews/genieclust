@@ -1,3 +1,5 @@
+# Copyright (c) 2013-2021, Marek Gagolewski <https://www.gagolewski.com>
+
 FILES_RMD = \
 	r.Rmd
 

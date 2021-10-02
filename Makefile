@@ -1,7 +1,9 @@
 # Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>
 
 
-.PHONY: python py-test py-check r r-check r r-build sphinx clean
+.PHONY: python py-test py-check r r-check r r-build sphinx docs clean
+
+.NOTPARALLEL: python py-test py-check r r-check r r-build clean purge sphinx docs
 
 PKGNAME="genieclust"
 
