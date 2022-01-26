@@ -21,6 +21,13 @@ def test_inequity():
                 s += x[j-1]/(n-i+1)
         return n  * (1.0- s / np.sum(x)) / (n-1)
 
+    def devergottini_ref(x):
+        n = len(x)
+        x = np.sort(x)[::-1]
+        c = np.sum(x)
+        i = np.arange(1, n+1)
+        return (np.sum(np.cumsum(x)/i)/c  - 1 ) / np.sum(1/i[1:])
+
 
     for n in [2, 5, 100]:
         for i in range(10):
@@ -43,10 +50,17 @@ def test_inequity():
             assert abs(xb1 - xb2) < 1e-9
             assert abs(xb1 - xb3) < 1e-9
 
+            xv1 = devergottini_index(np.array(x))
+            xv2 = devergottini_index(np.array(x, dtype=np.float_))
+            xv3 = devergottini_ref(x)
+            assert abs(xv1 - xv2) < 1e-9
+            assert abs(xv1 - xv3) < 1e-9
+
             if n > 2:
                 x = np.sort(x)
                 assert gini_index(x[::2],True) == gini_index(np.array(x[::2]))
                 assert bonferroni_index(x[::2], True) == bonferroni_index(np.array(x[::2]))
+                assert devergottini_index(x[::2], True) == devergottini_index(np.array(x[::2]))
 
 if __name__ == "__main__":
     test_inequity()

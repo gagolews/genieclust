@@ -14,7 +14,7 @@ Provides access to Inequity (Inequality) Measuress.
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -33,3 +33,4 @@ Provides access to Inequity (Inequality) Measuress.
 cdef extern from "../src/c_inequity.h":
     double Cgini_sorted[T](const T* x, ssize_t n) except +
     double Cbonferroni_sorted[T](const T* x, ssize_t n) except +
+    double Cdevergottini_sorted[T](const T* x, ssize_t n) except +

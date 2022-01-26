@@ -4,7 +4,7 @@ genieclust Package
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2018-2021, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2018-2022, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -135,7 +135,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="1.0.0",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
+    version="1.0.0.9001",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
     description="The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection",
     long_description=long_description,
     long_description_content_type="text/x-rst",

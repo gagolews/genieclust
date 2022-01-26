@@ -11,7 +11,7 @@ import genieclust
 # -- Project information -----------------------------------------------------
 
 project = 'genieclust'
-copyright = '2018-2021, Marek Gagolewski'
+copyright = '2018-2022, Marek Gagolewski'
 author = 'Marek Gagolewski'
 html_title = project
 html_short_title = project

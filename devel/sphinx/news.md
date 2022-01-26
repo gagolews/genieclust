@@ -9,6 +9,10 @@
 -  [Python] `plot_scatter` now uses a more accessible default palette
    (from R 4.0.0).
 
+-  [Python] New function: `inequity.devergottini_index`.
+
+-  [R] New function: `devergottini_index`.
+
 
 ## genieclust 1.0.0 (2021-04-22)
 

@@ -5,7 +5,7 @@ genieclust Python Package
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -28,4 +28,4 @@ from . import compare_partitions
 from . import internal
 from .genie import Genie, GIc
 
-__version__ = '1.0.0'  # see also ../setup.py; e.g., '0.9.6.dev0'
+__version__ = '1.0.0.9001'  # see also ../setup.py; e.g., '0.9.6.dev0'

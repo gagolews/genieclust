@@ -1,6 +1,6 @@
 /*  Inequity (Inequality) Measures
  *
- *  Copyleft (C) 2018-2021, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2018-2022, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License
@@ -152,6 +152,50 @@ double Cbonferroni_sorted(const T* x, ssize_t n)
 // #    vmax <- sum(1/(2:n))
 // #    (sum(sapply(1:length(x), function(i) mean(x[1:i])))/sum(x)-1)/vmax
 // # }
+
+
+/*! The Normalised De Vergottini Index
+ *
+ * The normalised De Vergottini index is given by:
+ * $$
+ *     V(x_1,\dots,x_n) = \frac{1}{\sum_{i=2}^n \frac{1}{i}} \left(
+ *    \frac{ \sum_{i=1}^n \left( \sum_{j=i}^{n} \frac{1}{j}\right)
+ *       x_{\sigma(n-i+1)} }{\sum_{i=1}^{n} x_i} - 1
+ * \right)
+ * $$
+ * where $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
+ *
+ * Time complexity: $O(n)$ for sorted data.
+ *
+ *
+ *
+ *
+ * @param x non-decreasingly sorted c_contiguous input vector >= 0
+ * @param n length of x
+ *
+ * @return the value of the inequity index, a number in [0,1].
+ */
+template<class T>
+double Cdevergottini_sorted(const T* x, ssize_t n)
+{
+    double s = 0.0, t = 0.0, c = 0.0, f=0.0, d=0.0;
+    GENIECLUST_ASSERT(x[0] >= 0);
+    GENIECLUST_ASSERT(x[n-1] > 0);
+
+    for (ssize_t i=2; i<=n; ++i)
+        c += 1.0/(double)i;
+
+    for (ssize_t i=1; i<=n; ++i) {
+        t += x[i-1];
+        f += 1.0/(double)(n-i+1);
+        d += f*x[i-1];  // the i-th smallest
+    }
+
+    s = (d/t-1.0)/c;
+    if (s > 1.0) return 1.0;
+    else if (s < 0.0) return 0.0;
+    else return s;
+}
 
 
 #endif

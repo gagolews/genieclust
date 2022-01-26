@@ -1,4 +1,4 @@
-# Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>
+# Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
 
 
 .PHONY: python py-test py-check r r-check r r-build sphinx docs clean
@@ -28,11 +28,11 @@ py-check: python
 
 ################################################################################
 
-reload: r
-	# https://github.com/gagolews/home_bin
-	if [ `whoami` = "gagolews" ]; then \
-		jupyter-qtconsole-sender --silent "reload('${PKGNAME}')"; \
-	fi
+# reload: r
+# 	# https://github.com/gagolews/home_bin
+# 	if [ `whoami` = "gagolews" ]; then \
+# 		jupyter-qtconsole-sender --silent "reload('${PKGNAME}')"; \
+# 	fi
 
 stop-on-utf8:
 	# Stop if some files are not in ASCII:

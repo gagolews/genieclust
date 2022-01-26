@@ -3,11 +3,14 @@
 \name{gini_index}
 \alias{gini_index}
 \alias{bonferroni_index}
+\alias{devergottini_index}
 \title{Inequity (Inequality) Measures}
 \usage{
 gini_index(x)
 
 bonferroni_index(x)
+
+devergottini_index(x)
 }
 \arguments{
 \item{x}{numeric vector of non-negative values}
@@ -16,32 +19,33 @@ bonferroni_index(x)
 The value of the inequity index, a number in \eqn{[0, 1]}.
 }
 \description{
-\code{gini_index()} gives the normalised Gini index
-and \code{bonferroni_index()} implements the Bonferroni index.
+\code{gini_index()} gives the normalised Gini index,
+\code{bonferroni_index()} implements the Bonferroni index, and
+\code{devergottini_index()} implements the De Vergottini index.
 }
 \details{
-Both indices can be used to quantify the "inequity" of a numeric sample.
+These indices can be used to quantify the "inequity" of a numeric sample.
 They can be perceived as measures of data dispersion.
 For constant vectors (perfect equity), the indices yield values of 0.
 Vectors with all elements but one equal to 0 (perfect inequity),
 are assigned scores of 1.
-Both indices follow the Pigou-Dalton principle (are Schur-convex):
+They follow the Pigou-Dalton principle (are Schur-convex):
 setting \eqn{x_i = x_i - h} and \eqn{x_j = x_j + h} with \eqn{h > 0}
 and \eqn{x_i - h \geq  x_j + h} (taking from the "rich" and
 giving to the "poor") decreases the inequity.
 
 These indices have applications in economics, amongst others.
-The Gini clustering algorithm uses the Gini index as a measure
+The Genie clustering algorithm uses the Gini index as a measure
 of the inequality of cluster sizes.
 
 
 The normalised  Gini index is given by:
 \deqn{
     G(x_1,\dots,x_n) = \frac{
-    \sum_{i=1}^{n-1} \sum_{j=i+1}^n |x_i-x_j|
+    \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
     }{
     (n-1) \sum_{i=1}^n x_i
-    }.
+    },
 }
 
 The normalised Bonferroni index is given by:
@@ -54,19 +58,19 @@ The normalised Bonferroni index is given by:
     }.
 }
 
+The normalised De Vergottini index is given by:
+\deqn{
+    V(x_1,\dots,x_n) =
+    \frac{1}{\sum_{i=2}^n \frac{1}{i}} \left(
+       \frac{ \sum_{i=1}^n \left( \sum_{j=i}^{n} \frac{1}{j}\right)
+       x_{\sigma(n-i+1)} }{\sum_{i=1}^{n} x_i} - 1
+    \right).
+}
+
+Here, \eqn{\sigma} is an ordering permutation of \eqn{(x_1,\dots,x_n)}.
 
 Time complexity: \eqn{O(n)} for sorted (increasingly) data.
 Otherwise, the vector will be sorted.
-
-In particular, for ordered inputs, it holds:
-\deqn{
-    G(x_1,\dots,x_n) = \frac{
-    \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
-    }{
-    (n-1) \sum_{i=1}^n x_i
-    },
-}
-where \eqn{\sigma} is an ordering permutation of \eqn{(x_1,\dots,x_n)}.
 }
 \examples{
 gini_index(c(2, 2, 2, 2, 2))  # no inequality
@@ -77,6 +81,10 @@ bonferroni_index(c(2, 2, 2, 2, 2))
 bonferroni_index(c(0, 0, 10, 0, 0))
 bonferroni_index(c(7, 0, 3, 0, 0))
 bonferroni_index(c(6, 0, 3, 1, 0))
+devergottini_index(c(2, 2, 2, 2, 2))
+devergottini_index(c(0, 0, 10, 0, 0))
+devergottini_index(c(7, 0, 3, 0, 0))
+devergottini_index(c(6, 0, 3, 1, 0))
 
 }
 \references{

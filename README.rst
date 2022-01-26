@@ -84,7 +84,7 @@ functions ``gclust()`` and ``genieclust()`` (R).
 
 Other goodies:
 
--  Inequity measures (the normalised Gini and Bonferroni index);
+-  Inequity measures (the normalised Gini, Bonferroni, and De Vergottini index);
 
 -  unctions to compare partitions (adjusted&unadjusted Rand,
    adjusted&unadjusted Fowlkes-Mallows (FM),
@@ -185,7 +185,7 @@ Any contributions are welcome (e.g., Julia, Matlab, ...).
 License
 -------
 
-Copyright (C) 2018-2021 Marek Gagolewski (https://www.gagolewski.com)
+Copyright (C) 2018-2022 Marek Gagolewski (https://www.gagolewski.com)
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
@@ -217,15 +217,21 @@ References
 
 
 Gagolewski M., genieclust: Fast and robust hierarchical clustering,
-*SoftwareX* **15**, 2021, 100722. doi:10.1016/j.softx.2021.100722.
+*SoftwareX* **15**, 2021, 100722.
+[doi:10.1016/j.softx.2021.100722](https://dx.doi.org/10.1016/j.softx.2021.100722).
 
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, *Information
-Sciences* **363**, 2016, 8-23. doi:10.1016/j.ins.2016.05.003.
+Sciences* **363**, 2016, 8-23.
+[doi:10.1016/j.ins.2016.05.003](https://dx.doi.org/10.1016/j.ins.2016.05.003).
+
+Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
+*Information Sciences* **581**, 2021, 620-636.
+[doi:10.1016/j.ins.2021.10.004](https://dx.doi.org/10.1016/j.ins.2021.10.004).
 
 Cena A., Gagolewski M., Genie+OWA: Robustifying Hierarchical Clustering
 with OWA-based Linkages, *Information Sciences* **520**, 2020, 324-336.
-doi:10.1016/j.ins.2020.02.025.
+[doi:10.1016/j.ins.2020.02.025](https://dx.doi.org/10.1016/j.ins.2020.02.025).
 
 Cena A., *Adaptive hierarchical clustering algorithms based on data
 aggregation methods*, PhD Thesis, Systems Research Institute, Polish
@@ -233,8 +239,8 @@ Academy of Sciences, 2018.
 
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density
 estimates for data clustering, visualization, and outlier detection,
-*ACM Transactions on Knowledge Discovery from Data* **10**\ (1), 2015,
-5:1-5:51. doi:10.1145/2733381.
+*ACM Transactions on Knowledge Discovery from Data* **10**\ (1), 2015, 5:1-5:51.
+[doi:10.1145/2733381](https://dx.doi.org/10.1145/2733381).
 
 Mueller A., Nowozin S., Lampert C.H., Information Theoretic Clustering
 using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
