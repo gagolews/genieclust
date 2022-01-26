@@ -46,8 +46,8 @@ r-autoconf:
 	    source('devel/roxygen2-patch.R');\
 	    roxygenise(\
 	        roclets=c('rd', 'collate', 'namespace', 'vignette'),\
-	        load_code=roxygen2::load_installed\
 	    )"
+# 	        load_code=roxygen2::load_installed\
 
 r: r-autoconf
 	R CMD INSTALL . --html
