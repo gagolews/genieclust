@@ -1,3 +1,4 @@
+# Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
 # Configuration file for the Sphinx documentation builder.
 
 #import sys

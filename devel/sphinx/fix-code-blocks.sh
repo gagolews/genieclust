@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
 
 set -e
 

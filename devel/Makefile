@@ -1,4 +1,4 @@
-# (C) 2020 Marek Gagolewski, https://www.gagolewski.com
+# Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
 
 #VPATH="/home/gagolews/Python/genieclust"
 
