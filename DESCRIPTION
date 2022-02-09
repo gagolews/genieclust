@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
 Version: 1.0.0.9001
-Date: 2022-01-26
+Date: 2022-02-09
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -31,7 +31,9 @@ Description: A retake on the Genie algorithm - a robust
     (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>), which
     supports sparse data, more metrics, and even larger datasets.
 BugReports: https://github.com/gagolews/genieclust/issues
-URL: https://genieclust.gagolewski.com/
+URL:
+    https://genieclust.gagolewski.com/,
+    https://github.com/gagolews/genieclust
 License: AGPL-3
 Imports:
     Rcpp (>= 1.0.4),
