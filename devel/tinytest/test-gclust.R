@@ -1,7 +1,6 @@
 library("tinytest")
 library("genieclust")
 
-
 verbose <- FALSE
 set.seed(123)
 n <- 1000
@@ -14,7 +13,7 @@ print(system.time(h1 <- gclust(X, verbose=verbose)))
 print(system.time(h2 <- gclust(X, verbose=verbose, cast_float32=FALSE)))
 #for (k in 2:20) expect_equal(adjusted_rand_score(cutree(h1, k), cutree(h2, k)), 1.0)
 
-if (require("genie")) {
+if (require("genie", quietly=TRUE)) {
     print(system.time(h2 <- hclust2(objects=X)))
     #for (k in 2:20) expect_equal(adjusted_rand_score(cutree(h1, k), cutree(h2, k)), 1.0)
 }
@@ -63,7 +62,7 @@ for (g in c(0.1, 0.3, 0.5, 0.7, 1.0)) {
         c3 <- genie(X, 3, gini_threshold=g, distance=distance)
         expect_equal(adjusted_rand_score(cutree(h1, 3), c3), 1.0)
 
-        if (require("genie")) {
+        if (require("genie", quietly=TRUE)) {
             h5 <- hclust2(dist(X, method=distance), thresholdGini=g)
             expect_equal(adjusted_rand_score(cutree(h1, 3), cutree(h5, 3)), 1.0)
         }
