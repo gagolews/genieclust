@@ -5,6 +5,10 @@
 
    **Genie outputs meaningful clusters and is fast even on large data sets.**
 
+When using *genieclust* in research publications, please
+cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
+as specified below. Thank you.
+
 Documentation, tutorials, and benchmarks are available
 at https://genieclust.gagolewski.com/.
 
@@ -185,7 +189,7 @@ Any contributions are welcome (e.g., Julia, Matlab, ...).
 License
 -------
 
-Copyright (C) 2018-2022 Marek Gagolewski (https://www.gagolewski.com)
+Copyright (C) 2018-2022 Marek Gagolewski <https://www.gagolewski.com>
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
@@ -210,11 +214,6 @@ Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 
 References
 ----------
-
-    When using *genieclust* in research publications, please
-    cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
-    as specified below. Thank you.
-
 
 Gagolewski M., genieclust: Fast and robust hierarchical clustering,
 *SoftwareX* **15**, 2021, 100722.

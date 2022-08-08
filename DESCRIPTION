@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
 Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
-Version: 1.0.0.9001
-Date: 2022-07-27
+Version: 1.0.1
+Date: 2022-08-08
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -12,7 +12,8 @@ Authors@R: c(
     person("Anna", "Cena", role = c("ctb")),
     person("Peter M.", "Larsen", role = c("ctb"))
     )
-Description: A retake on the Genie algorithm - a robust
+Description: A retake on the Genie algorithm
+    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>) - a robust
     hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
     Now faster and more memory efficient; determining the whole hierarchy
@@ -27,8 +28,7 @@ Description: A retake on the Genie algorithm - a robust
     (the Gini, Bonferroni index) and external cluster validity measures
     (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
     adjusted mutual information, pair sets index).
-    See also the 'Python' version of 'genieclust' available on 'PyPI'
-    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>), which
+    See also the 'Python' version of 'genieclust' available on 'PyPI', which
     supports sparse data, more metrics, and even larger datasets.
 BugReports: https://github.com/gagolews/genieclust/issues
 URL:

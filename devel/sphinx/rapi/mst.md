@@ -8,7 +8,7 @@ An parallelised implementation of a Jarnik (Prim/Dijkstra)-like algorithm for de
 
 ## Usage
 
-```r
+``` r
 mst(d, ...)
 
 ## Default S3 method:
@@ -38,13 +38,13 @@ mst(d, M = 1L, verbose = FALSE, ...)
 
 ## Details
 
-If `d` is a numeric matrix of size *n p*, the *n (n-1)/2* distances are computed on the fly, so that *O(n M)* memory is used.
+If `d` is a numeric matrix of size $n p$, the $n (n-1)/2$ distances are computed on the fly, so that $O(n M)$ memory is used.
 
 The algorithm is parallelised; set the `OMP_NUM_THREADS` environment variable [`Sys.setenv`](https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html) to control the number of threads used.
 
-Time complexity is *O(n\^2)* for the method accepting an object of class `dist` and *O(p n\^2)* otherwise.
+Time complexity is $O(n^2)$ for the method accepting an object of class `dist` and $O(p n^2)$ otherwise.
 
-If `M` \>= 2, then the mutual reachability distance *m(i,j)* with smoothing factor `M` (see Campello et al. 2015) is used instead of the chosen \"raw\" distance *d(i,j)*. It holds *m(i, j)=\\max(d(i,j), c(i), c(j))*, where *c(i)* is *d(i, k)* with *k* being the (`M`-1)-th nearest neighbour of *i*. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other. Genie++ clustering algorithm (see [`gclust`](gclust.md)) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.
+If `M` \>= 2, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` (see Campello et al. 2015) is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i, j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i, k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other. Genie++ clustering algorithm (see [`gclust`](gclust.md)) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.
 
 Note that the case `M` = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.
 
@@ -73,6 +73,8 @@ Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 [`emst_mlpack()`](emst_mlpack.md) for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and `M` = 1).
 

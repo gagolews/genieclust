@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>genieclust.compare_partitions &mdash; genieclust</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
@@ -33,11 +36,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -69,7 +74,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.0.1
               </div>
             
           
@@ -94,11 +99,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">genieclust</span></p>
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="index.html">About</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -109,7 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
@@ -122,7 +127,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
@@ -131,7 +136,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">Appendix</span></p>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
@@ -160,64 +165,28 @@
         
         <div class="rst-content style-external-links">
         
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a> &raquo;</li>
-        
       <li>genieclust.compare_partitions</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-        
       </li>
-    
-  </ul>
-
-  
-  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
-      
-        <a href="genieclust_inequity.html" class="btn btn-neutral float-right" title="genieclust.inequity" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-      
-      
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
         <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-      
+        <a href="genieclust_inequity.html" class="btn btn-neutral float-right" title="genieclust.inequity" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
   </div>
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-genieclust.compare_partitions">
-<span id="genieclust-compare-partitions"></span><h1>genieclust.compare_partitions<a class="headerlink" href="#module-genieclust.compare_partitions" title="Permalink to this headline">¶</a></h1>
+  <section id="module-genieclust.compare_partitions">
+<span id="genieclust-compare-partitions"></span><h1>genieclust.compare_partitions<a class="headerlink" href="#module-genieclust.compare_partitions" title="Permalink to this heading"></a></h1>
 <p>Partition similarity scores</p>
 <dl class="py function">
-<dt id="genieclust.compare_partitions.adjusted_fm_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">adjusted_fm_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_fm_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_fm_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_fm_score" title="Permalink to this definition"></a></dt>
 <dd><p>The Fowlkes-Mallows index adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -248,8 +217,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.adjusted_mi_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">adjusted_mi_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_mi_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_mi_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_mi_score" title="Permalink to this definition"></a></dt>
 <dd><p>Adjusted mutual information score <span class="math notranslate nohighlight">\((\mathrm{AMI}_\mathrm{sum})\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -280,8 +249,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.adjusted_rand_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">adjusted_rand_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_rand_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_rand_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_rand_score" title="Permalink to this definition"></a></dt>
 <dd><p>The Rand index adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -312,8 +281,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.compare_partitions">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">compare_partitions</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.compare_partitions">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">compare_partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions" title="Permalink to this definition"></a></dt>
 <dd><p>Computes a series of partition similarity scores</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
@@ -459,8 +428,8 @@ Variants, properties, normalization and correction for chance,
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.compare_partitions2">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">compare_partitions2</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions2" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.compare_partitions2">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">compare_partitions2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions2" title="Permalink to this definition"></a></dt>
 <dd><p>Computes a series of partition similarity scores</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -492,8 +461,8 @@ where <code class="docutils literal notranslate"><span class="pre">C</span> <spa
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.confusion_matrix">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">confusion_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.confusion_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the confusion matrix for two label vectors</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -531,8 +500,8 @@ and  <code class="docutils literal notranslate"><span class="pre">max(y)-min(y)+
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.fm_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">fm_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.fm_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.fm_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.fm_score" title="Permalink to this definition"></a></dt>
 <dd><p>The original Fowlkes-Mallows index (not adjusted for chance)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -563,8 +532,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.mi_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">mi_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.mi_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.mi_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.mi_score" title="Permalink to this definition"></a></dt>
 <dd><p>Mutual information score</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -595,8 +564,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.normalize_confusion_matrix">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">normalize_confusion_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.normalize_confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalize_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Applies pivoting to a given confusion matrix</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -642,8 +611,8 @@ by clustering algorithms, where actual label values do not matter
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.normalized_accuracy">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">normalized_accuracy</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_accuracy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_accuracy">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_accuracy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_accuracy" title="Permalink to this definition"></a></dt>
 <dd><p>genieclust.compare_partitions.normalized accuracy(x, y)</p>
 <p>Normalised accuracy</p>
 <dl class="field-list simple">
@@ -675,8 +644,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.normalized_confusion_matrix">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">normalized_confusion_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_confusion_matrix">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the confusion matrix for two label vectors and applies pivoting</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -715,8 +684,8 @@ and  <code class="docutils literal notranslate"><span class="pre">max(y)-min(y)+
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.normalized_mi_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">normalized_mi_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_mi_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_mi_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_mi_score" title="Permalink to this definition"></a></dt>
 <dd><p>Normalised mutual information score <span class="math notranslate nohighlight">\((\mathrm{NMI}_\mathrm{sum})\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -747,8 +716,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.pair_sets_index">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">pair_sets_index</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.pair_sets_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">pair_sets_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Permalink to this definition"></a></dt>
 <dd><p>Pair Sets Index (PSI) adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -779,8 +748,8 @@ representing two partitions of the same set.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="genieclust.compare_partitions.rand_score">
-<code class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></code><code class="sig-name descname"><span class="pre">rand_score</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.rand_score" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="genieclust.compare_partitions.rand_score">
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.rand_score" title="Permalink to this definition"></a></dt>
 <dd><p>The original Rand index not adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -810,37 +779,29 @@ representing two partitions of the same set.</p>
 <p>See <cite>genieclust.compare_partitions.compare_partitions</cite> for more details.</p>
 </dd></dl>
 
-</div>
+</section>
 
 
            </div>
            
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="genieclust_inequity.html" class="btn btn-neutral float-right" title="genieclust.inequity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="genieclust_inequity.html" class="btn btn-neutral float-right" title="genieclust.inequity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018-2021, Marek Gagolewski.
-      <span class="lastupdated">
-        Last updated on 2021-08-21T17:24:12+1000.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
+      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>

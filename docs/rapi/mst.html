@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>mst: Minimum Spanning Tree of the Pairwise Distance Graph &mdash; genieclust</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,9 +36,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -67,7 +74,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.0.1
               </div>
             
           
@@ -92,11 +99,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">genieclust</span></p>
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -107,7 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../weave/string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
@@ -131,7 +138,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
@@ -140,7 +147,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">Appendix</span></p>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
@@ -169,67 +176,31 @@
         
         <div class="rst-content style-external-links">
         
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
-        
       <li>mst: Minimum Spanning Tree of the Pairwise Distance Graph</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-        
       </li>
-    
-  </ul>
-
-  
-  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
-      
-        <a href="../news.html" class="btn btn-neutral float-right" title="What Is New in genieclust" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-      
-      
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
         <a href="inequity.html" class="btn btn-neutral float-left" title="inequity: Inequity (Inequality) Measures" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-      
+        <a href="../news.html" class="btn btn-neutral float-right" title="What Is New in genieclust" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
   </div>
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
-<h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="mst-minimum-spanning-tree-of-the-pairwise-distance-graph">
+<h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Permalink to this heading"></a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
 <p>An parallelised implementation of a Jarnik (Prim/Dijkstra)-like algorithm for determining a(*) minimum spanning tree (MST) of a complete undirected graph representing a set of n points with weights given by a pairwise distance matrix.</p>
 <p>(*) Note that there might be multiple minimum trees spanning a given graph.</p>
-</div>
-<div class="section" id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">mst</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## Default S3 method:</span>
@@ -246,9 +217,9 @@
 <span class="nf">mst</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">M</span> <span class="o">=</span> <span class="m">1L</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="arguments">
-<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="arguments">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading"></a></h2>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p></p></th>
@@ -276,77 +247,70 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
-<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <em>n p</em>, the <em>n (n-1)/2</em> distances are computed on the fly, so that <em>O(n M)</em> memory is used.</p>
+</section>
+<section id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading"></a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n p\)</span>, the <span class="math notranslate nohighlight">\(n (n-1)/2\)</span> distances are computed on the fly, so that <span class="math notranslate nohighlight">\(O(n M)\)</span> memory is used.</p>
 <p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a> to control the number of threads used.</p>
-<p>Time complexity is <em>O(n^2)</em> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <em>O(p n^2)</em> otherwise.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <em>m(i,j)</em> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <em>d(i,j)</em>. It holds <em>m(i, j)=\max(d(i,j), c(i), c(j))</em>, where <em>c(i)</em> is <em>d(i, k)</em> with <em>k</em> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <em>i</em>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
+<p>Time complexity is <span class="math notranslate nohighlight">\(O(n^2)\)</span> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <span class="math notranslate nohighlight">\(O(p n^2)\)</span> otherwise.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
 <p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
-</div>
-<div class="section" id="value">
-<h2>Value<a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="value">
+<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading"></a></h2>
 <p>Matrix of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> with n-1 rows and 3 columns: <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code> and <code class="docutils literal notranslate"><span class="pre">dist</span></code>. It holds <code class="docutils literal notranslate"><span class="pre">from</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">to</span></code>. Moreover, <code class="docutils literal notranslate"><span class="pre">dist</span></code> is sorted nondecreasingly. The i-th row gives the i-th edge of the MST. <code class="docutils literal notranslate"><span class="pre">(from[i],</span> <span class="pre">to[i])</span></code> defines the vertices (in 1,…,n) and <code class="docutils literal notranslate"><span class="pre">dist[i]</span></code> gives the weight, i.e., the distance between the corresponding points.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">method</span></code> attribute gives the name of the distance used. The <code class="docutils literal notranslate"><span class="pre">Labels</span></code> attribute gives the labels of all the input points.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, the <code class="docutils literal notranslate"><span class="pre">nn</span></code> attribute gives the indices of the <code class="docutils literal notranslate"><span class="pre">M</span></code>-1 nearest neighbours of each point.</p>
-</div>
-<div class="section" id="author-s">
-<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="author-s">
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
-</div>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
 <p>V. Jarnik, O jistem problemu minimalnim, Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.</p>
 <p>Olson C.F., Parallel algorithms for hierarchical clustering, Parallel Comput. 21 (1995) 1313-1325.</p>
 <p>Prim R., Shortest connection networks and some generalisations, Bell Syst. Tech. J. 36 (1957) 1389-1401.</p>
 <p>Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.</p>
-</div>
-<div class="section" id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
+<p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
 <p><a class="reference internal" href="emst_mlpack.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
 <span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
 <span class="n">tree</span> <span class="o">&lt;-</span> <span class="nf">mst</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
            
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="../news.html" class="btn btn-neutral float-right" title="What Is New in genieclust" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="inequity.html" class="btn btn-neutral float-left" title="inequity: Inequity (Inequality) Measures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../news.html" class="btn btn-neutral float-right" title="What Is New in genieclust" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018-2021, Marek Gagolewski.
-      <span class="lastupdated">
-        Last updated on 2021-08-21T17:24:12+1000.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
+      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>

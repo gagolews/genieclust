@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>Clustering with Noise Points Detection &mdash; genieclust</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,11 +36,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -69,7 +74,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.0.1
               </div>
             
           
@@ -94,11 +99,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">genieclust</span></p>
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -113,12 +118,12 @@
 <li class="toctree-l1"><a class="reference internal" href="string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
@@ -127,7 +132,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">Appendix</span></p>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
@@ -156,58 +161,23 @@
         
         <div class="rst-content style-external-links">
         
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Clustering with Noise Points Detection</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-        
       </li>
-    
-  </ul>
-
-  
-  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
-      
-        <a href="sparse.html" class="btn btn-neutral float-right" title="Example: Sparse Data and Movie Recommendation" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-      
-      
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
         <a href="timings.html" class="btn btn-neutral float-left" title="Timings (How Fast Is It?)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-      
+        <a href="sparse.html" class="btn btn-neutral float-right" title="Example: Sparse Data and Movie Recommendation" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
   </div>
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="clustering-with-noise-points-detection">
-<h1>Clustering with Noise Points Detection<a class="headerlink" href="#clustering-with-noise-points-detection" title="Permalink to this headline">¶</a></h1>
+  <section id="clustering-with-noise-points-detection">
+<h1>Clustering with Noise Points Detection<a class="headerlink" href="#clustering-with-noise-points-detection" title="Permalink to this heading"></a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -233,16 +203,18 @@ Labels -1 denote noise points (light grey markers).</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id5">
+<figure class="align-default" id="id5">
 <a class="reference internal image-reference" href="../_images/noise_noise-scatter_1.png"><img alt="../_images/noise_noise-scatter_1.png" src="../_images/noise_noise-scatter_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-<div class="section" id="smoothing-factor">
-<h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id5" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<section id="smoothing-factor">
+<h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Permalink to this heading"></a></h2>
 <p>The <cite>genieclust</cite> package allows for clustering with respect
 to a mutual reachability distance,
 <span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8">CMZS15</a>]</span>.
+known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8" title="R.J.G.B. Campello, D. Moulavi, A. Zimek, and J. Sander. Hierarchical density estimates for data clustering, visualization, and outlier detection. ACM Transactions on Knowledge Discovery from Data, 10(1):5:1–5:51, 2015. doi:10.1145/2733381.">CMZS15</a>]</span>.
 It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
 <p>Here are the effects of playing with the <cite>M</cite> parameter
@@ -258,10 +230,12 @@ controls how eagerly we tend to classify points as noise.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id6">
+<figure class="align-default" id="id6">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie1_1.png"><img alt="../_images/noise_noise-Genie1_1.png" src="../_images/noise_noise-Genie1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id6" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>For a more natural look-and-feel, it can be a good idea to first identify
 the noise points with Genie, remove them from the data set (or at least
 temporarily disable), and then apply the clustering procedure once again
@@ -283,14 +257,16 @@ but now with respect to the original distance (here: Euclidean):</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id7">
+<figure class="align-default" id="id7">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie2_1.png"><img alt="../_images/noise_noise-Genie2_1.png" src="../_images/noise_noise-Genie2_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id7" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>However, contrary to an excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id37">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
-here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id5">GBC16</a>]</span> algorithm under the hood.
+package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id37" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id5" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> algorithm under the hood.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>
@@ -306,13 +282,15 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id8">
+<figure class="align-default" id="id8">
 <a class="reference internal image-reference" href="../_images/noise_noise-Genie3_1.png"><img alt="../_images/noise_noise-Genie3_1.png" src="../_images/noise_noise-Genie3_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="a-comparision-with-hdbscan">
-<h2>A Comparision with HDBSCAN*<a class="headerlink" href="#a-comparision-with-hdbscan" title="Permalink to this headline">¶</a></h2>
+<figcaption>
+<p><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id8" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="a-comparision-with-hdbscan">
+<h2>A Comparision with HDBSCAN*<a class="headerlink" href="#a-comparision-with-hdbscan" title="Permalink to this heading"></a></h2>
 <p>Here are the results returned by <cite>hdbscan</cite> with default parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
 </pre></div>
@@ -326,10 +304,12 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id9">
+<figure class="align-default" id="id9">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN1_1.png"><img alt="../_images/noise_noise-HDBSCAN1_1.png" src="../_images/noise_noise-HDBSCAN1_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>By tuning <cite>min_cluster_size</cite> and/or <cite>min_samples</cite> (which corresponds to our <cite>M</cite> parameter;
 by the way, <cite>min_samples</cite> defaults to <cite>min_cluster_size</cite> if not provided explicitly),
 we can obtain a partition that is even closer to the reference one:</p>
@@ -347,43 +327,37 @@ we can obtain a partition that is even closer to the reference one:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="figure align-default" id="id10">
+<figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/noise_noise-HDBSCAN2_1.png"><img alt="../_images/noise_noise-HDBSCAN2_1.png" src="../_images/noise_noise-HDBSCAN2_1.png" style="width: 15cm;" /></a>
-<p class="caption"><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
 <p>Neat.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
            
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="sparse.html" class="btn btn-neutral float-right" title="Example: Sparse Data and Movie Recommendation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="timings.html" class="btn btn-neutral float-left" title="Timings (How Fast Is It?)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sparse.html" class="btn btn-neutral float-right" title="Example: Sparse Data and Movie Recommendation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018-2021, Marek Gagolewski.
-      <span class="lastupdated">
-        Last updated on 2021-08-21T17:24:12+1000.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
+      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>

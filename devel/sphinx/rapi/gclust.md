@@ -4,13 +4,13 @@
 
 A reimplementation of *Genie* - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like single linkage, it consumes the edges of the MST in increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see [`gini_index()`](inequity.md)) of the cluster size distribution raises above `gini_threshold`, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <https://github.com/gagolews/clustering_benchmarks_v1>.
 
-The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see Campello et al., 2015). If `M` \> 1, then the mutual reachability distance *m(i,j)* with smoothing factor `M` is used instead of the chosen \"raw\" distance *d(i,j)*. It holds *m(i,j)=\\max(d(i,j), c(i), c(j))*, where *c(i)* is *d(i,k)* with *k* being the (`M`-1)-th nearest neighbour of *i*. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other.
+The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see Campello et al., 2015). If `M` \> 1, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i,j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i,k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other.
 
 The Genie correction together with the smoothing factor `M` \> 1 (note that `M` = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN\* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN\'s somewhat magical `eps` parameter or the HDBSCAN\'s `min_cluster_size` one.
 
 ## Usage
 
-```r
+``` r
 gclust(d, ...)
 
 ## Default S3 method:
@@ -88,15 +88,15 @@ genie(
 
 Note that as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.
 
-If `d` is a numeric matrix or an object of class `dist`, [`mst()`](mst.md) will be called to compute an MST, which generally takes at most *O(n\^2)* time (the algorithm we provide is parallelised, environment variable `OMP_NUM_THREADS` controls the number of threads in use). However, see [`emst_mlpack()`](emst_mlpack.md) for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and `M` = 1.
+If `d` is a numeric matrix or an object of class `dist`, [`mst()`](mst.md) will be called to compute an MST, which generally takes at most $O(n^2)$ time (the algorithm we provide is parallelised, environment variable `OMP_NUM_THREADS` controls the number of threads in use). However, see [`emst_mlpack()`](emst_mlpack.md) for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and `M` = 1.
 
-Given an minimum spanning tree, the algorithm runs in *O(n √{n})* time. Therefore, if you want to test different `gini_threshold`s, (or `k`s), it is best to explicitly compute the MST first.
+Given an minimum spanning tree, the algorithm runs in $O(n \sqrt{n})$ time. Therefore, if you want to test different `gini_threshold`s, (or `k`s), it is best to explicitly compute the MST first.
 
 According to the algorithm\'s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). Departures from ultrametricity are corrected by applying `height = rev(cummin(rev(height)))`.
 
 ## Value
 
-`gclust()` computes the whole clustering hierarchy; it returns a list of class `hclust`, see [`hclust`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html). Use `link{cutree}()` to obtain an arbitrary k-partition.
+`gclust()` computes the whole clustering hierarchy; it returns a list of class `hclust`, see [`hclust`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html). Use [`cutree`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/cutree.html) to obtain an arbitrary k-partition.
 
 `genie()` returns a `k`-partition - a vector with elements in 1,\...,k, whose i-th element denotes the i-th input point\'s cluster identifier. Missing values (`NA`) denote noise points (if `detect_noise` is `TRUE`).
 
@@ -106,13 +106,15 @@ According to the algorithm\'s original definition, the resulting partition tree 
 
 ## References
 
-Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, *Information Sciences* 363, 2016, 8-23.
+Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, *Information Sciences* 363, 2016, 8-23, [doi:10.1016/j.ins.2016.05.003](https://doi.org/10.1016/j.ins.2016.05.003).
 
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1-5:51.
 
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 [`mst()`](mst.md) for the minimum spanning tree routines.
 

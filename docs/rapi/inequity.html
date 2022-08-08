@@ -4,7 +4,8 @@
 <html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8" />
-  
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>inequity: Inequity (Inequality) Measures &mdash; genieclust</title>
@@ -13,6 +14,8 @@
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
   <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
@@ -33,9 +36,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -67,7 +74,7 @@
             
             
               <div class="version">
-                1.0.0
+                1.0.1
               </div>
             
           
@@ -92,11 +99,11 @@
               
             
             
-              <p class="caption"><span class="caption-text">genieclust</span></p>
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basics</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
@@ -107,7 +114,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../weave/string.html">Example: String Data and Grouping of DNA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
@@ -131,7 +138,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
@@ -140,7 +147,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 </ul>
-<p class="caption"><span class="caption-text">Appendix</span></p>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
@@ -169,74 +176,40 @@
         
         <div class="rst-content style-external-links">
         
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
-        
       <li>inequity: Inequity (Inequality) Measures</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-        
       </li>
-    
-  </ul>
-
-  
-  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
-      
-        <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-      
-      
+  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
         <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-      
+        <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
   </div>
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="inequity-inequity-inequality-measures">
-<h1>inequity: Inequity (Inequality) Measures<a class="headerlink" href="#inequity-inequity-inequality-measures" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code> gives the normalised Gini index and <code class="docutils literal notranslate"><span class="pre">bonferroni_index()</span></code> implements the Bonferroni index.</p>
-</div>
-<div class="section" id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="inequity-inequity-inequality-measures">
+<h1>inequity: Inequity (Inequality) Measures<a class="headerlink" href="#inequity-inequity-inequality-measures" title="Permalink to this heading"></a></h1>
+<section id="description">
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code> gives the normalised Gini index, <code class="docutils literal notranslate"><span class="pre">bonferroni_index()</span></code> implements the Bonferroni index, and <code class="docutils literal notranslate"><span class="pre">devergottini_index()</span></code> implements the De Vergottini index.</p>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gini_index</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="nf">bonferroni_index</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="nf">devergottini_index</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="arguments">
-<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="arguments">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading"></a></h2>
 <table class="colwidths-auto docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p></p></th>
@@ -249,40 +222,60 @@
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h2>
-<p>Both indices can be used to quantify the “inequity” of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. Both indices follow the Pigou-Dalton principle (are Schur-convex): setting <em>x_i = x_i - h</em> and <em>x_j = x_j + h</em> with <em>h &gt; 0</em> and <em>x_i - h ≥q x_j + h</em> (taking from the “rich” and giving to the “poor”) decreases the inequity.</p>
-<p>These indices have applications in economics, amongst others. The Gini clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.</p>
+</section>
+<section id="details">
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading"></a></h2>
+<p>These indices can be used to quantify the “inequity” of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting <span class="math notranslate nohighlight">\(x_i = x_i - h\)</span> and <span class="math notranslate nohighlight">\(x_j = x_j + h\)</span> with <span class="math notranslate nohighlight">\(h &gt; 0\)</span> and <span class="math notranslate nohighlight">\(x_i - h \geq x_j + h\)</span> (taking from the “rich” and giving to the “poor”) decreases the inequity.</p>
+<p>These indices have applications in economics, amongst others. The Genie clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.</p>
 <p>The normalised Gini index is given by:</p>
-<p><em>G(x_1,…,x_n) = \frac{ ∑_{i=1}^{n-1} ∑_{j=i+1}^n |x_i-x_j| }{ (n-1) ∑_{i=1}^n x_i }.</em></p>
+<div class="math notranslate nohighlight">
+\[
+    G(x_1,\dots,x_n) = \frac{
+    \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
+    }{
+    (n-1) \sum_{i=1}^n x_i
+    },\]</div>
 <p>The normalised Bonferroni index is given by:</p>
-<p><em>B(x_1,…,x_n) = \frac{ ∑_{i=1}^{n} (n-∑_{j=1}^i \frac{n}{n-j+1}) x_{σ(n-i+1)} }{ (n-1) ∑_{i=1}^n x_i }.</em></p>
-<p>Time complexity: <em>O(n)</em> for sorted (increasingly) data. Otherwise, the vector will be sorted.</p>
-<p>In particular, for ordered inputs, it holds:</p>
-<p><em>G(x_1,…,x_n) = \frac{ ∑_{i=1}^{n} (n-2i+1) x_{σ(n-i+1)} }{ (n-1) ∑_{i=1}^n x_i },</em></p>
-<p>where <em>σ</em> is an ordering permutation of <em>(x_1,…,x_n)</em>.</p>
-</div>
-<div class="section" id="value">
-<h2>Value<a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h2>
-<p>The value of the inequity index, a number in <em>[0, 1]</em>.</p>
-</div>
-<div class="section" id="author-s">
-<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[
+    B(x_1,\dots,x_n) = \frac{
+    \sum_{i=1}^{n}  (n-\sum_{j=1}^i \frac{n}{n-j+1})
+         x_{\sigma(n-i+1)}
+    }{
+    (n-1) \sum_{i=1}^n x_i
+    }.\]</div>
+<p>The normalised De Vergottini index is given by:</p>
+<div class="math notranslate nohighlight">
+\[
+    V(x_1,\dots,x_n) =
+    \frac{1}{\sum_{i=2}^n \frac{1}{i}} \left(
+       \frac{ \sum_{i=1}^n \left( \sum_{j=i}^{n} \frac{1}{j}\right)
+       x_{\sigma(n-i+1)} }{\sum_{i=1}^{n} x_i} - 1
+    \right).\]</div>
+<p>Here, <span class="math notranslate nohighlight">\(\sigma\)</span> is an ordering permutation of <span class="math notranslate nohighlight">\((x_1,\dots,x_n)\)</span>.</p>
+<p>Time complexity: <span class="math notranslate nohighlight">\(O(n)\)</span> for sorted (increasingly) data. Otherwise, the vector will be sorted.</p>
+</section>
+<section id="value">
+<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading"></a></h2>
+<p>The value of the inequity index, a number in <span class="math notranslate nohighlight">\([0, 1]\)</span>.</p>
+</section>
+<section id="author-s">
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading"></a></h2>
 <p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
-</div>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
 <p>Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.</p>
 <p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
 <p>Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.</p>
-</div>
-<div class="section" id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="see-also">
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
-</div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
+</section>
+<section id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">))</span>  <span class="c1"># no inequality</span>
 <span class="c1">## [1] 0</span>
 <span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="c1"># one has it all</span>
@@ -299,40 +292,40 @@
 <span class="c1">## [1] 0.90625</span>
 <span class="nf">bonferroni_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
 <span class="c1">## [1] 0.8333333</span>
+<span class="nf">devergottini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">))</span>
+<span class="c1">## [1] 0</span>
+<span class="nf">devergottini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
+<span class="c1">## [1] 1</span>
+<span class="nf">devergottini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
+<span class="c1">## [1] 0.7662338</span>
+<span class="nf">devergottini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>
+<span class="c1">## [1] 0.6493506</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
            
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2018-2021, Marek Gagolewski.
-      <span class="lastupdated">
-        Last updated on 2021-08-21T17:24:12+1000.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
+      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>

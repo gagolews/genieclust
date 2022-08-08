@@ -129,4 +129,7 @@ Journal of Machine Learning Research 11, 2010, 2837-2854.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
+
+Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
+
 }

@@ -6,7 +6,7 @@
 
 ## Usage
 
-```r
+``` r
 gini_index(x)
 
 bonferroni_index(x)
@@ -22,29 +22,45 @@ devergottini_index(x)
 
 ## Details
 
-These indices can be used to quantify the \"inequity\" of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting *x\_i = x\_i - h* and *x\_j = x\_j + h* with *h \> 0* and *x\_i - h ≥q x\_j + h* (taking from the \"rich\" and giving to the \"poor\") decreases the inequity.
+These indices can be used to quantify the \"inequity\" of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$ and $x_i - h \geq x_j + h$ (taking from the \"rich\" and giving to the \"poor\") decreases the inequity.
 
 These indices have applications in economics, amongst others. The Genie clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.
 
 The normalised Gini index is given by:
 
-*G(x\_1,...,x\_n) = \\frac{ ∑\_{i=1}\^{n} (n-2i+1) x\_{σ(n-i+1)} }{ (n-1) ∑\_{i=1}\^n x\_i },*
+$$
+    G(x_1,\dots,x_n) = \frac{
+    \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
+    }{
+    (n-1) \sum_{i=1}^n x_i
+    },$$
 
 The normalised Bonferroni index is given by:
 
-*B(x\_1,...,x\_n) = \\frac{ ∑\_{i=1}\^{n} (n-∑\_{j=1}\^i \\frac{n}{n-j+1}) x\_{σ(n-i+1)} }{ (n-1) ∑\_{i=1}\^n x\_i }.*
+$$
+    B(x_1,\dots,x_n) = \frac{
+    \sum_{i=1}^{n}  (n-\sum_{j=1}^i \frac{n}{n-j+1})
+         x_{\sigma(n-i+1)}
+    }{
+    (n-1) \sum_{i=1}^n x_i
+    }.$$
 
 The normalised De Vergottini index is given by:
 
-*V(x\_1,...,x\_n) = \\frac{1}{∑\_{i=2}\^n \\frac{1}{i}} ≤ft( \\frac{ ∑\_{i=1}\^n ≤ft( ∑\_{j=i}\^{n} \\frac{1}{j}\\right) x\_{σ(n-i+1)} }{∑\_{i=1}\^{n} x\_i} - 1 \\right).*
+$$
+    V(x_1,\dots,x_n) =
+    \frac{1}{\sum_{i=2}^n \frac{1}{i}} \left(
+       \frac{ \sum_{i=1}^n \left( \sum_{j=i}^{n} \frac{1}{j}\right)
+       x_{\sigma(n-i+1)} }{\sum_{i=1}^{n} x_i} - 1
+    \right).$$
 
-Here, *σ* is an ordering permutation of *(x\_1,...,x\_n)*.
+Here, $\sigma$ is an ordering permutation of $(x_1,\dots,x_n)$.
 
-Time complexity: *O(n)* for sorted (increasingly) data. Otherwise, the vector will be sorted.
+Time complexity: $O(n)$ for sorted (increasingly) data. Otherwise, the vector will be sorted.
 
 ## Value
 
-The value of the inequity index, a number in *\[0, 1\]*.
+The value of the inequity index, a number in $[0, 1]$.
 
 ## Author(s)
 
@@ -61,6 +77,8 @@ Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 ## Examples
 

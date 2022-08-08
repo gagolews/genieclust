@@ -117,6 +117,8 @@ ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 
+Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
+
 \code{\link{emst_mlpack}()} for a very fast alternative
 in case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
 }

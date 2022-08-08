@@ -22,21 +22,29 @@ postprocess_contents <- function(contents)
     # There is one and only one official manual. Ad- and tracker-free.
     # Enjoy the free internet.
 
+    seealso <- stringi::stri_paste(
+        "The official online manual of \\pkg{genieclust} at ",
+        "\\url{https://genieclust.gagolewski.com/}\n",
+        "\n",
+        "Gagolewski M., ",
+        "\\pkg{genieclust}: Fast and robust hierarchical clustering, ",
+        "\\emph{SoftwareX} 15:100722, 2021, ",
+        "\\doi{10.1016/j.softx.2021.100722}.\n",
+        "\n"
+    )
+
     if (!stringi::stri_detect_fixed(contents, "\\seealso{\n")) {
-        contents <- stringi::stri_paste(contents,
-            "\\seealso{\n",
-            "The official online manual of \\pkg{genieclust} at ",
-            "\\url{https://genieclust.gagolewski.com/}\n",
-            "}\n")
+        contents <- stringi::stri_paste(
+            contents,
+            stringi::stri_paste("\\seealso{\n", seealso, "}\n")
+        )
     }
     else {
-        contents <- stringi::stri_replace_first_fixed(contents, "\\seealso{\n",
-            stringi::stri_paste(
-                "\\seealso{\n",
-                "The official online manual of \\pkg{genieclust} at ",
-                "\\url{https://genieclust.gagolewski.com/}\n",
-                "\n"
-            ))
+        contents <- stringi::stri_replace_first_fixed(
+            contents,
+            "\\seealso{\n",
+            stringi::stri_paste("\\seealso{\n", seealso)
+        )
     }
 
     contents

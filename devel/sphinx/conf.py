@@ -12,7 +12,7 @@ import genieclust
 # -- Project information -----------------------------------------------------
 
 project = 'genieclust'
-copyright = '2018-2022, Marek Gagolewski'
+copyright = '2018–2022, Marek Gagolewski'
 author = 'Marek Gagolewski'
 html_title = project
 html_short_title = project
@@ -52,7 +52,11 @@ extensions = [
 ]
 
 
-myst_enable_extensions = ["deflist"]
+myst_enable_extensions = [
+    "deflist",
+    "colon_fence",
+    "dollarmath",
+]
 
 templates_path = ['_templates']
 
@@ -100,8 +104,6 @@ html_show_sourcelink = False
 html_last_updated_fmt = today_fmt
 html_static_path = ['_static']
 html_css_files = ['css/custom.css']
-
-
 
 
 pygments_style = 'colorful'

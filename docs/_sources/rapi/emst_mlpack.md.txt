@@ -1,4 +1,4 @@
-# emst\_mlpack: Euclidean Minimum Spanning Tree
+# emst_mlpack: Euclidean Minimum Spanning Tree
 
 ## Description
 
@@ -6,7 +6,7 @@ Provides access to the implementation of the Dual-Tree Boruvka algorithm from th
 
 ## Usage
 
-```r
+``` r
 emst_mlpack(X, leaf_size = 1, naive = FALSE, verbose = FALSE)
 ```
 
@@ -36,3 +36,5 @@ Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).

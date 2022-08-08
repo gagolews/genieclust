@@ -1,12 +1,12 @@
-# comparing\_partitions: Pairwise Partition Similarity Scores
+# comparing_partitions: Pairwise Partition Similarity Scores
 
 ## Description
 
-Let `x` and `y` represent two partitions of a set of *n* elements into, respectively, *K* and *L* nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with *n* observations specified by two vectors of labels. The functions described in this section quantify the similarity between `x` and `y`. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
+Let `x` and `y` represent two partitions of a set of $n$ elements into, respectively, $K$ and $L$ nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described in this section quantify the similarity between `x` and `y`. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
 
 ## Usage
 
-```r
+``` r
 adjusted_rand_score(x, y = NULL)
 
 rand_score(x, y = NULL)
@@ -41,13 +41,13 @@ Every index except `mi_score()` (which computes the mutual information score) ou
 
 Similarly, `fm_score()` gives the Fowlkes-Mallows (FM) score and `adjusted_fm_score()` is its adjusted-for-chance version, see (Hubert, Arabie, 1985).
 
-Note that both the (unadjusted) Rand and FM scores are bounded from below by *1/(K+1)* if *K=L*, hence their adjusted versions are preferred.
+Note that both the (unadjusted) Rand and FM scores are bounded from below by $1/(K+1)$ if $K=L$, hence their adjusted versions are preferred.
 
-`mi_score()`, `adjusted_mi_score()` and `normalized_mi_score()` are information-theoretic scores, based on mutual information, see the definition of *AMI\_{sum}* and *NMI\_{sum}* in (Vinh et al., 2010).
+`mi_score()`, `adjusted_mi_score()` and `normalized_mi_score()` are information-theoretic scores, based on mutual information, see the definition of $AMI_{sum}$ and $NMI_{sum}$ in (Vinh et al., 2010).
 
-`normalized_accuracy()` is defined as *(Accuracy(C\_σ)-1/L)/(1-1/L)*, where *C\_σ* is a version of the confusion matrix for given `x` and `y`, *K ≤q L*, with columns permuted based on the solution to the Maximal Linear Sum Assignment Problem. *Accuracy(C\_σ)* is sometimes referred to as Purity, e.g., in (Rendon et al. 2011).
+`normalized_accuracy()` is defined as $(Accuracy(C_\sigma)-1/L)/(1-1/L)$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y`, $K \leq L$, with columns permuted based on the solution to the Maximal Linear Sum Assignment Problem. $Accuracy(C_\sigma)$ is sometimes referred to as Purity, e.g., in (Rendon et al. 2011).
 
-`pair_sets_index()` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016), *K ≤q L*. Pairing is based on the solution to the Linear Sum Assignment Problem of a transformed version of the confusion matrix.
+`pair_sets_index()` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016), $K \leq L$. Pairing is based on the solution to the Linear Sum Assignment Problem of a transformed version of the confusion matrix.
 
 ## Value
 
@@ -70,6 +70,8 @@ Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings co
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 ## Examples
 

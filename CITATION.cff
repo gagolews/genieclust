@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "Please cite this package as follows."
+authors:
+  - family-names: Gagolewski
+    given-names: Marek
+    orcid: "https://orcid.org/0000-0003-0637-6028"
+repository-code: "https://github.com/gagolews/genieclust"
+title: "genieclust: Fast and robust hierarchical clustering"
+doi: 10.1016/j.softx.2021.100722
+preferred-citation:
+    type: article
+    year: 2021
+    url: "https://genieclust.gagolewski.com/"
+    doi: 10.1016/j.softx.2021.100722
+    title: "genieclust: Fast and robust hierarchical clustering"
+    journal: "SoftwareX"
+    volume: 15
+    issue: 100722
+    authors:
+    -   family-names: Gagolewski
+        given-names: Marek
+        orcid: "https://orcid.org/0000-0003-0637-6028"

@@ -135,7 +135,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="1.0.0.9001",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
+    version="1.0.1",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
     description="The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection",
     long_description=long_description,
     long_description_content_type="text/x-rst",
@@ -169,6 +169,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX",

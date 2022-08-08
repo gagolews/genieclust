@@ -1,7 +1,7 @@
 # What Is New in *genieclust*
 
 
-## genieclust 1.0.y (under development)
+## genieclust 1.0.1 (2022-08-08)
 
 -  [GENERAL] A paper on the `genieclust` package has appeared
    in *SoftwareX*, see https://doi.org/10.1016/j.softx.2021.100722.
