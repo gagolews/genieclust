@@ -96,6 +96,19 @@ ol.arabic li {
     padding-bottom: 8pt;
 }
 
+img.img-left-align-always {
+    float: left;
+    margin-right: 16px;
+    margin-bottom: 16px;
+    border-radius: 0;
+}
+
+img.img-right-align-always {
+    float: right;
+    margin-left: 16px;
+    margin-bottom: 16px;
+    border-radius: 0;
+}
 
 @media (max-width: 480px) {
     img.img-left-align {

@@ -6,7 +6,7 @@ Python and R Package `genieclust`: Fast and Robust Hierarchical Clustering with 
 
 
 .. image:: _static/img/genie_toy_example.png
-    :class: img-right-align
+    :class: img-right-align-always
     :alt: Genie
     :width: 113px
 
