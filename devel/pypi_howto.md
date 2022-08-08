@@ -6,14 +6,17 @@ Versions:
 1.2.0rc1    # Release Candidate
 1.2.0       # Final Release
 
-# source distribution:
-~~python3 setup.py sdist~~
 
 # platform wheels:
 ~~python3 setup.py bdist_wheel~~
 
 
 Github actions - cibuildwheel - run manually
+
+# source distribution:
+
+rm -f dist/*
+python3 setup.py sdist
 
 
 # upload to pypi:

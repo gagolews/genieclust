@@ -6,36 +6,18 @@ env:
     # nmslib does not build on 32bit Windows
     # https://cibuildwheel.readthedocs.io/en/stable/options/
     # cp39-win_amd64
-    CIBW_SKIP: cp2* pp* cp35* cp36* cp37-win32 cp38-win32 cp39-win32 cp310-win32 cp311-win32
+    CIBW_SKIP: cp2* pp* cp35* cp36* cp37-win32 cp38-win32 cp39-win* cp310-win* cp311-win*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
 
+#[ubuntu-latest, windows-latest, macos-latest]
+#https://github.com/pypa/cibuildwheel
+
 jobs:
-  build_sdist:
-    name: Build source distribution
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v3
-
-      - name: Install optional dependencies
-        continue-on-error: true
-        run: |
-          pip install mlpack --upgrade
-
-      - name: Build sdist
-        run: python setup.py sdist
-
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./dist/*.tar.gz
-
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #[ubuntu-latest, windows-latest, macos-latest]
         os: [ubuntu-20.04, windows-2019, macOS-11]
 
     steps:
