@@ -6,7 +6,7 @@ env:
     # nmslib does not build on 32bit Windows
     # https://cibuildwheel.readthedocs.io/en/stable/options/
     # cp39-win_amd64
-    CIBW_SKIP: cp2* pp* cp35* cp36* cp37-win32 cp38-win32 cp39-win* cp310-win* cp311-win* cp310-manylinux_i686 cp311-manylinux_i686
+    CIBW_SKIP: cp2* pp* cp35* cp36* cp37-win32 cp38-win32 cp39-win* cp310-win* cp311-win* cp310-manylinux_i686 cp311-manylinux_i686 *-musllinux*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
 
 #[ubuntu-latest, windows-latest, macos-latest]
