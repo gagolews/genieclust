@@ -95,7 +95,8 @@ In particular, an object of class `Genie` is equipped with the
 
 
 
-:See also: Documentation of the :class:`genieclust.Genie`\ class.
+See the documentation of the :class:`genieclust.Genie`\ class
+for more details.
 
 
 
@@ -344,7 +345,7 @@ This makes the resulting partitions more stable.
 Dendrograms
 -----------
 
-Plotting of dendrograms is possible with `scipy.cluster.hierarchy`:
+Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
 
 
 .. code-block:: python
@@ -358,8 +359,10 @@ Plotting of dendrograms is possible with `scipy.cluster.hierarchy`:
     plt.show()
 
 
-.. image:: figures/basics_basics-dendrogram-1_1.png
+.. figure:: figures/basics_basics-dendrogram-1_1.png
    :width: 15 cm
+
+   Example dendrogram.
 
 
 
@@ -373,10 +376,10 @@ For a list of graphical parameters, refer to the function's manual:
     plt.show()
 
 
-.. image:: figures/basics_basics-dendrogram-2_1.png
+.. figure:: figures/basics_basics-dendrogram-2_1.png
    :width: 15 cm
 
-
+   Another example dendrogram.
 
 
 
@@ -386,3 +389,7 @@ Further Reading
 
 For more details, refer to the package's API reference
 manual: :class:`genieclust.Genie`\ .
+
+To learn more about Python, check out Marek's open-access (free!) textbook
+`Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>`_
+:cite:`datawranglingpy`\ .

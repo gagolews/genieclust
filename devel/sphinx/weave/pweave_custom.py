@@ -69,7 +69,28 @@ def _indent2(self, text):
     return text.replace('\n', '\n' + self.formatdict['indent'] + "## ")  # !!!!
 
 
+#def formatfigure2(self, chunk):
+    #fignames = chunk['figure']
+    #caption = chunk['caption']
+    #width = chunk['width']
+    #result = ""
+    #figstring = ""
+
+    #print(chunk['figure'], chunk['caption'])
+
+    #for fig in fignames:
+        #figstring += ('.. image:: %s\n   :width: %s\n\n' % (fig, width))
+
+    #if chunk['caption']:
+        #result += (".. figure:: %s\n" \
+                    #"   :width: %s\n\n" \
+                    #"   %s\n\n" % (fignames[0], width, caption))
+    #else:
+        #result += figstring
+    #return result
+
 doc.formatter.__class__.format_text_result = format_text_result2
 doc.formatter.__class__._indent2 = _indent2
+#doc.formatter.__class__.formatfigure = formatfigure2
 
 doc.weave()

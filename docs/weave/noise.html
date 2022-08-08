@@ -102,6 +102,7 @@
               <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
@@ -123,17 +124,18 @@
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../news.html">What Is New in <em>genieclust</em></a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
@@ -214,7 +216,7 @@ Labels -1 denote noise points (light grey markers).</p>
 <p>The <cite>genieclust</cite> package allows for clustering with respect
 to a mutual reachability distance,
 <span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8" title="R.J.G.B. Campello, D. Moulavi, A. Zimek, and J. Sander. Hierarchical density estimates for data clustering, visualization, and outlier detection. ACM Transactions on Knowledge Discovery from Data, 10(1):5:1–5:51, 2015. doi:10.1145/2733381.">CMZS15</a>]</span>.
+known from the HDBSCAN* algorithm <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id9" title="R.J.G.B. Campello, D. Moulavi, A. Zimek, and J. Sander. Hierarchical density estimates for data clustering, visualization, and outlier detection. ACM Transactions on Knowledge Discovery from Data, 10(1):5:1–5:51, 2015. doi:10.1145/2733381.">CMZS15</a>]</span>.
 It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
 <p>Here are the effects of playing with the <cite>M</cite> parameter
@@ -265,8 +267,8 @@ but now with respect to the original distance (here: Euclidean):</p>
 </figure>
 <p>However, contrary to an excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id37" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
-here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id5" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> algorithm under the hood.
+package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id38" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> and which also relies on a minimum spanning tree w.r.t. <span class="math notranslate nohighlight">\(d_M\)</span>,
+here we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id6" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> algorithm under the hood.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>
@@ -350,7 +352,7 @@ we can obtain a partition that is even closer to the reference one:</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      <span class="lastupdated">Last updated on 2022-08-08T20:12:49+1000.
       </span></p>
   </div>
 

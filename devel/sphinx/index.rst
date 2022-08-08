@@ -1,10 +1,14 @@
 Python and R Package `genieclust`: Fast and Robust Hierarchical Clustering with Noise Point Detection
 =====================================================================================================
 
-
+.. epigraph::
     **Genie finds meaningful clusters and is fast even on large data sets.**
 
-    -- by `Marek Gagolewski <https://www.gagolewski.com/>`_
+
+.. image:: _static/img/genie_toy_example.png
+    :class: img-right-align
+    :alt: Genie
+    :width: 113px
 
 
 `genieclust` :cite:`genieclust` brings
@@ -52,6 +56,11 @@ a familiar `scikit-learn`-like :cite:`sklearn_api` look-and-feel:
     labels = g.fit_predict(X)
 
 
+.. epigraph::
+    *To learn more about Python, check out Marek's recent open-access (free!) textbook*
+    `Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>`_
+    :cite:`datawranglingpy`\ .
+
 The R language interface is compatible with ``hclust()``, but there is more.
 
 .. code-block:: r
@@ -70,7 +79,7 @@ Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 `GitHub <https://github.com/gagolews/genieclust>`_.
 The core functionality is implemented in the form of a header-only C++
-library, so it may relatively easily be adapted to new environments —
+library, so it may be adapted to new environments relatively easily —
 any contributions are welcome (Julia, Matlab, etc.).
 
 
@@ -80,6 +89,7 @@ any contributions are welcome (Julia, Matlab, etc.).
     :hidden:
 
     About <self>
+    Author <https://www.gagolewski.com/>
 
 
 .. toctree::
@@ -104,19 +114,20 @@ any contributions are welcome (Julia, Matlab, etc.).
 
 .. toctree::
     :maxdepth: 1
-    :caption: Other
+    :caption: See Also
 
     Source Code (GitHub) <https://github.com/gagolews/genieclust>
     Bug Tracker and Feature Suggestions <https://github.com/gagolews/genieclust/issues>
     PyPI Entry <https://pypi.org/project/genieclust/>
     CRAN Entry <https://cran.r-project.org/web/packages/genieclust/>
-    Author's Homepage <https://www.gagolewski.com/>
-    news
+    Clustering Benchmarks <https://github.com/gagolews/clustering_benchmarks_v1>
+    Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 
 .. toctree::
     :maxdepth: 2
     :caption: Appendix
 
+    news
     weave/benchmarks_details
     weave/benchmarks_approx
     z_bibliography

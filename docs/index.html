@@ -99,6 +99,7 @@
               <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">About</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -116,17 +117,18 @@
 <li class="toctree-l1"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a></li>
@@ -170,12 +172,12 @@
             
   <section id="python-and-r-package-genieclust-fast-and-robust-hierarchical-clustering-with-noise-point-detection">
 <h1>Python and R Package <cite>genieclust</cite>: Fast and Robust Hierarchical Clustering with Noise Point Detection<a class="headerlink" href="#python-and-r-package-genieclust-fast-and-robust-hierarchical-clustering-with-noise-point-detection" title="Permalink to this heading"></a></h1>
-<blockquote>
+<blockquote class="epigraph">
 <div><p><strong>Genie finds meaningful clusters and is fast even on large data sets.</strong></p>
-<p class="attribution">—by <a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a></p>
 </div></blockquote>
-<p><cite>genieclust</cite> <span id="id1">[<a class="reference internal" href="z_bibliography.html#id4" title="M. Gagolewski. genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722, 2021. doi:10.1016/j.softx.2021.100722.">Gag21</a>]</span> brings
-a faster and more powerful version of <strong>Genie</strong> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id5" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> — a robust
+<a class="img-right-align reference internal image-reference" href="_images/genie_toy_example.png"><img alt="Genie" class="img-right-align" src="_images/genie_toy_example.png" style="width: 113px;" /></a>
+<p><cite>genieclust</cite> <span id="id1">[<a class="reference internal" href="z_bibliography.html#id5" title="M. Gagolewski. genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722, 2021. doi:10.1016/j.softx.2021.100722.">Gag21</a>]</span> brings
+a faster and more powerful version of <strong>Genie</strong> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id6" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> — a robust
 and outlier resistant clustering algorithm, originally published as an R package
 <a class="reference external" href="https://cran.r-project.org/web/packages/genie/">genie</a>.</p>
 <p>The idea behind Genie is beautifully simple. First, make each individual
@@ -194,21 +196,26 @@ for datasets of millions of points can be completed within
 Therefore, it is perfectly suited for solving of <strong>extreme clustering tasks</strong>
 (large datasets with any number of clusters to detect) for data
 that fit into memory.
-Thanks to the use of <cite>nmslib</cite> <span id="id3">[<a class="reference internal" href="z_bibliography.html#id18" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>,
+Thanks to the use of <cite>nmslib</cite> <span id="id3">[<a class="reference internal" href="z_bibliography.html#id19" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>,
 sparse or string inputs are also supported.</p>
 <p>Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a <strong>noise point detector</strong> or a robustified version
-of <cite>HDBSCAN*</cite> <span id="id4">[<a class="reference internal" href="z_bibliography.html#id8" title="R.J.G.B. Campello, D. Moulavi, A. Zimek, and J. Sander. Hierarchical density estimates for data clustering, visualization, and outlier detection. ACM Transactions on Knowledge Discovery from Data, 10(1):5:1–5:51, 2015. doi:10.1145/2733381.">CMZS15</a>]</span> that is able to detect a predefined
+of <cite>HDBSCAN*</cite> <span id="id4">[<a class="reference internal" href="z_bibliography.html#id9" title="R.J.G.B. Campello, D. Moulavi, A. Zimek, and J. Sander. Hierarchical density estimates for data clustering, visualization, and outlier detection. ACM Transactions on Knowledge Discovery from Data, 10(1):5:1–5:51, 2015. doi:10.1145/2733381.">CMZS15</a>]</span> that is able to detect a predefined
 number of clusters and so it doesn’t dependent on the <cite>DBSCAN</cite>’s somewhat
 difficult-to-set <cite>eps</cite> parameter.</p>
 <p>The Python language version of <cite>genieclust</cite> has
-a familiar <cite>scikit-learn</cite>-like <span id="id5">[<a class="reference internal" href="z_bibliography.html#id27" title="L. Buitinck and others. API design for machine learning software: Experiences from the scikit-learn project. In ECML PKDD Workshop: Languages for Data Mining and Machine Learning, 108–122. 2013.">B+13</a>]</span> look-and-feel:</p>
+a familiar <cite>scikit-learn</cite>-like <span id="id5">[<a class="reference internal" href="z_bibliography.html#id28" title="L. Buitinck and others. API design for machine learning software: Experiences from the scikit-learn project. In ECML PKDD Workshop: Languages for Data Mining and Machine Learning, 108–122. 2013.">B+13</a>]</span> look-and-feel:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">X</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># some data</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">labels</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
 </div>
+<blockquote class="epigraph">
+<div><p><em>To learn more about Python, check out Marek’s recent open-access (free!) textbook</em>
+<a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a>
+<span id="id6">[<a class="reference internal" href="z_bibliography.html#id4" title="M. Gagolewski. Minimalist Data Wrangling with Python. Zenodo, Melbourne, 2022. ISBN 978-0-6455719-1-2. URL: https://datawranglingpy.gagolewski.com/, doi:10.5281/zenodo.6451068.">Gag22</a>]</span>.</p>
+</div></blockquote>
 <p>The R language interface is compatible with <code class="docutils literal notranslate"><span class="pre">hclust()</span></code>, but there is more.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">X</span> <span class="o">&lt;-</span> <span class="kc">...</span> <span class="c1"># some data</span>
 <span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -224,7 +231,7 @@ Its source code is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 <a class="reference external" href="https://github.com/gagolews/genieclust">GitHub</a>.
 The core functionality is implemented in the form of a header-only C++
-library, so it may relatively easily be adapted to new environments —
+library, so it may be adapted to new environments relatively easily —
 any contributions are welcome (Julia, Matlab, etc.).</p>
 <div class="toctree-wrapper compound">
 </div>
@@ -287,19 +294,30 @@ any contributions are welcome (Julia, Matlab, etc.).</p>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption" role="heading"><span class="caption-text">Other</span></p>
+<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author's Homepage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a><ul>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-1-0-1-2022-08-08">genieclust 1.0.1 (2022-08-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-1-0-0-2021-04-22">genieclust 1.0.0 (2021-04-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-8-2021-01-08">genieclust 0.9.8 (2021-01-08)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-4-2020-07-31">genieclust 0.9.4 (2020-07-31)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-3-2020-07-25">genieclust 0.9.3 (2020-07-25)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-2-2020-07-22">genieclust 0.9.2 (2020-07-22)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-9-1-2020-07-18">genieclust 0.9.1 (2020-07-18)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="news.html#genieclust-0-1a2-2018-05-23">genieclust 0.1a2 (2018-05-23)</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_details.html#small-datasets">Small Datasets</a></li>
 <li class="toctree-l2"><a class="reference internal" href="weave/benchmarks_details.html#large-datasets">Large Datasets</a></li>
@@ -336,7 +354,7 @@ any contributions are welcome (Julia, Matlab, etc.).</p>
 
   <div role="contentinfo">
     <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-08T14:57:58+1000.
+      <span class="lastupdated">Last updated on 2022-08-08T20:12:49+1000.
       </span></p>
   </div>
 
