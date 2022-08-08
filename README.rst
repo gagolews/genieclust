@@ -5,7 +5,7 @@
 
    **Genie outputs meaningful clusters and is fast even on large data sets.**
 
-When using *genieclust* in research publications, please
+When using ``genieclust`` in research publications, please
 cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
 as specified below. Thank you.
 
@@ -37,14 +37,14 @@ for datasets of millions of points can be completed within a coffee break.
 Therefore, it is perfectly suited for solving of **extreme clustering tasks**
 (large datasets with any number of clusters to detect) for data (also sparse)
 that fit into memory.
-Thanks to the use of `nmslib`, sparse or string inputs are also supported.
+Thanks to the use of ``nmslib``, sparse or string inputs are also supported.
 
 It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
 robustified version of `HDBSCAN\*`  (see Campello et al., 2015)
 that is able to detect a predefined
 number of clusters and hence it doesn't dependent on the `DBSCAN`'s somewhat
-difficult-to-set `eps` parameter.
+difficult-to-set ``eps`` parameter.
 
 
 
@@ -53,7 +53,7 @@ Author and Contributors
 
 Author and maintainer: `Marek Gagolewski <https://www.gagolewski.com>`_
 
-Contributors of the code from the original R package `genie`:
+Contributors of the code from the original R package ``genie``:
 `Anna Cena <https://cena.rexamine.com>`_,
 `Maciej Bartoszuk <https://bartoszuk.rexamine.com>`_
 
@@ -71,7 +71,7 @@ Python and R Package Features
 The implemented algorithms include:
 
 -  Genie++ - a reimplementation of the original Genie algorithm
-    with a `scikit-learn`-compatible interface (Gagolewski et al., 2016);
+    with a ``scikit-learn``-compatible interface (Gagolewski et al., 2016);
     much faster than the original one; supports approximate disconnected MSTs;
 
 -  Genie+HDBSCAN\* - our robustified (Geniefied) retake on the HDBSCAN\*
@@ -106,16 +106,6 @@ Other goodies:
 Examples, Tutorials, and Documentation
 --------------------------------------
 
-The Python language version of `genieclust` has a familiar
-`scikit-learn`-like look-and-feel:
-
-.. code:: python
-
-   import genieclust
-   X = ... # some data
-   g = genieclust.Genie(n_clusters=2)
-   labels = g.fit_predict(X)
-
 R's interface is compatible with ``hclust()``, but there is more.
 
 .. code:: r
@@ -126,9 +116,21 @@ R's interface is compatible with ``hclust()``, but there is more.
    cutree(h, k=2)
    # or genie(X, k=2)
 
+The Python language version of ``genieclust`` has a familiar
+``scikit-learn``-like look-and-feel:
+
+.. code:: python
+
+   import genieclust
+   X = ... # some data
+   g = genieclust.Genie(n_clusters=2)
+   labels = g.fit_predict(X)
+
 Check out the tutorials and the package documentation at
 https://genieclust.gagolewski.com/.
 
+*And to learn more about Python, check out Marek's recent open-access (free!) textbook*
+`Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>`_\ .
 
 
 How to Install
