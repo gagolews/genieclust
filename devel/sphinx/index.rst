@@ -8,7 +8,7 @@ Python and R Package `genieclust`: Fast and Robust Hierarchical Clustering with 
 .. image:: _static/img/genie_toy_example.png
     :class: img-right-align-always
     :alt: Genie
-    :width: 113px
+    :width: 128px
 
 
 `genieclust` :cite:`genieclust` brings
@@ -106,7 +106,7 @@ any contributions are welcome (Julia, Matlab, etc.).
     weave/r
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: API Documentation
 
     genieclust
@@ -124,7 +124,7 @@ any contributions are welcome (Julia, Matlab, etc.).
     Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
     :caption: Appendix
 
     news
@@ -133,9 +133,10 @@ any contributions are welcome (Julia, Matlab, etc.).
     z_bibliography
 
 
-Indices and Tables
-------------------
+..
+    Indices and Tables
+    ------------------
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    * :ref:`genindex`
+    * :ref:`modindex`
+    * :ref:`search`
