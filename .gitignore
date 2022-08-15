@@ -20,3 +20,33 @@ cache-*
 coverage.xml
 .coverage
 htmlcov
+
+# Compiled files:
+*.o
+*.so
+*.dll
+*.a
+src-i386/
+src-x64/
+
+
+# Backup and temporary files:
+*~
+*.backup
+*.cache
+*.bak
+*.tmp
+tmp*
+delme*
+
+# LaTeX/knitr dust:
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+cache-knitr/
+cache/
+
+# Sphinx documentation
+devel/sphinx/_build

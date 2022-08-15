@@ -1197,7 +1197,7 @@ cdef class GiniDisjointSets():
             An integer in `{0,...,n-1}`, representing an element to find.
 
         Notes
-        ------
+        -----
 
         Run time: the cost of `find(x)`
         """

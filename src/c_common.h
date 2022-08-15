@@ -72,8 +72,15 @@
 
 
 
+typedef float FLOAT_T; ///< float type we are working internally with
+
 #ifndef INFTY
-#define INFTY (std::numeric_limits<float>::infinity())
+#define INFTY (std::numeric_limits<FLOAT_T>::infinity())
 #endif
+
+#define IS_PLUS_INFTY(x)  ((x) > 0.0 && !std::isfinite(x))
+#define IS_MINUS_INFTY(x) ((x) < 0.0 && !std::isfinite(x))
+
+#define CVI_MAX_N_PRECOMPUTE_DISTANCE 10000
 
 #endif

@@ -11,7 +11,7 @@ all: r python
 ################################################################################
 
 python:
-	python3 setup.py install --user
+	python3 -m pip install .
 
 py-test: python
 	pytest
@@ -78,7 +78,7 @@ news:
 	cd devel/sphinx && cp ../../NEWS news.md
 # 	cd devel/sphinx && pandoc ../../NEWS -f markdown -t rst -o news.rst
 
-sphinx: python r news weave rd2myst weave-examples
+sphinx: news weave rd2myst weave-examples
 	rm -rf devel/sphinx/_build/
 	cd devel/sphinx && make html
 	@echo "*** Browse the generated documentation at"\

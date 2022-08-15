@@ -10,8 +10,8 @@ install.packages("genieclust")
 ```
 
 
-Below are a few basic examples on how to interact with the package
-(partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)).
+Below are a few basic examples of how to interact with the package.
+<!-- (partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)). -->
 
 
 
@@ -22,10 +22,9 @@ library("genieclust")
 
 
 
-Let's consider the Sustainable Society Indices Dataset
-(see http://www.ssfindex.com/)
-that measures the Human, Environmental, and Economic Wellbeing
-in each country based on 7 categories on the scale $[0, 10]$.
+Let's consider the [Sustainable Society Indices](http://www.ssfindex.com/)
+dataset that measures the Human, Environmental, and Economic Wellbeing
+in each country based on seven categories on the scale $[0, 10]$.
 
 
 ```r
@@ -84,7 +83,7 @@ sample(y_pred, 25)  # preview
 ```
 
 This gives the cluster ID allocated to each country.
-Let's depict the obtained partition with the `rworldmap` package:
+Let's depict the obtained partition using the `rworldmap` package:
 
 
 ```r
@@ -118,9 +117,9 @@ t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
 ```
 
 
-Plotting of dendrograms is also possible.
-For greater readability, we'll restrict ourselves to a smaller sample, say,
-to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
+Dendrogram plotting is also possible.
+For greater readability, we'll restrict ourselves to a smaller sample;
+namely, to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
 
 
 ```r
@@ -155,6 +154,6 @@ calling `genie()` directly will be slightly faster than referring to
 (such as the Adjusted Rand or the Pair Sets Index) that can be used as
 external cluster validity measures.
 
-For more details, refer to the package's documentation.
-Don't forget to check out the Python examples regarding noise point detection,
+For more details, refer to the package's {any}`documentation <../rapi>`.
+Don't forget to check out the Python examples regarding noise points detection,
 benchmarking, timing, etc.

@@ -1,12 +1,27 @@
 # What Is New in *genieclust*
 
 
-## genieclust 1.0.1 (2022-08-08)
+## 1.1.x (under development)
 
--  [GENERAL] A paper on the `genieclust` package has appeared
-   in *SoftwareX*, see https://doi.org/10.1016/j.softx.2021.100722.
+-  ....TO DO...
+   Implementations of internal cluster validity measures discussed in:
+   M. Gagolewski, M. Bartoszuk, A. Cena,
+   Are cluster validity measures (in)valid?,
+   *Information Sciences* **581**, 620–636, 2021,
+   DOI: [10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
+   see our [CVI](https://github.com/gagolews/optim_cvi) package for R.
+   In particular, the generalised Dunn indices are based on the code originally
+   authored by Maciej Bartoszuk.
 
--  [Python] `plot_scatter` now uses a more accessible default palette
+
+## 1.0.1 (2022-08-08)
+
+-  [GENERAL] A paper on the `genieclust` package is now available:
+   M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
+   *SoftwareX* **15**, 100722, 2021,
+   DOI: [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
+
+-  [Python] `plots.plot_scatter` now uses a more accessible default palette
    (from R 4.0.0).
 
 -  [Python] New function: `inequity.devergottini_index`.
@@ -14,13 +29,13 @@
 -  [R] New function: `devergottini_index`.
 
 
-## genieclust 1.0.0 (2021-04-22)
+## 1.0.0 (2021-04-22)
 
 -  [R] Use `mlpack` instead of `RcppMLPACK` (#72).
    This package is merely suggested, not dependent upon.
 
 
-## genieclust 0.9.8 (2021-01-08)
+## 0.9.8 (2021-01-08)
 
 -  [Python] Require Python >= 3.7 (implied by `numpy`).
 
@@ -31,12 +46,12 @@
 -  [R] Use `tinytest` for unit testing instead of `testthat`.
 
 
-## genieclust 0.9.4 (2020-07-31)
+## 0.9.4 (2020-07-31)
 
 -  [BUGFIX] [R] Fix build errors on Solaris.
 
 
-## genieclust 0.9.3 (2020-07-25)
+## 0.9.3 (2020-07-25)
 
 -  [BUGFIX] [Python] Add code coverage CI. Fix some minor inconsistencies.
    Automate the `bdist` build chain.
@@ -44,12 +59,12 @@
 -  [R] Update DESCRIPTION to meet the CRAN policies.
 
 
-## genieclust 0.9.2 (2020-07-22)
+## 0.9.2 (2020-07-22)
 
 -  [BUGFIX] [Python] Fix broken build script for OS X with no OpenMP.
 
 
-## genieclust 0.9.1 (2020-07-18)
+## 0.9.1 (2020-07-18)
 
 -  [GENERAL] The package has been completely rewritten.
    The core functionality is now implemented in C++ (with OpenMP).
@@ -70,6 +85,6 @@
    by `nmslib` is added.
 
 
-## genieclust 0.1a2 (2018-05-23)
+## 0.1a2 (2018-05-23)
 
 -  [Python] Initial PyPI release.
