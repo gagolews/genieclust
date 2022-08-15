@@ -1,0 +1,86 @@
+# cluster_validity_measures: Internal Cluster Validity Measures
+
+## Description
+
+Implements a number of cluster validity indices critically reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2 therein for the respective definitions.
+
+The greater the index value, the more *valid* (whatever that means) the assessed partition. For consistency, the Ball-Hall and Davies-Bouldin indexes take negative values.
+
+## Usage
+
+``` r
+calinski_harabasz_index(X, y, K)
+
+dunnowa_index(X, y, K, M = 10L, owa_numerator = "Min", owa_denominator = "Max")
+
+generalised_dunn_index(X, y, K, lowercase_delta, uppercase_delta)
+
+negated_ball_hall_index(X, y, K)
+
+negated_davies_bouldin_index(X, y, K)
+
+silhouette_index(X, y, K)
+
+silhouette_w_index(X, y, K)
+
+wcnn_index(X, y, K, M = 10L)
+
+wcss_index(X, y, K)
+```
+
+## Arguments
+
+|                                  |                                                                                                                                                                                                                               |
+|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `X`                              | numeric matrix with `n` rows and `d` columns, representing `n` points in a `d`-dimensional space                                                                                                                              |
+| `y`                              | vector of `n` integer labels with elements in $[1, K]$, representing a partition whose *quality* is to be assessed; `y[i]` is the cluster ID of the `i`-th point, `X[i, ]`                                                    |
+| `K`                              | number of clusters, equal to `max(y)`                                                                                                                                                                                         |
+| `M`                              | number of nearest neighbours                                                                                                                                                                                                  |
+| `owa_numerator, owa_denominator` | single string defining the OWA operator to use in the definition of the DuNN index; one of: `"Mean"`, `"Min"`, `"Max"`, `"Const"`, `"SMin:M"`, `"SMax:M"`, where `M` is an integer defining the number of nearest neighbours. |
+| `lowercase_delta`                | an integer between 1 and 6, denoting $d_1$, \..., $d_6$ in the definition of the generalised Dunn index (numerator)                                                                                                           |
+| `uppercase_delta`                | an integer between 1 and 3, denoting $D_1$, \..., $D_3$ in the definition of the generalised Dunn index (denominator)                                                                                                         |
+
+## Value
+
+A single numeric value.
+
+## Author(s)
+
+[Marek Gagolewski](https://www.gagolewski.com/) and other contributors
+
+## References
+
+G.H. Ball, D.J. Hall, ISODATA: A novel method of data analysis and pattern classification, Technical report No. AD699616, Stanford Research Institute, 1965.
+
+J. Bezdek, N. Pal, Some new indexes of cluster validity, IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics) 28 1998, pp. 301--315, [doi:10.1109/3477.678624](https://doi.org/10.1109/3477.678624).
+
+T. Calinski, J. Harabasz. A dendrite method for cluster analysis, Communications in Statistics, 3(1), 1974, pp. 1-27, [doi:10.1080/03610927408827101](https://doi.org/10.1080/03610927408827101).
+
+D.L. Davies, D.W. Bouldin, A Cluster Separation Measure, IEEE Transactions on Pattern Analysis and Machine Intelligence. PAMI-1 (2), 1979, pp. 224-227, [doi:10.1109/TPAMI.1979.4766909](https://doi.org/10.1109/TPAMI.1979.4766909).
+
+J.C. Dunn, A Fuzzy Relative of the ISODATA Process and Its Use in Detecting Compact Well-Separated Clusters, Journal of Cybernetics 3(3), 1973, pp. 32-57, [doi:10.1080/01969727308546046](https://doi.org/10.1080/01969727308546046).
+
+M. Gagolewski, M. Bartoszuk, A. Cena, Are cluster validity measures (in)valid?, Information Sciences 581, 620--636, 2021, [doi:10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004); preprint: <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>.
+
+P.J. Rousseeuw, Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis, Computational and Applied Mathematics 20, 1987, pp. 53-65, [doi:10.1016/0377-0427(87)90125-7](https://doi.org/10.1016/0377-0427%2887%2990125-7).
+
+## See Also
+
+The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>
+
+Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, *SoftwareX* 15:100722, 2021, [doi:10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
+
+## Examples
+
+
+
+
+```r
+X <- as.matrix(iris[,1:4])
+X[,] <- jitter(X)  # otherwise we get a non-unique solution
+y <- as.integer(iris[[5]])
+calinski_harabasz_index(X, y, max(y))
+## [1] 486.6681
+calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE), max(y))
+## [1] 2.836713
+```

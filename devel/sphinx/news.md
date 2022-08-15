@@ -3,21 +3,23 @@
 
 ## 1.1.x (under development)
 
--  Implementations of internal cluster validity measures discussed
-   in: M. Gagolewski, M. Bartoszuk, A. Cena,
-   Are cluster validity measures (in)valid?, *Information Sciences* **581**,
-   620–636, 2021, DOI: [10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
-   <https://github.com/gagolews/optim_cvi>
+-  ....TO DO...
+   Implementations of internal cluster validity measures discussed in:
+   M. Gagolewski, M. Bartoszuk, A. Cena,
+   Are cluster validity measures (in)valid?,
+   *Information Sciences* **581**, 620–636, 2021, DOI:
+   [10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
+   see our unpublished [CVI](https://github.com/gagolews/optim_cvi) package
+   for R. In particular, the generalised Dunn indices are based on the code
+   originally authored by Maciej Bartoszuk. Thanks.
 
-   Generalised Dunn indices are based on the code originally authored
-   by Maciej Bartoszuk.
 
 ## 1.0.1 (2022-08-08)
 
 -  [GENERAL] A paper on the `genieclust` package is now available:
    M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
-   *SoftwareX* **15**, 100722, 2021,
-   DOI: [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
+   *SoftwareX* **15**, 100722, 2021, DOI:
+   [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 -  [Python] `plots.plot_scatter` now uses a more accessible default palette
    (from R 4.0.0).

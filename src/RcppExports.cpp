@@ -118,6 +118,129 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// calinski_harabasz_index
+double calinski_harabasz_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_calinski_harabasz_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(calinski_harabasz_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// dunnowa_index
+double dunnowa_index(NumericMatrix X, NumericVector y, int K, int M, Rcpp::String owa_numerator, Rcpp::String owa_denominator);
+RcppExport SEXP _genieclust_dunnowa_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP, SEXP MSEXP, SEXP owa_numeratorSEXP, SEXP owa_denominatorSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type owa_numerator(owa_numeratorSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type owa_denominator(owa_denominatorSEXP);
+    rcpp_result_gen = Rcpp::wrap(dunnowa_index(X, y, K, M, owa_numerator, owa_denominator));
+    return rcpp_result_gen;
+END_RCPP
+}
+// generalised_dunn_index
+double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lowercase_delta, int uppercase_delta);
+RcppExport SEXP _genieclust_generalised_dunn_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP, SEXP lowercase_deltaSEXP, SEXP uppercase_deltaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type lowercase_delta(lowercase_deltaSEXP);
+    Rcpp::traits::input_parameter< int >::type uppercase_delta(uppercase_deltaSEXP);
+    rcpp_result_gen = Rcpp::wrap(generalised_dunn_index(X, y, K, lowercase_delta, uppercase_delta));
+    return rcpp_result_gen;
+END_RCPP
+}
+// negated_ball_hall_index
+double negated_ball_hall_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_negated_ball_hall_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(negated_ball_hall_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// negated_davies_bouldin_index
+double negated_davies_bouldin_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_negated_davies_bouldin_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(negated_davies_bouldin_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// silhouette_index
+double silhouette_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_silhouette_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(silhouette_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// silhouette_w_index
+double silhouette_w_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_silhouette_w_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(silhouette_w_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
+// wcnn_index
+double wcnn_index(NumericMatrix X, NumericVector y, int K, int M);
+RcppExport SEXP _genieclust_wcnn_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP, SEXP MSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    rcpp_result_gen = Rcpp::wrap(wcnn_index(X, y, K, M));
+    return rcpp_result_gen;
+END_RCPP
+}
+// wcss_index
+double wcss_index(NumericMatrix X, NumericVector y, int K);
+RcppExport SEXP _genieclust_wcss_index(SEXP XSEXP, SEXP ySEXP, SEXP KSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type K(KSEXP);
+    rcpp_result_gen = Rcpp::wrap(wcss_index(X, y, K));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dot_mst_default
 NumericMatrix dot_mst_default(NumericMatrix X, String distance, int M, bool cast_float32, bool verbose);
 RcppExport SEXP _genieclust_dot_mst_default(SEXP XSEXP, SEXP distanceSEXP, SEXP MSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
@@ -219,6 +342,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
+    {"_genieclust_calinski_harabasz_index", (DL_FUNC) &_genieclust_calinski_harabasz_index, 3},
+    {"_genieclust_dunnowa_index", (DL_FUNC) &_genieclust_dunnowa_index, 6},
+    {"_genieclust_generalised_dunn_index", (DL_FUNC) &_genieclust_generalised_dunn_index, 5},
+    {"_genieclust_negated_ball_hall_index", (DL_FUNC) &_genieclust_negated_ball_hall_index, 3},
+    {"_genieclust_negated_davies_bouldin_index", (DL_FUNC) &_genieclust_negated_davies_bouldin_index, 3},
+    {"_genieclust_silhouette_index", (DL_FUNC) &_genieclust_silhouette_index, 3},
+    {"_genieclust_silhouette_w_index", (DL_FUNC) &_genieclust_silhouette_w_index, 3},
+    {"_genieclust_wcnn_index", (DL_FUNC) &_genieclust_wcnn_index, 4},
+    {"_genieclust_wcss_index", (DL_FUNC) &_genieclust_wcss_index, 3},
     {"_genieclust_dot_mst_default", (DL_FUNC) &_genieclust_dot_mst_default, 5},
     {"_genieclust_dot_mst_dist", (DL_FUNC) &_genieclust_dot_mst_dist, 3},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
