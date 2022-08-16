@@ -1,6 +1,6 @@
 Package: genieclust
 Type: Package
-Title: Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection
+Title: Fast and Robust Hierarchical Clustering with Noise Points Detection
 Version: 1.0.0.9001
 Date: 2022-08-16
 Authors@R: c(
@@ -29,7 +29,7 @@ Description: A retake on the Genie algorithm
     (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
     adjusted mutual information, pair sets indices),
     and internal cluster validity indices (e.g., the Calinski-Harabasz,
-    Silhouette, and generalised Dunn indices).
+    Davies-Bouldin, Ball-Hall, Silhouette, and generalised Dunn indices).
     See also the 'Python' version of 'genieclust' available on 'PyPI', which
     supports sparse data, more metrics, and even larger datasets.
 BugReports: https://github.com/gagolews/genieclust/issues

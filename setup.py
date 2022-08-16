@@ -130,15 +130,16 @@ ext_kwargs = dict(
 )
 
 
-with open("README.rst", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
+
 
 setuptools.setup(
     name="genieclust",
     version="1.0.0.9001",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
-    description="Fast and Robust Hierarchical Clustering with Noise Points Detection",
+    description="Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection",
     long_description=long_description,
-    long_description_content_type="text/x-rst",
+    long_description_content_type="text/markdown",
     author="Marek Gagolewski",
     author_email="marek@gagolewski.com",
     maintainer="Marek Gagolewski",

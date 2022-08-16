@@ -156,7 +156,7 @@ matrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 //'
 //' J. Bezdek, N. Pal, Some new indexes of cluster validity,
 //' IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics) 28
-//' 1998, pp. 301--315, \doi{10.1109/3477.678624}.
+//' 1998, pp. 301-315, \doi{10.1109/3477.678624}.
 //'
 //' T. Calinski, J. Harabasz. A dendrite method for cluster analysis,
 //' Communications in Statistics, 3(1), 1974, pp. 1-27,
@@ -173,7 +173,7 @@ matrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 //'
 //' M. Gagolewski, M. Bartoszuk, A. Cena,
 //' Are cluster validity measures (in)valid?, Information Sciences 581,
-//' 620–636, 2021, \doi{10.1016/j.ins.2021.10.004};
+//' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 //' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 //'
 //' P.J. Rousseeuw, Silhouettes: A Graphical Aid to the Interpretation and

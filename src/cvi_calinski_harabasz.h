@@ -25,16 +25,16 @@
 
 /** The Calinski-Harabasz Index (Variance Ratio Criterion)
  *
- *  See Eq.(3) in (Caliński, Harabasz, 1974)
+ *  See Eq.(3) in (Calinski, Harabasz, 1974)
  *
- *  T. Caliński, J. Harabasz, A dendrite method for cluster analysis,
+ *  T. Calinski, J. Harabasz, A dendrite method for cluster analysis,
  *  Communications in Statistics, 3(1), 1974, pp. 1-27,
  *  doi:10.1080/03610927408827101.
  *
  *  See the following paper for the formula and further discussion:
  *  M. Gagolewski, M. Bartoszuk, A. Cena,
  *  Are cluster validity measures (in)valid?, Information Sciences 581,
- *  620–636, 2021, DOI:10.1016/j.ins.2021.10.004
+ *  620-636, 2021, DOI:10.1016/j.ins.2021.10.004
  */
 class CalinskiHarabaszIndex : public CentroidsBasedIndex
 {

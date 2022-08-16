@@ -33,7 +33,7 @@
  *  See the following paper for the formula and further discussion:
  *  M. Gagolewski, M. Bartoszuk, A. Cena,
  *  Are cluster validity measures (in)valid?, Information Sciences 581,
- *  620–636, 2021, DOI:10.1016/j.ins.2021.10.004
+ *  620-636, 2021, DOI:10.1016/j.ins.2021.10.004
  */
 class WCNNIndex : public NNBasedIndex
 {

@@ -13,9 +13,11 @@
 ^devel
 ^dist
 ^docs
+^src/\.clangd$
 ^genieclust
 ^pytest
-^README.rst$
+^README.md$
+^CITATION.cff$
 ^Makefile$
 ^setup\.py$
 ^setup\.cfg$
