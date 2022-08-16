@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
-Title: The Genie++ Hierarchical Clustering Algorithm with Noise Points Detection
+Title: Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection
 Version: 1.0.0.9001
-Date: 2022-08-15
+Date: 2022-08-16
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -25,9 +25,11 @@ Description: A retake on the Genie algorithm
     clusters and hence it does not dependent on the somewhat
     fragile 'eps' parameter).
     The package also features an implementation of economic inequity indices
-    (the Gini, Bonferroni index) and external cluster validity measures
+    (the Gini, Bonferroni index), external cluster validity measures
     (partition similarity scores; e.g., the adjusted Rand, Fowlkes-Mallows,
-    adjusted mutual information, pair sets index).
+    adjusted mutual information, pair sets indices),
+    and internal cluster validity indices (e.g., the Calinski-Harabasz,
+    Silhouette, and generalised Dunn indices).
     See also the 'Python' version of 'genieclust' available on 'PyPI', which
     supports sparse data, more metrics, and even larger datasets.
 BugReports: https://github.com/gagolews/genieclust/issues
