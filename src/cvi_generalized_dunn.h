@@ -49,8 +49,8 @@ protected:
 public:
     // Described in the base class
     GeneralizedDunnIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            LowercaseDeltaFactory* numeratorDeltaFactory,
            UppercaseDeltaFactory* denominatorDeltaFactory,
            const bool _allow_undo=false)
@@ -67,7 +67,7 @@ public:
     }
 
     // Described in the base class
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         ClusterValidityIndex::set_labels(_L); // sets L, count and centroids
         numeratorDelta->recompute_all();
@@ -76,7 +76,7 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
         numeratorDelta->before_modify(i, j);
         denominatorDelta->before_modify(i, j);
@@ -128,8 +128,8 @@ protected:
 public:
     // Described in the base class
     GeneralizedDunnIndexCentroidBased(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            LowercaseDeltaFactory* numeratorDeltaFactory,
            UppercaseDeltaFactory* denominatorDeltaFactory,
            const bool _allow_undo=false)
@@ -146,7 +146,7 @@ public:
     }
 
     // Described in the base class
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         CentroidsBasedIndex::set_labels(_L); // sets L, count and centroids
         numeratorDelta->recompute_all();
@@ -155,7 +155,7 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
         numeratorDelta->before_modify(i, j);
         denominatorDelta->before_modify(i, j);

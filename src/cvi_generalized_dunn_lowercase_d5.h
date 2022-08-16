@@ -31,19 +31,19 @@ protected:
     std::vector<double> last_dist_sums;      ///< for undo()
     bool last_chg; ///< for undo() (was dist changed at all?)
 
-    size_t cluster1;
-    size_t cluster2;
+    ssize_t cluster1;
+    ssize_t cluster2;
 
 public:
     LowercaseDelta5(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : LowercaseDelta(D,X,L,count,K,n,d,centroids),
     dist_sums(K),
@@ -53,7 +53,7 @@ public:
     }
 
 
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
         last_chg = true;
         for (size_t u=0; u<K; ++u) {
                 last_dist_sums[u] = dist_sums[u];
@@ -62,7 +62,7 @@ public:
 
         cluster1 = L[i];
 
-        // uint8_t cluster_index = L[i];
+        // ssize_t cluster_index = L[i];
         // FLOAT_T act = 0.0;
         // for (size_t u=0; u<d; ++u) {
         //     act += square((*centroids)(cluster_index, u) - X(i, u));
@@ -72,8 +72,8 @@ public:
     }
 
 
-    virtual void after_modify(size_t i, uint8_t j) {
-        // uint8_t cluster_index = L[i];
+    virtual void after_modify(size_t i, ssize_t j) {
+        // ssize_t cluster_index = L[i];
         // FLOAT_T act = 0.0;
         // for (size_t u=0; u<d; ++u) {
         //     act += square((*centroids)(cluster_index, u) - X(i, u));
@@ -88,7 +88,7 @@ public:
         dist_sums[cluster2] = 0;
 
         for (size_t i=0; i<n; ++i) {
-            uint8_t cluster_index = L[i];
+            ssize_t cluster_index = L[i];
             if (cluster_index == cluster1 || cluster_index == cluster2) {
                 FLOAT_T act = 0.0;
                 for (size_t u=0; u<d; ++u) {
@@ -115,7 +115,7 @@ public:
         std::fill(dist_sums.begin(), dist_sums.end(), 0);
 
         for (size_t i=0; i<n; ++i) {
-            uint8_t cluster_index = L[i];
+            ssize_t cluster_index = L[i];
             FLOAT_T act = 0.0;
             for (size_t u=0; u<d; ++u) {
                 act += square((*centroids)(cluster_index, u) - X(i, u));
@@ -137,13 +137,13 @@ public:
     virtual bool IsCentroidNeeded() { return true; }
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new LowercaseDelta5(D, X, L, count, K, n, d, centroids);
            }
 };

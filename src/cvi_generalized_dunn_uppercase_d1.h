@@ -36,19 +36,19 @@ protected:
 public:
     UppercaseDelta1(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : UppercaseDelta(D,X,L,count,K,n,d,centroids),
     diam(K),
     last_diam(K)
     { }
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
             last_diam[u] = diam[u];
@@ -60,7 +60,7 @@ public:
 
     }
 
-    virtual void after_modify(size_t i, uint8_t j) {
+    virtual void after_modify(size_t i, ssize_t j) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -117,13 +117,13 @@ public:
     virtual bool IsCentroidNeeded() { return false; }
 
     virtual UppercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new UppercaseDelta1(D, X, L, count, K, n, d, centroids);
            }
 };

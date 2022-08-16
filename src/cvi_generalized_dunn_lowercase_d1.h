@@ -27,10 +27,10 @@
 class LowercaseDelta1 : public LowercaseDelta
 {
 protected:
-    matrix<DistTriple> dist; /**< intra-cluster distances:
+    CMatrix<DistTriple> dist; /**< intra-cluster distances:
         dist(i,j) = min( X(u,), X(v,) ), X(u,) in C_i, X(v,) in C_j  (i!=j)
         */
-    matrix<DistTriple> last_dist;      ///< for undo()
+    CMatrix<DistTriple> last_dist;      ///< for undo()
     bool last_chg; ///< for undo() (was dist changed at all?)
     bool needs_recompute; ///< for before and after modify
     std::function< bool(FLOAT_T, FLOAT_T) > comparator;
@@ -38,13 +38,13 @@ protected:
 public:
     LowercaseDelta1(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : LowercaseDelta(D, X, L, count,K,n,d,centroids),
     dist(K, K),
@@ -53,7 +53,7 @@ public:
         comparator = std::less<FLOAT_T>();
 
     }
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
 
@@ -66,7 +66,7 @@ public:
             }
         }
     }
-    virtual void after_modify(size_t i, uint8_t j) {
+    virtual void after_modify(size_t i, ssize_t j) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -125,13 +125,13 @@ public:
     virtual bool IsCentroidNeeded() { return false; }
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new LowercaseDelta1(D, X, L, count, K, n, d, centroids);
            }
 };

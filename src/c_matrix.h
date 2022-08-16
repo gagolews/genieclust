@@ -23,7 +23,7 @@
  * Represents a matrix as a C-contiguous array,
  * i.e., in a row-major order.
  */
-template <typename T> class matrix {
+template <typename T> class CMatrix {
 private:
     size_t n, d;
     std::vector<T> elems;
@@ -34,7 +34,7 @@ public:
      * @param _nrow
      * @param _ncol
      */
-    matrix(size_t _nrow, size_t _ncol)
+    CMatrix(size_t _nrow, size_t _ncol)
         : n(_nrow), d(_ncol), elems(_nrow*_ncol)
     {
         ;
@@ -46,7 +46,7 @@ public:
      * @param _ncol
      * @param _t
      */
-    matrix(size_t _nrow, size_t _ncol, T _t)
+    CMatrix(size_t _nrow, size_t _ncol, T _t)
         : n(_nrow), d(_ncol), elems(_nrow*_ncol, _t)
     {
         ;
@@ -62,7 +62,7 @@ public:
      * @param _c_order whether the first _ncol elements in _data constitute the first row
      * or the first _nrow elements define the first column
      */
-    template<class S> matrix(const S* _data, size_t _nrow, size_t _ncol, bool _c_order)
+    template<class S> CMatrix(const S* _data, size_t _nrow, size_t _ncol, bool _c_order)
         : n(_nrow), d(_ncol), elems(_nrow*_ncol)
     {
         if (_c_order) {

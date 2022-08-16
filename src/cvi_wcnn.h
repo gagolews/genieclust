@@ -40,8 +40,8 @@ class WCNNIndex : public NNBasedIndex
 public:
     // Described in the base class
     WCNNIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            const bool _allow_undo=false,
            const size_t _M=10
              )

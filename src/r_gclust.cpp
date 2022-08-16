@@ -119,8 +119,8 @@ NumericMatrix internal_compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool v
         if (verbose) GENIECLUST_PRINT("[genieclust] Determining the core distance.\n");
 
         ssize_t k = M-1;
-        matrix<ssize_t> nn_i(n, k);
-        matrix<T> nn_d(n, k);
+        CMatrix<ssize_t> nn_i(n, k);
+        CMatrix<T> nn_d(n, k);
         Cknn_from_complete(D, n, k, nn_d.data(), nn_i.data());
 
         NumericMatrix nn_r(n, k);
@@ -141,7 +141,7 @@ NumericMatrix internal_compute_mst(CDistance<T>* D, ssize_t n, ssize_t M, bool v
         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
     }
 
-    matrix<ssize_t> mst_i(n-1, 2);
+    CMatrix<ssize_t> mst_i(n-1, 2);
     std::vector<T>  mst_d(n-1);
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
@@ -178,7 +178,7 @@ NumericMatrix internal_mst_default(
     ssize_t d = X.ncol();
     NumericMatrix ret;
 
-    matrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
+    CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
     CDistance<T>* D = NULL;
     if (distance == "euclidean" || distance == "l2")
         D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
@@ -259,7 +259,7 @@ IntegerVector dot_genie(
 
     if (k < 1 || k > n) stop("invalid requested number of clusters, `k`");
 
-    matrix<ssize_t> mst_i(n-1, 2);
+    CMatrix<ssize_t> mst_i(n-1, 2);
     std::vector<double>  mst_d(n-1);
 
     for (ssize_t i=0; i<n-1; ++i) {
@@ -285,7 +285,7 @@ IntegerVector dot_genie(
         GENIECLUST_ASSERT(nn_r.nrow() == n);
         ssize_t M = nn_r.ncol()+1;
         GENIECLUST_ASSERT(M < n);
-        matrix<ssize_t> nn_i(n, M-1);
+        CMatrix<ssize_t> nn_i(n, M-1);
         for (ssize_t i=0; i<n; ++i) {
             for (ssize_t j=0; j<M-1; ++j) {
                 GENIECLUST_ASSERT(nn_r(i,j) >= 1);
@@ -326,7 +326,7 @@ List dot_gclust(
         stop("`gini_threshold` must be in [0, 1]");
 
     ssize_t n = mst.nrow()+1;
-    matrix<ssize_t> mst_i(n-1, 2);
+    CMatrix<ssize_t> mst_i(n-1, 2);
     std::vector<double>  mst_d(n-1);
 
     for (ssize_t i=0; i<n-1; ++i) {

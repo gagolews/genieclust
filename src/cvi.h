@@ -91,7 +91,7 @@ struct DistTriple {
 class EuclideanDistance
 {
 private:
-    const matrix<FLOAT_T>* X;
+    const CMatrix<FLOAT_T>* X;
     std::vector<FLOAT_T> D;
     bool precomputed;
     bool squared;
@@ -99,7 +99,7 @@ private:
     size_t d;
 
 public:
-    EuclideanDistance(const matrix<FLOAT_T>* _X, bool _precompute=false, bool _square=false)
+    EuclideanDistance(const CMatrix<FLOAT_T>* _X, bool _precompute=false, bool _square=false)
         : X(_X),
           D(_precompute?(_X->nrow()*(_X->nrow()-1)/2):0),
           precomputed(_precompute),
@@ -149,16 +149,16 @@ public:
 class ClusterValidityIndex
 {
 protected:
-    matrix<FLOAT_T> X;         ///< data matrix of size n*d
-    std::vector<uint8_t> L;    ///< current label vector of size n
+    CMatrix<FLOAT_T> X;         ///< data matrix of size n*d
+    std::vector<ssize_t> L;    ///< current label vector of size n
     std::vector<size_t> count; ///< size of each of the K clusters
-    const uint8_t K;           ///< number of clusters, max(L)
+    const size_t K;           ///< number of clusters, max(L)
     const size_t n;            ///< number of points (for brevity of notation)
     const size_t d;            ///< dataset dimensionality (for brevity)
     const bool allow_undo;     ///< is the object's state preserved on modify()?
 
-    size_t last_i;             ///< for undo()
-    uint8_t last_j;            ///< for undo()
+    ssize_t last_i;             ///< for undo()
+    ssize_t last_j;            ///< for undo()
 
 public:
 
@@ -170,8 +170,8 @@ public:
      *      modify()?
      */
     ClusterValidityIndex(
-            const matrix<FLOAT_T>& _X,
-            const uint8_t _K,
+            const CMatrix<FLOAT_T>& _X,
+            const size_t _K,
             const bool _allow_undo
     )
         : X(_X), L(_X.nrow()), count(_K),
@@ -192,7 +192,7 @@ public:
      * @param j
      * @return
      */
-    size_t get_count(const uint8_t j) const
+    size_t get_count(const size_t j) const
     {
         GENIECLUST_ASSERT(j >= 0 && j < K);
         return count[j];
@@ -203,7 +203,7 @@ public:
      * @param i
      * @return
      */
-    uint8_t get_label(const size_t i) const
+    ssize_t get_label(const size_t i) const
     {
         GENIECLUST_ASSERT(i >= 0 && i < n);
         return L[i];
@@ -213,7 +213,7 @@ public:
      *
      * @return
      */
-    const std::vector<uint8_t>& get_labels() const { return L; }
+    const std::vector<ssize_t>& get_labels() const { return L; }
 
 
     /** Returns the number of clusters
@@ -234,7 +234,7 @@ public:
      *
      * @param _L
      */
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         GENIECLUST_ASSERT(X.nrow() == _L.size());
         for (size_t j=0; j<K; ++j) {
@@ -242,7 +242,7 @@ public:
         }
 
         for (size_t i=0; i<n; ++i) {
-            GENIECLUST_ASSERT(_L[i] >= 0 && _L[i] < K);
+            GENIECLUST_ASSERT(_L[i] >= 0 && _L[i] < (ssize_t)K);
             L[i] = _L[i];
             count[ L[i] ]++;
         }
@@ -261,11 +261,11 @@ public:
      * @param i
      * @param j
      */
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
         GENIECLUST_ASSERT(i >= 0 && i < n);
-        GENIECLUST_ASSERT(j >= 0 && j < K);
-        GENIECLUST_ASSERT(L[i] >= 0 && L[i] < K);
+        GENIECLUST_ASSERT(j >= 0 && j < (ssize_t)K);
+        GENIECLUST_ASSERT(L[i] >= 0 && L[i] < (ssize_t)K);
         GENIECLUST_ASSERT(count[L[i]] > 0);
         GENIECLUST_ASSERT(L[i] != j);
 
@@ -307,14 +307,14 @@ public:
 class CentroidsBasedIndex : public ClusterValidityIndex
 {
 protected:
-    matrix<FLOAT_T> centroids;     ///< centroids of all the clusters, size K*d
+    CMatrix<FLOAT_T> centroids;     ///< centroids of all the clusters, size K*d
 
 
 public:
     // Described in the base class
     CentroidsBasedIndex(
-            const matrix<FLOAT_T>& _X,
-            const uint8_t _K,
+            const CMatrix<FLOAT_T>& _X,
+            const size_t _K,
             const bool _allow_undo)
         : ClusterValidityIndex(_X, _K, _allow_undo),
           centroids(K, d)
@@ -324,7 +324,7 @@ public:
 
 
     // Described in the base class
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         ClusterValidityIndex::set_labels(_L); // sets L and count
 
@@ -347,9 +347,9 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
-        uint8_t tmp = L[i];
+        ssize_t tmp = L[i];
         // tmp = old label for the i-th point
         // j   = new label for the i-th point
 
@@ -401,14 +401,14 @@ class NNBasedIndex : public ClusterValidityIndex
 {
 protected:
     const size_t M;       ///< number of nearest neighbours
-    matrix<FLOAT_T> dist; ///< dist(i, j) is the L2 distance between i and its j-th NN
-    matrix<size_t> ind;   ///< ind(i, j) is the index of the j-th NN of i
+    CMatrix<FLOAT_T> dist; ///< dist(i, j) is the L2 distance between i and its j-th NN
+    CMatrix<size_t> ind;   ///< ind(i, j) is the index of the j-th NN of i
 
 public:
     // Described in the base class
     NNBasedIndex(
-            const matrix<FLOAT_T>& _X,
-            const uint8_t _K,
+            const CMatrix<FLOAT_T>& _X,
+            const size_t _K,
             const bool _allow_undo,
             const size_t _M)
         : ClusterValidityIndex(_X, _K, _allow_undo),

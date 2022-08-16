@@ -27,25 +27,25 @@ class Delta
 {
 protected:
     EuclideanDistance& D; ///< squared Euclidean
-    const matrix<FLOAT_T>& X;
-    //matrix<FLOAT_T>& X;         ///< data matrix of size n*d
-    std::vector<uint8_t>& L;    ///< current label vector of size n
+    const CMatrix<FLOAT_T>& X;
+    //CMatrix<FLOAT_T>& X;         ///< data matrix of size n*d
+    std::vector<ssize_t>& L;    ///< current label vector of size n
     std::vector<size_t>& count; ///< size of each of the K clusters
-    uint8_t K;
+    size_t K;
     size_t n;
     size_t d;
-    matrix<FLOAT_T>* centroids; ///< centroids, can be NULL
+    CMatrix<FLOAT_T>* centroids; ///< centroids, can be NULL
 
 public:
     Delta(
            EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr
+           CMatrix<FLOAT_T>* centroids=nullptr
            )
         : D(D),
           X(X),
@@ -57,8 +57,8 @@ public:
           centroids(centroids)
     { }
 
-    virtual void before_modify(size_t i, uint8_t j) = 0;
-    virtual void after_modify(size_t i, uint8_t j) = 0;
+    virtual void before_modify(size_t i, ssize_t j) = 0;
+    virtual void after_modify(size_t i, ssize_t j) = 0;
     virtual void undo() = 0;
     virtual void recompute_all() = 0;
 
@@ -70,13 +70,13 @@ class LowercaseDelta : public Delta
 public:
     LowercaseDelta(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : Delta(D,X,L,count,K,n,d,centroids)
     { }
@@ -92,13 +92,13 @@ class UppercaseDelta : public Delta
 public:
     UppercaseDelta(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : Delta(D,X,L,count,K,n,d,centroids)
     { }
@@ -122,13 +122,13 @@ class LowercaseDeltaFactory : public DeltaFactory
 public:
     // cannot be in DeltaFactory since result type is different, even if parameter list is the same
     virtual LowercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) = 0;
+           CMatrix<FLOAT_T>* centroids=nullptr) = 0;
 
 
     // static LowercaseDeltaFactory* GetSpecializedFactory(std::string lowercaseDeltaName);
@@ -139,13 +139,13 @@ class UppercaseDeltaFactory : public DeltaFactory
 public:
     // cannot be in DeltaFactory since result type is different, even if parameter list is the same
     virtual UppercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) = 0;
+           CMatrix<FLOAT_T>* centroids=nullptr) = 0;
 
     // static UppercaseDeltaFactory* GetSpecializedFactory(std::string uppercaseDeltaName);
 };

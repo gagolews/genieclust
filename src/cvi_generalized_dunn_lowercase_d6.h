@@ -27,33 +27,33 @@
 class LowercaseDelta6 : public LowercaseDelta
 {
 protected:
-    matrix<DistTriple> dist; /**< intra-cluster distances:
+    CMatrix<DistTriple> dist; /**< intra-cluster distances:
         dist(i,j) = min( X(u,), X(v,) ), X(u,) in C_i, X(v,) in C_j  (i!=j)
         */
-    matrix<DistTriple> last_dist;      ///< for undo()
+    CMatrix<DistTriple> last_dist;      ///< for undo()
     std::vector<DistTriple> min_dists; ///< helper for calculating minimum distances to clusters for a single point
     bool last_chg; ///< for undo() (was dist changed at all?)
     bool needs_recompute; ///< for before and after modify
-    size_t cluster1;
-    size_t cluster2;
+    ssize_t cluster1;
+    ssize_t cluster2;
 
 public:
     LowercaseDelta6(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : LowercaseDelta(D, X, L, count,K,n,d,centroids),
     dist(K, K),
     last_dist(K, K),
     min_dists(K)
     { }
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
             for (size_t v=u+1; v<K; ++v) {
@@ -67,7 +67,7 @@ public:
 
         cluster1 = L[i];
     }
-    virtual void after_modify(size_t i, uint8_t j) {
+    virtual void after_modify(size_t i, ssize_t j) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -77,8 +77,8 @@ public:
             last_chg = false;
             cluster2 = L[i];
 
-            for (size_t i1=0; i1<K; ++i1) {
-                for (size_t j=i1+1; j<K; ++j) {
+            for (ssize_t i1=0; i1<(ssize_t)K; ++i1) {
+                for (ssize_t j=i1+1; j<(ssize_t)K; ++j) {
                     if(i1 == cluster1 || i1 == cluster2 || j == cluster1 || j == cluster2)
                         dist(i1,j) = dist(j,i1) = DistTriple(0, 0, 0);
                 }
@@ -99,8 +99,8 @@ public:
                 }
 
                 // update maximum minimum distance on cluster level
-                for(uint8_t l=0; l<K; ++l) {
-                    if ( l != L[i1] && dist(L[i1],l).d < min_dists[l].d) {
+                for (ssize_t l=0; l<(ssize_t)K; ++l) {
+                    if (l != L[i1] && dist(L[i1],l).d < min_dists[l].d) {
                         dist(L[i1],l) = min_dists[l];
                         last_chg = true;
                     }
@@ -121,7 +121,7 @@ public:
                 }
 
                 // update maximum minimum distance on cluster level
-                for(uint8_t l=0; l<K; ++l) {
+                for (ssize_t l=0; l<(ssize_t)K; ++l) {
                     if (l != cluster1 && l != cluster2)
                         continue;
 
@@ -163,7 +163,7 @@ public:
             }
 
             // update maximum minimum distance on cluster level
-            for(uint8_t l=0; l<K; ++l) {
+            for (ssize_t l=0; l<(ssize_t)K; ++l) {
                 if ( l != L[i] && dist(L[i],l).d < min_dists[l].d) {
                     dist(L[i],l) = min_dists[l];
                 }
@@ -184,13 +184,13 @@ public:
     virtual bool IsCentroidNeeded() { return false; }
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new LowercaseDelta6(D, X, L, count, K, n, d, centroids);
            }
 };

@@ -27,22 +27,22 @@
 class LowercaseDelta3 : public LowercaseDelta
 {
 protected:
-    matrix<FLOAT_T> dist_sums; /**< intra-cluster sums:
+    CMatrix<FLOAT_T> dist_sums; /**< intra-cluster sums:
         dist(i,j) = min( X(u,), X(v,) ), X(u,) in C_i, X(v,) in C_j  (i!=j)
         */
-    matrix<FLOAT_T> last_dist_sums;      ///< for undo()
+    CMatrix<FLOAT_T> last_dist_sums;      ///< for undo()
     bool last_chg; ///< for undo() (was dist changed at all?)
 
 public:
     LowercaseDelta3(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : LowercaseDelta(D, X, L,count,K,n,d,centroids),
     dist_sums(K, K),
@@ -50,7 +50,7 @@ public:
     last_chg(false)
     {
     }
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
 
         for (size_t u=0; u<K; ++u) {
             for (size_t v=u+1; v<K; ++v) {
@@ -70,7 +70,7 @@ public:
         last_chg = true;
 
     }
-    virtual void after_modify(size_t i, uint8_t j) {
+    virtual void after_modify(size_t i, ssize_t j) {
         // add a contribution of the point i to the new cluster L[i]
         for (size_t u=0; u<n; ++u) {
             if(L[i] != L[u])
@@ -118,13 +118,13 @@ public:
     virtual bool IsCentroidNeeded() { return false; }
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new LowercaseDelta3(D, X, L, count, K, n, d, centroids);
            }
 };

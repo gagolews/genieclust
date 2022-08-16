@@ -49,8 +49,8 @@ protected:
 public:
     // Described in the base class
     CalinskiHarabaszIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            const bool _allow_undo=false)
         : CentroidsBasedIndex(_X, _K, _allow_undo),
           centroid(d, 0.0)
@@ -70,7 +70,7 @@ public:
 
 
     // Described in the base class
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         CentroidsBasedIndex::set_labels(_L); // sets L, count and centroids
 
@@ -93,9 +93,9 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
-        uint8_t tmp = L[i];
+        ssize_t tmp = L[i];
         // tmp = old label for the i-th point
         // j   = new label for the i-th point
 

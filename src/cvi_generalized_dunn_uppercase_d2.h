@@ -33,20 +33,20 @@ protected:
 public:
     UppercaseDelta2(
         EuclideanDistance& D,
-        const matrix<FLOAT_T>& X,
-        std::vector<uint8_t>& L,
+        const CMatrix<FLOAT_T>& X,
+        std::vector<ssize_t>& L,
         std::vector<size_t>& count,
-        uint8_t K,
+        size_t K,
         size_t n,
         size_t d,
-        matrix<FLOAT_T>* centroids=nullptr
+        CMatrix<FLOAT_T>* centroids=nullptr
         )
     : UppercaseDelta(D,X,L,count,K,n,d,centroids),
     dist_sums(K),
     last_dist_sums(K),
     last_chg(false)
     { }
-    virtual void before_modify(size_t i, uint8_t j) {
+    virtual void before_modify(size_t i, ssize_t j) {
         for (size_t u=0; u<K; ++u) {
             last_dist_sums[u] = dist_sums[u];
         }
@@ -63,7 +63,7 @@ public:
         last_chg = true;
     }
 
-    virtual void after_modify(size_t i, uint8_t j) {
+    virtual void after_modify(size_t i, ssize_t j) {
         // add a contribution of the point i to the new cluster L[i]
         for (size_t u=0; u<n; ++u) {
             if(L[i] == L[u] && i != u)
@@ -108,13 +108,13 @@ public:
     virtual bool IsCentroidNeeded() { return false; }
 
     virtual UppercaseDelta* create(EuclideanDistance& D,
-           const matrix<FLOAT_T>& X,
-           std::vector<uint8_t>& L,
+           const CMatrix<FLOAT_T>& X,
+           std::vector<ssize_t>& L,
            std::vector<size_t>& count,
-           uint8_t K,
+           size_t K,
            size_t n,
            size_t d,
-           matrix<FLOAT_T>* centroids=nullptr) {
+           CMatrix<FLOAT_T>* centroids=nullptr) {
                return new UppercaseDelta2(D, X, L, count, K, n, d, centroids);
            }
 };

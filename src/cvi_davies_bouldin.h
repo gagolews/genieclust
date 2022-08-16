@@ -47,8 +47,8 @@ protected:
 public:
     // Described in the base class
     DaviesBouldinIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            const bool _allow_undo=false)
         : CentroidsBasedIndex(_X, _K, _allow_undo),
           R(_K)
@@ -57,14 +57,14 @@ public:
     }
 
 //     // Described in the base class
-//     virtual void set_labels(const std::vector<uint8_t>& _L)
+//     virtual void set_labels(const std::vector<ssize_t>& _L)
 //     {
 //         CentroidsBasedIndex::set_labels(_L); // sets L, count and centroids
 //     }
 
 
 //     // Described in the base class
-//     virtual void modify(size_t i, uint8_t j)
+//     virtual void modify(size_t i, ssize_t j)
 //     {
 //         // sets L[i]=j and updates count as well as centroids
 //         CentroidsBasedIndex::modify(i, j);

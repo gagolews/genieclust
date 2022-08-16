@@ -56,14 +56,14 @@ using namespace Rcpp;
  *
  * @return vector
  */
-std::vector<uint8_t> translateLabels_fromR(const Rcpp::NumericVector& x)
+std::vector<ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x)
 {
     size_t n = x.size();
-    std::vector<uint8_t> ret(n);
+    std::vector<ssize_t> ret(n);
     for (size_t i=0; i<n; ++i) {
         int xi = (int)x[i];
         GENIECLUST_ASSERT(xi >= 1 && xi <= 256)
-        ret[i] = (uint8_t)(xi-1); // 1-based -> 0-based
+        ret[i] = (ssize_t)(xi-1); // 1-based -> 0-based
     }
     return ret;
 }
@@ -75,7 +75,7 @@ std::vector<uint8_t> translateLabels_fromR(const Rcpp::NumericVector& x)
  *
  * @return R's numeric vector
  */
-Rcpp::NumericVector translateLabels_toR(const std::vector<uint8_t>& x)
+Rcpp::NumericVector translateLabels_toR(const std::vector<ssize_t>& x)
 {
     size_t n = x.size();
     Rcpp::NumericVector ret(n);
@@ -92,18 +92,18 @@ Rcpp::NumericVector translateLabels_toR(const std::vector<uint8_t>& x)
  *
  * @return matrix (internal type)
  */
-matrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
+CMatrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 {
 //     size_t n = X.nrow();
 //     size_t d = X.ncol();
-//     matrix<FLOAT_T> Y(n, d);
+//     CMatrix<FLOAT_T> Y(n, d);
 //     for (size_t i=0; i<n; i++) {
 //         for (size_t j=0; j<d; j++) {
 //                 Y(i, j) = X(i, j);
 //         }
 //     }
 //     return Y;
-    return matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    return CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
 }
 
 
@@ -196,8 +196,8 @@ matrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 double calinski_harabasz_index(NumericMatrix X, NumericVector y, int K)
 {
     CalinskiHarabaszIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
@@ -221,8 +221,8 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int K, int M=10,
     }
 
     DuNNOWAIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, M, _owa_numerator, _owa_denominator
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, M, _owa_numerator, _owa_denominator
     );
 
     ind.set_labels(translateLabels_fromR(y));
@@ -281,7 +281,7 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lower
 
     if (areCentroidsNeeded) {
         GeneralizedDunnIndexCentroidBased ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
         K,
         lowercase_deltaFactory,
         uppercase_deltaFactory
@@ -294,8 +294,8 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lower
         return (double)ind.compute();
     } else {
         GeneralizedDunnIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K,
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K,
         lowercase_deltaFactory,
         uppercase_deltaFactory
         );
@@ -315,8 +315,8 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lower
 double negated_ball_hall_index(NumericMatrix X, NumericVector y, int K)
 {
     WCSSIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, true/*weighted*/
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, true/*weighted*/
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
@@ -329,8 +329,8 @@ double negated_ball_hall_index(NumericMatrix X, NumericVector y, int K)
 double negated_davies_bouldin_index(NumericMatrix X, NumericVector y, int K)
 {
     DaviesBouldinIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
@@ -343,8 +343,8 @@ double negated_davies_bouldin_index(NumericMatrix X, NumericVector y, int K)
 double silhouette_index(NumericMatrix X, NumericVector y, int K)
 {
     SilhouetteIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, false
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, false
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
@@ -357,8 +357,8 @@ double silhouette_index(NumericMatrix X, NumericVector y, int K)
 double silhouette_w_index(NumericMatrix X, NumericVector y, int K)
 {
     SilhouetteIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, true
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, true
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
@@ -373,8 +373,8 @@ double wcnn_index(NumericMatrix X, NumericVector y, int K, int M=10)
     GENIECLUST_ASSERT(M>0);  // M = min(n-1, M) in the constructor
 
     WCNNIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, M
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, M
     );
 
     ind.set_labels(translateLabels_fromR(y));
@@ -388,8 +388,8 @@ double wcnn_index(NumericMatrix X, NumericVector y, int K, int M=10)
 double wcss_index(NumericMatrix X, NumericVector y, int K)
 {
     WCSSIndex ind(
-        matrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (uint8_t)K, false, false/*not weighted*/
+        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
+        (ssize_t)K, false, false/*not weighted*/
     );
     ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();

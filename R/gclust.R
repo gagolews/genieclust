@@ -32,22 +32,22 @@
 
 
 
-#' @title The Genie++ Hierarchical Clustering Algorithm
+#' @title Hierarchical Clustering Algorithm Genie
 #'
 #' @description
 #' A reimplementation of \emph{Genie} - a robust and outlier resistant
 #' clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016).
 #' The Genie algorithm is based on a minimum spanning tree (MST) of the
 #' pairwise distance graph of a given point set.
-#' Just like single linkage, it consumes the edges
-#' of the MST in increasing order of weights. However, it prevents
+#' Just like the single linkage, it consumes the edges
+#' of the MST in an increasing order of weights. However, it prevents
 #' the formation of clusters of highly imbalanced sizes; once the Gini index
 #' (see \code{\link{gini_index}()}) of the cluster size distribution
 #' raises above \code{gini_threshold}, a forced merge of a point group
 #' of the smallest size is performed. Its appealing simplicity goes hand
 #' in hand with its usability; Genie often outperforms
 #' other clustering approaches on benchmark data,
-#' such as \url{https://github.com/gagolews/clustering_benchmarks_v1}.
+#' such as \url{https://github.com/gagolews/clustering-benchmarks}.
 #'
 #' The clustering can now also be computed with respect to the
 #' mutual reachability distance (based, e.g., on the Euclidean metric),
@@ -67,7 +67,7 @@
 #'
 #'
 #' @details
-#' Note that as in the case of all the distance-based methods,
+#' Note that, as in the case of all the distance-based methods,
 #' the standardisation of the input features is definitely worth giving a try.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},

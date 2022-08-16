@@ -47,7 +47,7 @@ class SilhouetteIndex : public ClusterValidityIndex
 protected:
     std::vector<FLOAT_T> A; ///< cluster "radius"
     std::vector<FLOAT_T> B; ///< distance to "nearest" cluster
-    matrix<FLOAT_T> C;      ///< auxiliary array; Let C(i,j) == sum of
+    CMatrix<FLOAT_T> C;      ///< auxiliary array; Let C(i,j) == sum of
                 ///< distances between X(i,:) and all points in the j-th cluster
     EuclideanDistance D;    ///< D(i, j) gives the Euclidean distance
                 ///< between X(i,:) and X(j,:) /can be precomputed for speed/
@@ -56,8 +56,8 @@ protected:
 public:
     // Described in the base class
     SilhouetteIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            const bool _allow_undo=false,
            bool _widths=false)
         : ClusterValidityIndex(_X, _K, _allow_undo),
@@ -70,12 +70,12 @@ public:
     }
 
     // Described in the base class
-    virtual void set_labels(const std::vector<uint8_t>& _L)
+    virtual void set_labels(const std::vector<ssize_t>& _L)
     {
         ClusterValidityIndex::set_labels(_L); // sets L, count and centroids
 
         for (size_t i=0; i<n; ++i) {
-            for (size_t j=0; j<K; ++j) C(i,j) = 0.0;
+            for (size_t j=0; j<K; ++j) C(i, j) = 0.0;
         }
 
         for (size_t i=0; i<n-1; ++i) {
@@ -89,7 +89,7 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, uint8_t j)
+    virtual void modify(size_t i, ssize_t j)
     {
         for (size_t u=0; u<n; ++u) {
             FLOAT_T dist = D(i, u);
@@ -122,7 +122,7 @@ public:
         for (size_t i=0; i<n; ++i) {
             // Let C(i,j) == sum of distances between X(i,) and all points in the j-th cluster
             B[i] = INFTY;
-            for (size_t j=0; j<K; ++j) {
+            for (ssize_t j=0; j<(ssize_t)K; ++j) {
                 if (j == L[i]) {
                     A[i] = C(i,j)/(FLOAT_T)(count[j]-1);
                 }

@@ -52,8 +52,8 @@ protected:
 public:
     // Described in the base class
     WCSSIndex(
-           const matrix<FLOAT_T>& _X,
-           const uint8_t _K,
+           const CMatrix<FLOAT_T>& _X,
+           const size_t _K,
            const bool _allow_undo=false,
            bool _weighted=false)
         : CentroidsBasedIndex(_X, _K, _allow_undo)
