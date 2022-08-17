@@ -3,14 +3,14 @@
 
 ## 1.1.x (under development)
 
--  [Python and R] ...TO DO...
-   Implementations of internal cluster validity measures discussed in
+-  [Python and R] Implementations of the so-called internal cluster
+   validity measures discussed in
    DOI:[10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
    see our (GitHub-only) [CVI](https://github.com/gagolews/optim_cvi) package
    for R. In particular, the generalised Dunn indices are based on the code
    originally authored by Maciej Bartoszuk. Thanks.
 
-   Functions added (`genieclust.cluster_validity` module in the Python version):
+   Functions added (to the `cluster_validity` module in the Python version):
    `calinski_harabasz_index`,
    `dunnowa_index`,
    `generalised_dunn_index`,

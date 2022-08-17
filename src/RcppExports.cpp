@@ -146,16 +146,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // generalised_dunn_index
-double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_delta, int uppercase_delta);
-RcppExport SEXP _genieclust_generalised_dunn_index(SEXP XSEXP, SEXP ySEXP, SEXP lowercase_deltaSEXP, SEXP uppercase_deltaSEXP) {
+double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_d, int uppercase_d);
+RcppExport SEXP _genieclust_generalised_dunn_index(SEXP XSEXP, SEXP ySEXP, SEXP lowercase_dSEXP, SEXP uppercase_dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type y(ySEXP);
-    Rcpp::traits::input_parameter< int >::type lowercase_delta(lowercase_deltaSEXP);
-    Rcpp::traits::input_parameter< int >::type uppercase_delta(uppercase_deltaSEXP);
-    rcpp_result_gen = Rcpp::wrap(generalised_dunn_index(X, y, lowercase_delta, uppercase_delta));
+    Rcpp::traits::input_parameter< int >::type lowercase_d(lowercase_dSEXP);
+    Rcpp::traits::input_parameter< int >::type uppercase_d(uppercase_dSEXP);
+    rcpp_result_gen = Rcpp::wrap(generalised_dunn_index(X, y, lowercase_d, uppercase_d));
     return rcpp_result_gen;
 END_RCPP
 }

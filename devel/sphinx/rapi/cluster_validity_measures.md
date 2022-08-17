@@ -11,9 +11,15 @@ The greater the index value, the more *valid* (whatever that means) the assessed
 ``` r
 calinski_harabasz_index(X, y)
 
-dunnowa_index(X, y, M = 10L, owa_numerator = "Min", owa_denominator = "Max")
+dunnowa_index(
+  X,
+  y,
+  M = 25L,
+  owa_numerator = "SMin:5",
+  owa_denominator = "Const"
+)
 
-generalised_dunn_index(X, y, lowercase_delta, uppercase_delta)
+generalised_dunn_index(X, y, lowercase_d, uppercase_d)
 
 negated_ball_hall_index(X, y)
 
@@ -25,19 +31,19 @@ silhouette_index(X, y)
 
 silhouette_w_index(X, y)
 
-wcnn_index(X, y, M = 10L)
+wcnn_index(X, y, M = 25L)
 ```
 
 ## Arguments
 
-|                                  |                                                                                                                                                                                                                              |
-|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `X`                              | numeric matrix with `n` rows and `d` columns, representing `n` points in a `d`-dimensional space                                                                                                                             |
-| `y`                              | vector of `n` integer labels, representing a partition whose *quality* is to be assessed; `y[i]` is the cluster ID of the `i`-th point, `X[i, ]`; `1 <= y[i] <= K`, where `K` is the number or clusters                      |
-| `M`                              | number of nearest neighbours                                                                                                                                                                                                 |
-| `owa_numerator, owa_denominator` | single string defining the OWA operator to use in the definition of the DuNN index; one of: `"Mean"`, `"Min"`, `"Max"`, `"Const"`, `"SMin:M"`, `"SMax:M"`, where `M` is an integer defining the number of nearest neighbours |
-| `lowercase_delta`                | an integer between 1 and 6, denoting $d_1$, \..., $d_6$ in the definition of the generalised Dunn index (numerator)                                                                                                          |
-| `uppercase_delta`                | an integer between 1 and 3, denoting $D_1$, \..., $D_3$ in the definition of the generalised Dunn index (denominator)                                                                                                        |
+|                                  |                                                                                                                                                                                                                                                                         |
+|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `X`                              | numeric matrix with `n` rows and `d` columns, representing `n` points in a `d`-dimensional space                                                                                                                                                                        |
+| `y`                              | vector of `n` integer labels, representing a partition whose *quality* is to be assessed; `y[i]` is the cluster ID of the `i`-th point, `X[i, ]`; `1 <= y[i] <= K`, where `K` is the number or clusters                                                                 |
+| `M`                              | number of nearest neighbours                                                                                                                                                                                                                                            |
+| `owa_numerator, owa_denominator` | single string specifying the OWA operators to use in the definition of the DuNN index; one of: `"Mean"`, `"Min"`, `"Max"`, `"Const"`, `"SMin:D"`, `"SMax:D"`, where `D` is an integer defining the degree of smoothness                                                 |
+| `lowercase_d`                    | an integer between 1 and 5, denoting $d_1$, \..., $d_5$ in the definition of the generalised Dunn (Bezdek-Pal) index (numerator: min, max, and mean pairwise intracluster distance, distance between cluster centroids, weighted point-centroid distance, respectively) |
+| `uppercase_d`                    | an integer between 1 and 3, denoting $D_1$, \..., $D_3$ in the definition of the generalised Dunn (Bezdek-Pal) index (denominator: max and min pairwise intracluster distance, average point-centroid distance, respectively)                                           |
 
 ## Value
 

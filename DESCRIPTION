@@ -35,6 +35,7 @@ Description: A retake on the Genie algorithm
 BugReports: https://github.com/gagolews/genieclust/issues
 URL:
     https://genieclust.gagolewski.com/,
+    https://clustering-benchmarks.gagolewski.com/,
     https://github.com/gagolews/genieclust
 License: AGPL-3
 Imports:

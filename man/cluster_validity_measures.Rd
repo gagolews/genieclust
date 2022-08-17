@@ -15,9 +15,15 @@
 \usage{
 calinski_harabasz_index(X, y)
 
-dunnowa_index(X, y, M = 10L, owa_numerator = "Min", owa_denominator = "Max")
+dunnowa_index(
+  X,
+  y,
+  M = 25L,
+  owa_numerator = "SMin:5",
+  owa_denominator = "Const"
+)
 
-generalised_dunn_index(X, y, lowercase_delta, uppercase_delta)
+generalised_dunn_index(X, y, lowercase_d, uppercase_d)
 
 negated_ball_hall_index(X, y)
 
@@ -29,7 +35,7 @@ silhouette_index(X, y)
 
 silhouette_w_index(X, y)
 
-wcnn_index(X, y, M = 10L)
+wcnn_index(X, y, M = 25L)
 }
 \arguments{
 \item{X}{numeric matrix with \code{n} rows and \code{d} columns,
@@ -43,19 +49,24 @@ or clusters}
 
 \item{M}{number of nearest neighbours}
 
-\item{owa_numerator, owa_denominator}{single string defining
-the OWA operator to use in the definition of the DuNN index;
+\item{owa_numerator, owa_denominator}{single string specifying
+the OWA operators to use in the definition of the DuNN index;
 one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
-\code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-defining the number of nearest neighbours}
+\code{"SMin:D"}, \code{"SMax:D"}, where \code{D} is an integer
+defining the degree of smoothness}
 
-\item{lowercase_delta}{an integer between 1 and 6, denoting
-\eqn{d_1}, ..., \eqn{d_6} in the definition
-of the generalised Dunn index (numerator)}
+\item{lowercase_d}{an integer between 1 and 5, denoting
+\eqn{d_1}, ..., \eqn{d_5} in the definition
+of the generalised Dunn (Bezdek-Pal) index (numerator:
+min, max, and mean pairwise intracluster distance,
+distance between cluster centroids,
+weighted point-centroid distance, respectively)}
 
-\item{uppercase_delta}{an integer between 1 and 3, denoting
+\item{uppercase_d}{an integer between 1 and 3, denoting
 \eqn{D_1}, ..., \eqn{D_3} in the definition
-of the generalised Dunn index (denominator)}
+of the generalised Dunn (Bezdek-Pal) index (denominator:
+  max and min pairwise intracluster distance, average point-centroid
+  distance, respectively)}
 }
 \value{
 A single numeric value (the more, the \emph{better}).

@@ -23,6 +23,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+#include <exception>
 
 #include "c_common.h"
 #include "c_matrix.h"
@@ -58,109 +59,6 @@ double c_calinski_harabasz_index(const double* X, const ssize_t* y,
 
     return (double)ind.compute();
 }
-
-
-// double c_dunnowa_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int M=10,
-//                 Rcpp::String owa_numerator="Min",
-//                 Rcpp::String owa_denominator="Max")
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     if (M <= 0)    // M = min(n-1, M) in the constructor
-//         Rf_error("M must be positive.");
-//
-//     int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
-//     int _owa_denominator = DuNNOWA_get_OWA(std::string(owa_denominator));
-//
-//     if (_owa_numerator < 0 || _owa_denominator < 0) {
-//         Rf_error("invalid OWA operator specifier");
-//     }
-//
-//     DuNNOWAIndex ind(_X, (ssize_t)K, false, M, _owa_numerator, _owa_denominator);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
-// double c_generalised_dunn_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int lowercase_delta, int uppercase_delta)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     LowercaseDeltaFactory* lowercase_deltaFactory;
-//     UppercaseDeltaFactory* uppercase_deltaFactory;
-//
-//     if (lowercase_delta == 1) {
-//         lowercase_deltaFactory = new LowercaseDelta1Factory();
-//     }
-//     else if (lowercase_delta == 2) {
-//         lowercase_deltaFactory = new LowercaseDelta2Factory();
-//     }
-//     else if (lowercase_delta == 3) {
-//         lowercase_deltaFactory = new LowercaseDelta3Factory();
-//     }
-//     else if (lowercase_delta == 4) {
-//         lowercase_deltaFactory = new LowercaseDelta4Factory();
-//     }
-//     else if (lowercase_delta == 5) {
-//         lowercase_deltaFactory = new LowercaseDelta5Factory();
-//     }
-//     else if (lowercase_delta == 6) {
-//         lowercase_deltaFactory = new LowercaseDelta6Factory();
-//     }
-//     else {
-//         Rf_error("invalid lowercase_delta");
-//     }
-//
-//     if (uppercase_delta == 1) {
-//         uppercase_deltaFactory = new UppercaseDelta1Factory();
-//     }
-//     else if (uppercase_delta == 2) {
-//         uppercase_deltaFactory = new UppercaseDelta2Factory();
-//     }
-//     else if (uppercase_delta == 3) {
-//         uppercase_deltaFactory = new UppercaseDelta3Factory();
-//     }
-//     else {
-//         Rf_error("invalid uppercase_delta");
-//     }
-//
-//     bool areCentroidsNeeded = (
-//         lowercase_deltaFactory->IsCentroidNeeded() ||
-//         uppercase_deltaFactory->IsCentroidNeeded()
-//     );
-//
-//     if (areCentroidsNeeded) {
-//         GeneralizedDunnIndexCentroidBased ind(_X, (ssize_t)K,
-//             lowercase_deltaFactory, uppercase_deltaFactory);
-//
-//         delete lowercase_deltaFactory;
-//         delete uppercase_deltaFactory;
-//
-//         ind.set_labels(_y);
-//
-//         return (double)ind.compute();
-//     }
-//     else {
-//         GeneralizedDunnIndex ind(_X, (ssize_t)K,
-//             lowercase_deltaFactory, uppercase_deltaFactory);
-//
-//         delete lowercase_deltaFactory;
-//         delete uppercase_deltaFactory;
-//
-//         ind.set_labels(_y);
-//
-//         return (double)ind.compute();
-//     }
-// }
 
 
 double c_negated_ball_hall_index(const double* X, const ssize_t* y,
@@ -225,24 +123,115 @@ double c_silhouette_w_index(const double* X, const ssize_t* y,
 }
 
 
-// double c_wcnn_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int M=10)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     if (M <= 0)    // M = min(n-1, M) in the constructor
-//         Rf_error("M must be positive.");
-//
-//     WCNNIndex ind(_X, (ssize_t)K, false, M);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
+double c_wcnn_index(const double* X, const ssize_t* y,
+                    size_t n, size_t d, ssize_t K, size_t M)
+{
+    if (M <= 0)
+        throw std::invalid_argument("M must be positive.");
+
+    WCNNIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, M
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_dunnowa_index(const double* X, const ssize_t* y,
+    size_t n, size_t d, ssize_t K, size_t M,
+    const char* owa_numerator, const char* owa_denominator)
+{
+    int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
+    int _owa_denominator = DuNNOWA_get_OWA(std::string(owa_denominator));
+
+    if (_owa_numerator == OWA_ERROR || _owa_denominator == OWA_ERROR)
+        throw std::invalid_argument("Invalid OWA operator specifier.");
+
+    if (M <= 0)
+        throw std::invalid_argument("M must be positive.");
+
+    DuNNOWAIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        false, M, _owa_numerator, _owa_denominator
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_generalised_dunn_index(const double* X, const ssize_t* y,
+    size_t n, size_t d, ssize_t K, size_t lowercase_d, size_t uppercase_d)
+{
+    LowercaseDeltaFactory* lowercase_deltaFactory;
+    UppercaseDeltaFactory* uppercase_deltaFactory;
+
+    if (lowercase_d == 1) {
+        lowercase_deltaFactory = new LowercaseDelta1Factory();
+    }
+    else if (lowercase_d == 2) {
+        lowercase_deltaFactory = new LowercaseDelta2Factory();
+    }
+    else if (lowercase_d == 3) {
+        lowercase_deltaFactory = new LowercaseDelta3Factory();
+    }
+    else if (lowercase_d == 4) {
+        lowercase_deltaFactory = new LowercaseDelta4Factory();
+    }
+    else if (lowercase_d == 5) {
+        lowercase_deltaFactory = new LowercaseDelta5Factory();
+    }
+    else if (lowercase_d == 6) {
+        lowercase_deltaFactory = new LowercaseDelta6Factory();
+    }
+    else {
+        throw std::invalid_argument("Invalid lowercase_d.");
+    }
+
+    if (uppercase_d == 1) {
+        uppercase_deltaFactory = new UppercaseDelta1Factory();
+    }
+    else if (uppercase_d == 2) {
+        uppercase_deltaFactory = new UppercaseDelta2Factory();
+    }
+    else if (uppercase_d == 3) {
+        uppercase_deltaFactory = new UppercaseDelta3Factory();
+    }
+    else {
+        throw std::invalid_argument("Invalid uppercase_d.");
+    }
+
+    bool areCentroidsNeeded = (
+        lowercase_deltaFactory->IsCentroidNeeded() ||
+        uppercase_deltaFactory->IsCentroidNeeded()
+    );
+
+    if (areCentroidsNeeded) {
+        GeneralizedDunnIndexCentroidBased ind(
+            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+            lowercase_deltaFactory, uppercase_deltaFactory);
+
+        delete lowercase_deltaFactory;
+        delete uppercase_deltaFactory;
+
+        ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+        return (double)ind.compute();
+    }
+    else {
+        GeneralizedDunnIndex ind(
+            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+            lowercase_deltaFactory, uppercase_deltaFactory);
+
+        delete lowercase_deltaFactory;
+        delete uppercase_deltaFactory;
+
+        ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+        return (double)ind.compute();
+    }
+}
 
 
 

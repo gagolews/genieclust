@@ -179,19 +179,24 @@ pair_sets_index <- function(x, y = NULL) {
 #'
 #' @param M number of nearest neighbours
 #'
-#' @param lowercase_delta an integer between 1 and 6, denoting
-#'     \eqn{d_1}, ..., \eqn{d_6} in the definition
-#'     of the generalised Dunn index (numerator)
+#' @param lowercase_d an integer between 1 and 5, denoting
+#'     \eqn{d_1}, ..., \eqn{d_5} in the definition
+#'     of the generalised Dunn (Bezdek-Pal) index (numerator:
+#'     min, max, and mean pairwise intracluster distance,
+#'     distance between cluster centroids,
+#'     weighted point-centroid distance, respectively)
 #'
-#' @param uppercase_delta an integer between 1 and 3, denoting
+#' @param uppercase_d an integer between 1 and 3, denoting
 #'     \eqn{D_1}, ..., \eqn{D_3} in the definition
-#'     of the generalised Dunn index (denominator)
+#'     of the generalised Dunn (Bezdek-Pal) index (denominator:
+#'       max and min pairwise intracluster distance, average point-centroid
+#'       distance, respectively)
 #'
-#' @param owa_numerator,owa_denominator single string defining
-#'     the OWA operator to use in the definition of the DuNN index;
+#' @param owa_numerator,owa_denominator single string specifying
+#'     the OWA operators to use in the definition of the DuNN index;
 #'     one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
-#'     \code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-#'     defining the number of nearest neighbours
+#'     \code{"SMin:D"}, \code{"SMax:D"}, where \code{D} is an integer
+#'     defining the degree of smoothness
 #'
 #'
 #' @return
@@ -249,14 +254,14 @@ calinski_harabasz_index <- function(X, y) {
 
 #' @rdname cluster_validity_measures
 #' @export
-dunnowa_index <- function(X, y, M = 10L, owa_numerator = "Min", owa_denominator = "Max") {
+dunnowa_index <- function(X, y, M = 25L, owa_numerator = "SMin:5", owa_denominator = "Const") {
     .Call(`_genieclust_dunnowa_index`, X, y, M, owa_numerator, owa_denominator)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-generalised_dunn_index <- function(X, y, lowercase_delta, uppercase_delta) {
-    .Call(`_genieclust_generalised_dunn_index`, X, y, lowercase_delta, uppercase_delta)
+generalised_dunn_index <- function(X, y, lowercase_d, uppercase_d) {
+    .Call(`_genieclust_generalised_dunn_index`, X, y, lowercase_d, uppercase_d)
 }
 
 #' @rdname cluster_validity_measures
@@ -291,7 +296,7 @@ silhouette_w_index <- function(X, y) {
 
 #' @rdname cluster_validity_measures
 #' @export
-wcnn_index <- function(X, y, M = 10L) {
+wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 

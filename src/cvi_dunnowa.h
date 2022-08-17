@@ -22,6 +22,7 @@
 #include "cvi.h"
 #include "c_argfuns.h"
 
+#define OWA_ERROR 0
 #define OWA_MEAN 1
 #define OWA_CONST 666
 #define OWA_MIN 2
@@ -30,8 +31,6 @@
 #define OWA_SMIN_LIMIT 199999
 #define OWA_SMAX_START 200000
 #define OWA_SMAX_LIMIT 299999
-
-
 
 
 int DuNNOWA_get_OWA(std::string owa_name)
@@ -51,8 +50,7 @@ int DuNNOWA_get_OWA(std::string owa_name)
         return OWA_SMAX_START+delta;
     }
     else {
-        //Rf_error("invalid OWA operator specifier");
-        return -1; // whatever
+        return OWA_ERROR;
     };
 }
 
@@ -163,7 +161,7 @@ protected:
             if (pq_cur == 0) return INFTY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
             for (ssize_t u=0; u<pq_cur; ++u) {
-                FLOAT_T cur_w = dnorm(u+1, 1, delta);
+                FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
                 sum_w  += cur_w;
                 sum_wx += cur_w*pq[u];
             }
@@ -183,7 +181,7 @@ protected:
             if (pq_cur == 0) return INFTY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
             for (ssize_t u=0; u<pq_cur; ++u) {
-                FLOAT_T cur_w = dnorm(u+1, 1, delta);
+                FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
                 sum_w  += cur_w;
                 sum_wx += cur_w*pq[u];
             }
@@ -191,7 +189,7 @@ protected:
         }
         else {
             GENIECLUST_ASSERT(false);
-            return 0.0/0.0;  // whatever
+            return -1.0;  // whatever
         }
     }
 

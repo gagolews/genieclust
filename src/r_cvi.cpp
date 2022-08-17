@@ -94,19 +94,24 @@ std::vector<ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, ssize_t
 //'
 //' @param M number of nearest neighbours
 //'
-//' @param lowercase_delta an integer between 1 and 6, denoting
-//'     \eqn{d_1}, ..., \eqn{d_6} in the definition
-//'     of the generalised Dunn index (numerator)
+//' @param lowercase_d an integer between 1 and 5, denoting
+//'     \eqn{d_1}, ..., \eqn{d_5} in the definition
+//'     of the generalised Dunn (Bezdek-Pal) index (numerator:
+//'     min, max, and mean pairwise intracluster distance,
+//'     distance between cluster centroids,
+//'     weighted point-centroid distance, respectively)
 //'
-//' @param uppercase_delta an integer between 1 and 3, denoting
+//' @param uppercase_d an integer between 1 and 3, denoting
 //'     \eqn{D_1}, ..., \eqn{D_3} in the definition
-//'     of the generalised Dunn index (denominator)
+//'     of the generalised Dunn (Bezdek-Pal) index (denominator:
+//'       max and min pairwise intracluster distance, average point-centroid
+//'       distance, respectively)
 //'
-//' @param owa_numerator,owa_denominator single string defining
-//'     the OWA operator to use in the definition of the DuNN index;
+//' @param owa_numerator,owa_denominator single string specifying
+//'     the OWA operators to use in the definition of the DuNN index;
 //'     one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
-//'     \code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-//'     defining the number of nearest neighbours
+//'     \code{"SMin:D"}, \code{"SMax:D"}, where \code{D} is an integer
+//'     defining the degree of smoothness
 //'
 //'
 //' @return
@@ -177,9 +182,9 @@ double calinski_harabasz_index(NumericMatrix X, NumericVector y)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double dunnowa_index(NumericMatrix X, NumericVector y, int M=10,
-                Rcpp::String owa_numerator="Min",
-                Rcpp::String owa_denominator="Max")
+double dunnowa_index(NumericMatrix X, NumericVector y, int M=25,
+                Rcpp::String owa_numerator="SMin:5",
+                Rcpp::String owa_denominator="Const")
 {
     ssize_t K;
     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
@@ -193,7 +198,7 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int M=10,
     int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
     int _owa_denominator = DuNNOWA_get_OWA(std::string(owa_denominator));
 
-    if (_owa_numerator < 0 || _owa_denominator < 0) {
+    if (_owa_numerator == OWA_ERROR || _owa_denominator == OWA_ERROR) {
         Rf_error("invalid OWA operator specifier");
     }
 
@@ -208,7 +213,8 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int M=10,
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_delta, int uppercase_delta)
+double generalised_dunn_index(NumericMatrix X, NumericVector y,
+    int lowercase_d, int uppercase_d)
 {
     ssize_t K;
     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
@@ -219,39 +225,39 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_de
     LowercaseDeltaFactory* lowercase_deltaFactory;
     UppercaseDeltaFactory* uppercase_deltaFactory;
 
-    if (lowercase_delta == 1) {
+    if (lowercase_d == 1) {
         lowercase_deltaFactory = new LowercaseDelta1Factory();
     }
-    else if (lowercase_delta == 2) {
+    else if (lowercase_d == 2) {
         lowercase_deltaFactory = new LowercaseDelta2Factory();
     }
-    else if (lowercase_delta == 3) {
+    else if (lowercase_d == 3) {
         lowercase_deltaFactory = new LowercaseDelta3Factory();
     }
-    else if (lowercase_delta == 4) {
+    else if (lowercase_d == 4) {
         lowercase_deltaFactory = new LowercaseDelta4Factory();
     }
-    else if (lowercase_delta == 5) {
+    else if (lowercase_d == 5) {
         lowercase_deltaFactory = new LowercaseDelta5Factory();
     }
-    else if (lowercase_delta == 6) {
+    else if (lowercase_d == 6) {
         lowercase_deltaFactory = new LowercaseDelta6Factory();
     }
     else {
-        Rf_error("invalid lowercase_delta");
+        Rf_error("invalid lowercase_d");
     }
 
-    if (uppercase_delta == 1) {
+    if (uppercase_d == 1) {
         uppercase_deltaFactory = new UppercaseDelta1Factory();
     }
-    else if (uppercase_delta == 2) {
+    else if (uppercase_d == 2) {
         uppercase_deltaFactory = new UppercaseDelta2Factory();
     }
-    else if (uppercase_delta == 3) {
+    else if (uppercase_d == 3) {
         uppercase_deltaFactory = new UppercaseDelta3Factory();
     }
     else {
-        Rf_error("invalid uppercase_delta");
+        Rf_error("invalid uppercase_d");
     }
 
     bool areCentroidsNeeded = (
@@ -377,7 +383,7 @@ double silhouette_w_index(NumericMatrix X, NumericVector y)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double wcnn_index(NumericMatrix X, NumericVector y, int M=10)
+double wcnn_index(NumericMatrix X, NumericVector y, int M=25)
 {
     ssize_t K;
     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);

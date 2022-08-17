@@ -60,6 +60,17 @@ def test_cvi():
             i2 = genieclust.cluster_validity.silhouette_w_index(X, labels-1)
             assert i1 == i2
 
+            i1 = r_genieclust.generalised_dunn_index(X, labels, 4, 2)[0]
+            i2 = genieclust.cluster_validity.generalised_dunn_index(X, labels-1, 4, 2)
+            assert i1 == i2
+
+            i1 = r_genieclust.wcnn_index(X, labels, 5)[0]
+            i2 = genieclust.cluster_validity.wcnn_index(X, labels-1, 5)
+            assert i1 == i2
+
+            i1 = r_genieclust.dunnowa_index(X, labels, 10, "SMin:5", "Max")[0]
+            i2 = genieclust.cluster_validity.dunnowa_index(X, labels-1, 10, "SMin:5", "Max")
+            assert i1 == i2
 
             #double c_dunnowa_index
 
@@ -69,7 +80,7 @@ def test_cvi():
 
 
     except ImportError:
-        pass
+        print("ImportError")
 
 
 if __name__ == "__main__":
