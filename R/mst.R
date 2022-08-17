@@ -66,35 +66,41 @@
 #'
 #'
 #' @references
-#' V. Jarnik, O jistem problemu minimalnim,
-#' Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
+#' Jarnik V., O jistem problemu minimalnim,
+#' \emph{Prace Moravske Prirodovedecke Spolecnosti} 6, 1930, 57-63.
 #'
 #' Olson C.F., Parallel algorithms for hierarchical clustering,
-#' Parallel Comput. 21 (1995) 1313-1325.
+#' \emph{Parallel Comput.} 21, 1995, 1313-1325.
 #'
 #' Prim R., Shortest connection networks and some generalisations,
-#' Bell Syst. Tech. J. 36 (1957) 1389-1401.
+#' \emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
 #'
 #' Campello R., Moulavi D., Zimek A., Sander J.,
 #' Hierarchical density estimates for data clustering, visualization,
-#' and outlier detection,
-#' ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.
+#' and outlier detection, \emph{ACM Transactions on Knowledge Discovery
+#' from Data} 10(1), 2015, 5:1-5:51.
 #'
 #'
 #' @param d either a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
-#'     object of class \code{dist}, see \code{\link[stats]{dist}}.
+#'     object of class \code{dist}, see \code{\link[stats]{dist}}
+#'
 #' @param distance metric used to compute the linkage, one of:
 #'     \code{"euclidean"} (synonym: \code{"l2"}),
 #'     \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
-#'     \code{"cosine"}.
+#'     \code{"cosine"}
+#'
 #' @param M smoothing factor; \code{M} = 1 gives the selected \code{distance};
-#'     otherwise, the mutual reachability distance is used.
+#'     otherwise, the mutual reachability distance is used
+#'
 #' @param verbose logical; whether to print diagnostic messages
-#'     and progress information.
+#'     and progress information
+#'
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
-#'     instead of 64-bit precision floating-point arithmetic (up to 2x faster).
-#' @param ... further arguments passed to or from other methods.
+#'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
+#'
+#' @param ... further arguments passed to or from other methods
+#'
 #'
 #' @return
 #' Matrix of class \code{mst} with n-1 rows and 3 columns:
@@ -110,6 +116,7 @@
 #'
 #' If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
 #' nearest neighbours of each point.
+#'
 #'
 #' @examples
 #' library("datasets")
@@ -186,10 +193,14 @@ registerS3method("mst", "dist",    "mst.dist")
 #'
 #' @param X a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns)
+#'
 #' @param leaf_size size of leaves in the kd-tree,
 #'     controls the trade-off between speed and memory consumption
+#'
 #' @param naive logical; whether to use the naive, quadratic-time algorithm
+#'
 #' @param verbose logical; whether to print diagnostic messages
+#'
 #'
 #' @return
 #' An object of class \code{mst}, see \code{\link{mst}()} for details.
@@ -197,11 +208,12 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @references
 #' March W.B., Ram P., Gray A.G.,
 #' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-#' Proc. ACM SIGKDD'10 (2010) 603-611, \url{https://mlpack.org/papers/emst.pdf}.
+#' \emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
+#' \url{https://mlpack.org/papers/emst.pdf}.
 #'
 #' Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
 #' mlpack 3: A fast, flexible machine learning library,
-#' Journal of Open Source Software 3(26), 726, 2018.
+#' \emph{Journal of Open Source Software} 3(26), 2018, 726.
 #'
 #' @export
 emst_mlpack <- function(X, leaf_size=1, naive=FALSE, verbose=FALSE)

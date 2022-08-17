@@ -7,40 +7,39 @@
 \alias{generalised_dunn_index}
 \alias{negated_ball_hall_index}
 \alias{negated_davies_bouldin_index}
+\alias{negated_wcss_index}
 \alias{silhouette_index}
 \alias{silhouette_w_index}
 \alias{wcnn_index}
-\alias{wcss_index}
 \title{Internal Cluster Validity Measures}
 \usage{
-calinski_harabasz_index(X, y, K)
+calinski_harabasz_index(X, y)
 
-dunnowa_index(X, y, K, M = 10L, owa_numerator = "Min", owa_denominator = "Max")
+dunnowa_index(X, y, M = 10L, owa_numerator = "Min", owa_denominator = "Max")
 
-generalised_dunn_index(X, y, K, lowercase_delta, uppercase_delta)
+generalised_dunn_index(X, y, lowercase_delta, uppercase_delta)
 
-negated_ball_hall_index(X, y, K)
+negated_ball_hall_index(X, y)
 
-negated_davies_bouldin_index(X, y, K)
+negated_davies_bouldin_index(X, y)
 
-silhouette_index(X, y, K)
+negated_wcss_index(X, y)
 
-silhouette_w_index(X, y, K)
+silhouette_index(X, y)
 
-wcnn_index(X, y, K, M = 10L)
+silhouette_w_index(X, y)
 
-wcss_index(X, y, K)
+wcnn_index(X, y, M = 10L)
 }
 \arguments{
 \item{X}{numeric matrix with \code{n} rows and \code{d} columns,
 representing \code{n} points in a \code{d}-dimensional space}
 
-\item{y}{vector of \code{n} integer labels with elements in \eqn{[1, K]},
+\item{y}{vector of \code{n} integer labels,
 representing a partition whose \emph{quality} is to be
 assessed; \code{y[i]} is the cluster ID of the \code{i}-th point,
-\code{X[i, ]}}
-
-\item{K}{number of clusters, equal to \code{max(y)}}
+\code{X[i, ]}; \code{1 <= y[i] <= K}, where \code{K} is the number
+or clusters}
 
 \item{M}{number of nearest neighbours}
 
@@ -48,7 +47,7 @@ assessed; \code{y[i]} is the cluster ID of the \code{i}-th point,
 the OWA operator to use in the definition of the DuNN index;
 one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
 \code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-defining the number of nearest neighbours.}
+defining the number of nearest neighbours}
 
 \item{lowercase_delta}{an integer between 1 and 6, denoting
 \eqn{d_1}, ..., \eqn{d_6} in the definition
@@ -62,52 +61,56 @@ of the generalised Dunn index (denominator)}
 A single numeric value (the more, the \emph{better}).
 }
 \description{
-Implements a number of cluster validity indices critically
+Implementation of a number of so-called cluster validity indices critically
 reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2
-therein for the respective definitions.
+therein and (Gagolewski, 2022) for the respective definitions.
 
 The greater the index value, the more \emph{valid} (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
-Davies-Bouldin indexes take negative values.
+Davies-Bouldin indexes as well as the within-cluster sum of squares (WCSS)
+take negative values.
 }
 \examples{
 X <- as.matrix(iris[,1:4])
 X[,] <- jitter(X)  # otherwise we get a non-unique solution
 y <- as.integer(iris[[5]])
-calinski_harabasz_index(X, y, max(y))
-calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE), max(y))
+calinski_harabasz_index(X, y)  # good
+calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
 
 }
 \references{
-G.H. Ball, D.J. Hall,
-ISODATA: A novel method of data analysis and pattern classification,
+Ball G.H., Hall D.J.,
+\emph{ISODATA: A novel method of data analysis and pattern classification},
 Technical report No. AD699616, Stanford Research Institute, 1965.
 
-J. Bezdek, N. Pal, Some new indexes of cluster validity,
-IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics) 28
-1998, pp. 301-315, \doi{10.1109/3477.678624}.
+JBezdek J., Pal N., Some new indexes of cluster validity,
+\emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
+1998, 301-315, \doi{10.1109/3477.678624}.
 
-T. Calinski, J. Harabasz. A dendrite method for cluster analysis,
-Communications in Statistics, 3(1), 1974, pp. 1-27,
+Calinski T., Harabasz J., A dendrite method for cluster analysis,
+\emph{Communications in Statistics} 3(1), 1974, 1-27,
 \doi{10.1080/03610927408827101}.
 
-D.L. Davies, D.W. Bouldin,
+Davies D.L., Bouldin D.W.,
 A Cluster Separation Measure,
-IEEE Transactions on Pattern Analysis and Machine Intelligence. PAMI-1 (2),
-1979, pp. 224-227, \doi{10.1109/TPAMI.1979.4766909}.
+\emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
+PAMI-1 (2), 1979, 224-227, \doi{10.1109/TPAMI.1979.4766909}.
 
-J.C. Dunn, A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
-Compact Well-Separated Clusters, Journal of Cybernetics 3(3), 1973,
-pp. 32-57, \doi{10.1080/01969727308546046}.
+Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
+Compact Well-Separated Clusters, \emph{Journal of Cybernetics} 3(3), 1973,
+32-57, \doi{10.1080/01969727308546046}.
 
-M. Gagolewski, M. Bartoszuk, A. Cena,
-Are cluster validity measures (in)valid?, Information Sciences 581,
+Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, \emph{Information Sciences} 581,
 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 
-P.J. Rousseeuw, Silhouettes: A Graphical Aid to the Interpretation and
-Validation of Cluster Analysis, Computational and Applied Mathematics 20,
-1987, pp. 53-65, \doi{10.1016/0377-0427(87)90125-7}.
+Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
+2022, \url{https://clustering-benchmarks.gagolewski.com}.
+
+Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
+20, 1987, 53-65, \doi{10.1016/0377-0427(87)90125-7}.
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

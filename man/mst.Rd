@@ -22,23 +22,23 @@ mst(d, ...)
 \arguments{
 \item{d}{either a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
-object of class \code{dist}, see \code{\link[stats]{dist}}.}
+object of class \code{dist}, see \code{\link[stats]{dist}}}
 
-\item{...}{further arguments passed to or from other methods.}
+\item{...}{further arguments passed to or from other methods}
 
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
-\code{"cosine"}.}
+\code{"cosine"}}
 
 \item{M}{smoothing factor; \code{M} = 1 gives the selected \code{distance};
-otherwise, the mutual reachability distance is used.}
+otherwise, the mutual reachability distance is used}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic (up to 2x faster).}
+instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
 
 \item{verbose}{logical; whether to print diagnostic messages
-and progress information.}
+and progress information}
 }
 \value{
 Matrix of class \code{mst} with n-1 rows and 3 columns:
@@ -100,19 +100,19 @@ tree <- mst(X)
 
 }
 \references{
-V. Jarnik, O jistem problemu minimalnim,
-Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
+Jarnik V., O jistem problemu minimalnim,
+\emph{Prace Moravske Prirodovedecke Spolecnosti} 6, 1930, 57-63.
 
 Olson C.F., Parallel algorithms for hierarchical clustering,
-Parallel Comput. 21 (1995) 1313-1325.
+\emph{Parallel Comput.} 21, 1995, 1313-1325.
 
 Prim R., Shortest connection networks and some generalisations,
-Bell Syst. Tech. J. 36 (1957) 1389-1401.
+\emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
 
 Campello R., Moulavi D., Zimek A., Sander J.,
 Hierarchical density estimates for data clustering, visualization,
-and outlier detection,
-ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.
+and outlier detection, \emph{ACM Transactions on Knowledge Discovery
+from Data} 10(1), 2015, 5:1-5:51.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

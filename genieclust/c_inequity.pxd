@@ -8,7 +8,7 @@
 
 
 """
-Provides access to Inequity (Inequality) Measuress.
+Provides access to inequity (inequality) measures.
 """
 
 

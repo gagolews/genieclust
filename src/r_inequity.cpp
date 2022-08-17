@@ -42,7 +42,7 @@
 //' of the inequality of cluster sizes.
 //'
 //'
-//' The normalised  Gini index is given by:
+//' The normalised Gini index is given by:
 //' \deqn{
 //'     G(x_1,\dots,x_n) = \frac{
 //'     \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
@@ -77,14 +77,16 @@
 //'
 //'
 //' @references
-//' Bonferroni C., Elementi di Statistica Generale, Libreria Seber,
+//' Bonferroni C., \emph{Elementi di Statistica Generale}, Libreria Seber,
 //' Firenze, 1930.
 //'
 //' Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 //' outlier-resistant hierarchical clustering algorithm,
-//' Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+//' \emph{Information Sciences} 363, 2016, pp. 8-23.
+//' \doi{10.1016/j.ins.2016.05.003}
 //'
-//' Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
+//' Gini C., \emph{Variabilita e Mutabilita},
+//' Tipografia di Paolo Cuppini, Bologna, 1912.
 //'
 //'
 //' @param x numeric vector of non-negative values
@@ -92,10 +94,10 @@
 //' @return The value of the inequity index, a number in \eqn{[0, 1]}.
 //'
 //' @examples
-//' gini_index(c(2, 2, 2, 2, 2))  # no inequality
-//' gini_index(c(0, 0, 10, 0, 0)) # one has it all
-//' gini_index(c(7, 0, 3, 0, 0))  # give to the poor, take away from the rich
-//' gini_index(c(6, 0, 3, 1, 0))  # (a.k.a. Pigou-Dalton principle)
+//' gini_index(c(2, 2, 2, 2, 2))   # no inequality
+//' gini_index(c(0, 0, 10, 0, 0))  # one has it all
+//' gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
+//' gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
 //' bonferroni_index(c(2, 2, 2, 2, 2))
 //' bonferroni_index(c(0, 0, 10, 0, 0))
 //' bonferroni_index(c(7, 0, 3, 0, 0))

@@ -68,11 +68,11 @@ The value of the inequity index, a number in $[0, 1]$.
 
 ## References
 
-Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.
+Bonferroni C., *Elementi di Statistica Generale*, Libreria Seber, Firenze, 1930.
 
-Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, *Information Sciences* 363, 2016, pp. 8-23. [doi:10.1016/j.ins.2016.05.003](https://doi.org/10.1016/j.ins.2016.05.003)
 
-Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
+Gini C., *Variabilita e Mutabilita*, Tipografia di Paolo Cuppini, Bologna, 1912.
 
 ## See Also
 
@@ -86,13 +86,13 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 ```r
-gini_index(c(2, 2, 2, 2, 2))  # no inequality
+gini_index(c(2, 2, 2, 2, 2))   # no inequality
 ## [1] 0
-gini_index(c(0, 0, 10, 0, 0)) # one has it all
+gini_index(c(0, 0, 10, 0, 0))  # one has it all
 ## [1] 1
-gini_index(c(7, 0, 3, 0, 0))  # give to the poor, take away from the rich
+gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
 ## [1] 0.85
-gini_index(c(6, 0, 3, 1, 0))  # (a.k.a. Pigou-Dalton principle)
+gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
 ## [1] 0.75
 bonferroni_index(c(2, 2, 2, 2, 2))
 ## [1] 0

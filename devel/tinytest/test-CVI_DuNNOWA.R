@@ -24,7 +24,7 @@ for (owa_numerator in owas_numerator) {
     for (owa_denominator in owas_denominator) {
         for (M in c(5)) {
 
-            CVI_fun <- function(X, y, K) dunnowa_index(X, y, K, M, owa_numerator, owa_denominator)
+            CVI_fun <- function(X, y) dunnowa_index(X, y, M, owa_numerator, owa_denominator)
             CVI_name <- sprintf("DuNN_%d_%s_%s", M, owa_numerator, owa_denominator)
 
             reference_fun <- function(X, y) {

@@ -44,7 +44,7 @@ CVI_test_proc1 <- function(CVI_name, CVI_fun, reference_fun)
 #                 times=1
 #             ), unit="ms")
 
-            i1 <- CVI_fun(X, y, K)
+            i1 <- CVI_fun(X, y)
             i2 <- reference_fun(X, y)
 
             if (is.finite(i2)) expect_equivalent(i2, i1, tolerance=1e-7)

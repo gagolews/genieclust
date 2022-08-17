@@ -12,7 +12,7 @@
 #' The functions described in this section quantify the similarity between
 #' \code{x} and \code{y}. They can be used as external cluster
 #' validity measures, i.e., in the presence of reference (ground-truth)
-#' partitions.
+#' partitions (compare Gagolewski, 2022).
 #'
 #' @details
 #' Every index except \code{mi_score()} (which computes the mutual
@@ -50,26 +50,30 @@
 #' \eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
 #' e.g., in (Rendon et al. 2011).
 #'
-#' \code{pair_sets_index()} gives the  Pair Sets Index (PSI)
+#' \code{pair_sets_index()} gives the Pair Sets Index (PSI)
 #' adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 #' Pairing is based on the solution to the Linear Sum Assignment Problem
 #' of a transformed version of the confusion matrix.
 #'
 #' @references
-#' Hubert L., Arabie P., Comparing Partitions,
-#' Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
+#' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
+#' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
+#'
+#' Hubert L., Arabie P., Comparing partitions,
+#' \emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 #'
 #' Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
 #' Internal versus external cluster validation indexes,
-#' International Journal of Computers and Communications 5(1), 2011, 27-34.
+#' \emph{International Journal of Computers and Communications} 5(1), 2011, 27-34.
 #'
 #' Rezaei M., Franti P., Set matching measures for external cluster validity,
-#' IEEE Transactions on Knowledge and Data Mining 28(8), 2016, 2173-2186.
+#' \emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016, 2173-2186.
 #'
 #' Vinh N.X., Epps J., Bailey J.,
 #' Information theoretic measures for clusterings comparison:
 #' Variants, properties, normalization and correction for chance,
-#' Journal of Machine Learning Research 11, 2010, 2837-2854.
+#' \emph{Journal of Machine Learning Research} 11, 2010, 2837-2854.
+#'
 #'
 #'
 #' @param x an integer vector of length n (or an object coercible to)
@@ -80,7 +84,9 @@
 #' representing an L-partition of the same set),
 #' or NULL (if x is an K*L confusion matrix)
 #'
-#' @return A single real value giving the similarity score.
+#'
+#' @return A single numeric value giving the similarity score.
+#'
 #'
 #' @examples
 #' y_true <- iris[[5]]
@@ -152,24 +158,24 @@ pair_sets_index <- function(x, y = NULL) {
 #' @title Internal Cluster Validity Measures
 #'
 #' @description
-#' Implements a number of cluster validity indices critically
+#' Implementation of a number of so-called cluster validity indices critically
 #' reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2
-#' therein for the respective definitions.
+#' therein and (Gagolewski, 2022) for the respective definitions.
 #'
 #' The greater the index value, the more \emph{valid} (whatever that means)
 #' the assessed partition. For consistency, the Ball-Hall and
-#' Davies-Bouldin indexes take negative values.
+#' Davies-Bouldin indexes as well as the within-cluster sum of squares (WCSS)
+#' take negative values.
 #'
 #'
 #' @param X numeric matrix with \code{n} rows and \code{d} columns,
 #'     representing \code{n} points in a \code{d}-dimensional space
 #'
-#' @param y vector of \code{n} integer labels with elements in \eqn{[1, K]},
+#' @param y vector of \code{n} integer labels,
 #'     representing a partition whose \emph{quality} is to be
 #'     assessed; \code{y[i]} is the cluster ID of the \code{i}-th point,
-#'     \code{X[i, ]}
-#'
-#' @param K number of clusters, equal to \code{max(y)}
+#'     \code{X[i, ]}; \code{1 <= y[i] <= K}, where \code{K} is the number
+#'     or clusters
 #'
 #' @param M number of nearest neighbours
 #'
@@ -185,40 +191,45 @@ pair_sets_index <- function(x, y = NULL) {
 #'     the OWA operator to use in the definition of the DuNN index;
 #'     one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
 #'     \code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-#'     defining the number of nearest neighbours.
+#'     defining the number of nearest neighbours
 #'
-#' @return A single numeric value (the more, the \emph{better}).
+#'
+#' @return
+#' A single numeric value (the more, the \emph{better}).
 #'
 #' @references
-#' G.H. Ball, D.J. Hall,
-#' ISODATA: A novel method of data analysis and pattern classification,
+#' Ball G.H., Hall D.J.,
+#' \emph{ISODATA: A novel method of data analysis and pattern classification},
 #' Technical report No. AD699616, Stanford Research Institute, 1965.
 #'
-#' J. Bezdek, N. Pal, Some new indexes of cluster validity,
-#' IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics) 28
-#' 1998, pp. 301-315, \doi{10.1109/3477.678624}.
+#' JBezdek J., Pal N., Some new indexes of cluster validity,
+#' \emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
+#' 1998, 301-315, \doi{10.1109/3477.678624}.
 #'
-#' T. Calinski, J. Harabasz. A dendrite method for cluster analysis,
-#' Communications in Statistics, 3(1), 1974, pp. 1-27,
+#' Calinski T., Harabasz J., A dendrite method for cluster analysis,
+#' \emph{Communications in Statistics} 3(1), 1974, 1-27,
 #' \doi{10.1080/03610927408827101}.
 #'
-#' D.L. Davies, D.W. Bouldin,
+#' Davies D.L., Bouldin D.W.,
 #' A Cluster Separation Measure,
-#' IEEE Transactions on Pattern Analysis and Machine Intelligence. PAMI-1 (2),
-#' 1979, pp. 224-227, \doi{10.1109/TPAMI.1979.4766909}.
+#' \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
+#' PAMI-1 (2), 1979, 224-227, \doi{10.1109/TPAMI.1979.4766909}.
 #'
-#' J.C. Dunn, A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
-#' Compact Well-Separated Clusters, Journal of Cybernetics 3(3), 1973,
-#' pp. 32-57, \doi{10.1080/01969727308546046}.
+#' Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
+#' Compact Well-Separated Clusters, \emph{Journal of Cybernetics} 3(3), 1973,
+#' 32-57, \doi{10.1080/01969727308546046}.
 #'
-#' M. Gagolewski, M. Bartoszuk, A. Cena,
-#' Are cluster validity measures (in)valid?, Information Sciences 581,
+#' Gagolewski M., Bartoszuk M., Cena A.,
+#' Are cluster validity measures (in)valid?, \emph{Information Sciences} 581,
 #' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 #' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 #'
-#' P.J. Rousseeuw, Silhouettes: A Graphical Aid to the Interpretation and
-#' Validation of Cluster Analysis, Computational and Applied Mathematics 20,
-#' 1987, pp. 53-65, \doi{10.1016/0377-0427(87)90125-7}.
+#' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
+#' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
+#'
+#' Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+#' Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
+#' 20, 1987, 53-65, \doi{10.1016/0377-0427(87)90125-7}.
 #'
 #'
 #'
@@ -226,62 +237,62 @@ pair_sets_index <- function(x, y = NULL) {
 #' X <- as.matrix(iris[,1:4])
 #' X[,] <- jitter(X)  # otherwise we get a non-unique solution
 #' y <- as.integer(iris[[5]])
-#' calinski_harabasz_index(X, y, max(y))
-#' calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE), max(y))
+#' calinski_harabasz_index(X, y)  # good
+#' calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
 #'
 #' @name cluster_validity_measures
 #' @rdname cluster_validity_measures
 #' @export
-calinski_harabasz_index <- function(X, y, K) {
-    .Call(`_genieclust_calinski_harabasz_index`, X, y, K)
+calinski_harabasz_index <- function(X, y) {
+    .Call(`_genieclust_calinski_harabasz_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-dunnowa_index <- function(X, y, K, M = 10L, owa_numerator = "Min", owa_denominator = "Max") {
-    .Call(`_genieclust_dunnowa_index`, X, y, K, M, owa_numerator, owa_denominator)
+dunnowa_index <- function(X, y, M = 10L, owa_numerator = "Min", owa_denominator = "Max") {
+    .Call(`_genieclust_dunnowa_index`, X, y, M, owa_numerator, owa_denominator)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-generalised_dunn_index <- function(X, y, K, lowercase_delta, uppercase_delta) {
-    .Call(`_genieclust_generalised_dunn_index`, X, y, K, lowercase_delta, uppercase_delta)
+generalised_dunn_index <- function(X, y, lowercase_delta, uppercase_delta) {
+    .Call(`_genieclust_generalised_dunn_index`, X, y, lowercase_delta, uppercase_delta)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-negated_ball_hall_index <- function(X, y, K) {
-    .Call(`_genieclust_negated_ball_hall_index`, X, y, K)
+negated_ball_hall_index <- function(X, y) {
+    .Call(`_genieclust_negated_ball_hall_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-negated_davies_bouldin_index <- function(X, y, K) {
-    .Call(`_genieclust_negated_davies_bouldin_index`, X, y, K)
+negated_davies_bouldin_index <- function(X, y) {
+    .Call(`_genieclust_negated_davies_bouldin_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-silhouette_index <- function(X, y, K) {
-    .Call(`_genieclust_silhouette_index`, X, y, K)
+negated_wcss_index <- function(X, y) {
+    .Call(`_genieclust_negated_wcss_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-silhouette_w_index <- function(X, y, K) {
-    .Call(`_genieclust_silhouette_w_index`, X, y, K)
+silhouette_index <- function(X, y) {
+    .Call(`_genieclust_silhouette_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-wcnn_index <- function(X, y, K, M = 10L) {
-    .Call(`_genieclust_wcnn_index`, X, y, K, M)
+silhouette_w_index <- function(X, y) {
+    .Call(`_genieclust_silhouette_w_index`, X, y)
 }
 
 #' @rdname cluster_validity_measures
 #' @export
-wcss_index <- function(X, y, K) {
-    .Call(`_genieclust_wcss_index`, X, y, K)
+wcnn_index <- function(X, y, M = 10L) {
+    .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 
 .mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
@@ -323,7 +334,7 @@ wcss_index <- function(X, y, K) {
 #' of the inequality of cluster sizes.
 #'
 #'
-#' The normalised  Gini index is given by:
+#' The normalised Gini index is given by:
 #' \deqn{
 #'     G(x_1,\dots,x_n) = \frac{
 #'     \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
@@ -358,14 +369,16 @@ wcss_index <- function(X, y, K) {
 #'
 #'
 #' @references
-#' Bonferroni C., Elementi di Statistica Generale, Libreria Seber,
+#' Bonferroni C., \emph{Elementi di Statistica Generale}, Libreria Seber,
 #' Firenze, 1930.
 #'
 #' Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 #' outlier-resistant hierarchical clustering algorithm,
-#' Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
+#' \emph{Information Sciences} 363, 2016, pp. 8-23.
+#' \doi{10.1016/j.ins.2016.05.003}
 #'
-#' Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.
+#' Gini C., \emph{Variabilita e Mutabilita},
+#' Tipografia di Paolo Cuppini, Bologna, 1912.
 #'
 #'
 #' @param x numeric vector of non-negative values
@@ -373,10 +386,10 @@ wcss_index <- function(X, y, K) {
 #' @return The value of the inequity index, a number in \eqn{[0, 1]}.
 #'
 #' @examples
-#' gini_index(c(2, 2, 2, 2, 2))  # no inequality
-#' gini_index(c(0, 0, 10, 0, 0)) # one has it all
-#' gini_index(c(7, 0, 3, 0, 0))  # give to the poor, take away from the rich
-#' gini_index(c(6, 0, 3, 1, 0))  # (a.k.a. Pigou-Dalton principle)
+#' gini_index(c(2, 2, 2, 2, 2))   # no inequality
+#' gini_index(c(0, 0, 10, 0, 0))  # one has it all
+#' gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
+#' gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
 #' bonferroni_index(c(2, 2, 2, 2, 2))
 #' bonferroni_index(c(0, 0, 10, 0, 0))
 #' bonferroni_index(c(7, 0, 3, 0, 0))

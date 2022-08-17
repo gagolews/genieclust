@@ -30,12 +30,5 @@ Provides access to the internal cluster validity measures.
 # ############################################################################ #
 
 
-cdef extern from "../src/c_matrix.h":
-    cdef cppclass CMatrix[T]:
-        CMatrix(T* data, size_t nrow, size_t ncol, bint c_order) except+
-
-cdef extern from "../src/cvi.h":
-    cdef cppclass CalinskiHarabaszIndex[T]:
-        CalinskiHarabaszIndex(const CMatrix[T]& X, size_t K, bint allow_undo) except +
-        void set_labels(const vector[ssize_t]& L)
-        T compute()
+cdef extern from "../src/c_cvi.h":
+    double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K)

@@ -2,7 +2,7 @@
 
 ## Description
 
-Let `x` and `y` represent two partitions of a set of $n$ elements into, respectively, $K$ and $L$ nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described in this section quantify the similarity between `x` and `y`. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions.
+Let `x` and `y` represent two partitions of a set of $n$ elements into, respectively, $K$ and $L$ nonempty and pairwise disjoint subsets. For instance, these can be two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described in this section quantify the similarity between `x` and `y`. They can be used as external cluster validity measures, i.e., in the presence of reference (ground-truth) partitions (compare Gagolewski, 2022).
 
 ## Usage
 
@@ -51,7 +51,7 @@ Note that both the (unadjusted) Rand and FM scores are bounded from below by $1/
 
 ## Value
 
-A single real value giving the similarity score.
+A single numeric value giving the similarity score.
 
 ## Author(s)
 
@@ -59,13 +59,15 @@ A single real value giving the similarity score.
 
 ## References
 
-Hubert L., Arabie P., Comparing Partitions, Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
+Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*, 2022, <https://clustering-benchmarks.gagolewski.com>.
 
-Rendon E., Abundez I., Arizmendi A., Quiroz E.M., Internal versus external cluster validation indexes, International Journal of Computers and Communications 5(1), 2011, 27-34.
+Hubert L., Arabie P., Comparing partitions, *Journal of Classification* 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
-Rezaei M., Franti P., Set matching measures for external cluster validity, IEEE Transactions on Knowledge and Data Mining 28(8), 2016, 2173-2186.
+Rendon E., Abundez I., Arizmendi A., Quiroz E.M., Internal versus external cluster validation indexes, *International Journal of Computers and Communications* 5(1), 2011, 27-34.
 
-Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, Journal of Machine Learning Research 11, 2010, 2837-2854.
+Rezaei M., Franti P., Set matching measures for external cluster validity, *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016, 2173-2186.
+
+Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, *Journal of Machine Learning Research* 11, 2010, 2837-2854.
 
 ## See Also
 

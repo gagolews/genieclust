@@ -1,4 +1,4 @@
-# genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)
+# genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)
 
 ## Description
 

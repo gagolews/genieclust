@@ -3,15 +3,27 @@
 
 ## 1.1.x (under development)
 
--  ....TO DO...
+-  [Python and R] ...TO DO...
    Implementations of internal cluster validity measures discussed in:
    M. Gagolewski, M. Bartoszuk, A. Cena,
    Are cluster validity measures (in)valid?,
    *Information Sciences* **581**, 620–636, 2021, DOI:
    [10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
-   see our unpublished [CVI](https://github.com/gagolews/optim_cvi) package
+   see our (GitHub-only) [CVI](https://github.com/gagolews/optim_cvi) package
    for R. In particular, the generalised Dunn indices are based on the code
    originally authored by Maciej Bartoszuk. Thanks.
+
+   Functions added:
+   `calinski_harabasz_index`,
+   `dunnowa_index`,
+   `generalised_dunn_index`,
+   `negated_ball_hall_index`,
+   `negated_davies_bouldin_index`,
+   `silhouette_index`,
+   `silhouette_w_index`,
+   `wcnn_index`,
+   `wcss_index`.
+
 
 
 ## 1.0.1 (2022-08-08)

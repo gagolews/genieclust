@@ -17,9 +17,6 @@
  */
 
 
-#ifndef R_CVI_INTERNAL_H
-#define R_CVI_INTERNAL_H
-
 #include <string>
 #include <cstring>
 #include <Rcpp.h>
@@ -52,84 +49,48 @@ using namespace Rcpp;
 
 /** Converts a 1-based label vector to a 0-based vector of small integers.
  *
- * @param x numeric vector with integer elements in [1, 256].
- *
+ * @param x numeric vector with integer elements
+ * @param K [out] the number of clusters
  * @return vector
  */
-std::vector<ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x)
+std::vector<ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, ssize_t& K)
 {
     size_t n = x.size();
     std::vector<ssize_t> ret(n);
+    K = 0;
     for (size_t i=0; i<n; ++i) {
         int xi = (int)x[i];
-        GENIECLUST_ASSERT(xi >= 1 && xi <= 256)
+        if (xi < 1) Rf_error("All elements in a label vector must be >= 1.");
         ret[i] = (ssize_t)(xi-1); // 1-based -> 0-based
+
+        if (K < xi) K = xi;  // determine the max(x)
     }
     return ret;
 }
-
-
-/** Converts a 0-based label vector to a 1-based one.
- *
- * @param x
- *
- * @return R's numeric vector
- */
-Rcpp::NumericVector translateLabels_toR(const std::vector<ssize_t>& x)
-{
-    size_t n = x.size();
-    Rcpp::NumericVector ret(n);
-    for (size_t i=0; i<n; ++i)
-        ret[i] = (x[i]+1); // 1-based -> 0-based
-    return ret;
-}
-
-
-/** Convert Rcpp's numeric matrix object (column-major) to our
- * internal type (row-major).
- *
- * @param X
- *
- * @return matrix (internal type)
- */
-CMatrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
-{
-//     size_t n = X.nrow();
-//     size_t d = X.ncol();
-//     CMatrix<FLOAT_T> Y(n, d);
-//     for (size_t i=0; i<n; i++) {
-//         for (size_t j=0; j<d; j++) {
-//                 Y(i, j) = X(i, j);
-//         }
-//     }
-//     return Y;
-    return CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-}
-
 
 
 
 //' @title Internal Cluster Validity Measures
 //'
 //' @description
-//' Implements a number of cluster validity indices critically
+//' Implementation of a number of so-called cluster validity indices critically
 //' reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2
-//' therein for the respective definitions.
+//' therein and (Gagolewski, 2022) for the respective definitions.
 //'
 //' The greater the index value, the more \emph{valid} (whatever that means)
 //' the assessed partition. For consistency, the Ball-Hall and
-//' Davies-Bouldin indexes take negative values.
+//' Davies-Bouldin indexes as well as the within-cluster sum of squares (WCSS)
+//' take negative values.
 //'
 //'
 //' @param X numeric matrix with \code{n} rows and \code{d} columns,
 //'     representing \code{n} points in a \code{d}-dimensional space
 //'
-//' @param y vector of \code{n} integer labels with elements in \eqn{[1, K]},
+//' @param y vector of \code{n} integer labels,
 //'     representing a partition whose \emph{quality} is to be
 //'     assessed; \code{y[i]} is the cluster ID of the \code{i}-th point,
-//'     \code{X[i, ]}
-//'
-//' @param K number of clusters, equal to \code{max(y)}
+//'     \code{X[i, ]}; \code{1 <= y[i] <= K}, where \code{K} is the number
+//'     or clusters
 //'
 //' @param M number of nearest neighbours
 //'
@@ -145,40 +106,45 @@ CMatrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 //'     the OWA operator to use in the definition of the DuNN index;
 //'     one of: \code{"Mean"}, \code{"Min"}, \code{"Max"}, \code{"Const"},
 //'     \code{"SMin:M"}, \code{"SMax:M"}, where \code{M} is an integer
-//'     defining the number of nearest neighbours.
+//'     defining the number of nearest neighbours
 //'
-//' @return A single numeric value (the more, the \emph{better}).
+//'
+//' @return
+//' A single numeric value (the more, the \emph{better}).
 //'
 //' @references
-//' G.H. Ball, D.J. Hall,
-//' ISODATA: A novel method of data analysis and pattern classification,
+//' Ball G.H., Hall D.J.,
+//' \emph{ISODATA: A novel method of data analysis and pattern classification},
 //' Technical report No. AD699616, Stanford Research Institute, 1965.
 //'
-//' J. Bezdek, N. Pal, Some new indexes of cluster validity,
-//' IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics) 28
-//' 1998, pp. 301-315, \doi{10.1109/3477.678624}.
+//' JBezdek J., Pal N., Some new indexes of cluster validity,
+//' \emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
+//' 1998, 301-315, \doi{10.1109/3477.678624}.
 //'
-//' T. Calinski, J. Harabasz. A dendrite method for cluster analysis,
-//' Communications in Statistics, 3(1), 1974, pp. 1-27,
+//' Calinski T., Harabasz J., A dendrite method for cluster analysis,
+//' \emph{Communications in Statistics} 3(1), 1974, 1-27,
 //' \doi{10.1080/03610927408827101}.
 //'
-//' D.L. Davies, D.W. Bouldin,
+//' Davies D.L., Bouldin D.W.,
 //' A Cluster Separation Measure,
-//' IEEE Transactions on Pattern Analysis and Machine Intelligence. PAMI-1 (2),
-//' 1979, pp. 224-227, \doi{10.1109/TPAMI.1979.4766909}.
+//' \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
+//' PAMI-1 (2), 1979, 224-227, \doi{10.1109/TPAMI.1979.4766909}.
 //'
-//' J.C. Dunn, A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
-//' Compact Well-Separated Clusters, Journal of Cybernetics 3(3), 1973,
-//' pp. 32-57, \doi{10.1080/01969727308546046}.
+//' Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
+//' Compact Well-Separated Clusters, \emph{Journal of Cybernetics} 3(3), 1973,
+//' 32-57, \doi{10.1080/01969727308546046}.
 //'
-//' M. Gagolewski, M. Bartoszuk, A. Cena,
-//' Are cluster validity measures (in)valid?, Information Sciences 581,
+//' Gagolewski M., Bartoszuk M., Cena A.,
+//' Are cluster validity measures (in)valid?, \emph{Information Sciences} 581,
 //' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 //' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 //'
-//' P.J. Rousseeuw, Silhouettes: A Graphical Aid to the Interpretation and
-//' Validation of Cluster Analysis, Computational and Applied Mathematics 20,
-//' 1987, pp. 53-65, \doi{10.1016/0377-0427(87)90125-7}.
+//' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
+//' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
+//'
+//' Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+//' Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
+//' 20, 1987, 53-65, \doi{10.1016/0377-0427(87)90125-7}.
 //'
 //'
 //'
@@ -186,20 +152,24 @@ CMatrix<FLOAT_T> translateMatrix_fromR(const Rcpp::NumericMatrix& X)
 //' X <- as.matrix(iris[,1:4])
 //' X[,] <- jitter(X)  # otherwise we get a non-unique solution
 //' y <- as.integer(iris[[5]])
-//' calinski_harabasz_index(X, y, max(y))
-//' calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE), max(y))
+//' calinski_harabasz_index(X, y)  # good
+//' calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
 //'
 //' @name cluster_validity_measures
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double calinski_harabasz_index(NumericMatrix X, NumericVector y, int K)
+double calinski_harabasz_index(NumericMatrix X, NumericVector y)
 {
-    CalinskiHarabaszIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    CalinskiHarabaszIndex ind(_X, (ssize_t)K);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
 
@@ -207,11 +177,18 @@ double calinski_harabasz_index(NumericMatrix X, NumericVector y, int K)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double dunnowa_index(NumericMatrix X, NumericVector y, int K, int M=10,
+double dunnowa_index(NumericMatrix X, NumericVector y, int M=10,
                 Rcpp::String owa_numerator="Min",
                 Rcpp::String owa_denominator="Max")
 {
-    GENIECLUST_ASSERT(M>0);    // M = min(n-1, M) in the constructor
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    if (M <= 0)    // M = min(n-1, M) in the constructor
+        Rf_error("M must be positive.");
 
     int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
     int _owa_denominator = DuNNOWA_get_OWA(std::string(owa_denominator));
@@ -220,12 +197,9 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int K, int M=10,
         Rf_error("invalid OWA operator specifier");
     }
 
-    DuNNOWAIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, M, _owa_numerator, _owa_denominator
-    );
+    DuNNOWAIndex ind(_X, (ssize_t)K, false, M, _owa_numerator, _owa_denominator);
+    ind.set_labels(_y);
 
-    ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
 }
 
@@ -234,8 +208,14 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int K, int M=10,
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lowercase_delta, int uppercase_delta)
+double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_delta, int uppercase_delta)
 {
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
     LowercaseDeltaFactory* lowercase_deltaFactory;
     UppercaseDeltaFactory* uppercase_deltaFactory;
 
@@ -280,30 +260,25 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lower
     );
 
     if (areCentroidsNeeded) {
-        GeneralizedDunnIndexCentroidBased ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        K,
-        lowercase_deltaFactory,
-        uppercase_deltaFactory
-        );
+        GeneralizedDunnIndexCentroidBased ind(_X, (ssize_t)K,
+            lowercase_deltaFactory, uppercase_deltaFactory);
 
         delete lowercase_deltaFactory;
         delete uppercase_deltaFactory;
 
-        ind.set_labels(translateLabels_fromR(y));
+        ind.set_labels(_y);
+
         return (double)ind.compute();
-    } else {
-        GeneralizedDunnIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K,
-        lowercase_deltaFactory,
-        uppercase_deltaFactory
-        );
+    }
+    else {
+        GeneralizedDunnIndex ind(_X, (ssize_t)K,
+            lowercase_deltaFactory, uppercase_deltaFactory);
 
         delete lowercase_deltaFactory;
         delete uppercase_deltaFactory;
 
-        ind.set_labels(translateLabels_fromR(y));
+        ind.set_labels(_y);
+
         return (double)ind.compute();
     }
 }
@@ -312,13 +287,17 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y, int K, int lower
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double negated_ball_hall_index(NumericMatrix X, NumericVector y, int K)
+double negated_ball_hall_index(NumericMatrix X, NumericVector y)
 {
-    WCSSIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, true/*weighted*/
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    WCSSIndex ind(_X, (ssize_t)K, false, true/*weighted*/);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
 
@@ -326,13 +305,17 @@ double negated_ball_hall_index(NumericMatrix X, NumericVector y, int K)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double negated_davies_bouldin_index(NumericMatrix X, NumericVector y, int K)
+double negated_davies_bouldin_index(NumericMatrix X, NumericVector y)
 {
-    DaviesBouldinIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    DaviesBouldinIndex ind(_X, (ssize_t)K);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
 
@@ -340,13 +323,17 @@ double negated_davies_bouldin_index(NumericMatrix X, NumericVector y, int K)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double silhouette_index(NumericMatrix X, NumericVector y, int K)
+double negated_wcss_index(NumericMatrix X, NumericVector y)
 {
-    SilhouetteIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, false
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    WCSSIndex ind(_X, (ssize_t)K, false, false/*not weighted*/);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
 
@@ -354,13 +341,17 @@ double silhouette_index(NumericMatrix X, NumericVector y, int K)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double silhouette_w_index(NumericMatrix X, NumericVector y, int K)
+double silhouette_index(NumericMatrix X, NumericVector y)
 {
-    SilhouetteIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, true
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    SilhouetteIndex ind(_X, (ssize_t)K, false, false);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
 
@@ -368,16 +359,17 @@ double silhouette_w_index(NumericMatrix X, NumericVector y, int K)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double wcnn_index(NumericMatrix X, NumericVector y, int K, int M=10)
+double silhouette_w_index(NumericMatrix X, NumericVector y)
 {
-    GENIECLUST_ASSERT(M>0);  // M = min(n-1, M) in the constructor
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
 
-    WCNNIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, M
-    );
+    SilhouetteIndex ind(_X, (ssize_t)K, false, true);
+    ind.set_labels(_y);
 
-    ind.set_labels(translateLabels_fromR(y));
     return (double)ind.compute();
 }
 
@@ -385,16 +377,19 @@ double wcnn_index(NumericMatrix X, NumericVector y, int K, int M=10)
 //' @rdname cluster_validity_measures
 //' @export
 // [[Rcpp::export]]
-double wcss_index(NumericMatrix X, NumericVector y, int K)
+double wcnn_index(NumericMatrix X, NumericVector y, int M=10)
 {
-    WCSSIndex ind(
-        CMatrix<FLOAT_T>(REAL(SEXP(X)), X.nrow(), X.ncol(), false),
-        (ssize_t)K, false, false/*not weighted*/
-    );
-    ind.set_labels(translateLabels_fromR(y));
+    ssize_t K;
+    std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
+    CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
+    if (_X.nrow() < 1 || _X.nrow() != _y.size())
+        Rf_error("Incompatible X and y");
+
+    if (M <= 0)    // M = min(n-1, M) in the constructor
+        Rf_error("M must be positive.");
+
+    WCNNIndex ind(_X, (ssize_t)K, false, M);
+    ind.set_labels(_y);
+
     return (double)ind.compute();
 }
-
-
-
-#endif

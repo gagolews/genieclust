@@ -2,9 +2,9 @@ source("CVI_test_proc1.R", local=TRUE)
 
 CVI_GDunn_Factory <- function(lower, upper)
 {
-    CVI_GDunn_specialized <- function(X, y, K)
+    CVI_GDunn_specialized <- function(X, y)
     {
-        return(generalised_dunn_index(X, y, K, lower, upper))
+        return(generalised_dunn_index(X, y, lower, upper))
     }
     CVI_GDunn_specialized
 }

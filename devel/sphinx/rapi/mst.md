@@ -27,14 +27,14 @@ mst(d, M = 1L, verbose = FALSE, ...)
 
 ## Arguments
 
-|                |                                                                                                                                                                                                                       |
-|----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `d`            | either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html). |
-| `...`          | further arguments passed to or from other methods.                                                                                                                                                                    |
-| `distance`     | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"`.                                                                             |
-| `M`            | smoothing factor; `M` = 1 gives the selected `distance`; otherwise, the mutual reachability distance is used.                                                                                                         |
-| `cast_float32` | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster).                                                                                       |
-| `verbose`      | logical; whether to print diagnostic messages and progress information.                                                                                                                                               |
+|                |                                                                                                                                                                                                                      |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `d`            | either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) |
+| `...`          | further arguments passed to or from other methods                                                                                                                                                                    |
+| `distance`     | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"`                                                                             |
+| `M`            | smoothing factor; `M` = 1 gives the selected `distance`; otherwise, the mutual reachability distance is used                                                                                                         |
+| `cast_float32` | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster)                                                                                       |
+| `verbose`      | logical; whether to print diagnostic messages and progress information                                                                                                                                               |
 
 ## Details
 
@@ -62,13 +62,13 @@ If `M` \> 1, the `nn` attribute gives the indices of the `M`-1 nearest neighbour
 
 ## References
 
-V. Jarnik, O jistem problemu minimalnim, Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
+Jarnik V., O jistem problemu minimalnim, *Prace Moravske Prirodovedecke Spolecnosti* 6, 1930, 57-63.
 
-Olson C.F., Parallel algorithms for hierarchical clustering, Parallel Comput. 21 (1995) 1313-1325.
+Olson C.F., Parallel algorithms for hierarchical clustering, *Parallel Comput.* 21, 1995, 1313-1325.
 
-Prim R., Shortest connection networks and some generalisations, Bell Syst. Tech. J. 36 (1957) 1389-1401.
+Prim R., Shortest connection networks and some generalisations, *Bell Syst. Tech. J.* 36, 1957, 1389-1401.
 
-Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, ACM Transactions on Knowledge Discovery from Data 10(1) (2015) 5:1-5:51.
+Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, *ACM Transactions on Knowledge Discovery from Data* 10(1), 2015, 5:1-5:51.
 
 ## See Also
 

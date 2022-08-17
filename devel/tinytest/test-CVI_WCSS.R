@@ -1,6 +1,6 @@
 source("CVI_test_proc1.R", local=TRUE)
 
-CVI_fun <- wcss_index
+CVI_fun <- negated_wcss_index
 CVI_name <- "WCSS"
 
 reference_fun <- function(X, y) {

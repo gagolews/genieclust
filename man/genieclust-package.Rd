@@ -4,7 +4,7 @@
 \name{genieclust-package}
 \alias{genieclust-package}
 \alias{genieclust}
-\title{The Genie++ Hierarchical Clustering Algorithm (with Extras)}
+\title{The Genie Hierarchical Clustering Algorithm (with Extras)}
 \description{
 See \code{\link{genie}()} for more details.
 }

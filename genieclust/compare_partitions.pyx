@@ -7,7 +7,13 @@
 
 
 """
-Partition similarity scores
+Partition similarity scores can be used as external cluster validity measures,
+i.e., for comparing the outputs of clustering algorithms with reference
+(ground truth) labels.
+
+For more details, see the
+`Framework for Benchmarking Clustering Algorithms
+<https://clustering-benchmarks.gagolewski.com>`_.
 """
 
 
@@ -289,8 +295,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     the similarity between `x` and `y`.
     Partition similarity scores can be used as external cluster validity
     measures — for comparing the outputs of clustering algorithms
-    with reference (ground truth) labels, see, e.g.,
-    https://github.com/gagolews/clustering_benchmarks_v1
+    with reference (ground truth) labels, see, e.g., [5]_
     for a suite of benchmark datasets.
 
     Every index except `mi_score` (which computes the mutual
@@ -349,7 +354,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     .. [3]
         Rezaei M., Franti P., Set matching measures for external cluster validity,
         *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016,
-        2173-2186. doi:10.1109/TKDE.2016.2551240.
+        2173-2186. https://doi.org/10.1109/TKDE.2016.2551240.
 
     .. [4]
         Vinh N.X., Epps J., Bailey J.,
@@ -357,7 +362,9 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
         Variants, properties, normalization and correction for chance,
         *Journal of Machine Learning Research* 11, 2010, 2837-2854.
 
-
+    .. [5]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
 
 
     Examples

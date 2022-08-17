@@ -40,7 +40,7 @@ representing an L-partition of the same set),
 or NULL (if x is an K*L confusion matrix)}
 }
 \value{
-A single real value giving the similarity score.
+A single numeric value giving the similarity score.
 }
 \description{
 Let \code{x} and \code{y} represent two partitions of a set of \eqn{n}
@@ -51,7 +51,7 @@ For instance, these can be two clusterings of a dataset with
 The functions described in this section quantify the similarity between
 \code{x} and \code{y}. They can be used as external cluster
 validity measures, i.e., in the presence of reference (ground-truth)
-partitions.
+partitions (compare Gagolewski, 2022).
 }
 \details{
 Every index except \code{mi_score()} (which computes the mutual
@@ -89,7 +89,7 @@ Maximal Linear Sum Assignment Problem.
 \eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
 e.g., in (Rendon et al. 2011).
 
-\code{pair_sets_index()} gives the  Pair Sets Index (PSI)
+\code{pair_sets_index()} gives the Pair Sets Index (PSI)
 adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 Pairing is based on the solution to the Linear Sum Assignment Problem
 of a transformed version of the confusion matrix.
@@ -109,20 +109,23 @@ pair_sets_index(y_true, y_pred)
 
 }
 \references{
-Hubert L., Arabie P., Comparing Partitions,
-Journal of Classification 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
+Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
+2022, \url{https://clustering-benchmarks.gagolewski.com}.
+
+Hubert L., Arabie P., Comparing partitions,
+\emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
 Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
 Internal versus external cluster validation indexes,
-International Journal of Computers and Communications 5(1), 2011, 27-34.
+\emph{International Journal of Computers and Communications} 5(1), 2011, 27-34.
 
 Rezaei M., Franti P., Set matching measures for external cluster validity,
-IEEE Transactions on Knowledge and Data Mining 28(8), 2016, 2173-2186.
+\emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016, 2173-2186.
 
 Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
-Journal of Machine Learning Research 11, 2010, 2837-2854.
+\emph{Journal of Machine Learning Research} 11, 2010, 2837-2854.
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

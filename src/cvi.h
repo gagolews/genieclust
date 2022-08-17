@@ -19,9 +19,9 @@
 #ifndef __CVI_H
 #define __CVI_H
 
-#include <Rcpp.h>
 #include <cmath>
 #include <algorithm>
+#include <functional>
 #include <vector>
 #include <string>
 #include "c_common.h"
