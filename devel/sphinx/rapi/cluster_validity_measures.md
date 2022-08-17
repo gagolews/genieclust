@@ -19,13 +19,13 @@ negated_ball_hall_index(X, y)
 
 negated_davies_bouldin_index(X, y)
 
+negated_wcss_index(X, y)
+
 silhouette_index(X, y)
 
 silhouette_w_index(X, y)
 
 wcnn_index(X, y, M = 10L)
-
-negated_wcss_index(X, y)
 ```
 
 ## Arguments

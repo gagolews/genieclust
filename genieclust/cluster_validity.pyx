@@ -47,6 +47,25 @@ from . cimport c_compare_partitions
 from . cimport c_cvi
 
 
+cdef ssize_t _get_K(np.ndarray[ssize_t] _y, size_t n, size_t d):
+    """
+    internal function for CVIs - check correctness of shapes and get clust.num.
+    """
+
+    if n != _y.shape[0]:
+        raise ValueError("number of elements in y does not match the number of rows in X")
+
+    cdef ssize_t ymin, ymax
+    c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
+    cdef ssize_t K = ymax-ymin+1
+    if ymin != 0:
+        raise ValueError("min(y) != 0")
+
+    if K <= 1 or K > 100000:
+        raise ValueError("incorrect y")
+
+    return K
+
 
 cpdef double calinski_harabasz_index(X, y):
     """
@@ -97,6 +116,10 @@ cpdef double calinski_harabasz_index(X, y):
     genieclust.cluster_validity.negated_davies_bouldin_index :
         The Davies-Bouldin index (negated)
 
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
     genieclust.cluster_validity.silhouette_index :
         The Silhouette index (average silhouette score)
 
@@ -105,10 +128,6 @@ cpdef double calinski_harabasz_index(X, y):
 
     genieclust.cluster_validity.wcnn_index :
         The within-cluster near-neighbours index
-
-    genieclust.cluster_validity.negated_wcss_index :
-        Within-cluster sum of squares (used as the objective function
-        in the k-means and Ward algorithm) (negated)
 
 
 
@@ -132,23 +151,12 @@ cpdef double calinski_harabasz_index(X, y):
 
     """
     cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
-    cdef size_t n = _y.shape[0]
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
     cdef size_t d = _X.shape[1]
 
-    if n != _X.shape[0]:
-        raise ValueError("number of elements in y does not match the number of rows in X")
-
-    cdef ssize_t ymin, ymax
-    c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
-    cdef ssize_t K = ymax-ymin+1
-    if ymin != 0:
-        raise ValueError("min(y) != 0")
-
-    if K <= 1 or K > 100000:
-        raise ValueError("incorrect y")
-
+    cdef ssize_t K = _get_K(_y, n, d)
 
     return c_cvi.c_calinski_harabasz_index(<double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K)
 

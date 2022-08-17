@@ -3,7 +3,7 @@ Benchmarks — Detailed Results
 
 In one of the :any:`above sections <benchmarks_ar>`
 we have summarised the AR indices based on the datasets from
-the `Benchmark Suite for Clustering Algorithms – Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
+the `Benchmark Suite for Clustering Algorithms – Version 1 <https://github.com/gagolews/clustering-benchmarks>`_
 :cite:`clustering_benchmarks_v1`.
 In this section we present more detailed results for
 some other partition similarity measures implemented in the `genieclust`

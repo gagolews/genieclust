@@ -153,7 +153,7 @@ Source Code (GitHub) <https://github.com/gagolews/genieclust>
 Bug Tracker and Feature Suggestions <https://github.com/gagolews/genieclust/issues>
 PyPI Entry <https://pypi.org/project/genieclust/>
 CRAN Entry <https://CRAN.R-project.org/package=genieclust>
-Clustering Benchmarks <https://github.com/gagolews/clustering_benchmarks_v1>
+Clustering Benchmarks <https://github.com/gagolews/clustering-benchmarks>
 Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 ::::
 

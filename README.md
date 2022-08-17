@@ -34,7 +34,7 @@ the *smallest* size will sometimes be matched with its nearest neighbour.
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
-on [benchmark data](https://github.com/gagolews/clustering_benchmarks_v1/).
+on [benchmark data](https://github.com/gagolews/clustering-benchmarks/).
 
 Genie is also **very fast** – determining the whole cluster hierarchy
 for datasets of millions of points can be completed within minutes.

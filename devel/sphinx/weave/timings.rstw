@@ -101,7 +101,7 @@ Let's study the algorithm's run times for some of the
 "larger" datasets (70,000-105,600 observations,
 see section on :any:`benchmark results <benchmarks_ar>` for discussion)
 from the
-`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
+`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering-benchmarks>`_
 :cite:`clustering_benchmarks_v1`\ .
 Features with variance of 0 were removed,
 datasets were centred at **0** and scaled so that they have total variance of 1.
