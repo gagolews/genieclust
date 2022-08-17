@@ -27,6 +27,16 @@ as an example:
 
 ::
 
+    ## /tmp/ipykernel_56999/1616393685.py:3: DeprecationWarning: `np.str` is
+    ## a deprecated alias for the builtin `str`. To silence this warning, use
+    ## `str` by itself. Doing this will not modify any behavior and is safe.
+    ## If you specifically wanted the numpy scalar type, use `np.str_` here.
+    ## Deprecated in NumPy 1.20; for more details and guidance:
+    ## https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+    ##   strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
+
+::
+
     ## ['tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata',
     ## 'atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca',
     ## 'gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg',

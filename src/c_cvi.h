@@ -48,7 +48,8 @@
 
 
 
-double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K)
+double c_calinski_harabasz_index(const double* X, const ssize_t* y,
+                                 size_t n, size_t d, ssize_t K)
 {
     CalinskiHarabaszIndex ind(
         CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K
@@ -59,7 +60,7 @@ double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, si
 }
 
 
-// double dunnowa_index(NumericMatrix X, NumericVector y, int M=10,
+// double c_dunnowa_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int M=10,
 //                 Rcpp::String owa_numerator="Min",
 //                 Rcpp::String owa_denominator="Max")
 // {
@@ -86,7 +87,7 @@ double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, si
 // }
 //
 //
-// double generalised_dunn_index(NumericMatrix X, NumericVector y, int lowercase_delta, int uppercase_delta)
+// double c_generalised_dunn_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int lowercase_delta, int uppercase_delta)
 // {
 //     ssize_t K;
 //     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
@@ -160,69 +161,71 @@ double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, si
 //         return (double)ind.compute();
 //     }
 // }
-//
-//
-// double negated_ball_hall_index(NumericMatrix X, NumericVector y)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     WCSSIndex ind(_X, (ssize_t)K, false, true/*weighted*/);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
-// double negated_davies_bouldin_index(NumericMatrix X, NumericVector y)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     DaviesBouldinIndex ind(_X, (ssize_t)K);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
-// double silhouette_index(NumericMatrix X, NumericVector y)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     SilhouetteIndex ind(_X, (ssize_t)K, false, false);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
-// double silhouette_w_index(NumericMatrix X, NumericVector y)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     SilhouetteIndex ind(_X, (ssize_t)K, false, true);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
-//
-//
-// double wcnn_index(NumericMatrix X, NumericVector y, int M=10)
+
+
+double c_negated_ball_hall_index(const double* X, const ssize_t* y,
+                               size_t n, size_t d, ssize_t K)
+{
+    WCSSIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        false, true/*weighted*/
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_negated_davies_bouldin_index(const double* X, const ssize_t* y,
+                                    size_t n, size_t d, ssize_t K)
+{
+    DaviesBouldinIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_negated_wcss_index(const double* X, const ssize_t* y,
+                          size_t n, size_t d, ssize_t K)
+{
+    WCSSIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        false, false/*not weighted*/
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_silhouette_index(const double* X, const ssize_t* y,
+                        size_t n, size_t d, ssize_t K)
+{
+    SilhouetteIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, false
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+double c_silhouette_w_index(const double* X, const ssize_t* y,
+                          size_t n, size_t d, ssize_t K)
+{
+    SilhouetteIndex ind(
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, true
+    );
+    ind.set_labels(std::vector<ssize_t>(y, y+n));
+
+    return (double)ind.compute();
+}
+
+
+// double c_wcnn_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K, int M=10)
 // {
 //     ssize_t K;
 //     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
@@ -240,19 +243,7 @@ double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, si
 // }
 //
 //
-// double wcss_index(NumericMatrix X, NumericVector y)
-// {
-//     ssize_t K;
-//     std::vector<ssize_t> _y = translateLabels_fromR(y, /*out*/K);
-//     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
-//     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-//         Rf_error("Incompatible X and y");
-//
-//     WCSSIndex ind(_X, (ssize_t)K, false, false/*not weighted*/);
-//     ind.set_labels(_y);
-//
-//     return (double)ind.compute();
-// }
+
 
 
 #endif

@@ -83,7 +83,7 @@ Ball G.H., Hall D.J.,
 \emph{ISODATA: A novel method of data analysis and pattern classification},
 Technical report No. AD699616, Stanford Research Institute, 1965.
 
-JBezdek J., Pal N., Some new indexes of cluster validity,
+Bezdek J., Pal N., Some new indexes of cluster validity,
 \emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
 1998, 301-315, \doi{10.1109/3477.678624}.
 

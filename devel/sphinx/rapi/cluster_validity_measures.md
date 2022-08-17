@@ -51,7 +51,7 @@ A single numeric value (the more, the *better*).
 
 Ball G.H., Hall D.J., *ISODATA: A novel method of data analysis and pattern classification*, Technical report No. AD699616, Stanford Research Institute, 1965.
 
-JBezdek J., Pal N., Some new indexes of cluster validity, *IEEE Transactions on Systems, Man, and Cybernetics, Part B* 28, 1998, 301-315, [doi:10.1109/3477.678624](https://doi.org/10.1109/3477.678624).
+Bezdek J., Pal N., Some new indexes of cluster validity, *IEEE Transactions on Systems, Man, and Cybernetics, Part B* 28, 1998, 301-315, [doi:10.1109/3477.678624](https://doi.org/10.1109/3477.678624).
 
 Calinski T., Harabasz J., A dendrite method for cluster analysis, *Communications in Statistics* 3(1), 1974, 1-27, [doi:10.1080/03610927408827101](https://doi.org/10.1080/03610927408827101).
 

@@ -33,7 +33,7 @@ np.random.seed(1234)
 import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
-pd.set_option("min_rows", 200)
+pd.set_option("display.min_rows", 200)
 plt.style.use("bmh")
 plt.rcParams.update({
     'font.size': 9,

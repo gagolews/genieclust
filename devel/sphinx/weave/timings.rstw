@@ -50,8 +50,8 @@ import seaborn as sns
 import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
-pd.set_option("min_rows", 200)
-pd.set_option("max_columns", 20)
+pd.set_option("display.min_rows", 200)
+pd.set_option("display.max_columns", 20)
 #pd.set_option("display.width", 200)
 plt.style.use("bmh")
 plt.rcParams.update({
@@ -195,7 +195,7 @@ On the other hand, the approximate version of Genie can easily cluster
 very large datasets. Only the system's memory limits might become a problem then.
 
 
-<<g2mg-plot,results="hidden",echo=False,caption="Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.">>=
+<<g2mg-plot,fig=True,results="hidden",echo=False,caption="Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.">>=
 _dat = g2mg.loc[g2mg.method.isin(["Genie_0.3_approx", "Genie_0.3_nomlpack", "Genie_0.3_mlpack"])&(g2mg.d>10),["method","n","d","elapsed_time"]].groupby(["method","n","d"]).median().reset_index()
 sns.lineplot(x="n", y="elapsed_time", hue="method", style="d", data=_dat, markers=True)
 #plt.yscale("log")
@@ -203,7 +203,6 @@ sns.lineplot(x="n", y="elapsed_time", hue="method", style="d", data=_dat, marker
 plt.ylim(0, 600)
 plt.show()
 @
-
 
 
 
@@ -216,7 +215,7 @@ Genie turns out to be nicely parallelisable — as evidenced on
 the ``mnist/digits`` dataset:
 
 
-<<timings-plot,results="hidden",echo=False,caption="Timings [s] as a function of the number of clusters and threads.">>=
+<<digits,fig=True,results="hidden",echo=False,caption="Timings [s] as a function of the number of clusters and threads.">>=
 dataset="mnist/digits"
 sns.lineplot(x="n_clusters", y="elapsed_time", hue="method", style="n_threads",
     data=res2.loc[(res2.dataset==dataset) & (res2.method.isin(["sklearn_kmeans", "Genie_0.3", "Genie_0.3_approx"])),:], markers=True)
@@ -226,7 +225,6 @@ plt.xscale("log")
 plt.ylim(0, 2000)
 plt.show()
 @
-
 
 
 
@@ -270,4 +268,3 @@ t0 = time.time()
 g.fit(X)
 print("time elapsed - consecutive run: %.3f" % (time.time()-t0))
 @
-

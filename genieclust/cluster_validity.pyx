@@ -158,7 +158,496 @@ cpdef double calinski_harabasz_index(X, y):
 
     cdef ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_calinski_harabasz_index(<double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K)
+    return c_cvi.c_calinski_harabasz_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
+
+    return res
+
+
+cpdef double negated_ball_hall_index(X, y):
+    """
+    genieclust.cluster_validity.negated_ball_hall_index(X, y)
+
+    Computes the value of the negated Ball-Hall index [3]_.
+
+    See [1]_ and [2]_ for the definition and discussion.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n, d)
+        `n` data points in a feature space of dimensionality `d`
+
+    y : array_like
+        A vector of "small" integers representing a partition of the
+        `n` input points; `y[i]` is the cluster ID of the `i`-th point,
+        where `0 <= y[i] < K` and `K` is the number of clusters.
+
+
+    Returns
+    -------
+
+    index : float
+        Computed index value.
+        The greater the index value, the more *valid* (whatever that means)
+        the assessed partition.
+
+
+    See also
+    --------
+
+    genieclust.cluster_validity.calinski_harabasz_index :
+        The Caliński-Harabasz index
+
+    genieclust.cluster_validity.dunnowa_index :
+        Generalised Dunn indices based on near-neighbours and
+        OWA operators (by Gagolewski)
+
+    genieclust.cluster_validity.generalised_dunn_index :
+        Generalised Dunn indices (by Bezdek and Pal)
+
+    genieclust.cluster_validity.negated_ball_hall_index :
+        The Ball-Hall index (negated)
+
+    genieclust.cluster_validity.negated_davies_bouldin_index :
+        The Davies-Bouldin index (negated)
+
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
+    genieclust.cluster_validity.silhouette_index :
+        The Silhouette index (average silhouette score)
+
+    genieclust.cluster_validity.silhouette_w_index :
+        The Silhouette W index (mean of the cluster average silhouette widths)
+
+    genieclust.cluster_validity.wcnn_index :
+        The within-cluster near-neighbours index
+
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
+
+    .. [2]
+        Gagolewski M., Bartoszuk M., Cena A.,
+        Are cluster validity measures (in)valid?, *Information Sciences* **581**,
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
+        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+
+    .. [3]
+        Ball G.H., Hall D.J.,
+        *ISODATA: A novel method of data analysis and pattern classification*,
+        Technical report No. AD699616, Stanford Research Institute, 1965.
+    """
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+
+    cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
+    cdef size_t d = _X.shape[1]
+
+    cdef ssize_t K = _get_K(_y, n, d)
+
+    return c_cvi.c_negated_ball_hall_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
+
+    return res
+
+
+cpdef double negated_davies_bouldin_index(X, y):
+    """
+    genieclust.cluster_validity.negated_davies_bouldin_index(X, y)
+
+    Computes the value of the Davies-Bouldin index [3]_.
+
+    See [1]_ and [2]_ for the definition and discussion.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n, d)
+        `n` data points in a feature space of dimensionality `d`
+
+    y : array_like
+        A vector of "small" integers representing a partition of the
+        `n` input points; `y[i]` is the cluster ID of the `i`-th point,
+        where `0 <= y[i] < K` and `K` is the number of clusters.
+
+
+    Returns
+    -------
+
+    index : float
+        Computed index value.
+        The greater the index value, the more *valid* (whatever that means)
+        the assessed partition.
+
+
+    See also
+    --------
+
+    genieclust.cluster_validity.calinski_harabasz_index :
+        The Caliński-Harabasz index
+
+    genieclust.cluster_validity.dunnowa_index :
+        Generalised Dunn indices based on near-neighbours and
+        OWA operators (by Gagolewski)
+
+    genieclust.cluster_validity.generalised_dunn_index :
+        Generalised Dunn indices (by Bezdek and Pal)
+
+    genieclust.cluster_validity.negated_ball_hall_index :
+        The Ball-Hall index (negated)
+
+    genieclust.cluster_validity.negated_davies_bouldin_index :
+        The Davies-Bouldin index (negated)
+
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
+    genieclust.cluster_validity.silhouette_index :
+        The Silhouette index (average silhouette score)
+
+    genieclust.cluster_validity.silhouette_w_index :
+        The Silhouette W index (mean of the cluster average silhouette widths)
+
+    genieclust.cluster_validity.wcnn_index :
+        The within-cluster near-neighbours index
+
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
+
+    .. [2]
+        Gagolewski M., Bartoszuk M., Cena A.,
+        Are cluster validity measures (in)valid?, *Information Sciences* **581**,
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
+        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+
+    .. [3]
+        Davies D.L., Bouldin D.W., A Cluster Separation Measure,
+        *IEEE Transactions on Pattern Analysis and Machine Intelligence*
+        PAMI-1 (2), 1979, 224-227, https://doi.org/10.1109/TPAMI.1979.4766909.
+
+    """
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+
+    cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
+    cdef size_t d = _X.shape[1]
+
+    cdef ssize_t K = _get_K(_y, n, d)
+
+    return c_cvi.c_negated_davies_bouldin_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
+
+    return res
+
+
+cpdef double negated_wcss_index(X, y):
+    """
+    genieclust.cluster_validity.negated_wcss_index(X, y)
+
+    Computes the value of the negated within-cluster sum of squares
+    (used as the objective function in the k-means and Ward algorithm)
+
+    See [1]_ and [2]_ for the definition and discussion.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n, d)
+        `n` data points in a feature space of dimensionality `d`
+
+    y : array_like
+        A vector of "small" integers representing a partition of the
+        `n` input points; `y[i]` is the cluster ID of the `i`-th point,
+        where `0 <= y[i] < K` and `K` is the number of clusters.
+
+
+    Returns
+    -------
+
+    index : float
+        Computed index value.
+        The greater the index value, the more *valid* (whatever that means)
+        the assessed partition.
+
+
+    See also
+    --------
+
+    genieclust.cluster_validity.calinski_harabasz_index :
+        The Caliński-Harabasz index
+
+    genieclust.cluster_validity.dunnowa_index :
+        Generalised Dunn indices based on near-neighbours and
+        OWA operators (by Gagolewski)
+
+    genieclust.cluster_validity.generalised_dunn_index :
+        Generalised Dunn indices (by Bezdek and Pal)
+
+    genieclust.cluster_validity.negated_ball_hall_index :
+        The Ball-Hall index (negated)
+
+    genieclust.cluster_validity.negated_davies_bouldin_index :
+        The Davies-Bouldin index (negated)
+
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
+    genieclust.cluster_validity.silhouette_index :
+        The Silhouette index (average silhouette score)
+
+    genieclust.cluster_validity.silhouette_w_index :
+        The Silhouette W index (mean of the cluster average silhouette widths)
+
+    genieclust.cluster_validity.wcnn_index :
+        The within-cluster near-neighbours index
+
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
+
+    .. [2]
+        Gagolewski M., Bartoszuk M., Cena A.,
+        Are cluster validity measures (in)valid?, *Information Sciences* **581**,
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
+        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+
+    """
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+
+    cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
+    cdef size_t d = _X.shape[1]
+
+    cdef ssize_t K = _get_K(_y, n, d)
+
+    return c_cvi.c_negated_wcss_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
+
+    return res
+
+
+cpdef double silhouette_index(X, y):
+    """
+    genieclust.cluster_validity.silhouette_index(X, y)
+
+    Computes the value of the The Silhouette index
+    (average silhouette score) [3]_.
+
+    See [1]_ and [2]_ for the definition and discussion.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n, d)
+        `n` data points in a feature space of dimensionality `d`
+
+    y : array_like
+        A vector of "small" integers representing a partition of the
+        `n` input points; `y[i]` is the cluster ID of the `i`-th point,
+        where `0 <= y[i] < K` and `K` is the number of clusters.
+
+
+    Returns
+    -------
+
+    index : float
+        Computed index value.
+        The greater the index value, the more *valid* (whatever that means)
+        the assessed partition.
+
+
+    See also
+    --------
+
+    genieclust.cluster_validity.calinski_harabasz_index :
+        The Caliński-Harabasz index
+
+    genieclust.cluster_validity.dunnowa_index :
+        Generalised Dunn indices based on near-neighbours and
+        OWA operators (by Gagolewski)
+
+    genieclust.cluster_validity.generalised_dunn_index :
+        Generalised Dunn indices (by Bezdek and Pal)
+
+    genieclust.cluster_validity.negated_ball_hall_index :
+        The Ball-Hall index (negated)
+
+    genieclust.cluster_validity.negated_davies_bouldin_index :
+        The Davies-Bouldin index (negated)
+
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
+    genieclust.cluster_validity.silhouette_index :
+        The Silhouette index (average silhouette score)
+
+    genieclust.cluster_validity.silhouette_w_index :
+        The Silhouette W index (mean of the cluster average silhouette widths)
+
+    genieclust.cluster_validity.wcnn_index :
+        The within-cluster near-neighbours index
+
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
+
+    .. [2]
+        Gagolewski M., Bartoszuk M., Cena A.,
+        Are cluster validity measures (in)valid?, *Information Sciences* **581**,
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
+        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+
+    .. [3]
+        Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+        Validation of Cluster Analysis, *Computational and Applied Mathematics*
+        20, 1987, 53-65, https://doi.org/10.1016/0377-0427(87)90125-7.
+
+    """
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+
+    cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
+    cdef size_t d = _X.shape[1]
+
+    cdef ssize_t K = _get_K(_y, n, d)
+
+    return c_cvi.c_silhouette_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
+
+    return res
+
+
+cpdef double silhouette_w_index(X, y):
+    """
+    genieclust.cluster_validity.silhouette_w_index(X, y)
+
+    Computes the value of the The Silhouette W index
+    (mean of the cluster average silhouette widths) [3]_.
+
+    See [1]_ and [2]_ for the definition and discussion.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n, d)
+        `n` data points in a feature space of dimensionality `d`
+
+    y : array_like
+        A vector of "small" integers representing a partition of the
+        `n` input points; `y[i]` is the cluster ID of the `i`-th point,
+        where `0 <= y[i] < K` and `K` is the number of clusters.
+
+
+    Returns
+    -------
+
+    index : float
+        Computed index value.
+        The greater the index value, the more *valid* (whatever that means)
+        the assessed partition.
+
+
+    See also
+    --------
+
+    genieclust.cluster_validity.calinski_harabasz_index :
+        The Caliński-Harabasz index
+
+    genieclust.cluster_validity.dunnowa_index :
+        Generalised Dunn indices based on near-neighbours and
+        OWA operators (by Gagolewski)
+
+    genieclust.cluster_validity.generalised_dunn_index :
+        Generalised Dunn indices (by Bezdek and Pal)
+
+    genieclust.cluster_validity.negated_ball_hall_index :
+        The Ball-Hall index (negated)
+
+    genieclust.cluster_validity.negated_davies_bouldin_index :
+        The Davies-Bouldin index (negated)
+
+    genieclust.cluster_validity.negated_wcss_index :
+        Within-cluster sum of squares (used as the objective function
+        in the k-means and Ward algorithm) (negated)
+
+    genieclust.cluster_validity.silhouette_index :
+        The Silhouette index (average silhouette score)
+
+    genieclust.cluster_validity.silhouette_w_index :
+        The Silhouette W index (mean of the cluster average silhouette widths)
+
+    genieclust.cluster_validity.wcnn_index :
+        The within-cluster near-neighbours index
+
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        https://clustering-benchmarks.gagolewski.com
+
+    .. [2]
+        Gagolewski M., Bartoszuk M., Cena A.,
+        Are cluster validity measures (in)valid?, *Information Sciences* **581**,
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
+        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+
+    .. [3]
+        Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+        Validation of Cluster Analysis, *Computational and Applied Mathematics*
+        20, 1987, 53-65, https://doi.org/10.1016/0377-0427(87)90125-7.
+
+    """
+    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+
+    cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
+    cdef size_t n = _X.shape[0]
+    cdef size_t d = _X.shape[1]
+
+    cdef ssize_t K = _get_K(_y, n, d)
+
+    return c_cvi.c_silhouette_w_index(
+        <double*>(&_X[0, 0]), <ssize_t*>(&_y[0]), n, d, K
+    )
 
     return res
 

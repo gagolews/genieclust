@@ -31,4 +31,26 @@ Provides access to the internal cluster validity measures.
 
 
 cdef extern from "../src/c_cvi.h":
-    double c_calinski_harabasz_index(const double* X, const ssize_t* y, size_t n, size_t d, ssize_t K)
+    double c_calinski_harabasz_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    #double c_dunnowa_index
+
+    #double c_generalised_dunn_index
+
+    double c_negated_ball_hall_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    double c_negated_davies_bouldin_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    double c_negated_wcss_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    double c_silhouette_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    double c_silhouette_w_index(const double* X, const ssize_t* y,
+        size_t n, size_t d, ssize_t K)
+
+    #double c_wcnn_index

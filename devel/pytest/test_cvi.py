@@ -40,6 +40,33 @@ def test_cvi():
             i2 = genieclust.cluster_validity.calinski_harabasz_index(X, labels-1)
             assert i1 == i2
 
+            i1 = r_genieclust.negated_ball_hall_index(X, labels)[0]
+            i2 = genieclust.cluster_validity.negated_ball_hall_index(X, labels-1)
+            assert i1 == i2
+
+            i1 = r_genieclust.negated_davies_bouldin_index(X, labels)[0]
+            i2 = genieclust.cluster_validity.negated_davies_bouldin_index(X, labels-1)
+            assert i1 == i2
+
+            i1 = r_genieclust.negated_wcss_index(X, labels)[0]
+            i2 = genieclust.cluster_validity.negated_wcss_index(X, labels-1)
+            assert i1 == i2
+
+            i1 = r_genieclust.silhouette_index(X, labels)[0]
+            i2 = genieclust.cluster_validity.silhouette_index(X, labels-1)
+            assert i1 == i2
+
+            i1 = r_genieclust.silhouette_w_index(X, labels)[0]
+            i2 = genieclust.cluster_validity.silhouette_w_index(X, labels-1)
+            assert i1 == i2
+
+
+            #double c_dunnowa_index
+
+            #double c_generalised_dunn_index
+
+            #double c_wcnn_index
+
 
     except ImportError:
         pass

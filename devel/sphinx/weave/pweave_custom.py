@@ -2,7 +2,7 @@
 
 # ########################################################################## #
 #  Marek's output hooks hacks                                                #
-#  Copyleft (C) 2020-2021, Marek Gagolewski <https://www.gagolewski.com>     #
+#  Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>     #
 # ########################################################################## #
 
 import sys
@@ -78,10 +78,10 @@ def _indent2(self, text):
 
     #print(chunk['figure'], chunk['caption'])
 
-    #for fig in fignames:
-        #figstring += ('.. image:: %s\n   :width: %s\n\n' % (fig, width))
+    ##for fig in fignames:
+    ##    figstring += ('.. image:: %s\n   :width: %s\n\n' % (fig, width))
 
-    #if chunk['caption']:
+    #if fignames and chunk['caption']:
         #result += (".. figure:: %s\n" \
                     #"   :width: %s\n\n" \
                     #"   %s\n\n" % (fignames[0], width, caption))
