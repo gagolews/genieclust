@@ -34,12 +34,14 @@ highlight_language = "python"
 html_last_updated_fmt = today_fmt
 
 extensions = [
+    'sphinx_rtd_theme',
     'myst_parser',
     'sphinx.ext.mathjax',
     'sphinxcontrib.bibtex',
-    #'sphinxcontrib.proof',
-    'sphinx_multitoc_numbering',
-    'sphinx_rtd_theme',
+    #'sphinxcontrib.proof',  # proof:exercise, proof:example
+    #'sphinx_multitoc_numbering',  # so that chapter numbers do not reset across parts [book only]
+
+    # [Python package API docs only]
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
@@ -48,9 +50,6 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'numpydoc'
-    #'sphinx.ext.viewcode',
-    #'sphinx.ext.imgmath',
-    # 'sphinx.ext.napoleon',
 ]
 
 myst_enable_extensions = [
