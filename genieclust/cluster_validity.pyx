@@ -7,17 +7,18 @@
 
 
 """
-Implementation of a number of the so-called internal cluster validity indices
-critically reviewed in (Gagolewski, Bartoszuk, Cena, 2022;
-https://doi.org/10.1016/j.ins.2021.10.004;
-`preprint <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_).
-See Section 2 therein for the respective definitions.
+So-called internal cluster validity indices
 
 The greater the index value, the more *valid* (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
 Davies-Bouldin indexes take negative values.
 
-For more details, see the
+These measures were critically reviewed in (Gagolewski, Bartoszuk, Cena, 2022;
+https://doi.org/10.1016/j.ins.2021.10.004;
+`preprint <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_).
+See Section 2 therein for the respective definitions.
+
+For even more details, see the
 `Framework for Benchmarking Clustering Algorithms
 <https://clustering-benchmarks.gagolewski.com>`_.
 """
@@ -896,10 +897,10 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
 
     uppercase_d : int
         an integer between 1 and 3, denoting
-       :math:`D_1`, ..., :math:`D_3` in the definition
-       of the generalised Dunn index (denominator:
-       max and min pairwise intracluster distance, average point-centroid
-       distance, respectively)
+        :math:`D_1`, ..., :math:`D_3` in the definition
+        of the generalised Dunn index (denominator:
+        max and min pairwise intracluster distance, average point-centroid
+        distance, respectively)
 
 
     Returns

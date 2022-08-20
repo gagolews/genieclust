@@ -1,4 +1,4 @@
-devel/data/pbmc3k_raw.h5ad
+.devel/data/pbmc3k_raw.h5ad
 *.kate-swp
 .vscode
 .pytest_cache
@@ -15,7 +15,6 @@ pytest/__pycache__
 *.Rmd-tmp-*
 src/*.o
 src/*.so
-devel/sphinx/_build
 cache-*
 coverage.xml
 .coverage
@@ -49,4 +48,4 @@ cache-knitr/
 cache/
 
 # Sphinx documentation
-devel/sphinx/_build
+.devel/sphinx/_build

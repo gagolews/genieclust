@@ -7,7 +7,9 @@
 
 
 """
-Partition similarity scores can be used as external cluster validity measures,
+Partition similarity scores
+
+These indices can be used as external cluster validity measures,
 i.e., for comparing the outputs of clustering algorithms with reference
 (ground truth) labels.
 
