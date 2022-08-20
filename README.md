@@ -59,8 +59,8 @@ difficult-to-set `eps` parameter.
 **Contributors**:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com),
 [Anna Cena](https://cena.rexamine.com) (R packages
-[`genie`](https://CRAN.R-project.org/package=genie) /`genieclust`'s predecessor/
-and [`CVI`](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures/),
+[**genie**](https://CRAN.R-project.org/package=genie) /**genieclust**'s predecessor/
+and [**CVI**](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures/),
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
 of the shortest augmenting path algorithm for the rectangular assignment problem

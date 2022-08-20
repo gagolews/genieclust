@@ -1,4 +1,4 @@
-# `genieclust`: Fast and Robust Hierarchical Clustering with Noise Point Detection
+# *genieclust*: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
 ::::{epigraph}
 **Genie finds meaningful clusters and is fast even on large data sets.**
@@ -11,10 +11,10 @@
 ::::
 
 
-The `genieclust` package {cite}`genieclust` equips Python and R users with
+The *genieclust* package {cite}`genieclust` equips Python and R users with
 a faster and more powerful version of *Genie* {cite}`genieins` — a robust
 and outlier resistant clustering algorithm, originally published as an R package
-[`genie`](https://cran.r-project.org/web/packages/genie).
+[*genie*](https://cran.r-project.org/web/packages/genie).
 
 The idea behind *Genie* is beautifully simple. First, make each individual
 point the sole member of its own cluster. Then, keep merging pairs
@@ -34,7 +34,7 @@ for datasets of millions of points, can be completed within
 Therefore, it is capable of solving **extreme clustering tasks**
 (large datasets with any number of clusters to detect)
 on data that fit into memory.
-Thanks to the use of `nmslib` {cite}`nmslib`,
+Thanks to the use of *nmslib* {cite}`nmslib`,
 sparse or string inputs are also supported.
 
 Genie also allows clustering with respect to mutual reachability distances
@@ -45,7 +45,7 @@ difficult-to-set `eps` parameter.
 
 
 
-The **Python version** of `genieclust` is available via
+The **Python version** of *genieclust* is available via
 [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to
 
@@ -54,7 +54,7 @@ pip3 install genieclust
 ```
 
 from the command line or through your favourite package manager.
-Note a familiar `scikit-learn`-like {cite}`sklearn_api` look-and-feel:
+Note a familiar *scikit-learn*-like {cite}`sklearn_api` look-and-feel:
 
 ```python
 import genieclust
@@ -71,7 +71,7 @@ labels = g.fit_predict(X)
 
 
 
-The **R version** of `genieclust` can be downloaded from
+The **R version** of *genieclust* can be downloaded from
 [CRAN](https://cran.r-project.org/web/packages/genieclust/)
 by calling:
 
@@ -91,7 +91,7 @@ cutree(h, k=2)
 
 
 
-`genieclust` is distributed
+*genieclust* is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 [GitHub](https://github.com/gagolews/genieclust).
 The core functionality is implemented in the form of a header-only C++
@@ -102,8 +102,8 @@ any contributions are welcome (Julia, Matlab, etc.).
 
 **Contributors**:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com), [Anna Cena](https://cena.rexamine.com) (R packages
-[`genie`](https://cran.r-project.org/web/packages/genie) /`genieclust`'s predecessor {cite}`genieins`/
-and [`CVI`](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures {cite}`cvi`/),
+[*genie*](https://cran.r-project.org/web/packages/genie) /*genieclust*'s predecessor {cite}`genieins`/
+and [*CVI*](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures {cite}`cvi`/),
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
 of the shortest augmenting path algorithm for the rectangular assignment problem

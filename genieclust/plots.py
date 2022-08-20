@@ -146,13 +146,14 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
     if labels.ndim != 1 or X.shape[0] != labels.shape[0]:
         raise ValueError("Incorrect shape of `labels`.")
 
-    for i in np.unique(labels):  # 0 is black, 1 is red, etc.
+    for i in np.unique(labels):  # 0 = black, 1 = red, etc.
         plt.scatter(
             X[labels == i, 0],
             X[labels == i, 1],
             c=col[(i) % len(col)],
             marker=mrk[(i) % len(mrk)],
-            **kwargs)
+            **kwargs
+        )
 
 
 

@@ -299,7 +299,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     for a suite of benchmark datasets.
 
     Every index except `mi_score` (which computes the mutual
-    information score) outputs 1 given two identical partitions.
+    information score) outputs the value of 1.0 if two identical partitions
+    are given.
     Note that partitions are always defined up to a bijection of the set of
     possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
     represent the same 2-partition.
