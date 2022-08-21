@@ -60,7 +60,10 @@ def _get_xy(X, y):
     return X
 
 
-def plot_scatter(X, y=None, labels=None, **kwargs):
+def plot_scatter(X, y=None, labels=None,
+        axis=None, title=None, xlabel=None, ylabel=None, xlim=None, ylim=None,
+        **kwargs
+    ):
     """
     Draws a scatter plot
 
@@ -79,6 +82,10 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
     labels : None or array_like
         A vector of *n* integer labels that correspond to each point in `X`,
         that gives its plot style.
+
+    axis, title, xlabel, ylabel, xlim, ylim : None or object
+        If not `None`, values passed to `matplotlib.pyplot.axis`,
+        `matplotlib.pyplot.title`, etc.
 
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter`.
@@ -154,6 +161,24 @@ def plot_scatter(X, y=None, labels=None, **kwargs):
             marker=mrk[(i) % len(mrk)],
             **kwargs
         )
+
+    if axis is not None:
+        plt.axis(axis)
+
+    if title is not None:
+        plt.title(title)
+
+    if xlabel is not None:
+        plt.xlabel(xlabel)
+
+    if ylabel is not None:
+        plt.ylabel(ylabel)
+
+    if xlim is not None:
+        plt.xlim(xlim)
+
+    if ylim is not None:
+        plt.ylim(ylim)
 
 
 
