@@ -21,6 +21,11 @@
    `silhouette_w_index`,
    `wcnn_index`.
 
+-  [BACKWARD INCOMPATIBILITY] `compare_partitions.normalized_confusion_matrix`
+   now solves the maximal assignment problem instead of applying
+   the primitive partial pivoting.
+
+-  [R] New function: `normalized_confusion_matrix`.
 
 
 ## 1.0.1 (2022-08-08)

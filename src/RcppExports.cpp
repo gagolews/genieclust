@@ -118,6 +118,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// normalized_confusion_matrix
+IntegerMatrix normalized_confusion_matrix(RObject x, RObject y);
+RcppExport SEXP _genieclust_normalized_confusion_matrix(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(normalized_confusion_matrix(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // calinski_harabasz_index
 double calinski_harabasz_index(NumericMatrix X, NumericVector y);
 RcppExport SEXP _genieclust_calinski_harabasz_index(SEXP XSEXP, SEXP ySEXP) {
@@ -333,6 +345,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
+    {"_genieclust_normalized_confusion_matrix", (DL_FUNC) &_genieclust_normalized_confusion_matrix, 2},
     {"_genieclust_calinski_harabasz_index", (DL_FUNC) &_genieclust_calinski_harabasz_index, 2},
     {"_genieclust_dunnowa_index", (DL_FUNC) &_genieclust_dunnowa_index, 5},
     {"_genieclust_generalised_dunn_index", (DL_FUNC) &_genieclust_generalised_dunn_index, 4},

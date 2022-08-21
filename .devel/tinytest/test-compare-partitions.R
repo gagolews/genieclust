@@ -32,6 +32,10 @@ for (score in scores) {
             y <- sample(c(1:K, sample(K, n-K, replace=TRUE)))
             s <- score(x, y)
             expect_true(s < 1.0+1e-9)
+
+            expect_equal(
+                sum(table(x, y)), sum(normalized_confusion_matrix(x, y))
+            )
         }
     }
 }

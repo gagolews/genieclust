@@ -70,6 +70,8 @@ def test_compare_partitions():
             assert 1.0+1e-9>normalized_accuracy(x, y)>1.0-1e-9
             assert 1.0+1e-9>pair_sets_index(x, y)>1.0-1e-9
 
+            assert confusion_matrix(x, y).sum() == normalized_confusion_matrix(x, y).sum()
+
             # TODO: more tests...
 
 

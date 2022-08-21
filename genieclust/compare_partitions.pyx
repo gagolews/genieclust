@@ -46,14 +46,19 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
 
-    Applies pivoting to a given confusion matrix
+    Permutes the rows and columns of a confusion matrix
+    so that the sum of the elements
+    on the main diagonal is the largest possible (by solving
+    the maximal assignment problem)
 
 
     Parameters
     ----------
 
     C : ndarray
-        A ``c_contiguous`` confusion matrix (contingency table).
+        A ``c_contiguous`` confusion matrix (contingency table),
+        whose row count is not greater than the column count
+
 
 
     Returns
@@ -69,15 +74,17 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     genieclust.compare_partitions.confusion_matrix :
         Determines the confusion matrix
 
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
+
 
     Notes
     -----
 
-    This function permutes the columns of `C` so as to relocate the largest
-    elements in each row onto the main diagonal.
-
-    It may come in handy whenever `C` summarises the results generated
-    by clustering algorithms, where actual label values do not matter
+    This function comes in handy when `C` summarises the results generated
+    by clustering algorithms, where the actual label values do not matter
     (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning).
 
 
@@ -99,10 +106,10 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(C, dtype=np.intp)
     cdef ssize_t xc = C_normalized.shape[0]
     cdef ssize_t yc = C_normalized.shape[1]
-    c_compare_partitions.Capply_pivoting(&C_normalized[0,0], xc, yc)
+    if xc > yc:
+        raise ValueError("number of rows cannot be greater than the number of columns")
+    c_compare_partitions.Capply_pivoting(&C[0,0], xc, yc, &C_normalized[0,0])
     return C_normalized
-
-
 
 
 cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
@@ -132,7 +139,8 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
     --------
 
     genieclust.compare_partitions.normalize_confusion_matrix :
-        Applies pivoting
+        Permutes the rows and columns of a confusion matrix so that
+        the sum of the elements of the main diagonal is the largest possible
 
 
     Examples
@@ -174,7 +182,10 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     """
     genieclust.compare_partitions.normalized_confusion_matrix(x, y)
 
-    Computes the confusion matrix for two label vectors and applies pivoting
+    Computes the confusion matrix for two label vectors and
+    permutes its rows and columns so that the sum of the elements
+    of the main diagonal is the largest possible (by solving
+    the maximal assignment problem)
 
 
     Parameters
@@ -183,6 +194,8 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     x, y : array_like
         Two vectors of "small" integers of identical lengths.
 
+    use_sum : bool
+        Whether the pivoting should be based on
 
     Returns
     -------
@@ -197,7 +210,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     --------
 
     genieclust.compare_partitions.normalize_confusion_matrix :
-        Applies pivoting
+        The underlying function to permute the rows and columns
 
     genieclust.compare_partitions.confusion_matrix :
         Determines the confusion matrix
@@ -267,8 +280,15 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
     genieclust.compare_partitions.confusion_matrix :
         Computes a confusion matrix
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
+
     genieclust.compare_partitions.compare_partitions2 :
         A wrapper around this function that accepts two label vectors on input
+
     genieclust.compare_partitions.adjusted_rand_score
     genieclust.compare_partitions.rand_score
     genieclust.compare_partitions.adjusted_fm_score
@@ -281,6 +301,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
 
 
+
     Notes
     -----
 
@@ -289,8 +310,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     nonempty and pairwise disjoint subsets.
     For instance, these can be two clusterings of a dataset with :math:`n`
     observations specified as vectors of labels. Moreover, let `C` be the
-    confusion matrix (with :math:`K` rows and :math:`L` columns, :math:`K \\leq L`)
-    corresponding to `x` and `y`, see also
+    confusion matrix (with :math:`K` rows and :math:`L` columns,
+    :math:`K \\leq L`) corresponding to `x` and `y`, see also
     `genieclust.compare_partitions.confusion_matrix`.
 
     This function implements a few scores that aim to quantify
@@ -330,7 +351,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/L)/(1-1/L)`,
     where :math:`C_\\sigma` is a version of the confusion matrix
     for given `x` and `y`, :math:`K \\leq L`, with columns permuted
-    based on the solution to the Maximal Linear Sum Assignment Problem.
+    based on the solution to the Maximal Linear Sum Assignment Problem
+    (see `normalize_confusion_matrix`).
     :math:`\\mathrm{Accuracy}(C_\\sigma)` is sometimes referred to as Purity,
     e.g., in [2]_.
 
@@ -436,6 +458,11 @@ cpdef dict compare_partitions2(x, y):
 
     genieclust.compare_partitions.confusion_matrix :
         Determines the contingency table
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
 
 
     Notes
@@ -770,7 +797,7 @@ cpdef double adjusted_mi_score(x, y):
 
 cpdef double normalized_accuracy(x, y):
     """
-    genieclust.compare_partitions.normalized accuracy(x, y)
+    genieclust.compare_partitions.normalized_accuracy(x, y)
 
     Normalised accuracy
 
@@ -795,8 +822,14 @@ cpdef double normalized_accuracy(x, y):
 
     genieclust.compare_partitions.compare_partitions :
         Computes multiple similarity scores based on a confusion matrix
+
     genieclust.compare_partitions.compare_partitions2 :
         Computes multiple similarity scores based on two label vectors
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
 
 
     Notes
@@ -844,8 +877,14 @@ cpdef double pair_sets_index(x, y):
 
     genieclust.compare_partitions.compare_partitions :
         Computes multiple similarity scores based on a confusion matrix
+
     genieclust.compare_partitions.compare_partitions2 :
         Computes multiple similarity scores based on two label vectors
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
 
 
     Notes

@@ -10,6 +10,7 @@
 \alias{adjusted_mi_score}
 \alias{normalized_accuracy}
 \alias{pair_sets_index}
+\alias{normalized_confusion_matrix}
 \title{Pairwise Partition Similarity Scores}
 \usage{
 adjusted_rand_score(x, y = NULL)
@@ -29,27 +30,34 @@ adjusted_mi_score(x, y = NULL)
 normalized_accuracy(x, y = NULL)
 
 pair_sets_index(x, y = NULL)
+
+normalized_confusion_matrix(x, y = NULL)
 }
 \arguments{
 \item{x}{an integer vector of length n (or an object coercible to)
 representing a K-partition of an n-set,
-or a confusion matrix with K rows and L columns (see \code{table(x, y)})}
+or a confusion matrix with K rows and L columns
+(see \code{\link{table}(x, y)})}
 
 \item{y}{an integer vector of length n (or an object coercible to)
 representing an L-partition of the same set),
 or NULL (if x is an K*L confusion matrix)}
 }
 \value{
-A single numeric value giving the similarity score.
+Each partition similarity score is a
+single numeric value.
+
+\code{normalized_confusion_matrix()} returns an integer matrix.
 }
 \description{
-Let \code{x} and \code{y} represent two partitions of a set of \eqn{n}
-elements into, respectively, \eqn{K} and \eqn{L}
-nonempty and pairwise disjoint subsets.
-For instance, these can be two clusterings of a dataset with
-\eqn{n} observations specified by two vectors of labels.
 The functions described in this section quantify the similarity between
-\code{x} and \code{y}. They can be used as external cluster
+two label vectors \code{x} and \code{y} which represent two partitions
+of a set of \eqn{n} elements into, respectively, \eqn{K} and \eqn{L}
+nonempty and pairwise disjoint subsets.
+
+For instance, \code{x} and \code{y} can be two clusterings
+of a dataset with \eqn{n} observations specified by two vectors
+of labels. Hence, these functions can be used as external cluster
 validity measures, i.e., in the presence of reference (ground-truth)
 partitions (compare Gagolewski, 2022).
 }
@@ -85,7 +93,8 @@ in (Vinh et al., 2010).
 \eqn{(Accuracy(C_\sigma)-1/L)/(1-1/L)}, where \eqn{C_\sigma} is a version
 of the confusion matrix for given \code{x} and \code{y},
 \eqn{K \leq L}, with columns permuted based on the solution to the
-Maximal Linear Sum Assignment Problem.
+Maximal Linear Sum Assignment Problem;
+see \code{\link{normalized_confusion_matrix}}.
 \eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
 e.g., in (Rendon et al. 2011).
 
@@ -93,6 +102,13 @@ e.g., in (Rendon et al. 2011).
 adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 Pairing is based on the solution to the Linear Sum Assignment Problem
 of a transformed version of the confusion matrix.
+
+\code{normalized_confusion_matrix()} computes the confusion matrix
+and permutes its rows and columns so that the sum of the elements
+of the main diagonal is the largest possible (by solving
+the maximal assignment problem). The functions only accepts \eqn{K \leq L}.
+Note that the built-in
+\code{\link{table}()} determines the standard confusion matrix.
 }
 \examples{
 y_true <- iris[[5]]
@@ -106,6 +122,7 @@ normalized_mi_score(y_true, y_pred)
 adjusted_mi_score(y_true, y_pred)
 normalized_accuracy(y_true, y_pred)
 pair_sets_index(y_true, y_pred)
+normalized_confusion_matrix(y_true, y_pred)
 
 }
 \references{
@@ -120,7 +137,8 @@ Internal versus external cluster validation indexes,
 \emph{International Journal of Computers and Communications} 5(1), 2011, 27-34.
 
 Rezaei M., Franti P., Set matching measures for external cluster validity,
-\emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016, 2173-2186.
+\emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016,
+2173-2186.
 
 Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:

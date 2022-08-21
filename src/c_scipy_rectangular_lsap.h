@@ -101,7 +101,7 @@ ssize_t __augmenting_path(
  *                        nr items in C with the smallest sum.
  *  @param minimise false if we seek the maximum
  *
- * @return 0 on success
+ *  @return 0 on success
  */
 template<class T> ssize_t linear_sum_assignment(
     T* C,

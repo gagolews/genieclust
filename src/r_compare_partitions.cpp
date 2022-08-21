@@ -90,13 +90,14 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' @title Pairwise Partition Similarity Scores
 //'
 //' @description
-//' Let \code{x} and \code{y} represent two partitions of a set of \eqn{n}
-//' elements into, respectively, \eqn{K} and \eqn{L}
-//' nonempty and pairwise disjoint subsets.
-//' For instance, these can be two clusterings of a dataset with
-//' \eqn{n} observations specified by two vectors of labels.
 //' The functions described in this section quantify the similarity between
-//' \code{x} and \code{y}. They can be used as external cluster
+//' two label vectors \code{x} and \code{y} which represent two partitions
+//' of a set of \eqn{n} elements into, respectively, \eqn{K} and \eqn{L}
+//' nonempty and pairwise disjoint subsets.
+//'
+//' For instance, \code{x} and \code{y} can be two clusterings
+//' of a dataset with \eqn{n} observations specified by two vectors
+//' of labels. Hence, these functions can be used as external cluster
 //' validity measures, i.e., in the presence of reference (ground-truth)
 //' partitions (compare Gagolewski, 2022).
 //'
@@ -132,7 +133,8 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' \eqn{(Accuracy(C_\sigma)-1/L)/(1-1/L)}, where \eqn{C_\sigma} is a version
 //' of the confusion matrix for given \code{x} and \code{y},
 //' \eqn{K \leq L}, with columns permuted based on the solution to the
-//' Maximal Linear Sum Assignment Problem.
+//' Maximal Linear Sum Assignment Problem;
+//' see \code{\link{normalized_confusion_matrix}}.
 //' \eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
 //' e.g., in (Rendon et al. 2011).
 //'
@@ -140,6 +142,13 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 //' Pairing is based on the solution to the Linear Sum Assignment Problem
 //' of a transformed version of the confusion matrix.
+//'
+//' \code{normalized_confusion_matrix()} computes the confusion matrix
+//' and permutes its rows and columns so that the sum of the elements
+//' of the main diagonal is the largest possible (by solving
+//' the maximal assignment problem). The functions only accepts \eqn{K \leq L}.
+//' Note that the built-in
+//' \code{\link{table}()} determines the standard confusion matrix.
 //'
 //' @references
 //' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
@@ -153,7 +162,8 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' \emph{International Journal of Computers and Communications} 5(1), 2011, 27-34.
 //'
 //' Rezaei M., Franti P., Set matching measures for external cluster validity,
-//' \emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016, 2173-2186.
+//' \emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016,
+//' 2173-2186.
 //'
 //' Vinh N.X., Epps J., Bailey J.,
 //' Information theoretic measures for clusterings comparison:
@@ -164,14 +174,18 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //'
 //' @param x an integer vector of length n (or an object coercible to)
 //' representing a K-partition of an n-set,
-//' or a confusion matrix with K rows and L columns (see \code{table(x, y)})
+//' or a confusion matrix with K rows and L columns
+//' (see \code{\link{table}(x, y)})
 //'
 //' @param y an integer vector of length n (or an object coercible to)
 //' representing an L-partition of the same set),
 //' or NULL (if x is an K*L confusion matrix)
 //'
 //'
-//' @return A single numeric value giving the similarity score.
+//' @return Each partition similarity score is a
+//' single numeric value.
+//'
+//' \code{normalized_confusion_matrix()} returns an integer matrix.
 //'
 //'
 //' @examples
@@ -186,6 +200,7 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' adjusted_mi_score(y_true, y_pred)
 //' normalized_accuracy(y_true, y_pred)
 //' pair_sets_index(y_true, y_pred)
+//' normalized_confusion_matrix(y_true, y_pred)
 //'
 //' @rdname comparing_partitions
 //' @export
@@ -316,3 +331,24 @@ double pair_sets_index(RObject x, RObject y=R_NilValue)
 }
 
 
+
+
+//' @rdname comparing_partitions
+//' @export
+//[[Rcpp::export]]
+IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
+{
+    ssize_t xc, yc;
+    std::vector<int> C(
+        get_contingency_matrix(x, y, &xc, &yc)
+    );
+
+    std::vector<int> C_out_Corder(xc*yc);
+    Capply_pivoting(C.data(), xc, yc, C_out_Corder.data());
+
+    IntegerMatrix Cout(xc, yc);
+    for (ssize_t i=0; i<xc; ++i)  // make Fortran order
+            for (ssize_t j=0; j<yc; ++j)
+                Cout(i, j) = C_out_Corder[j+i*yc];
+    return Cout;
+}

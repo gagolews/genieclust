@@ -103,35 +103,80 @@ struct CComparePartitionsInfoResult {
 
 
 
-/*! Applies partial pivoting to a given confusion matrix - permutes the columns
- *  so as to have the largest elements in each row on the main diagonal.
+/*! Applies pivoting to a given confusion matrix
  *
- *  This comes in handy whenever C actually summarises the results generated
+ *  Permutes the rows and columns so that the sum of the elements
+ *  on the main diagonal is the largest possible (by solving
+ *  the maximal assignment problem).
+ *
+ *  This comes in handy if C summarises the results generated
  *  by clustering algorithms, where actual label values do not matter
  *  (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
  *
  *
- * @param C [in/out] a c_contiguous confusion matrix of size xc*yc
- * @param xc number of rows in C
- * @param yc number of columns in C
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C
+ *  @param yc number of columns in C; xc <= yc
+ *  @param Cout [out] output matrix after pivoting
  *
- * Note that C is modified in-place (overwritten).
+ *  Note that Cout is modified in-place (overwritten).
  */
 template<class T>
-void Capply_pivoting(T* C, ssize_t xc, ssize_t yc)
-{
-    for (ssize_t i=0; i<std::min(xc-1, yc-1); ++i) {
-        ssize_t w = i;
-        for (ssize_t j=i+1; j<yc; ++j) {
-            // find w = argmax C[i,w], w=i,i+1,...yc-1
-            if (C[i*yc+w] < C[i*yc+j]) w = j;
-        }
-        for (ssize_t j=0; j<xc; ++j) {
-            // swap columns i and w
-            std::swap(C[j*yc+i], C[j*yc+w]);
+void Capply_pivoting(
+    const T* C, ssize_t xc, ssize_t yc, T* Cout/*, bool use_sum=false*/
+) {
+    GENIECLUST_ASSERT(xc <= yc);
+
+//     if (use_sum) {
+    std::vector<ssize_t> output_col4row(xc);
+    std::vector<bool> column_used(yc, false);
+
+    ssize_t retval = linear_sum_assignment(
+        C, xc, yc, output_col4row.data(), /*minimise*/false
+    );
+    GENIECLUST_ASSERT(retval == 0);
+
+    ssize_t i;
+    for (i=0; i<xc; ++i) {
+        column_used[ output_col4row[i] ] = true;
+        for (ssize_t j=0; j<xc; ++j)
+            Cout[yc*j+i] = C[yc*j+output_col4row[i]];
+    }
+    // the remainder:
+    for (ssize_t k=0; k<yc; ++k) {
+        if (!column_used[k]) {
+            column_used[k] = true;
+            for (ssize_t j=0; j<xc; ++j)
+                Cout[yc*j+i] = C[yc*j+k];
+            i++;
         }
     }
+//     }
+//     WARNING: not tested yet
+//     else { // use max
+//         for (ssize_t ij=0; ij<xc*yc; ++ij)
+//             Cout[ij] = C[ij];
+//
+//         for (ssize_t i=0; i<xc-1; ++i) {
+//             ssize_t wi = i, wj = i;
+//
+//             for (ssize_t ni=i; ni<xc; ++ni) {
+//                 for (ssize_t nj=i; nj<yc; ++nj) {
+//                 // find wi, wj = argmax C[ni,nj]
+//                 if (C[wi*yc+wj] < C[ni*yc+nj]) { wi = ni; wj = nj; }
+//             }
+//             // swap columns i and wj
+//             for (ssize_t j=0; j<xc; ++j) {
+//                 std::swap(C[j*yc+i], C[j*yc+wj]);
+//             }
+//             // swap rows i and wi
+//             for (ssize_t k=0; k<yc; ++k) {
+//                 std::swap(C[i*yc+k], C[wi*yc+k]);
+//             }
+//         }
+//     }
 }
+
 
 
 /*! Computes the confusion matrix (as a dense matrix) - a 2-way contingency table
