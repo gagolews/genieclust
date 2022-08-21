@@ -103,11 +103,11 @@ ssize_t __augmenting_path(
  *
  *  @return 0 on success
  */
-template<class T> ssize_t linear_sum_assignment(
-    T* C,
+template<class T1, class T2> ssize_t linear_sum_assignment(
+    T1* C,
     ssize_t nr,
     ssize_t nc,
-    ssize_t* output_col4row,
+    T2* output_col4row,
     bool minimise=true)
 {
     if (nr > nc)
@@ -175,7 +175,7 @@ template<class T> ssize_t linear_sum_assignment(
     }
 
     for (ssize_t i = 0; i < nr; i++) {
-        output_col4row[i] = col4row[i];
+        output_col4row[i] = (T2)col4row[i];
     }
 
     return 0;

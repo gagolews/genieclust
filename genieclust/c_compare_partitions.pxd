@@ -49,6 +49,9 @@ cdef extern from "../src/c_compare_partitions.h":
         ssize_t xmin, ssize_t ymin,
         ssize_t* x, ssize_t* y, ssize_t n)
 
+    void Cnormalizing_permutation(ssize_t* C, ssize_t xc, ssize_t yc,
+        ssize_t* Iout)
+
     void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc, ssize_t* Cout)
 
     CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C,

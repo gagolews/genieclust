@@ -33,8 +33,14 @@ for (score in scores) {
             s <- score(x, y)
             expect_true(s < 1.0+1e-9)
 
+            C <- table(x, y)
             expect_equal(
-                sum(table(x, y)), sum(normalized_confusion_matrix(x, y))
+                sum(C), sum(normalized_confusion_matrix(x, y))
+            )
+
+            expect_equivalent(
+                normalized_confusion_matrix(x, y),
+                unclass(C[, normalizing_permutation(C)])
             )
         }
     }

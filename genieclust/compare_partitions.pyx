@@ -42,6 +42,80 @@ import numpy as np
 from . cimport c_compare_partitions
 
 
+cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(ssize_t[:, ::1] C):
+    """
+    genieclust.compare_partitions.normalizing_permutation(C)
+
+    Determines the permutation of columns of a confusion matrix
+    so that the sum of the elements on the main diagonal is the largest
+    possible (by solving the maximal assignment problem)
+
+
+    Parameters
+    ----------
+
+    C : ndarray
+        A ``c_contiguous`` confusion matrix (contingency table),
+        whose row count is not greater than the column count
+
+
+
+    Returns
+    -------
+
+    ndarray
+        A vector of indexes
+
+
+    See also
+    --------
+
+    genieclust.compare_partitions.confusion_matrix :
+        Determines the confusion matrix
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
+
+
+    Notes
+    -----
+
+    This function comes in handy when `C` summarises the results generated
+    by clustering algorithms, where the actual label values do not matter
+    (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning).
+
+
+    Examples
+    --------
+
+    >>> x = np.r_[1, 2, 1, 2, 2, 2, 3, 1, 2, 1, 2, 1, 2, 2]
+    >>> y = np.r_[3, 3, 3, 3, 2, 2, 3, 1, 2, 3, 2, 3, 2, 2]
+    >>> C = genieclust.compare_partitions.confusion_matrix(x, y)
+    >>> C
+    array([[1, 0, 4],
+           [0, 6, 2],
+           [0, 0, 1]])
+    >>> I = genieclust.compare_partitions.normalizing_permutation(C)
+    >>> I
+    array([2, 1, 0])
+    >>> C[:, I]
+    array([[4, 0, 1],
+           [2, 6, 0],
+           [1, 0, 0]])
+    """
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
+    if xc > yc:
+        raise ValueError("number of rows cannot be greater than the number of columns")
+
+    c_compare_partitions.Cnormalizing_permutation(&C[0,0], xc, yc, &perm[0])
+
+    return perm
+
+
 cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
@@ -78,6 +152,10 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
         Determines the confusion matrix and permutes the rows and columns
         so that the sum of the elements of the main diagonal is the largest
         possible
+
+    genieclust.compare_partitions.normalizing_permutation :
+        The underlying function to determine the ordering permutation
+        of the columns
 
 
     Notes
@@ -209,8 +287,9 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     See also
     --------
 
-    genieclust.compare_partitions.normalize_confusion_matrix :
-        The underlying function to permute the rows and columns
+    genieclust.compare_partitions.normalizing_permutation :
+        The underlying function to determine the ordering
+        permutation of the columns
 
     genieclust.compare_partitions.confusion_matrix :
         Determines the confusion matrix

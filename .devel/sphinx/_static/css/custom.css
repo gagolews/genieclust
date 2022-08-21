@@ -114,14 +114,6 @@ strong.command, .rst-content code, .rst-content div[class^="highlight"] pre, .rs
 /*     font-style: normal; */
 }
 
-.rst-content div.figure  {
-    text-align: center;
-}
-
-.rst-content div.figure p.caption {
-    text-align: left;
-}
-
 /* -------------------------------------------------------------------------- */
 
 /* red theme */
@@ -159,11 +151,11 @@ strong.command, .rst-content code, .rst-content div[class^="highlight"] pre, .rs
 
 /* -------------------------------------------------------------------------- */
 
-.rst-content div.figure  {
+.rst-content div.figure, .rst-content figure  {
     text-align: center;
 }
 
-.rst-content div.figure p.caption {
+.rst-content div.figure p.caption, .rst-content figure figcaption {
     text-align: left;
 }
 

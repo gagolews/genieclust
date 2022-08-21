@@ -146,8 +146,12 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' \code{normalized_confusion_matrix()} computes the confusion matrix
 //' and permutes its rows and columns so that the sum of the elements
 //' of the main diagonal is the largest possible (by solving
-//' the maximal assignment problem). The functions only accepts \eqn{K \leq L}.
-//' Note that the built-in
+//' the maximal assignment problem).
+//' The function only accepts \eqn{K \leq L}.
+//' The sole reordering of the columns of a confusion matrix can be determined
+//' by calling \code{normalizing_permutation()}.
+//'
+//' Also note that the built-in
 //' \code{\link{table}()} determines the standard confusion matrix.
 //'
 //' @references
@@ -201,6 +205,7 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' normalized_accuracy(y_true, y_pred)
 //' pair_sets_index(y_true, y_pred)
 //' normalized_confusion_matrix(y_true, y_pred)
+//' normalizing_permutation(y_true, y_pred)
 //'
 //' @rdname comparing_partitions
 //' @export
@@ -351,4 +356,26 @@ IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
             for (ssize_t j=0; j<yc; ++j)
                 Cout(i, j) = C_out_Corder[j+i*yc];
     return Cout;
+}
+
+
+
+//' @rdname comparing_partitions
+//' @export
+//[[Rcpp::export]]
+IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)
+{
+    ssize_t xc, yc;
+    std::vector<int> C(
+        get_contingency_matrix(x, y, &xc, &yc)
+    );
+
+    IntegerVector Iout(yc);
+
+    Cnormalizing_permutation(C.data(), xc, yc, INTEGER(SEXP(Iout)));
+
+    for (ssize_t j=0; j<yc; ++j)
+        Iout[j]++; // 0-based -> 1-based
+
+    return Iout;
 }

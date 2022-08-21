@@ -11,6 +11,7 @@
 \alias{normalized_accuracy}
 \alias{pair_sets_index}
 \alias{normalized_confusion_matrix}
+\alias{normalizing_permutation}
 \title{Pairwise Partition Similarity Scores}
 \usage{
 adjusted_rand_score(x, y = NULL)
@@ -32,6 +33,8 @@ normalized_accuracy(x, y = NULL)
 pair_sets_index(x, y = NULL)
 
 normalized_confusion_matrix(x, y = NULL)
+
+normalizing_permutation(x, y = NULL)
 }
 \arguments{
 \item{x}{an integer vector of length n (or an object coercible to)
@@ -106,8 +109,12 @@ of a transformed version of the confusion matrix.
 \code{normalized_confusion_matrix()} computes the confusion matrix
 and permutes its rows and columns so that the sum of the elements
 of the main diagonal is the largest possible (by solving
-the maximal assignment problem). The functions only accepts \eqn{K \leq L}.
-Note that the built-in
+the maximal assignment problem).
+The function only accepts \eqn{K \leq L}.
+The sole reordering of the columns of a confusion matrix can be determined
+by calling \code{normalizing_permutation()}.
+
+Also note that the built-in
 \code{\link{table}()} determines the standard confusion matrix.
 }
 \examples{
@@ -123,6 +130,7 @@ adjusted_mi_score(y_true, y_pred)
 normalized_accuracy(y_true, y_pred)
 pair_sets_index(y_true, y_pred)
 normalized_confusion_matrix(y_true, y_pred)
+normalizing_permutation(y_true, y_pred)
 
 }
 \references{

@@ -3,6 +3,10 @@
 
 ## 1.1.x (under development)
 
+-  [GENERAL] ..TO DO.. We now mention that the partition similarity scores
+   are discussed in more detail at
+   <https://clustering-benchmarks.gagolewski.com>.
+
 -  [Python and R] Implementations of the so-called internal cluster
    validity measures discussed in
    DOI:[10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
@@ -21,6 +25,13 @@
    `silhouette_w_index`,
    `wcnn_index`.
 
+-  [BACKWARD INCOMPATIBILITY] `compare_partitions.normalized_confusion_matrix`
+   now solves the maximal assignment problem instead of applying
+   the primitive partial pivoting.
+
+-  [Python and R] New function: `normalizing_permutation`.
+
+-  [R] New function: `normalized_confusion_matrix`.
 
 
 ## 1.0.1 (2022-08-08)

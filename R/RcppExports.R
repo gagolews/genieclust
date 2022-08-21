@@ -60,8 +60,12 @@
 #' \code{normalized_confusion_matrix()} computes the confusion matrix
 #' and permutes its rows and columns so that the sum of the elements
 #' of the main diagonal is the largest possible (by solving
-#' the maximal assignment problem). The functions only accepts \eqn{K \leq L}.
-#' Note that the built-in
+#' the maximal assignment problem).
+#' The function only accepts \eqn{K \leq L}.
+#' The sole reordering of the columns of a confusion matrix can be determined
+#' by calling \code{normalizing_permutation()}.
+#'
+#' Also note that the built-in
 #' \code{\link{table}()} determines the standard confusion matrix.
 #'
 #' @references
@@ -115,6 +119,7 @@
 #' normalized_accuracy(y_true, y_pred)
 #' pair_sets_index(y_true, y_pred)
 #' normalized_confusion_matrix(y_true, y_pred)
+#' normalizing_permutation(y_true, y_pred)
 #'
 #' @rdname comparing_partitions
 #' @export
@@ -174,6 +179,12 @@ pair_sets_index <- function(x, y = NULL) {
 #' @export
 normalized_confusion_matrix <- function(x, y = NULL) {
     .Call(`_genieclust_normalized_confusion_matrix`, x, y)
+}
+
+#' @rdname comparing_partitions
+#' @export
+normalizing_permutation <- function(x, y = NULL) {
+    .Call(`_genieclust_normalizing_permutation`, x, y)
 }
 
 #' @title Internal Cluster Validity Measures

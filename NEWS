@@ -29,7 +29,7 @@
    now solves the maximal assignment problem instead of applying
    the primitive partial pivoting.
 
--  [Python and R] TODO: ... New function: `normalize_cluster_ids`.
+-  [Python and R] New function: `normalizing_permutation`.
 
 -  [R] New function: `normalized_confusion_matrix`.
 

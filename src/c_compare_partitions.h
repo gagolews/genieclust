@@ -101,6 +101,54 @@ struct CComparePartitionsInfoResult {
 
 
 
+/*! Normalising permutation for the columns of a confusion matrix
+ *
+ *  Determines the reordering of columns in a given confusion matrix
+ *  so that the sum of the elements on the main diagonal is the largest
+ *  possible (by solving the maximal assignment problem).
+ *
+ *  This comes in handy if C summarises the results generated
+ *  by clustering algorithms, where actual label values do not matter
+ *  (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
+ *
+ *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C
+ *  @param yc number of columns in C; xc <= yc
+ *  @param Iout [out] output sequence of length yc
+ *
+ *  Note that Iout is modified in-place (overwritten).
+ */
+template<class T1, class T2>
+void Cnormalizing_permutation(
+    const T1* C, ssize_t xc, ssize_t yc, T2* Iout
+) {
+    GENIECLUST_ASSERT(xc <= yc);
+
+    std::vector<bool> column_used(yc, false);
+
+    ssize_t retval = linear_sum_assignment(
+        C, xc, yc, Iout, /*minimise*/false
+    );
+    GENIECLUST_ASSERT(retval == 0);
+
+    // only Iout[0]..Iout[xc-1] are set
+    ssize_t i;
+    for (i=0; i<xc; ++i) {
+        column_used[ Iout[i] ] = true;
+    }
+
+    // the remainder:
+    for (ssize_t k=0; k<yc; ++k) {
+        if (!column_used[k]) {
+            column_used[k] = true;
+            Iout[i] = k;
+            i++;
+
+            if (i == yc) break;
+        }
+    }
+}
 
 
 /*! Applies pivoting to a given confusion matrix
@@ -109,9 +157,7 @@ struct CComparePartitionsInfoResult {
  *  on the main diagonal is the largest possible (by solving
  *  the maximal assignment problem).
  *
- *  This comes in handy if C summarises the results generated
- *  by clustering algorithms, where actual label values do not matter
- *  (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
+ *  See Cnormalizing_permutation().
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
@@ -128,29 +174,17 @@ void Capply_pivoting(
     GENIECLUST_ASSERT(xc <= yc);
 
 //     if (use_sum) {
-    std::vector<ssize_t> output_col4row(xc);
-    std::vector<bool> column_used(yc, false);
 
-    ssize_t retval = linear_sum_assignment(
-        C, xc, yc, output_col4row.data(), /*minimise*/false
-    );
-    GENIECLUST_ASSERT(retval == 0);
+    std::vector<ssize_t> output_col4row(yc);
+
+    Cnormalizing_permutation(C, xc, yc, /*retval*/output_col4row.data());
 
     ssize_t i;
-    for (i=0; i<xc; ++i) {
-        column_used[ output_col4row[i] ] = true;
+    for (i=0; i<yc; ++i) {
         for (ssize_t j=0; j<xc; ++j)
             Cout[yc*j+i] = C[yc*j+output_col4row[i]];
     }
-    // the remainder:
-    for (ssize_t k=0; k<yc; ++k) {
-        if (!column_used[k]) {
-            column_used[k] = true;
-            for (ssize_t j=0; j<xc; ++j)
-                Cout[yc*j+i] = C[yc*j+k];
-            i++;
-        }
-    }
+
 //     }
 //     WARNING: not tested yet
 //     else { // use max
