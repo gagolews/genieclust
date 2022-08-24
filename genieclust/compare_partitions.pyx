@@ -391,7 +391,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     observations specified as vectors of labels. Moreover, let `C` be the
     confusion matrix (with :math:`K` rows and :math:`L` columns,
     :math:`K \\leq L`) corresponding to `x` and `y`, see also
-    `genieclust.compare_partitions.confusion_matrix`.
+    :func:`confusion_matrix`.
 
     This function implements a few scores that aim to quantify
     the similarity between `x` and `y`.
@@ -547,8 +547,8 @@ cpdef dict compare_partitions2(x, y):
     Notes
     -----
 
-    Calls ``genieclust.compare_partitions.compare_partitions(C)``,
-    where ``C = genieclust.compare_partitions.confusion_matrix(x, y)``.
+    Calls :func:`compare_partitions` on the result of
+    returned by :func:`confusion_matrix`.
 
 
     """
@@ -592,7 +592,7 @@ cpdef double adjusted_rand_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
     """
 
@@ -636,7 +636,7 @@ cpdef double rand_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -681,7 +681,7 @@ cpdef double adjusted_fm_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -726,7 +726,7 @@ cpdef double fm_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -771,7 +771,7 @@ cpdef double mi_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -817,7 +817,7 @@ cpdef double normalized_mi_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -862,7 +862,7 @@ cpdef double adjusted_mi_score(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
 
     """
@@ -914,7 +914,7 @@ cpdef double normalized_accuracy(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
     """
 
@@ -969,7 +969,7 @@ cpdef double pair_sets_index(x, y):
     Notes
     -----
 
-    See `genieclust.compare_partitions.compare_partitions` for more details.
+    See :func:`compare_partitions` for more details.
 
     """
 

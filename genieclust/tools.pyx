@@ -11,7 +11,7 @@
 
 
 """
-Functions a person might find useful, but not necessarily
+Functions one might find useful, but not necessarily
 """
 
 
@@ -99,10 +99,6 @@ cpdef np.ndarray[ssize_t] cummin(T[:] x):
 
     genieclust.tools.cummax : Cumulative maximum
 
-    numpy.cumsum : Cumulative sum
-
-    numpy.cumprod : Cumulative product
-
 
     Examples
     --------
@@ -151,10 +147,6 @@ cpdef np.ndarray[ssize_t] cummax(T[:] x):
     --------
 
     genieclust.tools.cummin : Cumulative minimum
-
-    numpy.cumsum : Cumulative sum
-
-    numpy.cumprod : Cumulative product
 
 
     Examples
@@ -360,7 +352,7 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
 
     Given a pairwise distance matrix,
     computes the mutual reachability distance w.r.t. the given
-    core distance vector, see genieclust.internal.core_distance().
+    core distance vector; see `internal.core_distance`.
 
     See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
     estimates for data clustering, visualization, and outlier detection,
