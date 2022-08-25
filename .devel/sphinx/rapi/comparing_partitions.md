@@ -25,7 +25,7 @@ adjusted_mi_score(x, y = NULL)
 
 normalized_accuracy(x, y = NULL)
 
-pair_sets_index(x, y = NULL)
+pair_sets_index(x, y = NULL, simplified = FALSE)
 
 normalized_confusion_matrix(x, y = NULL)
 
@@ -34,10 +34,11 @@ normalizing_permutation(x, y = NULL)
 
 ## Arguments
 
-|     |                                                                                                                                                                                                                                             |
-|-----|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `x` | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set, or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
-| `y` | an integer vector of length n (or an object coercible to) representing an L-partition of the same set), or NULL (if x is an K\*L confusion matrix)                                                                                          |
+|           |                                                                                                                                                                                                                                             |
+|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `x`       | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set, or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
+| `y`       | an integer vector of length n (or an object coercible to) representing an L-partition of the same set), or NULL (if x is an K\*L confusion matrix)                                                                                          |
+| `Whether` | to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18), see (Rezaei, Franti, 2016).                                                                                                               |
 
 ## Details
 
@@ -51,9 +52,9 @@ Note that both the (unadjusted) Rand and FM scores are bounded from below by $1/
 
 `mi_score()`, `adjusted_mi_score()` and `normalized_mi_score()` are information-theoretic scores, based on mutual information, see the definition of $AMI_{sum}$ and $NMI_{sum}$ in (Vinh et al., 2010).
 
-`normalized_accuracy()` is defined as $(Accuracy(C_\sigma)-1/L)/(1-1/L)$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y`, $K \leq L$, with columns permuted based on the solution to the Maximal Linear Sum Assignment Problem; see [`normalized_confusion_matrix`](comparing_partitions.md). $Accuracy(C_\sigma)$ is sometimes referred to as Purity, e.g., in (Rendon et al. 2011).
+`normalized_accuracy()` is defined as $(Accuracy(C_\sigma)-1/L)/(1-1/L)$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y`, $K \leq L$, with columns permuted based on the solution to the Maximal Linear Sum Assignment Problem; see [`normalized_confusion_matrix`](comparing_partitions.md). The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate.
 
-`pair_sets_index()` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016), $K \leq L$. Pairing is based on the solution to the Linear Sum Assignment Problem of a transformed version of the confusion matrix.
+`pair_sets_index()` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016), $K \leq L$. Pairing is based on the solution to the Linear Sum Assignment Problem of a transformed version of the confusion matrix. Its simplified version assumes E=1 in the definition of the index, i.e., uses Eq. (20) instead of (18).
 
 `normalized_confusion_matrix()` computes the confusion matrix and permutes its rows and columns so that the sum of the elements of the main diagonal is the largest possible (by solving the maximal assignment problem). The function only accepts $K \leq L$. The sole reordering of the columns of a confusion matrix can be determined by calling `normalizing_permutation()`.
 

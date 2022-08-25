@@ -9,7 +9,8 @@ In this section we present more detailed results for
 some other partition similarity measures implemented in the `genieclust`
 package — Fowlkes–Mallows :cite:`fm`, adjusted Rand :cite:`comparing_partitions`,
 adjusted and normalised mutual information :cite:`nmi`,
-normalised accuracy (purity) and pair sets index :cite:`psi`,
+normalised accuracy (which is based on set-matching classification rate),
+and pair sets index :cite:`psi`,
 see the API documentation of :mod:`genieclust.compare_partitions` for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.

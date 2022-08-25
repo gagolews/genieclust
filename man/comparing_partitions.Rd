@@ -30,7 +30,7 @@ adjusted_mi_score(x, y = NULL)
 
 normalized_accuracy(x, y = NULL)
 
-pair_sets_index(x, y = NULL)
+pair_sets_index(x, y = NULL, simplified = FALSE)
 
 normalized_confusion_matrix(x, y = NULL)
 
@@ -45,6 +45,9 @@ or a confusion matrix with K rows and L columns
 \item{y}{an integer vector of length n (or an object coercible to)
 representing an L-partition of the same set),
 or NULL (if x is an K*L confusion matrix)}
+
+\item{Whether}{to assume E=1 in the definition of the pair sets index index,
+i.e., use Eq. (20) instead of (18), see (Rezaei, Franti, 2016).}
 }
 \value{
 Each partition similarity score is a
@@ -98,13 +101,15 @@ of the confusion matrix for given \code{x} and \code{y},
 \eqn{K \leq L}, with columns permuted based on the solution to the
 Maximal Linear Sum Assignment Problem;
 see \code{\link{normalized_confusion_matrix}}.
-\eqn{Accuracy(C_\sigma)} is sometimes referred to as Purity,
-e.g., in (Rendon et al. 2011).
+The \eqn{Accuracy(C_\sigma)} part is sometimes referred to as
+set-matching classification rate.
 
 \code{pair_sets_index()} gives the Pair Sets Index (PSI)
 adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
 Pairing is based on the solution to the Linear Sum Assignment Problem
 of a transformed version of the confusion matrix.
+Its simplified version assumes E=1 in the definition of the index,
+i.e., uses Eq. (20) instead of (18).
 
 \code{normalized_confusion_matrix()} computes the confusion matrix
 and permutes its rows and columns so that the sum of the elements

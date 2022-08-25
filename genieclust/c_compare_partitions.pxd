@@ -45,18 +45,19 @@ cdef extern from "../src/c_compare_partitions.h":
 
     void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
 
-    void Ccontingency_table(ssize_t* C, ssize_t xc, ssize_t yc,
+    void Ccontingency_table(ssize_t* Cout, ssize_t xc, ssize_t yc,
         ssize_t xmin, ssize_t ymin,
         ssize_t* x, ssize_t* y, ssize_t n)
 
-    void Cnormalizing_permutation(ssize_t* C, ssize_t xc, ssize_t yc,
+    void Cnormalizing_permutation[T](const T* C, ssize_t xc, ssize_t yc,
         ssize_t* Iout)
 
-    void Capply_pivoting(ssize_t* C, ssize_t xc, ssize_t yc, ssize_t* Cout)
+    void Capply_pivoting(const ssize_t* C, ssize_t xc, ssize_t yc, ssize_t* Cout)
 
     CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C,
         ssize_t xc, ssize_t yc)
     CComparePartitionsInfoResult  Ccompare_partitions_info(const ssize_t* C,
         ssize_t xc, ssize_t yc)
     double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
-    double Ccompare_partitions_psi(const ssize_t* C, ssize_t xc, ssize_t yc)
+    double Ccompare_partitions_psi(
+        const ssize_t* C, ssize_t xc, ssize_t yc, bint simplified)

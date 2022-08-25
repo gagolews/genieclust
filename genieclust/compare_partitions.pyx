@@ -42,7 +42,7 @@ import numpy as np
 from . cimport c_compare_partitions
 
 
-cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(ssize_t[:, ::1] C):
+cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(C):
     """
     genieclust.compare_partitions.normalizing_permutation(C)
 
@@ -55,7 +55,7 @@ cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(ssize_t[:, ::1] C):
     ----------
 
     C : ndarray
-        A ``c_contiguous`` confusion matrix (contingency table),
+        A confusion matrix (contingency table),
         whose row count is not greater than the column count
 
 
@@ -105,18 +105,19 @@ cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(ssize_t[:, ::1] C):
            [2, 6, 0],
            [1, 0, 0]])
     """
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[double,ndim=2] _C = np.array(C, dtype=np.double)
+    cdef ssize_t xc = _C.shape[0]
+    cdef ssize_t yc = _C.shape[1]
     cdef np.ndarray[ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
     if xc > yc:
         raise ValueError("number of rows cannot be greater than the number of columns")
 
-    c_compare_partitions.Cnormalizing_permutation(&C[0,0], xc, yc, &perm[0])
+    c_compare_partitions.Cnormalizing_permutation(&_C[0,0], xc, yc, &perm[0])
 
     return perm
 
 
-cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
+cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
 
@@ -130,7 +131,7 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
     ----------
 
     C : ndarray
-        A ``c_contiguous`` confusion matrix (contingency table),
+        A confusion matrix (contingency table),
         whose row count is not greater than the column count
 
 
@@ -181,12 +182,13 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(ssize_t[:, ::1] C):
            [2, 6, 0],
            [1, 0, 0]])
     """
-    cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(C, dtype=np.intp)
+    cdef np.ndarray[ssize_t,ndim=2] _C = np.array(C, dtype=np.intp)
+    cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(_C, dtype=np.intp)
     cdef ssize_t xc = C_normalized.shape[0]
     cdef ssize_t yc = C_normalized.shape[1]
     if xc > yc:
         raise ValueError("number of rows cannot be greater than the number of columns")
-    c_compare_partitions.Capply_pivoting(&C[0,0], xc, yc, &C_normalized[0,0])
+    c_compare_partitions.Capply_pivoting(&_C[0,0], xc, yc, &C_normalized[0,0])
     return C_normalized
 
 
@@ -349,9 +351,12 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
         ``'ami'``
             Adjusted mutual information   :math:`(\\mathrm{AMI}_\\mathrm{sum})`
         ``'nacc'``
-            Normalised accuracy (purity)
+            Normalised (set matching) accuracy
         ``'psi'``
             Pair sets index
+        ``'spsi'``
+            Simplified pair sets index
+
 
 
     See also
@@ -390,14 +395,14 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     For instance, these can be two clusterings of a dataset with :math:`n`
     observations specified as vectors of labels. Moreover, let `C` be the
     confusion matrix (with :math:`K` rows and :math:`L` columns,
-    :math:`K \\leq L`) corresponding to `x` and `y`, see also
+    :math:`K \\leq L`) corresponding to `x` and `y`; see also
     :func:`confusion_matrix`.
 
     This function implements a few scores that aim to quantify
     the similarity between `x` and `y`.
     Partition similarity scores can be used as external cluster validity
     measures — for comparing the outputs of clustering algorithms
-    with reference (ground truth) labels, see, e.g., [5]_
+    with reference (ground truth) labels; see, e.g., [5]_
     for a suite of benchmark datasets.
 
     Every index except `mi_score` (which computes the mutual
@@ -426,20 +431,22 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     see the definition of :math:`\\mathrm{AMI}_\\mathrm{sum}`
     and :math:`\\mathrm{NMI}_\\mathrm{sum}` in [4]_.
 
-    `normalized_accuracy` is defined as
+    `normalized_accuracy` is a measure defined as
     :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/L)/(1-1/L)`,
     where :math:`C_\\sigma` is a version of the confusion matrix
     for given `x` and `y`, :math:`K \\leq L`, with columns permuted
     based on the solution to the Maximal Linear Sum Assignment Problem
     (see `normalize_confusion_matrix`).
-    :math:`\\mathrm{Accuracy}(C_\\sigma)` is sometimes referred to as Purity,
-    e.g., in [2]_.
+    Note that the :math:`\\mathrm{Accuracy}(C_\\sigma)` part
+    is sometimes referred to in the literature as
+    set-matching classification rate.
 
     `pair_sets_index` gives the Pair Sets Index (PSI)
     adjusted for chance [3]_, :math:`K \\leq L`.
     Pairing is based on the solution to the Linear Sum Assignment Problem
     of a transformed version of the confusion matrix.
-
+    Its simplified version assumes E=1 in the definition of the index,
+    i.e., uses Eq. (20) instead of (18); see [3]_.
 
 
     References
@@ -482,10 +489,10 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
            [ 8,  2]])
     >>> {k : round(v, 2) for k, v in
     ...      genieclust.compare_partitions.compare_partitions(C).items()}
-    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65}
+    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63}
     >>> {k : round(v, 2) for k, v in
     ...      genieclust.compare_partitions.compare_partitions2(x,y).items()}
-    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65}
+    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63}
     >>> round(genieclust.compare_partitions.adjusted_rand_score(x, y), 2)
     0.49
 
@@ -498,11 +505,15 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
     cdef dict res2 = c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc)
     cdef double nacc = c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
-    cdef double psi = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
-    return {**res1,
-            **res2,
-            "nacc": nacc,
-            "psi": psi}
+    cdef double psi = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc, False)
+    cdef double psi_simplified = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc, True)
+    return {
+        **res1,
+        **res2,
+        "nacc": nacc,
+        "psi": psi,
+        "spsi": psi_simplified,
+    }
 
 
 
@@ -929,7 +940,7 @@ cpdef double normalized_accuracy(x, y):
 
 
 
-cpdef double pair_sets_index(x, y):
+cpdef double pair_sets_index(x, y, bint simplified=False):
     """
     genieclust.compare_partitions.pair_sets_index(x, y)
 
@@ -943,6 +954,9 @@ cpdef double pair_sets_index(x, y):
         Two vectors of "small" integers of identical lengths,
         representing two partitions of the same set.
 
+    simplified : bool
+        Whether to assume E=1 in the definition of the index,
+        i.e., use Eq. (20) instead of (18); see [1]_.
 
     Returns
     -------
@@ -971,6 +985,15 @@ cpdef double pair_sets_index(x, y):
 
     See :func:`compare_partitions` for more details.
 
+
+    References
+    ----------
+
+    .. [1]
+        Rezaei M., Franti P., Set matching measures for external cluster validity,
+        *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016,
+        2173-2186. https://doi.org/10.1109/TKDE.2016.2551240.
+
     """
 
     cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
@@ -979,5 +1002,7 @@ cpdef double pair_sets_index(x, y):
     if xc > yc:
         raise ValueError("Number of rows in the confusion matrix "
             "must be less than or equal to the number of columns.")
-    return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
+    return c_compare_partitions.Ccompare_partitions_psi(
+        &C[0,0], xc, yc, simplified
+    )
 

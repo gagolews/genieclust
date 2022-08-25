@@ -107,14 +107,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // pair_sets_index
-double pair_sets_index(RObject x, RObject y);
-RcppExport SEXP _genieclust_pair_sets_index(SEXP xSEXP, SEXP ySEXP) {
+double pair_sets_index(RObject x, RObject y, bool simplified);
+RcppExport SEXP _genieclust_pair_sets_index(SEXP xSEXP, SEXP ySEXP, SEXP simplifiedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(pair_sets_index(x, y));
+    Rcpp::traits::input_parameter< bool >::type simplified(simplifiedSEXP);
+    rcpp_result_gen = Rcpp::wrap(pair_sets_index(x, y, simplified));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -356,7 +357,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_normalized_mi_score", (DL_FUNC) &_genieclust_normalized_mi_score, 2},
     {"_genieclust_adjusted_mi_score", (DL_FUNC) &_genieclust_adjusted_mi_score, 2},
     {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
-    {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 2},
+    {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 3},
     {"_genieclust_normalized_confusion_matrix", (DL_FUNC) &_genieclust_normalized_confusion_matrix, 2},
     {"_genieclust_normalizing_permutation", (DL_FUNC) &_genieclust_normalizing_permutation, 2},
     {"_genieclust_calinski_harabasz_index", (DL_FUNC) &_genieclust_calinski_harabasz_index, 2},

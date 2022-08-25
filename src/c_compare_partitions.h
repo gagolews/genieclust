@@ -229,17 +229,17 @@ void Capply_pivoting(
  * The elements in C are modified in-place.
  */
 template<class T>
-void Ccontingency_table(T* C, ssize_t xc, ssize_t yc,
+void Ccontingency_table(T* Cout, ssize_t xc, ssize_t yc,
         T xmin, T ymin,
         const T* x, const T* y, ssize_t n)
 {
     for (ssize_t j=0; j<xc*yc; ++j)
-        C[j] = 0;
+        Cout[j] = 0;
 
     for (ssize_t i=0; i<n; ++i) {
         GENIECLUST_ASSERT(   0 <= (x[i]-xmin)*yc +(y[i]-ymin));
         GENIECLUST_ASSERT(xc*yc > (x[i]-xmin)*yc +(y[i]-ymin));
-        C[(x[i]-xmin)*yc +(y[i]-ymin)]++;
+        Cout[(x[i]-xmin)*yc +(y[i]-ymin)]++;
     }
 }
 
@@ -397,9 +397,6 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  with columns permuted based on the solution to the
  *  maximal linear sum assignment problem.
  *
- *  Accuracy(C[sigma]) is sometimes referred to as purity,
- *  e.g. in (Rendon et al. 2011).
- *
  *
  *  References
  *  ==========
@@ -407,7 +404,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
  *  Internal versus external cluster validation indexes,
  *  International Journal of Computers and Communications 5(1), 2011, pp. 27-34.
-
+ *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
  *  @param xc number of rows in C, xc <= yc
@@ -454,11 +451,12 @@ double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
  *  @param C a c_contiguous confusion matrix of size xc*yc
  *  @param xc number of rows in C, xc <= yc
  *  @param yc number of columns in C
+ *  @param simplified whether to assume E=1 in the definition of the index, i.e., use Eq. (20) instead of (18)
  *
  *  @return the computed score
  */
 template<class T>
-double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc)
+double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc, bool simplified=false)
 {
     GENIECLUST_ASSERT(xc <= yc);
 
@@ -489,12 +487,18 @@ double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc)
     for (ssize_t i=0; i<xc; ++i)
         s += S[yc*i+output_col4row2[i]];
 
-    std::sort(sum_x.begin(), sum_x.end());
-    std::sort(sum_y.begin(), sum_y.end());
-    double es = 0.0;
-    for (ssize_t i=0; i<xc; ++i)
-        es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
-    es /= (double)n;
+    double es;
+    if (simplified) {
+        es = 1.0;
+    }
+    else {
+        std::sort(sum_x.begin(), sum_x.end());
+        std::sort(sum_y.begin(), sum_y.end());
+        es = 0.0;
+        for (ssize_t i=0; i<xc; ++i)
+            es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
+        es /= (double)n;
+    }
 
     double psi  = (s-es)/(yc-es);
     if (psi<0.0) psi = 0.0;

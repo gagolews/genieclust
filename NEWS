@@ -29,10 +29,12 @@
    now solves the maximal assignment problem instead of applying
    the primitive partial pivoting.
 
--  [Python and R] New function: `normalizing_permutation`
-   (`compare_partitions` module)
+-  [Python and R] New function: `compare_partitions.normalizing_permutation`
 
 -  [R] New function: `normalized_confusion_matrix`.
+
+-  [Python and R] New parameter to `compare_partitions.pair_sets_index`:
+      `simplified`.
 
 -  [Python] New parameters to `plots.plot_scatter`:
    `axis`, `title`, `xlabel`, `ylabel`, `xlim`, `ylim`.
