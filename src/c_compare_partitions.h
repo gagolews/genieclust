@@ -101,13 +101,24 @@ struct CComparePartitionsInfoResult {
 
 
 
+/*!
+ * Stores normalised set-matching scores
+ */
+struct CCompareSetMatchingResult {
+    double psi;
+    double spsi;
+};
+
+
+
+
 /*! Normalising permutation for the columns of a confusion matrix
  *
  *  Determines the reordering of columns in a given confusion matrix
  *  so that the sum of the elements on the main diagonal is the largest
  *  possible (by solving the maximal assignment problem).
  *
- *  This comes in handy if C summarises the results generated
+ *  Comes in handy if C summarises the results generated
  *  by clustering algorithms, where actual label values do not matter
  *  (e.g., (1, 2, 0) can be remapped to (0, 2, 1) with no change in meaning.
  *
@@ -392,18 +403,24 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 
 /*! Computes the normalised accuracy score between two partitions
  *
- *  Normalised accuracy is (Accuracy(C[sigma])-1.0/yc)/(1.0-1.0/yc),
- *  where C[sigma] is a version of the input confusion matrix
+ *  Normalised accuracy is (Accuracy(C[:,sigma])-1.0/yc)/(1.0-1.0/yc),
+ *  where C[:,sigma] is a version of the input confusion matrix
  *  with columns permuted based on the solution to the
  *  maximal linear sum assignment problem.
+ *
+ *  Accuracy(C[:,sigma]) is sometimes referred to as
+ *  set-matching classification rate or pivoted accuracy.
  *
  *
  *  References
  *  ==========
  *
- *  Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
- *  Internal versus external cluster validation indexes,
- *  International Journal of Computers and Communications 5(1), 2011, pp. 27-34.
+ *  Steinley D., Properties of the Hubert-Arabie adjusted Rand index,
+ *  Psychological Methods 9(3), 2004, pp. 386-396,
+ *  doi:10.1037/1082-989X.9.3.386.
+ *
+ *  Meila M., Heckerman D., An experimental comparison of model-based clustering
+ *  methods, Machine Learning 42, 2001, pp. 9--29, doi:10.1023/A:1007648401407.
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
@@ -430,16 +447,68 @@ double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
     for (ssize_t i=0; i<xc; ++i)
         t += C[yc*i+output_col4row[i]];
 
-    double pur = (double)t/(double)n;
-    return (pur-1.0/yc)/(1.0-1.0/yc);
+    double a = (double)t/(double)n;
+    return (a*yc-1.0)/(yc-1.0);
 
 }
 
 
 
+/*! Computes the adjusted asymmetric accuracy (AAA) score
+ *
+ *  AAA is asymmetric - we assume that rows in C determine the true (reference)
+ *  partition.
+ *
+ *  References
+ *  ==========
+ *
+ *  Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+ *  cluster validity measure, 2022, submitted for publication.
+ *
+ *
+ *  @param C a c_contiguous confusion matrix of size xc*yc
+ *  @param xc number of rows in C, xc == yc
+ *  @param yc number of columns in C
+ *
+ *  @return the computed score
+ */
+template<class T>
+double Ccompare_partitions_aaa(const T* C, ssize_t xc, ssize_t yc)
+{
+    GENIECLUST_ASSERT(xc == yc);
+
+    std::vector<double> sum_x(xc);
+    for (ssize_t i=0; i<xc; ++i) {
+        for (ssize_t j=0; j<yc; ++j) {
+            sum_x[i] += C[i*yc+j];
+        }
+    }
+
+    std::vector<double> S(xc*yc);
+    for (ssize_t i=0; i<xc; ++i) {
+        for (ssize_t j=0; j<yc; ++j) {
+            S[i*yc+j] = (double)C[i*yc+j]/(double)sum_x[i];
+        }
+    }
+
+    std::vector<ssize_t> output_col4row2(xc);
+    ssize_t retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
+    GENIECLUST_ASSERT(retval == 0);
+
+    double t = 0.0;
+    for (ssize_t i=0; i<xc; ++i)
+        t += S[yc*i+output_col4row2[i]];
+
+    return (t-1.0)/(yc-1.0);
+
+}
 
 
-/*! Computes the PSI (pair sets index) score
+/*! Computes the pair sets index (PSI) and its simplified version
+ *
+ *
+ *  SPSI (simplified PSI) assumes E=1 in the definition of the index
+ *  in (Rezaei, Franti 2016), i.e., uses Eq. (20) instead of (18) therein.
  *
  *  References
  *  ==========
@@ -448,16 +517,17 @@ double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
  *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
  *  doi:10.1109/TKDE.2016.2551240
  *
+ *
  *  @param C a c_contiguous confusion matrix of size xc*yc
  *  @param xc number of rows in C, xc <= yc
  *  @param yc number of columns in C
- *  @param simplified whether to assume E=1 in the definition of the index, i.e., use Eq. (20) instead of (18)
  *
- *  @return the computed score
+ *  @return the computed scores
  */
 template<class T>
-double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc, bool simplified=false)
-{
+CCompareSetMatchingResult Ccompare_partitions_psi(
+    const T* C, ssize_t xc, ssize_t yc
+) {
     GENIECLUST_ASSERT(xc <= yc);
 
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
@@ -488,22 +558,22 @@ double Ccompare_partitions_psi(const T* C, ssize_t xc, ssize_t yc, bool simplifi
         s += S[yc*i+output_col4row2[i]];
 
     double es;
-    if (simplified) {
-        es = 1.0;
-    }
-    else {
-        std::sort(sum_x.begin(), sum_x.end());
-        std::sort(sum_y.begin(), sum_y.end());
-        es = 0.0;
-        for (ssize_t i=0; i<xc; ++i)
-            es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
-        es /= (double)n;
-    }
+    std::sort(sum_x.begin(), sum_x.end());
+    std::sort(sum_y.begin(), sum_y.end());
+    es = 0.0;
+    for (ssize_t i=0; i<xc; ++i)
+        es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
+    es /= (double)n;
 
-    double psi  = (s-es)/(yc-es);
-    if (psi<0.0) psi = 0.0;
+    CCompareSetMatchingResult res;
 
-    return psi;
+    res.psi  = (s-es)/(yc-es);
+    if (res.psi<0.0) res.psi = 0.0;
+
+    res.spsi  = (s-1.0)/(yc-1.0);
+    if (res.spsi<0.0) res.spsi = 0.0;
+
+    return res;
 }
 
 

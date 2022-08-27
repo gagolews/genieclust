@@ -7,11 +7,10 @@
 
 
 """
-Partition similarity scores
+External cluster validity measures and partition similarity scores
 
-These indices can be used as external cluster validity measures,
-i.e., for comparing the outputs of clustering algorithms with reference
-(ground truth) labels.
+These indices can be used for comparing the outputs of clustering algorithms
+with reference (ground truth) labels.
 
 For more details, see the
 `Framework for Benchmarking Clustering Algorithms
@@ -318,8 +317,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     """
     genieclust.compare_partitions.compare_partitions(C)
 
-    Computes a series of partition similarity scores
-
+    Computes a series of external cluster validity measures
 
 
     Parameters
@@ -351,12 +349,15 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
         ``'ami'``
             Adjusted mutual information   :math:`(\\mathrm{AMI}_\\mathrm{sum})`
         ``'nacc'``
-            Normalised (set matching) accuracy
+            Normalised (set-matching) accuracy
         ``'psi'``
             Pair sets index
         ``'spsi'``
             Simplified pair sets index
-
+        ``'aaa'``
+            Adjusted asymmetric accuracy (or ``nan`` if :math:`K \\neq L`);
+            it is assumed that rows in `C` represent the ground-truth
+            partition
 
 
     See also
@@ -373,6 +374,10 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     genieclust.compare_partitions.compare_partitions2 :
         A wrapper around this function that accepts two label vectors on input
 
+
+    genieclust.compare_partitions.adjusted_asymmetric_accuracy
+    genieclust.compare_partitions.normalized_accuracy
+    genieclust.compare_partitions.pair_sets_index
     genieclust.compare_partitions.adjusted_rand_score
     genieclust.compare_partitions.rand_score
     genieclust.compare_partitions.adjusted_fm_score
@@ -380,8 +385,6 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     genieclust.compare_partitions.mi_score
     genieclust.compare_partitions.normalized_mi_score
     genieclust.compare_partitions.adjusted_mi_score
-    genieclust.compare_partitions.normalized_accuracy
-    genieclust.compare_partitions.pair_sets_index
 
 
 
@@ -400,17 +403,47 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
     This function implements a few scores that aim to quantify
     the similarity between `x` and `y`.
-    Partition similarity scores can be used as external cluster validity
-    measures — for comparing the outputs of clustering algorithms
-    with reference (ground truth) labels; see, e.g., [5]_
-    for a suite of benchmark datasets.
 
-    Every index except `mi_score` (which computes the mutual
-    information score) outputs the value of 1.0 if two identical partitions
-    are given.
+    These functions can be used as external cluster
+    validity measures, where we assume that `x` is
+    the reference (ground-truth) partition; compare [5]_.
+
+    Each index except `adjusted_asymmetric_accuracy`
+    can act as a pairwise partition similarity score: it is symmetric,
+    i.e., ``index(x, y) == index(y, x)``.
+
+    Each index except `mi_score` (which computes the mutual information score)
+    outputs the value of 1.0 if two identical partitions are given.
     Note that partitions are always defined up to a bijection of the set of
     possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
     represent the same 2-partition.
+
+    `adjusted_asymmetric_accuracy` [2]_
+    only accepts :math:`K = L`. It is an external cluster validity measure
+    which assumes that the label vector `x` (or rows in the confusion
+    matrix) represents the reference (ground truth) partition.
+    It is a corrected-for-chance summary of the proportion of correctly
+    classified points in each cluster (with cluster matching based on the
+    solution to the maximal linear sum assignment problem; see
+    :func:`normalize_confusion_matrix`), given by:
+    :math:`(\\max_\\sigma \\sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)`,
+    where :math:`C` is the confusion matrix.
+
+    `normalized_accuracy` is a measure defined as
+    :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/L)/(1-1/L)`,
+    where :math:`C_\\sigma` is a version of the confusion matrix
+    for given `x` and `y`, :math:`K \\leq L`, with columns permuted
+    based on the solution to the maximal linear sum assignment problem.
+    Note that the :math:`\\mathrm{Accuracy}(C_\\sigma)` part
+    is sometimes referred to as set-matching classification
+    rate or pivoted accuracy.
+
+    `pair_sets_index` gives the Pair Sets Index (PSI)
+    adjusted for chance [3]_, :math:`K \\leq L`.
+    Pairing is based on the solution to the linear sum assignment problem
+    of a transformed version of the confusion matrix.
+    Its simplified version assumes E=1 in the definition of the index,
+    i.e., uses Eq. (20) instead of (18); see [3]_.
 
     `rand_score` gives the Rand score (the "probability" of agreement
     between the two partitions) and `adjusted_rand_score` is its version
@@ -431,22 +464,6 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     see the definition of :math:`\\mathrm{AMI}_\\mathrm{sum}`
     and :math:`\\mathrm{NMI}_\\mathrm{sum}` in [4]_.
 
-    `normalized_accuracy` is a measure defined as
-    :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/L)/(1-1/L)`,
-    where :math:`C_\\sigma` is a version of the confusion matrix
-    for given `x` and `y`, :math:`K \\leq L`, with columns permuted
-    based on the solution to the Maximal Linear Sum Assignment Problem
-    (see `normalize_confusion_matrix`).
-    Note that the :math:`\\mathrm{Accuracy}(C_\\sigma)` part
-    is sometimes referred to in the literature as
-    set-matching classification rate.
-
-    `pair_sets_index` gives the Pair Sets Index (PSI)
-    adjusted for chance [3]_, :math:`K \\leq L`.
-    Pairing is based on the solution to the Linear Sum Assignment Problem
-    of a transformed version of the confusion matrix.
-    Its simplified version assumes E=1 in the definition of the index,
-    i.e., uses Eq. (20) instead of (18); see [3]_.
 
 
     References
@@ -457,10 +474,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
         *Journal of Classification* 2(1), 1985, 193-218.
 
     .. [2]
-        Rendon E., Abundez I., Arizmendi A., Quiroz E.M.,
-        Internal versus external cluster validation indexes,
-        *International Journal of Computers and Communications* 5(1), 2011,
-        27-34.
+        Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+        cluster validity measure, 2022, submitted for publication.
 
     .. [3]
         Rezaei M., Franti P., Set matching measures for external cluster validity,
@@ -489,12 +504,12 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
            [ 8,  2]])
     >>> {k : round(v, 2) for k, v in
     ...      genieclust.compare_partitions.compare_partitions(C).items()}
-    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63}
+    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63, 'aaa': 0.71}
     >>> {k : round(v, 2) for k, v in
     ...      genieclust.compare_partitions.compare_partitions2(x,y).items()}
-    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63}
-    >>> round(genieclust.compare_partitions.adjusted_rand_score(x, y), 2)
-    0.49
+    {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'nacc': 0.71, 'psi': 0.65, 'spsi': 0.63, 'aaa': 0.71}
+    >>> round(genieclust.compare_partitions.adjusted_asymmetric_accuracy(x, y), 2)
+    0.71
 
     """
     cdef ssize_t xc = C.shape[0]
@@ -502,17 +517,25 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     if xc > yc:
         raise ValueError("number of rows in the confusion matrix \
             must be less than or equal to the number of columns")
+
     cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
+
     cdef dict res2 = c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc)
+
     cdef double nacc = c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
-    cdef double psi = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc, False)
-    cdef double psi_simplified = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc, True)
+
+    cdef dict res3 = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
+
+    cdef double aaa = np.nan
+    if xc == yc:
+        aaa = c_compare_partitions.Ccompare_partitions_aaa(&C[0,0], xc, yc)
+
     return {
         **res1,
         **res2,
         "nacc": nacc,
-        "psi": psi,
-        "spsi": psi_simplified,
+        **res3,
+        "aaa": aaa,
     }
 
 
@@ -939,6 +962,81 @@ cpdef double normalized_accuracy(x, y):
 
 
 
+cpdef double adjusted_asymmetric_accuracy(x, y):
+    """
+    genieclust.compare_partitions.adjusted_asymmetric_accuracy(x, y)
+
+    Adjusted asymmetric accuracy (AAA) [1]_.
+
+
+
+    Parameters
+    ----------
+
+    x, y : array_like
+        Two vectors of "small" integers of identical lengths,
+        representing two partitions of the same set.
+        `x` is the set of ground truth (reference) labels
+        and `y` is a partition whose quality we would like to asses
+
+
+    Returns
+    -------
+
+    double
+        Partition similarity measure.
+
+
+    See also
+    --------
+
+    genieclust.compare_partitions.compare_partitions :
+        Computes multiple similarity scores based on a confusion matrix
+
+    genieclust.compare_partitions.compare_partitions2 :
+        Computes multiple similarity scores based on two label vectors
+
+    genieclust.compare_partitions.normalized_confusion_matrix :
+        Determines the confusion matrix and permutes the rows and columns
+        so that the sum of the elements of the main diagonal is the largest
+        possible
+
+
+    Notes
+    -----
+
+    Let :math:`C` be a confusion matrix with :math:`K` rows
+    and :math:`K` columns.
+    AAA is an external cluster validity measure.
+    It is a corrected-for-chance summary of the proportion of correctly
+    classified points in each cluster (with cluster matching based on the
+    solution to the maximal linear sum assignment problem; see
+    :func:`normalize_confusion_matrix`), given by:
+    :math:`(\\max_\\sigma \\sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)`.
+
+    Note that this measure is not symmetric, i.e., ``index(x, y)`` does not
+    have to be equal to ``index(y, x)``.
+
+    See [1]_ for more details and :func:`compare_partitions` for more functions.
+
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+        cluster validity measure, 2022, submitted for publication.
+
+    """
+
+    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef ssize_t xc = C.shape[0]
+    cdef ssize_t yc = C.shape[1]
+    if xc != yc:
+        raise ValueError("Number of rows in the confusion matrix "
+            "must be equal to the number of columns.")
+    return c_compare_partitions.Ccompare_partitions_aaa(&C[0,0], xc, yc)
+
 
 cpdef double pair_sets_index(x, y, bint simplified=False):
     """
@@ -1002,7 +1100,8 @@ cpdef double pair_sets_index(x, y, bint simplified=False):
     if xc > yc:
         raise ValueError("Number of rows in the confusion matrix "
             "must be less than or equal to the number of columns.")
-    return c_compare_partitions.Ccompare_partitions_psi(
-        &C[0,0], xc, yc, simplified
-    )
 
+    if simplified:
+        return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).spsi
+    else:
+        return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).psi
