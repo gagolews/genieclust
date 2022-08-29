@@ -89,23 +89,25 @@ functions `gclust()` and `genieclust()` (in R).
 
 Other features:
 
--  inequality measures (the normalised Gini, Bonferroni,
-   and De Vergottini index);
+-  inequality measures: the normalised Gini, Bonferroni,
+   and De Vergottini indices;
 
--  external cluster validity measures, including functions to compare partitions
-   (adjusted asymmetric accuracy
+-  external cluster validity measures:
+   adjusted asymmetric accuracy
+   and partition similarity scores such as
    normalised accuracy,
    pair sets index (PSI),
    adjusted&unadjusted Rand, adjusted&unadjusted Fowlkes-Mallows (FM),
-   adjusted&normalised&unadjusted mutual information (MI) scores,
+   adjusted&normalised&unadjusted mutual information (MI) indices;
 
--  internal cluster validity measures (the Caliński-Harabasz,
-   Silhouette, Ball-Hall, Davies-Bouldin, generalised Dunn indices, etc.);
+-  internal cluster validity measures:
+   the Caliński-Harabasz,
+   Silhouette, Ball-Hall, Davies-Bouldin, generalised Dunn indices, etc.;
 
 -  *(Python only)* Union-find (disjoint sets) data structures (with
    extensions);
 
--  *(Python only)* Useful R-like plotting functions.
+-  *(Python only)* Some R-like plotting functions.
 
 
 
@@ -179,9 +181,8 @@ See the package entry on
 
 ### Other
 
-
-Note that the core functionality is implemented in form of a header-only
-C++ library, so it might be relatively easily adapted for use in
+The core functionality is implemented in the form of a header-only
+C++ library. It can thus be easily adapted for use in
 other environments.
 
 Any contributions are welcome (e.g., Julia, Matlab, ...).
