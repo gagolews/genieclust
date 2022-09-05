@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>inequity: Inequity (Inequality) Measures &mdash; genieclust</title>
+  <title>inequity: Inequity (Inequality) Measures &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -50,7 +57,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" href="mst.html" />
-    <link rel="prev" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" /> 
+    <link rel="prev" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -64,25 +71,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -103,6 +116,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -119,10 +136,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: Pairwise Partition Similarity Scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster_validity_measures.html">cluster_validity_measures: Internal Cluster Validity Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: The Genie++ Hierarchical Clustering Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">inequity: Inequity (Inequality) Measures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
@@ -141,11 +159,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -178,17 +192,60 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
+        
       <li>inequity: Inequity (Inequality) Measures</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -267,9 +324,9 @@
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
-<p>Bonferroni C., Elementi di Statistica Generale, Libreria Seber, Firenze, 1930.</p>
-<p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
-<p>Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini, Bologna, 1912.</p>
+<p>Bonferroni C., <em>Elementi di Statistica Generale</em>, Libreria Seber, Firenze, 1930.</p>
+<p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, <em>Information Sciences</em> 363, 2016, pp. 8-23. <a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">doi:10.1016/j.ins.2016.05.003</a></p>
+<p>Gini C., <em>Variabilita e Mutabilita</em>, Tipografia di Paolo Cuppini, Bologna, 1912.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
@@ -278,13 +335,13 @@
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">))</span>  <span class="c1"># no inequality</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">))</span>   <span class="c1"># no inequality</span>
 <span class="c1">## [1] 0</span>
-<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span> <span class="c1"># one has it all</span>
+<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>  <span class="c1"># one has it all</span>
 <span class="c1">## [1] 1</span>
-<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>  <span class="c1"># give to the poor, take away from the rich</span>
+<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">7</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>   <span class="c1"># give to the poor, take away from the rich</span>
 <span class="c1">## [1] 0.85</span>
-<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>  <span class="c1"># (a.k.a. Pigou-Dalton principle)</span>
+<span class="nf">gini_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">6</span><span class="p">,</span> <span class="m">0</span><span class="p">,</span> <span class="m">3</span><span class="p">,</span> <span class="m">1</span><span class="p">,</span> <span class="m">0</span><span class="p">))</span>   <span class="c1"># (a.k.a. Pigou-Dalton principle)</span>
 <span class="c1">## [1] 0.75</span>
 <span class="nf">bonferroni_index</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">))</span>
 <span class="c1">## [1] 0</span>
@@ -311,23 +368,31 @@
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="mst.html" class="btn btn-neutral float-right" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genieclust-package.html" class="btn btn-neutral float-left" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -342,12 +407,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -462,7 +462,7 @@ double Ccompare_partitions_nacc(const T* C, ssize_t xc, ssize_t yc)
  *  References
  *  ==========
  *
- *  Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+ *  Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
  *  cluster validity measure, 2022, submitted for publication.
  *
  *

@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>gclust: The Genie++ Hierarchical Clustering Algorithm &mdash; genieclust</title>
+  <title>gclust: Hierarchical Clustering Algorithm Genie &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -49,7 +56,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" />
+    <link rel="next" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" />
     <link rel="prev" title="emst_mlpack: Euclidean Minimum Spanning Tree" href="emst_mlpack.html" /> 
 </head>
 
@@ -64,25 +71,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -103,6 +116,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -119,9 +136,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: Pairwise Partition Similarity Scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster_validity_measures.html">cluster_validity_measures: Internal Cluster Validity Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">gclust: The Genie++ Hierarchical Clustering Algorithm</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gclust: Hierarchical Clustering Algorithm Genie</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#arguments">Arguments</a></li>
@@ -133,7 +151,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#examples">Examples</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inequity.html">inequity: Inequity (Inequality) Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
@@ -141,11 +159,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -178,27 +192,70 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
-      <li>gclust: The Genie++ Hierarchical Clustering Algorithm</li>
+        
+      <li>gclust: Hierarchical Clustering Algorithm Genie</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="genieclust-package.html" class="btn btn-neutral float-right" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
         <a href="emst_mlpack.html" class="btn btn-neutral float-left" title="emst_mlpack: Euclidean Minimum Spanning Tree" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="genieclust-package.html" class="btn btn-neutral float-right" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <section class="tex2jax_ignore mathjax_ignore" id="gclust-the-genie-hierarchical-clustering-algorithm">
-<h1>gclust: The Genie++ Hierarchical Clustering Algorithm<a class="headerlink" href="#gclust-the-genie-hierarchical-clustering-algorithm" title="Permalink to this heading"></a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="gclust-hierarchical-clustering-algorithm-genie">
+<h1>gclust: Hierarchical Clustering Algorithm Genie<a class="headerlink" href="#gclust-hierarchical-clustering-algorithm-genie" title="Permalink to this heading"></a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
-<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like single linkage, it consumes the edges of the MST in increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequity.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">https://github.com/gagolews/clustering_benchmarks_v1</a>.</p>
+<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequity.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">https://github.com/gagolews/clustering-benchmarks</a>.</p>
 <p>The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN* algorithm (see Campello et al., 2015). If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i,j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i,k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other.</p>
 <p>The Genie correction together with the smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1 (note that <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN’s somewhat magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or the HDBSCAN’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
 </section>
@@ -307,7 +364,7 @@
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Permalink to this heading"></a></h2>
-<p>Note that as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.</p>
+<p>Note that, as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, <a class="reference internal" href="mst.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> will be called to compute an MST, which generally takes at most <span class="math notranslate nohighlight">\(O(n^2)\)</span> time (the algorithm we provide is parallelised, environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> controls the number of threads in use). However, see <a class="reference internal" href="emst_mlpack.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1.</p>
 <p>Given an minimum spanning tree, the algorithm runs in <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time. Therefore, if you want to test different <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s, (or <code class="docutils literal notranslate"><span class="pre">k</span></code>s), it is best to explicitly compute the MST first.</p>
 <p>According to the algorithm’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). Departures from ultrametricity are corrected by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
@@ -361,23 +418,31 @@
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="genieclust-package.html" class="btn btn-neutral float-right" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="emst_mlpack.html" class="btn btn-neutral float-left" title="emst_mlpack: Euclidean Minimum Spanning Tree" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="genieclust-package.html" class="btn btn-neutral float-right" title="genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -392,12 +457,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

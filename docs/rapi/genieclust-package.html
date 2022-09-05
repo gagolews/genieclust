@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras) &mdash; genieclust</title>
+  <title>genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras) &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -48,7 +55,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="inequity: Inequity (Inequality) Measures" href="inequity.html" />
-    <link rel="prev" title="gclust: The Genie++ Hierarchical Clustering Algorithm" href="gclust.html" /> 
+    <link rel="prev" title="gclust: Hierarchical Clustering Algorithm Genie" href="gclust.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -62,25 +69,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -101,6 +114,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -117,10 +134,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: Pairwise Partition Similarity Scores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cluster_validity_measures.html">cluster_validity_measures: Internal Cluster Validity Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="comparing_partitions.html">comparing_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: The Genie++ Hierarchical Clustering Algorithm</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#author-s">Author(s)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#see-also">See Also</a></li>
@@ -133,11 +151,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -170,24 +184,67 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
           <li><a href="../rapi.html">R Package <em>genieclust</em> Reference</a> &raquo;</li>
-      <li>genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)</li>
+        
+      <li>genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="gclust.html" class="btn btn-neutral float-left" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="inequity.html" class="btn btn-neutral float-right" title="inequity: Inequity (Inequality) Measures" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="gclust.html" class="btn btn-neutral float-left" title="gclust: Hierarchical Clustering Algorithm Genie" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
   <section class="tex2jax_ignore mathjax_ignore" id="genieclust-package-the-genie-hierarchical-clustering-algorithm-with-extras">
-<h1>genieclust-package: The Genie++ Hierarchical Clustering Algorithm (with Extras)<a class="headerlink" href="#genieclust-package-the-genie-hierarchical-clustering-algorithm-with-extras" title="Permalink to this heading"></a></h1>
+<h1>genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)<a class="headerlink" href="#genieclust-package-the-genie-hierarchical-clustering-algorithm-with-extras" title="Permalink to this heading"></a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
 <p>See <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">genie()</span></code></span></a> for more details.</p>
@@ -207,23 +264,31 @@
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gclust.html" class="btn btn-neutral float-left" title="gclust: The Genie++ Hierarchical Clustering Algorithm" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="inequity.html" class="btn btn-neutral float-right" title="inequity: Inequity (Inequality) Measures" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gclust.html" class="btn btn-neutral float-left" title="gclust: Hierarchical Clustering Algorithm Genie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -238,12 +303,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

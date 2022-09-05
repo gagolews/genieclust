@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+
+
+<html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>genieclust.cluster_validity &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="https://genieclust.gagolewski.com/genieclust_cluster_validity.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="genieclust.compare_partitions" href="genieclust_compare_partitions.html" />
+    <link rel="prev" title="genieclust.Genie" href="genieclust_genie.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html"> genieclust
+          
+
+          
+          </a>
+
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
+          
+            
+            
+              <div class="version">
+                by Marek Gagolewski
+              </div>
+            
+          
+-->
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search phrase..." />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">About</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.cluster_validity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a> &raquo;</li>
+        
+      <li>genieclust.cluster_validity</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="genieclust_compare_partitions.html" class="btn btn-neutral float-right" title="genieclust.compare_partitions" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
+  </div>
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="module-genieclust.cluster_validity">
+<span id="genieclust-cluster-validity"></span><h1>genieclust.cluster_validity<a class="headerlink" href="#module-genieclust.cluster_validity" title="Permalink to this heading"></a></h1>
+<p>So-called internal cluster validity indices</p>
+<p>The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition. For consistency, the Ball-Hall and
+Davies-Bouldin indexes take negative values.</p>
+<p>These measures were critically reviewed in (Gagolewski, Bartoszuk, Cena, 2022;
+<a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>;
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">preprint</a>).
+See Section 2 therein for the respective definitions.</p>
+<p>For even more details, see the
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Framework for Benchmarking Clustering Algorithms</a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.calinski_harabasz_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">calinski_harabasz_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.calinski_harabasz_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the Caliński-Harabasz index <a class="reference internal" href="#r2beb019b66a8-3" id="id1">[3]</a>.</p>
+<p>See <a class="reference internal" href="#r2beb019b66a8-1" id="id2">[1]</a> and <a class="reference internal" href="#r2beb019b66a8-2" id="id3">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r2beb019b66a8-1"><span class="brackets"><a class="fn-backref" href="#id2">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r2beb019b66a8-2"><span class="brackets"><a class="fn-backref" href="#id3">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="r2beb019b66a8-3"><span class="brackets"><a class="fn-backref" href="#id1">3</a></span></dt>
+<dd><p>Calinski T., Harabasz J., A dendrite method for cluster analysis,
+<em>Communications in Statistics</em> 3(1), 1974, 1–27,
+<a class="reference external" href="https://doi.org/10.1080/03610927408827101">https://doi.org/10.1080/03610927408827101</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.dunnowa_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">dunnowa_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_numerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SMin:5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_denominator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Const'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.dunnowa_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the generalised Dunn indices based on near-neighbours and
+OWA operators <a class="reference internal" href="#r20e856f1accc-2" id="id8">[2]</a>.</p>
+<p>See <a class="reference internal" href="#r20e856f1accc-1" id="id9">[1]</a> and <a class="reference internal" href="#r20e856f1accc-2" id="id10">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>number of nearest neighbours</p>
+</dd>
+<dt><strong>owa_numerator, owa_denominator</strong><span class="classifier">str</span></dt><dd><p>specifies the OWA operators to use in the definition of the DuNN index;
+one of: <code class="docutils literal notranslate"><span class="pre">&quot;Mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Min&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Max&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Const&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;SMin:D&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;SMax:D&quot;</span></code>, where code{D} is an integer
+defining the degree of smoothness</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r20e856f1accc-1"><span class="brackets"><a class="fn-backref" href="#id9">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r20e856f1accc-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id8">1</a>,<a href="#id10">2</a>)</span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.generalised_dunn_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">generalised_dunn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uppercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.generalised_dunn_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the generalised Dunn indices (by Bezdek and Pal) <a class="reference internal" href="#r460ccc59a877-3" id="id14">[3]</a>.</p>
+<p>See <a class="reference internal" href="#r460ccc59a877-1" id="id15">[1]</a> and <a class="reference internal" href="#r460ccc59a877-2" id="id16">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>number of nearest neighbours</p>
+</dd>
+<dt><strong>lowercase_d</strong><span class="classifier">int</span></dt><dd><p>an integer between 1 and 5, denoting
+<span class="math notranslate nohighlight">\(d_1\)</span>, …, <span class="math notranslate nohighlight">\(d_5\)</span> in the definition
+of the generalised Dunn index (numerator:
+min, max, and mean pairwise intracluster distance,
+distance between cluster centroids,
+weighted point-centroid distance, respectively)</p>
+</dd>
+<dt><strong>uppercase_d</strong><span class="classifier">int</span></dt><dd><p>an integer between 1 and 3, denoting
+<span class="math notranslate nohighlight">\(D_1\)</span>, …, <span class="math notranslate nohighlight">\(D_3\)</span> in the definition
+of the generalised Dunn index (denominator:
+max and min pairwise intracluster distance, average point-centroid
+distance, respectively)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r460ccc59a877-1"><span class="brackets"><a class="fn-backref" href="#id15">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r460ccc59a877-2"><span class="brackets"><a class="fn-backref" href="#id16">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="r460ccc59a877-3"><span class="brackets"><a class="fn-backref" href="#id14">3</a></span></dt>
+<dd><p>Bezdek J., Pal N., Some new indexes of cluster validity,
+<em>IEEE Transactions on Systems, Man, and Cybernetics, Part B</em> 28,
+1998, 301-315, <a class="reference external" href="https://doi.org/10.1109/3477.678624/">https://doi.org/10.1109/3477.678624/</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.negated_ball_hall_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_ball_hall_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_ball_hall_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the negated Ball-Hall index <a class="reference internal" href="#r87c09c79f043-3" id="id21">[3]</a>.</p>
+<p>See <a class="reference internal" href="#r87c09c79f043-1" id="id22">[1]</a> and <a class="reference internal" href="#r87c09c79f043-2" id="id23">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r87c09c79f043-1"><span class="brackets"><a class="fn-backref" href="#id22">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r87c09c79f043-2"><span class="brackets"><a class="fn-backref" href="#id23">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="r87c09c79f043-3"><span class="brackets"><a class="fn-backref" href="#id21">3</a></span></dt>
+<dd><p>Ball G.H., Hall D.J.,
+<em>ISODATA: A novel method of data analysis and pattern classification</em>,
+Technical report No. AD699616, Stanford Research Institute, 1965.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.negated_davies_bouldin_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_davies_bouldin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the Davies-Bouldin index <a class="reference internal" href="#r1f1dc6981684-3" id="id28">[3]</a>.</p>
+<p>See <a class="reference internal" href="#r1f1dc6981684-1" id="id29">[1]</a> and <a class="reference internal" href="#r1f1dc6981684-2" id="id30">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r1f1dc6981684-1"><span class="brackets"><a class="fn-backref" href="#id29">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r1f1dc6981684-2"><span class="brackets"><a class="fn-backref" href="#id30">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="r1f1dc6981684-3"><span class="brackets"><a class="fn-backref" href="#id28">3</a></span></dt>
+<dd><p>Davies D.L., Bouldin D.W., A Cluster Separation Measure,
+<em>IEEE Transactions on Pattern Analysis and Machine Intelligence</em>
+PAMI-1 (2), 1979, 224-227, <a class="reference external" href="https://doi.org/10.1109/TPAMI.1979.4766909">https://doi.org/10.1109/TPAMI.1979.4766909</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.negated_wcss_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_wcss_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_wcss_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the negated within-cluster sum of squares
+(used as the objective function in the k-means and Ward algorithm)</p>
+<p>See <a class="reference internal" href="#rebb7938d47db-1" id="id35">[1]</a> and <a class="reference internal" href="#rebb7938d47db-2" id="id36">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rebb7938d47db-1"><span class="brackets"><a class="fn-backref" href="#id35">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="rebb7938d47db-2"><span class="brackets"><a class="fn-backref" href="#id36">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the The Silhouette index
+(average silhouette score) <a class="reference internal" href="#r22bdb84f562e-3" id="id40">[3]</a>.</p>
+<p>See <a class="reference internal" href="#r22bdb84f562e-1" id="id41">[1]</a> and <a class="reference internal" href="#r22bdb84f562e-2" id="id42">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="r22bdb84f562e-1"><span class="brackets"><a class="fn-backref" href="#id41">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="r22bdb84f562e-2"><span class="brackets"><a class="fn-backref" href="#id42">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="r22bdb84f562e-3"><span class="brackets"><a class="fn-backref" href="#id40">3</a></span></dt>
+<dd><p>Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
+20, 1987, 53-65, <a class="reference external" href="https://doi.org/10.1016/0377-0427(87)90125-7">https://doi.org/10.1016/0377-0427(87)90125-7</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_w_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_w_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_w_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the value of the The Silhouette W index
+(mean of the cluster average silhouette widths) <a class="reference internal" href="#rc10181437a2c-3" id="id47">[3]</a>.</p>
+<p>See <a class="reference internal" href="#rc10181437a2c-1" id="id48">[1]</a> and <a class="reference internal" href="#rc10181437a2c-2" id="id49">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rc10181437a2c-1"><span class="brackets"><a class="fn-backref" href="#id48">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="rc10181437a2c-2"><span class="brackets"><a class="fn-backref" href="#id49">2</a></span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+<dt class="label" id="rc10181437a2c-3"><span class="brackets"><a class="fn-backref" href="#id47">3</a></span></dt>
+<dd><p>Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
+20, 1987, 53-65, <a class="reference external" href="https://doi.org/10.1016/0377-0427(87)90125-7">https://doi.org/10.1016/0377-0427(87)90125-7</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="genieclust.cluster_validity.wcnn_index">
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">wcnn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.wcnn_index" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the within-cluster near-neighbours index <a class="reference internal" href="#rc3cb1f0779f0-2" id="id54">[2]</a>.</p>
+<p>See <a class="reference internal" href="#rc3cb1f0779f0-1" id="id55">[1]</a> and <a class="reference internal" href="#rc3cb1f0779f0-2" id="id56">[2]</a> for the definition and discussion.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">c_contiguous ndarray, shape (n, d)</span></dt><dd><p><cite>n</cite> data points in a feature space of dimensionality <cite>d</cite></p>
+</dd>
+<dt><strong>y</strong><span class="classifier">array_like</span></dt><dd><p>A vector of “small” integers representing a partition of the
+<cite>n</cite> input points; <cite>y[i]</cite> is the cluster ID of the <cite>i</cite>-th point,
+where <cite>0 &lt;= y[i] &lt; K</cite> and <cite>K</cite> is the number of clusters.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>number of nearest neighbours</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>index</strong><span class="classifier">float</span></dt><dd><p>Computed index value.
+The greater the index value, the more <em>valid</em> (whatever that means)
+the assessed partition.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#genieclust.cluster_validity.calinski_harabasz_index" title="genieclust.cluster_validity.calinski_harabasz_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.calinski_harabasz_index</span></code></a></dt><dd><p>The Caliński-Harabasz index</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.dunnowa_index" title="genieclust.cluster_validity.dunnowa_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.dunnowa_index</span></code></a></dt><dd><p>Generalised Dunn indices based on near-neighbours and OWA operators (by Gagolewski)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.generalised_dunn_index" title="genieclust.cluster_validity.generalised_dunn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.generalised_dunn_index</span></code></a></dt><dd><p>Generalised Dunn indices (by Bezdek and Pal)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_ball_hall_index" title="genieclust.cluster_validity.negated_ball_hall_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_ball_hall_index</span></code></a></dt><dd><p>The Ball-Hall index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="genieclust.cluster_validity.negated_davies_bouldin_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_davies_bouldin_index</span></code></a></dt><dd><p>The Davies-Bouldin index (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.negated_wcss_index" title="genieclust.cluster_validity.negated_wcss_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.negated_wcss_index</span></code></a></dt><dd><p>Within-cluster sum of squares (used as the objective function in the k-means and Ward algorithm) (negated)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_index" title="genieclust.cluster_validity.silhouette_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_index</span></code></a></dt><dd><p>The Silhouette index (average silhouette score)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.silhouette_w_index" title="genieclust.cluster_validity.silhouette_w_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.silhouette_w_index</span></code></a></dt><dd><p>The Silhouette W index (mean of the cluster average silhouette widths)</p>
+</dd>
+<dt><a class="reference internal" href="#genieclust.cluster_validity.wcnn_index" title="genieclust.cluster_validity.wcnn_index"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity.wcnn_index</span></code></a></dt><dd><p>The within-cluster near-neighbours index</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">References</p>
+<dl class="citation">
+<dt class="label" id="rc3cb1f0779f0-1"><span class="brackets"><a class="fn-backref" href="#id55">1</a></span></dt>
+<dd><p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+</dd>
+<dt class="label" id="rc3cb1f0779f0-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id54">1</a>,<a href="#id56">2</a>)</span></dt>
+<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>581</strong>,
+620–636, 2021, <a class="reference external" href="https://doi.org/10.1016/j.ins.2021.10.004">https://doi.org/10.1016/j.ins.2021.10.004</a>
+<a class="reference external" href="https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf">(preprint)</a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="genieclust_compare_partitions.html" class="btn btn-neutral float-right" title="genieclust.compare_partitions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
+
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

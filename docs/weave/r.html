@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>R Interface Examples &mdash; genieclust</title>
+  <title>R Interface Examples &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -64,25 +71,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -103,6 +116,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
@@ -122,11 +139,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -159,16 +172,58 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>R Interface Examples</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="string.html" class="btn btn-neutral float-left" title="Example: String Data and Grouping of DNA" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="../genieclust.html" class="btn btn-neutral float-right" title="Python Package genieclust Reference" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="string.html" class="btn btn-neutral float-left" title="Example: String Data and Grouping of DNA" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -182,15 +237,14 @@ We can install it by calling:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Below are a few basic examples on how to interact with the package
-(partially based on Marek’s <a class="reference external" href="https://lmlcr.gagolewski.com">forthcoming book</a>).</p>
+<p>Below are a few basic examples of how to interact with the package.</p>
+<!-- (partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)). -->
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Let’s consider the Sustainable Society Indices Dataset
-(see http://www.ssfindex.com/)
-that measures the Human, Environmental, and Economic Wellbeing
-in each country based on 7 categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
+<p>Let’s consider the <a class="reference external" href="http://www.ssfindex.com/">Sustainable Society Indices</a>
+dataset that measures the Human, Environmental, and Economic Wellbeing
+in each country based on seven categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">ssi</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span> <span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span>    <span class="c1"># everything except the Country (1st) column</span>
@@ -198,7 +252,7 @@ in each country based on 7 categories on the scale <span class="math notranslate
 <span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
 <span class="c1">## Albania     9.605769                     7.959609            6.992649         6.634251         4.621681   2.102542 3.056494</span>
 <span class="c1">## Algeria     9.021185                     7.336496            4.203906         5.277173         2.662674   3.074134 6.154272</span>
 <span class="c1">## Angola      5.972848                     5.692808            2.140138         6.759396         6.212197   1.898812 3.753476</span>
@@ -216,7 +270,7 @@ with the input matrix directly:</p>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
 <span class="c1">## Call:</span>
 <span class="c1">## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)</span>
 <span class="c1">## </span>
@@ -230,12 +284,12 @@ with the input matrix directly:</p>
 <span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="m">25</span><span class="p">)</span>  <span class="c1"># preview</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
 <span class="c1">##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1</span>
 </pre></div>
 </div>
 <p>This gives the cluster ID allocated to each country.
-Let’s depict the obtained partition with the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
+Let’s depict the obtained partition using the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span>  <span class="c1"># see the package&#39;s manual for details</span>
 <span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span> <span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
 <span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
@@ -249,7 +303,7 @@ Let’s depict the obtained partition with the <code class="docutils literal not
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span> <span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
 <span class="c1">## BasicNeeds                   9.067901 5.268879 9.817850</span>
 <span class="c1">## PersonalDevelopmentAndHealth 7.508130 5.931156 8.299537</span>
 <span class="c1">## WellBalancedSociety          4.886885 2.868176 6.827154</span>
@@ -259,9 +313,9 @@ Let’s depict the obtained partition with the <code class="docutils literal not
 <span class="c1">## Economy                      5.512709 3.541081 4.274155</span>
 </pre></div>
 </div>
-<p>Plotting of dendrograms is also possible.
-For greater readability, we’ll restrict ourselves to a smaller sample, say,
-to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
+<p>Dendrogram plotting is also possible.
+For greater readability, we’ll restrict ourselves to a smaller sample;
+namely, to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span> <span class="s">&quot;Austria&quot;</span><span class="p">,</span> <span class="s">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s">&quot;Canada&quot;</span><span class="p">,</span> <span class="s">&quot;Chile&quot;</span><span class="p">,</span> <span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s">&quot;Finland&quot;</span><span class="p">,</span> <span class="s">&quot;France&quot;</span><span class="p">,</span> <span class="s">&quot;Germany&quot;</span><span class="p">,</span>
 <span class="s">&quot;Greece&quot;</span><span class="p">,</span> <span class="s">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s">&quot;Israel&quot;</span><span class="p">,</span> <span class="s">&quot;Italy&quot;</span><span class="p">,</span> <span class="s">&quot;Japan&quot;</span><span class="p">,</span>
@@ -285,8 +339,8 @@ calling <code class="docutils literal notranslate"><span class="pre">genie()</sp
 (such as the Adjusted Rand or the Pair Sets Index) that can be used as
 external cluster validity measures.</p></li>
 </ul>
-<p>For more details, refer to the package’s documentation.
-Don’t forget to check out the Python examples regarding noise point detection,
+<p>For more details, refer to the package’s <a class="reference internal" href="../rapi.html"><span class="doc">documentation</span></a>.
+Don’t forget to check out the Python examples regarding noise points detection,
 benchmarking, timing, etc.</p>
 </section>
 
@@ -294,23 +348,31 @@ benchmarking, timing, etc.</p>
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="string.html" class="btn btn-neutral float-left" title="Example: String Data and Grouping of DNA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="../genieclust.html" class="btn btn-neutral float-right" title="Python Package genieclust Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="string.html" class="btn btn-neutral float-left" title="Example: String Data and Grouping of DNA" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -325,12 +387,7 @@ benchmarking, timing, etc.</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -29,9 +29,9 @@ An object of class `mst`, see [`mst()`](mst.md) for details.
 
 ## References
 
-March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, Proc. ACM SIGKDD\'10 (2010) 603-611, <https://mlpack.org/papers/emst.pdf>.
+March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD\'10*, 2010, 603-611, <https://mlpack.org/papers/emst.pdf>.
 
-Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 3: A fast, flexible machine learning library, Journal of Open Source Software 3(26), 726, 2018.
+Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 3: A fast, flexible machine learning library, *Journal of Open Source Software* 3(26), 2018, 726.
 
 ## See Also
 

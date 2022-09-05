@@ -139,7 +139,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="1.0.0.9001",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
+    version="1.1.0",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
     description="Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection",
     long_description=long_description,
     long_description_content_type="text/markdown",

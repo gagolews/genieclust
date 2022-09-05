@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Example: Sparse Data and Movie Recommendation &mdash; genieclust</title>
+  <title>Example: Sparse Data and Movie Recommendation &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -62,25 +69,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -101,6 +114,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
@@ -120,11 +137,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -157,16 +170,58 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>Example: Sparse Data and Movie Recommendation</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="string.html" class="btn btn-neutral float-right" title="Example: String Data and Grouping of DNA" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -193,7 +248,7 @@ and map the movie IDs to consecutive integers.</p>
 <span class="n">ratings</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##    userId  movieId  rating  timestamp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##    userId  movieId  rating  timestamp</span>
 <span class="c1">## 0       0        0     4.0  964982703</span>
 <span class="c1">## 1       0        2     4.0  964981247</span>
 <span class="c1">## 2       0        5     4.0  964982224</span>
@@ -210,7 +265,7 @@ in the same way:</p>
 <span class="n">movies</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">##    movieId                               title</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##    movieId                               title</span>
 <span class="c1">## 0        0                    Toy Story (1995)</span>
 <span class="c1">## 1        1                      Jumanji (1995)</span>
 <span class="c1">## 2        2             Grumpier Old Men (1995)</span>
@@ -227,7 +282,7 @@ in the same way:</p>
 <span class="nb">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## &lt;9724x610 sparse matrix of type &#39;&lt;class &#39;numpy.float32&#39;&gt;&#39;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## &lt;9724x610 sparse matrix of type &#39;&lt;class &#39;numpy.float32&#39;&gt;&#39;</span>
 <span class="c1">##         with 100836 stored elements in Compressed Sparse Row format&gt;</span>
 </pre></div>
 </div>
@@ -235,7 +290,7 @@ in the same way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">X</span><span class="p">[:</span><span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## matrix([[4. , 0. , 0. , 0. , 4. , 0. , 4.5, 0. , 0. , 0. ],</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## matrix([[4. , 0. , 0. , 0. , 4. , 0. , 4.5, 0. , 0. , 0. ],</span>
 <span class="c1">##         [0. , 0. , 0. , 0. , 0. , 4. , 0. , 4. , 0. , 0. ],</span>
 <span class="c1">##         [4. , 0. , 0. , 0. , 0. , 5. , 0. , 0. , 0. , 0. ],</span>
 <span class="c1">##         [0. , 0. , 0. , 0. , 0. , 3. , 0. , 0. , 0. , 0. ],</span>
@@ -259,7 +314,7 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 <span class="n">movies</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">movies</span><span class="o">.</span><span class="n">cluster</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">which_cluster</span><span class="p">)]</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## 2097                                     Airplane! (1980)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## 2097                                     Airplane! (1980)</span>
 <span class="c1">## 2907                                 Almost Famous (2000)</span>
 <span class="c1">## 1914                                  Analyze This (1999)</span>
 <span class="c1">## 969                             Back to the Future (1985)</span>
@@ -316,7 +371,7 @@ also features a full database that yields a 53889x283228 ratings table
 not fit into our RAM if it was in the dense form.
 Determining the whole cluster hierarchy takes only 144 secs.
 Here is one of 500 clusters extracted:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## 13327                       Blackadder Back &amp; Forth (1999)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## 13327                       Blackadder Back &amp; Forth (1999)</span>
 <span class="c1">## 13328                  Blackadder&#39;s Christmas Carol (1988)</span>
 <span class="c1">## 3341                              Creature Comforts (1989)</span>
 <span class="c1">## 1197       Grand Day Out with Wallace and Gromit, A (1989)</span>
@@ -350,23 +405,31 @@ Here is one of 500 clusters extracted:</p>
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="string.html" class="btn btn-neutral float-right" title="Example: String Data and Grouping of DNA" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="noise.html" class="btn btn-neutral float-left" title="Clustering with Noise Points Detection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -381,12 +444,7 @@ Here is one of 500 clusters extracted:</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

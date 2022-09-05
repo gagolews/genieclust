@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Benchmarks — Detailed Results &mdash; genieclust</title>
+  <title>Benchmarks — Detailed Results &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -62,25 +69,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -101,6 +114,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul>
@@ -120,11 +137,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -179,16 +192,58 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>Benchmarks — Detailed Results</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="../news.html" class="btn btn-neutral float-left" title="What Is New in genieclust" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="benchmarks_approx.html" class="btn btn-neutral float-right" title="Benchmarks — Approximate Method" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="../news.html" class="btn btn-neutral float-left" title="What Is New in genieclust" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -198,13 +253,14 @@
 <h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this heading"></a></h1>
 <p>In one of the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">above sections</span></a>
 we have summarised the AR indices based on the datasets from
-the <a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms – Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id27" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering_benchmarks_v1, doi:10.5281/zenodo.3815066.">G+20</a>]</span>.
+the <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms – Version 1</a>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id29" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering-benchmarks, doi:10.5281/zenodo.3815066.">G+20</a>]</span>.
 In this section we present more detailed results for
 some other partition similarity measures implemented in the <cite>genieclust</cite>
-package — Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id33" title="E.B. Fowlkes and C.L. Mallows. A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569, 1983.">FM83</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id13" title="L. Hubert and P. Arabie. Comparing partitions. Journal of Classification, 2(1):193–218, 1985. doi:10.1007/BF01908075.">HA85</a>]</span>,
-adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id21" title="N.X. Vinh, J. Epps, and J. Bailey. Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854, 2010. URL: http://jmlr.org/papers/v11/vinh10a.html.">VEB10</a>]</span>,
-normalised accuracy (purity) and pair sets index <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id20" title="M. Rezaei and P. Fränti. Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186, 2016. doi:10.1109/TKDE.2016.2551240.">RF16</a>]</span>,
+package — Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id35" title="E.B. Fowlkes and C.L. Mallows. A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569, 1983.">FM83</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id15" title="L. Hubert and P. Arabie. Comparing partitions. Journal of Classification, 2(1):193–218, 1985. doi:10.1007/BF01908075.">HA85</a>]</span>,
+adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id23" title="N.X. Vinh, J. Epps, and J. Bailey. Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854, 2010. URL: http://jmlr.org/papers/v11/vinh10a.html.">VEB10</a>]</span>,
+normalised accuracy (which is based on set-matching classification rate),
+and pair sets index <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id22" title="M. Rezaei and P. Fränti. Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186, 2016. doi:10.1109/TKDE.2016.2551240.">RF16</a>]</span>,
 see the API documentation of <a class="reference internal" href="../genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a> for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.</p>
@@ -8935,7 +8991,7 @@ item. Clustering is performed with respect to the Euclidean distance
 <figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="../_images/benchmarks_details_indices_small_1.png"><img alt="../_images/benchmarks_details_indices_small_1.png" src="../_images/benchmarks_details_indices_small_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 20 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -10790,7 +10846,7 @@ item. Clustering is performed with respect to the Euclidean distance
 <figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="../_images/benchmarks_details_indices_large_1.png"><img alt="../_images/benchmarks_details_indices_large_1.png" src="../_images/benchmarks_details_indices_large_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 21 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -10801,23 +10857,31 @@ item. Clustering is performed with respect to the Euclidean distance
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../news.html" class="btn btn-neutral float-left" title="What Is New in genieclust" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="benchmarks_approx.html" class="btn btn-neutral float-right" title="Benchmarks — Approximate Method" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../news.html" class="btn btn-neutral float-left" title="What Is New in genieclust" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -10832,12 +10896,7 @@ item. Clustering is performed with respect to the Euclidean distance
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

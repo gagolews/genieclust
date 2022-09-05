@@ -14,7 +14,10 @@ in terms of clustering :any:`quality <benchmarks_ar>`
 and :any:`speed <timings>`.
 
 Here are a few examples of basic interactions with the Python version
-of the `genieclust` :cite:`genieclust` package.
+of the `genieclust` :cite:`genieclust` package,
+which can be installed from
+`PyPI <https://pypi.org/project/genieclust/>`_, e.g.,
+via a call to ``pip3 install genieclust`` from the command line.
 
 
 

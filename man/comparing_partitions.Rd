@@ -51,7 +51,7 @@ representing an L-partition of the same set (e.g., the output of a
 clustering algorithm we wish to compare with \code{x}),
 or NULL (if x is an K*L confusion matrix)}
 
-\item{whether}{to assume E=1 in the definition of the pair sets index index,
+\item{simplified}{whether to assume E=1 in the definition of the pair sets index index,
 i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).}
 }
 \value{
@@ -164,7 +164,7 @@ normalizing_permutation(y_true, y_pred)
 Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
 2022, \url{https://clustering-benchmarks.gagolewski.com}.
 
-Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
 cluster validity measure, 2022, submitted for publication.
 
 Hubert L., Arabie P., Comparing partitions,

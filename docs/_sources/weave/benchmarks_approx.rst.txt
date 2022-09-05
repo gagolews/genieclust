@@ -11,7 +11,7 @@ takes less than 5 minutes on a laptop.
 
 As *fast* does not necessarily mean *meaningful* (tl;dr spoiler alert: in our case, it does),
 let's again consider  all the datasets
-from the `Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
+from the `Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering-benchmarks>`_
 :cite:`clustering_benchmarks_v1`
 (except the ``h2mg`` and ``g2mg`` batteries). Features with variance of 0 were
 removed, datasets were centred at **0** and scaled so that they have total

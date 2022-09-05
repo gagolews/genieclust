@@ -1,8 +1,8 @@
-# gclust: The Genie++ Hierarchical Clustering Algorithm
+# gclust: Hierarchical Clustering Algorithm Genie
 
 ## Description
 
-A reimplementation of *Genie* - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like single linkage, it consumes the edges of the MST in increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see [`gini_index()`](inequity.md)) of the cluster size distribution raises above `gini_threshold`, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <https://github.com/gagolews/clustering_benchmarks_v1>.
+A reimplementation of *Genie* - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see [`gini_index()`](inequity.md)) of the cluster size distribution raises above `gini_threshold`, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <https://github.com/gagolews/clustering-benchmarks>.
 
 The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see Campello et al., 2015). If `M` \> 1, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i,j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i,k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other.
 
@@ -86,7 +86,7 @@ genie(
 
 ## Details
 
-Note that as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.
+Note that, as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.
 
 If `d` is a numeric matrix or an object of class `dist`, [`mst()`](mst.md) will be called to compute an MST, which generally takes at most $O(n^2)$ time (the algorithm we provide is parallelised, environment variable `OMP_NUM_THREADS` controls the number of threads in use). However, see [`emst_mlpack()`](emst_mlpack.md) for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and `M` = 1.
 

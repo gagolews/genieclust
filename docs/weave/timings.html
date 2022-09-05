@@ -2,13 +2,20 @@
 
 
 <html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Timings (How Fast Is It?) &mdash; genieclust</title>
+  <title>Timings (How Fast Is It?) &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
   
 
   
@@ -64,25 +71,31 @@
           
 
           
-            <a href="../index.html" class="icon icon-home"> genieclust
+            <a href="../index.html"> genieclust
           
 
           
           </a>
 
+          <div class="version">
+              Python and R Package<br />    v1.1.0
+          </div>
+
+<!--
           
             
             
               <div class="version">
-                1.0.1
+                by Marek Gagolewski
               </div>
             
           
+-->
 
           
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search phrase..." />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -103,6 +116,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../index.html">About</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
 <ul class="current">
@@ -128,11 +145,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN Entry</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -165,16 +178,58 @@
         
         <div class="rst-content style-external-links">
         
-          <div role="navigation" aria-label="Page navigation">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
   <ul class="wy-breadcrumbs">
+    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
       <li>Timings (How Fast Is It?)</li>
+    
+    
       <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">Star</a>
+        
+
+
+        
       </li>
-  </ul><div class="rst-breadcrumbs-buttons" role="navigation" aria-label="Sequential page navigation">
-        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
         <a href="noise.html" class="btn btn-neutral float-right" title="Clustering with Noise Points Detection" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
   </div>
+  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
@@ -186,27 +241,27 @@
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
 <p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id29" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span> version 0.23.1
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id31" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span> version 0.23.1
 (<cite>sklearn.cluster.KMeans</cite>) for different number of threads
 (by default it uses all available resources;
 note that the number of restarts, <cite>n_init</cite>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
-<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id14" title="D. Müllner. fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18, 2013. doi:10.18637/jss.v053.i09.">Mul13</a>]</span>.</p>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id16" title="D. Müllner. fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18, 2013. doi:10.18637/jss.v053.i09.">Mul13</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id12" title="C.F. Olson. Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325, 1995. doi:10.1016/0167-8191(95)00017-I.">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id17" title="R.R. Curtin, M. Edel, M. Lozhnikov, Y. Mentekidis, S. Ghaisas, and S. Zhang. Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726, 2018. doi:10.21105/joss.00726.">CEL+18</a>]</span> provides a very fast
+method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id14" title="C.F. Olson. Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325, 1995. doi:10.1016/0167-8191(95)00017-I.">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id19" title="R.R. Curtin, M. Edel, M. Lozhnikov, Y. Mentekidis, S. Ghaisas, and S. Zhang. Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726, 2018. doi:10.21105/joss.00726.">CEL+18</a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id18" title="W.B. March, P. Ram, and A.G. Gray. Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In Proc. 16th ACM SIGKDD'10, 603–612. 2010. doi:10.1145/1835804.1835882.">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id20" title="W.B. March, P. Ram, and A.G. Gray. Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In Proc. 16th ACM SIGKDD'10, 603–612. 2010. doi:10.1145/1835804.1835882.">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
 Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id19" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id21" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
 such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
@@ -217,8 +272,8 @@ and total memory of 16,242,084 kB.</p>
 “larger” datasets (70,000-105,600 observations,
 see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
 from the
-<a class="reference external" href="https://github.com/gagolews/clustering_benchmarks_v1">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id27" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering_benchmarks_v1, doi:10.5281/zenodo.3815066.">G+20</a>]</span>.
+<a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms — Version 1</a>
+<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id29" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering-benchmarks, doi:10.5281/zenodo.3815066.">G+20</a>]</span>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
@@ -445,7 +500,7 @@ partitions’ cardinality.</p>
 </table>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id23" title="A. Kobren, N. Monath, A. Krishnamurthy, and A. McCallum. A hierarchical algorithm for extreme clustering. In Proc. 23rd ACM SIGKDD'17, 255–264. 2017. doi:10.1145/3097983.3098079.">KMKM17</a>]</span>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id25" title="A. Kobren, N. Monath, A. Krishnamurthy, and A. McCallum. A hierarchical algorithm for extreme clustering. In Proc. 23rd ACM SIGKDD'17, 255–264. 2017. doi:10.1145/3097983.3098079.">KMKM17</a>]</span>)
 problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality
@@ -612,7 +667,7 @@ very large datasets. Only the system’s memory limits might become a problem th
 <figure class="align-default" id="id9">
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 12 </span><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.</span><a class="headerlink" href="#id9" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -622,9 +677,9 @@ very large datasets. Only the system’s memory limits might become a problem th
 Genie turns out to be nicely parallelisable — as evidenced on
 the <code class="docutils literal notranslate"><span class="pre">mnist/digits</span></code> dataset:</p>
 <figure class="align-default" id="id10">
-<a class="reference internal image-reference" href="../_images/timings_timings-plot_1.png"><img alt="../_images/timings_timings-plot_1.png" src="../_images/timings_timings-plot_1.png" style="width: 15cm;" /></a>
+<a class="reference internal image-reference" href="../_images/timings_digits_1.png"><img alt="../_images/timings_digits_1.png" src="../_images/timings_digits_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 13 </span><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -651,7 +706,7 @@ a first run of the algorithm:</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - first run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - first run: 13.850</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - first run: 7.911</span>
 </pre></div>
 </div>
 <p>Changing some parameters and re-running the cluster search:</p>
@@ -662,7 +717,7 @@ a first run of the algorithm:</p>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - consecutive run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - consecutive run: 0.030</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - consecutive run: 0.028</span>
 </pre></div>
 </div>
 </section>
@@ -672,23 +727,31 @@ a first run of the algorithm:</p>
            </div>
            
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="noise.html" class="btn btn-neutral float-right" title="Clustering with Noise Points Detection" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="benchmarks_ar.html" class="btn btn-neutral float-left" title="Benchmarks (How Good Is It?)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2018–2022, Marek Gagolewski.
-      <span class="lastupdated">Last updated on 2022-08-09T17:56:16+1000.
-      </span></p>
-  </div>
+    <p>
+        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2022-09-05T12:45:35+1000.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
 
 </footer>
         </div>
@@ -703,12 +766,7 @@ a first run of the algorithm:</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

@@ -2,13 +2,13 @@
 LICENSE
 MANIFEST.in
 NEWS
-README.rst
 requirements.txt
 setup.cfg
 setup.py
 genieclust/__init__.py
 genieclust/c_argfuns.pxd
 genieclust/c_compare_partitions.pxd
+genieclust/c_cvi.pxd
 genieclust/c_disjoint_sets.pxd
 genieclust/c_genie.pxd
 genieclust/c_gini_disjoint_sets.pxd
@@ -16,6 +16,7 @@ genieclust/c_inequity.pxd
 genieclust/c_mst.pxd
 genieclust/c_postprocess.pxd
 genieclust/c_preprocess.pxd
+genieclust/cluster_validity.pyx
 genieclust/compare_partitions.pyx
 genieclust/genie.py
 genieclust/inequity.pyx
@@ -25,6 +26,7 @@ genieclust/tools.pyx
 src/c_argfuns.h
 src/c_common.h
 src/c_compare_partitions.h
+src/c_cvi.h
 src/c_disjoint_sets.h
 src/c_distance.h
 src/c_genie.h

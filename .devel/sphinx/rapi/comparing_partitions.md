@@ -36,11 +36,11 @@ normalizing_permutation(x, y = NULL)
 
 ## Arguments
 
-|           |                                                                                                                                                                                                                                                                           |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `x`       | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
-| `y`       | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix)                                                |
-| `whether` | to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).                                                                                                                                             |
+|              |                                                                                                                                                                                                                                                                           |
+|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `x`          | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
+| `y`          | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix)                                                |
+| `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).                                                                                                                                     |
 
 ## Details
 
@@ -80,7 +80,7 @@ Each cluster validity measure is a single numeric value.
 
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*, 2022, <https://clustering-benchmarks.gagolewski.com>.
 
-Gagolewski M., Adjusted asymmetric accuracy: An interpretable external cluster validity measure, 2022, submitted for publication.
+Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external cluster validity measure, 2022, submitted for publication.
 
 Hubert L., Arabie P., Comparing partitions, *Journal of Classification* 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 

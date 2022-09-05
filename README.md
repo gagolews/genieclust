@@ -231,7 +231,7 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 *Information Sciences* **581**, 2021, 620–636.
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
 
-Gagolewski M., *Adjusted asymmetric accuracy: An interpretable external
+Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
 cluster validity measure*, 2022, submitted for publication.
 
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*.

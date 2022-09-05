@@ -1,10 +1,10 @@
 # What Is New in *genieclust*
 
 
-## 1.1.x (under development)
+## 1.1.0 (2022-09-05)
 
--  [GENERAL] ..TO DO.. We now mention that the partition similarity scores
-   are discussed in more detail at
+
+-  [GENERAL] The cluster validity measures are discussed in more detail at
    <https://clustering-benchmarks.gagolewski.com>.
 
 -  [Python and R] New function:
@@ -12,7 +12,7 @@
 
 -  [Python and R] Implementations of the so-called internal cluster
    validity measures discussed in
-   DOI:[10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
+   DOI: [10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004);
    see our (GitHub-only) [CVI](https://github.com/gagolews/optim_cvi) package
    for R. In particular, the generalised Dunn indices are based on the code
    originally authored by Maciej Bartoszuk. Thanks.
@@ -47,7 +47,7 @@
 
 -  [GENERAL] A paper on the `genieclust` package is now available:
    M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
-   *SoftwareX* **15**, 100722, 2021, DOI:
+   SoftwareX 15, 100722, 2021, DOI:
    [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 
 -  [Python] `plots.plot_scatter` now uses a more accessible default palette

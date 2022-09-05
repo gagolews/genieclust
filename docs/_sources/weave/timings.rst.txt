@@ -51,7 +51,7 @@ Let's study the algorithm's run times for some of the
 "larger" datasets (70,000-105,600 observations,
 see section on :any:`benchmark results <benchmarks_ar>` for discussion)
 from the
-`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering_benchmarks_v1>`_
+`Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering-benchmarks>`_
 :cite:`clustering_benchmarks_v1`\ .
 Features with variance of 0 were removed,
 datasets were centred at **0** and scaled so that they have total variance of 1.
@@ -168,8 +168,7 @@ very large datasets. Only the system's memory limits might become a problem then
 .. figure:: figures/timings_g2mg-plot_1.png
    :width: 15 cm
 
-   Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved during a coffee-break.
-
+   Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.
 
 
 
@@ -185,11 +184,10 @@ the ``mnist/digits`` dataset:
 
 
 
-.. figure:: figures/timings_timings-plot_1.png
+.. figure:: figures/timings_digits_1.png
    :width: 15 cm
 
    Timings [s] as a function of the number of clusters and threads.
-
 
 
 
@@ -229,7 +227,7 @@ a first run of the algorithm:
 
 ::
 
-    ## time elapsed - first run: 13.850
+    ## time elapsed - first run: 7.911
 
 
 
@@ -248,7 +246,6 @@ Changing some parameters and re-running the cluster search:
 
 ::
 
-    ## time elapsed - consecutive run: 0.030
-
+    ## time elapsed - consecutive run: 0.028
 
 

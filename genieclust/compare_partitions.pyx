@@ -474,7 +474,7 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
         *Journal of Classification* 2(1), 1985, 193-218.
 
     .. [2]
-        Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+        Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
         cluster validity measure, 2022, submitted for publication.
 
     .. [3]
@@ -1024,7 +1024,7 @@ cpdef double adjusted_asymmetric_accuracy(x, y):
     ----------
 
     .. [1]
-        Gagolewski M., Adjusted asymmetric accuracy: An interpretable external
+        Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
         cluster validity measure, 2022, submitted for publication.
 
     """
