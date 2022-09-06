@@ -1,4 +1,4 @@
-# cluster_validity_measures: Internal Cluster Validity Measures
+# cluster_validity: Internal Cluster Validity Measures
 
 ## Description
 

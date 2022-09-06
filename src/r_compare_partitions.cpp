@@ -238,8 +238,8 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' normalized_confusion_matrix(y_true, y_pred)
 //' normalizing_permutation(y_true, y_pred)
 //'
-//' @rdname comparing_partitions
-//' @name comparing_partitions
+//' @rdname compare_partitions
+//' @name compare_partitions
 //' @export
 //[[Rcpp::export]]
 double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
@@ -253,7 +253,7 @@ double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double normalized_accuracy(RObject x, RObject y=R_NilValue)
@@ -267,7 +267,7 @@ double normalized_accuracy(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false)
@@ -284,7 +284,7 @@ double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double adjusted_rand_score(RObject x, RObject y=R_NilValue)
@@ -298,7 +298,7 @@ double adjusted_rand_score(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double rand_score(RObject x, RObject y=R_NilValue)
@@ -312,7 +312,7 @@ double rand_score(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double adjusted_fm_score(RObject x, RObject y=R_NilValue)
@@ -326,7 +326,7 @@ double adjusted_fm_score(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double fm_score(RObject x, RObject y=R_NilValue)
@@ -340,7 +340,7 @@ double fm_score(RObject x, RObject y=R_NilValue)
 }
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double mi_score(RObject x, RObject y=R_NilValue)
@@ -355,7 +355,7 @@ double mi_score(RObject x, RObject y=R_NilValue)
 
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double normalized_mi_score(RObject x, RObject y=R_NilValue)
@@ -370,7 +370,7 @@ double normalized_mi_score(RObject x, RObject y=R_NilValue)
 
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 double adjusted_mi_score(RObject x, RObject y=R_NilValue)
@@ -385,7 +385,7 @@ double adjusted_mi_score(RObject x, RObject y=R_NilValue)
 
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
@@ -407,7 +407,7 @@ IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 
 
 
-//' @rdname comparing_partitions
+//' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
 IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)

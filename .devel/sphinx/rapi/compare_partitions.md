@@ -1,4 +1,4 @@
-# comparing_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores
+# compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores
 
 ## Description
 
@@ -48,7 +48,7 @@ Each index except `adjusted_asymmetric_accuracy()` can act as a pairwise partiti
 
 Each index except `mi_score()` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a bijection of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
 
-`adjusted_asymmetric_accuracy()` (Gagolewski, 2022) only accepts $K = L$. It is an external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is a corrected-for-chance summary of the proportion of correctly classified points in each cluster (with cluster matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](comparing_partitions.md)), given by: $(\max_\sigma \sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)$, where $C$ is the confusion matrix.
+`adjusted_asymmetric_accuracy()` (Gagolewski, 2022) only accepts $K = L$. It is an external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is a corrected-for-chance summary of the proportion of correctly classified points in each cluster (with cluster matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)), given by: $(\max_\sigma \sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)$, where $C$ is the confusion matrix.
 
 `normalized_accuracy()` is defined as $(Accuracy(C_\sigma)-1/L)/(1-1/L)$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y`, $K \leq L$, with columns permuted based on the solution to the maximal linear sum assignment problem. The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate or pivoted accuracy.
 

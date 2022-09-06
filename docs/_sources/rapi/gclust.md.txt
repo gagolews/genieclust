@@ -118,7 +118,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 [`mst()`](mst.md) for the minimum spanning tree routines.
 
-[`adjusted_rand_score()`](comparing_partitions.md) (amongst others) for external cluster validity measures (partition similarity scores).
+[`adjusted_rand_score()`](compare_partitions.md) (amongst others) for external cluster validity measures (partition similarity scores).
 
 ## Examples
 

@@ -107,6 +107,7 @@
 //' devergottini_index(c(7, 0, 3, 0, 0))
 //' devergottini_index(c(6, 0, 3, 1, 0))
 //'
+//' @name inequity
 //' @rdname inequity
 //' @export
 // [[Rcpp::export]]

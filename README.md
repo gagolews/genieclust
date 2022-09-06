@@ -194,10 +194,6 @@ cluster validity measure*, 2022, submitted for publication.
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*.
 2022, <https://clustering-benchmarks.gagolewski.com>.
 
-Cena A., *Adaptive hierarchical clustering algorithms based on data
-aggregation methods*, PhD Thesis, Systems Research Institute, Polish
-Academy of Sciences, 2018.
-
 Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density
 estimates for data clustering, visualization, and outlier detection,
 *ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
@@ -205,6 +201,10 @@ estimates for data clustering, visualization, and outlier detection,
 
 Mueller A., Nowozin S., Lampert C.H., Information Theoretic Clustering
 using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
+
+Rezaei M., Fränti P., Set matching measures for external cluster validity,
+*IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,
+2173–2186 [DOI: 10.1109/TKDE.2016.2551240](https://doi.org/10.1109/TKDE.2016.2551240).
 
 See the package's [homepage](https://genieclust.gagolewski.com) for more
 references.

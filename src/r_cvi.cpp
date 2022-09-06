@@ -160,8 +160,8 @@ std::vector<ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, ssize_t
 //' calinski_harabasz_index(X, y)  # good
 //' calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
 //'
-//' @name cluster_validity_measures
-//' @rdname cluster_validity_measures
+//' @name cluster_validity
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double calinski_harabasz_index(NumericMatrix X, NumericVector y)
@@ -179,7 +179,7 @@ double calinski_harabasz_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double dunnowa_index(NumericMatrix X, NumericVector y, int M=25,
@@ -210,7 +210,7 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int M=25,
 
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double generalised_dunn_index(NumericMatrix X, NumericVector y,
@@ -290,7 +290,7 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y,
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double negated_ball_hall_index(NumericMatrix X, NumericVector y)
@@ -308,7 +308,7 @@ double negated_ball_hall_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double negated_davies_bouldin_index(NumericMatrix X, NumericVector y)
@@ -326,7 +326,7 @@ double negated_davies_bouldin_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double negated_wcss_index(NumericMatrix X, NumericVector y)
@@ -344,7 +344,7 @@ double negated_wcss_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double silhouette_index(NumericMatrix X, NumericVector y)
@@ -362,7 +362,7 @@ double silhouette_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double silhouette_w_index(NumericMatrix X, NumericVector y)
@@ -380,7 +380,7 @@ double silhouette_w_index(NumericMatrix X, NumericVector y)
 }
 
 
-//' @rdname cluster_validity_measures
+//' @rdname cluster_validity
 //' @export
 // [[Rcpp::export]]
 double wcnn_index(NumericMatrix X, NumericVector y, int M=25)
