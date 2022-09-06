@@ -108,31 +108,25 @@ The implemented algorithms include:
     Cena's {cite}`cenaphd` algorithm to minimise the information
     theoretic criterion discussed in {cite}`itm`.
 
-See classes `genieclust.Genie` and `genieclust.GIc` (in Python) or
-functions `gclust()` and `genieclust()` (in R).
-
-
 Other features:
 
 -  inequality measures: the normalised Gini, Bonferroni,
    and De Vergottini indices;
 
 -  external cluster validity measures (see {cite}`aaa` for discussion):
-   adjusted asymmetric accuracy
-   and partition similarity scores such as
-   normalised accuracy,
-   pair sets index (PSI),
-   adjusted&unadjusted Rand, adjusted&unadjusted Fowlkes-Mallows (FM),
-   adjusted&normalised&unadjusted mutual information (MI) indices;
+   adjusted asymmetric accuracy and partition similarity scores such as
+   normalised accuracy, pair sets index (PSI) {cite}`psi`,
+   adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
+   adjusted/normalised/unadjusted mutual information (MI) indices;
 
 -  internal cluster validity measures (see {cite}`cvi` for discussion):
-   the Caliński-Harabasz,
-   Silhouette, Ball-Hall, Davies-Bouldin, generalised Dunn indices, etc.;
+   the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
+   generalised Dunn indices, etc.;
 
--  *(Python only)* Union-find (disjoint sets) data structures (with
+-  *(Python only)* union-find (disjoint sets) data structures (with
    extensions);
 
--  *(Python only)* Some R-like plotting functions.
+-  *(Python only)* some R-like plotting functions.
 
 
 
