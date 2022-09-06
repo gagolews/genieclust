@@ -1,7 +1,7 @@
 # *genieclust*: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
 ::::{epigraph}
-**Genie finds meaningful clusters and is fast even on large data sets.**
+**Genie finds meaningful clusters quickly – even on large data sets.**
 ::::
 
 ::::{image} _static/img/genie_toy_example.png
@@ -11,17 +11,14 @@
 ::::
 
 
-The *genieclust* package {cite}`genieclust` equips Python and R users with
-a faster and more powerful version of *Genie* {cite}`genieins` — a robust
-and outlier resistant clustering algorithm, originally published as an R package
-[*genie*](https://cran.r-project.org/web/packages/genie).
+The *genieclust* package {cite}`genieclust` for Python and R implements
+a robust and outlier resistant clustering algorithm called *Genie* {cite}`genieins`.
 
 The idea behind *Genie* is beautifully simple. First, make each individual
 point the sole member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
-the formation of clusters of highly imbalanced sizes**
-a point group of the smallest size will sometimes be matched with its nearest
-neighbours.
+the formation of clusters of highly imbalanced sizes** a point group of the
+smallest size will sometimes be matched with its nearest neighbours.
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
@@ -45,6 +42,8 @@ difficult-to-set `eps` parameter.
 
 
 
+## Python Version
+
 The **Python version** of *genieclust* is available via
 [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to
@@ -63,13 +62,14 @@ g = genieclust.Genie(n_clusters=2)
 labels = g.fit_predict(X)
 ```
 
-::::{epigraph}
+::::{note}
 *To learn more about Python, check out Marek's recent open-access (free!) textbook*
 [Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.
 ::::
 
 
+## R Version
 
 The **R version** of *genieclust* can be downloaded from
 [CRAN](https://cran.r-project.org/web/packages/genieclust/)
@@ -91,23 +91,72 @@ cutree(h, k=2)
 
 
 
+## Package Features
+
+The implemented algorithms include:
+
+-  *Genie++* – a reimplementation of the original Genie algorithm
+    from the R package [*genie*](https://cran.r-project.org/web/packages/genie)
+    {cite}`genieins`: much faster than the original one;
+    supports approximate disconnected MSTs;
+
+-   *Genie+HDBSCAN\** – a robustified (Geniefied) retake on the *HDBSCAN\**
+    {cite}`hdbscan` method that detects noise points in data and
+    outputs clusters of predefined sizes;
+
+-   *(Python only, experimental preview)* *Genie+Ic* (*GIc*) –
+    Cena's {cite}`cenaphd` algorithm to minimise the information
+    theoretic criterion discussed in {cite}`itm`.
+
+See classes `genieclust.Genie` and `genieclust.GIc` (in Python) or
+functions `gclust()` and `genieclust()` (in R).
+
+
+Other features:
+
+-  inequality measures: the normalised Gini, Bonferroni,
+   and De Vergottini indices;
+
+-  external cluster validity measures (see {cite}`aaa` for discussion):
+   adjusted asymmetric accuracy
+   and partition similarity scores such as
+   normalised accuracy,
+   pair sets index (PSI),
+   adjusted&unadjusted Rand, adjusted&unadjusted Fowlkes-Mallows (FM),
+   adjusted&normalised&unadjusted mutual information (MI) indices;
+
+-  internal cluster validity measures (see {cite}`cvi` for discussion):
+   the Caliński-Harabasz,
+   Silhouette, Ball-Hall, Davies-Bouldin, generalised Dunn indices, etc.;
+
+-  *(Python only)* Union-find (disjoint sets) data structures (with
+   extensions);
+
+-  *(Python only)* Some R-like plotting functions.
+
+
+
+## Contributing
+
 *genieclust* is distributed
 under the open source GNU AGPL v3 license and can be downloaded from
 [GitHub](https://github.com/gagolews/genieclust).
 The core functionality is implemented in the form of a header-only C++
 library, so it may be adapted to new environments relatively easily —
-any contributions are welcome (Julia, Matlab, etc.).
+any valuable contributions are welcome (Julia, Matlab, etc.).
+
 
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)
 
 **Contributors**:
-[Maciej Bartoszuk](http://bartoszuk.rexamine.com), [Anna Cena](https://cena.rexamine.com) (R packages
-[*genie*](https://cran.r-project.org/web/packages/genie) /*genieclust*'s predecessor {cite}`genieins`/
-and [*CVI*](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures {cite}`cvi`/),
+[Maciej Bartoszuk](http://bartoszuk.rexamine.com) and
+[Anna Cena](https://cena.rexamine.com)
+(*genieclust*'s predecessor [*genie*](https://cran.r-project.org/web/packages/genie)  {cite}`genieins`
+and some internal cluster validity measures [*CVI*](https://github.com/gagolews/optim_cvi)  {cite}`cvi`);
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
 of the shortest augmenting path algorithm for the rectangular assignment problem
-which we use for computing the normalised accuracy and pair sets index).
+which we use for computing some external cluster validity measures {cite}`genieins,psi`).
 
 
 

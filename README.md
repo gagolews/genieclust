@@ -8,7 +8,7 @@
 ![codecov](https://codecov.io/gh/gagolews/genieclust/branch/master/graph/badge.svg)
 
 
-> **Genie outputs meaningful clusters and is fast even on large data sets.**
+> **Genie finds meaningful clusters quickly – even on large data sets.**
 
 > A comprehensive tutorial, benchmarks, and a reference manual is available
 at <https://genieclust.gagolewski.com/>.
@@ -59,55 +59,10 @@ difficult-to-set `eps` parameter.
 **Contributors**:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com),
 [Anna Cena](https://cena.rexamine.com) (R packages
-[**genie**](https://CRAN.R-project.org/package=genie) /**genieclust**'s predecessor/
-and [**CVI**](https://github.com/gagolews/optim_cvi) /some internal cluster validity measures/),
+[**genie**](https://CRAN.R-project.org/package=genie)
+and [**CVI**](https://github.com/gagolews/optim_cvi)),
 [Peter M. Larsen](https://github.com/pmla/)
-(an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
-of the shortest augmenting path algorithm for the rectangular assignment problem
-which we use for computing the normalised accuracy and pair sets index).
-
-
-## Python and R Package Features
-
-The implemented algorithms include:
-
--  *Genie++* – a reimplementation of the original Genie algorithm
-   (Gagolewski et al., 2016);
-   much faster than the original one; supports approximate disconnected MSTs;
-
--  *Genie+HDBSCAN\** – a robustified (Geniefied) retake on the *HDBSCAN\**
-   (Campello et al., 2015) method that detects noise points in data and
-   outputs clusters of predefined sizes;
-
--  *(Python only, experimental preview)* *Genie+Ic* (*GIc*) – Cena's (2018)
-   algorithm to minimise the information theoretic criterion discussed
-   by Mueller et al. (2012).
-
-See classes `genieclust.Genie` and `genieclust.GIc` (in Python) or
-functions `gclust()` and `genieclust()` (in R).
-
-
-Other features:
-
--  inequality measures: the normalised Gini, Bonferroni,
-   and De Vergottini indices;
-
--  external cluster validity measures:
-   adjusted asymmetric accuracy
-   and partition similarity scores such as
-   normalised accuracy,
-   pair sets index (PSI),
-   adjusted&unadjusted Rand, adjusted&unadjusted Fowlkes-Mallows (FM),
-   adjusted&normalised&unadjusted mutual information (MI) indices;
-
--  internal cluster validity measures:
-   the Caliński-Harabasz,
-   Silhouette, Ball-Hall, Davies-Bouldin, generalised Dunn indices, etc.;
-
--  *(Python only)* Union-find (disjoint sets) data structures (with
-   extensions);
-
--  *(Python only)* Some R-like plotting functions.
+([rectangular_lsap](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
 
 
 
@@ -134,7 +89,7 @@ g = genieclust.Genie(n_clusters=2)
 labels = g.fit_predict(X)
 ```
 
-The tutorials and the package documentation is available
+Tutorials and the package documentation are available
 [here](https://genieclust.gagolewski.com/).
 
 *To learn more about Python, check out Marek's recent open-access (free!) textbook*
@@ -186,6 +141,8 @@ C++ library. It can thus be easily adapted for use in
 other environments.
 
 Any contributions are welcome (e.g., Julia, Matlab, ...).
+
+
 
 
 ## License
