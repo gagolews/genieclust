@@ -35,13 +35,17 @@ Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
 on [benchmark data](https://github.com/gagolews/clustering-benchmarks/).
+Of course, there is no, nor will it ever be, a single best
+universal clustering approach for every kind of problem, but Genie
+is definitely worth a try!
 
-Genie is also **very fast** – determining the whole cluster hierarchy
-for datasets of millions of points can be completed within minutes.
-Therefore, it is nicely suited for solving of **extreme clustering tasks**
-(large datasets with any number of clusters to detect) for data (also sparse)
-that fit into memory. Thanks to the use of
-[**nmslib**](https://github.com/nmslib/nmslib), sparse or string inputs are also supported.
+Thanks to its being based on minimal spanning trees of the pairwise distance
+graphs, Genie is also **very fast** – determining the whole cluster hierarchy
+for datasets of millions of points can be completed within minutes. Therefore,
+it is nicely suited for solving of **extreme clustering tasks** (large datasets
+with any number of clusters to detect) for data (also sparse) that fit into
+memory. Thanks to the use of [**nmslib**](https://github.com/nmslib/nmslib),
+sparse or string inputs are also supported.
 
 It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
