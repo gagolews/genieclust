@@ -171,3 +171,5 @@ Then we run the clustering procedures and plot the results.
 
 It turns out that the out-of-the-box Genie algorithm not only generates the most
 meaningful partitions but also it's the fastest.
+Of course, it's not ideal for all the possible datasets (no algorithm is),
+but it's definitely worth a try in your next data mining challenge.

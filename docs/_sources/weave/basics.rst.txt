@@ -8,10 +8,8 @@ the Gini index (a popular measure of inequity used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
 If this happens, instead of merging two closest clusters, a smallest cluster
 is joined with its nearest neighbour.
-In the following sections we'll show
-that Genie most often outperforms many other methods
-in terms of clustering :any:`quality <benchmarks_ar>`
-and :any:`speed <timings>`.
+In the following sections we'll show that Genie frequently outperforms many other methods
+in terms of clustering :any:`quality <benchmarks_ar>` and :any:`speed <timings>`.
 
 Here are a few examples of basic interactions with the Python version
 of the `genieclust` :cite:`genieclust` package,

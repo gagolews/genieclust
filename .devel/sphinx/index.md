@@ -23,9 +23,13 @@ smallest size will sometimes be matched with its nearest neighbours.
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
-on {any}`benchmark data <weave/benchmarks_ar>`.
+on various kinds of {any}`benchmark dataset <weave/benchmarks_ar>`.
+Of course, there is no, nor will it ever be, a single best
+universal clustering approach for every kind of problem, but Genie
+is definitely worth a try!
 
-Genie is also **very fast** — determining the whole cluster hierarchy
+Thanks to its being based on minimal spanning trees of the pairwise distance
+graphs, Genie is also **very fast** — determining the whole cluster hierarchy
 for datasets of millions of points, can be completed within
 {any}`minutes <weave/timings>`.
 Therefore, it is capable of solving **extreme clustering tasks**
