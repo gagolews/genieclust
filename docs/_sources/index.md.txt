@@ -24,7 +24,7 @@ Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
 on various kinds of {any}`benchmark dataset <weave/benchmarks_ar>`.
-Of course, there is no, nor will it ever be, a single best
+Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 

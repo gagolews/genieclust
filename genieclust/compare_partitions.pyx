@@ -475,7 +475,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
 
     .. [2]
         Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
-        cluster validity measure, 2022, submitted for publication.
+        cluster validity measure, 2022, under review (preprint).
+        https://doi.org/10.48550/arXiv.2209.02935.
 
     .. [3]
         Rezaei M., Franti P., Set matching measures for external cluster validity,
@@ -1025,7 +1026,8 @@ cpdef double adjusted_asymmetric_accuracy(x, y):
 
     .. [1]
         Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
-        cluster validity measure, 2022, submitted for publication.
+        cluster validity measure, 2022, under review (preprint).
+        https://doi.org/10.48550/arXiv.2209.02935
 
     """
 

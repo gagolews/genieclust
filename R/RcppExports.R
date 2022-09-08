@@ -92,7 +92,8 @@
 #' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
 #'
 #' Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
-#' cluster validity measure, 2022, submitted for publication.
+#' cluster validity measure, 2022, under review (preprint),
+#' \doi{10.48550/arXiv.2209.02935}.
 #'
 #' Hubert L., Arabie P., Comparing partitions,
 #' \emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
