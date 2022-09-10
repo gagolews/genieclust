@@ -44,7 +44,7 @@ The algorithm is parallelised; set the `OMP_NUM_THREADS` environment variable [`
 
 Time complexity is $O(n^2)$ for the method accepting an object of class `dist` and $O(p n^2)$ otherwise.
 
-If `M` \>= 2, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` (see Campello et al. 2015) is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i, j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i, k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other. Genie++ clustering algorithm (see [`gclust`](gclust.md)) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.
+If `M` \>= 2, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` (see Campello et al. 2013) is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i, j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i, k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other. Genie++ clustering algorithm (see [`gclust`](gclust.md)) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.
 
 Note that the case `M` = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.
 
@@ -68,7 +68,7 @@ Olson C.F., Parallel algorithms for hierarchical clustering, *Parallel Comput.* 
 
 Prim R., Shortest connection networks and some generalisations, *Bell Syst. Tech. J.* 36, 1957, 1389-1401.
 
-Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, *ACM Transactions on Knowledge Discovery from Data* 10(1), 2015, 5:1-5:51.
+Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, *Lecture Notes in Computer Science* 7819, 2013, 160-172, [doi:10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
 ## See Also
 

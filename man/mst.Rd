@@ -78,7 +78,7 @@ Time complexity is \eqn{O(n^2)} for the method accepting an object of
 class \code{dist} and \eqn{O(p n^2)} otherwise.
 
 If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)} with smoothing
-factor \code{M} (see Campello et al. 2015)
+factor \code{M} (see Campello et al. 2013)
 is used instead of the chosen "raw" distance \eqn{d(i,j)}.
 It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
 \eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
@@ -109,10 +109,10 @@ Olson C.F., Parallel algorithms for hierarchical clustering,
 Prim R., Shortest connection networks and some generalisations,
 \emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
 
-Campello R., Moulavi D., Zimek A., Sander J.,
-Hierarchical density estimates for data clustering, visualization,
-and outlier detection, \emph{ACM Transactions on Knowledge Discovery
-from Data} 10(1), 2015, 5:1-5:51.
+Campello R.J.G.B., Moulavi D., Sander J.,
+Density-based clustering based on hierarchical density estimates,
+\emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
+\doi{10.1007/978-3-642-37456-2_14}.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

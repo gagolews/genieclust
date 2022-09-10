@@ -296,10 +296,10 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
     The core distances are needed when computing the mutual reachability
     distance in the HDBSCAN* algorithm.
 
-    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
 
     The input distance matrix for a given point cloud X may be computed,
     e.g., via a call to
@@ -354,10 +354,10 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
     computes the mutual reachability distance w.r.t. the given
     core distance vector; see `internal.core_distance`.
 
-    See R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
-    estimates for data clustering, visualization, and outlier detection,
-    ACM Transactions on Knowledge Discovery from Data 10(1):5:1–5:51, 2015.
-    doi: 10.1145/2733381.
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
 
     The input distance matrix for a given point cloud X
     may be computed, e.g., via a call to

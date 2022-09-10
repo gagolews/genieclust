@@ -312,7 +312,7 @@
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n p\)</span>, the <span class="math notranslate nohighlight">\(n (n-1)/2\)</span> distances are computed on the fly, so that <span class="math notranslate nohighlight">\(O(n M)\)</span> memory is used.</p>
 <p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a> to control the number of threads used.</p>
 <p>Time complexity is <span class="math notranslate nohighlight">\(O(n^2)\)</span> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <span class="math notranslate nohighlight">\(O(p n^2)\)</span> otherwise.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2015) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2013) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
 <p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
 </section>
 <section id="value">
@@ -330,7 +330,7 @@
 <p>Jarnik V., O jistem problemu minimalnim, <em>Prace Moravske Prirodovedecke Spolecnosti</em> 6, 1930, 57-63.</p>
 <p>Olson C.F., Parallel algorithms for hierarchical clustering, <em>Parallel Comput.</em> 21, 1995, 1313-1325.</p>
 <p>Prim R., Shortest connection networks and some generalisations, <em>Bell Syst. Tech. J.</em> 36, 1957, 1389-1401.</p>
-<p>Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density estimates for data clustering, visualization, and outlier detection, <em>ACM Transactions on Knowledge Discovery from Data</em> 10(1), 2015, 5:1-5:51.</p>
+<p>Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172, <a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">doi:10.1007/978-3-642-37456-2_14</a>.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
@@ -369,7 +369,7 @@
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2022-09-08T13:16:36+1000.
+        Last updated on 2022-09-10T16:51:30+1000.
       </span>
 
 

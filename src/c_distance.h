@@ -334,17 +334,17 @@ struct CDistanceCosine : public CDistance<T>  {
 
 
 
-/*! A class to compute the "mutual reachability" (Campello et al., 2015)
+/*! A class to compute the "mutual reachability" (Campello et al., 2013)
  *  distances from the i-th point to all given k points based on the "core"
  *  distances and a CDistance class instance.
  *
  *  References:
  *  ==========
  *
- *  [1] R. Campello, D. Moulavi, A. Zimek, J. Sander, Hierarchical density
- *  estimates for data clustering, visualization, and outlier detection,
- *  ACM Transactions on Knowledge Discovery from Data 10(1):5:1-5:51, 2015.
- *  doi: 10.1145/2733381.
+ *  [1] Campello R.J.G.B., Moulavi D., Sander J.,
+ *      Density-based clustering based on hierarchical density estimates,
+ *      *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+ *      doi:10.1007/978-3-642-37456-2_14.
  *
  */
 template<class T>

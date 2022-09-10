@@ -17,9 +17,9 @@ Clustering with Noise Points Detection
 
 
 
-Let's load an example data set that can be found
+Let's load an example dataset that can be found
 the on `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
-package's project site:
+:cite:`hdbscanpkg` package's project site:
 
 
 .. code-block:: python
@@ -125,10 +125,11 @@ but now with respect to the original distance (here: Euclidean):
 
 
 
-However, contrary to an excellent implementation of HDBSCAN\*
+Contrary to an excellent implementation of HDBSCAN\*
 that is featured in the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_
-package :cite:`hdbscanpkg` and which also relies on a minimum spanning tree w.r.t. :math:`d_M`,
-here we still have the hierarchical Genie :cite:`genieins` algorithm under the hood.
+package :cite:`hdbscanpkg` and which also relies on a minimum spanning tree
+with respect to :math:`d_M`,
+we still have the hierarchical Genie :cite:`genieins` algorithm under the hood here.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.

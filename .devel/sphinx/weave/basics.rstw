@@ -164,10 +164,10 @@ A Comparison with HDBSCAN\*
 
 Let's also make a comparison against a version of the DBSCAN
 :cite:`predbscan,dbscan` algorithm. The original DBSCAN relies on a somewhat
-magical ``eps`` parameter, which might be hard to tune in practice. Fortunately,
+magical ``eps`` parameter, which might be hard to tune in practice. However,
 the `hdbscan <https://github.com/scikit-learn-contrib/hdbscan>`_ package
-implements its robustified variant :cite:`hdbscan`\ , which makes the algorithm much
-more user-friendly.
+:cite:`hdbscanpkg` implements its robustified variant
+:cite:`hdbscan`\ , which makes the algorithm much more user-friendly.
 
 
 Here are the clustering results with the ``min_cluster_size`` parameter

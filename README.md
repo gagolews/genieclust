@@ -49,7 +49,7 @@ sparse or string inputs are also supported.
 
 It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
-robustified version of *HDBSCAN\**  (see Campello et al., 2015)
+robustified version of *HDBSCAN\**  (see Campello et al., 2013)
 that is able to detect a predefined
 number of clusters and hence it doesn't dependent on the *DBSCAN*'s somewhat
 difficult-to-set `eps` parameter.
@@ -195,13 +195,13 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
 cluster validity measure*, 2022, submitted for publication.
 
-Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*.
+Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
 2022, <https://clustering-benchmarks.gagolewski.com>.
 
-Campello R., Moulavi D., Zimek A., Sander J., Hierarchical density
-estimates for data clustering, visualization, and outlier detection,
-*ACM Transactions on Knowledge Discovery from Data* **10**(1), 2015, 5:1–5:51.
-[DOI: 10.1145/2733381](https://doi.org/10.1145/2733381).
+Campello R.J.G.B., Moulavi D., Sander J.,
+Density-based clustering based on hierarchical density estimates,
+*Lecture Notes in Computer Science* **7819**, 2013, 160–172.
+[DOI: 10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
 Mueller A., Nowozin S., Lampert C.H., Information Theoretic Clustering
 using Minimum Spanning Trees, *DAGM-OAGM*, 2012.

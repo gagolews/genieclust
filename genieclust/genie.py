@@ -894,11 +894,10 @@ class Genie(GenieBase):
         https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
 
     .. [6]
-        Campello R., Moulavi D., Zimek A., Sander J.,
-        Hierarchical density estimates for data clustering, visualization,
-        and outlier detection,
-        *ACM Transactions on Knowledge Discovery from Data* 10(1),
-        2015, 5:1–5:51. doi:10.1145/2733381.
+        Campello R.J.G.B., Moulavi D., Sander J.,
+        Density-based clustering based on hierarchical density estimates,
+        *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+        doi:10.1007/978-3-642-37456-2_14.
 
     """
 

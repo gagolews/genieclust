@@ -52,7 +52,7 @@
 #' The clustering can now also be computed with respect to the
 #' mutual reachability distance (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
-#' (see Campello et al., 2015). If \code{M} > 1, then the mutual reachability
+#' (see Campello et al., 2013). If \code{M} > 1, then the mutual reachability
 #' distance \eqn{m(i,j)} with smoothing factor \code{M} is used instead of the
 #' chosen "raw" distance \eqn{d(i,j)}. It holds \eqn{m(i,j)=\max(d(i,j), c(i), c(j))},
 #' where \eqn{c(i)} is \eqn{d(i,k)} with \eqn{k} being the
@@ -147,10 +147,10 @@
 #' \emph{Information Sciences} 363, 2016, 8-23,
 #' \doi{10.1016/j.ins.2016.05.003}.
 #'
-#' Campello R., Moulavi D., Zimek A., Sander J.,
-#' Hierarchical density estimates for data clustering, visualization,
-#' and outlier detection,
-#' ACM Transactions on Knowledge Discovery from Data 10(1), 2015, 5:1-5:51.
+#' Campello R.J.G.B., Moulavi D., Sander J.,
+#' Density-based clustering based on hierarchical density estimates,
+#' \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
+#' \doi{10.1007/978-3-642-37456-2_14}.
 #'
 #'
 #' @examples
