@@ -21,7 +21,7 @@
   <title>{{ title|striptags|e }}{{ titlesuffix }}</title>
   {% endblock %}
 
-  {# Marek's hack for the GitHub start button #}
+  {# Marek's hack for the GitHub star button #}
   {% if theme_vcs_pageview_mode is defined and theme_vcs_pageview_mode is not none %}
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   {% endif %}

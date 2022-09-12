@@ -43,9 +43,9 @@
     {% block breadcrumbs_aside %}
       <li class="wy-breadcrumbs-aside">
 
-        {# Marek's hack for the GitHub start button #}
+        {# Marek's hack for the GitHub star button #}
         {% if theme_vcs_pageview_mode is defined and theme_vcs_pageview_mode is not none %}
-        <a class="github-button" href="https://github.com/{{ theme_vcs_pageview_mode }}" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star {{ theme_vcs_pageview_mode }} on GitHub">Star</a>
+        <a class="github-button" href="https://github.com/{{ theme_vcs_pageview_mode }}" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star {{ theme_vcs_pageview_mode }} on GitHub">GitHub</a>
         {% endif %}
 
 
