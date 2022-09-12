@@ -16,7 +16,7 @@ author = "Marek Gagolewski"
 copyright = f"{copyright_year}"
 html_title = f"Python and R Package {pkg_title}"
 html_short_title = f"{pkg_title}"
-html_favicon = "_static/img/favicon.png"
+html_favicon = "_static/favicon.png"
 
 html_version_text = f'\
     Python and R Package<br />\
