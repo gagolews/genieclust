@@ -26,7 +26,11 @@ jobs:
         pip install pip wheel cython --upgrade
         pip install -r requirements.txt --upgrade
         pip install pytest pytest-cov --upgrade
-    - name: Install optional dependencies
+    - name: Install optional dependencies (nmslib)
+      continue-on-error: true
+      run: |
+        pip install nmslib --upgrade
+    - name: Install optional dependencies (mlpack)
       continue-on-error: true
       run: |
         pip install mlpack --upgrade

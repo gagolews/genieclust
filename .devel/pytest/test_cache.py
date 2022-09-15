@@ -24,6 +24,11 @@ try:
 except ImportError:
     mlpack = None
 
+try:
+    import nmslib
+except ImportError:
+    nmslib = None
+
 
 import os
 if os.path.exists("devel/benchmark_data"):
@@ -53,6 +58,9 @@ def test_cache(metric='euclidean'):
 
     for C in [genieclust.Genie, genieclust.GIc]:
         for exact in [True, False]:
+            if not exact and not nmslib:
+                continue
+
             for M in [10,2,1]:
                 os.environ["OMP_NUM_THREADS"] = '1'
                 t01 = time.time()

@@ -96,5 +96,3 @@ def test_warnerr(metric='euclidean'):
 
 if __name__ == "__main__":
     test_warnerr()
-
-
