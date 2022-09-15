@@ -31,30 +31,30 @@ Provides access to the internal cluster validity measures.
 
 
 cdef extern from "../src/c_cvi.h":
-    double c_calinski_harabasz_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_calinski_harabasz_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_dunnowa_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K, size_t M,
+    double c_dunnowa_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t M,
         const char* owa_numerator, const char* owa_denominator)
 
-    double c_generalised_dunn_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K, size_t lowercase_d, size_t uppercase_d)
+    double c_generalised_dunn_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t lowercase_d, size_t uppercase_d)
 
-    double c_negated_ball_hall_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_negated_ball_hall_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_negated_davies_bouldin_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_negated_davies_bouldin_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_negated_wcss_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_negated_wcss_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_silhouette_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_silhouette_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_silhouette_w_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K)
+    double c_silhouette_w_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
 
-    double c_wcnn_index(const double* X, const ssize_t* y,
-        size_t n, size_t d, ssize_t K, size_t M)
+    double c_wcnn_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t M)

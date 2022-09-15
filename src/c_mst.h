@@ -32,13 +32,13 @@
 
 
 #ifdef _OPENMP
-void Comp_set_num_threads(ssize_t n_threads) {
+void Comp_set_num_threads(Py_ssize_t n_threads) {
     if (n_threads <= 0)
         n_threads = omp_get_max_threads();
     omp_set_num_threads(n_threads);
 }
 #else
-void Comp_set_num_threads(ssize_t /*n_threads*/) {
+void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
     ;
 }
 #endif
@@ -51,13 +51,13 @@ void Comp_set_num_threads(ssize_t /*n_threads*/) {
 template <class T>
 class CMstTriple {
 public:
-    ssize_t i1; //!< first  vertex defining an edge
-    ssize_t i2; //!< second vertex defining an edge
+    Py_ssize_t i1; //!< first  vertex defining an edge
+    Py_ssize_t i2; //!< second vertex defining an edge
     T d;        //!< edge weight
 
     CMstTriple() {}
 
-    CMstTriple(ssize_t i1, ssize_t i2, T d, bool order=true) {
+    CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bool order=true) {
         this->d = d;
         if (!order || (i1 < i2)) {
             this->i1 = i1;
@@ -116,8 +116,8 @@ public:
  * @return number of edges in the minimal spanning forest
  */
 // template <class T>
-// ssize_t Cmst_from_nn_list(CMstTriple<T>* nns, ssize_t c,
-//     ssize_t n, T* mst_dist, ssize_t* mst_ind, bool verbose=false)
+// Py_ssize_t Cmst_from_nn_list(CMstTriple<T>* nns, Py_ssize_t c,
+//     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
 // {
 //     if (n <= 0)   throw std::domain_error("n <= 0");
 //     if (c <= 0)   throw std::domain_error("c <= 0");
@@ -127,14 +127,14 @@ public:
 //
 //     std::sort(nns, nns+c); // unstable sort (do we need stable here?)
 //
-//     ssize_t triple_cur = 0;
-//     ssize_t mst_edge_cur = 0;
+//     Py_ssize_t triple_cur = 0;
+//     Py_ssize_t mst_edge_cur = 0;
 //
 //     CDisjointSets ds(n);
 //     while (mst_edge_cur < n-1) {
 //         if (triple_cur == c) {
 //             // The input graph is not connected (we have a forest)
-//             ssize_t ret = mst_edge_cur;
+//             Py_ssize_t ret = mst_edge_cur;
 //             while (mst_edge_cur < n-1) {
 //                 mst_ind[2*mst_edge_cur+0] = -1;
 //                 mst_ind[2*mst_edge_cur+1] = -1;
@@ -146,8 +146,8 @@ public:
 //             return ret;
 //         }
 //
-//         ssize_t u = nns[triple_cur].i1;
-//         ssize_t v = nns[triple_cur].i2;
+//         Py_ssize_t u = nns[triple_cur].i1;
+//         Py_ssize_t v = nns[triple_cur].i2;
 //         T d = nns[triple_cur].d;
 //         triple_cur++;
 //
@@ -220,29 +220,29 @@ public:
  * @return number of edges in the minimal spanning forest
  */
 template <class T>
-ssize_t Cmst_from_nn(
+Py_ssize_t Cmst_from_nn(
     const T* dist,
-    const ssize_t* ind,
+    const Py_ssize_t* ind,
     const T* d_core,
-    ssize_t n,
-    ssize_t k,
+    Py_ssize_t n,
+    Py_ssize_t k,
     T* mst_dist,
-    ssize_t* mst_ind,
+    Py_ssize_t* mst_ind,
     bool* maybe_inexact,
     bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
-    ssize_t nk = n*k;
+    Py_ssize_t nk = n*k;
 
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
     std::vector< CMstTriple<T> > nns(nk);
-    ssize_t c = 0;
-    for (ssize_t i = 0; i < n; ++i) {
-        for (ssize_t j = 0; j < k; ++j) {
-            ssize_t i2 = ind[k*i+j];
+    Py_ssize_t c = 0;
+    for (Py_ssize_t i = 0; i < n; ++i) {
+        for (Py_ssize_t j = 0; j < k; ++j) {
+            Py_ssize_t i2 = ind[k*i+j];
             if (i2 >= 0 && i2 != i) {
                 double d = dist[k*i+j];
                 if (d_core) {
@@ -258,14 +258,14 @@ ssize_t Cmst_from_nn(
     std::stable_sort(nns.data(), nns.data()+c);
 
 
-    ssize_t triple_cur = 0;
-    ssize_t mst_edge_cur = 0;
+    Py_ssize_t triple_cur = 0;
+    Py_ssize_t mst_edge_cur = 0;
 
     CDisjointSets ds(n);
     while (mst_edge_cur < n-1) {
         if (triple_cur == c) {
             // The input graph is not connected (we have a forest)
-            ssize_t ret = mst_edge_cur;
+            Py_ssize_t ret = mst_edge_cur;
             while (mst_edge_cur < n-1) {
                 mst_ind[2*mst_edge_cur+0] = -1;
                 mst_ind[2*mst_edge_cur+1] = -1;
@@ -277,8 +277,8 @@ ssize_t Cmst_from_nn(
             return ret;
         }
 
-        ssize_t u = nns[triple_cur].i1;
-        ssize_t v = nns[triple_cur].i2;
+        Py_ssize_t u = nns[triple_cur].i1;
+        Py_ssize_t v = nns[triple_cur].i2;
         T d = nns[triple_cur].d;
         triple_cur++;
 
@@ -323,7 +323,7 @@ ssize_t Cmst_from_nn(
  *
  *
  *  @param D a callable CDistance object such that a call to
- *         <T*>D(j, <ssize_t*>M, ssize_t l) returns an n-ary array
+ *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
  *         with the distances from the j-th point to l points whose indices
  *         are given in array M
  *  @param n number of points
@@ -335,8 +335,8 @@ ssize_t Cmst_from_nn(
  *  @param verbose output diagnostic/progress messages?
  */
 template <class T>
-void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
-    T* dist, ssize_t* ind, bool verbose=false)
+void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
+    T* dist, Py_ssize_t* ind, bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
@@ -345,26 +345,26 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the K-nn graph... %3d%%", 0);
 
 
-    for (ssize_t i=0; i<n*k; ++i) {
+    for (Py_ssize_t i=0; i<n*k; ++i) {
         dist[i] = INFTY;
         ind[i] = -1;
     }
 
-    std::vector<ssize_t> M(n);
-    for (ssize_t i=0; i<n; ++i) M[i] = i;
+    std::vector<Py_ssize_t> M(n);
+    for (Py_ssize_t i=0; i<n; ++i) M[i] = i;
 
-    for (ssize_t i=0; i<n-1; ++i) {
+    for (Py_ssize_t i=0; i<n-1; ++i) {
         // pragma omp parallel for inside:
         const T* dij = (*D)(i, M.data()+i+1, n-i-1);
         // let dij[j] == d(x_i, x_j)
 
 
         // TODO: the 2nd if below can be OpenMP'd
-        for (ssize_t j=i+1; j<n; ++j) {
+        for (Py_ssize_t j=i+1; j<n; ++j) {
 
             if (dij[j] < dist[i*k+k-1]) {
                 // j might be amongst k-NNs of i
-                ssize_t l = k-1;
+                Py_ssize_t l = k-1;
                 while (l > 0 && dij[j] < dist[i*k+l-1]) {
                     dist[i*k+l] = dist[i*k+l-1];
                     ind[i*k+l]  = ind[i*k+l-1];
@@ -376,7 +376,7 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
 
             if (dij[j] < dist[j*k+k-1]) {
                 // i might be amongst k-NNs of j
-                ssize_t l = k-1;
+                Py_ssize_t l = k-1;
                 while (l > 0 && dij[j] < dist[j*k+l-1]) {
                     dist[j*k+l] = dist[j*k+l-1];
                     ind[j*k+l]  = ind[j*k+l-1];
@@ -429,7 +429,7 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
  *
  *
  * @param D a callable CDistance object such that a call to
- *        <T*>D(j, <ssize_t*>M, ssize_t k) returns an n-ary array
+ *        <T*>D(j, <Py_ssize_t*>M, Py_ssize_t k) returns an n-ary array
  *        with the distances from the j-th point to k points whose indices
  *        are given in array M
  * @param n number of points
@@ -441,20 +441,20 @@ void Cknn_from_complete(CDistance<T>* D, ssize_t n, ssize_t k,
  * @param verbose output diagnostic/progress messages?
  */
 template <class T>
-void Cmst_from_complete(CDistance<T>* D, ssize_t n,
-    T* mst_dist, ssize_t* mst_ind, bool verbose=false)
+void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
+    T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
 {
     std::vector<T> Dnn(n, INFTY);
-    std::vector<ssize_t> Fnn(n);
-    std::vector<ssize_t> M(n);
+    std::vector<Py_ssize_t> Fnn(n);
+    std::vector<Py_ssize_t> M(n);
     std::vector< CMstTriple<T> > res(n-1);
 
-    for (ssize_t i=0; i<n; ++i) M[i] = i;
+    for (Py_ssize_t i=0; i<n; ++i) M[i] = i;
 
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
-    ssize_t lastj = 0, bestj, bestjpos;
-    for (ssize_t i=0; i<n-1; ++i) {
+    Py_ssize_t lastj = 0, bestj, bestjpos;
+    for (Py_ssize_t i=0; i<n-1; ++i) {
         // M[1], ... M[n-i-1] - points not yet in the MST
 
         // compute the distances from lastj (on the fly)
@@ -465,8 +465,8 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
         #endif
-        for (ssize_t j=1; j<n-i; ++j) {
-            ssize_t M_j = M[j];
+        for (Py_ssize_t j=1; j<n-i; ++j) {
+            Py_ssize_t M_j = M[j];
             T curdist = dist_from_lastj[M_j]; // d(lastj, M_j)
             if (curdist < Dnn[M_j]) {
                 Dnn[M_j] = curdist;
@@ -479,8 +479,8 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
         // find min and argmin in Dnn:
         bestjpos = 1;
         bestj = M[1];
-        for (ssize_t j=2; j<n-i; ++j) {
-            ssize_t M_j = M[j];
+        for (Py_ssize_t j=2; j<n-i; ++j) {
+            Py_ssize_t M_j = M[j];
             if (Dnn[M_j] < Dnn[bestj]) {
                 bestj = M_j;
                 bestjpos = j;
@@ -494,7 +494,7 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
 
         // M[bestjpos] = M[n-i-1]; // don't visit bestj again
         // (#62) new version: keep M sorted (more CPU cache-friendly):
-        for (ssize_t j=bestjpos; j<n-i-1; ++j)
+        for (Py_ssize_t j=bestjpos; j<n-i-1; ++j)
             M[j] = M[j+1];
 
         // and an edge to MST: (smaller index first)
@@ -512,7 +512,7 @@ void Cmst_from_complete(CDistance<T>* D, ssize_t n,
     // sort the resulting MST edges in increasing order w.r.t. d
     std::sort(res.begin(), res.end());
 
-    for (ssize_t i=0; i<n-1; ++i) {
+    for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_dist[i]    = res[i].d;
         mst_ind[2*i+0] = res[i].i1; // i1 < i2
         mst_ind[2*i+1] = res[i].i2;

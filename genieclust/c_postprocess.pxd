@@ -31,8 +31,8 @@ Noisy k-partition post-processing
 
 
 cdef extern from "../src/c_postprocess.h":
-    void Cmerge_boundary_points(const ssize_t* ind, ssize_t num_edges,
-        const ssize_t* nn, ssize_t num_neighbours, ssize_t M,
-        ssize_t* c, ssize_t n)
-    void Cmerge_noise_points(const ssize_t* ind, ssize_t num_edges,
-        ssize_t* c, ssize_t n)
+    void Cmerge_boundary_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
+        const Py_ssize_t* nn, Py_ssize_t num_neighbours, Py_ssize_t M,
+        Py_ssize_t* c, Py_ssize_t n)
+    void Cmerge_noise_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
+        Py_ssize_t* c, Py_ssize_t n)

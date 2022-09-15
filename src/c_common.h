@@ -71,6 +71,11 @@
 #endif
 
 
+#if GENIECLUST_R
+typedef ssize_t         Py_ssize_t;
+#endif
+
+
 
 typedef double FLOAT_T; ///< float type we are working internally with
 

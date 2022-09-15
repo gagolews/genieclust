@@ -29,7 +29,7 @@ protected:
     EuclideanDistance& D; ///< squared Euclidean
     const CMatrix<FLOAT_T>& X;
     //CMatrix<FLOAT_T>& X;         ///< data matrix of size n*d
-    std::vector<ssize_t>& L;    ///< current label vector of size n
+    std::vector<Py_ssize_t>& L;    ///< current label vector of size n
     std::vector<size_t>& count; ///< size of each of the K clusters
     size_t K;
     size_t n;
@@ -40,7 +40,7 @@ public:
     Delta(
            EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,
@@ -57,8 +57,8 @@ public:
           centroids(centroids)
     { }
 
-    virtual void before_modify(size_t i, ssize_t j) = 0;
-    virtual void after_modify(size_t i, ssize_t j) = 0;
+    virtual void before_modify(size_t i, Py_ssize_t j) = 0;
+    virtual void after_modify(size_t i, Py_ssize_t j) = 0;
     virtual void undo() = 0;
     virtual void recompute_all() = 0;
 
@@ -71,7 +71,7 @@ public:
     LowercaseDelta(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -93,7 +93,7 @@ public:
     UppercaseDelta(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -123,7 +123,7 @@ public:
     // cannot be in DeltaFactory since result type is different, even if parameter list is the same
     virtual LowercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,
@@ -140,7 +140,7 @@ public:
     // cannot be in DeltaFactory since result type is different, even if parameter list is the same
     virtual UppercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,

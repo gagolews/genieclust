@@ -113,10 +113,10 @@
 // [[Rcpp::export]]
 double gini_index(Rcpp::NumericVector x)
 {
-    ssize_t n = x.size();
+    Py_ssize_t n = x.size();
 
     // check if sorted; if not, sort.
-    for (ssize_t i=1; i<n; ++i) {
+    for (Py_ssize_t i=1; i<n; ++i) {
         if (x[i-1] > x[i]) {
             x = Rcpp::clone(x);
             std::sort(x.begin(), x.end());
@@ -133,10 +133,10 @@ double gini_index(Rcpp::NumericVector x)
 // [[Rcpp::export]]
 double bonferroni_index(Rcpp::NumericVector x)
 {
-    ssize_t n = x.size();
+    Py_ssize_t n = x.size();
 
     // check if sorted; if not, sort.
-    for (ssize_t i=1; i<n; ++i) {
+    for (Py_ssize_t i=1; i<n; ++i) {
         if (x[i-1] > x[i]) {
             x = Rcpp::clone(x);
             std::sort(x.begin(), x.end());
@@ -154,10 +154,10 @@ double bonferroni_index(Rcpp::NumericVector x)
 // [[Rcpp::export]]
 double devergottini_index(Rcpp::NumericVector x)
 {
-    ssize_t n = x.size();
+    Py_ssize_t n = x.size();
 
     // check if sorted; if not, sort.
-    for (ssize_t i=1; i<n; ++i) {
+    for (Py_ssize_t i=1; i<n; ++i) {
         if (x[i-1] > x[i]) {
             x = Rcpp::clone(x);
             std::sort(x.begin(), x.end());

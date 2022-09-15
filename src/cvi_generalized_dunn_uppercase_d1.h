@@ -37,7 +37,7 @@ public:
     UppercaseDelta1(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -48,7 +48,7 @@ public:
     diam(K),
     last_diam(K)
     { }
-    virtual void before_modify(size_t i, ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t j) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
             last_diam[u] = diam[u];
@@ -60,7 +60,7 @@ public:
 
     }
 
-    virtual void after_modify(size_t i, ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t j) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -118,7 +118,7 @@ public:
 
     virtual UppercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,

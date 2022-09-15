@@ -53,7 +53,7 @@ ctypedef fused T:
     int
     long
     long long
-    ssize_t
+    Py_ssize_t
     float
     double
 
@@ -86,8 +86,8 @@ cdef void _openmp_set_num_threads():
 
 cpdef np.ndarray[floatT] get_d_core(
     floatT[:,::1] dist,
-    ssize_t[:,::1] ind,
-    ssize_t M):
+    Py_ssize_t[:,::1] ind,
+    Py_ssize_t M):
     """
     Get "core" distance = distance to the (M-1)-th nearest neighbour
     (if available, otherwise, distance to the furthest away one at hand).
@@ -113,8 +113,8 @@ cpdef np.ndarray[floatT] get_d_core(
         of length dist.shape[0]
     """
 
-    cdef ssize_t n = dist.shape[0]
-    cdef ssize_t k = dist.shape[1]
+    cdef Py_ssize_t n = dist.shape[0]
+    cdef Py_ssize_t k = dist.shape[1]
 
     if not (ind.shape[0] == n and ind.shape[1] == k):
         raise ValueError("shapes of dist and ind must match")
@@ -129,7 +129,7 @@ cpdef np.ndarray[floatT] get_d_core(
     #assert nn_dist.shape[1] >= cur_state["M"]-1
     #d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
 
-    cdef ssize_t i, j
+    cdef Py_ssize_t i, j
     for i in range(n):
         j = M-2
         while ind[i, j] < 0:
@@ -143,7 +143,7 @@ cpdef np.ndarray[floatT] get_d_core(
 
 cpdef tuple nn_list_to_matrix(
     list nns,
-    ssize_t k_max):
+    Py_ssize_t k_max):
     """
     genieclust.internal.nn_list_to_matrix(nns, k_max)
 
@@ -179,15 +179,15 @@ cpdef tuple nn_list_to_matrix(
         Constructs a minimum spanning tree from a near-neighbour matrix
 
     """
-    cdef ssize_t n = len(nns)
+    cdef Py_ssize_t n = len(nns)
     cdef np.ndarray[int]   nn_i
     cdef np.ndarray[float] nn_d
 
-    cdef np.ndarray[ssize_t,ndim=2] ret_nn_ind  = np.empty((n, k_max), dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] ret_nn_ind  = np.empty((n, k_max), dtype=np.intp)
     cdef np.ndarray[float,ndim=2]  ret_nn_dist = np.empty((n, k_max), dtype=np.float32)
 
-    cdef ssize_t i, j, k, l
-    cdef ssize_t i1, i2
+    cdef Py_ssize_t i, j, k, l
+    cdef Py_ssize_t i1, i2
     cdef float d
 
     for i in range(n):
@@ -219,7 +219,7 @@ cpdef tuple nn_list_to_matrix(
 
 
 # cpdef tuple mst_from_nn_list(list nns,
-#         ssize_t k_max=0,
+#         Py_ssize_t k_max=0,
 #         bint stop_disconnected=True,
 #         bint verbose=False):
 #     """
@@ -250,12 +250,12 @@ cpdef tuple nn_list_to_matrix(
 #     pair : tuple
 #         See `mst_from_nn`.
 #     """
-#     cdef ssize_t n = len(nns)
+#     cdef Py_ssize_t n = len(nns)
 #     cdef np.ndarray[int]   nn_i
 #     cdef np.ndarray[float] nn_d
-#     cdef ssize_t k
-#     cdef ssize_t i, j
-#     cdef ssize_t i1, i2
+#     cdef Py_ssize_t k
+#     cdef Py_ssize_t i, j
+#     cdef Py_ssize_t i1, i2
 #     cdef float d
 #
 #     cdef vector[ c_mst.CMstTriple[float] ] nns2
@@ -277,10 +277,10 @@ cpdef tuple nn_list_to_matrix(
 #             if i2 >= 0 and i1 != i2:
 #                 nns2.push_back( c_mst.CMstTriple[float](i1, i2, d) )
 #
-#     cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+#     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
 #     cdef np.ndarray[float]          mst_dist = np.empty(n-1, dtype=np.float32)
 #
-#     cdef ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
+#     cdef Py_ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
 #             &mst_dist[0], &mst_ind[0,0], verbose)
 #
 #     if stop_disconnected and n_edges < n-1:
@@ -293,7 +293,7 @@ cpdef tuple nn_list_to_matrix(
 
 cpdef tuple mst_from_nn(
     floatT[:,::1] dist,
-    ssize_t[:,::1] ind,
+    Py_ssize_t[:,::1] ind,
     floatT[::1] d_core=None,
     bint stop_disconnected=True,
     bint stop_inexact=False,
@@ -359,13 +359,13 @@ cpdef tuple mst_from_nn(
     If the input graph is unconnected, the result is a forest.
 
     """
-    cdef ssize_t n = dist.shape[0]
-    cdef ssize_t k = dist.shape[1]
+    cdef Py_ssize_t n = dist.shape[0]
+    cdef Py_ssize_t k = dist.shape[1]
 
     if not (ind.shape[0] == n and ind.shape[1] == k):
         raise ValueError("shapes of dist and ind must match")
 
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
@@ -378,7 +378,7 @@ cpdef tuple mst_from_nn(
         d_core_ptr = &d_core[0]
 
     _openmp_set_num_threads()
-    cdef ssize_t n_edges = c_mst.Cmst_from_nn(
+    cdef Py_ssize_t n_edges = c_mst.Cmst_from_nn(
         &dist[0,0], &ind[0,0],
         d_core_ptr,
         n, k,
@@ -445,13 +445,13 @@ cpdef tuple mst_from_complete(
         (and then the 1st, and the the 2nd index).
         For each i, it holds mst[i,0]<mst[i,1].
     """
-    cdef ssize_t d = X.shape[1]
-    cdef ssize_t n = X.shape[0]
+    cdef Py_ssize_t d = X.shape[1]
+    cdef Py_ssize_t n = X.shape[0]
     if d == 1:
-        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
         assert n*(n-1)//2 == X.shape[0]
 
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
@@ -531,13 +531,13 @@ cpdef tuple mst_from_distance(
         (and then the 1st, and the the 2nd index).
         For each i, it holds mst[i,0]<mst[i,1].
     """
-    cdef ssize_t n = X.shape[0]
-    cdef ssize_t d = X.shape[1]
+    cdef Py_ssize_t n = X.shape[0]
+    cdef Py_ssize_t d = X.shape[1]
     if d == 1 and metric == "precomputed":
-        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
         assert n*(n-1)//2 == X.shape[0]
-    cdef ssize_t i
-    cdef np.ndarray[ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    cdef Py_ssize_t i
+    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
     cdef c_mst.CDistance[floatT]* D = NULL
@@ -575,7 +575,7 @@ cpdef tuple mst_from_distance(
 
 
 
-cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
+cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
        str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
     """Determines the first k nearest neighbours of each point in X,
     with respect to a given metric (distance).
@@ -617,17 +617,17 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
                 edge definition, interpreted as {i, ind[i,j]};
                 ind[i,j] is the index of the j-th nearest neighbour of i.
     """
-    cdef ssize_t n = X.shape[0]
-    cdef ssize_t d = X.shape[1]
+    cdef Py_ssize_t n = X.shape[0]
+    cdef Py_ssize_t d = X.shape[1]
     if d == 1 and metric == "precomputed":
-        n = <ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
+        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
         assert n*(n-1)//2 == X.shape[0]
 
     if k >= n:
         raise ValueError("too many nearest neighbours requested")
 
-    cdef ssize_t i
-    cdef np.ndarray[ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+    cdef Py_ssize_t i
+    cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
     cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
         dtype=np.float32 if floatT is float else np.float64)
     cdef c_mst.CDistance[floatT]* D = NULL
@@ -669,7 +669,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, ssize_t k,
 
 
 
-cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
+cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
     """Given an adjacency list representing an undirected simple graph over
     vertex set {0,...,n-1}, return an array deg with deg[i] denoting
     the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
@@ -691,9 +691,9 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
     deg : ndarray, shape(n,)
         An integer array of length n.
     """
-    cdef ssize_t num_edges = ind.shape[0]
+    cdef Py_ssize_t num_edges = ind.shape[0]
     assert ind.shape[1] == 2
-    cdef np.ndarray[ssize_t] deg = np.empty(n, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
 
     _openmp_set_num_threads()
     c_preprocess.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
@@ -711,11 +711,11 @@ cpdef np.ndarray[ssize_t] get_graph_node_degrees(ssize_t[:,::1] ind, ssize_t n):
 ################################################################################
 
 
-cpdef np.ndarray[ssize_t] merge_boundary_points(
-        ssize_t[:,::1] mst_i,
-        ssize_t[::1] c,
-        ssize_t[:,::1] nn_i,
-        ssize_t M):
+cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t[::1] c,
+        Py_ssize_t[:,::1] nn_i,
+        Py_ssize_t M):
     """A noisy k-partition post-processing:
     given a k-partition (with noise points included),
     merges all "boundary" noise points with their nearest
@@ -745,7 +745,7 @@ cpdef np.ndarray[ssize_t] merge_boundary_points(
         A new integer vector c with c[i] denoting the cluster
         id (in {-1, 0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[ssize_t] cl2 = np.array(c, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
     _openmp_set_num_threads()
     c_postprocess.Cmerge_boundary_points(
@@ -756,9 +756,9 @@ cpdef np.ndarray[ssize_t] merge_boundary_points(
     return cl2
 
 
-cpdef np.ndarray[ssize_t] merge_noise_points(
-        ssize_t[:,::1] mst_i,
-        ssize_t[::1] c):
+cpdef np.ndarray[Py_ssize_t] merge_noise_points(
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t[::1] c):
     """A noisy k-partition post-processing:
     given a k-partition (with noise points included),
     merges all noise points with their nearest
@@ -783,7 +783,7 @@ cpdef np.ndarray[ssize_t] merge_noise_points(
         A new integer vector c with c[i] denoting the cluster
         id (in {0, ..., k-1}) of the i-th object.
     """
-    cdef np.ndarray[ssize_t] cl2 = np.array(c, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
     _openmp_set_num_threads()
     c_postprocess.Cmerge_noise_points(
@@ -793,9 +793,9 @@ cpdef np.ndarray[ssize_t] merge_noise_points(
     return cl2
 
 
-cpdef dict get_linkage_matrix(ssize_t[::1] links,
+cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
                               floatT[::1] mst_d,
-                              ssize_t[:,::1] mst_i):
+                              Py_ssize_t[:,::1] mst_i):
     """
 
     Parameters
@@ -816,8 +816,8 @@ cpdef dict get_linkage_matrix(ssize_t[::1] links,
         see the description of Z[:,:2], Z[:,2] and Z[:,3], respectively,
         in scipy.cluster.hierarchy.linkage.
     """
-    cdef ssize_t n = mst_i.shape[0]+1
-    cdef ssize_t i, i1, i2, par, w, num_unused, j
+    cdef Py_ssize_t n = mst_i.shape[0]+1
+    cdef Py_ssize_t i, i1, i2, par, w, num_unused, j
 
     if not n-1 == mst_d.shape[0]:
         raise ValueError("ill-defined MST")
@@ -827,12 +827,12 @@ cpdef dict get_linkage_matrix(ssize_t[::1] links,
     cdef c_gini_disjoint_sets.CGiniDisjointSets ds = \
         c_gini_disjoint_sets.CGiniDisjointSets(n)
 
-    cdef np.ndarray[ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT]         distances_ = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
-    cdef np.ndarray[ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
-    cdef np.ndarray[ssize_t]        ids        = np.empty(n, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t]        ids        = np.empty(n, dtype=np.intp)
 
     num_unused = n-1
     for i in range(n-1):
@@ -900,7 +900,7 @@ cdef class DisjointSets:
     Parameters
     ----------
 
-    n : ssize_t
+    n : Py_ssize_t
         The cardinality of the set whose partitions are generated.
 
 
@@ -921,7 +921,7 @@ cdef class DisjointSets:
     """
     cdef c_disjoint_sets.CDisjointSets ds
 
-    def __cinit__(self, ssize_t n):
+    def __cinit__(self, Py_ssize_t n):
         self.ds = c_disjoint_sets.CDisjointSets(n)
 
     def __len__(self):
@@ -933,27 +933,27 @@ cdef class DisjointSets:
         Returns
         -------
 
-        ssize_t
+        Py_ssize_t
             A value in `{0,...,n-1}`.
         """
         return self.ds.get_k()-1
 
 
-    cpdef ssize_t get_n(self):
+    cpdef Py_ssize_t get_n(self):
         """
         Returns the number of elements in the set being partitioned
         """
         return self.ds.get_n()
 
 
-    cpdef ssize_t get_k(self):
+    cpdef Py_ssize_t get_k(self):
         """
         Returns the current number of subsets
         """
         return self.ds.get_k()
 
 
-    cpdef ssize_t find(self, ssize_t x):
+    cpdef Py_ssize_t find(self, Py_ssize_t x):
         """
         Finds the subset ID for a given `x`
 
@@ -961,20 +961,20 @@ cdef class DisjointSets:
         Parameters
         ----------
 
-        x : ssize_t
+        x : Py_ssize_t
             An integer in `{0,...,n-1}`, representing an element to find.
 
 
         Returns
         -------
 
-        ssize_t
+        Py_ssize_t
             The ID of the parent of `x`.
         """
         return self.ds.find(x)
 
 
-    cpdef ssize_t union(self, ssize_t x, ssize_t y):
+    cpdef Py_ssize_t union(self, Py_ssize_t x, Py_ssize_t y):
         """
         Merges the sets containing given `x` and `y`
 
@@ -983,11 +983,11 @@ cdef class DisjointSets:
         Parameters
         ----------
 
-        x : ssize_t
+        x : Py_ssize_t
             Integer in {0,...,n-1}, representing an element of the first set
             to be merged.
 
-        y : ssize_t
+        y : Py_ssize_t
             Integer in {0,...,n-1}, representing an element of the second set
             to be merged.
 
@@ -995,7 +995,7 @@ cdef class DisjointSets:
         Returns
         -------
 
-        parent : ssize_t
+        parent : Py_ssize_t
             The id of the parent of x or y, whichever is smaller.
 
 
@@ -1014,7 +1014,7 @@ cdef class DisjointSets:
         return self.ds.merge(x, y)
 
 
-    cpdef np.ndarray[ssize_t] to_list(self):
+    cpdef np.ndarray[Py_ssize_t] to_list(self):
         """
         Gets parent IDs of all the elements
 
@@ -1026,14 +1026,14 @@ cdef class DisjointSets:
             A list ``m`` such that ``m[x]`` denotes the (recursive) parent ID
             of `x`, for `x = 0,1,...,n-1`.
         """
-        cdef ssize_t i
-        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef Py_ssize_t i
+        cdef np.ndarray[Py_ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
         for i in range(self.ds.get_n()):
             m[i] = self.ds.find(i)
         return m
 
 
-    cpdef np.ndarray[ssize_t] to_list_normalized(self):
+    cpdef np.ndarray[Py_ssize_t] to_list_normalized(self):
         """
         Gets the normalised elements' membership information
 
@@ -1046,10 +1046,10 @@ cdef class DisjointSets:
             of `x`. The resulting values are in `{0,1,...,k-1}`,
             where `k` is the current number of subsets in the partition.
         """
-        cdef ssize_t i, j
-        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
-        cdef np.ndarray[ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
-        cdef ssize_t c = 1
+        cdef Py_ssize_t i, j
+        cdef np.ndarray[Py_ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef np.ndarray[Py_ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
+        cdef Py_ssize_t c = 1
         for i in range(self.ds.get_n()):
             j = self.ds.find(i)
             if v[j] == 0:
@@ -1080,7 +1080,7 @@ cdef class DisjointSets:
         This is a slow operation. Do you really need it?
 
         """
-        cdef ssize_t i
+        cdef Py_ssize_t i
         cdef list tou, out
 
         tou = [ [] for i in range(self.ds.get_n()) ]
@@ -1121,7 +1121,7 @@ cdef class GiniDisjointSets():
     Parameters
     ----------
 
-    n : ssize_t
+    n : Py_ssize_t
         The cardinality of the set whose partitions are generated.
 
     Notes
@@ -1140,7 +1140,7 @@ cdef class GiniDisjointSets():
     """
     cdef c_gini_disjoint_sets.CGiniDisjointSets ds
 
-    def __cinit__(self, ssize_t n):
+    def __cinit__(self, Py_ssize_t n):
         self.ds = c_gini_disjoint_sets.CGiniDisjointSets(n)
 
     def __len__(self):
@@ -1152,20 +1152,20 @@ cdef class GiniDisjointSets():
         Returns
         -------
 
-        ssize_t
+        Py_ssize_t
             A value in `{0,...,n-1}`.
         """
         return self.ds.get_k()-1
 
 
-    cpdef ssize_t get_n(self):
+    cpdef Py_ssize_t get_n(self):
         """
         Returns the number of elements in the set being partitioned
         """
         return self.ds.get_n()
 
 
-    cpdef ssize_t get_k(self):
+    cpdef Py_ssize_t get_k(self):
         """
         Returns the current number of subsets
         """
@@ -1185,7 +1185,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_gini()
 
 
-    cpdef ssize_t get_count(self, ssize_t x):
+    cpdef Py_ssize_t get_count(self, Py_ssize_t x):
         """
         Returns the size of the subset containing `x`
 
@@ -1193,7 +1193,7 @@ cdef class GiniDisjointSets():
         Parameters
         ----------
 
-        x : ssize_t
+        x : Py_ssize_t
             An integer in `{0,...,n-1}`, representing an element to find.
 
         Notes
@@ -1204,7 +1204,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_count(x)
 
 
-    cpdef ssize_t get_smallest_count(self):
+    cpdef Py_ssize_t get_smallest_count(self):
         """
         Returns the size of the smallest subset
 
@@ -1217,7 +1217,7 @@ cdef class GiniDisjointSets():
         return self.ds.get_smallest_count()
 
 
-    cpdef ssize_t find(self, ssize_t x):
+    cpdef Py_ssize_t find(self, Py_ssize_t x):
         """
         Finds the subset ID for a given `x`
 
@@ -1225,20 +1225,20 @@ cdef class GiniDisjointSets():
         Parameters
         ----------
 
-        x : ssize_t
+        x : Py_ssize_t
             An integer in `{0,...,n-1}`, representing an element to find.
 
 
         Returns
         -------
 
-        ssize_t
+        Py_ssize_t
             The ID of the parent of `x`.
         """
         return self.ds.find(x)
 
 
-    cpdef ssize_t union(self, ssize_t x, ssize_t y):
+    cpdef Py_ssize_t union(self, Py_ssize_t x, Py_ssize_t y):
         """
         Merges the sets containing given `x` and `y`
 
@@ -1247,11 +1247,11 @@ cdef class GiniDisjointSets():
         Parameters
         ----------
 
-        x : ssize_t
+        x : Py_ssize_t
             Integer in {0,...,n-1}, representing an element of the first set
             to be merged.
 
-        y : ssize_t
+        y : Py_ssize_t
             Integer in {0,...,n-1}, representing an element of the second set
             to be merged.
 
@@ -1259,7 +1259,7 @@ cdef class GiniDisjointSets():
         Returns
         -------
 
-        parent : ssize_t
+        parent : Py_ssize_t
             The id of the parent of x or y, whichever is smaller.
 
 
@@ -1282,7 +1282,7 @@ cdef class GiniDisjointSets():
 
 
 
-    cpdef np.ndarray[ssize_t] to_list(self):
+    cpdef np.ndarray[Py_ssize_t] to_list(self):
         """
         Gets parent IDs of all the elements
 
@@ -1294,14 +1294,14 @@ cdef class GiniDisjointSets():
             A list ``m`` such that ``m[x]`` denotes the (recursive) parent ID
             of `x`, for `x = 0,1,...,n-1`.
         """
-        cdef ssize_t i
-        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef Py_ssize_t i
+        cdef np.ndarray[Py_ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
         for i in range(self.ds.get_n()):
             m[i] = self.ds.find(i)
         return m
 
 
-    cpdef np.ndarray[ssize_t] to_list_normalized(self):
+    cpdef np.ndarray[Py_ssize_t] to_list_normalized(self):
         """
         Gets the normalised elements' membership information
 
@@ -1314,10 +1314,10 @@ cdef class GiniDisjointSets():
             of `x`. The resulting values are in `{0,1,...,k-1}`,
             where `k` is the current number of subsets in the partition.
         """
-        cdef ssize_t i, j
-        cdef np.ndarray[ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
-        cdef np.ndarray[ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
-        cdef ssize_t c = 1
+        cdef Py_ssize_t i, j
+        cdef np.ndarray[Py_ssize_t] m = np.empty(self.ds.get_n(), dtype=np.intp)
+        cdef np.ndarray[Py_ssize_t] v = np.zeros(self.ds.get_n(), dtype=np.intp)
+        cdef Py_ssize_t c = 1
         for i in range(self.ds.get_n()):
             j = self.ds.find(i)
             if v[j] == 0:
@@ -1348,7 +1348,7 @@ cdef class GiniDisjointSets():
         This is a slow operation. Do you really need it?
 
         """
-        cdef ssize_t i
+        cdef Py_ssize_t i
         cdef list tou, out
 
         tou = [ [] for i in range(self.ds.get_n()) ]
@@ -1373,8 +1373,8 @@ cdef class GiniDisjointSets():
 
         Run time is :math:`O(k)`, where `k` is the current number of subsets.
         """
-        cdef ssize_t k = self.ds.get_k()
-        cdef np.ndarray[ssize_t] out = np.empty(k, dtype=np.intp)
+        cdef Py_ssize_t k = self.ds.get_k()
+        cdef np.ndarray[Py_ssize_t] out = np.empty(k, dtype=np.intp)
         self.ds.get_counts(&out[0])
         return out
 
@@ -1394,8 +1394,8 @@ cdef class GiniDisjointSets():
 
 cpdef dict genie_from_mst(
         floatT[::1] mst_d,
-        ssize_t[:,::1] mst_i,
-        ssize_t n_clusters=1,
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
         bint noise_leaves=False,
         bint compute_full_tree=True,
@@ -1484,7 +1484,7 @@ cpdef dict genie_from_mst(
             actual number of clusters found, 0 if labels is None
 
     """
-    cdef ssize_t n = mst_i.shape[0]+1
+    cdef Py_ssize_t n = mst_i.shape[0]+1
 
     if not 0 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
@@ -1494,11 +1494,11 @@ cpdef dict genie_from_mst(
         raise ValueError("incorrect gini_threshold")
 
 
-    cdef np.ndarray[ssize_t] tmp_labels_1
-    cdef np.ndarray[ssize_t,ndim=2] tmp_labels_2
+    cdef np.ndarray[Py_ssize_t] tmp_labels_1
+    cdef np.ndarray[Py_ssize_t,ndim=2] tmp_labels_2
 
-    cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
-    cdef ssize_t n_clusters_ = 0, iters_
+    cdef np.ndarray[Py_ssize_t] links_  = np.empty(n-1, dtype=np.intp)
+    cdef Py_ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
 
     _openmp_set_num_threads()
@@ -1542,10 +1542,10 @@ cpdef dict genie_from_mst(
 
 cpdef dict gic_from_mst(
         floatT[::1] mst_d,
-        ssize_t[:,::1] mst_i,
+        Py_ssize_t[:,::1] mst_i,
         double n_features,
-        ssize_t n_clusters=1,
-        ssize_t add_clusters=0,
+        Py_ssize_t n_clusters=1,
+        Py_ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
         bint noise_leaves=False,
         bint compute_full_tree=True,
@@ -1638,7 +1638,7 @@ cpdef dict gic_from_mst(
         n_cluster : integer
             actual number of clusters found, 0 if labels is None
     """
-    cdef ssize_t n = mst_i.shape[0]+1
+    cdef Py_ssize_t n = mst_i.shape[0]+1
 
     if not 0 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
@@ -1649,11 +1649,11 @@ cpdef dict gic_from_mst(
         gini_thresholds = np.r_[0.1, 0.3, 0.5, 0.7]
 
 
-    cdef np.ndarray[ssize_t] tmp_labels_1
-    cdef np.ndarray[ssize_t,ndim=2] tmp_labels_2
+    cdef np.ndarray[Py_ssize_t] tmp_labels_1
+    cdef np.ndarray[Py_ssize_t,ndim=2] tmp_labels_2
 
-    cdef np.ndarray[ssize_t] links_  = np.empty(n-1, dtype=np.intp)
-    cdef ssize_t n_clusters_ = 0, iters_
+    cdef np.ndarray[Py_ssize_t] links_  = np.empty(n-1, dtype=np.intp)
+    cdef Py_ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
 
     _openmp_set_num_threads()

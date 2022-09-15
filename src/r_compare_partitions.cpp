@@ -32,7 +32,7 @@ using namespace Rcpp;
  *   with xc rows and yc columns
  */
 std::vector<int> get_contingency_matrix(RObject x, RObject y,
-                                          ssize_t* xc, ssize_t* yc)
+                                          Py_ssize_t* xc, Py_ssize_t* yc)
 {
     if (Rf_isMatrix(x)) {
         if (!Rf_isNull(y))
@@ -44,9 +44,9 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
         *xc = X.nrow();
         *yc = X.ncol();
         std::vector<int> C((*xc)*(*yc));
-        ssize_t k=0;
-        for (ssize_t i=0; i<*xc; ++i)
-            for (ssize_t j=0; j<*yc; ++j)
+        Py_ssize_t k=0;
+        for (Py_ssize_t i=0; i<*xc; ++i)
+            for (Py_ssize_t j=0; j<*yc; ++j)
                 C[k++] = X(i, j); // Fortran -> C-style
         return C;
     }
@@ -61,11 +61,11 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
         IntegerVector rx(x);
         IntegerVector ry(y);
 
-        ssize_t n = rx.size();
+        Py_ssize_t n = rx.size();
         if (ry.size() != n)
             stop("x and y must be of equal lengths");
 
-        for (ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t i=0; i<n; ++i) {
             if (rx[i] == NA_INTEGER || ry[i] == NA_INTEGER)
                 stop("missing values not allowed");
         }
@@ -245,7 +245,7 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //[[Rcpp::export]]
 double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -259,7 +259,7 @@ double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double normalized_accuracy(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -273,7 +273,7 @@ double normalized_accuracy(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -290,7 +290,7 @@ double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false)
 //[[Rcpp::export]]
 double adjusted_rand_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -304,7 +304,7 @@ double adjusted_rand_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double rand_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -318,7 +318,7 @@ double rand_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double adjusted_fm_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -332,7 +332,7 @@ double adjusted_fm_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double fm_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -346,7 +346,7 @@ double fm_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double mi_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -361,7 +361,7 @@ double mi_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double normalized_mi_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -376,7 +376,7 @@ double normalized_mi_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 double adjusted_mi_score(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -391,7 +391,7 @@ double adjusted_mi_score(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -400,8 +400,8 @@ IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
     Capply_pivoting(C.data(), xc, yc, C_out_Corder.data());
 
     IntegerMatrix Cout(xc, yc);
-    for (ssize_t i=0; i<xc; ++i)  // make Fortran order
-            for (ssize_t j=0; j<yc; ++j)
+    for (Py_ssize_t i=0; i<xc; ++i)  // make Fortran order
+            for (Py_ssize_t j=0; j<yc; ++j)
                 Cout(i, j) = C_out_Corder[j+i*yc];
     return Cout;
 }
@@ -413,7 +413,7 @@ IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 //[[Rcpp::export]]
 IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)
 {
-    ssize_t xc, yc;
+    Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
@@ -422,7 +422,7 @@ IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)
 
     Cnormalizing_permutation(C.data(), xc, yc, INTEGER(SEXP(Iout)));
 
-    for (ssize_t j=0; j<yc; ++j)
+    for (Py_ssize_t j=0; j<yc; ++j)
         Iout[j]++; // 0-based -> 1-based
 
     return Iout;

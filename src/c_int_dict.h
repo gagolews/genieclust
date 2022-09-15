@@ -38,14 +38,14 @@ template <class T>
 class CIntDict {
 
 protected:
-    ssize_t n;                //!< total number of distinct keys possible
-    ssize_t k;                //!< number of keys currently stored
+    Py_ssize_t n;                //!< total number of distinct keys possible
+    Py_ssize_t k;                //!< number of keys currently stored
     std::vector<T> tab;       //!< tab[i] is the element associated with key i
 
-    std::vector<ssize_t> tab_next; //!< an array-based...
-    std::vector<ssize_t> tab_prev; //!< ...doubly-linked list...
-    ssize_t  tab_head; //!< ...for quickly accessing and iterating over...
-    ssize_t  tab_tail; //!< ...this->tab data
+    std::vector<Py_ssize_t> tab_next; //!< an array-based...
+    std::vector<Py_ssize_t> tab_prev; //!< ...doubly-linked list...
+    Py_ssize_t  tab_head; //!< ...for quickly accessing and iterating over...
+    Py_ssize_t  tab_tail; //!< ...this->tab data
 
 
 
@@ -54,7 +54,7 @@ public:
      *
      *  @param n number of elements, n>=0.
      */
-    CIntDict(ssize_t n) :
+    CIntDict(Py_ssize_t n) :
         tab(n), tab_next(n, n), tab_prev(n, -1)
     {
         // if (n < 0) throw std::domain_error("n < 0");
@@ -70,13 +70,13 @@ public:
      *  @param n number of elements, n>=0.
      *  @param val value to replicate at each position
      */
-    CIntDict(ssize_t n, const T& val) :
+    CIntDict(Py_ssize_t n, const T& val) :
         tab(n), tab_next(n), tab_prev(n)
     {
         // if (n < 0) throw std::domain_error("n < 0");
         this->n = n;
         this->k = n;
-        for (ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t i=0; i<n; ++i) {
             this->tab_prev[i] = i-1;
             this->tab_next[i] = i+1;
             this->tab = val;
@@ -96,12 +96,12 @@ public:
      *
      * Time complexity: O(1)
      */
-    inline ssize_t size() const { return this->k; }
+    inline Py_ssize_t size() const { return this->k; }
 
 
     /*! Returns the maximum number of elements that the container can hold.
      */
-    inline ssize_t max_size() const { return this->n; }
+    inline Py_ssize_t max_size() const { return this->n; }
 
     /*! Tests whether the container is empty, i.e., its size() is 0.
      */
@@ -114,7 +114,7 @@ public:
      *
      * @param i key in [0,n)
      */
-    inline size_t count(ssize_t i) const {
+    inline size_t count(Py_ssize_t i) const {
         if (i < 0 || i >= n)
             throw std::out_of_range("CIntDict::count key out of range");
         return (tab_prev[i]>=0 || tab_next[i]<n || i==tab_head) ? 1 : 0;
@@ -129,11 +129,11 @@ public:
     void clear() {
         if (k == 0) return;
 
-        ssize_t cur = tab_head;
+        Py_ssize_t cur = tab_head;
         while (cur < n) {
             tab[cur] = T(); // force destructor call
 
-            ssize_t last = cur;
+            Py_ssize_t last = cur;
             cur = tab_next[cur];
 
             tab_prev[last] = -1;
@@ -152,20 +152,20 @@ public:
      *
      * @param i key in [0,n)
      */
-    inline T& at(ssize_t i) {
+    inline T& at(Py_ssize_t i) {
         if (!count(i))
             throw std::out_of_range("CIntDict::at key does not exist");
         return tab[i];
     }
 
-    inline const T& at(ssize_t i) const {
+    inline const T& at(Py_ssize_t i) const {
         if (!count(i))
             throw std::out_of_range("CIntDict::at key does not exist");
         return tab[i];
     }
 
 
-    // inline const T& operator[] (ssize_t i) const {
+    // inline const T& operator[] (Py_ssize_t i) const {
     //     if (!count(i))       throw std::out_of_range("key does not exist");
     //     return tab[i];
     // }
@@ -180,7 +180,7 @@ public:
      *
      * @param i key in [0,n)
      */
-    T& operator[] (ssize_t i) {
+    T& operator[] (Py_ssize_t i) {
         if (!count(i)) {
             // adding a new element
 
@@ -206,11 +206,11 @@ public:
                 // insert in the "middle"
                 // slow op
                 // TODO skip list, etc. ??
-                ssize_t elem_before_i = tab_head;
+                Py_ssize_t elem_before_i = tab_head;
                 while (tab_next[elem_before_i] < i)
                     elem_before_i = tab_next[elem_before_i];
 
-                ssize_t elem_after_i = tab_next[elem_before_i];
+                Py_ssize_t elem_after_i = tab_next[elem_before_i];
                 GENIECLUST_ASSERT(tab_prev[elem_after_i] == elem_before_i);
                 tab_next[i] = elem_after_i;
                 tab_prev[i] = elem_before_i;
@@ -232,7 +232,7 @@ public:
      * @param i key in [0,n)
      * @return the number of elements removed (0 or 1)
      */
-    ssize_t erase(ssize_t i) {
+    Py_ssize_t erase(Py_ssize_t i) {
         if (!count(i))
             return 0;
 
@@ -253,8 +253,8 @@ public:
         }
         else {
             // elem in the "middle"
-            ssize_t elem_after_i  = tab_next[i];
-            ssize_t elem_before_i = tab_prev[i];
+            Py_ssize_t elem_after_i  = tab_next[i];
+            Py_ssize_t elem_before_i = tab_prev[i];
             tab_next[elem_before_i] = elem_after_i;
             tab_prev[elem_after_i]  = elem_before_i;
         }
@@ -267,19 +267,19 @@ public:
     }
 
 
-    ssize_t get_key_min() const { return tab_head; }
-    ssize_t get_key_max() const { return tab_tail; }
-    ssize_t get_key_next(ssize_t i) const { return tab_next[i]; }
-    ssize_t get_key_prev(ssize_t i) const { return tab_prev[i]; }
+    Py_ssize_t get_key_min() const { return tab_head; }
+    Py_ssize_t get_key_max() const { return tab_tail; }
+    Py_ssize_t get_key_next(Py_ssize_t i) const { return tab_next[i]; }
+    Py_ssize_t get_key_prev(Py_ssize_t i) const { return tab_prev[i]; }
 
-    ssize_t pop_key_min() {
-        ssize_t ret = tab_head;
+    Py_ssize_t pop_key_min() {
+        Py_ssize_t ret = tab_head;
         erase(ret);
         return ret;
     }
 
-    ssize_t pop_key_max() {
-        ssize_t ret = tab_tail;
+    Py_ssize_t pop_key_max() {
+        Py_ssize_t ret = tab_tail;
         erase(ret);
         return ret;
     }
@@ -291,12 +291,12 @@ public:
     /*! If you want more than merely an input_iterator,
      * go ahead, implement it and make a pull request :)
      */
-    class iterator : public std::iterator<std::input_iterator_tag, ssize_t> {
+    class iterator : public std::iterator<std::input_iterator_tag, Py_ssize_t> {
         private:
-            const ssize_t* tab_next;
-            ssize_t cur;
+            const Py_ssize_t* tab_next;
+            Py_ssize_t cur;
         public:
-            iterator(ssize_t tab_head, ssize_t* tab_next) :
+            iterator(Py_ssize_t tab_head, Py_ssize_t* tab_next) :
                 tab_next(tab_next), cur(tab_head) { }
             iterator& operator++() { cur = tab_next[cur]; return *this; }
             iterator operator++(int) {
@@ -308,7 +308,7 @@ public:
             bool operator!=(const iterator& rhs) const {
                 return tab_next!=rhs.tab_next || cur!=rhs.cur;
             }
-            ssize_t operator*() const { return cur; }
+            Py_ssize_t operator*() const { return cur; }
     };
 
 

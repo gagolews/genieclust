@@ -37,7 +37,7 @@ public:
     LowercaseDelta3(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -50,7 +50,7 @@ public:
     last_chg(false)
     {
     }
-    virtual void before_modify(size_t i, ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t j) {
 
         for (size_t u=0; u<K; ++u) {
             for (size_t v=u+1; v<K; ++v) {
@@ -70,7 +70,7 @@ public:
         last_chg = true;
 
     }
-    virtual void after_modify(size_t i, ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t j) {
         // add a contribution of the point i to the new cluster L[i]
         for (size_t u=0; u<n; ++u) {
             if(L[i] != L[u])
@@ -119,7 +119,7 @@ public:
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,

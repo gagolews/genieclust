@@ -49,97 +49,97 @@
 
 
 
-double c_calinski_harabasz_index(const double* X, const ssize_t* y,
-                                 size_t n, size_t d, ssize_t K)
+double c_calinski_harabasz_index(const double* X, const Py_ssize_t* y,
+                                 size_t n, size_t d, Py_ssize_t K)
 {
     CalinskiHarabaszIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_negated_ball_hall_index(const double* X, const ssize_t* y,
-                               size_t n, size_t d, ssize_t K)
+double c_negated_ball_hall_index(const double* X, const Py_ssize_t* y,
+                               size_t n, size_t d, Py_ssize_t K)
 {
     WCSSIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K,
         false, true/*weighted*/
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_negated_davies_bouldin_index(const double* X, const ssize_t* y,
-                                    size_t n, size_t d, ssize_t K)
+double c_negated_davies_bouldin_index(const double* X, const Py_ssize_t* y,
+                                    size_t n, size_t d, Py_ssize_t K)
 {
     DaviesBouldinIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_negated_wcss_index(const double* X, const ssize_t* y,
-                          size_t n, size_t d, ssize_t K)
+double c_negated_wcss_index(const double* X, const Py_ssize_t* y,
+                          size_t n, size_t d, Py_ssize_t K)
 {
     WCSSIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K,
         false, false/*not weighted*/
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_silhouette_index(const double* X, const ssize_t* y,
-                        size_t n, size_t d, ssize_t K)
+double c_silhouette_index(const double* X, const Py_ssize_t* y,
+                        size_t n, size_t d, Py_ssize_t K)
 {
     SilhouetteIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, false
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K, false, false
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_silhouette_w_index(const double* X, const ssize_t* y,
-                          size_t n, size_t d, ssize_t K)
+double c_silhouette_w_index(const double* X, const Py_ssize_t* y,
+                          size_t n, size_t d, Py_ssize_t K)
 {
     SilhouetteIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, true
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K, false, true
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_wcnn_index(const double* X, const ssize_t* y,
-                    size_t n, size_t d, ssize_t K, size_t M)
+double c_wcnn_index(const double* X, const Py_ssize_t* y,
+                    size_t n, size_t d, Py_ssize_t K, size_t M)
 {
     if (M <= 0)
         throw std::invalid_argument("M must be positive.");
 
     WCNNIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K, false, M
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K, false, M
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_dunnowa_index(const double* X, const ssize_t* y,
-    size_t n, size_t d, ssize_t K, size_t M,
+double c_dunnowa_index(const double* X, const Py_ssize_t* y,
+    size_t n, size_t d, Py_ssize_t K, size_t M,
     const char* owa_numerator, const char* owa_denominator)
 {
     int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
@@ -152,17 +152,17 @@ double c_dunnowa_index(const double* X, const ssize_t* y,
         throw std::invalid_argument("M must be positive.");
 
     DuNNOWAIndex ind(
-        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+        CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K,
         false, M, _owa_numerator, _owa_denominator
     );
-    ind.set_labels(std::vector<ssize_t>(y, y+n));
+    ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
     return (double)ind.compute();
 }
 
 
-double c_generalised_dunn_index(const double* X, const ssize_t* y,
-    size_t n, size_t d, ssize_t K, size_t lowercase_d, size_t uppercase_d)
+double c_generalised_dunn_index(const double* X, const Py_ssize_t* y,
+    size_t n, size_t d, Py_ssize_t K, size_t lowercase_d, size_t uppercase_d)
 {
     LowercaseDeltaFactory* lowercase_deltaFactory;
     UppercaseDeltaFactory* uppercase_deltaFactory;
@@ -209,25 +209,25 @@ double c_generalised_dunn_index(const double* X, const ssize_t* y,
 
     if (areCentroidsNeeded) {
         GeneralizedDunnIndexCentroidBased ind(
-            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K,
             lowercase_deltaFactory, uppercase_deltaFactory);
 
         delete lowercase_deltaFactory;
         delete uppercase_deltaFactory;
 
-        ind.set_labels(std::vector<ssize_t>(y, y+n));
+        ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
         return (double)ind.compute();
     }
     else {
         GeneralizedDunnIndex ind(
-            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (ssize_t)K,
+            CMatrix<FLOAT_T>(X, n, d, /*_c_order=*/true), (Py_ssize_t)K,
             lowercase_deltaFactory, uppercase_deltaFactory);
 
         delete lowercase_deltaFactory;
         delete uppercase_deltaFactory;
 
-        ind.set_labels(std::vector<ssize_t>(y, y+n));
+        ind.set_labels(std::vector<Py_ssize_t>(y, y+n));
 
         return (double)ind.compute();
     }

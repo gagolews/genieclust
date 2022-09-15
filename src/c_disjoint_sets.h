@@ -39,9 +39,9 @@
 class CDisjointSets {
 
 protected:
-    ssize_t n;                //!< number of distinct elements
-    ssize_t k;                //!< number of subsets
-    std::vector<ssize_t> par; /*!< par[i] is the id of the parent
+    Py_ssize_t n;                //!< number of distinct elements
+    Py_ssize_t k;                //!< number of subsets
+    std::vector<Py_ssize_t> par; /*!< par[i] is the id of the parent
                                *   of the i-th element
                                */
 
@@ -51,13 +51,13 @@ public:
      *
      *   @param n number of elements, n>=0.
      */
-    CDisjointSets(ssize_t n) :
+    CDisjointSets(Py_ssize_t n) :
         par(n)
     {
         // if (n < 0) throw std::domain_error("n < 0");
         this->n = n;
         this->k = n;
-        for (ssize_t i=0; i<n; ++i)
+        for (Py_ssize_t i=0; i<n; ++i)
             this->par[i] = i;
     }
 
@@ -70,19 +70,19 @@ public:
 
     /*! Returns the current number of sets in the partition.
      */
-    ssize_t get_k() const { return this->k; }
+    Py_ssize_t get_k() const { return this->k; }
 
 
     /*! Returns the total cardinality of the set being partitioned.
      */
-    ssize_t get_n() const { return this->n; }
+    Py_ssize_t get_n() const { return this->n; }
 
 
     /*! Finds the subset id for a given x.
      *
      *  @param x a value in {0,...,n-1}
      */
-    ssize_t find(ssize_t x) {
+    Py_ssize_t find(Py_ssize_t x) {
         if (x < 0 || x >= this->n) throw std::domain_error("x not in [0,n)");
 
         if (this->par[x] != x) {
@@ -106,7 +106,7 @@ public:
      *   @param x a value in {0,...,n-1}
      *   @param y a value in {0,...,n-1}
      */
-    virtual ssize_t merge(ssize_t x, ssize_t y) { // well, union is a reserved C++ keyword :)
+    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y) { // well, union is a reserved C++ keyword :)
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
         if (x == y) throw std::invalid_argument("find(x) == find(y)");

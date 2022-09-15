@@ -150,15 +150,15 @@ class ClusterValidityIndex
 {
 protected:
     CMatrix<FLOAT_T> X;         ///< data matrix of size n*d
-    std::vector<ssize_t> L;    ///< current label vector of size n
+    std::vector<Py_ssize_t> L;    ///< current label vector of size n
     std::vector<size_t> count; ///< size of each of the K clusters
     const size_t K;           ///< number of clusters, max(L)
     const size_t n;            ///< number of points (for brevity of notation)
     const size_t d;            ///< dataset dimensionality (for brevity)
     const bool allow_undo;     ///< is the object's state preserved on modify()?
 
-    ssize_t last_i;             ///< for undo()
-    ssize_t last_j;            ///< for undo()
+    Py_ssize_t last_i;             ///< for undo()
+    Py_ssize_t last_j;            ///< for undo()
 
 public:
 
@@ -203,7 +203,7 @@ public:
      * @param i
      * @return
      */
-    ssize_t get_label(const size_t i) const
+    Py_ssize_t get_label(const size_t i) const
     {
         GENIECLUST_ASSERT(i >= 0 && i < n);
         return L[i];
@@ -213,7 +213,7 @@ public:
      *
      * @return
      */
-    const std::vector<ssize_t>& get_labels() const { return L; }
+    const std::vector<Py_ssize_t>& get_labels() const { return L; }
 
 
     /** Returns the number of clusters
@@ -234,7 +234,7 @@ public:
      *
      * @param _L
      */
-    virtual void set_labels(const std::vector<ssize_t>& _L)
+    virtual void set_labels(const std::vector<Py_ssize_t>& _L)
     {
         GENIECLUST_ASSERT(X.nrow() == _L.size());
         for (size_t j=0; j<K; ++j) {
@@ -242,7 +242,7 @@ public:
         }
 
         for (size_t i=0; i<n; ++i) {
-            GENIECLUST_ASSERT(_L[i] >= 0 && _L[i] < (ssize_t)K);
+            GENIECLUST_ASSERT(_L[i] >= 0 && _L[i] < (Py_ssize_t)K);
             L[i] = _L[i];
             count[ L[i] ]++;
         }
@@ -261,11 +261,11 @@ public:
      * @param i
      * @param j
      */
-    virtual void modify(size_t i, ssize_t j)
+    virtual void modify(size_t i, Py_ssize_t j)
     {
         GENIECLUST_ASSERT(i >= 0 && i < n);
-        GENIECLUST_ASSERT(j >= 0 && j < (ssize_t)K);
-        GENIECLUST_ASSERT(L[i] >= 0 && L[i] < (ssize_t)K);
+        GENIECLUST_ASSERT(j >= 0 && j < (Py_ssize_t)K);
+        GENIECLUST_ASSERT(L[i] >= 0 && L[i] < (Py_ssize_t)K);
         GENIECLUST_ASSERT(count[L[i]] > 0);
         GENIECLUST_ASSERT(L[i] != j);
 
@@ -324,7 +324,7 @@ public:
 
 
     // Described in the base class
-    virtual void set_labels(const std::vector<ssize_t>& _L)
+    virtual void set_labels(const std::vector<Py_ssize_t>& _L)
     {
         ClusterValidityIndex::set_labels(_L); // sets L and count
 
@@ -347,9 +347,9 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, ssize_t j)
+    virtual void modify(size_t i, Py_ssize_t j)
     {
-        ssize_t tmp = L[i];
+        Py_ssize_t tmp = L[i];
         // tmp = old label for the i-th point
         // j   = new label for the i-th point
 

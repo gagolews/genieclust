@@ -25,12 +25,12 @@ from libcpp.vector cimport vector
 cdef extern from "../src/c_gini_disjoint_sets.h":
     cdef cppclass CGiniDisjointSets:
         CGiniDisjointSets() except +
-        CGiniDisjointSets(ssize_t) except +
-        ssize_t get_k()
-        ssize_t get_n()
-        ssize_t find(ssize_t)
-        ssize_t merge(ssize_t, ssize_t)
+        CGiniDisjointSets(Py_ssize_t) except +
+        Py_ssize_t get_k()
+        Py_ssize_t get_n()
+        Py_ssize_t find(Py_ssize_t)
+        Py_ssize_t merge(Py_ssize_t, Py_ssize_t)
         double get_gini()
-        ssize_t get_smallest_count()
-        ssize_t get_count(ssize_t)
-        void get_counts(ssize_t*)
+        Py_ssize_t get_smallest_count()
+        Py_ssize_t get_count(Py_ssize_t)
+        void get_counts(Py_ssize_t*)

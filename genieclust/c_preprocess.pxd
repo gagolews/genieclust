@@ -30,5 +30,5 @@ Graph pre-processing and other functions
 
 
 cdef extern from "../src/c_preprocess.h":
-    cdef void Cget_graph_node_degrees(ssize_t* ind, ssize_t num_edges,
-            ssize_t n, ssize_t* deg)
+    cdef void Cget_graph_node_degrees(Py_ssize_t* ind, Py_ssize_t num_edges,
+            Py_ssize_t n, Py_ssize_t* deg)

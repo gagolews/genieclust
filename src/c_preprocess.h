@@ -40,17 +40,17 @@
  *     deg[i] will give the degree of the i-th vertex.
  */
 void Cget_graph_node_degrees(
-    const ssize_t* ind,
-    ssize_t num_edges,
-    ssize_t n,
-    ssize_t* deg)
+    const Py_ssize_t* ind,
+    Py_ssize_t num_edges,
+    Py_ssize_t n,
+    Py_ssize_t* deg)
 {
-    for (ssize_t i=0; i<n; ++i)
+    for (Py_ssize_t i=0; i<n; ++i)
         deg[i] = 0;
 
-    for (ssize_t i=0; i<num_edges; ++i) {
-        ssize_t u = ind[2*i+0];
-        ssize_t v = ind[2*i+1];
+    for (Py_ssize_t i=0; i<num_edges; ++i) {
+        Py_ssize_t u = ind[2*i+0];
+        Py_ssize_t v = ind[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)

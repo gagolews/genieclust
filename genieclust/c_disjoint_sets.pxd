@@ -23,8 +23,8 @@ cppclass CDisjointSets
 cdef extern from "../src/c_disjoint_sets.h":
     cdef cppclass CDisjointSets:
         CDisjointSets() except +
-        CDisjointSets(ssize_t) except +
-        ssize_t get_k()
-        ssize_t get_n()
-        ssize_t find(ssize_t)
-        ssize_t merge(ssize_t, ssize_t)
+        CDisjointSets(Py_ssize_t) except +
+        Py_ssize_t get_k()
+        Py_ssize_t get_n()
+        Py_ssize_t find(Py_ssize_t)
+        Py_ssize_t merge(Py_ssize_t, Py_ssize_t)

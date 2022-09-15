@@ -30,5 +30,5 @@ Provides access to the Cargsort() and Cargkmin() functions.
 
 
 cdef extern from "../src/c_argfuns.h":
-    void Cargsort[T](ssize_t* ret, T* x, ssize_t n, bint stable)
-    ssize_t Cargkmin[T](T* x, ssize_t n, ssize_t k, ssize_t* buf)
+    void Cargsort[T](Py_ssize_t* ret, T* x, Py_ssize_t n, bint stable)
+    Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)

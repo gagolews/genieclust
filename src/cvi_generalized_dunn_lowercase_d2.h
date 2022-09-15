@@ -30,7 +30,7 @@ public:
     LowercaseDelta2(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -68,7 +68,7 @@ public:
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,

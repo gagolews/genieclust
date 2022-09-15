@@ -41,7 +41,7 @@ import numpy as np
 from . cimport c_compare_partitions
 
 
-cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(C):
+cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
     """
     genieclust.compare_partitions.normalizing_permutation(C)
 
@@ -105,9 +105,9 @@ cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(C):
            [1, 0, 0]])
     """
     cdef np.ndarray[double,ndim=2] _C = np.array(C, dtype=np.double)
-    cdef ssize_t xc = _C.shape[0]
-    cdef ssize_t yc = _C.shape[1]
-    cdef np.ndarray[ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
+    cdef Py_ssize_t xc = _C.shape[0]
+    cdef Py_ssize_t yc = _C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
     if xc > yc:
         raise ValueError("number of rows cannot be greater than the number of columns")
 
@@ -116,7 +116,7 @@ cpdef np.ndarray[ssize_t,ndim=1] normalizing_permutation(C):
     return perm
 
 
-cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(C):
+cpdef np.ndarray[Py_ssize_t,ndim=2] normalize_confusion_matrix(C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
 
@@ -181,17 +181,17 @@ cpdef np.ndarray[ssize_t,ndim=2] normalize_confusion_matrix(C):
            [2, 6, 0],
            [1, 0, 0]])
     """
-    cdef np.ndarray[ssize_t,ndim=2] _C = np.array(C, dtype=np.intp)
-    cdef np.ndarray[ssize_t,ndim=2] C_normalized = np.array(_C, dtype=np.intp)
-    cdef ssize_t xc = C_normalized.shape[0]
-    cdef ssize_t yc = C_normalized.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] _C = np.array(C, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] C_normalized = np.array(_C, dtype=np.intp)
+    cdef Py_ssize_t xc = C_normalized.shape[0]
+    cdef Py_ssize_t yc = C_normalized.shape[1]
     if xc > yc:
         raise ValueError("number of rows cannot be greater than the number of columns")
     c_compare_partitions.Capply_pivoting(&_C[0,0], xc, yc, &C_normalized[0,0])
     return C_normalized
 
 
-cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
+cpdef np.ndarray[Py_ssize_t,ndim=2] confusion_matrix(x, y):
     """
     genieclust.compare_partitions.confusion_matrix(x, y)
 
@@ -234,30 +234,30 @@ cpdef np.ndarray[ssize_t,ndim=2] confusion_matrix(x, y):
            [0, 0, 1]])
 
     """
-    cdef np.ndarray[ssize_t] _x = np.array(x, dtype=np.intp)
-    cdef ssize_t n = _x.shape[0]
-    cdef ssize_t xmin, xmax
-    c_compare_partitions.Cminmax(<ssize_t*>(&_x[0]), n, <ssize_t*>(&xmin), <ssize_t*>(&xmax))
-    cdef ssize_t xc = (xmax-xmin+1)
+    cdef np.ndarray[Py_ssize_t] _x = np.array(x, dtype=np.intp)
+    cdef Py_ssize_t n = _x.shape[0]
+    cdef Py_ssize_t xmin, xmax
+    c_compare_partitions.Cminmax(<Py_ssize_t*>(&_x[0]), n, <Py_ssize_t*>(&xmin), <Py_ssize_t*>(&xmax))
+    cdef Py_ssize_t xc = (xmax-xmin+1)
 
-    cdef np.ndarray[ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
     if n != _y.shape[0]: raise ValueError("incompatible lengths")
-    cdef ssize_t ymin, ymax
-    c_compare_partitions.Cminmax(<ssize_t*>(&_y[0]), n, <ssize_t*>(&ymin), <ssize_t*>(&ymax))
-    cdef ssize_t yc = (ymax-ymin+1)
+    cdef Py_ssize_t ymin, ymax
+    c_compare_partitions.Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
+    cdef Py_ssize_t yc = (ymax-ymin+1)
 
-    cdef ssize_t CONFUSION_MATRIX_MAXSIZE = 1000000
+    cdef Py_ssize_t CONFUSION_MATRIX_MAXSIZE = 1000000
     if xc*yc > CONFUSION_MATRIX_MAXSIZE:
         raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
-    cdef np.ndarray[ssize_t,ndim=2] C = np.empty((xc, yc), dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = np.empty((xc, yc), dtype=np.intp)
     c_compare_partitions.Ccontingency_table(&C[0,0], xc, yc,
         xmin, ymin, &_x[0], &_y[0], n)
     return C
 
 
 
-cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
+cpdef np.ndarray[Py_ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     """
     genieclust.compare_partitions.normalized_confusion_matrix(x, y)
 
@@ -308,12 +308,12 @@ cpdef np.ndarray[ssize_t,ndim=2] normalized_confusion_matrix(x, y):
            [1, 0, 0]])
 
     """
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
     return normalize_confusion_matrix(C)
 
 
 
-cpdef dict compare_partitions(ssize_t[:,::1] C):
+cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     """
     genieclust.compare_partitions.compare_partitions(C)
 
@@ -513,8 +513,8 @@ cpdef dict compare_partitions(ssize_t[:,::1] C):
     0.71
 
     """
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     if xc > yc:
         raise ValueError("number of rows in the confusion matrix \
             must be less than or equal to the number of columns")
@@ -631,9 +631,9 @@ cpdef double adjusted_rand_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).ar
 
 
@@ -676,9 +676,9 @@ cpdef double rand_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).r
 
 
@@ -721,9 +721,9 @@ cpdef double adjusted_fm_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).afm
 
 
@@ -766,9 +766,9 @@ cpdef double fm_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).fm
 
 
@@ -811,9 +811,9 @@ cpdef double mi_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).mi
 
 
@@ -857,9 +857,9 @@ cpdef double normalized_mi_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).nmi
 
 
@@ -902,9 +902,9 @@ cpdef double adjusted_mi_score(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).ami
 
 
@@ -953,9 +953,9 @@ cpdef double normalized_accuracy(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     if xc > yc:
         raise ValueError("Number of rows in the confusion matrix "
             "must be less than or equal to the number of columns.")
@@ -1031,9 +1031,9 @@ cpdef double adjusted_asymmetric_accuracy(x, y):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     if xc != yc:
         raise ValueError("Number of rows in the confusion matrix "
             "must be equal to the number of columns.")
@@ -1096,9 +1096,9 @@ cpdef double pair_sets_index(x, y, bint simplified=False):
 
     """
 
-    cdef np.ndarray[ssize_t,ndim=2] C = confusion_matrix(x, y)
-    cdef ssize_t xc = C.shape[0]
-    cdef ssize_t yc = C.shape[1]
+    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef Py_ssize_t xc = C.shape[0]
+    cdef Py_ssize_t yc = C.shape[1]
     if xc > yc:
         raise ValueError("Number of rows in the confusion matrix "
             "must be less than or equal to the number of columns.")

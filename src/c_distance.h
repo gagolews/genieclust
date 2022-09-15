@@ -46,7 +46,7 @@ struct CDistance {
      *         the user does not own ret;
      *         the function is not thread-safe
      */
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) = 0;
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) = 0;
 };
 
 
@@ -58,14 +58,14 @@ struct CDistance {
 template<class T>
 struct CDistancePrecomputedMatrix : public CDistance<T> {
     const T* dist;
-    ssize_t n;
+    Py_ssize_t n;
 
     /*!
      * @param dist n*n c_contiguous array, dist[i,j] is the distance between
      *    the i-th and the j-th point, the matrix is symmetric
      * @param n number of points
      */
-    CDistancePrecomputedMatrix(const T* dist, ssize_t n) {
+    CDistancePrecomputedMatrix(const T* dist, Py_ssize_t n) {
         this->n = n;
         this->dist = dist;
     }
@@ -73,7 +73,7 @@ struct CDistancePrecomputedMatrix : public CDistance<T> {
     CDistancePrecomputedMatrix()
         : CDistancePrecomputedMatrix(NULL, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* /*M*/, ssize_t /*k*/) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* /*M*/, Py_ssize_t /*k*/) {
         return &this->dist[i*n]; // the i-th row of dist
     }
 };
@@ -86,7 +86,7 @@ struct CDistancePrecomputedMatrix : public CDistance<T> {
 template<class T>
 struct CDistancePrecomputedVector : public CDistance<T> {
     const T* dist;
-    ssize_t n;
+    Py_ssize_t n;
     std::vector<T> buf;
 
     /*!
@@ -94,7 +94,7 @@ struct CDistancePrecomputedVector : public CDistance<T> {
      *    where w is the distance between the i-th and the w-th point
      * @param n number of points
      */
-    CDistancePrecomputedVector(const T* dist, ssize_t n)
+    CDistancePrecomputedVector(const T* dist, Py_ssize_t n)
             : buf(n)
     {
         this->n = n;
@@ -104,10 +104,10 @@ struct CDistancePrecomputedVector : public CDistance<T> {
     CDistancePrecomputedVector()
         : CDistancePrecomputedVector(NULL, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T* __buf = buf.data();
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
+        for (Py_ssize_t j=0; j<k; ++j) {
+            Py_ssize_t w = M[j];
             if (i == w)
                 __buf[w] = 0.0;
             else if (i < w)
@@ -127,8 +127,8 @@ struct CDistancePrecomputedVector : public CDistance<T> {
 template<class T>
 struct CDistanceEuclidean : public CDistance<T>  {
     const T* X;
-    ssize_t n;
-    ssize_t d;
+    Py_ssize_t n;
+    Py_ssize_t d;
     std::vector<T> buf;
 
     /*!
@@ -136,7 +136,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceEuclidean(const T* X, ssize_t n, ssize_t d)
+    CDistanceEuclidean(const T* X, Py_ssize_t n, Py_ssize_t d)
             : buf(n)
     {
         this->n = n;
@@ -147,21 +147,21 @@ struct CDistanceEuclidean : public CDistance<T>  {
     CDistanceEuclidean()
         : CDistanceEuclidean(NULL, 0, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T* __buf = buf.data();
         const T* x = X+d*i;
 
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
+        for (Py_ssize_t j=0; j<k; ++j) {
+            Py_ssize_t w = M[j];
             const T* y = X+d*w;
 
             // or we could use the BLAS snrm2() for increased numerical
             // stability; are we building a rocket though?
             __buf[w] = 0.0;
-            for (ssize_t u=0; u<d; ++u) {
+            for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
             }
             __buf[w] = sqrt(__buf[w]);
@@ -180,8 +180,8 @@ struct CDistanceEuclidean : public CDistance<T>  {
 template<class T>
 struct CDistanceEuclideanSquared : public CDistance<T>  {
     const T* X;
-    ssize_t n;
-    ssize_t d;
+    Py_ssize_t n;
+    Py_ssize_t d;
     std::vector<T> buf;
 
     /*!
@@ -189,7 +189,7 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceEuclideanSquared(const T* X, ssize_t n, ssize_t d)
+    CDistanceEuclideanSquared(const T* X, Py_ssize_t n, Py_ssize_t d)
             : buf(n)
     {
         this->n = n;
@@ -200,21 +200,21 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
     CDistanceEuclideanSquared()
         : CDistanceEuclideanSquared(NULL, 0, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T* __buf = buf.data();
         const T* x = X+d*i;
 
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
+        for (Py_ssize_t j=0; j<k; ++j) {
+            Py_ssize_t w = M[j];
             const T* y = X+d*w;
 
             // or we could use the BLAS snrm2() for increased numerical
             // stability; are we building a rocket though?
             __buf[w] = 0.0;
-            for (ssize_t u=0; u<d; ++u) {
+            for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
             }
         }
@@ -231,8 +231,8 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
 template<class T>
 struct CDistanceManhattan : public CDistance<T>  {
     const T* X;
-    ssize_t n;
-    ssize_t d;
+    Py_ssize_t n;
+    Py_ssize_t d;
     std::vector<T> buf;
 
     /*!
@@ -240,7 +240,7 @@ struct CDistanceManhattan : public CDistance<T>  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceManhattan(const T* X, ssize_t n, ssize_t d)
+    CDistanceManhattan(const T* X, Py_ssize_t n, Py_ssize_t d)
             : buf(n)
     {
         this->n = n;
@@ -251,17 +251,17 @@ struct CDistanceManhattan : public CDistance<T>  {
     CDistanceManhattan()
         : CDistanceManhattan(NULL, 0, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T* __buf = buf.data();
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
+        for (Py_ssize_t j=0; j<k; ++j) {
+            Py_ssize_t w = M[j];
             // GENIECLUST_ASSERT(w>=0 && w<n)
             __buf[w] = 0.0;
 
-            for (ssize_t u=0; u<d; ++u) {
+            for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += fabs(X[d*i+u]-X[d*w+u]);
             }
         }
@@ -277,8 +277,8 @@ struct CDistanceManhattan : public CDistance<T>  {
 template<class T>
 struct CDistanceCosine : public CDistance<T>  {
     const T* X;
-    ssize_t n;
-    ssize_t d;
+    Py_ssize_t n;
+    Py_ssize_t d;
     std::vector<T> buf;
     std::vector<T> norm;
 
@@ -287,7 +287,7 @@ struct CDistanceCosine : public CDistance<T>  {
      * @param n number of points
      * @param d dimensionality
      */
-    CDistanceCosine(const T* X, ssize_t n, ssize_t d)
+    CDistanceCosine(const T* X, Py_ssize_t n, Py_ssize_t d)
             : buf(n), norm(n)
     {
         this->n = n;
@@ -298,9 +298,9 @@ struct CDistanceCosine : public CDistance<T>  {
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
-        for (ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t i=0; i<n; ++i) {
             __norm[i] = 0.0;
-            for (ssize_t u=0; u<d; ++u) {
+            for (Py_ssize_t u=0; u<d; ++u) {
                 __norm[i] += X[d*i+u]*X[d*i+u];
             }
             __norm[i] = sqrt(__norm[i]);
@@ -310,18 +310,18 @@ struct CDistanceCosine : public CDistance<T>  {
     CDistanceCosine()
         : CDistanceCosine(NULL, 0, 0) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T*  __buf = buf.data();
         T* __norm = norm.data();
 #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
 #endif
-        for (ssize_t j=0; j<k; ++j) {
-            ssize_t w = M[j];
+        for (Py_ssize_t j=0; j<k; ++j) {
+            Py_ssize_t w = M[j];
             // GENIECLUST_ASSERT(w>=0&&w<n)
             __buf[w] = 0.0;
 
-            for (ssize_t u=0; u<d; ++u) {
+            for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] -= X[d*i+u]*X[d*w+u];
             }
             __buf[w] /= __norm[i];
@@ -350,12 +350,12 @@ struct CDistanceCosine : public CDistance<T>  {
 template<class T>
 struct CDistanceMutualReachability : public CDistance<T>
 {
-    ssize_t n;
+    Py_ssize_t n;
     CDistance<T>* d_pairwise;
     std::vector<T> buf;
     std::vector<T> d_core;
 
-    CDistanceMutualReachability(const T* _d_core, ssize_t n, CDistance<T>* d_pairwise)
+    CDistanceMutualReachability(const T* _d_core, Py_ssize_t n, CDistance<T>* d_pairwise)
             : buf(n), d_core(_d_core, _d_core+n)
     {
         this->n = n;
@@ -364,7 +364,7 @@ struct CDistanceMutualReachability : public CDistance<T>
 
     CDistanceMutualReachability() : CDistanceMutualReachability(NULL, 0, NULL) { }
 
-    virtual const T* operator()(ssize_t i, const ssize_t* M, ssize_t k) {
+    virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         // pragma omp parallel for inside::
         const T* d = (*d_pairwise)(i, M, k);
         T*  __buf = buf.data();
@@ -372,9 +372,9 @@ struct CDistanceMutualReachability : public CDistance<T>
         #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
         #endif
-        for (ssize_t j=0; j<k; ++j)  { //
+        for (Py_ssize_t j=0; j<k; ++j)  { //
             // buf[w] = max{d[w],d_core[i],d_core[w]}
-            ssize_t w = M[j];
+            Py_ssize_t w = M[j];
             if (w == i) __buf[w] = 0.0;
             else {
                 __buf[w] = d[w];

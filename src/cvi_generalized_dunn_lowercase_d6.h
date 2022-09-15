@@ -34,14 +34,14 @@ protected:
     std::vector<DistTriple> min_dists; ///< helper for calculating minimum distances to clusters for a single point
     bool last_chg; ///< for undo() (was dist changed at all?)
     bool needs_recompute; ///< for before and after modify
-    ssize_t cluster1;
-    ssize_t cluster2;
+    Py_ssize_t cluster1;
+    Py_ssize_t cluster2;
 
 public:
     LowercaseDelta6(
         EuclideanDistance& D,
         const CMatrix<FLOAT_T>& X,
-        std::vector<ssize_t>& L,
+        std::vector<Py_ssize_t>& L,
         std::vector<size_t>& count,
         size_t K,
         size_t n,
@@ -53,7 +53,7 @@ public:
     last_dist(K, K),
     min_dists(K)
     { }
-    virtual void before_modify(size_t i, ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t j) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
             for (size_t v=u+1; v<K; ++v) {
@@ -67,7 +67,7 @@ public:
 
         cluster1 = L[i];
     }
-    virtual void after_modify(size_t i, ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t j) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -77,8 +77,8 @@ public:
             last_chg = false;
             cluster2 = L[i];
 
-            for (ssize_t i1=0; i1<(ssize_t)K; ++i1) {
-                for (ssize_t j=i1+1; j<(ssize_t)K; ++j) {
+            for (Py_ssize_t i1=0; i1<(Py_ssize_t)K; ++i1) {
+                for (Py_ssize_t j=i1+1; j<(Py_ssize_t)K; ++j) {
                     if(i1 == cluster1 || i1 == cluster2 || j == cluster1 || j == cluster2)
                         dist(i1,j) = dist(j,i1) = DistTriple(0, 0, 0);
                 }
@@ -99,7 +99,7 @@ public:
                 }
 
                 // update maximum minimum distance on cluster level
-                for (ssize_t l=0; l<(ssize_t)K; ++l) {
+                for (Py_ssize_t l=0; l<(Py_ssize_t)K; ++l) {
                     if (l != L[i1] && dist(L[i1],l).d < min_dists[l].d) {
                         dist(L[i1],l) = min_dists[l];
                         last_chg = true;
@@ -121,7 +121,7 @@ public:
                 }
 
                 // update maximum minimum distance on cluster level
-                for (ssize_t l=0; l<(ssize_t)K; ++l) {
+                for (Py_ssize_t l=0; l<(Py_ssize_t)K; ++l) {
                     if (l != cluster1 && l != cluster2)
                         continue;
 
@@ -163,7 +163,7 @@ public:
             }
 
             // update maximum minimum distance on cluster level
-            for (ssize_t l=0; l<(ssize_t)K; ++l) {
+            for (Py_ssize_t l=0; l<(Py_ssize_t)K; ++l) {
                 if ( l != L[i] && dist(L[i],l).d < min_dists[l].d) {
                     dist(L[i],l) = min_dists[l];
                 }
@@ -185,7 +185,7 @@ public:
 
     virtual LowercaseDelta* create(EuclideanDistance& D,
            const CMatrix<FLOAT_T>& X,
-           std::vector<ssize_t>& L,
+           std::vector<Py_ssize_t>& L,
            std::vector<size_t>& count,
            size_t K,
            size_t n,

@@ -70,7 +70,7 @@ public:
     }
 
     // Described in the base class
-    virtual void set_labels(const std::vector<ssize_t>& _L)
+    virtual void set_labels(const std::vector<Py_ssize_t>& _L)
     {
         ClusterValidityIndex::set_labels(_L); // sets L, count and centroids
 
@@ -89,7 +89,7 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, ssize_t j)
+    virtual void modify(size_t i, Py_ssize_t j)
     {
         for (size_t u=0; u<n; ++u) {
             FLOAT_T dist = D(i, u);
@@ -122,7 +122,7 @@ public:
         for (size_t i=0; i<n; ++i) {
             // Let C(i,j) == sum of distances between X(i,) and all points in the j-th cluster
             B[i] = INFTY;
-            for (ssize_t j=0; j<(ssize_t)K; ++j) {
+            for (Py_ssize_t j=0; j<(Py_ssize_t)K; ++j) {
                 if (j == L[i]) {
                     A[i] = C(i,j)/(FLOAT_T)(count[j]-1);
                 }

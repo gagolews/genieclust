@@ -58,15 +58,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cmath>
 #include <vector>
 
-ssize_t __augmenting_path(
-    ssize_t nc,
+Py_ssize_t __augmenting_path(
+    Py_ssize_t nc,
     std::vector<double>& cost,
     std::vector<double>& u,
     std::vector<double>& v,
-    std::vector<ssize_t>& path,
-    std::vector<ssize_t>& row4col,
+    std::vector<Py_ssize_t>& path,
+    std::vector<Py_ssize_t>& row4col,
     std::vector<double>& shortestPathCosts,
-    ssize_t i,
+    Py_ssize_t i,
     std::vector<bool>& SR,
     std::vector<bool>& SC,
     double* p_minVal);
@@ -103,10 +103,10 @@ ssize_t __augmenting_path(
  *
  *  @return 0 on success
  */
-template<class T1, class T2> ssize_t linear_sum_assignment(
+template<class T1, class T2> Py_ssize_t linear_sum_assignment(
     T1* C,
-    ssize_t nr,
-    ssize_t nc,
+    Py_ssize_t nr,
+    Py_ssize_t nc,
     T2* output_col4row,
     bool minimise=true)
 {
@@ -117,13 +117,13 @@ template<class T1, class T2> ssize_t linear_sum_assignment(
     std::vector<double> cost(nr * nc);
     if (minimise) {
         double minval = *std::min_element(C, C + nr * nc);
-        for (ssize_t i = 0; i < nr * nc; i++) {
+        for (Py_ssize_t i = 0; i < nr * nc; i++) {
             cost[i] = C[i] - minval;
         }
     }
     else {
         double maxval = *std::max_element(C, C + nr * nc);
-        for (ssize_t i = 0; i < nr * nc; i++) {
+        for (Py_ssize_t i = 0; i < nr * nc; i++) {
             cost[i] = maxval-C[i];
         }
     }
@@ -132,17 +132,17 @@ template<class T1, class T2> ssize_t linear_sum_assignment(
     std::vector<double> u(nr, 0);
     std::vector<double> v(nc, 0);
     std::vector<double> shortestPathCosts(nc);
-    std::vector<ssize_t> path(nc, -1);
-    std::vector<ssize_t> col4row(nr, -1);
-    std::vector<ssize_t> row4col(nc, -1);
+    std::vector<Py_ssize_t> path(nc, -1);
+    std::vector<Py_ssize_t> col4row(nr, -1);
+    std::vector<Py_ssize_t> row4col(nc, -1);
     std::vector<bool> SR(nr);
     std::vector<bool> SC(nc);
 
     // iteratively build the solution
-    for (ssize_t curRow = 0; curRow < nr; curRow++) {
+    for (Py_ssize_t curRow = 0; curRow < nr; curRow++) {
 
         double minVal;
-        ssize_t sink = __augmenting_path(nc, cost, u, v, path, row4col,
+        Py_ssize_t sink = __augmenting_path(nc, cost, u, v, path, row4col,
                                    shortestPathCosts, curRow, SR, SC, &minVal);
         if (sink < 0) {
             return -1;
@@ -150,22 +150,22 @@ template<class T1, class T2> ssize_t linear_sum_assignment(
 
         // update dual variables
         u[curRow] += minVal;
-        for (ssize_t i = 0; i < nr; i++) {
+        for (Py_ssize_t i = 0; i < nr; i++) {
             if (SR[i] && i != curRow) {
                 u[i] += minVal - shortestPathCosts[col4row[i]];
             }
         }
 
-        for (ssize_t j = 0; j < nc; j++) {
+        for (Py_ssize_t j = 0; j < nc; j++) {
             if (SC[j]) {
                 v[j] -= minVal - shortestPathCosts[j];
             }
         }
 
         // augment previous solution
-        ssize_t j = sink;
+        Py_ssize_t j = sink;
         while (1) {
-            ssize_t i = path[j];
+            Py_ssize_t i = path[j];
             row4col[j] = i;
             std::swap(col4row[i], j);
             if (i == curRow) {
@@ -174,7 +174,7 @@ template<class T1, class T2> ssize_t linear_sum_assignment(
         }
     }
 
-    for (ssize_t i = 0; i < nr; i++) {
+    for (Py_ssize_t i = 0; i < nr; i++) {
         output_col4row[i] = (T2)col4row[i];
     }
 
@@ -184,15 +184,15 @@ template<class T1, class T2> ssize_t linear_sum_assignment(
 
 
 
-ssize_t __augmenting_path(
-    ssize_t nc,
+Py_ssize_t __augmenting_path(
+    Py_ssize_t nc,
     std::vector<double>& cost,
     std::vector<double>& u,
     std::vector<double>& v,
-    std::vector<ssize_t>& path,
-    std::vector<ssize_t>& row4col,
+    std::vector<Py_ssize_t>& path,
+    std::vector<Py_ssize_t>& row4col,
     std::vector<double>& shortestPathCosts,
-    ssize_t i,
+    Py_ssize_t i,
     std::vector<bool>& SR,
     std::vector<bool>& SC,
     double* p_minVal)
@@ -201,9 +201,9 @@ ssize_t __augmenting_path(
 
     // Crouse's pseudocode uses set complements to keep track of remaining
     // nodes.  Here we use a vector, as it is more efficient in C++.
-    ssize_t num_remaining = nc;
-    std::vector<ssize_t> remaining(nc);
-    for (ssize_t it = 0; it < nc; it++) {
+    Py_ssize_t num_remaining = nc;
+    std::vector<Py_ssize_t> remaining(nc);
+    for (Py_ssize_t it = 0; it < nc; it++) {
         // Filling this up in reverse order ensures that the solution of a
         // constant cost matrix is the identity matrix (c.f. #11602).
         remaining[it] = nc - it - 1;
@@ -214,15 +214,15 @@ ssize_t __augmenting_path(
     std::fill(shortestPathCosts.begin(), shortestPathCosts.end(), INFINITY);
 
     // find shortest augmenting path
-    ssize_t sink = -1;
+    Py_ssize_t sink = -1;
     while (sink == -1) {
 
-        ssize_t index = -1;
+        Py_ssize_t index = -1;
         double lowest = INFINITY;
         SR[i] = true;
 
-        for (ssize_t it = 0; it < num_remaining; it++) {
-            ssize_t j = remaining[it];
+        for (Py_ssize_t it = 0; it < num_remaining; it++) {
+            Py_ssize_t j = remaining[it];
 
             double r = minVal + cost[i * nc + j] - u[i] - v[j];
             if (r < shortestPathCosts[j]) {
@@ -241,7 +241,7 @@ ssize_t __augmenting_path(
         }
 
         minVal = lowest;
-        ssize_t j = remaining[index];
+        Py_ssize_t j = remaining[index];
         if (minVal == INFINITY) { // infeasible cost matrix
             return -1;
         }

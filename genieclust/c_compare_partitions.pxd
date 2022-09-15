@@ -47,26 +47,26 @@ cdef extern from "../src/c_compare_partitions.h":
         double spsi
 
 
-    void Cminmax[T](const T* x, ssize_t n, T* xmin, T* xmax)
+    void Cminmax[T](const T* x, Py_ssize_t n, T* xmin, T* xmax)
 
-    void Ccontingency_table(ssize_t* Cout, ssize_t xc, ssize_t yc,
-        ssize_t xmin, ssize_t ymin,
-        ssize_t* x, ssize_t* y, ssize_t n)
+    void Ccontingency_table(Py_ssize_t* Cout, Py_ssize_t xc, Py_ssize_t yc,
+        Py_ssize_t xmin, Py_ssize_t ymin,
+        Py_ssize_t* x, Py_ssize_t* y, Py_ssize_t n)
 
-    void Cnormalizing_permutation[T](const T* C, ssize_t xc, ssize_t yc,
-        ssize_t* Iout)
+    void Cnormalizing_permutation[T](const T* C, Py_ssize_t xc, Py_ssize_t yc,
+        Py_ssize_t* Iout)
 
-    void Capply_pivoting(const ssize_t* C, ssize_t xc, ssize_t yc, ssize_t* Cout)
+    void Capply_pivoting(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc, Py_ssize_t* Cout)
 
-    CComparePartitionsPairsResult Ccompare_partitions_pairs(const ssize_t* C,
-        ssize_t xc, ssize_t yc)
+    CComparePartitionsPairsResult Ccompare_partitions_pairs(const Py_ssize_t* C,
+        Py_ssize_t xc, Py_ssize_t yc)
 
-    CComparePartitionsInfoResult Ccompare_partitions_info(const ssize_t* C,
-        ssize_t xc, ssize_t yc)
+    CComparePartitionsInfoResult Ccompare_partitions_info(const Py_ssize_t* C,
+        Py_ssize_t xc, Py_ssize_t yc)
 
-    double Ccompare_partitions_nacc(const ssize_t* C, ssize_t xc, ssize_t yc)
+    double Ccompare_partitions_nacc(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
 
-    double Ccompare_partitions_aaa(const ssize_t* C, ssize_t xc, ssize_t yc)
+    double Ccompare_partitions_aaa(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
 
-    CCompareSetMatchingResult Ccompare_partitions_psi(const ssize_t* C,
-        ssize_t xc, ssize_t yc)
+    CCompareSetMatchingResult Ccompare_partitions_psi(const Py_ssize_t* C,
+        Py_ssize_t xc, Py_ssize_t yc)

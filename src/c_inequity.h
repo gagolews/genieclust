@@ -56,12 +56,12 @@
  * @return the value of the inequity index, a number in [0,1].
  */
 template<class T>
-double Cgini_sorted(const T* x, ssize_t n)
+double Cgini_sorted(const T* x, Py_ssize_t n)
 {
     double s = 0.0, t = 0.0;
     GENIECLUST_ASSERT(x[0] >= 0);
     GENIECLUST_ASSERT(x[n-1] > 0);
-    for (ssize_t i=1; i<=n; ++i) {
+    for (Py_ssize_t i=1; i<=n; ++i) {
         t += x[n-i];
         s += (n-2.0*i+1.0)*x[n-i];
     }
@@ -101,12 +101,12 @@ double Cgini_sorted(const T* x, ssize_t n)
  * @return the value of the inequity index, a number in [0,1].
  */
 template<class T>
-double Cbonferroni_sorted(const T* x, ssize_t n)
+double Cbonferroni_sorted(const T* x, Py_ssize_t n)
 {
     double s = 0.0, t = 0.0, c = 0.0;
     GENIECLUST_ASSERT(x[0] >= 0);
     GENIECLUST_ASSERT(x[n-1] > 0);
-    for (ssize_t i=1; i<=n; ++i) {
+    for (Py_ssize_t i=1; i<=n; ++i) {
         c += n/(n-i+1.0);
         t += x[n-i];
         s += (n-c)*x[n-i];
@@ -176,16 +176,16 @@ double Cbonferroni_sorted(const T* x, ssize_t n)
  * @return the value of the inequity index, a number in [0,1].
  */
 template<class T>
-double Cdevergottini_sorted(const T* x, ssize_t n)
+double Cdevergottini_sorted(const T* x, Py_ssize_t n)
 {
     double s = 0.0, t = 0.0, c = 0.0, f=0.0, d=0.0;
     GENIECLUST_ASSERT(x[0] >= 0);
     GENIECLUST_ASSERT(x[n-1] > 0);
 
-    for (ssize_t i=2; i<=n; ++i)
+    for (Py_ssize_t i=2; i<=n; ++i)
         c += 1.0/(double)i;
 
-    for (ssize_t i=1; i<=n; ++i) {
+    for (Py_ssize_t i=1; i<=n; ++i) {
         t += x[i-1];
         f += 1.0/(double)(n-i+1);
         d += f*x[i-1];  // the i-th smallest

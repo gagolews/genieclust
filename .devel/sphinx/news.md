@@ -5,6 +5,8 @@
 
 *  [Python] #75: `nmslib` is now optional.
 
+*  [BUILD TIME]: The use of `ssize_t` was not portable.
+
 
 ## 1.1.0 (2022-09-05)
 

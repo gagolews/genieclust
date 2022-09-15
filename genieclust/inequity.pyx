@@ -37,7 +37,7 @@ ctypedef fused T:
     int
     long
     long long
-    ssize_t
+    Py_ssize_t
     float
     double
 

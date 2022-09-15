@@ -52,7 +52,7 @@ ctypedef fused T:
     int
     long
     long long
-    ssize_t
+    Py_ssize_t
     float
     double
 
@@ -70,7 +70,7 @@ from . cimport c_argfuns
 ################################################################################
 
 
-cpdef np.ndarray[ssize_t] cummin(T[:] x):
+cpdef np.ndarray[Py_ssize_t] cummin(T[:] x):
     """
     genieclust.tools.cummin(x)
 
@@ -107,7 +107,7 @@ cpdef np.ndarray[ssize_t] cummin(T[:] x):
     array([3, 3, 2, 1, 1, 1])
 
     """
-    cdef ssize_t n = x.shape[0], i
+    cdef Py_ssize_t n = x.shape[0], i
     cdef np.ndarray[T] ret = np.empty_like(x)
     ret[0] = x[0]
     for i in range(1, n):
@@ -119,7 +119,7 @@ cpdef np.ndarray[ssize_t] cummin(T[:] x):
     return ret
 
 
-cpdef np.ndarray[ssize_t] cummax(T[:] x):
+cpdef np.ndarray[Py_ssize_t] cummax(T[:] x):
     """
     genieclust.tools.cummax(x)
 
@@ -156,7 +156,7 @@ cpdef np.ndarray[ssize_t] cummax(T[:] x):
     array([3, 3, 3, 4, 6, 6])
 
     """
-    cdef ssize_t n = x.shape[0], i
+    cdef Py_ssize_t n = x.shape[0], i
     cdef np.ndarray[T] ret = np.empty_like(x)
     ret[0] = x[0]
     for i in range(1, n):
@@ -171,7 +171,7 @@ cpdef np.ndarray[ssize_t] cummax(T[:] x):
 
 
 
-cpdef ssize_t argkmin(np.ndarray[T] x, int k):
+cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
     """
     genieclust.tools.argkmin(x, k)
 
@@ -232,12 +232,12 @@ cpdef ssize_t argkmin(np.ndarray[T] x, int k):
     0
     """
     x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
-    cdef ssize_t n = x.shape[0]
-    return c_argfuns.Cargkmin(&x[0], n, k, <ssize_t*>0)
+    cdef Py_ssize_t n = x.shape[0]
+    return c_argfuns.Cargkmin(&x[0], n, k, <Py_ssize_t*>0)
 
 
 
-cpdef np.ndarray[ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
+cpdef np.ndarray[Py_ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
     """
     genieclust.tools.argsort(x, stable=True)
 
@@ -274,8 +274,8 @@ cpdef np.ndarray[ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
 
     """
     x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
-    cdef ssize_t n = x.shape[0]
-    cdef np.ndarray[ssize_t] ret = np.empty(n, dtype=np.intp)
+    cdef Py_ssize_t n = x.shape[0]
+    cdef np.ndarray[Py_ssize_t] ret = np.empty(n, dtype=np.intp)
     c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
     return ret
 
@@ -322,7 +322,7 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
         d_core[i] gives the distance between the i-th point and its M-th nearest
         neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
     """
-    cdef ssize_t n = dist.shape[0], i, j
+    cdef Py_ssize_t n = dist.shape[0], i, j
     cdef floatT v
     cdef np.ndarray[floatT] d_core = np.zeros(n,
         dtype=np.float32 if floatT is float else np.float64)
@@ -334,7 +334,7 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
 
     if M == 1: return d_core # zeros
 
-    cdef vector[ssize_t] buf = vector[ssize_t](M)
+    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
     for i in range(n):
         row = dist[i,:]
         j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
@@ -379,7 +379,7 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
     R : ndarray, shape (n_samples,n_samples)
         A new distance matrix, giving the mutual reachability distance.
     """
-    cdef ssize_t n = dist.shape[0], i, j
+    cdef Py_ssize_t n = dist.shape[0], i, j
     cdef floatT v
     if dist.shape[1] != n: raise ValueError("not a square matrix")
 

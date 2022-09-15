@@ -57,14 +57,14 @@ public:
     }
 
 //     // Described in the base class
-//     virtual void set_labels(const std::vector<ssize_t>& _L)
+//     virtual void set_labels(const std::vector<Py_ssize_t>& _L)
 //     {
 //         CentroidsBasedIndex::set_labels(_L); // sets L, count and centroids
 //     }
 
 
 //     // Described in the base class
-//     virtual void modify(size_t i, ssize_t j)
+//     virtual void modify(size_t i, Py_ssize_t j)
 //     {
 //         // sets L[i]=j and updates count as well as centroids
 //         CentroidsBasedIndex::modify(i, j);

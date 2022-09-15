@@ -83,7 +83,7 @@ class DuNNOWAIndex : public NNBasedIndex
 protected:
     const int owa_numerator;
     const int owa_denominator;
-    std::vector<ssize_t> order;
+    std::vector<Py_ssize_t> order;
     std::vector<FLOAT_T> pq;  ///< for SMin and SMax - aux storage of size 3*delta
 
     FLOAT_T aggregate(int owa, bool same_cluster)
@@ -115,8 +115,8 @@ protected:
 //             }
 //             return ret;
             for (size_t u=0; u<n*M; ++u) {
-                ssize_t i = order[u]/M;
-                ssize_t j = order[u]%M;
+                Py_ssize_t i = order[u]/M;
+                Py_ssize_t j = order[u]%M;
                 if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
                     return dist(i, j);
                 }
@@ -126,7 +126,7 @@ protected:
         else if (owa == OWA_MAX) {
 //             FLOAT_T ret = -INFTY;
 //             for (size_t i=0; i<n; ++i) {
-//                 for (ssize_t j=M-1; j>=0; --j) { /* yep, a signed type */
+//                 for (Py_ssize_t j=M-1; j>=0; --j) { /* yep, a signed type */
 //                     if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
 //                         if (dist(i, j) > ret)
 //                             ret = dist(i, j);
@@ -135,9 +135,9 @@ protected:
 //                 }
 //             }
 //            return ret;
-            for (ssize_t u=n*M-1; u>=0; --u) { /* yep, a signed type */
-                ssize_t i = order[u]/M;
-                ssize_t j = order[u]%M;
+            for (Py_ssize_t u=n*M-1; u>=0; --u) { /* yep, a signed type */
+                Py_ssize_t i = order[u]/M;
+                Py_ssize_t j = order[u]%M;
                 if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
                     return dist(i, j);
                 }
@@ -148,11 +148,11 @@ protected:
             return 1.0;
         }
         else if (owa > OWA_SMIN_START && owa <= OWA_SMIN_LIMIT) {
-            ssize_t delta = owa-OWA_SMIN_START;
-            ssize_t pq_cur = 0;
+            Py_ssize_t delta = owa-OWA_SMIN_START;
+            Py_ssize_t pq_cur = 0;
             for (size_t u=0; u<n*M; ++u) {
-                ssize_t i = order[u]/M;
-                ssize_t j = order[u]%M;
+                Py_ssize_t i = order[u]/M;
+                Py_ssize_t j = order[u]%M;
                 if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
                     pq[pq_cur++] = dist(i, j);
                     if (pq_cur == 3*delta) break;
@@ -160,7 +160,7 @@ protected:
             }
             if (pq_cur == 0) return INFTY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
-            for (ssize_t u=0; u<pq_cur; ++u) {
+            for (Py_ssize_t u=0; u<pq_cur; ++u) {
                 FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
                 sum_w  += cur_w;
                 sum_wx += cur_w*pq[u];
@@ -168,11 +168,11 @@ protected:
             return sum_wx/sum_w;
         }
         else if (owa > OWA_SMAX_START && owa <= OWA_SMAX_LIMIT) {
-            ssize_t delta = owa-OWA_SMAX_START;
-            ssize_t pq_cur = 0;
-             for (ssize_t u=n*M-1; u>=0; --u) { /* yep, a signed type */
-                ssize_t i = order[u]/M;
-                ssize_t j = order[u]%M;
+            Py_ssize_t delta = owa-OWA_SMAX_START;
+            Py_ssize_t pq_cur = 0;
+             for (Py_ssize_t u=n*M-1; u>=0; --u) { /* yep, a signed type */
+                Py_ssize_t i = order[u]/M;
+                Py_ssize_t j = order[u]%M;
                 if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
                     pq[pq_cur++] = dist(i, j);
                     if (pq_cur == 3*delta) break;
@@ -180,7 +180,7 @@ protected:
             }
             if (pq_cur == 0) return INFTY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
-            for (ssize_t u=0; u<pq_cur; ++u) {
+            for (Py_ssize_t u=0; u<pq_cur; ++u) {
                 FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
                 sum_w  += cur_w;
                 sum_wx += cur_w*pq[u];

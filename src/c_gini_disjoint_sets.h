@@ -35,7 +35,7 @@
 class CCountDisjointSets : public CDisjointSets{
 
 protected:
-    std::vector<ssize_t> cnt;  //!< cnt[find(x)] is the size of the relevant subset
+    std::vector<Py_ssize_t> cnt;  //!< cnt[find(x)] is the size of the relevant subset
 
 
 public:
@@ -44,7 +44,7 @@ public:
      *
      *  @param n number of elements, n>=0.
      */
-    CCountDisjointSets(ssize_t n) :
+    CCountDisjointSets(Py_ssize_t n) :
         CDisjointSets(n),
         cnt(n, 1) // each cluster is of size 1
     {
@@ -63,7 +63,7 @@ public:
      *
      * Run time: the cost of find(x)
      */
-    ssize_t get_count(ssize_t x) {
+    Py_ssize_t get_count(Py_ssize_t x) {
         x = this->find(x);
         return this->cnt[x];
     }
@@ -85,7 +85,7 @@ public:
      *
      *  Update time: amortised O(1).
      */
-    virtual ssize_t merge(ssize_t x, ssize_t y)
+    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y)
     {   // well, union is a reserved C++ keyword :)
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
@@ -133,12 +133,12 @@ class CGiniDisjointSets : public CCountDisjointSets{
 
 protected:
 
-    CIntDict<ssize_t> number_of_size; /*!< number_of_size[i] gives the number
+    CIntDict<Py_ssize_t> number_of_size; /*!< number_of_size[i] gives the number
         * of subsets of size i (there are at most sqrt(n) possible
         * non-zero elements) */
 
     double gini;   //!< the Gini index of the current subset sizes
-    ssize_t forgotten;
+    Py_ssize_t forgotten;
 
 
     /*! Re-compute the normalized Gini index
@@ -150,10 +150,10 @@ protected:
         gini = 0.0;
         if (number_of_size.size() > 1) { // otherwise all clusters are of identical sizes
             GENIECLUST_ASSERT(k-forgotten-1 > 0)
-            ssize_t v = number_of_size.get_key_min();
-            ssize_t i = 0;
+            Py_ssize_t v = number_of_size.get_key_min();
+            Py_ssize_t i = 0;
             while (v != number_of_size.get_key_max()) {
-                ssize_t w = v;                       // previous v
+                Py_ssize_t w = v;                       // previous v
                 v = number_of_size.get_key_next(v);  // next v
                 i += number_of_size[w];              // cumulative counts
                 gini += ((double)v-w)*i*((double)k-forgotten-i);
@@ -170,7 +170,7 @@ protected:
 
     /*! called by merge(x, y) and merge_and_forget(x, y)
      */
-    ssize_t merge(ssize_t x, ssize_t y, bool forget)
+    Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y, bool forget)
     {
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
@@ -182,8 +182,8 @@ protected:
         this->k -= 1;     // decrease the subset count
 
         // CCountDisjointSets's merge part:
-        ssize_t size1 = this->cnt[x];
-        ssize_t size2 = this->cnt[y];
+        Py_ssize_t size1 = this->cnt[x];
+        Py_ssize_t size2 = this->cnt[y];
         this->cnt[x] += this->cnt[y]; // cluster x has more elements now
         this->cnt[y] = 0;             // cluster y, well, cleaning up
 
@@ -202,7 +202,7 @@ protected:
             number_of_size.erase(size2);  // fast
 
         if (!forget) {
-            ssize_t size12 = size1+size2;
+            Py_ssize_t size12 = size1+size2;
             if (number_of_size.count(size12) == 0)
                 number_of_size[size12] = 1;   // might be O(sqrt(n))
             else
@@ -222,7 +222,7 @@ public:
      *
      *  @param n number of elements, n>=0.
      */
-    CGiniDisjointSets(ssize_t n) :
+    CGiniDisjointSets(Py_ssize_t n) :
         CCountDisjointSets(n),
         number_of_size(n+1),
         forgotten(0)
@@ -250,7 +250,7 @@ public:
      *
      *  Run time: O(1).
      */
-    ssize_t get_smallest_count() const {
+    Py_ssize_t get_smallest_count() const {
         return number_of_size.get_key_min(); /*this->tab_head;*/
     }
 
@@ -259,7 +259,7 @@ public:
      *
      *  Run time: O(1).
      */
-    ssize_t get_largest_count() const {
+    Py_ssize_t get_largest_count() const {
         return number_of_size.get_key_max(); /*this->tab_tail;*/
     }
 
@@ -268,7 +268,7 @@ public:
      *
      *  Run time: O(1).
      */
-    ssize_t get_k_of_size(ssize_t c) {
+    Py_ssize_t get_k_of_size(Py_ssize_t c) {
         return number_of_size[c];
     }
 
@@ -276,20 +276,20 @@ public:
     /*! Determine the Gini index that you would get if x and y
      *  were merged.
      */
-    double test_gini_after_merge(ssize_t x, ssize_t y, bool forget)
+    double test_gini_after_merge(Py_ssize_t x, Py_ssize_t y, bool forget)
     {
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
-        ssize_t size1 = this->cnt[x];
-        ssize_t size2 = this->cnt[y];
-        ssize_t size12 = size1+size2;
+        Py_ssize_t size1 = this->cnt[x];
+        Py_ssize_t size2 = this->cnt[y];
+        Py_ssize_t size12 = size1+size2;
         if (!(size1 <= size2)) std::swap(size1, size2);
 
         double new_gini = gini*(n)*(k-forgotten-1.0);
 
-        ssize_t v = number_of_size.get_key_min();
+        Py_ssize_t v = number_of_size.get_key_min();
         while (true) {
-            ssize_t vc = number_of_size[v];
+            Py_ssize_t vc = number_of_size[v];
 
             new_gini -= vc*std::fabs(v-size1);
             new_gini -= vc*std::fabs(v-size2);
@@ -334,7 +334,7 @@ public:
      *
      *  Update time: worst-case amortised O(sqrt(n)).
      */
-    virtual ssize_t merge(ssize_t x, ssize_t y)
+    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y)
     {
         return merge(x, y, /*forget=*/false);
     }
@@ -353,7 +353,7 @@ public:
      *
      *  Update time: worst-case amortised O(sqrt(n)).
      */
-    ssize_t merge_and_forget(ssize_t x, ssize_t y)
+    Py_ssize_t merge_and_forget(Py_ssize_t x, Py_ssize_t y)
     {
         ++forgotten;
         return merge(x, y, /*forget=*/true);
@@ -369,14 +369,14 @@ public:
      *
      *  @param res [out] c_contiguous array of length k
      */
-    void get_counts(ssize_t* res) {
+    void get_counts(Py_ssize_t* res) {
         GENIECLUST_ASSERT(forgotten == 0)
-        ssize_t i = 0;
-        for (CIntDict<ssize_t>::iterator it = number_of_size.begin();
+        Py_ssize_t i = 0;
+        for (CIntDict<Py_ssize_t>::iterator it = number_of_size.begin();
              it != number_of_size.end(); ++it)
         {
             // add this->tab[v] times v
-            for (ssize_t j=0; j<number_of_size[*it]; ++j) {
+            for (Py_ssize_t j=0; j<number_of_size[*it]; ++j) {
                 GENIECLUST_ASSERT(i<k);
                 res[i++] = *it;
             }

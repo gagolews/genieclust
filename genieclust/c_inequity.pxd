@@ -31,6 +31,6 @@ Provides access to inequity (inequality) measures.
 
 
 cdef extern from "../src/c_inequity.h":
-    double Cgini_sorted[T](const T* x, ssize_t n) except +
-    double Cbonferroni_sorted[T](const T* x, ssize_t n) except +
-    double Cdevergottini_sorted[T](const T* x, ssize_t n) except +
+    double Cgini_sorted[T](const T* x, Py_ssize_t n) except +
+    double Cbonferroni_sorted[T](const T* x, Py_ssize_t n) except +
+    double Cdevergottini_sorted[T](const T* x, Py_ssize_t n) except +

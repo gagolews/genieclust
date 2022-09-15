@@ -36,53 +36,53 @@ cdef extern from "../src/c_mst.h":
 
     cdef cppclass CDistanceMutualReachability[T]: # inherits from CDistance
         CDistanceMutualReachability()
-        CDistanceMutualReachability(const T* d_core, ssize_t n, CDistance[T]* d_pairwise)
+        CDistanceMutualReachability(const T* d_core, Py_ssize_t n, CDistance[T]* d_pairwise)
 
     cdef cppclass CDistanceEuclidean[T]: # inherits from CDistance
         CDistanceEuclidean()
-        CDistanceEuclidean(T* X, ssize_t n, ssize_t d)
+        CDistanceEuclidean(T* X, Py_ssize_t n, Py_ssize_t d)
 
     cdef cppclass CDistanceEuclideanSquared[T]: # inherits from CDistance
         CDistanceEuclideanSquared()
-        CDistanceEuclideanSquared(T* X, ssize_t n, ssize_t d)
+        CDistanceEuclideanSquared(T* X, Py_ssize_t n, Py_ssize_t d)
 
     cdef cppclass CDistanceManhattan[T]: # inherits from CDistance
         CDistanceManhattan()
-        CDistanceManhattan(T* X, ssize_t n, ssize_t d)
+        CDistanceManhattan(T* X, Py_ssize_t n, Py_ssize_t d)
 
     cdef cppclass CDistanceCosine[T]: # inherits from CDistance
         CDistanceCosine()
-        CDistanceCosine(T* X, ssize_t n, ssize_t d)
+        CDistanceCosine(T* X, Py_ssize_t n, Py_ssize_t d)
 
     cdef cppclass CDistancePrecomputedMatrix[T]: # inherits from CDistance
         CDistancePrecomputedMatrix()
-        CDistancePrecomputedMatrix(T* d, ssize_t n)
+        CDistancePrecomputedMatrix(T* d, Py_ssize_t n)
 
     cdef cppclass CDistancePrecomputedVector[T]: # inherits from CDistance
         CDistancePrecomputedVector()
-        CDistancePrecomputedVector(T* d, ssize_t n)
+        CDistancePrecomputedVector(T* d, Py_ssize_t n)
 
 
 
     # cdef cppclass CMstTriple[T]:
-    #     CMstTriple(ssize_t i1, ssize_t i2, T d, bint order=False)
+    #     CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bint order=False)
 
-    # ssize_t Cmst_from_nn_list[T](
-    #     CMstTriple[T]* nns, ssize_t c,
-    #     ssize_t n, T* mst_dist, ssize_t* mst_ind, bint verbose) except +
+    # Py_ssize_t Cmst_from_nn_list[T](
+    #     CMstTriple[T]* nns, Py_ssize_t c,
+    #     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
 
 
-    ssize_t Cmst_from_nn[T](
-        T* dist, ssize_t* ind, const T* d_core, ssize_t n, ssize_t k,
-        T* mst_dist, ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
+    Py_ssize_t Cmst_from_nn[T](
+        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
+        T* mst_dist, Py_ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
 
     void Cknn_from_complete[T](
-        CDistance[T]* D, ssize_t n, ssize_t k,
-        T* dist, ssize_t* ind, bint verbose) except +
+        CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,
+        T* dist, Py_ssize_t* ind, bint verbose) except +
 
     void Cmst_from_complete[T](
-        CDistance[T]* D, ssize_t n,
-        T* mst_dist, ssize_t* mst_ind, bint verbose) except +
+        CDistance[T]* D, Py_ssize_t n,
+        T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
 
 
-    void Comp_set_num_threads(ssize_t n_threads)
+    void Comp_set_num_threads(Py_ssize_t n_threads)

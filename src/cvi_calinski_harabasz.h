@@ -70,7 +70,7 @@ public:
 
 
     // Described in the base class
-    virtual void set_labels(const std::vector<ssize_t>& _L)
+    virtual void set_labels(const std::vector<Py_ssize_t>& _L)
     {
         CentroidsBasedIndex::set_labels(_L); // sets L, count and centroids
 
@@ -93,9 +93,9 @@ public:
 
 
     // Described in the base class
-    virtual void modify(size_t i, ssize_t j)
+    virtual void modify(size_t i, Py_ssize_t j)
     {
-        ssize_t tmp = L[i];
+        Py_ssize_t tmp = L[i];
         // tmp = old label for the i-th point
         // j   = new label for the i-th point
 

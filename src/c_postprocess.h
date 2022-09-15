@@ -49,21 +49,21 @@
  *  @param n length of c and the number of vertices in the spanning forest
  */
 void Cmerge_boundary_points(
-        const ssize_t* ind,
-        ssize_t num_edges,
-        const ssize_t* nn,
-        ssize_t num_neighbours,
-        ssize_t M,
-        ssize_t* c,
-        ssize_t n)
+        const Py_ssize_t* ind,
+        Py_ssize_t num_edges,
+        const Py_ssize_t* nn,
+        Py_ssize_t num_neighbours,
+        Py_ssize_t M,
+        Py_ssize_t* c,
+        Py_ssize_t n)
 {
 
     if (M < 2 || M-2 >= num_neighbours)
         throw std::domain_error("Incorrect smoothing factor M");
 
-    for (ssize_t i=0; i<num_edges; ++i) {
-        ssize_t u = ind[2*i+0];
-        ssize_t v = ind[2*i+1];
+    for (Py_ssize_t i=0; i<num_edges; ++i) {
+        Py_ssize_t u = ind[2*i+0];
+        Py_ssize_t v = ind[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
@@ -84,7 +84,7 @@ void Cmerge_boundary_points(
         // u is a boundary point if u is amongst v's M-1 nearest neighbours
 
         //c[u] = -1; // it's negative anyway
-        for (ssize_t j=0; j<M-1; ++j) {
+        for (Py_ssize_t j=0; j<M-1; ++j) {
             // -1s are ignored (they should be at the end of the array btw)
             if (nn[v*num_neighbours+j] == u) {
                 // yes, it's a boundary point
@@ -114,14 +114,14 @@ void Cmerge_boundary_points(
  *  @param n length of c and the number of vertices in the spanning forest
  */
 void Cmerge_noise_points(
-        const ssize_t* ind,
-        ssize_t num_edges,
-        ssize_t* c,
-        ssize_t n)
+        const Py_ssize_t* ind,
+        Py_ssize_t num_edges,
+        Py_ssize_t* c,
+        Py_ssize_t n)
 {
-    for (ssize_t i=0; i<num_edges; ++i) {
-        ssize_t u = ind[2*i+0];
-        ssize_t v = ind[2*i+1];
+    for (Py_ssize_t i=0; i<num_edges; ++i) {
+        Py_ssize_t u = ind[2*i+0];
+        Py_ssize_t v = ind[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
