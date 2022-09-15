@@ -1,6 +1,11 @@
 # What Is New in *genieclust*
 
 
+## 1.1.1 (2022-09-15)
+
+*  [Python] #75: `nmslib` is now optional.
+
+
 ## 1.1.0 (2022-09-05)
 
 *  [GENERAL] The below-mentioned cluster validity measures are discussed

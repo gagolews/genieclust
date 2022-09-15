@@ -44,8 +44,8 @@ graphs, Genie is also **very fast** – determining the whole cluster hierarchy
 for datasets of millions of points can be completed within minutes. Therefore,
 it is nicely suited for solving of **extreme clustering tasks** (large datasets
 with any number of clusters to detect) for data (also sparse) that fit into
-memory. Thanks to the use of [**nmslib**](https://github.com/nmslib/nmslib),
-sparse or string inputs are also supported.
+memory. Thanks to the use of [**nmslib**](https://github.com/nmslib/nmslib)
+(if available), sparse or string inputs are also supported.
 
 It also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a
@@ -114,8 +114,8 @@ pip3 install genieclust
 ```
 
 The package requires Python 3.7+ together with **cython** as well as
-**numpy**, **scipy**, **matplotlib**, **nmslib**, and **scikit-learn**.
-Optional dependency: **mlpack**.
+**numpy**, **scipy**, **matplotlib**, and **scikit-learn**.
+Optional dependencies: **nmslib** and **mlpack**.
 
 
 
@@ -193,7 +193,8 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
 
 Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
-cluster validity measure*, 2022, submitted for publication.
+cluster validity measure*, under review (preprint),
+[DOI: 10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
 
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
 2022, <https://clustering-benchmarks.gagolewski.com>.

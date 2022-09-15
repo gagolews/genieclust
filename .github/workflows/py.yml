@@ -32,7 +32,11 @@ jobs:
         pip install flake8 pytest --upgrade
         pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
         pip install rpy2 pweave ipython jupyter tabulate --upgrade
-    - name: Install optional dependencies
+    - name: Install optional dependencies (nmslib)
+      continue-on-error: true
+      run: |
+        pip install nmslib --upgrade
+    - name: Install optional dependencies (mlpack)
       continue-on-error: true
       run: |
         pip install mlpack --upgrade

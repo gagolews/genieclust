@@ -29,8 +29,10 @@ from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
 import warnings
 
-import nmslib
-
+try:
+    import nmslib
+except ImportError:
+    nmslib = None
 
 
 try:
@@ -374,8 +376,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def _get_mst_approx(self, X, cur_state):
-        #if nmslib is None:
-        #    raise ValueError("Package `nmslib` is not available.")
+        if nmslib is None:
+            raise ValueError("Package `nmslib` is not available.")
 
         if cur_state["affinity"] == "precomputed":
             raise ValueError(
@@ -837,6 +839,9 @@ class Genie(GenieBase):
     such a data structure turns out to be very suitable for our clustering task
     (note that the set of connected components will determine the top
     level of the identified cluster hierarchy).
+
+    Note that the `mlpack` and `nmslib` dependencies are optional.
+    Make sure they are installed on your system.
 
     The Genie correction together with the smoothing factor `M` > 1
     gives a robustified version of the HDBSCAN\\* [6]_ algorithm that,

@@ -6,6 +6,12 @@ To illustrate how *genieclust* handles
 let's perform a simple exercise in movie recommendation based on
 `MovieLens <https://grouplens.org/datasets/movielens/latest/>`_ data.
 
+.. important::
+
+    Make sure that the *nmslib* package (an optional dependency) is installed.
+
+
+
 <<sparse-example-imports>>=
 import numpy as np
 import scipy.sparse
@@ -39,7 +45,7 @@ ratings["movieId"] = np.searchsorted(old_movieId_map, ratings["movieId"])
 ratings.head()
 @
 
-Then we read the movie meta data and transform the movie IDs
+Then we read the movie metadata and transform the movie IDs
 in the same way:
 
 <<sparse-example-movies>>=
@@ -69,11 +75,11 @@ First few observations:
 X[:5, :10].todense()
 @
 
-Let's extract 200 clusters with Genie with respect to  cosine similarity between films' ratings
+Let's extract 200 clusters with Genie with respect to the cosine similarity between films' ratings
 as given by users (two movies considered similar if they get similar reviews).
 Sparse inputs are supported by the approximate version of the algorithm
 which  relies on the
-near-neighbour search routines implemented in the `nmslib` package.
+near-neighbour search routines implemented in the *nmslib* package.
 
 
 <<sparse-example-cluster>>=
@@ -95,10 +101,10 @@ movies.loc[movies.cluster == int(which_cluster)].title.sort_values()
 
 The above was performed on an abridged version of the MovieLens dataset.
 The project's `website <https://grouplens.org/datasets/movielens/latest/>`_
-also features a full database that yields a 53889x283228 ratings table
-(with 27753444  non-zero elements) -- such a matrix would definitely
+also features a full database that yields a 53,889x283,228 ratings table
+(with 27,753,444  non-zero elements) -- such a matrix would definitely
 not fit into our RAM if it was in the dense form.
-Determining the whole cluster hierarchy takes only 144 secs.
+Determining the whole cluster hierarchy takes only 144 seconds.
 Here is one of 500 clusters extracted:
 
 .. code::

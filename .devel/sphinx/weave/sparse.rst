@@ -6,6 +6,12 @@ To illustrate how *genieclust* handles
 let's perform a simple exercise in movie recommendation based on
 `MovieLens <https://grouplens.org/datasets/movielens/latest/>`_ data.
 
+.. important::
+
+    Make sure that the *nmslib* package (an optional dependency) is installed.
+
+
+
 
 .. code-block:: python
 
@@ -45,7 +51,7 @@ and map the movie IDs to consecutive integers.
 
 
 
-Then we read the movie meta data and transform the movie IDs
+Then we read the movie metadata and transform the movie IDs
 in the same way:
 
 
@@ -110,11 +116,11 @@ First few observations:
 
 
 
-Let's extract 200 clusters with Genie with respect to  cosine similarity between films' ratings
+Let's extract 200 clusters with Genie with respect to the cosine similarity between films' ratings
 as given by users (two movies considered similar if they get similar reviews).
 Sparse inputs are supported by the approximate version of the algorithm
 which  relies on the
-near-neighbour search routines implemented in the `nmslib` package.
+near-neighbour search routines implemented in the *nmslib* package.
 
 
 
@@ -152,6 +158,7 @@ Here are the members of an example cluster:
     ## 2084                                     Bowfinger (1999)
     ## 2190                                Boys Don't Cry (1999)
     ## 2888                                     Cell, The (2000)
+    ## 832                                     Doors, The (1991)
     ## 955                                      Duck Soup (1933)
     ## 836                     E.T. the Extra-Terrestrial (1982)
     ## 1960                                      Election (1999)
@@ -180,6 +187,7 @@ Here are the members of an example cluster:
     ## 898     Star Wars: Episode V - The Empire Strikes Back...
     ## 911     Star Wars: Episode VI - Return of the Jedi (1983)
     ## 934                                     Sting, The (1973)
+    ## 2030                                 Summer of Sam (1999)
     ## 987                             This Is Spinal Tap (1984)
     ## 2174                                   Three Kings (1999)
     ## 839                                        Top Gun (1986)
@@ -195,10 +203,10 @@ Here are the members of an example cluster:
 
 The above was performed on an abridged version of the MovieLens dataset.
 The project's `website <https://grouplens.org/datasets/movielens/latest/>`_
-also features a full database that yields a 53889x283228 ratings table
-(with 27753444  non-zero elements) -- such a matrix would definitely
+also features a full database that yields a 53,889x283,228 ratings table
+(with 27,753,444  non-zero elements) -- such a matrix would definitely
 not fit into our RAM if it was in the dense form.
-Determining the whole cluster hierarchy takes only 144 secs.
+Determining the whole cluster hierarchy takes only 144 seconds.
 Here is one of 500 clusters extracted:
 
 .. code::

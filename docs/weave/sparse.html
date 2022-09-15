@@ -78,7 +78,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.0
+              Python and R Package<br />    v1.1.1
           </div>
 
 <!--
@@ -235,6 +235,10 @@
 <a class="reference external" href="https://en.wikipedia.org/wiki/Sparse_matrix">sparse data</a>,
 let’s perform a simple exercise in movie recommendation based on
 <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">MovieLens</a> data.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Make sure that the <em>nmslib</em> package (an optional dependency) is installed.</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -258,7 +262,7 @@ and map the movie IDs to consecutive integers.</p>
 <span class="c1">## 4       0       46     5.0  964982931</span>
 </pre></div>
 </div>
-<p>Then we read the movie meta data and transform the movie IDs
+<p>Then we read the movie metadata and transform the movie IDs
 in the same way:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">movies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;ml-9-2018-small/movies.csv&quot;</span><span class="p">)</span>
 <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;movieId&quot;</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
@@ -300,11 +304,11 @@ in the same way:</p>
 <span class="c1">## dtype=float32)</span>
 </pre></div>
 </div>
-<p>Let’s extract 200 clusters with Genie with respect to  cosine similarity between films’ ratings
+<p>Let’s extract 200 clusters with Genie with respect to the cosine similarity between films’ ratings
 as given by users (two movies considered similar if they get similar reviews).
 Sparse inputs are supported by the approximate version of the algorithm
 which  relies on the
-near-neighbour search routines implemented in the <cite>nmslib</cite> package.</p>
+near-neighbour search routines implemented in the <em>nmslib</em> package.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">genieclust</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">exact</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">affinity</span><span class="o">=</span><span class="s2">&quot;cosinesimil_sparse&quot;</span><span class="p">)</span>
 <span class="n">movies</span><span class="p">[</span><span class="s2">&quot;cluster&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -329,6 +333,7 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 <span class="c1">## 2084                                     Bowfinger (1999)</span>
 <span class="c1">## 2190                                Boys Don&#39;t Cry (1999)</span>
 <span class="c1">## 2888                                     Cell, The (2000)</span>
+<span class="c1">## 832                                     Doors, The (1991)</span>
 <span class="c1">## 955                                      Duck Soup (1933)</span>
 <span class="c1">## 836                     E.T. the Extra-Terrestrial (1982)</span>
 <span class="c1">## 1960                                      Election (1999)</span>
@@ -357,6 +362,7 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 <span class="c1">## 898     Star Wars: Episode V - The Empire Strikes Back...</span>
 <span class="c1">## 911     Star Wars: Episode VI - Return of the Jedi (1983)</span>
 <span class="c1">## 934                                     Sting, The (1973)</span>
+<span class="c1">## 2030                                 Summer of Sam (1999)</span>
 <span class="c1">## 987                             This Is Spinal Tap (1984)</span>
 <span class="c1">## 2174                                   Three Kings (1999)</span>
 <span class="c1">## 839                                        Top Gun (1986)</span>
@@ -368,10 +374,10 @@ near-neighbour search routines implemented in the <cite>nmslib</cite> package.</
 </div>
 <p>The above was performed on an abridged version of the MovieLens dataset.
 The project’s <a class="reference external" href="https://grouplens.org/datasets/movielens/latest/">website</a>
-also features a full database that yields a 53889x283228 ratings table
-(with 27753444  non-zero elements) – such a matrix would definitely
+also features a full database that yields a 53,889x283,228 ratings table
+(with 27,753,444  non-zero elements) – such a matrix would definitely
 not fit into our RAM if it was in the dense form.
-Determining the whole cluster hierarchy takes only 144 secs.
+Determining the whole cluster hierarchy takes only 144 seconds.
 Here is one of 500 clusters extracted:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## 13327                       Blackadder Back &amp; Forth (1999)</span>
 <span class="c1">## 13328                  Blackadder&#39;s Christmas Carol (1988)</span>
@@ -423,7 +429,7 @@ Here is one of 500 clusters extracted:</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2022-09-12T12:14:43+1000.
+        Last updated on 2022-09-15T11:51:18+1000.
       </span>
 
 

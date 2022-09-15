@@ -139,7 +139,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="genieclust",
-    version="1.1.0",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
+    version="1.1.1",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
     description="Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -153,10 +153,10 @@ setuptools.setup(
         "cython",
         "matplotlib",
         "scikit-learn",
-        "nmslib"  # nmslib does not build on 32bit Windows...
       ],
     extras_require={
-        "mlpack": ["mlpack"]  # as of 2021-04-22, mlpack is not available for Python 3.9
+        "nmslib": ["nmslib"],  # nmslib does not build on 32bit Windows...
+        "mlpack": ["mlpack"]   # as of 2021-04-22, mlpack is not available for Python 3.9
     },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",

@@ -3,4 +3,3 @@ scipy
 cython
 matplotlib
 scikit-learn
-nmslib

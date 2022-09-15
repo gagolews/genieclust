@@ -6,7 +6,12 @@ data. Let's perform an example grouping based
 on `Levenshtein's <https://en.wikipedia.org/wiki/Levenshtein_distance>`_ edit
 distance.
 
-We'll use one of the benchmark datasets mentioned in :cite:`genieins`
+.. important::
+
+    Make sure that the *nmslib* package (an optional dependency) is installed.
+
+
+We will use one of the benchmark datasets mentioned in :cite:`genieins`
 as an example:
 
 
@@ -46,7 +51,7 @@ print(n_clusters)
 
 
 Clustering in the string domain relies on the
-near-neighbour search routines implemented in the `nmslib` package.
+near-neighbour search routines implemented in the *nmslib* package.
 
 <<string-example-cluster>>=
 import genieclust

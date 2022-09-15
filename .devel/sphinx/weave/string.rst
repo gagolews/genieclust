@@ -6,7 +6,12 @@ data. Let's perform an example grouping based
 on `Levenshtein's <https://en.wikipedia.org/wiki/Levenshtein_distance>`_ edit
 distance.
 
-We'll use one of the benchmark datasets mentioned in :cite:`genieins`
+.. important::
+
+    Make sure that the *nmslib* package (an optional dependency) is installed.
+
+
+We will use one of the benchmark datasets mentioned in :cite:`genieins`
 as an example:
 
 
@@ -27,7 +32,7 @@ as an example:
 
 ::
 
-    ## /tmp/ipykernel_56999/1616393685.py:3: DeprecationWarning: `np.str` is
+    ## /tmp/ipykernel_15571/1616393685.py:3: DeprecationWarning: `np.str` is
     ## a deprecated alias for the builtin `str`. To silence this warning, use
     ## `str` by itself. Doing this will not modify any behavior and is safe.
     ## If you specifically wanted the numpy scalar type, use `np.str_` here.
@@ -64,7 +69,7 @@ by an expert:
 
 
 Clustering in the string domain relies on the
-near-neighbour search routines implemented in the `nmslib` package.
+near-neighbour search routines implemented in the *nmslib* package.
 
 
 .. code-block:: python

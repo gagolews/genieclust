@@ -35,7 +35,7 @@ for datasets of millions of points, can be completed within
 Therefore, it is capable of solving **extreme clustering tasks**
 (large datasets with any number of clusters to detect)
 on data that fit into memory.
-Thanks to the use of *nmslib* {cite}`nmslib`,
+Thanks to the use of *nmslib* {cite}`nmslib` (if available),
 sparse or string inputs are also supported.
 
 Genie also allows clustering with respect to mutual reachability distances

@@ -75,11 +75,12 @@ news:
 html: python r news weave rd2myst weave-examples
 	rm -rf .devel/sphinx/_build/
 	cd .devel/sphinx && make html
+	rm -rf .devel/sphinx/_build/html/_sources
 	@echo "*** Browse the generated documentation at"\
 	    "file://`pwd`/.devel/sphinx/_build/html/index.html"
 
 docs: html
-	@echo "*** Making 'docs' is only recommended when publishing an"\
+	@echo "*** Making 'docs' is only recommended when publishing the"\
 	    "official release, because it updates the package homepage."
 	@echo "*** Therefore, we check if the package version is like 1.2.3"\
 	    "and not 1.2.2.9007."
