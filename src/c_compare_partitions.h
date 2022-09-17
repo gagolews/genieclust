@@ -403,7 +403,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 
 /*! Computes the normalised accuracy score between two partitions
  *
- *  Normalised accuracy is (Accuracy(C[:,sigma])-1.0/yc)/(1.0-1.0/yc),
+ *  Normalised accuracy is (Accuracy(C[:,sigma])-1.0/max(xc,yc))/(1.0-1.0/max(xc,yc)),
  *  where C[:,sigma] is a version of the input confusion matrix
  *  with columns permuted based on the solution to the
  *  maximal linear sum assignment problem.
@@ -422,9 +422,13 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  Meila M., Heckerman D., An experimental comparison of model-based clustering
  *  methods, Machine Learning 42, 2001, pp. 9--29, doi:10.1023/A:1007648401407.
  *
+ *  Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
+ *  cluster validity measure, 2022, submitted for publication.
+ *  URL: https://arxiv.org/pdf/2209.02935.pdf
+ *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
- *  @param xc number of rows in C, xc <= yc
+ *  @param xc number of rows in C
  *  @param yc number of columns in C
  *
  *  @return the computed score
@@ -432,23 +436,30 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 template<class T>
 double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
-    GENIECLUST_ASSERT(xc <= yc);
-
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (Py_ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
-    std::vector<Py_ssize_t> output_col4row(xc);
+    // if C is not a square matrix, treat the missing columns as if they were filled with 0s
+    Py_ssize_t xyc = std::max(xc, yc);
+    std::vector<double> S(xyc*xyc, 0);
+    for (Py_ssize_t i=0; i<xc; ++i) {
+        for (Py_ssize_t j=0; j<yc; ++j) {
+            S[i*xyc+j] = (double)C[i*yc+j];
+        }
+    }
 
-    Py_ssize_t retval = linear_sum_assignment(C, xc, yc, output_col4row.data(), false); // minimise=false
+    std::vector<Py_ssize_t> output_col4row(xyc);
+
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc, output_col4row.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
     double t = 0.0;
-    for (Py_ssize_t i=0; i<xc; ++i)
-        t += C[yc*i+output_col4row[i]];
+    for (Py_ssize_t i=0; i<xyc; ++i)
+        t += S[xyc*i+output_col4row[i]];
 
     double a = (double)t/(double)n;
-    return (a*yc-1.0)/(yc-1.0);
+    return (a*xyc-1.0)/(xyc-1.0);
 
 }
 
@@ -464,10 +475,11 @@ double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *
  *  Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
  *  cluster validity measure, 2022, submitted for publication.
+ *  URL: https://arxiv.org/pdf/2209.02935.pdf
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
- *  @param xc number of rows in C, xc == yc
+ *  @param xc number of rows in C
  *  @param yc number of columns in C
  *
  *  @return the computed score
@@ -475,32 +487,32 @@ double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 template<class T>
 double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
-    GENIECLUST_ASSERT(xc == yc);
-
-    std::vector<double> sum_x(xc);
+    std::vector<double> sum_x(xc, 0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
             sum_x[i] += C[i*yc+j];
         }
     }
 
-    std::vector<double> S(xc*yc);
+    // if xc>yc, treat C as if its missing columns were filled with 0s
+    Py_ssize_t yc2 = std::max(xc, yc);
+
+    std::vector<double> S(xc*yc2, 0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            S[i*yc+j] = (double)C[i*yc+j]/(double)sum_x[i];
+            S[i*yc2+j] = (double)C[i*yc+j]/(double)sum_x[i];
         }
     }
 
     std::vector<Py_ssize_t> output_col4row2(xc);
-    Py_ssize_t retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xc, yc2, output_col4row2.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
     double t = 0.0;
     for (Py_ssize_t i=0; i<xc; ++i)
-        t += S[yc*i+output_col4row2[i]];
+        t += S[yc2*i+output_col4row2[i]];
 
-    return (t-1.0)/(yc-1.0);
-
+    return (t-1.0)/(xc-1.0);
 }
 
 
@@ -515,11 +527,11 @@ double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *
  *  Rezaei M., Franti P., Set matching measures for external cluster validity,
  *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
- *  doi:10.1109/TKDE.2016.2551240
+ *  DOI: 10.1109/TKDE.2016.2551240
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
- *  @param xc number of rows in C, xc <= yc
+ *  @param xc number of rows in C
  *  @param yc number of columns in C
  *
  *  @return the computed scores
@@ -528,14 +540,16 @@ template<class T>
 CCompareSetMatchingResult Ccompare_partitions_psi(
     const T* C, Py_ssize_t xc, Py_ssize_t yc
 ) {
-    GENIECLUST_ASSERT(xc <= yc);
 
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (Py_ssize_t ij=0; ij<xc*yc; ++ij)
         n += C[ij];
 
-    std::vector<double> sum_x(xc);
-    std::vector<double> sum_y(yc);
+    // if C is not a square matrix, treat the missing columns as if they were filled with 0s
+    Py_ssize_t xyc = std::max(xc, yc);
+
+    std::vector<double> sum_x(xyc, 0);
+    std::vector<double> sum_y(xyc, 0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
             sum_x[i] += C[i*yc+j];
@@ -543,34 +557,35 @@ CCompareSetMatchingResult Ccompare_partitions_psi(
         }
     }
 
-    std::vector<double> S(xc*yc);
+    std::vector<double> S(xyc*xyc, 0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            S[i*yc+j] = (double)C[i*yc+j]/(double)std::max(sum_x[i], sum_y[j]);
+            S[i*xyc+j] = (double)C[i*yc+j]/(double)std::max(sum_x[i], sum_y[j]);
         }
     }
-    std::vector<Py_ssize_t> output_col4row2(xc);
-    Py_ssize_t retval = linear_sum_assignment(S.data(), xc, yc, output_col4row2.data(), false); // minimise=false
+
+    std::vector<Py_ssize_t> output_col4row2(xyc);
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc, output_col4row2.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
     double s = 0.0;
-    for (Py_ssize_t i=0; i<xc; ++i)
-        s += S[yc*i+output_col4row2[i]];
+    for (Py_ssize_t i=0; i<xyc; ++i)
+        s += S[xyc*i+output_col4row2[i]];
 
     double es;
     std::sort(sum_x.begin(), sum_x.end());
     std::sort(sum_y.begin(), sum_y.end());
     es = 0.0;
-    for (Py_ssize_t i=0; i<xc; ++i)
-        es += sum_y[yc-i-1]*sum_x[xc-i-1]/(double)std::max(sum_x[xc-i-1], sum_y[yc-i-1]);
+    for (Py_ssize_t i=0; i<xyc; ++i)
+        es += sum_y[xyc-i-1]*sum_x[xyc-i-1]/(double)std::max(sum_x[xyc-i-1], sum_y[xyc-i-1]);
     es /= (double)n;
 
     CCompareSetMatchingResult res;
 
-    res.psi  = (s-es)/(yc-es);
+    res.psi  = (s-es)/(xyc-es);
     if (res.psi<0.0) res.psi = 0.0;
 
-    res.spsi  = (s-1.0)/(yc-1.0);
+    res.spsi  = (s-1.0)/(xyc-1.0);
     if (res.spsi<0.0) res.spsi = 0.0;
 
     return res;

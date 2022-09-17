@@ -30,6 +30,7 @@ import os.path
 import glob
 import os
 import sys
+import re
 
 
 cython_modules = {
@@ -136,10 +137,15 @@ ext_kwargs = dict(
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+with open("genieclust/__init__.py", "r") as fh:
+    __version__ = re.search("(?m)^\\s*__version__\\s*=\\s*[\"']([0-9.]+)[\"']", fh.read())
+    if __version__ is None:
+        raise ValueError("the package version could not be read")
+    __version__ = __version__.group(1)
 
 setuptools.setup(
     name="genieclust",
-    version="1.1.1",  # see also genieclust/__init__.py; e.g., 1.0.0.9001
+    version=__version__,
     description="Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection",
     long_description=long_description,
     long_description_content_type="text/markdown",

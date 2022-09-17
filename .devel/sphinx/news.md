@@ -1,6 +1,18 @@
 # What Is New in *genieclust*
 
 
+## 1.1.1.9001 (under development)
+
+*  [Python and R] `adjusted_asymmetric_accuracy`
+   now accepts confusion matrices with fewer columns than rows.
+   Such "missing" columns are now treated as if they were filled with 0s.
+
+*  [Python and R] `pair_sets_index`, and `normalized_accuracy` return
+   the same results for nonsymmetric confusion matrices and transposes thereof.
+
+*  ...
+
+
 ## 1.1.1 (2022-09-15)
 
 *  [Python] #75: `nmslib` is now optional.

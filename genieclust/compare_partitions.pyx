@@ -325,7 +325,7 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
 
     C : ndarray
         A ``c_contiguous`` confusion matrix (contingency table)
-        with :math:`K` rows and :math:`L` columns, where :math:`K \\le L`.
+        with :math:`K` rows and :math:`L` columns.
 
 
     Returns
@@ -355,7 +355,7 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
         ``'spsi'``
             Simplified pair sets index
         ``'aaa'``
-            Adjusted asymmetric accuracy (or ``nan`` if :math:`K \\neq L`);
+            Adjusted asymmetric accuracy;
             it is assumed that rows in `C` represent the ground-truth
             partition
 
@@ -397,8 +397,8 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     nonempty and pairwise disjoint subsets.
     For instance, these can be two clusterings of a dataset with :math:`n`
     observations specified as vectors of labels. Moreover, let `C` be the
-    confusion matrix (with :math:`K` rows and :math:`L` columns,
-    :math:`K \\leq L`) corresponding to `x` and `y`; see also
+    confusion matrix with :math:`K` rows and :math:`L` columns,
+    corresponding to `x` and `y`; see also
     :func:`confusion_matrix`.
 
     This function implements a few scores that aim to quantify
@@ -418,8 +418,7 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
     represent the same 2-partition.
 
-    `adjusted_asymmetric_accuracy` [2]_
-    only accepts :math:`K = L`. It is an external cluster validity measure
+    `adjusted_asymmetric_accuracy` [2]_ is an external cluster validity measure
     which assumes that the label vector `x` (or rows in the confusion
     matrix) represents the reference (ground truth) partition.
     It is a corrected-for-chance summary of the proportion of correctly
@@ -430,16 +429,16 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     where :math:`C` is the confusion matrix.
 
     `normalized_accuracy` is a measure defined as
-    :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/L)/(1-1/L)`,
+    :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/\\max(K,L))/(1-1/\\max(K,L))`,
     where :math:`C_\\sigma` is a version of the confusion matrix
-    for given `x` and `y`, :math:`K \\leq L`, with columns permuted
+    for given `x` and `y` with columns permuted
     based on the solution to the maximal linear sum assignment problem.
     Note that the :math:`\\mathrm{Accuracy}(C_\\sigma)` part
     is sometimes referred to as set-matching classification
     rate or pivoted accuracy.
 
     `pair_sets_index` gives the Pair Sets Index (PSI)
-    adjusted for chance [3]_, :math:`K \\leq L`.
+    adjusted for chance [3]_.
     Pairing is based on the solution to the linear sum assignment problem
     of a transformed version of the confusion matrix.
     Its simplified version assumes E=1 in the definition of the index,
@@ -515,9 +514,6 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     """
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    if xc > yc:
-        raise ValueError("number of rows in the confusion matrix \
-            must be less than or equal to the number of columns")
 
     cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
 
@@ -956,9 +952,6 @@ cpdef double normalized_accuracy(x, y):
     cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    if xc > yc:
-        raise ValueError("Number of rows in the confusion matrix "
-            "must be less than or equal to the number of columns.")
     return c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
 
 
@@ -1007,13 +1000,14 @@ cpdef double adjusted_asymmetric_accuracy(x, y):
     -----
 
     Let :math:`C` be a confusion matrix with :math:`K` rows
-    and :math:`K` columns.
+    and :math:`L` columns.
     AAA is an external cluster validity measure.
     It is a corrected-for-chance summary of the proportion of correctly
     classified points in each cluster (with cluster matching based on the
     solution to the maximal linear sum assignment problem; see
     :func:`normalize_confusion_matrix`), given by:
     :math:`(\\max_\\sigma \\sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)`.
+    Missing columns are treated as if they were filled with 0s.
 
     Note that this measure is not symmetric, i.e., ``index(x, y)`` does not
     have to be equal to ``index(y, x)``.
@@ -1034,9 +1028,6 @@ cpdef double adjusted_asymmetric_accuracy(x, y):
     cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    if xc != yc:
-        raise ValueError("Number of rows in the confusion matrix "
-            "must be equal to the number of columns.")
     return c_compare_partitions.Ccompare_partitions_aaa(&C[0,0], xc, yc)
 
 
@@ -1099,9 +1090,6 @@ cpdef double pair_sets_index(x, y, bint simplified=False):
     cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    if xc > yc:
-        raise ValueError("Number of rows in the confusion matrix "
-            "must be less than or equal to the number of columns.")
 
     if simplified:
         return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).spsi

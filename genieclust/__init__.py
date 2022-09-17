@@ -20,6 +20,9 @@ genieclust Python Package
 #                                                                              #
 # ############################################################################ #
 
+# version string, e.g., "1.0.0.9001" or "1.1.1"
+__version__ = "1.1.1.9001"
+
 
 from . import plots
 from . import inequity
@@ -27,5 +30,3 @@ from . import tools
 from . import compare_partitions
 from . import internal
 from .genie import Genie, GIc
-
-__version__ = "1.1.1"  # see also ../setup.py; e.g., "1.0.0.9001"

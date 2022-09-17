@@ -31,9 +31,9 @@ using namespace Rcpp;
  *  @return flat, contiguous c_style vector representing the contingency table
  *   with xc rows and yc columns
  */
-std::vector<int> get_contingency_matrix(RObject x, RObject y,
-                                          Py_ssize_t* xc, Py_ssize_t* yc)
-{
+std::vector<int> get_contingency_matrix(
+    RObject x, RObject y, Py_ssize_t* xc, Py_ssize_t* yc
+) {
     if (Rf_isMatrix(x)) {
         if (!Rf_isNull(y))
             stop("if x is a contingency matrix, y must be NULL");
@@ -114,7 +114,7 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //'
 //'
 //' \code{adjusted_asymmetric_accuracy()} (Gagolewski, 2022)
-//' only accepts \eqn{K = L}. It is an external cluster validity measure
+//' is an external cluster validity measure
 //' which assumes that the label vector \code{x} (or rows in the confusion
 //' matrix) represents the reference (ground truth) partition.
 //' It is a corrected-for-chance summary of the proportion of correctly
@@ -125,15 +125,15 @@ std::vector<int> get_contingency_matrix(RObject x, RObject y,
 //' where \eqn{C} is the confusion matrix.
 //'
 //' \code{normalized_accuracy()} is defined as
-//' \eqn{(Accuracy(C_\sigma)-1/L)/(1-1/L)}, where \eqn{C_\sigma} is a version
-//' of the confusion matrix for given \code{x} and \code{y},
-//' \eqn{K \leq L}, with columns permuted based on the solution to the
+//' \eqn{(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))}, where \eqn{C_\sigma} is a version
+//' of the confusion matrix for given \code{x} and \code{y}
+//' with columns permuted based on the solution to the
 //' maximal linear sum assignment problem.
 //' The \eqn{Accuracy(C_\sigma)} part is sometimes referred to as
 //' set-matching classification rate or pivoted accuracy.
 //'
 //' \code{pair_sets_index()} gives the Pair Sets Index (PSI)
-//' adjusted for chance (Rezaei, Franti, 2016), \eqn{K \leq L}.
+//' adjusted for chance (Rezaei, Franti, 2016).
 //' Pairing is based on the solution to the linear sum assignment problem
 //' of a transformed version of the confusion matrix.
 //' Its simplified version assumes E=1 in the definition of the index,

@@ -47,11 +47,3 @@ for (score in scores) {
         }
     }
 }
-
-x <- c(1, 1, 1, 2, 2, 2, 3, 2, 1)
-y <- c(1, 1, 1, 2, 2, 2, 3, 4, 4)
-expect_error(normalized_accuracy(y, x))
-expect_error(pair_sets_index(y, x))
-expect_error(pair_sets_index(y, x, TRUE))
-expect_error(adjusted_asymmetric_accuracy(y, x))
-expect_true(mi_score(x, y) >= 0)
