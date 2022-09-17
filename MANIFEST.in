@@ -1,4 +1,4 @@
-include README.rst
+include README.md
 include LICENSE
 include NEWS
 include src/c_*.h

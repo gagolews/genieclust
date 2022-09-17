@@ -2,6 +2,7 @@
 LICENSE
 MANIFEST.in
 NEWS
+README.md
 requirements.txt
 setup.cfg
 setup.py
