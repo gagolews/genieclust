@@ -1,10 +1,9 @@
 Benchmarks (How Good Is It?)
 ============================
 
-
 In this section we evaluate the usefulness of different clustering algorithms.
-We consider the `Benchmark Suite for Clustering Algorithms — Version 1 <https://github.com/gagolews/clustering-benchmarks>`_
-:cite:`clustering_benchmarks_v1` which aggregates datasets from various sources,
+We use our `framework for benchmarking clustering algorithms (benchmark suite version 1.0.1) <https://github.com/gagolews/clustering-benchmarks>`_
+:cite:`clustering-benchmarks` which aggregates datasets from various sources,
 including, but not limited to :cite:`uci,kmsix,fcps,graves,chameleon,xnn`.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study

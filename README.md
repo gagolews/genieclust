@@ -197,7 +197,9 @@ cluster validity measure*, under review (preprint),
 [DOI: 10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
 
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-2022, <https://clustering-benchmarks.gagolewski.com>.
+2022, <https://clustering-benchmarks.gagolewski.com>,
+[DOI: 10.48550/arXiv.2209.09493](https://doi.org/10.48550/arXiv.2209.09493),
+under review (preprint).
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,

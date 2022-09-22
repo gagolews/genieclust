@@ -245,7 +245,7 @@
 </div>
 <p>Let’s load an example dataset that can be found
 the on <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id41" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> package’s project site:</p>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id43" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> package’s project site:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;hdbscan&quot;</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.data.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.labels0.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
@@ -273,7 +273,7 @@ Labels -1 denote noise points (light grey markers).</p>
 <p>The <cite>genieclust</cite> package allows for clustering with respect
 to a mutual reachability distance,
 <span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id12" title="R.J.G.B. Campello, D. Moulavi, and J. Sander. Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172, 2013. doi:10.1007/978-3-642-37456-2_14.">CMS13</a>]</span>.
+known from the HDBSCAN* algorithm <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id14" title="R.J.G.B. Campello, D. Moulavi, and J. Sander. Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172, 2013. doi:10.1007/978-3-642-37456-2_14.">CMS13</a>]</span>.
 It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
 <p>Here are the effects of playing with the <cite>M</cite> parameter
@@ -324,9 +324,9 @@ but now with respect to the original distance (here: Euclidean):</p>
 </figure>
 <p>Contrary to an excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id41" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> and which also relies on a minimum spanning tree
+package <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id43" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> and which also relies on a minimum spanning tree
 with respect to <span class="math notranslate nohighlight">\(d_M\)</span>,
-we still have the hierarchical Genie <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id8" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> algorithm under the hood here.
+we still have the hierarchical Genie <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id10" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> algorithm under the hood here.
 This means we can ask for any number of clusters and get what we asked for.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>
@@ -417,7 +417,7 @@ we can obtain a partition that is even closer to the reference one:</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2022-09-17T17:13:14+1000.
+        Last updated on 2022-09-22T18:55:42+1000.
       </span>
 
 

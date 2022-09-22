@@ -114,23 +114,24 @@ The implemented algorithms include:
 
 Other features:
 
--  inequality measures: the normalised Gini, Bonferroni,
-   and De Vergottini indices;
+-   inequality measures: the normalised Gini, Bonferroni,
+    and De Vergottini indices;
 
--  external cluster validity measures (see {cite}`aaa` for discussion):
-   adjusted asymmetric accuracy and partition similarity scores such as
-   normalised accuracy, pair sets index (PSI) {cite}`psi`,
-   adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
-   adjusted/normalised/unadjusted mutual information (MI) indices;
+-   external cluster validity measures (see {cite}`aaa,clustering-benchmarks`
+    for discussion):
+    adjusted asymmetric accuracy and partition similarity scores such as
+    normalised accuracy, pair sets index (PSI) {cite}`psi`,
+    adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
+    adjusted/normalised/unadjusted mutual information (MI) indices;
 
--  internal cluster validity measures (see {cite}`cvi` for discussion):
-   the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
-   generalised Dunn indices, etc.;
+-   internal cluster validity measures (see {cite}`cvi` for discussion):
+    the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
+    generalised Dunn indices, etc.;
 
--  *(Python only)* union-find (disjoint sets) data structures (with
-   extensions);
+-   *(Python only)* union-find (disjoint sets) data structures (with
+    extensions);
 
--  *(Python only)* some R-like plotting functions.
+-   *(Python only)* some R-like plotting functions.
 
 
 
