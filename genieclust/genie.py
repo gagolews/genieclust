@@ -332,7 +332,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
             if mst_dist is None or mst_ind is None:
                 _res = mlpack.emst(
-                    input=X,
+                    X,
                     leaf_size=cur_state["mlpack_leaf_size"],
                     naive=False,
                     copy_all_inputs=False,
