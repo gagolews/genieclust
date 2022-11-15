@@ -179,6 +179,14 @@ NumericMatrix internal_mst_default(
     NumericMatrix ret;
 
     CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
+
+    for (Py_ssize_t i=0; i<n; i++) {
+        for (Py_ssize_t j=0; j<d; j++) {
+            if (!std::isfinite(X2(i,j)))
+                Rf_error("All elements in the input matrix must be finite/non-missing.");
+        }
+    }
+
     CDistance<T>* D = NULL;
     if (distance == "euclidean" || distance == "l2")
         D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));

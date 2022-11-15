@@ -70,6 +70,12 @@
 #define GENIECLUST_PRINT_int(fmt, val) fprintf(stderr, (fmt), (int)(val));
 #endif
 
+#if GENIECLUST_R
+#define GENIECLUST_PRINT_float(fmt, val) REprintf((fmt), (double)(val));
+#else
+#define GENIECLUST_PRINT_float(fmt, val) fprintf(stderr, (fmt), (double)(val));
+#endif
+
 
 #if GENIECLUST_R
 typedef ssize_t         Py_ssize_t;
