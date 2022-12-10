@@ -1,6 +1,15 @@
 # What Is New in *genieclust*
 
 
+## 1.1.2.9xxx (under development)
+
+*  [R] `mst.default` throws an error if any element in the input matrix
+   is missing/infinite.
+
+*  [Python] Fixed call to `mlpack.emst` that no longer worked
+   with the new version of `mlpack`.
+
+
 ## 1.1.2 (2022-09-17)
 
 *  [Python and R] `adjusted_asymmetric_accuracy`
