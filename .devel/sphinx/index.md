@@ -93,6 +93,11 @@ cutree(h, k=2)
 # or simply:  genie(X, k=2)
 ```
 
+::::{note}
+*To learn more about R, check out Marek's recent open-access (free!) textbook*
+[Deep R Programming](https://deepr.gagolewski.com/)
+{cite}`deepr`.
+::::
 
 
 ## Package Features
@@ -203,6 +208,7 @@ rapi
 
 Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com>
 Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
+Deep R Programming <https://deepr.gagolewski.com>
 ::::
 
 

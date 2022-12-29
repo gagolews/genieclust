@@ -157,3 +157,7 @@ external cluster validity measures.
 For more details, refer to the package's {any}`documentation <../rapi>`.
 Don't forget to check out the Python examples regarding noise points detection,
 benchmarking, timing, etc.
+
+*To learn more about R, check out Marek's recent open-access (free!) textbook*
+[Deep R Programming](https://deepr.gagolewski.com/)
+{cite}`deepr`.

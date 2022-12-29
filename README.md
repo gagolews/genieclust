@@ -83,6 +83,12 @@ cutree(h, k=2)
 # or genie(X, k=2)
 ```
 
+
+*To learn more about R, check out Marek's recent open-access (free!) textbook*
+[Deep R Programming](https://deepr.gagolewski.com/).
+
+
+
 The Python language version of **genieclust** has a familiar
 **scikit-learn**-like look-and-feel:
 
