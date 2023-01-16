@@ -4,7 +4,7 @@ Various plotting functions
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -20,6 +20,7 @@ Various plotting functions
 # ############################################################################ #
 
 
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.colors
 import numpy as np
@@ -29,10 +30,10 @@ import numpy as np
 
 # module globals:
 col = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5C710"] + \
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab10").colors]  + \
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20").colors]  + \
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20b").colors] + \
-    [matplotlib.colors.to_hex(c) for c in plt.cm.get_cmap("tab20c").colors]
+    [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab10"].colors]  + \
+    [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20"].colors]  + \
+    [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20b"].colors] + \
+    [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20c"].colors]
 
 mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 

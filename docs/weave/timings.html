@@ -80,7 +80,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.2
+              Python and R Package<br />    v1.1.3
           </div>
 
 <!--
@@ -149,6 +149,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul>
@@ -243,27 +244,27 @@
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
 <p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id34" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span> version 0.23.1
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id35" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span> version 0.23.1
 (<cite>sklearn.cluster.KMeans</cite>) for different number of threads
 (by default it uses all available resources;
 note that the number of restarts, <cite>n_init</cite>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
-<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id20" title="D. Müllner. fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18, 2013. doi:10.18637/jss.v053.i09.">Mul13</a>]</span>.</p>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id21" title="D. Müllner. fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18, 2013. doi:10.18637/jss.v053.i09.">Mul13</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
 pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id18" title="C.F. Olson. Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325, 1995. doi:10.1016/0167-8191(95)00017-I.">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id23" title="R.R. Curtin, M. Edel, M. Lozhnikov, Y. Mentekidis, S. Ghaisas, and S. Zhang. Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726, 2018. doi:10.21105/joss.00726.">CEL+18</a>]</span> provides a very fast
+method  <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id19" title="C.F. Olson. Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325, 1995. doi:10.1016/0167-8191(95)00017-I.">Ols95</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id24" title="R.R. Curtin, M. Edel, M. Lozhnikov, Y. Mentekidis, S. Ghaisas, and S. Zhang. Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726, 2018. doi:10.21105/joss.00726.">CEL+18</a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id24" title="W.B. March, P. Ram, and A.G. Gray. Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In Proc. 16th ACM SIGKDD'10, 603–612. 2010. doi:10.1145/1835804.1835882.">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id25" title="W.B. March, P. Ram, and A.G. Gray. Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In Proc. 16th ACM SIGKDD'10, 603–612. 2010. doi:10.1145/1835804.1835882.">MRG10</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
 Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id25" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+by <cite>nmslib</cite> <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id26" title="B. Naidan, L. Boytsov, Y. Malkov, and D. Novak. Non-metric space library (NMSLIB) manual, version 2.0. 2019. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">NBMN19</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
 such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
@@ -502,7 +503,7 @@ partitions’ cardinality.</p>
 </table>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id29" title="A. Kobren, N. Monath, A. Krishnamurthy, and A. McCallum. A hierarchical algorithm for extreme clustering. In Proc. 23rd ACM SIGKDD'17, 255–264. 2017. doi:10.1145/3097983.3098079.">KMKM17</a>]</span>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id30" title="A. Kobren, N. Monath, A. Krishnamurthy, and A. McCallum. A hierarchical algorithm for extreme clustering. In Proc. 23rd ACM SIGKDD'17, 255–264. 2017. doi:10.1145/3097983.3098079.">KMKM17</a>]</span>)
 problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality
@@ -739,13 +740,13 @@ a first run of the algorithm:</p>
 
   <div role="contentinfo">
     <p>
-        Copyright &#169; 2018–2022 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
+        Copyright &#169; 2018–2023 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
 
     Built with <a href="https://sphinx-doc.org/">Sphinx</a>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2022-09-22T18:55:42+1000.
+        Last updated on 2023-01-17T10:05:17+1100.
       </span>
 
 

@@ -5,7 +5,7 @@ genieclust Python Package
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -21,7 +21,7 @@ genieclust Python Package
 # ############################################################################ #
 
 # version string, e.g., "1.0.0.9001" or "1.1.1"
-__version__ = "1.1.2.9001"
+__version__ = "1.1.3"
 
 
 from . import plots

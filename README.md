@@ -157,7 +157,7 @@ Any contributions are welcome (e.g., Julia, Matlab, ...).
 
 ## License
 
-Copyright (C) 2018–2022 Marek Gagolewski <https://www.gagolewski.com>
+Copyright (C) 2018–2023 Marek Gagolewski <https://www.gagolewski.com>
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
@@ -188,6 +188,7 @@ Originally distributed under the GNU Affero General Public License Version 3.
 Gagolewski M., genieclust: Fast and robust hierarchical clustering,
 *SoftwareX* **15**, 2021, 100722.
 [DOI: 10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
+<https://genieclust.gagolewski.com>.
 
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, *Information
@@ -202,10 +203,10 @@ Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
 cluster validity measure*, under review (preprint),
 [DOI: 10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
 
-Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-2022, <https://clustering-benchmarks.gagolewski.com>,
-[DOI: 10.48550/arXiv.2209.09493](https://doi.org/10.48550/arXiv.2209.09493),
-under review (preprint).
+Gagolewski M., A Framework for Benchmarking Clustering Algorithms,
+*SoftwareX* **20**, 2022, 101270.
+[DOI: 10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270).
+<https://clustering-benchmarks.gagolewski.com>.
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,

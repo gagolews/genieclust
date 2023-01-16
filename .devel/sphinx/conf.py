@@ -1,4 +1,4 @@
-# Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
+# Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
 # Configuration file for the Sphinx documentation builder.
 
 import sphinx_rtd_theme
@@ -7,7 +7,7 @@ import genieclust
 pkg_name = "genieclust"
 pkg_title = "genieclust"
 pkg_version = genieclust.__version__
-copyright_year = "2018–2022"
+copyright_year = "2018–2023"
 html_baseurl = "https://genieclust.gagolewski.com/"
 github_url = "https://github.com/gagolews/genieclust/"
 github_star_repo = "gagolews/genieclust"

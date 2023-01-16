@@ -1,4 +1,4 @@
-# Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
+# Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
 
 .PHONY: python py-test py-check r r-check r r-build sphinx docs clean
 
@@ -49,7 +49,7 @@ r: r-autoconf
 r-test: r
 	Rscript -e 'source(".devel/tinytest.R")'
 
-r-build:
+r-build: r-autoconf
 	cd .. && R CMD build ${PKGNAME}
 
 r-check: stop-on-utf8 r-build

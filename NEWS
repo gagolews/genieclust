@@ -1,9 +1,9 @@
 # What Is New in *genieclust*
 
 
-## 1.1.2.9xxx (under development)
+## 1.1.3 (2023-01-17)
 
-*  [R] `mst.default` throws an error if any element in the input matrix
+*  [R] `mst.default` now throws an error if any element in the input matrix
    is missing/infinite.
 
 *  [Python] Fixed call to `mlpack.emst` that no longer worked
