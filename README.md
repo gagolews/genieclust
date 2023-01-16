@@ -5,7 +5,6 @@
 
 ![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
 ![genieclust for R](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg)
-![codecov](https://codecov.io/gh/gagolews/genieclust/branch/master/graph/badge.svg)
 
 
 > **Genie finds meaningful clusters quickly – even on large data sets.**
