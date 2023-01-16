@@ -7,8 +7,7 @@ env:
     # https://cibuildwheel.readthedocs.io/en/stable/options/
     # cp39-win_amd64
     # cp37-win32 cp38-win32 cp39-win32
-    # scipy not yet available for cp311*
-    CIBW_SKIP: cp2* pp* cp35* cp36* cp310-win32 cp311-win32 cp310-manylinux_i686 cp311-manylinux_i686 *-musllinux* cp311*
+    CIBW_SKIP: cp2* pp* cp35* cp36* cp310-win32 cp311-win32 cp310-manylinux_i686 cp311-manylinux_i686 *-musllinux*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
 
 #[ubuntu-latest, windows-latest, macos-latest]
@@ -28,7 +27,7 @@ jobs:
       - uses: actions/setup-python@v3
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.10.0
+        run: python -m pip install cibuildwheel==2.12.0
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse
