@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -162,7 +163,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -255,77 +256,77 @@
            <div itemprop="articleBody">
             
   <section class="tex2jax_ignore mathjax_ignore" id="gclust-hierarchical-clustering-algorithm-genie">
-<h1>gclust: Hierarchical Clustering Algorithm Genie<a class="headerlink" href="#gclust-hierarchical-clustering-algorithm-genie" title="Permalink to this heading"></a></h1>
+<h1>gclust: Hierarchical Clustering Algorithm Genie<a class="headerlink" href="#gclust-hierarchical-clustering-algorithm-genie" title="Permalink to this heading">¶</a></h1>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequity.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">https://github.com/gagolews/clustering-benchmarks</a>.</p>
 <p>The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN* algorithm (see Campello et al., 2013). If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i,j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i,k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other.</p>
 <p>The Genie correction together with the smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1 (note that <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN’s somewhat magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or the HDBSCAN’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
 </section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## Default S3 method:</span>
 <span class="nf">gclust</span><span class="p">(</span>
-  <span class="n">d</span><span class="p">,</span>
-  <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
-  <span class="n">distance</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s">&quot;l2&quot;</span><span class="p">,</span> <span class="s">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s">&quot;cityblock&quot;</span><span class="p">,</span> <span class="s">&quot;l1&quot;</span><span class="p">,</span> <span class="s">&quot;cosine&quot;</span><span class="p">),</span>
-  <span class="n">cast_float32</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
-  <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
-  <span class="kc">...</span>
+<span class="w">  </span><span class="n">d</span><span class="p">,</span>
+<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;manhattan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cityblock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cosine&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">cast_float32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+<span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;dist&#39;</span>
-<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;mst&#39;</span>
-<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
-<span class="nf">genie</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="kc">...</span><span class="p">)</span>
+<span class="nf">genie</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## Default S3 method:</span>
 <span class="nf">genie</span><span class="p">(</span>
-  <span class="n">d</span><span class="p">,</span>
-  <span class="n">k</span><span class="p">,</span>
-  <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
-  <span class="n">distance</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span> <span class="s">&quot;l2&quot;</span><span class="p">,</span> <span class="s">&quot;manhattan&quot;</span><span class="p">,</span> <span class="s">&quot;cityblock&quot;</span><span class="p">,</span> <span class="s">&quot;l1&quot;</span><span class="p">,</span> <span class="s">&quot;cosine&quot;</span><span class="p">),</span>
-  <span class="n">M</span> <span class="o">=</span> <span class="m">1L</span><span class="p">,</span>
-  <span class="n">postprocess</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="s">&quot;all&quot;</span><span class="p">),</span>
-  <span class="n">detect_noise</span> <span class="o">=</span> <span class="n">M</span> <span class="o">&gt;</span> <span class="m">1L</span><span class="p">,</span>
-  <span class="n">cast_float32</span> <span class="o">=</span> <span class="kc">TRUE</span><span class="p">,</span>
-  <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
-  <span class="kc">...</span>
+<span class="w">  </span><span class="n">d</span><span class="p">,</span>
+<span class="w">  </span><span class="n">k</span><span class="p">,</span>
+<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;manhattan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cityblock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cosine&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cast_float32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+<span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;dist&#39;</span>
 <span class="nf">genie</span><span class="p">(</span>
-  <span class="n">d</span><span class="p">,</span>
-  <span class="n">k</span><span class="p">,</span>
-  <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
-  <span class="n">M</span> <span class="o">=</span> <span class="m">1L</span><span class="p">,</span>
-  <span class="n">postprocess</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="s">&quot;all&quot;</span><span class="p">),</span>
-  <span class="n">detect_noise</span> <span class="o">=</span> <span class="n">M</span> <span class="o">&gt;</span> <span class="m">1L</span><span class="p">,</span>
-  <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
-  <span class="kc">...</span>
+<span class="w">  </span><span class="n">d</span><span class="p">,</span>
+<span class="w">  </span><span class="n">k</span><span class="p">,</span>
+<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+<span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;mst&#39;</span>
 <span class="nf">genie</span><span class="p">(</span>
-  <span class="n">d</span><span class="p">,</span>
-  <span class="n">k</span><span class="p">,</span>
-  <span class="n">gini_threshold</span> <span class="o">=</span> <span class="m">0.3</span><span class="p">,</span>
-  <span class="n">postprocess</span> <span class="o">=</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span> <span class="s">&quot;none&quot;</span><span class="p">,</span> <span class="s">&quot;all&quot;</span><span class="p">),</span>
-  <span class="n">detect_noise</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
-  <span class="n">verbose</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">,</span>
-  <span class="kc">...</span>
+<span class="w">  </span><span class="n">d</span><span class="p">,</span>
+<span class="w">  </span><span class="n">k</span><span class="p">,</span>
+<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
+<span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="arguments">
-<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading"></a></h2>
-<table class="colwidths-auto docutils align-default">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">¶</a></h2>
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p></p></th>
@@ -366,52 +367,53 @@
 </table>
 </section>
 <section id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading"></a></h2>
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading">¶</a></h2>
 <p>Note that, as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, <a class="reference internal" href="mst.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> will be called to compute an MST, which generally takes at most <span class="math notranslate nohighlight">\(O(n^2)\)</span> time (the algorithm we provide is parallelised, environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> controls the number of threads in use). However, see <a class="reference internal" href="emst_mlpack.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1.</p>
 <p>Given an minimum spanning tree, the algorithm runs in <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time. Therefore, if you want to test different <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s, (or <code class="docutils literal notranslate"><span class="pre">k</span></code>s), it is best to explicitly compute the MST first.</p>
 <p>According to the algorithm’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). Departures from ultrametricity are corrected by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
 </section>
 <section id="value">
-<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading"></a></h2>
+<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading">¶</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gclust()</span></code> computes the whole clustering hierarchy; it returns a list of class <code class="docutils literal notranslate"><span class="pre">hclust</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html"><code class="docutils literal notranslate"><span class="pre">hclust</span></code></a>. Use <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/cutree.html"><code class="docutils literal notranslate"><span class="pre">cutree</span></code></a> to obtain an arbitrary k-partition.</p>
 <p><code class="docutils literal notranslate"><span class="pre">genie()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">k</span></code>-partition - a vector with elements in 1,…,k, whose i-th element denotes the i-th input point’s cluster identifier. Missing values (<code class="docutils literal notranslate"><span class="pre">NA</span></code>) denote noise points (if <code class="docutils literal notranslate"><span class="pre">detect_noise</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>).</p>
 </section>
 <section id="author-s">
-<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading"></a></h2>
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23, <a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">doi:10.1016/j.ins.2016.05.003</a>.</p>
 <p>Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172, <a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">doi:10.1007/978-3-642-37456-2_14</a>.</p>
+<p>Gagolewski M., Cena A., Bartoszuk M., Brzozowski L., <em>Clustering with minimum spanning trees: How good can it be?</em>, in preparation, 2013.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
 <p><a class="reference internal" href="mst.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> for the minimum spanning tree routines.</p>
 <p><a class="reference internal" href="compare_partitions.html"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code></span></a> (amongst others) for external cluster validity measures (partition similarity scores).</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
 <span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
-<span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="m">3</span><span class="p">)</span>
-<span class="n">y_test</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span> <span class="n">iris</span><span class="p">[,</span><span class="m">3</span><span class="p">],</span> <span class="n">col</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
-   <span class="n">pch</span><span class="o">=</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]),</span> <span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span> <span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
+<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]</span>
+<span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+<span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
+<span class="n">y_test</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">iris</span><span class="p">[,</span><span class="m">3</span><span class="p">],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span>
+<span class="w">   </span><span class="n">pch</span><span class="o">=</span><span class="nf">as.integer</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">]),</span><span class="w"> </span><span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><img alt="plot of chunk gclust" src="../_images/gclust-1.png" /></p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.8857921</span>
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.9049708</span>
 <span class="c1"># Fast for low-dimensional Euclidean spaces:</span>
-<span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
+<span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
 </pre></div>
 </div>
 </section>
@@ -437,7 +439,7 @@
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

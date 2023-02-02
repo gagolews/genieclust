@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+
+<html class="writer-html5" lang="en" >
+<!-- Copyright (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com> -->
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>genieclust.GIc &mdash; Python and R Package genieclust</title>
+  
+
+  
+  
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+  
+
+  
+  
+
+  
+    <link rel="canonical" href="https://genieclust.gagolewski.com/genieclust_gic.html" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="genieclust.cluster_validity" href="genieclust_cluster_validity.html" />
+    <link rel="prev" title="genieclust.Genie" href="genieclust_genie.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html"> genieclust
+          
+
+          
+          </a>
+
+          <div class="version">
+              Python and R Package<br />    v1.1.3
+          </div>
+
+<!--
+          
+            
+            
+              <div class="version">
+                by Marek Gagolewski
+              </div>
+            
+          
+-->
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search phrase..." />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption" role="heading"><span class="caption-text">genieclust</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">About</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/sparse.html">Example: Sparse Data and Movie Recommendation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/string.html">Example: String Data and Grouping of DNA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.GIc</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.GIc"><code class="docutils literal notranslate"><span class="pre">GIc</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.GIc.fit"><code class="docutils literal notranslate"><span class="pre">GIc.fit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="news.html">What Is New in <em>genieclust</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="z_bibliography.html">References</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">genieclust</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content style-external-links">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a> &raquo;</li>
+        
+      <li>genieclust.GIc</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+
+        
+        
+        <a class="github-button" href="https://github.com/gagolews/genieclust" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star gagolews/genieclust on GitHub">GitHub</a>
+        
+
+
+        
+      </li>
+    
+  </ul>
+
+  
+  <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
+      
+        <a href="genieclust_cluster_validity.html" class="btn btn-neutral float-right" title="genieclust.cluster_validity" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+      
+      
+        <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+      
+  </div>
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <section id="genieclust-gic">
+<h1>genieclust.GIc<a class="headerlink" href="#genieclust-gic" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="genieclust.GIc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">GIc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.5,</span> <span class="pre">0.7]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_float32</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_leaf_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'method':</span> <span class="pre">'hnsw'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'post':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc" title="Permalink to this definition">¶</a></dt>
+<dd><p>GIc (Genie+Information Criterion) clustering algorithm</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>n_clusters</strong><span class="classifier">int</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>gini_thresholds</strong><span class="classifier">array_like</span></dt><dd><p>A list of Gini index thresholds between 0 and 1.</p>
+<p>The GIc algorithm optimises the information criterion in
+an agglomerative way, starting from the intersection of
+the clusterings returned by
+<code class="docutils literal notranslate"><span class="pre">Genie(n_clusters=n_clusters+add_clusters,</span> <span class="pre">gini_threshold=gini_thresholds[i])</span></code>,
+for all <code class="docutils literal notranslate"><span class="pre">i</span></code> from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">len(gini_thresholds)-1</span></code>.</p>
+</dd>
+<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>affinity</strong><span class="classifier">str</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>exact</strong><span class="classifier">bool, default=True</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+<p>Note that if <cite>compute_all_cuts</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the i-th cut
+in the hierarchy behaves as if <cite>add_clusters</cite> was equal to
+<code class="docutils literal notranslate"><span class="pre">n_clusters-i</span></code>. In other words, the returned cuts might be different
+from those obtained by multiple calls to GIc, each time with
+different <cite>n_clusters</cite> and constant <cite>add_clusters</cite> requested.</p>
+</dd>
+<dt><strong>postprocess</strong><span class="classifier">{“boundary”, “none”, “all”}</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>cast_float32</strong><span class="classifier">bool</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>mlpack_enabled</strong><span class="classifier">“auto” or bool</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>mlpack_leaf_size</strong><span class="classifier">int</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>nmslib_n_neighbors</strong><span class="classifier">int</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>nmslib_params_init</strong><span class="classifier">dict</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>nmslib_params_index</strong><span class="classifier">dict</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>nmslib_params_query</strong><span class="classifier">dict</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+<dt><strong>add_clusters</strong><span class="classifier">int</span></dt><dd><p>Number of additional clusters to work with internally.</p>
+</dd>
+<dt><strong>n_features</strong><span class="classifier">float or None</span></dt><dd><p>Dataset’s (intrinsic) dimensionality.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it will be set based on the shape of the input matrix.
+Yet, <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code> needs this to be set manually.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>GIc (Genie+Information Criterion) is an Information-Theoretic
+Clustering Algorithm.
+It was proposed by Anna Cena in <a class="reference internal" href="#r32c47d027f4e-1" id="id1">[1]</a> and had been inspired
+by Mueller’s (et al.) ITM <a class="reference internal" href="#r32c47d027f4e-2" id="id2">[2]</a> and Gagolewski’s (et al.) Genie <a class="reference internal" href="#r32c47d027f4e-3" id="id3">[3]</a>;
+see also <a class="reference internal" href="#r32c47d027f4e-4" id="id4">[4]</a>.</p>
+<p>GIc computes an <cite>n_clusters</cite>-partition
+based on a pre-computed minimum spanning tree. Clusters are merged
+so as to maximise (heuristically) the information
+criterion discussed in <a class="reference internal" href="#r32c47d027f4e-2" id="id5">[2]</a>.</p>
+<p>GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
+which follows a divisive scheme). It greedily selects for merging
+a pair of clusters that maximises the information criterion <a class="reference internal" href="#r32c47d027f4e-2" id="id6">[2]</a>.
+By default, the initial partition is determined by considering
+the intersection of the partitions found by multiple runs of
+the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7], which
+we observe to be a sensible choice for most clustering activities.
+Hence, contrary to the Genie method, we can say that GIc as virtually
+parameter-less. However, when run with different <cite>n_clusters</cite> parameter,
+it does not yield a hierarchy of nested partitions (unless some more manual
+parameter tuning is applied).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Environment variables<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>OMP_NUM_THREADS</dt><dd><p>See <cite>genieclust.Genie</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div role="list" class="citation-list">
+<div class="citation" id="r32c47d027f4e-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Cena A., <em>Adaptive hierarchical clustering algorithms based on
+data aggregation methods</em>, PhD Thesis, Systems Research Institute,
+Polish Academy of Sciences 2018.</p>
+</div>
+<div class="citation" id="r32c47d027f4e-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id6">3</a>)</span>
+<p>Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+Clustering using Minimum Spanning Trees, <em>DAGM-OAGM</em>, 2012.</p>
+</div>
+<div class="citation" id="r32c47d027f4e-3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>Gagolewski M., Bartoszuk M., Cena A.,
+Genie: A new, fast, and outlier-resistant hierarchical clustering
+algorithm, <em>Information Sciences</em> 363, 2016, 8-23.
+doi:10.1016/j.ins.2016.05.003.</p>
+</div>
+<div class="citation" id="r32c47d027f4e-4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">4</a><span class="fn-bracket">]</span></span>
+<p>Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+Clustering with Minimum Spanning Trees: How Good Can It Be?,
+in preparation, 2023.</p>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>See class `genieclust.Genie`.</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#genieclust.GIc.fit" title="genieclust.GIc.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y])</p></td>
+<td><p>Perform cluster analysis of a dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(X[, y])</p></td>
+<td><p>Perform cluster analysis of a dataset and return the predicted labels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>([deep])</p></td>
+<td><p>Get parameters for this estimator.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(**params)</p></td>
+<td><p>Set the parameters of this estimator.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="genieclust.GIc.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform cluster analysis of a dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>See <cite>genieclust.Genie.fit</cite>.</p>
+</dd>
+<dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">genieclust.GIc</span></dt><dd><p>The object that the method was called on.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="genieclust_genie.html#genieclust.Genie.fit" title="genieclust.Genie.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.Genie.fit</span></code></a></dt><dd></dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.GIc.fit_predict</span></code></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>Refer to the <cite>labels_</cite> and <cite>n_clusters_</cite> attributes for the result.</p>
+<p>Note that for <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>, the <cite>n_features</cite>
+parameter must be set explicitly.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="genieclust_cluster_validity.html" class="btn btn-neutral float-right" title="genieclust.cluster_validity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genieclust_genie.html" class="btn btn-neutral float-left" title="genieclust.Genie" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        Copyright &#169; 2018–2023 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>. Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
+
+    Built with <a href="https://sphinx-doc.org/">Sphinx</a>
+    and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
+    theme.
+      <span class="lastupdated">
+        Last updated on 2023-02-02T12:42:54+1100.
+      </span>
+
+
+    This site will never display any ads: it is a non-profit project.
+    It does not collect any data.
+
+    </p>
+  </div> 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

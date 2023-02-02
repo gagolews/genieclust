@@ -197,7 +197,8 @@ The Genie algorithm with `gini_threshold` of 0.3 gives the highest average
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic `ITM <https://github.com/amueller/information-theoretic-mst>`_
-:cite:`itm` method (which is also based on a minimum spanning tree)
+:cite:`itm` method (which is also based on a minimum spanning tree;
+compare :cite:`clustering-msts`)
 tend to output good quality outcomes as well.
 
 

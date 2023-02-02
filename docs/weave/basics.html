@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -149,7 +150,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -240,8 +241,8 @@
            <div itemprop="articleBody">
             
   <section id="basics">
-<h1>Basics<a class="headerlink" href="#basics" title="Permalink to this heading"></a></h1>
-<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id11" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span> is an agglomerative hierarchical clustering
+<h1>Basics<a class="headerlink" href="#basics" title="Permalink to this heading">¶</a></h1>
+<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span> is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a popular measure of inequity used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
@@ -250,7 +251,7 @@ is joined with its nearest neighbour.
 In the following sections we’ll show that Genie frequently outperforms many other methods
 in terms of clustering <a class="reference internal" href="benchmarks_ar.html"><span class="doc">quality</span></a> and <a class="reference internal" href="timings.html"><span class="doc">speed</span></a>.</p>
 <p>Here are a few examples of basic interactions with the Python version
-of the <cite>genieclust</cite> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id9" title="M. Gagolewski. genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722, 2021. doi:10.1016/j.softx.2021.100722.">Gag21</a>]</span> package,
+of the <cite>genieclust</cite> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M. (2021).  genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722. DOI: 10.1016/j.softx.2021.100722.">11</a>]</span> package,
 which can be installed from
 <a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a>, e.g.,
 via a call to <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">genieclust</span></code> from the command line.</p>
@@ -261,8 +262,8 @@ via a call to <code class="docutils literal notranslate"><span class="pre">pip3<
 </pre></div>
 </div>
 <section id="breaking-the-ice">
-<h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this heading"></a></h2>
-<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id31" title="A.K. Jain and M.H.C. Law. Data clustering: A user's dilemma. Lecture Notes in Computer Science, 3776:1–10, 2005.">JL05</a>]</span>, which  comes
+<h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Permalink to this heading">¶</a></h2>
+<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id32" title="Jain, A.K., Law, M.H.C. (2005).  Data clustering: A user's dilemma. Lecture Notes in Computer Science, 3776:1–10.">22</a>]</span>, which  comes
 with the true corresponding partition (as assigned by experts).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
@@ -287,15 +288,15 @@ with the true corresponding partition (as assigned by experts).</p>
 <figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/basics_basics-scatter_1.png"><img alt="../_images/basics_basics-scatter_1.png" src="../_images/basics_basics-scatter_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 1 </span><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 1 </span><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Let’s apply the Genie algorithm (with the default/recommended
 <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> parameter value). The <cite>genieclust</cite> package’s interface
 is compatible with the one from the popular
-<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span>.
+<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F., et al. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span>.
 In particular, an object of class <cite>Genie</cite> is equipped with the
-<cite>fit</cite> and <cite>fit_predict</cite> methods  <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id34" title="L. Buitinck and others. API design for machine learning software: Experiences from the scikit-learn project. In ECML PKDD Workshop: Languages for Data Mining and Machine Learning, 108–122. 2013.">B+13</a>]</span>.</p>
+<cite>fit</cite> and <cite>fit_predict</cite> methods  <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id35" title="Buitinck, L., et al. (2013).  API design for machine learning software: Experiences from the scikit-learn project. In: ECML PKDD Workshop: Languages for Data Mining and Machine Learning, pp. 108–122.">1</a>]</span>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
 <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
@@ -312,7 +313,7 @@ for more details.</p>
 <figure class="align-default" id="id11">
 <a class="reference internal image-reference" href="../_images/basics_basics-plot-pred_1.png"><img alt="../_images/basics_basics-plot-pred_1.png" src="../_images/basics_basics-plot-pred_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 2 </span><span class="caption-text">Labels predicted by Genie.</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 2 </span><span class="caption-text">Labels predicted by Genie.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Nice.</p>
@@ -339,7 +340,7 @@ similarity measures, like the Adjusted Rand Index (<code class="docutils literal
 <p>Which of course denotes a perfect match between these two.</p>
 </section>
 <section id="a-comparison-with-k-means">
-<h2>A Comparison with k-means<a class="headerlink" href="#a-comparison-with-k-means" title="Permalink to this heading"></a></h2>
+<h2>A Comparison with k-means<a class="headerlink" href="#a-comparison-with-k-means" title="Permalink to this heading">¶</a></h2>
 <p>For the sake of comparison, let’s apply the k-means algorithm on the same dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn.cluster</span>
 <span class="n">km</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
@@ -353,7 +354,7 @@ similarity measures, like the Adjusted Rand Index (<code class="docutils literal
 <figure class="align-default" id="id12">
 <a class="reference internal image-reference" href="../_images/basics_basics-plot-km_1.png"><img alt="../_images/basics_basics-plot-km_1.png" src="../_images/basics_basics-plot-km_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 3 </span><span class="caption-text">Labels predicted by k-means.</span><a class="headerlink" href="#id12" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 3 </span><span class="caption-text">Labels predicted by k-means.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>It is well known that the k-means algorithm can only split the input space into
@@ -378,13 +379,13 @@ So we shouldn’t be much surprised with this result.</p>
 <p>The adjusted Rand score of <span class="math notranslate nohighlight">\(\sim 0.3\)</span> indicates a far-from-perfect fit.</p>
 </section>
 <section id="a-comparison-with-hdbscan">
-<h2>A Comparison with HDBSCAN*<a class="headerlink" href="#a-comparison-with-hdbscan" title="Permalink to this heading"></a></h2>
+<h2>A Comparison with HDBSCAN*<a class="headerlink" href="#a-comparison-with-hdbscan" title="Permalink to this heading">¶</a></h2>
 <p>Let’s also make a comparison against a version of the DBSCAN
-<span id="id6">[<a class="reference internal" href="../z_bibliography.html#id33" title="M. Ester, H.P. Kriegel, J. Sander, and X. Xu. A density-based algorithm for discovering clusters in large spatial databases with noise. In Proc. KDD'96, pages 226–231. 1996.">EKSX96</a>, <a class="reference internal" href="../z_bibliography.html#id32" title="R.F. Ling. A probability theory of cluster analysis. Journal of the American Statistical Association, 68(341):159–164, 1973.">Lin73</a>]</span> algorithm. The original DBSCAN relies on a somewhat
+<span id="id6">[<a class="reference internal" href="../z_bibliography.html#id34" title="Ester, M., Kriegel, H.P., Sander, J., Xu, X. (1996).  A density-based algorithm for discovering clusters in large spatial databases with noise. In: Proc. KDD'96, pp. 226–231.">7</a>, <a class="reference internal" href="../z_bibliography.html#id33" title="Ling, R.F. (1973).  A probability theory of cluster analysis. Journal of the American Statistical Association, 68(341):159–164.">25</a>]</span> algorithm. The original DBSCAN relies on a somewhat
 magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter, which might be hard to tune in practice. However,
 the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a> package
-<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id44" title="L. McInnes, J. Healy, and S. Astels. hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205, 2017. doi:10.21105/joss.00205.">MHA17</a>]</span> implements its robustified variant
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id15" title="R.J.G.B. Campello, D. Moulavi, and J. Sander. Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172, 2013. doi:10.1007/978-3-642-37456-2_14.">CMS13</a>]</span>, which makes the algorithm much more user-friendly.</p>
+<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id45" title="McInnes, L., Healy, J., Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">27</a>]</span> implements its robustified variant
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id16" title="Campello, R.J.G.B., Moulavi, D., Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>, which makes the algorithm much more user-friendly.</p>
 <p>Here are the clustering results with the <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameter
 of 3, 5, 10, and 15:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
@@ -403,7 +404,7 @@ of 3, 5, 10, and 15:</p>
 <figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="../_images/basics_basics-plot-hdbscan_1.png"><img alt="../_images/basics_basics-plot-hdbscan_1.png" src="../_images/basics_basics-plot-hdbscan_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 4 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 4 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <dl class="simple">
@@ -438,7 +439,7 @@ should lie somewhere between 10 and 15, but…</p>
 <figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="../_images/basics_basics-plot-hdbscan2_1.png"><img alt="../_images/basics_basics-plot-hdbscan2_1.png" src="../_images/basics_basics-plot-hdbscan2_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 5 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 5 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>Strangely enough, <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> of <span class="math notranslate nohighlight">\(11\)</span> generates 4 clusters,
@@ -464,12 +465,12 @@ This makes the resulting partitions more stable.</p>
 <figure class="align-default" id="id15">
 <a class="reference internal image-reference" href="../_images/basics_basics-plot-genie2_1.png"><img alt="../_images/basics_basics-plot-genie2_1.png" src="../_images/basics_basics-plot-genie2_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 6 </span><span class="caption-text">Labels predicted by Genie.</span><a class="headerlink" href="#id15" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 6 </span><span class="caption-text">Labels predicted by Genie.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="dendrograms">
-<h2>Dendrograms<a class="headerlink" href="#dendrograms" title="Permalink to this heading"></a></h2>
+<h2>Dendrograms<a class="headerlink" href="#dendrograms" title="Permalink to this heading">¶</a></h2>
 <p>Dendrogram plotting is possible with <cite>scipy.cluster.hierarchy</cite>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.cluster.hierarchy</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -483,7 +484,7 @@ This makes the resulting partitions more stable.</p>
 <figure class="align-default" id="id16">
 <a class="reference internal image-reference" href="../_images/basics_basics-dendrogram-1_1.png"><img alt="../_images/basics_basics-dendrogram-1_1.png" src="../_images/basics_basics-dendrogram-1_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 7 </span><span class="caption-text">Example dendrogram.</span><a class="headerlink" href="#id16" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 7 </span><span class="caption-text">Example dendrogram.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>For a list of graphical parameters, refer to the function’s manual:</p>
@@ -495,17 +496,17 @@ This makes the resulting partitions more stable.</p>
 <figure class="align-default" id="id17">
 <a class="reference internal image-reference" href="../_images/basics_basics-dendrogram-2_1.png"><img alt="../_images/basics_basics-dendrogram-2_1.png" src="../_images/basics_basics-dendrogram-2_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 8 </span><span class="caption-text">Another example dendrogram.</span><a class="headerlink" href="#id17" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 8 </span><span class="caption-text">Another example dendrogram.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="further-reading">
-<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading"></a></h2>
+<h2>Further Reading<a class="headerlink" href="#further-reading" title="Permalink to this heading">¶</a></h2>
 <p>For more details, refer to the package’s API reference
 manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>.</p>
 <p>To learn more about Python, check out Marek’s open-access (free!) textbook
 <a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a>
-<span id="id9">[<a class="reference internal" href="../z_bibliography.html#id7" title="M. Gagolewski. Minimalist Data Wrangling with Python. Zenodo, Melbourne, 2022. ISBN 978-0-6455719-1-2. URL: https://datawranglingpy.gagolewski.com/, doi:10.5281/zenodo.6451068.">Gag22c</a>]</span>.</p>
+<span id="id9">[<a class="reference internal" href="../z_bibliography.html#id9" title="Gagolewski, M. (2022).  Minimalist Data Wrangling with Python. Zenodo, Melbourne. ISBN 978-0-6455719-1-2. URL: https://datawranglingpy.gagolewski.com/, DOI: 10.5281/zenodo.6451068.">14</a>]</span>.</p>
 </section>
 </section>
 
@@ -529,7 +530,7 @@ manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

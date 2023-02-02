@@ -1400,7 +1400,7 @@ cpdef dict genie_from_mst(
         bint noise_leaves=False,
         bint compute_full_tree=True,
         bint compute_all_cuts=False,
-        bint new_merge=False):
+        bint experimental_forced_merge=False):
     """Compute a k-partition based on a precomputed MST.
 
     The Genie+ Clustering Algorithm (with extensions)
@@ -1450,7 +1450,7 @@ cpdef dict genie_from_mst(
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
         Implies `compute_full_tree`.
-    new_merge : bool
+    experimental_forced_merge : bool
         False for compatibility with the original Genie algorithm
         (R package `genie`). True (EXPERIMENTAL) merges pairs that
         lower the Gini index below `gini_threshold`
@@ -1504,7 +1504,7 @@ cpdef dict genie_from_mst(
     _openmp_set_num_threads()
 
     cdef c_genie.CGenie[floatT] g
-    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, new_merge)
+    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, experimental_forced_merge)
 
     if compute_all_cuts:
         compute_full_tree = True

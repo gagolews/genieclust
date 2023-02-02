@@ -1,7 +1,9 @@
 # Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
 # Configuration file for the Sphinx documentation builder.
 
-import sphinx_rtd_theme
+import sys, os, sphinx_rtd_theme
+sys.path.append(os.getcwd())
+
 import genieclust
 
 pkg_name = "genieclust"
@@ -113,5 +115,7 @@ html_static_path = ['_static']
 html_css_files = ['css/custom.css']
 
 
-bibtex_bibfiles = ['bibliography.bib']
-bibtex_default_style = 'alpha'
+# BibTeX biblography + Marek's custom pybtex style
+import alphamarek
+bibtex_default_style = "alphamarek"
+bibtex_bibfiles = ["bibliography.bib"]

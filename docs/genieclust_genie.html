@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -58,7 +59,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="genieclust.cluster_validity" href="genieclust_cluster_validity.html" />
+    <link rel="next" title="genieclust.GIc" href="genieclust_gic.html" />
     <link rel="prev" title="Python Package genieclust Reference" href="genieclust.html" /> 
 </head>
 
@@ -137,7 +138,14 @@
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.Genie</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.Genie</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.Genie"><code class="docutils literal notranslate"><span class="pre">Genie</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.Genie.fit"><code class="docutils literal notranslate"><span class="pre">Genie.fit()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
@@ -151,7 +159,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -231,7 +239,7 @@
   
   <div class="rst-breadcrumbs-buttons" role="navigation" aria-label="breadcrumb navigation">
       
-        <a href="genieclust_cluster_validity.html" class="btn btn-neutral float-right" title="genieclust.cluster_validity" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genieclust_gic.html" class="btn btn-neutral float-right" title="genieclust.GIc" accesskey="n">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
       
       
         <a href="genieclust.html" class="btn btn-neutral float-left" title="Python Package genieclust Reference" accesskey="p"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
@@ -244,13 +252,13 @@
            <div itemprop="articleBody">
             
   <section id="genieclust-genie">
-<h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this heading"></a></h1>
+<h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this heading">¶</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="genieclust.Genie">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_float32</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_leaf_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'method':</span> <span class="pre">'hnsw'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'post':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_float32</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_leaf_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'method':</span> <span class="pre">'hnsw'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'post':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Genie++ hierarchical clustering algorithm</p>
 <dl class="field-list">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>n_clusters</strong><span class="classifier">int</span></dt><dd><p>Number of clusters to detect.</p>
 <p>If <cite>M</cite> &gt; 1 and <cite>postprocess</cite> is not <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, <cite>n_clusters</cite> = 1
@@ -441,7 +449,7 @@ do not take part in the clustering process. They may be merged
 with the nearest clusters during the postprocessing stage,
 or left marked as “noise” observations.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Environment variables</dt>
+<dt class="field-odd">Environment variables<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>OMP_NUM_THREADS</dt><dd><p>Controls the number of threads used for computing the minimum
 spanning tree (not supported by <cite>mlpack</cite>).</p>
@@ -450,43 +458,53 @@ spanning tree (not supported by <cite>mlpack</cite>).</p>
 </dd>
 </dl>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r6050e59d50fb-1"><span class="brackets">1</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id6">2</a>)</span></dt>
-<dd><p>Gagolewski M., Bartoszuk M., Cena A.,
+<div role="list" class="citation-list">
+<div class="citation" id="r6050e59d50fb-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
+<p>Gagolewski M., Bartoszuk M., Cena A.,
 Genie: A new, fast, and outlier-resistant hierarchical
 clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23.
 doi:10.1016/j.ins.2016.05.003.</p>
-</dd>
-<dt class="label" id="r6050e59d50fb-2"><span class="brackets">2</span><span class="fn-backref">(<a href="#id4">1</a>,<a href="#id7">2</a>)</span></dt>
-<dd><p>Olson C.F., Parallel algorithms for hierarchical clustering,
+</div>
+<div class="citation" id="r6050e59d50fb-2" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
+<p>Olson C.F., Parallel algorithms for hierarchical clustering,
 <em>Parallel Computing</em> 21(8), 1995, 1313-1325.
 doi:10.1016/0167-8191(95)00017-I.</p>
-</dd>
-<dt class="label" id="r6050e59d50fb-3"><span class="brackets"><a class="fn-backref" href="#id8">3</a></span></dt>
-<dd><p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+</div>
+<div class="citation" id="r6050e59d50fb-3" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">3</a><span class="fn-bracket">]</span></span>
+<p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
 mlpack 3: A fast, flexible machine learning library,
 <em>Journal of Open Source Software</em> 3(26), 726, 2018.
 doi:10.21105/joss.00726.</p>
-</dd>
-<dt class="label" id="r6050e59d50fb-4"><span class="brackets"><a class="fn-backref" href="#id9">4</a></span></dt>
-<dd><p>March W.B., Ram P., Gray A.G.,
+</div>
+<div class="citation" id="r6050e59d50fb-4" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">4</a><span class="fn-bracket">]</span></span>
+<p>March W.B., Ram P., Gray A.G.,
 Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
 <em>Proc. ACM SIGKDD’10</em>, 2010, 603-611.</p>
-</dd>
-<dt class="label" id="r6050e59d50fb-5"><span class="brackets">5</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id5">2</a>,<a href="#id10">3</a>)</span></dt>
-<dd><p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+</div>
+<div class="citation" id="r6050e59d50fb-5" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id5">2</a>,<a role="doc-backlink" href="#id10">3</a>)</span>
+<p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
 <em>Non-metric space library (NMSLIB) manual</em>, version 2.0, 2019.
 <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf</a>.</p>
-</dd>
-<dt class="label" id="r6050e59d50fb-6"><span class="brackets">6</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id11">2</a>)</span></dt>
-<dd><p>Campello R.J.G.B., Moulavi D., Sander J.,
+</div>
+<div class="citation" id="r6050e59d50fb-6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id11">2</a>)</span>
+<p>Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,
 <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172,
 doi:10.1007/978-3-642-37456-2_14.</p>
-</dd>
-</dl>
+</div>
+</div>
 <dl class="field-list">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>labels_</strong><span class="classifier">ndarray</span></dt><dd><p>Detected cluster labels.</p>
 <p>If <cite>compute_all_cuts</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default),
@@ -542,10 +560,6 @@ See the description of <code class="docutils literal notranslate"><span class="p
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#genieclust.Genie.fit" title="genieclust.Genie.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, y])</p></td>
 <td><p>Perform cluster analysis of a dataset.</p></td>
@@ -563,10 +577,10 @@ See the description of <code class="docutils literal notranslate"><span class="p
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.Genie.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform cluster analysis of a dataset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows and <code class="docutils literal notranslate"><span class="pre">n_features</span></code>
 columns, see below for more details and options.</p>
@@ -575,7 +589,7 @@ columns, see below for more details and options.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>self</strong><span class="classifier">genieclust.Genie</span></dt><dd><p>The object that the method was called on.</p>
 </dd>
@@ -619,13 +633,14 @@ an array of ASCII strings.</p>
 </li>
 </ul>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r1af812c21110-1"><span class="brackets">1</span></dt>
-<dd><p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
+<div role="list" class="citation-list">
+<div class="citation" id="r1af812c21110-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Naidan B., Boytsov L., Malkov Y.,  Novak D.,
 <em>Non-metric space library (NMSLIB) manual</em>, version 2.0, 2019.
 <a class="reference external" href="https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf">https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf</a>.</p>
-</dd>
-</dl>
+</div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -638,7 +653,7 @@ an array of ASCII strings.</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="genieclust_cluster_validity.html" class="btn btn-neutral float-right" title="genieclust.cluster_validity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="genieclust_gic.html" class="btn btn-neutral float-right" title="genieclust.GIc" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
         <a href="genieclust.html" class="btn btn-neutral float-left" title="Python Package genieclust Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
@@ -652,7 +667,7 @@ an array of ASCII strings.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

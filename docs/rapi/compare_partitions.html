@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -162,7 +163,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -255,43 +256,43 @@
            <div itemprop="articleBody">
             
   <section class="tex2jax_ignore mathjax_ignore" id="compare-partitions-external-cluster-validity-measures-and-pairwise-partition-similarity-scores">
-<h1>compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores<a class="headerlink" href="#compare-partitions-external-cluster-validity-measures-and-pairwise-partition-similarity-scores" title="Permalink to this heading"></a></h1>
+<h1>compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores<a class="headerlink" href="#compare-partitions-external-cluster-validity-measures-and-pairwise-partition-similarity-scores" title="Permalink to this heading">¶</a></h1>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading"></a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Permalink to this heading">¶</a></h2>
 <p>The functions described in this section quantify the similarity between two label vectors <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> which represent two partitions of a set of <span class="math notranslate nohighlight">\(n\)</span> elements into, respectively, <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(L\)</span> nonempty and pairwise disjoint subsets.</p>
 <p>For instance, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> can be two clusterings of a dataset with <span class="math notranslate nohighlight">\(n\)</span> observations specified by two vectors of labels. These functions can be used as external cluster validity measures, where we assume that <code class="docutils literal notranslate"><span class="pre">x</span></code> is the reference (ground-truth) partition (compare Gagolewski, 2022).</p>
 </section>
 <section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading"></a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">adjusted_asymmetric_accuracy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">adjusted_asymmetric_accuracy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">normalized_accuracy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">normalized_accuracy</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">,</span> <span class="n">simplified</span> <span class="o">=</span> <span class="kc">FALSE</span><span class="p">)</span>
+<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">simplified</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
 
-<span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">rand_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">rand_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">fm_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">fm_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 
-<span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="kc">NULL</span><span class="p">)</span>
+<span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">NULL</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
 <section id="arguments">
-<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading"></a></h2>
-<table class="colwidths-auto docutils align-default">
+<h2>Arguments<a class="headerlink" href="#arguments" title="Permalink to this heading">¶</a></h2>
+<table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p></p></th>
@@ -311,7 +312,7 @@
 </table>
 </section>
 <section id="details">
-<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading"></a></h2>
+<h2>Details<a class="headerlink" href="#details" title="Permalink to this heading">¶</a></h2>
 <p>Each index except <code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy()</span></code> can act as a pairwise partition similarity score: it is symmetric, i.e., <code class="docutils literal notranslate"><span class="pre">index(x,</span> <span class="pre">y)</span> <span class="pre">==</span> <span class="pre">index(y,</span> <span class="pre">x)</span></code>.</p>
 <p>Each index except <code class="docutils literal notranslate"><span class="pre">mi_score()</span></code> (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a bijection of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.</p>
 <p><code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy()</span></code> (Gagolewski, 2022) is an external cluster validity measure which assumes that the label vector <code class="docutils literal notranslate"><span class="pre">x</span></code> (or rows in the confusion matrix) represents the reference (ground truth) partition. It is a corrected-for-chance summary of the proportion of correctly classified points in each cluster (with cluster matching based on the solution to the maximal linear sum assignment problem; see <a class="reference internal" href="#"><span class="doc std std-doc"><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix</span></code></span></a>), given by: <span class="math notranslate nohighlight">\((\max_\sigma \sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)\)</span>, where <span class="math notranslate nohighlight">\(C\)</span> is the confusion matrix.</p>
@@ -325,16 +326,16 @@
 <p>Also note that the built-in <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html"><code class="docutils literal notranslate"><span class="pre">table()</span></code></a> determines the standard confusion matrix.</p>
 </section>
 <section id="value">
-<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading"></a></h2>
+<h2>Value<a class="headerlink" href="#value" title="Permalink to this heading">¶</a></h2>
 <p>Each cluster validity measure is a single numeric value.</p>
 <p><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code> returns an integer matrix.</p>
 </section>
 <section id="author-s">
-<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading"></a></h2>
+<h2>Author(s)<a class="headerlink" href="#author-s" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
 </section>
 <section id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this heading"></a></h2>
+<h2>References<a class="headerlink" href="#references" title="Permalink to this heading">¶</a></h2>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>, 2022, <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 <p>Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external cluster validity measure, 2022, under review (preprint), <a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">doi:10.48550/arXiv.2209.02935</a>.</p>
 <p>Hubert L., Arabie P., Comparing partitions, <em>Journal of Classification</em> 2(1), 1985, 193-218, esp. Eqs. (2) and (4).</p>
@@ -344,42 +345,42 @@
 <p>Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, <em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854.</p>
 </section>
 <section id="see-also">
-<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading"></a></h2>
+<h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this heading">¶</a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
 </section>
 <section id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_true</span> <span class="o">&lt;-</span> <span class="n">iris</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span>
-<span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">kmeans</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span> <span class="m">3</span><span class="p">)</span><span class="o">$</span><span class="n">cluster</span>
-<span class="nf">adjusted_asymmetric_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_true</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">iris</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span>
+<span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">kmeans</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="o">$</span><span class="n">cluster</span>
+<span class="nf">adjusted_asymmetric_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.84</span>
-<span class="nf">normalized_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">normalized_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.84</span>
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.7568238</span>
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">simplified</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="n">simplified</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
 <span class="c1">## [1] 0.7470968</span>
-<span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.7302383</span>
-<span class="nf">rand_score</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">))</span> <span class="c1"># the same</span>
+<span class="nf">rand_score</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">))</span><span class="w"> </span><span class="c1"># the same</span>
 <span class="c1">## [1] 0.8797315</span>
-<span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.7304411</span>
-<span class="nf">fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.8208081</span>
-<span class="nf">mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.8255911</span>
-<span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.7581757</span>
-<span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 0.7551192</span>
-<span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">##      [,1] [,2] [,3]</span>
 <span class="c1">## [1,]   50    0    0</span>
 <span class="c1">## [2,]    0   48    2</span>
 <span class="c1">## [3,]    0   14   36</span>
-<span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
 <span class="c1">## [1] 1 2 3</span>
 </pre></div>
 </div>
@@ -406,7 +407,7 @@
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

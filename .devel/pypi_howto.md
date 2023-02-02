@@ -24,6 +24,10 @@ python3 setup.py sdist
 
 # upload to pypi:
 
+https://pypi.org/manage/account/token/
+
+https://pypi.org/help/#apitoken
+
 ```
 twine upload dist/*
 ```

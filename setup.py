@@ -162,7 +162,7 @@ setuptools.setup(
       ],
     extras_require={
         "nmslib": ["nmslib"],  # nmslib does not build on 32bit Windows...
-        "mlpack": ["mlpack"]   # as of 2021-04-22, mlpack is not available for Python 3.9
+        "mlpack": ["mlpack"]
     },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",

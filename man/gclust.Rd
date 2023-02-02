@@ -195,6 +195,10 @@ Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,
 \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 \doi{10.1007/978-3-642-37456-2_14}.
+
+Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+\emph{Clustering with minimum spanning trees: How good can it be?},
+in preparation, 2013.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

@@ -41,7 +41,7 @@ is definitely worth a try!
 Thanks to its being based on minimal spanning trees of the pairwise distance
 graphs, Genie is also **very fast** – determining the whole cluster hierarchy
 for datasets of millions of points can be completed within minutes. Therefore,
-it is nicely suited for solving of **extreme clustering tasks** (large datasets
+it is nicely suited for solving **extreme clustering tasks** (large datasets
 with any number of clusters to detect) for data (also sparse) that fit into
 memory. Thanks to the use of [**nmslib**](https://github.com/nmslib/nmslib)
 (if available), sparse or string inputs are also supported.
@@ -197,6 +197,10 @@ Sciences* **363**, 2016, 8–23.
 Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 *Information Sciences* **581**, 2021, 620–636.
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
+
+Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+*Clustering with minimum spanning trees: How good can it be?*,
+in preparation, 2013.
 
 Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
 cluster validity measure*, under review (preprint),

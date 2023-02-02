@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -142,7 +143,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -233,7 +234,7 @@
            <div itemprop="articleBody">
             
   <section class="tex2jax_ignore mathjax_ignore" id="r-interface-examples">
-<h1>R Interface Examples<a class="headerlink" href="#r-interface-examples" title="Permalink to this heading"></a></h1>
+<h1>R Interface Examples<a class="headerlink" href="#r-interface-examples" title="Permalink to this heading">¶</a></h1>
 <p>The latest stable release of the R package <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> is available from the
 <a class="reference external" href="https://cran.r-project.org/web/packages/genieclust/">CRAN</a> repository.
 We can install it by calling:</p>
@@ -249,10 +250,10 @@ We can install it by calling:</p>
 dataset that measures the Human, Environmental, and Economic Wellbeing
 in each country based on seven categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
-<span class="n">ssi</span> <span class="o">&lt;-</span> <span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span> <span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
-<span class="n">X</span> <span class="o">&lt;-</span> <span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span>    <span class="c1"># everything except the Country (1st) column</span>
-<span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span> <span class="o">&lt;-</span> <span class="n">ssi</span><span class="p">[,</span><span class="m">1</span><span class="p">]</span> <span class="c1"># set row names</span>
-<span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># preview</span>
+<span class="n">ssi</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
+<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span><span class="w">    </span><span class="c1"># everything except the Country (1st) column</span>
+<span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ssi</span><span class="p">[,</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># set row names</span>
+<span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># preview</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
@@ -269,7 +270,7 @@ for hierarchical clustering, <code class="docutils literal notranslate"><span cl
 Yet, for efficiency reasons, it’s better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code>
 with the input matrix directly:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
-<span class="n">h</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>  <span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
+<span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -283,8 +284,8 @@ with the input matrix directly:</p>
 </pre></div>
 </div>
 <p>In order to extract a desired <em>k</em>-partition, we can call <code class="docutils literal notranslate"><span class="pre">stats::cutree()</span></code>:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span> <span class="o">&lt;-</span> <span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
-<span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="m">25</span><span class="p">)</span>  <span class="c1"># preview</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
+<span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">  </span><span class="c1"># preview</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
@@ -293,17 +294,17 @@ with the input matrix directly:</p>
 </div>
 <p>This gives the cluster ID allocated to each country.
 Let’s depict the obtained partition using the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span>  <span class="c1"># see the package&#39;s manual for details</span>
-<span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span> <span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
-<span class="n">mapdata</span> <span class="o">&lt;-</span> <span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span> <span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
-<span class="nf">mapCountryData</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span> <span class="n">nameColumnToPlot</span><span class="o">=</span><span class="s">&quot;Cluster&quot;</span><span class="p">,</span> <span class="n">catMethod</span><span class="o">=</span><span class="s">&quot;categorical&quot;</span><span class="p">,</span>
-    <span class="n">missingCountryCol</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">,</span> <span class="n">colourPalette</span><span class="o">=</span><span class="nf">palette.colors</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="s">&quot;R4&quot;</span><span class="p">),</span>
-    <span class="n">mapTitle</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1"># see the package&#39;s manual for details</span>
+<span class="n">mapdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
+<span class="n">mapdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span><span class="w"> </span><span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
+<span class="nf">mapCountryData</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span><span class="w"> </span><span class="n">nameColumnToPlot</span><span class="o">=</span><span class="s">&quot;Cluster&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">catMethod</span><span class="o">=</span><span class="s">&quot;categorical&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="n">missingCountryCol</span><span class="o">=</span><span class="s">&quot;white&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">colourPalette</span><span class="o">=</span><span class="nf">palette.colors</span><span class="p">(</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;R4&quot;</span><span class="p">),</span>
+<span class="w">    </span><span class="n">mapTitle</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><img alt="Countries grouped w.r.t. the SSI categories." src="../_images/r_ssi-map-1.png" /></p>
 <p>We can compute, e.g., the average indicators in each identified group:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span> <span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span> <span class="p">]</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span><span class="w"> </span><span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
@@ -319,16 +320,16 @@ Let’s depict the obtained partition using the <code class="docutils literal no
 <p>Dendrogram plotting is also possible.
 For greater readability, we’ll restrict ourselves to a smaller sample;
 namely, to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span> <span class="o">&lt;-</span> <span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span> <span class="s">&quot;Austria&quot;</span><span class="p">,</span> <span class="s">&quot;Belgium&quot;</span><span class="p">,</span> <span class="s">&quot;Canada&quot;</span><span class="p">,</span> <span class="s">&quot;Chile&quot;</span><span class="p">,</span> <span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
-<span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Denmark&quot;</span><span class="p">,</span> <span class="s">&quot;Estonia&quot;</span><span class="p">,</span> <span class="s">&quot;Finland&quot;</span><span class="p">,</span> <span class="s">&quot;France&quot;</span><span class="p">,</span> <span class="s">&quot;Germany&quot;</span><span class="p">,</span>
-<span class="s">&quot;Greece&quot;</span><span class="p">,</span> <span class="s">&quot;Hungary&quot;</span><span class="p">,</span> <span class="s">&quot;Iceland&quot;</span><span class="p">,</span> <span class="s">&quot;Ireland&quot;</span><span class="p">,</span> <span class="s">&quot;Israel&quot;</span><span class="p">,</span> <span class="s">&quot;Italy&quot;</span><span class="p">,</span> <span class="s">&quot;Japan&quot;</span><span class="p">,</span>
-<span class="s">&quot;Korea, South&quot;</span><span class="p">,</span> <span class="s">&quot;Latvia&quot;</span><span class="p">,</span> <span class="s">&quot;Lithuania&quot;</span><span class="p">,</span> <span class="s">&quot;Luxembourg&quot;</span><span class="p">,</span> <span class="s">&quot;Mexico&quot;</span><span class="p">,</span> <span class="s">&quot;Netherlands&quot;</span><span class="p">,</span>
-<span class="s">&quot;New Zealand&quot;</span><span class="p">,</span> <span class="s">&quot;Norway&quot;</span><span class="p">,</span> <span class="s">&quot;Poland&quot;</span><span class="p">,</span> <span class="s">&quot;Portugal&quot;</span><span class="p">,</span> <span class="s">&quot;Slovak Republic&quot;</span><span class="p">,</span> <span class="s">&quot;Slovenia&quot;</span><span class="p">,</span>
-<span class="s">&quot;Spain&quot;</span><span class="p">,</span> <span class="s">&quot;Sweden&quot;</span><span class="p">,</span> <span class="s">&quot;Switzerland&quot;</span><span class="p">,</span> <span class="s">&quot;Turkey&quot;</span><span class="p">,</span> <span class="s">&quot;United Kingdom&quot;</span><span class="p">,</span> <span class="s">&quot;United States&quot;</span><span class="p">)</span>
-<span class="n">X_oecd</span> <span class="o">&lt;-</span> <span class="n">X</span><span class="p">[</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span> <span class="o">%in%</span> <span class="n">oecd</span><span class="p">,</span> <span class="p">]</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Austria&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Belgium&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Canada&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Chile&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
+<span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Denmark&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Estonia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Finland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;France&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Germany&quot;</span><span class="p">,</span>
+<span class="s">&quot;Greece&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hungary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Iceland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Ireland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Israel&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Italy&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Japan&quot;</span><span class="p">,</span>
+<span class="s">&quot;Korea, South&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Latvia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Lithuania&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Luxembourg&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Mexico&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Netherlands&quot;</span><span class="p">,</span>
+<span class="s">&quot;New Zealand&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Norway&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Poland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Portugal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovak Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovenia&quot;</span><span class="p">,</span>
+<span class="s">&quot;Spain&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sweden&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Switzerland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Turkey&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United Kingdom&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United States&quot;</span><span class="p">)</span>
+<span class="n">X_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">oecd</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">h_oecd</span> <span class="o">&lt;-</span> <span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">h_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
 <span class="nf">plot</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -347,7 +348,7 @@ Don’t forget to check out the Python examples regarding noise points detection
 benchmarking, timing, etc.</p>
 <p><em>To learn more about R, check out Marek’s recent open-access (free!) textbook</em>
 <a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8" title="M. Gagolewski. Deep R Programming. Zenodo, Melbourne, 2023. ISBN 978-0-6455719-2-9 (reserved). early draft. URL: https://deepr.gagolewski.com/, doi:10.5281/zenodo.7490464.">Gag23</a>]</span>.</p>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id10" title="Gagolewski, M. (2023).  Deep R Programming. Zenodo, Melbourne. ISBN 978-0-6455719-2-9 (reserved). early draft. URL: https://deepr.gagolewski.com/, DOI: 10.5281/zenodo.7490464.">15</a>]</span>.</p>
 </section>
 
 
@@ -370,7 +371,7 @@ benchmarking, timing, etc.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

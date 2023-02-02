@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -140,7 +141,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -231,7 +232,7 @@
            <div itemprop="articleBody">
             
   <section id="benchmarks-approximate-method">
-<h1>Benchmarks — Approximate Method<a class="headerlink" href="#benchmarks-approximate-method" title="Permalink to this heading"></a></h1>
+<h1>Benchmarks — Approximate Method<a class="headerlink" href="#benchmarks-approximate-method" title="Permalink to this heading">¶</a></h1>
 <p>In one of the <a class="reference internal" href="timings.html"><span class="doc">previous sections</span></a> we have demonstrated that the approximate version
 of the Genie algorithm (<a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-class docutils literal notranslate"><span class="pre">genieclust.Genie(exact=False,</span> <span class="pre">...)</span></code></a>), i.e.,
 one which relies on <a class="reference external" href="https://github.com/nmslib/nmslib/tree/master/python_bindings">nmslib</a>‘s
@@ -242,7 +243,7 @@ takes less than 5 minutes on a laptop.</p>
 <p>As <em>fast</em> does not necessarily mean <em>meaningful</em> (tl;dr spoiler alert: in our case, it does),
 let’s again consider  all the datasets
 from the <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id4" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering-benchmarks, doi:10.5281/zenodo.3815066.">G+20</a>]</span>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M., et al. (2020).  Benchmark suite for clustering algorithms – version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>
 (except the <code class="docutils literal notranslate"><span class="pre">h2mg</span></code> and <code class="docutils literal notranslate"><span class="pre">g2mg</span></code> batteries). Features with variance of 0 were
 removed, datasets were centred at <strong>0</strong> and scaled so that they have total
 variance of 1. Tiny bit of Gaussian noise was added to each observation.
@@ -255,18 +256,6 @@ outputs and the reference ones.</p>
 and the AR index for the exact method. Here is the complete list of datasets
 and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digits of precision:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 21%" />
-<col style="width: 21%" />
-<col style="width: 9%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>dataset</p></th>
 <th class="head"><p>gini_threshold</p></th>
@@ -401,17 +390,6 @@ of 0.5 yields a much better outcome than the original one.</p>
 <p>Here are the descriptive statistics for the AR indices across all the datasets
 (for the approximate method we chose the median AR in each of the 10 runs):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>method</p></th>
 <th class="head"><p>count</p></th>
@@ -552,7 +530,7 @@ behaves as good as the original one.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

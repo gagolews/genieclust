@@ -7,6 +7,8 @@ env:
     # https://cibuildwheel.readthedocs.io/en/stable/options/
     # cp39-win_amd64
     # cp37-win32 cp38-win32 cp39-win32
+    # TODO: manylinux aarch64
+    # TODO: macos arm64
     CIBW_SKIP: cp2* pp* cp35* cp36* *-win32 *-manylinux_i686 *-musllinux*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
 

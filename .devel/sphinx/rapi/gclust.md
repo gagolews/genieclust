@@ -110,6 +110,8 @@ Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant 
 
 Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, *Lecture Notes in Computer Science* 7819, 2013, 160-172, [doi:10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
+Gagolewski M., Cena A., Bartoszuk M., Brzozowski L., *Clustering with minimum spanning trees: How good can it be?*, in preparation, 2013.
+
 ## See Also
 
 The official online manual of <span class="pkg">genieclust</span> at <https://genieclust.gagolewski.com/>

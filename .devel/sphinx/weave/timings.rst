@@ -17,8 +17,8 @@ with the centroid, median, and Ward linkage implemented in the
 
 
 
-Genie, just like the single linkage, is based on a minimum spanning tree (MST) of the
-pairwise distance graph of an input point set.
+Genie, just like the single linkage, is based on a minimum spanning tree (MST)
+:cite:`clustering-msts` of the pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has :math:`O(n \sqrt{n})` time
 and :math:`O(n)` memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
@@ -227,7 +227,7 @@ a first run of the algorithm:
 
 ::
 
-    ## time elapsed - first run: 7.911
+    ## time elapsed - first run: 0.850
 
 
 
@@ -246,6 +246,6 @@ Changing some parameters and re-running the cluster search:
 
 ::
 
-    ## time elapsed - consecutive run: 0.028
+    ## time elapsed - consecutive run: 0.027
 
 

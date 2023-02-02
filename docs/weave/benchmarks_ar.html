@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -145,7 +146,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -236,34 +237,34 @@
            <div itemprop="articleBody">
             
   <section id="benchmarks-how-good-is-it">
-<h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Permalink to this heading"></a></h1>
+<h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Permalink to this heading">¶</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We use our <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">framework for benchmarking clustering algorithms (benchmark suite version 1.0.1)</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id6" title="M. Gagolewski. A framework for benchmarking clustering algorithms. SoftwareX, 20:101270, 2022. URL: https://clustering-benchmarks.gagolewski.com, doi:10.1016/j.softx.2022.101270.">Gag22a</a>]</span> which aggregates datasets from various sources,
-including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id37" title="D. Dua and C. Graff. UCI machine learning repository. 2019. URL: http://archive.ics.uci.edu/ml.">DG19</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="P. Fränti, R. Mariescu-Istodor, and C. Zhong. XNN graph. Lecture Notes in Computer Science, 10029:207–217, 2016. doi:10.1007/978-3-319-49055-7_19.">FMIZ16</a>, <a class="reference internal" href="../z_bibliography.html#id38" title="P. Fränti and S. Sieranoja. K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759, 2018. doi:10.1007/s10489-018-1238-7.">FS18</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="D. Graves and W. Pedrycz. Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543, 2010. doi:10.1016/j.fss.2009.10.021.">GP10</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="G. Karypis, E.H. Han, and V. Kumar. CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75, 1999. doi:10.1109/2.781637.">KHK99</a>, <a class="reference internal" href="../z_bibliography.html#id40" title="A. Ultsch. Clustering with SOM: U*C. In Workshop on Self-Organizing Maps, pages 75–82. 2005.">Ult05</a>]</span>.
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
+including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id38" title="Dua, D., Graff, C. (2019).  UCI machine learning repository. URL: http://archive.ics.uci.edu/ml.">6</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="Fränti, P., Mariescu-Istodor, R., Zhong, C. (2016).  XNN graph. Lecture Notes in Computer Science, 10029:207–217. DOI: 10.1007/978-3-319-49055-7_19.">9</a>, <a class="reference internal" href="../z_bibliography.html#id39" title="Fränti, P., Sieranoja, S. (2018).  K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759. DOI: 10.1007/s10489-018-1238-7.">10</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="Graves, D., Pedrycz, W. (2010).  Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543. DOI: 10.1016/j.fss.2009.10.021.">20</a>, <a class="reference internal" href="../z_bibliography.html#id44" title="Karypis, G., Han, E.H., Kumar, V. (1999).  CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75. DOI: 10.1109/2.781637.">23</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="Ultsch, A. (2005).  Clustering with SOM: U*C. In: Workshop on Self-Organizing Maps, pp. 75–82.">34</a>]</span>.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study
 the algorithms that allow for setting of <cite>n_clusters</cite> explicitly.</p>
 <p>We will apply a few agglomerative hierarchical
 methods (average, centroid, complete, single, and Ward linkage; implemented in the
-<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id21" title="D. Müllner. fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18, 2013. doi:10.18637/jss.v053.i09.">Mul13</a>]</span>),
+<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id22" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">29</a>]</span>),
 k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
-(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="F. Pedregosa and others. Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830, 2011. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">P+11</a>]</span>),
-<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id17" title="A.C. Müller, S. Nowozin, and C.H. Lampert. Information theoretic clustering using minimum spanning trees. In Proc. German Conference on Pattern Recognition. 2012. URL: https://github.com/amueller/information-theoretic-mst.">MNL12</a>]</span>,
-and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id11" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span>.</p>
-<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id20" title="L. Hubert and P. Arabie. Comparing partitions. Journal of Classification, 2(1):193–218, 1985. doi:10.1007/BF01908075.">HA85</a>]</span>) will be used
+(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F., et al. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span>),
+<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id18" title="Müller, A.C., Nowozin, S., Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">28</a>]</span>,
+and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
+<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id21" title="Hubert, L., Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">21</a>]</span>) will be used
 to quantify the agreement between
 a reference and a predicted clustering on the scale [0,1],
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id36" title="S. Dasgupta and V. Ng. Single data, multiple clusterings. In Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. 2009. URL: https://clusteringtheory.org.">DN09</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id4" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering-benchmarks, doi:10.5281/zenodo.3815066.">G+20</a>]</span> for discussion),
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id37" title="Dasgupta, S., Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M., et al. (2020).  Benchmark suite for clustering algorithms – version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span> for discussion),
 the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
 <p>For more detailed results based on other partition similarity scores,
 see the <a class="reference internal" href="benchmarks_details.html"><span class="doc">Appendix</span></a>.</p>
 <section id="small-datasets">
-<h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this heading"></a></h2>
+<h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this heading">¶</a></h2>
 <p>As some of the algorithms tested here have failed to generate a solution
 within reasonable time limits (e.g., spectral clustering),
 in this part we restrict ourselves to the datasets with up to 10,000 observations.
@@ -278,33 +279,23 @@ and <cite>threshold in [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0]</cite>
 and the latter on <cite>affinity in [“rbf”, “laplacian”, “poly”, “sigmoid”]</cite>
 and <cite>gamma in [0.25, 0.5, 1.0, 2.5, 5.0]</cite>).
 Moreover, Gaussian mixtures used <cite>n_init=100</cite>.</p>
-<figure class="align-default" id="id13">
+<figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="../_images/benchmarks_ar_plot_small_1.png"><img alt="../_images/benchmarks_ar_plot_small_1.png" src="../_images/benchmarks_ar_plot_small_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 10 </span><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 10 </span><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>The Genie algorithm with <cite>gini_threshold</cite> of 0.3 gives the highest average
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
-<span id="id11">[<a class="reference internal" href="../z_bibliography.html#id17" title="A.C. Müller, S. Nowozin, and C.H. Lampert. Information theoretic clustering using minimum spanning trees. In Proc. German Conference on Pattern Recognition. 2012. URL: https://github.com/amueller/information-theoretic-mst.">MNL12</a>]</span> method (which is also based on a minimum spanning tree)
+<span id="id11">[<a class="reference internal" href="../z_bibliography.html#id18" title="Müller, A.C., Nowozin, S., Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">28</a>]</span> method (which is also based on a minimum spanning tree;
+compare <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? in preparation.">18</a>]</span>)
 tend to output good quality outcomes as well.</p>
 <p>Descriptive statistics for the ranks (for each dataset,
 each algorithm that gets the highest AR index rounded to 2 decimal digits,
 gets a rank of 1); lower ranks are better:</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -319,8 +310,8 @@ gets a rank of 1); lower ranks are better:</p>
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Average linkage</p></td>
-<td><p>73</p></td>
-<td><p>6.9</p></td>
+<td><p>72</p></td>
+<td><p>6.8</p></td>
 <td><p>3.6</p></td>
 <td><p>1</p></td>
 <td><p>5</p></td>
@@ -329,7 +320,7 @@ gets a rank of 1); lower ranks are better:</p>
 <td><p>13</p></td>
 </tr>
 <tr class="row-odd"><td><p>Birch_0.01</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>6.1</p></td>
 <td><p>3.1</p></td>
 <td><p>1</p></td>
@@ -339,17 +330,17 @@ gets a rank of 1); lower ranks are better:</p>
 <td><p>13</p></td>
 </tr>
 <tr class="row-even"><td><p>Centroid linkage</p></td>
-<td><p>73</p></td>
-<td><p>7.1</p></td>
+<td><p>72</p></td>
+<td><p>7</p></td>
 <td><p>3.7</p></td>
 <td><p>1</p></td>
-<td><p>5</p></td>
-<td><p>8</p></td>
+<td><p>4.8</p></td>
+<td><p>7.5</p></td>
 <td><p>10</p></td>
 <td><p>13</p></td>
 </tr>
 <tr class="row-odd"><td><p>Complete linkage</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>8.3</p></td>
 <td><p>3.4</p></td>
 <td><p>1</p></td>
@@ -359,67 +350,67 @@ gets a rank of 1); lower ranks are better:</p>
 <td><p>13</p></td>
 </tr>
 <tr class="row-even"><td><p>Gaussian mixtures</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>4.3</p></td>
 <td><p>3.8</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
 <td><p>2</p></td>
-<td><p>6</p></td>
+<td><p>6.2</p></td>
 <td><p>13</p></td>
 </tr>
 <tr class="row-odd"><td><p>Genie_0.1</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>3.8</p></td>
 <td><p>3.6</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
 <td><p>3</p></td>
-<td><p>5</p></td>
+<td><p>5.2</p></td>
 <td><p>13</p></td>
 </tr>
 <tr class="row-even"><td><p>Genie_0.3</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>3.5</p></td>
-<td><p>3.3</p></td>
+<td><p>3.4</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>2</p></td>
+<td><p>1.5</p></td>
 <td><p>5</p></td>
 <td><p>12</p></td>
 </tr>
 <tr class="row-odd"><td><p>Genie_0.5</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>4.4</p></td>
-<td><p>4.1</p></td>
+<td><p>4.2</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
 <td><p>2</p></td>
-<td><p>8</p></td>
+<td><p>8.2</p></td>
 <td><p>12</p></td>
 </tr>
 <tr class="row-even"><td><p>ITM</p></td>
-<td><p>73</p></td>
-<td><p>5.5</p></td>
+<td><p>72</p></td>
+<td><p>5.6</p></td>
 <td><p>4.3</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
 <td><p>5</p></td>
-<td><p>9</p></td>
+<td><p>9.2</p></td>
 <td><p>13</p></td>
 </tr>
 <tr class="row-odd"><td><p>K-means</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>6</p></td>
-<td><p>4</p></td>
+<td><p>4.1</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
 <td><p>6</p></td>
-<td><p>9</p></td>
+<td><p>9.2</p></td>
 <td><p>13</p></td>
 </tr>
 <tr class="row-even"><td><p>Single linkage</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>7.9</p></td>
 <td><p>5.5</p></td>
 <td><p>1</p></td>
@@ -429,52 +420,41 @@ gets a rank of 1); lower ranks are better:</p>
 <td><p>13</p></td>
 </tr>
 <tr class="row-odd"><td><p>Spectral_RBF_5</p></td>
-<td><p>73</p></td>
-<td><p>5.4</p></td>
-<td><p>3.7</p></td>
+<td><p>72</p></td>
+<td><p>5.3</p></td>
+<td><p>3.6</p></td>
 <td><p>1</p></td>
 <td><p>1</p></td>
-<td><p>6</p></td>
+<td><p>5.5</p></td>
 <td><p>8</p></td>
-<td><p>13</p></td>
+<td><p>12</p></td>
 </tr>
 <tr class="row-even"><td><p>Ward linkage</p></td>
-<td><p>73</p></td>
+<td><p>72</p></td>
 <td><p>6.4</p></td>
 <td><p>3.2</p></td>
 <td><p>1</p></td>
 <td><p>4</p></td>
 <td><p>7</p></td>
-<td><p>8</p></td>
+<td><p>8.2</p></td>
 <td><p>13</p></td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="large-datasets">
-<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading"></a></h2>
+<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading">¶</a></h2>
 <p>Below we provide the results for the larger datasets (70,000-105,600 points).</p>
-<figure class="align-default" id="id14">
+<figure class="align-default" id="id15">
 <a class="reference internal image-reference" href="../_images/benchmarks_ar_plot_large_1.png"><img alt="../_images/benchmarks_ar_plot_large_1.png" src="../_images/benchmarks_ar_plot_large_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 11 </span><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 11 </span><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>This time, the ITM method and Genie with <cite>gini_threshold</cite> of 0.1 give
 the highest typical scores.</p>
 <p>Descriptive statistics for the ranks (AR index):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -572,10 +552,10 @@ the highest typical scores.</p>
 </table>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">¶</a></h2>
 <p>Overall, the Genie algorithm tends to outperform other algorithms considered
 in this study, at least on this rich benchmark battery.
-In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id11" title="M. Gagolewski, M. Bartoszuk, and A. Cena. Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23, 2016. doi:10.1016/j.ins.2016.05.003.">GBC16</a>]</span>, based on a much smaller sample of reference datasets,
+In <span id="id13">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
 we have recommended <cite>gini_threshold</cite> of 0.3,
 which is set as the default also in the <cite>genieclust</cite> package.
 However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
@@ -605,7 +585,7 @@ in a significant way.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

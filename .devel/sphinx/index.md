@@ -28,8 +28,9 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
-Thanks to its being based on minimal spanning trees of the pairwise distance
-graphs, Genie is also **very fast** — determining the whole cluster hierarchy
+Thanks to its being based on minimal spanning trees {cite}`clustering-msts`
+of the pairwise distance graphs, Genie is also **very fast** — determining
+the whole cluster hierarchy
 for datasets of millions of points, can be completed within
 {any}`minutes <weave/timings>`.
 Therefore, it is capable of solving **extreme clustering tasks**
@@ -113,9 +114,10 @@ The implemented algorithms include:
     {cite}`hdbscan` method that detects noise points in data and
     outputs clusters of predefined sizes;
 
--   *(Python only, experimental preview)* *Genie+Ic* (*GIc*) –
-    Cena's {cite}`cenaphd` algorithm to minimise the information
-    theoretic criterion discussed in {cite}`itm`.
+-   *GIc* (*Genie+Information Criterion*) –
+    a heuristic agglomerative algorithm {cite}`cenaphd` to minimise the information
+    theoretic criterion {cite}`itm`; see {cite}`clustering-msts`
+    *(Python only)*.
 
 Other features:
 
@@ -207,7 +209,7 @@ rapi
 :caption: See Also
 
 Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com>
-Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
+Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 Deep R Programming <https://deepr.gagolewski.com>
 ::::
 

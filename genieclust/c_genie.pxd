@@ -14,7 +14,7 @@ Provides access to the CGenie and CGIc classes.
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -33,7 +33,7 @@ Provides access to the CGenie and CGIc classes.
 cdef extern from "../src/c_genie.h":
     cdef cppclass CGenie[T]:
         CGenie() except +
-        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint noise_leaves, bint new_merge) except +
+        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint noise_leaves, bint experimental_forced_merge) except +
         void apply_genie(Py_ssize_t n_clusters, double gini_threshold)  except +
         Py_ssize_t get_max_n_clusters()
         Py_ssize_t get_links(Py_ssize_t* res)

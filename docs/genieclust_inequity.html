@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -138,9 +139,15 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.inequity</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.inequity</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.inequity.bonferroni_index"><code class="docutils literal notranslate"><span class="pre">bonferroni_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.inequity.devergottini_index"><code class="docutils literal notranslate"><span class="pre">devergottini_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.inequity.gini_index"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
@@ -151,7 +158,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -244,14 +251,14 @@
            <div itemprop="articleBody">
             
   <section id="module-genieclust.inequity">
-<span id="genieclust-inequity"></span><h1>genieclust.inequity<a class="headerlink" href="#module-genieclust.inequity" title="Permalink to this heading"></a></h1>
+<span id="genieclust-inequity"></span><h1>genieclust.inequity<a class="headerlink" href="#module-genieclust.inequity" title="Permalink to this heading">¶</a></h1>
 <p>Inequity (inequality) measures</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.inequity.bonferroni_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">bonferroni_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.bonferroni_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">bonferroni_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.bonferroni_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the normalised Bonferroni index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>A vector with non-negative elements.</p>
 </dd>
@@ -259,7 +266,7 @@
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>double</dt><dd><p>The value of the inequity index, a number in [0,1].</p>
 </dd>
@@ -286,12 +293,13 @@
 <p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is an ordering permutation of <span class="math notranslate nohighlight">\((x_1,\dots,x_n)\)</span>.</p>
 <p>Time complexity: <span class="math notranslate nohighlight">\(O(n)\)</span> for sorted data.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r7a1a970a7245-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Bonferroni C., <em>Elementi di Statistica Generale</em>, Libreria Seber,
+<div role="list" class="citation-list">
+<div class="citation" id="r7a1a970a7245-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Bonferroni C., <em>Elementi di Statistica Generale</em>, Libreria Seber,
 Firenze, 1930.</p>
-</dd>
-</dl>
+</div>
+</div>
 <p class="rubric">Examples</p>
 <p>No inequality (perfect equality):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">bonferroni_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
@@ -317,10 +325,10 @@ Firenze, 1930.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.inequity.devergottini_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">devergottini_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.devergottini_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">devergottini_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.devergottini_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the normalised De Vergottini index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>A vector with non-negative elements.</p>
 </dd>
@@ -328,7 +336,7 @@ Firenze, 1930.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>double</dt><dd><p>The value of the inequity index, a number in [0,1].</p>
 </dd>
@@ -380,10 +388,10 @@ Firenze, 1930.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.inequity.gini_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">gini_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.gini_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.inequity.</span></span><span class="sig-name descname"><span class="pre">gini_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sorted</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.inequity.gini_index" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the normalised Gini index</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">ndarray</span></dt><dd><p>A vector with non-negative elements.</p>
 </dd>
@@ -391,7 +399,7 @@ Firenze, 1930.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>double</dt><dd><p>The value of the inequity index, a number in [0,1].</p>
 </dd>
@@ -436,12 +444,13 @@ to the “poor”) decreases the inequity.</p>
 The <cite>Genie</cite> clustering algorithm uses the Gini index as a measure
 of the inequality of cluster sizes.</p>
 <p class="rubric">References</p>
-<dl class="citation">
-<dt class="label" id="r2095d0fd2ecf-1"><span class="brackets"><a class="fn-backref" href="#id3">1</a></span></dt>
-<dd><p>Gini C., <em>Variabilita e Mutabilita</em>,
+<div role="list" class="citation-list">
+<div class="citation" id="r2095d0fd2ecf-1" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">1</a><span class="fn-bracket">]</span></span>
+<p>Gini C., <em>Variabilita e Mutabilita</em>,
 Tipografia di Paolo Cuppini, Bologna, 1912.</p>
-</dd>
-</dl>
+</div>
+</div>
 <p class="rubric">Examples</p>
 <p>No inequality (perfect equality):</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">round</span><span class="p">(</span><span class="n">genieclust</span><span class="o">.</span><span class="n">inequity</span><span class="o">.</span><span class="n">gini_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span>  <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
@@ -487,7 +496,7 @@ Tipografia di Paolo Cuppini, Bologna, 1912.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="../_static/underscore.js"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -140,7 +141,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -253,17 +254,17 @@
            <div itemprop="articleBody">
             
   <section id="benchmarks-detailed-results">
-<h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this heading"></a></h1>
+<h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Permalink to this heading">¶</a></h1>
 <p>In one of the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">above sections</span></a>
 we have summarised the AR indices based on the datasets from
 the <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms – Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id4" title="M. Gagolewski and others. Benchmark suite for clustering algorithms – version 1. 2020. URL: https://github.com/gagolews/clustering-benchmarks, doi:10.5281/zenodo.3815066.">G+20</a>]</span>.
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M., et al. (2020).  Benchmark suite for clustering algorithms – version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>.
 In this section we present more detailed results for
 some other partition similarity measures implemented in the <cite>genieclust</cite>
-package — Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id39" title="E.B. Fowlkes and C.L. Mallows. A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569, 1983.">FM83</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id20" title="L. Hubert and P. Arabie. Comparing partitions. Journal of Classification, 2(1):193–218, 1985. doi:10.1007/BF01908075.">HA85</a>]</span>,
-adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id28" title="N.X. Vinh, J. Epps, and J. Bailey. Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854, 2010. URL: http://jmlr.org/papers/v11/vinh10a.html.">VEB10</a>]</span>,
+package — Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id40" title="Fowlkes, E.B., Mallows, C.L. (1983).  A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569.">8</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id21" title="Hubert, L., Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">21</a>]</span>,
+adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id29" title="Vinh, N.X., Epps, J., Bailey, J. (2010).  Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854. URL: http://jmlr.org/papers/v11/vinh10a.html.">35</a>]</span>,
 normalised accuracy (which is based on set-matching classification rate),
-and pair sets index <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id27" title="M. Rezaei and P. Fränti. Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186, 2016. doi:10.1109/TKDE.2016.2551240.">RF16</a>]</span>,
+and pair sets index <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id28" title="Rezaei, M., Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">33</a>]</span>,
 see the API documentation of <a class="reference internal" href="../genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a> for more details.
 In each case, score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.</p>
@@ -274,22 +275,11 @@ item. Clustering is performed with respect to the Euclidean distance
 (wherever applicable).</p>
 <p>All raw results can be found <a class="reference external" href="https://github.com/gagolews/clustering_results_v1/">here</a>.</p>
 <section id="small-datasets">
-<h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this heading"></a></h2>
+<h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Permalink to this heading">¶</a></h2>
 <section id="ar">
-<h3>ar<a class="headerlink" href="#ar" title="Permalink to this heading"></a></h3>
+<h3>ar<a class="headerlink" href="#ar" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -437,17 +427,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -595,22 +574,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -1728,20 +1691,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="fm">
-<h3>fm<a class="headerlink" href="#fm" title="Permalink to this heading"></a></h3>
+<h3>fm<a class="headerlink" href="#fm" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -1889,17 +1841,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -2047,22 +1988,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -3180,20 +3105,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="ami">
-<h3>ami<a class="headerlink" href="#ami" title="Permalink to this heading"></a></h3>
+<h3>ami<a class="headerlink" href="#ami" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -3341,17 +3255,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -3499,22 +3402,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -4632,20 +4519,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="nmi">
-<h3>nmi<a class="headerlink" href="#nmi" title="Permalink to this heading"></a></h3>
+<h3>nmi<a class="headerlink" href="#nmi" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -4793,17 +4669,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -4951,22 +4816,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -6084,20 +5933,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="nacc">
-<h3>nacc<a class="headerlink" href="#nacc" title="Permalink to this heading"></a></h3>
+<h3>nacc<a class="headerlink" href="#nacc" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -6245,17 +6083,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -6403,22 +6230,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -7536,20 +7347,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="psi">
-<h3>psi<a class="headerlink" href="#psi" title="Permalink to this heading"></a></h3>
+<h3>psi<a class="headerlink" href="#psi" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -7697,17 +7497,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 28%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -7855,22 +7644,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 11%" />
-<col style="width: 9%" />
-<col style="width: 6%" />
-<col style="width: 9%" />
-<col style="width: 9%" />
-<col style="width: 10%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 6%" />
-<col style="width: 3%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 7%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Average linkage</p></th>
@@ -8988,34 +8761,23 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="summary">
-<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h3>
+<h3>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">¶</a></h3>
 <p>Medians and means of the partition similarity scores
 (read row-wise, in groups of 2 columns):</p>
 <figure class="align-default" id="id13">
 <a class="reference internal image-reference" href="../_images/benchmarks_details_indices_small_1.png"><img alt="../_images/benchmarks_details_indices_small_1.png" src="../_images/benchmarks_details_indices_small_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 20 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id13" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 20 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
 </section>
 <section id="large-datasets">
-<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading"></a></h2>
+<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading">¶</a></h2>
 <section id="id6">
-<h3>ar<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
+<h3>ar<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9113,17 +8875,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9221,17 +8972,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -9309,20 +9049,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id7">
-<h3>fm<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<h3>fm<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9420,17 +9149,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9528,17 +9246,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -9616,20 +9323,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id8">
-<h3>ami<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<h3>ami<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9727,17 +9423,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -9835,17 +9520,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -9923,20 +9597,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id9">
-<h3>nmi<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
+<h3>nmi<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10034,17 +9697,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10142,17 +9794,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -10230,20 +9871,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id10">
-<h3>nacc<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
+<h3>nacc<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10341,17 +9971,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10449,17 +10068,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nacc</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -10537,20 +10145,9 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id11">
-<h3>psi<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<h3>psi<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10648,17 +10245,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 27%" />
-<col style="width: 12%" />
-<col style="width: 10%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-<col style="width: 8%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>count</p></th>
@@ -10756,17 +10342,6 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 12%" />
-<col style="width: 17%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 10%" />
-<col style="width: 5%" />
-<col style="width: 8%" />
-<col style="width: 15%" />
-<col style="width: 13%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"></th>
 <th class="head"><p>Centroid linkage</p></th>
@@ -10844,12 +10419,12 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </section>
 <section id="id12">
-<h3>Summary<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<h3>Summary<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h3>
 <p>Medians and means of the partition similarity scores:</p>
 <figure class="align-default" id="id14">
 <a class="reference internal image-reference" href="../_images/benchmarks_details_indices_large_1.png"><img alt="../_images/benchmarks_details_indices_large_1.png" src="../_images/benchmarks_details_indices_large_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 21 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id14" title="Permalink to this image"></a></p>
+<p><span class="caption-number">Figure 21 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
 </figcaption>
 </figure>
 </section>
@@ -10876,7 +10451,7 @@ item. Clustering is performed with respect to the Euclidean distance
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

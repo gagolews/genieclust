@@ -76,7 +76,8 @@ The Genie algorithm with `gini_threshold` of 0.3 gives the highest average
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic `ITM <https://github.com/amueller/information-theoretic-mst>`_
-:cite:`itm` method (which is also based on a minimum spanning tree)
+:cite:`itm` method (which is also based on a minimum spanning tree;
+compare :cite:`clustering-msts`)
 tend to output good quality outcomes as well.
 
 
@@ -91,19 +92,19 @@ gets a rank of 1); lower ranks are better:
 =================  =======  ======  =====  =====  =====  =====  =====  =====
 ..                   count    mean    std    min    25%    50%    75%    max
 =================  =======  ======  =====  =====  =====  =====  =====  =====
-Average linkage         73     6.9    3.6      1      5      7     10     13
-Birch_0.01              73     6.1    3.1      1      4      6      8     13
-Centroid linkage        73     7.1    3.7      1      5      8     10     13
-Complete linkage        73     8.3    3.4      1      6      9     11     13
-Gaussian mixtures       73     4.3    3.8      1      1      2      6     13
-Genie_0.1               73     3.8    3.6      1      1      3      5     13
-Genie_0.3               73     3.5    3.3      1      1      2      5     12
-Genie_0.5               73     4.4    4.1      1      1      2      8     12
-ITM                     73     5.5    4.3      1      1      5      9     13
-K-means                 73     6      4        1      1      6      9     13
-Single linkage          73     7.9    5.5      1      1     11     13     13
-Spectral_RBF_5          73     5.4    3.7      1      1      6      8     13
-Ward linkage            73     6.4    3.2      1      4      7      8     13
+Average linkage         72     6.8    3.6      1    5      7     10       13
+Birch_0.01              72     6.1    3.1      1    4      6      8       13
+Centroid linkage        72     7      3.7      1    4.8    7.5   10       13
+Complete linkage        72     8.3    3.4      1    6      9     11       13
+Gaussian mixtures       72     4.3    3.8      1    1      2      6.2     13
+Genie_0.1               72     3.8    3.6      1    1      3      5.2     13
+Genie_0.3               72     3.5    3.4      1    1      1.5    5       12
+Genie_0.5               72     4.4    4.2      1    1      2      8.2     12
+ITM                     72     5.6    4.3      1    1      5      9.2     13
+K-means                 72     6      4.1      1    1      6      9.2     13
+Single linkage          72     7.9    5.5      1    1     11     13       13
+Spectral_RBF_5          72     5.3    3.6      1    1      5.5    8       12
+Ward linkage            72     6.4    3.2      1    4      7      8.2     13
 =================  =======  ======  =====  =====  =====  =====  =====  ===== 
 
 

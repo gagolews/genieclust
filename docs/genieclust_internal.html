@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
         <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
         <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
@@ -138,10 +139,37 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="genieclust.html">Python Package <cite>genieclust</cite> Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.internal</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">genieclust.internal</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.internal.DisjointSets"><code class="docutils literal notranslate"><span class="pre">DisjointSets</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.find"><code class="docutils literal notranslate"><span class="pre">DisjointSets.find()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.get_k"><code class="docutils literal notranslate"><span class="pre">DisjointSets.get_k()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.get_n"><code class="docutils literal notranslate"><span class="pre">DisjointSets.get_n()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.to_list"><code class="docutils literal notranslate"><span class="pre">DisjointSets.to_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.to_list_normalized"><code class="docutils literal notranslate"><span class="pre">DisjointSets.to_list_normalized()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.to_lists"><code class="docutils literal notranslate"><span class="pre">DisjointSets.to_lists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.DisjointSets.union"><code class="docutils literal notranslate"><span class="pre">DisjointSets.union()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.find"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.find()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_count"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_counts"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_counts()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_gini"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_gini()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_k"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_k()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_n"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_n()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.get_smallest_count"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.get_smallest_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.to_list"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.to_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.to_list_normalized"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.to_list_normalized()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.to_lists"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.to_lists()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#genieclust.internal.GiniDisjointSets.union"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets.union()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
 </ul>
@@ -151,7 +179,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -244,14 +272,14 @@
            <div itemprop="articleBody">
             
   <section id="module-genieclust.internal">
-<span id="genieclust-internal"></span><h1>genieclust.internal<a class="headerlink" href="#module-genieclust.internal" title="Permalink to this heading"></a></h1>
+<span id="genieclust-internal"></span><h1>genieclust.internal<a class="headerlink" href="#module-genieclust.internal" title="Permalink to this heading">¶</a></h1>
 <p>Internal functions and classes</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.internal.</span></span><span class="sig-name descname"><span class="pre">DisjointSets</span></span><a class="headerlink" href="#genieclust.internal.DisjointSets" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.internal.</span></span><span class="sig-name descname"><span class="pre">DisjointSets</span></span><a class="headerlink" href="#genieclust.internal.DisjointSets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Disjoint Sets (Union-Find)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>n</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>The cardinality of the set whose partitions are generated.</p>
 </dd>
@@ -270,16 +298,16 @@ package rely on the assumption that the parent ID of each
 element is always &lt;= than itself.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.find">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.find" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the subset ID for a given <cite>x</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>An integer in <cite>{0,…,n-1}</cite>, representing an element to find.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>Py_ssize_t</dt><dd><p>The ID of the parent of <cite>x</cite>.</p>
 </dd>
@@ -290,22 +318,22 @@ element is always &lt;= than itself.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.get_k">
-<span class="sig-name descname"><span class="pre">get_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.get_k" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.get_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the current number of subsets</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.get_n">
-<span class="sig-name descname"><span class="pre">get_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.get_n" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.get_n" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of elements in the set being partitioned</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_list" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets parent IDs of all the elements</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ndarray, shape (n,)</dt><dd><p>A list <code class="docutils literal notranslate"><span class="pre">m</span></code> such that <code class="docutils literal notranslate"><span class="pre">m[x]</span></code> denotes the (recursive) parent ID
 of <cite>x</cite>, for <cite>x = 0,1,…,n-1</cite>.</p>
@@ -317,10 +345,10 @@ of <cite>x</cite>, for <cite>x = 0,1,…,n-1</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.to_list_normalized">
-<span class="sig-name descname"><span class="pre">to_list_normalized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_list_normalized" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_list_normalized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_list_normalized" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the normalised elements’ membership information</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ndarray, shape (n,)</dt><dd><p>A list <code class="docutils literal notranslate"><span class="pre">m</span></code> such that <code class="docutils literal notranslate"><span class="pre">m[x]</span></code> denotes the normalised parent ID
 of <cite>x</cite>. The resulting values are in <cite>{0,1,…,k-1}</cite>,
@@ -333,10 +361,10 @@ where <cite>k</cite> is the current number of subsets in the partition.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.to_lists">
-<span class="sig-name descname"><span class="pre">to_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_lists" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.to_lists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of lists representing the current partition</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>list of lists</dt><dd><p>A list of length <cite>k</cite>, where <cite>k</cite> is the current number
 of sets in the partition. Each list element is a list
@@ -351,10 +379,10 @@ with values in <cite>{0,…,n-1}</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.DisjointSets.union">
-<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.union" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.DisjointSets.union" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merges the sets containing given <cite>x</cite> and <cite>y</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>Integer in {0,…,n-1}, representing an element of the first set
 to be merged.</p>
@@ -364,7 +392,7 @@ to be merged.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>parent</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>The id of the parent of x or y, whichever is smaller.</p>
 </dd>
@@ -383,10 +411,10 @@ an exception is thrown.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.internal.</span></span><span class="sig-name descname"><span class="pre">GiniDisjointSets</span></span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.internal.</span></span><span class="sig-name descname"><span class="pre">GiniDisjointSets</span></span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets" title="Permalink to this definition">¶</a></dt>
 <dd><p>Augmented disjoint sets (Union-Find) over <cite>{0,1,…,n-1}</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>n</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>The cardinality of the set whose partitions are generated.</p>
 </dd>
@@ -404,16 +432,16 @@ Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 <em>Information Sciences</em> <strong>363</strong>, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.find">
-<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.find" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.find" title="Permalink to this definition">¶</a></dt>
 <dd><p>Finds the subset ID for a given <cite>x</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>An integer in <cite>{0,…,n-1}</cite>, representing an element to find.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>Py_ssize_t</dt><dd><p>The ID of the parent of <cite>x</cite>.</p>
 </dd>
@@ -424,10 +452,10 @@ Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_count">
-<span class="sig-name descname"><span class="pre">get_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_count" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the size of the subset containing <cite>x</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>An integer in <cite>{0,…,n-1}</cite>, representing an element to find.</p>
 </dd>
@@ -440,7 +468,7 @@ Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_counts">
-<span class="sig-name descname"><span class="pre">get_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_counts" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_counts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates an array of subsets’ sizes</p>
 <p class="rubric">Notes</p>
 <p>The resulting vector is ordered nondecreasingly.</p>
@@ -449,7 +477,7 @@ Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_gini">
-<span class="sig-name descname"><span class="pre">get_gini</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_gini" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_gini</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_gini" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Gini index of the distribution of subsets’ sizes</p>
 <p class="rubric">Notes</p>
 <p>Run time is <span class="math notranslate nohighlight">\(O(1)\)</span>, as the Gini index is updated during
@@ -458,19 +486,19 @@ each call to <cite>union()</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_k">
-<span class="sig-name descname"><span class="pre">get_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_k" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_k</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_k" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the current number of subsets</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_n">
-<span class="sig-name descname"><span class="pre">get_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_n" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_n</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_n" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of elements in the set being partitioned</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.get_smallest_count">
-<span class="sig-name descname"><span class="pre">get_smallest_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_smallest_count" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_smallest_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.get_smallest_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the size of the smallest subset</p>
 <p class="rubric">Notes</p>
 <p>Run time is <cite>O(1)</cite>.</p>
@@ -478,10 +506,10 @@ each call to <cite>union()</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.to_list">
-<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_list" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets parent IDs of all the elements</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ndarray, shape (n,)</dt><dd><p>A list <code class="docutils literal notranslate"><span class="pre">m</span></code> such that <code class="docutils literal notranslate"><span class="pre">m[x]</span></code> denotes the (recursive) parent ID
 of <cite>x</cite>, for <cite>x = 0,1,…,n-1</cite>.</p>
@@ -493,10 +521,10 @@ of <cite>x</cite>, for <cite>x = 0,1,…,n-1</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.to_list_normalized">
-<span class="sig-name descname"><span class="pre">to_list_normalized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_list_normalized" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_list_normalized</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_list_normalized" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the normalised elements’ membership information</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>ndarray, shape (n,)</dt><dd><p>A list <code class="docutils literal notranslate"><span class="pre">m</span></code> such that <code class="docutils literal notranslate"><span class="pre">m[x]</span></code> denotes the normalised parent ID
 of <cite>x</cite>. The resulting values are in <cite>{0,1,…,k-1}</cite>,
@@ -509,10 +537,10 @@ where <cite>k</cite> is the current number of subsets in the partition.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.to_lists">
-<span class="sig-name descname"><span class="pre">to_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_lists" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_lists</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.to_lists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of lists representing the current partition</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt>list of lists</dt><dd><p>A list of length <cite>k</cite>, where <cite>k</cite> is the current number
 of sets in the partition. Each list element is a list
@@ -527,10 +555,10 @@ with values in <cite>{0,…,n-1}</cite>.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.internal.GiniDisjointSets.union">
-<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.union" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">union</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.internal.GiniDisjointSets.union" title="Permalink to this definition">¶</a></dt>
 <dd><p>Merges the sets containing given <cite>x</cite> and <cite>y</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>x</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>Integer in {0,…,n-1}, representing an element of the first set
 to be merged.</p>
@@ -540,7 +568,7 @@ to be merged.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>parent</strong><span class="classifier">Py_ssize_t</span></dt><dd><p>The id of the parent of x or y, whichever is smaller.</p>
 </dd>
@@ -581,7 +609,7 @@ as the Gini index must be recomputed.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 

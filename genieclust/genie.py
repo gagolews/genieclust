@@ -944,7 +944,7 @@ class Genie(GenieBase):
             verbose=verbose)
 
         self.gini_threshold = gini_threshold
-        self._new_merge = False  # experimental, likely to be removed (#51)
+        self._experimental_forced_merge = False  # experimental, likely to be removed - wors (#51)
 
         self._check_params()
 
@@ -958,7 +958,7 @@ class Genie(GenieBase):
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("`gini_threshold` not in [0,1].")
 
-        cur_state["new_merge"] = bool(self._new_merge)  # experimental (#51)
+        cur_state["experimental_forced_merge"] = bool(self._experimental_forced_merge)  # experimental (#51)
 
         return cur_state
 
@@ -1057,7 +1057,7 @@ class Genie(GenieBase):
             noise_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"],
-            new_merge=cur_state["new_merge"])
+            experimental_forced_merge=cur_state["experimental_forced_merge"])
 
         cur_state = self._postprocess_outputs(res, cur_state)
 
@@ -1077,8 +1077,7 @@ class Genie(GenieBase):
 
 class GIc(GenieBase):
     """
-    (**EXPERIMENTAL**) GIc hierarchical clustering algorithm
-
+    GIc (Genie+Information Criterion) clustering algorithm
 
 
     Parameters
@@ -1172,9 +1171,10 @@ class GIc(GenieBase):
     -----
 
     GIc (Genie+Information Criterion) is an Information-Theoretic
-    Hierarchical Clustering Algorithm.
+    Clustering Algorithm.
     It was proposed by Anna Cena in [1]_ and had been inspired
-    by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_.
+    by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_;
+    see also [4]_.
 
     GIc computes an `n_clusters`-partition
     based on a pre-computed minimum spanning tree. Clusters are merged
@@ -1187,8 +1187,11 @@ class GIc(GenieBase):
     By default, the initial partition is determined by considering
     the intersection of the partitions found by multiple runs of
     the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7], which
-    is a sensible choice for most clustering activities. Hence, contrary
-    to the Genie method, we can say that GIc as virtually parameter-less.
+    we observe to be a sensible choice for most clustering activities.
+    Hence, contrary to the Genie method, we can say that GIc as virtually
+    parameter-less. However, when run with different `n_clusters` parameter,
+    it does not yield a hierarchy of nested partitions (unless some more manual
+    parameter tuning is applied).
 
 
     :Environment variables:
@@ -1213,6 +1216,11 @@ class GIc(GenieBase):
         Genie: A new, fast, and outlier-resistant hierarchical clustering
         algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
+
+    .. [4]
+        Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+        Clustering with Minimum Spanning Trees: How Good Can It Be?,
+        in preparation, 2023.
 
     """
     def __init__(

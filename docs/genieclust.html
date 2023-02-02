@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -50,6 +50,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -136,6 +137,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python Package <cite>genieclust</cite> Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
@@ -149,7 +151,7 @@
 <p class="caption" role="heading"><span class="caption-text">See Also</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Data Wrangling in Python</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -240,32 +242,31 @@
            <div itemprop="articleBody">
             
   <section id="python-package-genieclust-reference">
-<h1>Python Package <cite>genieclust</cite> Reference<a class="headerlink" href="#python-package-genieclust-reference" title="Permalink to this heading"></a></h1>
+<h1>Python Package <cite>genieclust</cite> Reference<a class="headerlink" href="#python-package-genieclust-reference" title="Permalink to this heading">¶</a></h1>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>([n_clusters, ...])</p></td>
 <td><p>Genie++ hierarchical clustering algorithm</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="genieclust_cluster_validity.html#module-genieclust.cluster_validity" title="genieclust.cluster_validity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="genieclust_gic.html#genieclust.GIc" title="genieclust.GIc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.GIc</span></code></a>([n_clusters, ...])</p></td>
+<td><p>GIc (Genie+Information Criterion) clustering algorithm</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_cluster_validity.html#module-genieclust.cluster_validity" title="genieclust.cluster_validity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.cluster_validity</span></code></a></p></td>
 <td><p>So-called internal cluster validity indices</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a></p></td>
 <td><p>External cluster validity measures and partition similarity scores</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="genieclust_inequity.html#module-genieclust.inequity" title="genieclust.inequity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.inequity</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_inequity.html#module-genieclust.inequity" title="genieclust.inequity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.inequity</span></code></a></p></td>
 <td><p>Inequity (inequality) measures</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_internal.html#module-genieclust.internal" title="genieclust.internal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.internal</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="genieclust_internal.html#module-genieclust.internal" title="genieclust.internal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.internal</span></code></a></p></td>
 <td><p>Internal functions and classes</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="genieclust_plots.html#module-genieclust.plots" title="genieclust.plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.plots</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_plots.html#module-genieclust.plots" title="genieclust.plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.plots</span></code></a></p></td>
 <td><p>Various plotting functions</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="genieclust_tools.html#module-genieclust.tools" title="genieclust.tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.tools</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="genieclust_tools.html#module-genieclust.tools" title="genieclust.tools"><code class="xref py py-obj docutils literal notranslate"><span class="pre">genieclust.tools</span></code></a></p></td>
 <td><p>Functions one might find useful, but not necessarily</p></td>
 </tr>
 </tbody>
@@ -273,13 +274,67 @@
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Modules and Classes:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
-<li class="toctree-l1"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_genie.html">genieclust.Genie</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_genie.html#genieclust.Genie"><code class="docutils literal notranslate"><span class="pre">Genie</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html#genieclust.GIc"><code class="docutils literal notranslate"><span class="pre">GIc</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.calinski_harabasz_index"><code class="docutils literal notranslate"><span class="pre">calinski_harabasz_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.dunnowa_index"><code class="docutils literal notranslate"><span class="pre">dunnowa_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.generalised_dunn_index"><code class="docutils literal notranslate"><span class="pre">generalised_dunn_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.negated_ball_hall_index"><code class="docutils literal notranslate"><span class="pre">negated_ball_hall_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.negated_davies_bouldin_index"><code class="docutils literal notranslate"><span class="pre">negated_davies_bouldin_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.negated_wcss_index"><code class="docutils literal notranslate"><span class="pre">negated_wcss_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.silhouette_index"><code class="docutils literal notranslate"><span class="pre">silhouette_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.silhouette_w_index"><code class="docutils literal notranslate"><span class="pre">silhouette_w_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html#genieclust.cluster_validity.wcnn_index"><code class="docutils literal notranslate"><span class="pre">wcnn_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.adjusted_asymmetric_accuracy"><code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.adjusted_fm_score"><code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.adjusted_mi_score"><code class="docutils literal notranslate"><span class="pre">adjusted_mi_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.adjusted_rand_score"><code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.compare_partitions"><code class="docutils literal notranslate"><span class="pre">compare_partitions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.compare_partitions2"><code class="docutils literal notranslate"><span class="pre">compare_partitions2()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.confusion_matrix"><code class="docutils literal notranslate"><span class="pre">confusion_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.fm_score"><code class="docutils literal notranslate"><span class="pre">fm_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.mi_score"><code class="docutils literal notranslate"><span class="pre">mi_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.normalize_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">normalize_confusion_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.normalized_accuracy"><code class="docutils literal notranslate"><span class="pre">normalized_accuracy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.normalized_confusion_matrix"><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.normalized_mi_score"><code class="docutils literal notranslate"><span class="pre">normalized_mi_score()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.normalizing_permutation"><code class="docutils literal notranslate"><span class="pre">normalizing_permutation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.pair_sets_index"><code class="docutils literal notranslate"><span class="pre">pair_sets_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html#genieclust.compare_partitions.rand_score"><code class="docutils literal notranslate"><span class="pre">rand_score()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html#genieclust.inequity.bonferroni_index"><code class="docutils literal notranslate"><span class="pre">bonferroni_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html#genieclust.inequity.devergottini_index"><code class="docutils literal notranslate"><span class="pre">devergottini_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html#genieclust.inequity.gini_index"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html#genieclust.internal.DisjointSets"><code class="docutils literal notranslate"><span class="pre">DisjointSets</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html#genieclust.internal.GiniDisjointSets"><code class="docutils literal notranslate"><span class="pre">GiniDisjointSets</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html#genieclust.plots.plot_scatter"><code class="docutils literal notranslate"><span class="pre">plot_scatter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html#genieclust.plots.plot_segments"><code class="docutils literal notranslate"><span class="pre">plot_segments()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html#genieclust.tools.argkmin"><code class="docutils literal notranslate"><span class="pre">argkmin()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html#genieclust.tools.cummax"><code class="docutils literal notranslate"><span class="pre">cummax()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html#genieclust.tools.cummin"><code class="docutils literal notranslate"><span class="pre">cummin()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -304,7 +359,7 @@
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-01-17T10:05:17+1100.
+        Last updated on 2023-02-02T12:42:54+1100.
       </span>
 
 
