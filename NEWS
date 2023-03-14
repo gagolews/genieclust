@@ -1,6 +1,12 @@
 # What Is New in *genieclust*
 
 
+## 1.1.3.9001 (...)
+
+*  [Python] The GIc algorithm no longer marked as experimental;
+   its description will be provided in a forthcoming paper (TODO).
+
+
 ## 1.1.3 (2023-01-17)
 
 *  [R] `mst.default` now throws an error if any element in the input matrix

@@ -154,7 +154,7 @@ any valuable contributions are welcome (Julia, Matlab, etc.).
 
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)
 
-**Contributors**:
+Contributors:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com) and
 [Anna Cena](https://cena.rexamine.com)
 (*genieclust*'s predecessor [*genie*](https://cran.r-project.org/web/packages/genie)  {cite}`genieins`

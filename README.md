@@ -59,7 +59,7 @@ difficult-to-set `eps` parameter.
 
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)
 
-**Contributors**:
+Contributors:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com),
 [Anna Cena](https://cena.rexamine.com) (R packages
 [**genie**](https://CRAN.R-project.org/package=genie)
