@@ -17,7 +17,7 @@ try:
     rpy2.robjects.numpy2ri.activate()
     stats = importr("stats")
     genie = importr("genie")
-except ImportError:
+except:
     rpy2 = None
     stats = None
     genie = None
