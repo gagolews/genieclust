@@ -1,12 +1,15 @@
-source("CVI_test_proc1.R", local=TRUE)
+if (require("clusterCrit", quietly=TRUE)) {
 
-CVI_fun <- negated_davies_bouldin_index
-CVI_name <- "DaviesBouldin"
+    source("CVI_test_proc1.R", local=TRUE)
 
-reference_fun <- function(X, y) {
-    if (min(tabulate(y))<=1) -Inf
-    else -clusterCrit::intCriteria(X, y, "Davies_Bouldin")[[1]]
-#         else -index.DB(X, y, q=1)$DB
-    }
+    CVI_fun <- negated_davies_bouldin_index
+    CVI_name <- "DaviesBouldin"
 
-CVI_test_proc1(CVI_name, CVI_fun, reference_fun)
+    reference_fun <- function(X, y) {
+        if (min(tabulate(y))<=1) -Inf
+        else -clusterCrit::intCriteria(X, y, "Davies_Bouldin")[[1]]
+    #         else -index.DB(X, y, q=1)$DB
+        }
+
+    CVI_test_proc1(CVI_name, CVI_fun, reference_fun)
+}
