@@ -26,6 +26,7 @@ jobs:
         sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild'))"
+        make r
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
