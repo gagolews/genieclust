@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -81,7 +81,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.3
+              Python and R Package<br />    v1.1.4
           </div>
 
 <!--
@@ -240,7 +240,7 @@
            <div itemprop="articleBody">
             
   <section id="timings-how-fast-is-it">
-<h1>Timings (How Fast Is It?)<a class="headerlink" href="#timings-how-fast-is-it" title="Permalink to this heading">¶</a></h1>
+<h1>Timings (How Fast Is It?)<a class="headerlink" href="#timings-how-fast-is-it" title="Permalink to this heading"></a></h1>
 <p>In the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">previous section</span></a> we have demonstrated
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
@@ -254,7 +254,7 @@ with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
 <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id22" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">29</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST)
-<span id="id3">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? in preparation.">18</a>]</span> of the pairwise distance graph of an input point set.
+<span id="id3">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span> of the pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
@@ -271,7 +271,7 @@ such a data structure <a class="reference internal" href="benchmarks_approx.html
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
 and total memory of 16,242,084 kB.</p>
 <section id="large-datasets">
-<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading">¶</a></h2>
+<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Permalink to this heading"></a></h2>
 <p>Let’s study the algorithm’s run times for some of the
 “larger” datasets (70,000-105,600 observations,
 see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
@@ -503,7 +503,7 @@ The exact variant is extremely performant in Euclidean spaces of low dimensional
 hierarchical algorithms in this study.</p>
 </section>
 <section id="timings-as-a-function-of-n-and-d">
-<h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Permalink to this heading">¶</a></h2>
+<h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Permalink to this heading"></a></h2>
 <p>In order to study the run-times as a function dataset size and dimensionality,
 let’s consider a series of synthetic benchmarks, each with two Gaussian blobs of size <cite>n/2</cite>
 (with i.i.d. coordinates), in a <cite>d</cite>-dimensional space.</p>
@@ -653,24 +653,24 @@ very large datasets. Only the system’s memory limits might become a problem th
 <figure class="align-default" id="id10">
 <a class="reference internal image-reference" href="../_images/timings_g2mg-plot_1.png"><img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 12 </span><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 12 </span><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.</span><a class="headerlink" href="#id10" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="timings-as-a-function-of-the-number-of-threads">
-<h2>Timings as a Function of the Number of Threads<a class="headerlink" href="#timings-as-a-function-of-the-number-of-threads" title="Permalink to this heading">¶</a></h2>
+<h2>Timings as a Function of the Number of Threads<a class="headerlink" href="#timings-as-a-function-of-the-number-of-threads" title="Permalink to this heading"></a></h2>
 <p>Recall that the timings are done on a PC with 6 physical cores.
 Genie turns out to be nicely parallelisable — as evidenced on
 the <code class="docutils literal notranslate"><span class="pre">mnist/digits</span></code> dataset:</p>
 <figure class="align-default" id="id11">
 <a class="reference internal image-reference" href="../_images/timings_digits_1.png"><img alt="../_images/timings_digits_1.png" src="../_images/timings_digits_1.png" style="width: 15cm;" /></a>
 <figcaption>
-<p><span class="caption-number">Figure 13 </span><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+<p><span class="caption-number">Figure 13 </span><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id11" title="Permalink to this image"></a></p>
 </figcaption>
 </figure>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">¶</a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
 <p>The approximate (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>) version of Genie is much faster
 than the original one. At the same time, it is still
 <a class="reference internal" href="benchmarks_approx.html"><span class="doc">highly compatible</span></a> with it
@@ -729,7 +729,7 @@ a first run of the algorithm:</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-02-02T12:42:54+1100.
+        Last updated on 2023-03-30T10:00:18+1100.
       </span>
 
 

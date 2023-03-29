@@ -154,7 +154,7 @@
 #'
 #' Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
 #' \emph{Clustering with minimum spanning trees: How good can it be?},
-#' in preparation, 2013.
+#' 2023, under review (preprint), \doi{10.48550/arXiv.2303.05679}.
 #'
 #'
 #' @examples

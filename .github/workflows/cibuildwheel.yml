@@ -9,8 +9,10 @@ env:
     # cp37-win32 cp38-win32 cp39-win32
     # TODO: manylinux aarch64
     # TODO: macos arm64
-    CIBW_SKIP: cp2* pp* cp35* cp36* *-win32 *-manylinux_i686 *-musllinux*
+    CIBW_SKIP: cp2* pp* cp35* cp36* cp37* *-win32 *-manylinux_i686 *-musllinux*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
+    CIBW_ARCHS: all
+    CIBW_TEST_SKIP: "*-macosx_arm64"
 
 #[ubuntu-latest, windows-latest, macos-latest]
 #https://github.com/pypa/cibuildwheel
@@ -21,7 +23,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-2019, macOS-11, ubuntu-20.04]
+        os: [macOS-11, windows-2019, ubuntu-20.04]
 
     steps:
       - uses: actions/checkout@v3
@@ -29,7 +31,7 @@ jobs:
       - uses: actions/setup-python@v3
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.12.0
+        run: python -m pip install cibuildwheel==2.12.1
 
       - name: Build wheels
         run: python -m cibuildwheel --output-dir wheelhouse

@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -81,7 +81,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.3
+              Python and R Package<br />    v1.1.4
           </div>
 
 <!--
@@ -252,10 +252,10 @@
            <div itemprop="articleBody">
             
   <section id="genieclust-genie">
-<h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this heading">¶</a></h1>
+<h1>genieclust.Genie<a class="headerlink" href="#genieclust-genie" title="Permalink to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="genieclust.Genie">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_float32</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_leaf_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'method':</span> <span class="pre">'hnsw'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'post':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">affinity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cast_float32</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mlpack_leaf_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'method':</span> <span class="pre">'hnsw'}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'post':</span> <span class="pre">2}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nmslib_params_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Permalink to this definition"></a></dt>
 <dd><p>Genie++ hierarchical clustering algorithm</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -502,6 +502,12 @@ Density-based clustering based on hierarchical density estimates,
 <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172,
 doi:10.1007/978-3-642-37456-2_14.</p>
 </div>
+<div class="citation" id="r6050e59d50fb-7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
+<p>Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+Clustering with minimum spanning trees: How good can it be?,
+2023, under review (preprint), doi:10.48550/arXiv.2303.05679.</p>
+</div>
 </div>
 <dl class="field-list">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
@@ -577,7 +583,7 @@ See the description of <code class="docutils literal notranslate"><span class="p
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="genieclust.Genie.fit">
-<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Perform cluster analysis of a dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -667,7 +673,7 @@ an array of ASCII strings.</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-02-02T12:42:54+1100.
+        Last updated on 2023-03-30T10:00:18+1100.
       </span>
 
 

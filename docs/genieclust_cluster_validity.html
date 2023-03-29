@@ -6,7 +6,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+  <meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -81,7 +81,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.3
+              Python and R Package<br />    v1.1.4
           </div>
 
 <!--
@@ -257,7 +257,7 @@
            <div itemprop="articleBody">
             
   <section id="module-genieclust.cluster_validity">
-<span id="genieclust-cluster-validity"></span><h1>genieclust.cluster_validity<a class="headerlink" href="#module-genieclust.cluster_validity" title="Permalink to this heading">¶</a></h1>
+<span id="genieclust-cluster-validity"></span><h1>genieclust.cluster_validity<a class="headerlink" href="#module-genieclust.cluster_validity" title="Permalink to this heading"></a></h1>
 <p>So-called internal cluster validity indices</p>
 <p>The greater the index value, the more <em>valid</em> (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
@@ -270,7 +270,7 @@ See Section 2 therein for the respective definitions.</p>
 <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Framework for Benchmarking Clustering Algorithms</a>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.calinski_harabasz_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">calinski_harabasz_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.calinski_harabasz_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">calinski_harabasz_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.calinski_harabasz_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the Caliński-Harabasz index <a class="reference internal" href="#r2beb019b66a8-3" id="id1">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r2beb019b66a8-1" id="id2">[1]</a> and <a class="reference internal" href="#r2beb019b66a8-2" id="id3">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -341,7 +341,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.dunnowa_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">dunnowa_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_numerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SMin:5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_denominator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Const'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.dunnowa_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">dunnowa_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_numerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SMin:5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_denominator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Const'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.dunnowa_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the generalised Dunn indices based on near-neighbours and
 OWA operators <a class="reference internal" href="#r20e856f1accc-2" id="id8">[2]</a>.</p>
 <p>See <a class="reference internal" href="#r20e856f1accc-1" id="id9">[1]</a> and <a class="reference internal" href="#r20e856f1accc-2" id="id10">[2]</a> for the definition and discussion.</p>
@@ -415,7 +415,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.generalised_dunn_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">generalised_dunn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uppercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.generalised_dunn_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">generalised_dunn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uppercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.generalised_dunn_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the generalised Dunn indices (by Bezdek and Pal) <a class="reference internal" href="#r460ccc59a877-3" id="id14">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r460ccc59a877-1" id="id15">[1]</a> and <a class="reference internal" href="#r460ccc59a877-2" id="id16">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -501,7 +501,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_ball_hall_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_ball_hall_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_ball_hall_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_ball_hall_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_ball_hall_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the negated Ball-Hall index <a class="reference internal" href="#r87c09c79f043-3" id="id21">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r87c09c79f043-1" id="id22">[1]</a> and <a class="reference internal" href="#r87c09c79f043-2" id="id23">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -572,7 +572,7 @@ Technical report No. AD699616, Stanford Research Institute, 1965.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_davies_bouldin_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_davies_bouldin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_davies_bouldin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the Davies-Bouldin index <a class="reference internal" href="#r1f1dc6981684-3" id="id28">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r1f1dc6981684-1" id="id29">[1]</a> and <a class="reference internal" href="#r1f1dc6981684-2" id="id30">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -643,7 +643,7 @@ PAMI-1 (2), 1979, 224-227, <a class="reference external" href="https://doi.org/1
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_wcss_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_wcss_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_wcss_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_wcss_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_wcss_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the negated within-cluster sum of squares
 (used as the objective function in the k-means and Ward algorithm)</p>
 <p>See <a class="reference internal" href="#rebb7938d47db-1" id="id35">[1]</a> and <a class="reference internal" href="#rebb7938d47db-2" id="id36">[2]</a> for the definition and discussion.</p>
@@ -709,7 +709,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the The Silhouette index
 (average silhouette score) <a class="reference internal" href="#r22bdb84f562e-3" id="id40">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r22bdb84f562e-1" id="id41">[1]</a> and <a class="reference internal" href="#r22bdb84f562e-2" id="id42">[2]</a> for the definition and discussion.</p>
@@ -781,7 +781,7 @@ Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_w_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_w_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_w_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_w_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_w_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the value of the The Silhouette W index
 (mean of the cluster average silhouette widths) <a class="reference internal" href="#rc10181437a2c-3" id="id47">[3]</a>.</p>
 <p>See <a class="reference internal" href="#rc10181437a2c-1" id="id48">[1]</a> and <a class="reference internal" href="#rc10181437a2c-2" id="id49">[2]</a> for the definition and discussion.</p>
@@ -853,7 +853,7 @@ Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.wcnn_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">wcnn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.wcnn_index" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">wcnn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.wcnn_index" title="Permalink to this definition"></a></dt>
 <dd><p>Computes the within-cluster near-neighbours index <a class="reference internal" href="#rc3cb1f0779f0-2" id="id54">[2]</a>.</p>
 <p>See <a class="reference internal" href="#rc3cb1f0779f0-1" id="id55">[1]</a> and <a class="reference internal" href="#rc3cb1f0779f0-2" id="id56">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -941,7 +941,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-02-02T12:42:54+1100.
+        Last updated on 2023-03-30T10:00:18+1100.
       </span>
 
 
