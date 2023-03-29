@@ -58,7 +58,6 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
         whose row count is not greater than the column count
 
 
-
     Returns
     -------
 

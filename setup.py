@@ -55,7 +55,7 @@ cython_modules = {
 class genieclust_sdist(sdist):
     def run(self):
         for pyx_files in cython_modules.values():
-            cythonize(pyx_files)
+            cythonize(pyx_files, include_path=["genieclust/", "src/", "../src/"])
         sdist.run(self)
 
 
@@ -126,7 +126,7 @@ class genieclust_build_ext(build_ext):
 
 
 ext_kwargs = dict(
-    include_dirs=[np.get_include()],
+    include_dirs=[np.get_include(), "src/", "../src/"],
     language="c++",
     depends=glob.glob(os.path.join("src", "c_*.h")) +
             glob.glob(os.path.join("genieclust", "*.pxd")),

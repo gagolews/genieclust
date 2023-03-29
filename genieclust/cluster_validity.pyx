@@ -165,8 +165,6 @@ cpdef double calinski_harabasz_index(X, y):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
-    return res
-
 
 cpdef double negated_ball_hall_index(X, y):
     """
@@ -261,8 +259,6 @@ cpdef double negated_ball_hall_index(X, y):
     return c_cvi.c_negated_ball_hall_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
-
-    return res
 
 
 cpdef double negated_davies_bouldin_index(X, y):
@@ -360,8 +356,6 @@ cpdef double negated_davies_bouldin_index(X, y):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
-    return res
-
 
 cpdef double negated_wcss_index(X, y):
     """
@@ -453,8 +447,6 @@ cpdef double negated_wcss_index(X, y):
     return c_cvi.c_negated_wcss_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
-
-    return res
 
 
 cpdef double silhouette_index(X, y):
@@ -553,8 +545,6 @@ cpdef double silhouette_index(X, y):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
-    return res
-
 
 cpdef double silhouette_w_index(X, y):
     """
@@ -652,8 +642,6 @@ cpdef double silhouette_w_index(X, y):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
-    return res
-
 
 cpdef double wcnn_index(X, y, int M=25):
     """
@@ -749,8 +737,6 @@ cpdef double wcnn_index(X, y, int M=25):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K, _M
     )
 
-    return res
-
 
 
 cpdef double dunnowa_index(
@@ -829,7 +815,6 @@ cpdef double dunnowa_index(
         The within-cluster near-neighbours index
 
 
-
     References
     ----------
 
@@ -859,8 +844,6 @@ cpdef double dunnowa_index(
             unicode(owa_numerator).encode('utf8'),
             unicode(owa_denominator).encode('utf8')
     )
-
-    return res
 
 
 cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
@@ -977,5 +960,3 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K,
             lowercase_d, uppercase_d
     )
-
-    return res

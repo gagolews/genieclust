@@ -5,7 +5,7 @@
  *  Copyleft (C) 2020, Maciej Bartoszuk <http://bartoszuk.rexamine.com>
  *
  *  For the 'genieclust' version:
- *  Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License

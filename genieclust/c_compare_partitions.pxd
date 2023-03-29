@@ -14,7 +14,7 @@ and Ccompare_partitions_*() functions.
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -45,7 +45,6 @@ cdef extern from "../src/c_compare_partitions.h":
     cdef struct CCompareSetMatchingResult:
         double psi
         double spsi
-
 
     void Cminmax[T](const T* x, Py_ssize_t n, T* xmin, T* xmax)
 
