@@ -12,8 +12,8 @@ env:
     CIBW_SKIP: cp2* pp* cp35* cp36* cp37* *-win32 *-manylinux_i686 *-musllinux*
     CIBW_BEFORE_BUILD: pip install -r requirements.txt --upgrade
     CIBW_TEST_SKIP: "*-macosx_arm64"
-    CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
-    #CIBW_ARCHS: all
+    #CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+    CIBW_ARCHS: all
 
 jobs:
   build_wheels:
@@ -21,16 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        #os: [macOS-11, windows-2019, ubuntu-20.04]
-        include:
-          - os: ubuntu-20.04
-            cibw_archs: "x86_64"
-          - os: ubuntu-20.04
-            cibw_archs: "aarch64"
-          - os: windows-latest
-            cibw_archs: "auto"
-          - os: macos-11
-            cibw_archs: "x86_64 universal2 arm64"
+        os: [macOS-11, windows-2019, ubuntu-20.04]
 
     steps:
       - uses: actions/checkout@v3
