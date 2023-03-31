@@ -1,7 +1,7 @@
 # What Is New in *genieclust*
 
 
-## 1.1.4 (2023-03-30)
+## 1.1.4 (2023-03-31)
 
 *  [Python] The GIc algorithm no longer marked as experimental;
    its description will be provided in a forthcoming paper; see
