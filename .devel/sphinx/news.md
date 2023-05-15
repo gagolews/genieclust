@@ -1,4 +1,4 @@
-# What Is New in *genieclust*
+# Changelog
 
 
 ## 1.1.4 (2023-03-31)
