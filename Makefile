@@ -11,7 +11,8 @@ all: r python
 ################################################################################
 
 python:
-	#python3 setup.py install --user
+	# python3 setup.py install --user  # deprecated
+	# python3 -m build  # requires the 'build' package, creates an isolated envir
 	python3 -m pip install .
 
 py-test: python

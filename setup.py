@@ -21,8 +21,7 @@ genieclust Package
 
 
 import setuptools
-from distutils.extension import Extension
-from distutils.command.sdist import sdist
+from setuptools.command.sdist import sdist
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
 import numpy as np
@@ -199,7 +198,7 @@ setuptools.setup(
         "build_ext": genieclust_build_ext
     },
     ext_modules=[
-        Extension(module, pyx_files, **ext_kwargs)
+        setuptools.Extension(module, pyx_files, **ext_kwargs)
         for module, pyx_files in cython_modules.items()
     ]
 )
