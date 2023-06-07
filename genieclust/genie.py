@@ -430,7 +430,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 nmslib.DistType.INT
 
         cur_state["nmslib_n_neighbors"] = min(
-            n_samples-1,
+            n_samples-2,
             max(1, cur_state["nmslib_n_neighbors"]))
 
         if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:
