@@ -83,7 +83,7 @@ cutree(h, k=2)
 ```
 
 
-*To learn more about R, check out Marek's recent open-access (free!) textbook*
+*To learn more about R, check out Marek's open-access (free!) textbook*
 [Deep R Programming](https://deepr.gagolewski.com/).
 
 

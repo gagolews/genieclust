@@ -77,7 +77,7 @@
           </a>
 
           <div class="version">
-              Python and R Package<br />    v1.1.4
+              Python and R Package<br />    v1.1.4.9001
           </div>
 
 <!--
@@ -241,7 +241,7 @@
 that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
 does it do this quickly?</p>
 <p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F., et al. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span> version 0.23.1
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span> version 0.23.1
 (<cite>sklearn.cluster.KMeans</cite>) for different number of threads
 (by default it uses all available resources;
 note that the number of restarts, <cite>n_init</cite>, defaults to 10)
@@ -250,18 +250,18 @@ with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
 <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id22" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">29</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST)
-<span id="id3">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span> of the pairwise distance graph of an input point set.
+<span id="id3">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span> of the pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
 method  <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id20" title="Olson, C.F. (1995).  Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325. DOI: 10.1016/0167-8191(95)00017-I.">31</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id25" title="Curtin, R.R., Edel, M., Lozhnikov, M., Mentekidis, Y., Ghaisas, S., Zhang, S. (2018).  Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726. DOI: 10.21105/joss.00726.">4</a>]</span> provides a very fast
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id25" title="Curtin, R.R., Edel, M., Lozhnikov, M., Mentekidis, Y., Ghaisas, S., and Zhang, S. (2018).  Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726. DOI: 10.21105/joss.00726.">4</a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id26" title="March, W.B., Ram, P., Gray, A.G. (2010).  Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In: Proc. 16th ACM SIGKDD'10, pp. 603–612. DOI: 10.1145/1835804.1835882.">26</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id26" title="March, W.B., Ram, P., and Gray, A.G. (2010).  Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In: Proc. 16th ACM SIGKDD'10, pp. 603–612. DOI: 10.1145/1835804.1835882.">26</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
 Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id27" title="Naidan, B., Boytsov, L., Malkov, Y., Novak, D. (2019).  Non-metric space library (NMSLIB) manual, version 2.0. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">30</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
+by <cite>nmslib</cite> <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id27" title="Naidan, B., Boytsov, L., Malkov, Y., and Novak, D. (2019).  Non-metric space library (NMSLIB) manual, version 2.0. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">30</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
 such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
@@ -273,7 +273,7 @@ and total memory of 16,242,084 kB.</p>
 see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
 from the
 <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M., et al. (2020).  Benchmark suite for clustering algorithms – version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>.
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M. and others. (2020).  Benchmark Suite for Clustering Algorithms – Version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
@@ -491,7 +491,7 @@ partitions’ cardinality.</p>
 </table>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id31" title="Kobren, A., Monath, N., Krishnamurthy, A., McCallum, A. (2017).  A hierarchical algorithm for extreme clustering. In: Proc. 23rd ACM SIGKDD'17, pp. 255–264. DOI: 10.1145/3097983.3098079.">24</a>]</span>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id31" title="Kobren, A., Monath, N., Krishnamurthy, A., and McCallum, A. (2017).  A hierarchical algorithm for extreme clustering. In: Proc. 23rd ACM SIGKDD'17, pp. 255–264. DOI: 10.1145/3097983.3098079.">24</a>]</span>)
 problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality
@@ -725,7 +725,7 @@ a first run of the algorithm:</p>
     and a customised <a href="https://github.com/rtfd/sphinx_rtd_theme">rtd</a>
     theme.
       <span class="lastupdated">
-        Last updated on 2023-05-15T10:58:59+1000.
+        Last updated on 2023-07-02T15:47:38+1000.
       </span>
 
 

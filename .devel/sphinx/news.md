@@ -1,6 +1,12 @@
 # Changelog
 
 
+## 1.1.4.9xxx (under development)
+
+* [BUGFIX] [Python] #80: fixed adjustment for `nmslib_n_neighbors`
+    in small samples.
+
+
 ## 1.1.4 (2023-03-31)
 
 *  [Python] The GIc algorithm no longer marked as experimental;

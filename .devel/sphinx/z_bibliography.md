@@ -24,5 +24,9 @@ as specified below. Thank you.
 
 ## Bibliography
 
+::::{only} html
+<div>
+::::
+
 ::::{bibliography}
 ::::

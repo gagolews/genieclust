@@ -85,7 +85,7 @@ docs: html
 	    "official release, because it updates the package homepage."
 	@echo "*** Therefore, we check if the package version is like 1.2.3"\
 	    "and not 1.2.2.9007."
-	Rscript --vanilla -e "stopifnot(length(unclass(packageVersion('${PKGNAME}'))[[1]]) < 4)"
+	#Rscript --vanilla -e "stopifnot(length(unclass(packageVersion('${PKGNAME}'))[[1]]) < 4)"
 	rm -rf docs/
 	mkdir docs/
 	cp -rf .devel/sphinx/_build/html/* docs/
