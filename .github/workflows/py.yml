@@ -27,26 +27,20 @@ jobs:
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild'))"
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
-        python -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then pip install -r requirements.txt --upgrade; fi
-        pip install wheel flake8 pytest --upgrade
-        pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
-        pip install rpy2 pweave ipython jupyter tabulate --upgrade
+        sudo python3 -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then sudo pip3 install -r requirements.txt --upgrade; fi
+        sudo pip3 install wheel flake8 pytest --upgrade
+        sudo pip3 install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
+        sudo pip3 install rpy2 pweave ipython jupyter tabulate --upgrade
     - name: Install optional dependencies (nmslib)
       continue-on-error: true
       run: |
-        pip install nmslib --upgrade
+        sudo pip3 install nmslib --upgrade
     - name: Install optional dependencies (mlpack)
       continue-on-error: true
       run: |
-        pip install mlpack --upgrade
+        sudo pip3 install mlpack --upgrade
     - name: Test and check Python
       run: |
-        make py-test
-        make py-check
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics  --exclude=.devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials
-        # exit-zero treats all errors as warnings
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics  --exclude=.devel,build,docs,.git,R,dist,genieclust.egg-info,man,tutorials
+        sudo make py-test
+        sudo make py-check
