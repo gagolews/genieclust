@@ -130,6 +130,8 @@
 #' @param simplified whether to assume E=1 in the definition of the pair sets index index,
 #'     i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).
 #'
+#' @param clipped whether the result should be clipped to the unit interval, i.e., [0, 1]
+#'
 #'
 #' @return Each cluster validity measure is a single numeric value.
 #'
@@ -168,14 +170,14 @@ normalized_accuracy <- function(x, y = NULL) {
 
 #' @rdname compare_partitions
 #' @export
-pair_sets_index <- function(x, y = NULL, simplified = FALSE) {
-    .Call(`_genieclust_pair_sets_index`, x, y, simplified)
+pair_sets_index <- function(x, y = NULL, simplified = FALSE, clipped = TRUE) {
+    .Call(`_genieclust_pair_sets_index`, x, y, simplified, clipped)
 }
 
 #' @rdname compare_partitions
 #' @export
-adjusted_rand_score <- function(x, y = NULL) {
-    .Call(`_genieclust_adjusted_rand_score`, x, y)
+adjusted_rand_score <- function(x, y = NULL, clipped = FALSE) {
+    .Call(`_genieclust_adjusted_rand_score`, x, y, clipped)
 }
 
 #' @rdname compare_partitions
@@ -186,8 +188,8 @@ rand_score <- function(x, y = NULL) {
 
 #' @rdname compare_partitions
 #' @export
-adjusted_fm_score <- function(x, y = NULL) {
-    .Call(`_genieclust_adjusted_fm_score`, x, y)
+adjusted_fm_score <- function(x, y = NULL, clipped = FALSE) {
+    .Call(`_genieclust_adjusted_fm_score`, x, y, clipped)
 }
 
 #' @rdname compare_partitions
@@ -210,8 +212,8 @@ normalized_mi_score <- function(x, y = NULL) {
 
 #' @rdname compare_partitions
 #' @export
-adjusted_mi_score <- function(x, y = NULL) {
-    .Call(`_genieclust_adjusted_mi_score`, x, y)
+adjusted_mi_score <- function(x, y = NULL, clipped = FALSE) {
+    .Call(`_genieclust_adjusted_mi_score`, x, y, clipped)
 }
 
 #' @rdname compare_partitions

@@ -20,13 +20,13 @@ adjusted_asymmetric_accuracy(x, y = NULL)
 
 normalized_accuracy(x, y = NULL)
 
-pair_sets_index(x, y = NULL, simplified = FALSE)
+pair_sets_index(x, y = NULL, simplified = FALSE, clipped = TRUE)
 
-adjusted_rand_score(x, y = NULL)
+adjusted_rand_score(x, y = NULL, clipped = FALSE)
 
 rand_score(x, y = NULL)
 
-adjusted_fm_score(x, y = NULL)
+adjusted_fm_score(x, y = NULL, clipped = FALSE)
 
 fm_score(x, y = NULL)
 
@@ -34,7 +34,7 @@ mi_score(x, y = NULL)
 
 normalized_mi_score(x, y = NULL)
 
-adjusted_mi_score(x, y = NULL)
+adjusted_mi_score(x, y = NULL, clipped = FALSE)
 
 normalized_confusion_matrix(x, y = NULL)
 
@@ -53,6 +53,8 @@ or NULL (if x is an K*L confusion matrix)}
 
 \item{simplified}{whether to assume E=1 in the definition of the pair sets index index,
 i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).}
+
+\item{clipped}{whether the result should be clipped to the unit interval, i.e., [0, 1]}
 }
 \value{
 Each cluster validity measure is a single numeric value.

@@ -43,8 +43,8 @@ cdef extern from "../src/c_compare_partitions.h":
         double ami
 
     cdef struct CCompareSetMatchingResult:
-        double psi
-        double spsi
+        double psi_unclipped
+        double spsi_unclipped
 
     void Cminmax[T](const T* x, Py_ssize_t n, T* xmin, T* xmax)
 

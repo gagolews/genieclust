@@ -521,6 +521,13 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     cdef double nacc = c_compare_partitions.Ccompare_partitions_nacc(&C[0,0], xc, yc)
 
     cdef dict res3 = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
+    cdef dict res3_clipped = {
+        "psi": res3["psi_unclipped"],
+        "spsi": res3["spsi_unclipped"],
+    }
+
+    if res3_clipped["psi"]  < 0.0: res3_clipped["psi"]  = 0.0
+    if res3_clipped["spsi"] < 0.0: res3_clipped["spsi"] = 0.0
 
     cdef double aaa = np.nan
     if xc == yc:
@@ -530,7 +537,7 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
         **res1,
         **res2,
         "nacc": nacc,
-        **res3,
+        **res3_clipped,
         "aaa": aaa,
     }
 
@@ -1089,8 +1096,13 @@ cpdef double pair_sets_index(x, y, bint simplified=False):
     cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
+    cdef double res
 
     if simplified:
-        return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).spsi
+        res = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).spsi_unclipped
     else:
-        return c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).psi
+        res = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).psi_unclipped
+
+    if res < 0.0: res = 0.0
+
+    return res

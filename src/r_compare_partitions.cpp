@@ -216,6 +216,8 @@ std::vector<int> get_contingency_matrix(
 //' @param simplified whether to assume E=1 in the definition of the pair sets index index,
 //'     i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).
 //'
+//' @param clipped whether the result should be clipped to the unit interval, i.e., [0, 1]
+//'
 //'
 //' @return Each cluster validity measure is a single numeric value.
 //'
@@ -271,31 +273,42 @@ double normalized_accuracy(RObject x, RObject y=R_NilValue)
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false)
+double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false, bool clipped=true)
 {
     Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
+    double res;
     if (simplified)
-        return Ccompare_partitions_psi(C.data(), xc, yc).spsi;
+        res = Ccompare_partitions_psi(C.data(), xc, yc).spsi_unclipped;
     else
-        return Ccompare_partitions_psi(C.data(), xc, yc).psi;
+        res = Ccompare_partitions_psi(C.data(), xc, yc).psi_unclipped;
+
+    // Rezaei&Franti use clipped=true in their paper
+
+    if (clipped) res = std::max(0.0, std::min(1.0, res));
+
+    return res;
 }
 
 
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-double adjusted_rand_score(RObject x, RObject y=R_NilValue)
+double adjusted_rand_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
-    return Ccompare_partitions_pairs(C.data(), xc, yc).ar;
+    double res = Ccompare_partitions_pairs(C.data(), xc, yc).ar;
+
+    if (clipped) res = std::max(0.0, std::min(1.0, res));
+
+    return res;
 }
 
 
@@ -316,14 +329,18 @@ double rand_score(RObject x, RObject y=R_NilValue)
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-double adjusted_fm_score(RObject x, RObject y=R_NilValue)
+double adjusted_fm_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
-    return Ccompare_partitions_pairs(C.data(), xc, yc).afm;
+    double res = Ccompare_partitions_pairs(C.data(), xc, yc).afm;
+
+    if (clipped) res = std::max(0.0, std::min(1.0, res));
+
+    return res;
 }
 
 
@@ -374,14 +391,18 @@ double normalized_mi_score(RObject x, RObject y=R_NilValue)
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-double adjusted_mi_score(RObject x, RObject y=R_NilValue)
+double adjusted_mi_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
     std::vector<int> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
-    return Ccompare_partitions_info(C.data(), xc, yc).ami;
+    double res = Ccompare_partitions_info(C.data(), xc, yc).ami;
+
+    if (clipped) res = std::max(0.0, std::min(1.0, res));
+
+    return res;
 }
 
 

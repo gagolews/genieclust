@@ -105,8 +105,8 @@ struct CComparePartitionsInfoResult {
  * Stores normalised set-matching scores
  */
 struct CCompareSetMatchingResult {
-    double psi;
-    double spsi;
+    double psi_unclipped;
+    double spsi_unclipped;
 };
 
 
@@ -522,6 +522,7 @@ double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  SPSI (simplified PSI) assumes E=1 in the definition of the index
  *  in (Rezaei, Franti 2016), i.e., uses Eq. (20) instead of (18) therein.
  *
+ *
  *  References
  *  ==========
  *
@@ -582,11 +583,9 @@ CCompareSetMatchingResult Ccompare_partitions_psi(
 
     CCompareSetMatchingResult res;
 
-    res.psi  = (s-es)/(xyc-es);
-    if (res.psi<0.0) res.psi = 0.0;
-
-    res.spsi  = (s-1.0)/(xyc-1.0);
-    if (res.spsi<0.0) res.spsi = 0.0;
+    // PSI uses max(0, PSI_unclipped)
+    res.psi_unclipped = (s-es)/(xyc-es);
+    res.spsi_unclipped = (s-1.0)/(xyc-1.0);
 
     return res;
 }
