@@ -55,7 +55,8 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
 
     C : ndarray
         A confusion matrix (contingency table),
-        whose row count is not greater than the column count
+        whose row count is not greater than the column count;
+        can be a matrix of elements of the double type
 
 
     Returns

@@ -9,11 +9,11 @@
 #' of a set of \eqn{n} elements into, respectively, \eqn{K} and \eqn{L}
 #' nonempty and pairwise disjoint subsets.
 #'
-#' For instance, \code{x} and \code{y} can be two clusterings
+#' For instance, \code{x} and \code{y} can represent two clusterings
 #' of a dataset with \eqn{n} observations specified by two vectors
-#' of labels. These functions can be used as external cluster
+#' of labels. The functions described here can be used as external cluster
 #' validity measures, where we assume that \code{x} is
-#' the reference (ground-truth) partition (compare Gagolewski, 2022).
+#' a reference (ground-truth) partition.
 #'
 #' @details
 #' Each index except \code{adjusted_asymmetric_accuracy()}
@@ -135,7 +135,9 @@
 #'
 #' @return Each cluster validity measure is a single numeric value.
 #'
-#' \code{normalized_confusion_matrix()} returns an integer matrix.
+#' \code{normalized_confusion_matrix()} returns a numeric matrix.
+#'
+#' \code{normalizing_permutation()} returns a vector of indexes.
 #'
 #'
 #' @examples

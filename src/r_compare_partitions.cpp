@@ -31,7 +31,7 @@ using namespace Rcpp;
  *  @return flat, contiguous c_style vector representing the contingency table
  *   with xc rows and yc columns
  */
-std::vector<int> get_contingency_matrix(
+std::vector<double> get_contingency_matrix(
     RObject x, RObject y, Py_ssize_t* xc, Py_ssize_t* yc
 ) {
     if (Rf_isMatrix(x)) {
@@ -40,10 +40,10 @@ std::vector<int> get_contingency_matrix(
         if (!(Rf_isInteger(x) | Rf_isReal(x)))
             stop("x must be of type numeric");
 
-        IntegerMatrix X(x);
+        NumericMatrix X(x);
         *xc = X.nrow();
         *yc = X.ncol();
-        std::vector<int> C((*xc)*(*yc));
+        std::vector<double> C((*xc)*(*yc));
         Py_ssize_t k=0;
         for (Py_ssize_t i=0; i<*xc; ++i)
             for (Py_ssize_t j=0; j<*yc; ++j)
@@ -66,7 +66,7 @@ std::vector<int> get_contingency_matrix(
             stop("x and y must be of equal lengths");
 
         for (Py_ssize_t i=0; i<n; ++i) {
-            if (rx[i] == NA_INTEGER || ry[i] == NA_INTEGER)
+            if (ISNA(rx[i]) || ISNA(ry[i]))
                 stop("missing values not allowed");
         }
 
@@ -78,7 +78,7 @@ std::vector<int> get_contingency_matrix(
         Cminmax(INTEGER(SEXP(ry)), n, &ymin, &ymax);
         *yc = (ymax-ymin+1);
 
-        std::vector<int> C((*xc)*(*yc));
+        std::vector<double> C((*xc)*(*yc));
         Ccontingency_table(C.data(), *xc, *yc,
             xmin, ymin, INTEGER(SEXP(rx)), INTEGER(SEXP(ry)), n);
         return C;
@@ -95,11 +95,11 @@ std::vector<int> get_contingency_matrix(
 //' of a set of \eqn{n} elements into, respectively, \eqn{K} and \eqn{L}
 //' nonempty and pairwise disjoint subsets.
 //'
-//' For instance, \code{x} and \code{y} can be two clusterings
+//' For instance, \code{x} and \code{y} can represent two clusterings
 //' of a dataset with \eqn{n} observations specified by two vectors
-//' of labels. These functions can be used as external cluster
+//' of labels. The functions described here can be used as external cluster
 //' validity measures, where we assume that \code{x} is
-//' the reference (ground-truth) partition (compare Gagolewski, 2022).
+//' a reference (ground-truth) partition.
 //'
 //' @details
 //' Each index except \code{adjusted_asymmetric_accuracy()}
@@ -221,7 +221,9 @@ std::vector<int> get_contingency_matrix(
 //'
 //' @return Each cluster validity measure is a single numeric value.
 //'
-//' \code{normalized_confusion_matrix()} returns an integer matrix.
+//' \code{normalized_confusion_matrix()} returns a numeric matrix.
+//'
+//' \code{normalizing_permutation()} returns a vector of indexes.
 //'
 //'
 //' @examples
@@ -248,7 +250,7 @@ std::vector<int> get_contingency_matrix(
 double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -262,7 +264,7 @@ double adjusted_asymmetric_accuracy(RObject x, RObject y=R_NilValue)
 double normalized_accuracy(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -276,7 +278,7 @@ double normalized_accuracy(RObject x, RObject y=R_NilValue)
 double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false, bool clipped=true)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -300,7 +302,7 @@ double pair_sets_index(RObject x, RObject y=R_NilValue, bool simplified=false, b
 double adjusted_rand_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -318,7 +320,7 @@ double adjusted_rand_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 double rand_score(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -332,7 +334,7 @@ double rand_score(RObject x, RObject y=R_NilValue)
 double adjusted_fm_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -350,7 +352,7 @@ double adjusted_fm_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 double fm_score(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -364,7 +366,7 @@ double fm_score(RObject x, RObject y=R_NilValue)
 double mi_score(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -379,7 +381,7 @@ double mi_score(RObject x, RObject y=R_NilValue)
 double normalized_mi_score(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -394,7 +396,7 @@ double normalized_mi_score(RObject x, RObject y=R_NilValue)
 double adjusted_mi_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
@@ -410,17 +412,17 @@ double adjusted_mi_score(RObject x, RObject y=R_NilValue, bool clipped=false)
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
+NumericMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
-    std::vector<int> C_out_Corder(xc*yc);
+    std::vector<double> C_out_Corder(xc*yc);
     Capply_pivoting(C.data(), xc, yc, C_out_Corder.data());
 
-    IntegerMatrix Cout(xc, yc);
+    NumericMatrix Cout(xc, yc);
     for (Py_ssize_t i=0; i<xc; ++i)  // make Fortran order
             for (Py_ssize_t j=0; j<yc; ++j)
                 Cout(i, j) = C_out_Corder[j+i*yc];
@@ -435,7 +437,7 @@ IntegerMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
-    std::vector<int> C(
+    std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 

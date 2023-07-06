@@ -239,8 +239,8 @@ void Capply_pivoting(
  *
  * The elements in C are modified in-place.
  */
-template<class T>
-void Ccontingency_table(T* Cout, Py_ssize_t xc, Py_ssize_t yc,
+template<class O, class T>
+void Ccontingency_table(O* Cout, Py_ssize_t xc, Py_ssize_t yc,
         T xmin, T ymin,
         const T* x, const T* y, Py_ssize_t n)
 {
@@ -250,7 +250,7 @@ void Ccontingency_table(T* Cout, Py_ssize_t xc, Py_ssize_t yc,
     for (Py_ssize_t i=0; i<n; ++i) {
         GENIECLUST_ASSERT(   0 <= (x[i]-xmin)*yc +(y[i]-ymin));
         GENIECLUST_ASSERT(xc*yc > (x[i]-xmin)*yc +(y[i]-ymin));
-        Cout[(x[i]-xmin)*yc +(y[i]-ymin)]++;
+        Cout[(x[i]-xmin)*yc +(y[i]-ymin)] += 1;
     }
 }
 

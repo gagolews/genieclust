@@ -136,7 +136,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // normalized_confusion_matrix
-IntegerMatrix normalized_confusion_matrix(RObject x, RObject y);
+NumericMatrix normalized_confusion_matrix(RObject x, RObject y);
 RcppExport SEXP _genieclust_normalized_confusion_matrix(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

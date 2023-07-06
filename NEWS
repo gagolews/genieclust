@@ -6,6 +6,9 @@
 * [BUGFIX] [Python] #80: fixed adjustment for `nmslib_n_neighbors`
     in small samples.
 
+* [R] In `normalizing_permutation` and external cluster validity measures,
+    the input matrix can now be of the double type.
+
 
 ## 1.1.4 (2023-03-31)
 
