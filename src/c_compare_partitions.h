@@ -437,23 +437,30 @@ template<class T>
 double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
-    for (Py_ssize_t ij=0; ij<xc*yc; ++ij)
-        n += C[ij];
+    for (Py_ssize_t ij=0; ij<xc*yc; ++ij) {
+        if (C[ij] > 0) {
+            n += C[ij];
+        }
+    }
 
     // if C is not a square matrix, treat the missing columns as if they were filled with 0s
     Py_ssize_t xyc = std::max(xc, yc);
-    std::vector<double> S(xyc*xyc, 0);
+    std::vector<double> S(xyc*xyc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            S[i*xyc+j] = (double)C[i*yc+j];
+            if (C[i*yc+j] > 0) {
+                S[i*xyc+j] = (double)C[i*yc+j];
+            }
         }
     }
 
     std::vector<Py_ssize_t> output_col4row(xyc);
 
-    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc, output_col4row.data(), false); // minimise=false
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc,
+        output_col4row.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
+    // sum of pivots:
     double t = 0.0;
     for (Py_ssize_t i=0; i<xyc; ++i)
         t += S[xyc*i+output_col4row[i]];
@@ -487,27 +494,33 @@ double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 template<class T>
 double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
-    std::vector<double> sum_x(xc, 0);
+    std::vector<double> sum_x(xc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            sum_x[i] += C[i*yc+j];
+            if (C[i*yc+j] > 0) {
+                sum_x[i] += C[i*yc+j];
+            }
         }
     }
 
     // if xc>yc, treat C as if its missing columns were filled with 0s
     Py_ssize_t yc2 = std::max(xc, yc);
 
-    std::vector<double> S(xc*yc2, 0);
+    std::vector<double> S(xc*yc2, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            S[i*yc2+j] = (double)C[i*yc+j]/(double)sum_x[i];
+            if (C[i*yc+j] > 0) {
+                S[i*yc2+j] = (double)C[i*yc+j]/(double)sum_x[i];
+            }
         }
     }
 
     std::vector<Py_ssize_t> output_col4row2(xc);
-    Py_ssize_t retval = linear_sum_assignment(S.data(), xc, yc2, output_col4row2.data(), false); // minimise=false
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xc, yc2,
+        output_col4row2.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
+    // sum of pivots
     double t = 0.0;
     for (Py_ssize_t i=0; i<xc; ++i)
         t += S[yc2*i+output_col4row2[i]];
@@ -516,7 +529,8 @@ double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 }
 
 
-/*! Computes the pair sets index (PSI) and its simplified version
+/*! Computes the pair sets index (PSI) and its simplified version,
+ *  but without clipping negative values to 0.
  *
  *
  *  SPSI (simplified PSI) assumes E=1 in the definition of the index
@@ -543,42 +557,64 @@ CCompareSetMatchingResult Ccompare_partitions_psi(
 ) {
 
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
-    for (Py_ssize_t ij=0; ij<xc*yc; ++ij)
-        n += C[ij];
+    for (Py_ssize_t ij=0; ij<xc*yc; ++ij) {
+        if (C[ij] > 0) {
+            n += C[ij];
+        }
+    }
 
     // if C is not a square matrix, treat the missing columns as if they were filled with 0s
     Py_ssize_t xyc = std::max(xc, yc);
 
-    std::vector<double> sum_x(xyc, 0);
-    std::vector<double> sum_y(xyc, 0);
+    std::vector<double> sum_x(xyc, 0.0);
+    std::vector<double> sum_y(xyc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            sum_x[i] += C[i*yc+j];
-            sum_y[j] += C[i*yc+j];
+            if (C[i*yc+j] > 0) {
+                sum_x[i] += C[i*yc+j];
+                sum_y[j] += C[i*yc+j];
+            }
         }
     }
 
-    std::vector<double> S(xyc*xyc, 0);
+    std::vector<double> S(xyc*xyc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            S[i*xyc+j] = (double)C[i*yc+j]/(double)std::max(sum_x[i], sum_y[j]);
+            if (C[i*yc+j] > 0) {
+                S[i*xyc+j] = (double)C[i*yc+j]/(double)std::max(sum_x[i], sum_y[j]);
+            }
         }
     }
 
     std::vector<Py_ssize_t> output_col4row2(xyc);
-    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc, output_col4row2.data(), false); // minimise=false
+    Py_ssize_t retval = linear_sum_assignment(S.data(), xyc, xyc,
+        output_col4row2.data(), false); // minimise=false
     GENIECLUST_ASSERT(retval == 0);
 
+    // // sum of pivots:
+    //     double s = 0.0;
+    //     for (Py_ssize_t i=0; i<xyc; ++i)
+    //         s += S[xyc*i+output_col4row2[i]];
+    // from the smallest to the greatest is more numerically well-behaving:
+    std::vector<double> pivots(xyc, 0.0);
+    for (Py_ssize_t i=0; i<xyc; ++i)
+        pivots[i] = S[xyc*i+output_col4row2[i]];
+    std::sort(pivots.begin(), pivots.end());
     double s = 0.0;
     for (Py_ssize_t i=0; i<xyc; ++i)
-        s += S[xyc*i+output_col4row2[i]];
+        s += pivots[i];
 
     double es;
     std::sort(sum_x.begin(), sum_x.end());
     std::sort(sum_y.begin(), sum_y.end());
     es = 0.0;
-    for (Py_ssize_t i=0; i<xyc; ++i)
-        es += sum_y[xyc-i-1]*sum_x[xyc-i-1]/(double)std::max(sum_x[xyc-i-1], sum_y[xyc-i-1]);
+    for (Py_ssize_t i=0; i<xyc; ++i) {
+        //es += sum_y[xyc-i-1]*sum_x[xyc-i-1]/(double)std::max(sum_x[xyc-i-1], sum_y[xyc-i-1]);
+        if (sum_y[i] > sum_x[i])
+            es += sum_x[i];
+        else
+            es += sum_y[i];
+    }
     es /= (double)n;
 
     CCompareSetMatchingResult res;

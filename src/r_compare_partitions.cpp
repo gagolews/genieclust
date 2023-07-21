@@ -424,8 +424,9 @@ NumericMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 
     NumericMatrix Cout(xc, yc);
     for (Py_ssize_t i=0; i<xc; ++i)  // make Fortran order
-            for (Py_ssize_t j=0; j<yc; ++j)
-                Cout(i, j) = C_out_Corder[j+i*yc];
+        for (Py_ssize_t j=0; j<yc; ++j)
+            Cout(i, j) = C_out_Corder[j+i*yc];
+
     return Cout;
 }
 
