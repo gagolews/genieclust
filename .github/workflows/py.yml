@@ -14,7 +14,7 @@ jobs:
         python-version: [3.7, 3.8, 3.9]
 
     env:
-        R_LIBS: /usr/lib/R/site-library
+        R_LIBS_SITE: /usr/lib/R/site-library
 
     steps:
     - uses: actions/checkout@v3
