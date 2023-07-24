@@ -34,7 +34,7 @@ def test_inequity():
             if i == 0:
                 x = np.r_[[1]*n]
             elif i == 1:
-                x = np.r_[1, [0]*(n-1)]
+                x = np.r_[1, [1e-12]*(n-1)]
             else:
                 x = np.random.random(n)*8 + 3
 
