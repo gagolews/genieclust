@@ -6,6 +6,8 @@
 * [BUGFIX] [Python] #80: fixed adjustment for `nmslib_n_neighbors`
     in small samples.
 
+* [BUGFIX] [Python] #82: `cluster_validity` submodule not imported.
+
 * [BUGFIX] Some external cluster validity measures
     now handle NaNs better and are slightly less prone to round-off errors.
 

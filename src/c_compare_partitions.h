@@ -300,7 +300,7 @@ CComparePartitionsPairsResult Ccompare_partitions_pairs(const T* C,
     double prod_comb = (sum_comb_x*sum_comb_y)/n/(n-1.0)*2.0; // expected sum_comb,
                                         // see Eq.(2) in (Hubert, Arabie, 1985)
     double mean_comb = (sum_comb_x+sum_comb_y)*0.5;
-    double e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y); // expected FM (variant)
+    double e_fm = prod_comb/sqrt(sum_comb_x*sum_comb_y); // expected FM
 
     CComparePartitionsPairsResult res;
     res.ar  = (sum_comb-prod_comb)/(mean_comb-prod_comb);
