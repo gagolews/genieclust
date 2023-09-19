@@ -37,7 +37,6 @@ see the :any:`Appendix <benchmarks_details>`\ .
 
 
 
-
 Small Datasets
 --------------
 
@@ -64,6 +63,19 @@ Moreover, Gaussian mixtures used `n_init=100`.
 
 
 
+
+::
+
+    ## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype
+    ## is deprecated and will be removed in a future version. Use
+    ## isinstance(dtype, CategoricalDtype) instead
+    ##   if pd.api.types.is_categorical_dtype(vector):
+    ## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype
+    ## is deprecated and will be removed in a future version. Use
+    ## isinstance(dtype, CategoricalDtype) instead
+    ##   if pd.api.types.is_categorical_dtype(vector):
 
 .. figure:: figures/benchmarks_ar_plot_small_1.png
    :width: 15 cm
@@ -92,19 +104,18 @@ gets a rank of 1); lower ranks are better:
 =================  =======  ======  =====  =====  =====  =====  =====  =====
 ..                   count    mean    std    min    25%    50%    75%    max
 =================  =======  ======  =====  =====  =====  =====  =====  =====
-Average linkage         72     6.8    3.6      1    5      7     10       13
-Birch_0.01              72     6.1    3.1      1    4      6      8       13
-Centroid linkage        72     7      3.7      1    4.8    7.5   10       13
-Complete linkage        72     8.3    3.4      1    6      9     11       13
-Gaussian mixtures       72     4.3    3.8      1    1      2      6.2     13
-Genie_0.1               72     3.8    3.6      1    1      3      5.2     13
-Genie_0.3               72     3.5    3.4      1    1      1.5    5       12
-Genie_0.5               72     4.4    4.2      1    1      2      8.2     12
-ITM                     72     5.6    4.3      1    1      5      9.2     13
-K-means                 72     6      4.1      1    1      6      9.2     13
-Single linkage          72     7.9    5.5      1    1     11     13       13
-Spectral_RBF_5          72     5.3    3.6      1    1      5.5    8       12
-Ward linkage            72     6.4    3.2      1    4      7      8.2     13
+Average linkage         72     6.6    3.5      1    4.8      7    9.2     12
+Birch_0.01              72     5.8    2.9      1    4        6    8       12
+Complete linkage        72     7.7    3.2      1    6        8   11       12
+Gaussian mixtures       72     4.2    3.6      1    1        3    7       12
+Genie_0.1               72     3.8    3.3      1    1        3    6       12
+Genie_0.3               72     3.3    3        1    1        2    5       11
+Genie_0.5               72     4.2    3.9      1    1        2    8       11
+ITM                     72     5.4    3.9      1    1        5    9       12
+K-means                 72     5.6    3.8      1    1        6    9       12
+Single linkage          72     7.4    5.1      1    1       11   12       12
+Spectral_RBF_5          72     5.2    3.5      1    1        6    8       11
+Ward linkage            72     6      3        1    4        6    8       12
 =================  =======  ======  =====  =====  =====  =====  =====  ===== 
 
 
@@ -123,6 +134,19 @@ Below we provide the results for the larger datasets (70,000-105,600 points).
 
 
 
+::
+
+    ## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype
+    ## is deprecated and will be removed in a future version. Use
+    ## isinstance(dtype, CategoricalDtype) instead
+    ##   if pd.api.types.is_categorical_dtype(vector):
+    ## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype
+    ## is deprecated and will be removed in a future version. Use
+    ## isinstance(dtype, CategoricalDtype) instead
+    ##   if pd.api.types.is_categorical_dtype(vector):
+
 .. figure:: figures/benchmarks_ar_plot_large_1.png
    :width: 15 cm
 
@@ -138,18 +162,17 @@ Descriptive statistics for the ranks (AR index):
 
 
 
-================  =======  ======  =====  =====  =====  =====  =====  =====
-..                  count    mean    std    min    25%    50%    75%    max
-================  =======  ======  =====  =====  =====  =====  =====  =====
-Centroid linkage        6     5.3    2.4      1    4.5    6.5    7        7
-Genie_0.1               6     1.8    1.2      1    1      1.5    2        4
-Genie_0.3               6     3.2    1.7      1    2      3      4.8      5
-Genie_0.5               6     5      2        1    5.2    6      6        6
-ITM                     6     3.7    2.7      1    1.5    3      6        7
-K-means                 6     3.5    1.9      1    2.2    3.5    4.8      6
-Single linkage          6     7.3    0.8      6    7      7.5    8        8
-Ward linkage            6     3.3    1.6      1    2.2    3.5    4.8      5
-================  =======  ======  =====  =====  =====  =====  =====  ===== 
+==============  =======  ======  =====  =====  =====  =====  =====  =====
+..                count    mean    std    min    25%    50%    75%    max
+==============  =======  ======  =====  =====  =====  =====  =====  =====
+Genie_0.1             6     1.8    1.2      1    1      1.5    2        4
+Genie_0.3             6     3.2    1.7      1    2      3      4.8      5
+Genie_0.5             6     4.8    1.9      1    5      5.5    6        6
+ITM                   6     3.3    2.3      1    1.5    3      5.2      6
+K-means               6     3.3    1.6      1    2.2    3.5    4.8      5
+Single linkage        6     6.8    0.4      6    7      7      7        7
+Ward linkage          6     3.2    1.5      1    2.2    3.5    4        5
+==============  =======  ======  =====  =====  =====  =====  =====  ===== 
 
 
 

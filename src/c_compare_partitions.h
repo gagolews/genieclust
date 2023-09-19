@@ -401,9 +401,9 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 
 
 
-/*! Computes the normalised accuracy score between two partitions
+/*! Computes the normalised pivoted accuracy
  *
- *  Normalised accuracy is (Accuracy(C[:,sigma])-1.0/max(xc,yc))/(1.0-1.0/max(xc,yc)),
+ *  Normalised pivoted accuracy is (Accuracy(C[:,sigma])-1.0/max(xc,yc))/(1.0-1.0/max(xc,yc)),
  *  where C[:,sigma] is a version of the input confusion matrix
  *  with columns permuted based on the solution to the
  *  maximal linear sum assignment problem.
@@ -422,8 +422,8 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  Meila M., Heckerman D., An experimental comparison of model-based clustering
  *  methods, Machine Learning 42, 2001, pp. 9--29, doi:10.1023/A:1007648401407.
  *
- *  Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
- *  cluster validity measure, 2022, submitted for publication.
+ *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
+ *  cluster validity measure, 2023, submitted for publication.
  *  URL: https://arxiv.org/pdf/2209.02935.pdf
  *
  *
@@ -434,7 +434,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  @return the computed score
  */
 template<class T>
-double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
+double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
     double n = 0.0; // total sum (length of the underlying x and y = number of points)
     for (Py_ssize_t ij=0; ij<xc*yc; ++ij) {
@@ -472,16 +472,16 @@ double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 
 
 
-/*! Computes the adjusted asymmetric accuracy (AAA) score
+/*! Computes the normalised clustering accuracy (NCA) score
  *
- *  AAA is asymmetric - we assume that rows in C determine the true (reference)
- *  partition.
+ *  NCA is not symmetric - we assume that rows in C determine the true
+ *  (reference) partition.
  *
  *  References
  *  ==========
  *
- *  Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
- *  cluster validity measure, 2022, submitted for publication.
+ *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
+ *  cluster validity measure, 2023, submitted for publication.
  *  URL: https://arxiv.org/pdf/2209.02935.pdf
  *
  *
@@ -492,7 +492,7 @@ double Ccompare_partitions_nacc(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  @return the computed score
  */
 template<class T>
-double Ccompare_partitions_aaa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
+double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
     std::vector<double> sum_x(xc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {

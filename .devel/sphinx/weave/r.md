@@ -143,7 +143,6 @@ plot(h_oecd)
 
 
 
-
 Final notes:
 
 * If we are only interested in a specific partition,

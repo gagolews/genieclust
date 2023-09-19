@@ -1,9 +1,13 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 # ########################################################################## #
 #  Marek's output hooks hacks                                                #
-#  Copyleft (C) 2020-2022, Marek Gagolewski <https://www.gagolewski.com>     #
+#  Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>     #
 # ########################################################################## #
+
+
+# NOTE! On stupid errors, make sure all modules are installed (e.g., tabulate!)
+# NOTE! Works with pweave==0.30
 
 import sys
 import pweave
@@ -69,25 +73,23 @@ def _indent2(self, text):
     return text.replace('\n', '\n' + self.formatdict['indent'] + "## ")  # !!!!
 
 
-#def formatfigure2(self, chunk):
-    #fignames = chunk['figure']
-    #caption = chunk['caption']
-    #width = chunk['width']
-    #result = ""
-    #figstring = ""
+def formatfigure2(self, chunk):
+    fignames = chunk['figure']
+    caption = chunk['caption']
+    width = chunk['width']
+    result = ""
+    figstring = ""
 
-    #print(chunk['figure'], chunk['caption'])
+    for fig in fignames:
+        figstring += ('.. image:: %s\n   :width: %s\n\n' % (fig, width))
 
-    ##for fig in fignames:
-    ##    figstring += ('.. image:: %s\n   :width: %s\n\n' % (fig, width))
-
-    #if fignames and chunk['caption']:
-        #result += (".. figure:: %s\n" \
-                    #"   :width: %s\n\n" \
-                    #"   %s\n\n" % (fignames[0], width, caption))
-    #else:
-        #result += figstring
-    #return result
+    if chunk['figure'] and chunk['caption']:
+        result += (".. figure:: %s\n" \
+                    "   :width: %s\n\n" \
+                    "   %s\n\n" % (fignames[0], width, caption))
+    else:
+        result += figstring
+    return result
 
 doc.formatter.__class__.format_text_result = format_text_result2
 doc.formatter.__class__._indent2 = _indent2

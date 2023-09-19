@@ -1,7 +1,18 @@
 # Changelog
 
 
-## 1.1.4.9xxx (under development)
+## 1.1.4.9xxx
+
+* [BACKWARD INCOMPATIBILITY] [Python and R]
+    Some external cluster validity measures were renamed
+    (as per the major revision of <https://doi.org/10.48550/arXiv.2209.02935>):
+    `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
+    `normalized_accuracy` -> `normalized_pivoted_accuracy`.
+
+* [Python and R] New parameter to `pair_sets_index`: `clipped`.
+
+* [R] In `normalizing_permutation` and external cluster validity measures,
+    the input matrix can now be of the type `double`.
 
 * [BUGFIX] [Python] #80: fixed adjustment for `nmslib_n_neighbors`
     in small samples.
@@ -10,9 +21,6 @@
 
 * [BUGFIX] Some external cluster validity measures
     now handle NaNs better and are slightly less prone to round-off errors.
-
-* [R] In `normalizing_permutation` and external cluster validity measures,
-    the input matrix can now be of the type `double`.
 
 
 ## 1.1.4 (2023-03-31)
@@ -53,8 +61,7 @@
 *  [GENERAL] The below-mentioned cluster validity measures are discussed
    in more detail at <https://clustering-benchmarks.gagolewski.com>.
 
-*  [Python and R] New function:
-   `compare_partitions.adjusted_asymmetric_accuracy`.
+*  [Python and R] New function: `adjusted_asymmetric_accuracy`.
 
 *  [Python and R] Implementations of the so-called internal cluster
    validity measures discussed in
@@ -74,16 +81,15 @@
    `silhouette_w_index`,
    `wcnn_index`.
 
-*  [BACKWARD INCOMPATIBILITY] `compare_partitions.normalized_confusion_matrix`
+*  [BACKWARD INCOMPATIBILITY] `normalized_confusion_matrix`
    now solves the maximal assignment problem instead of applying
-   a primitive partial pivoting.
+   the somewhat primitive partial pivoting.
 
-*  [Python and R] New function: `compare_partitions.normalizing_permutation`
+*  [Python and R] New function: `normalizing_permutation`
 
 *  [R] New function: `normalized_confusion_matrix`.
 
-*  [Python and R] New parameter to `compare_partitions.pair_sets_index`:
-      `simplified`.
+*  [Python and R] New parameter to `pair_sets_index`: `simplified`.
 
 *  [Python] New parameters to `plots.plot_scatter`:
    `axis`, `title`, `xlabel`, `ylabel`, `xlim`, `ylim`.

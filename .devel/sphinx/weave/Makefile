@@ -1,13 +1,13 @@
-# Copyright (c) 2013-2021, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (c) 2013-2023, Marek Gagolewski <https://www.gagolewski.com>
 
 FILES_RMD = \
 	r.Rmd
 
 
 FILES_RSTW = \
+	sklearn_toy_example.rstw \
 	basics.rstw              \
 	benchmarks_ar.rstw       \
-	sklearn_toy_example.rstw \
 	benchmarks_details.rstw  \
 	benchmarks_approx.rstw   \
 	noise.rstw               \
@@ -37,3 +37,5 @@ rmd : $(RMD_MD_OUTPUTS)
 
 rstw : $(RSTW_RST_OUTPUTS)
 
+clean:
+	rm -f $(RSTW_RST_OUTPUTS) $(RMD_MD_OUTPUTS)

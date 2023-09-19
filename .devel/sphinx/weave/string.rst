@@ -25,28 +25,44 @@ as an example:
 .. code-block:: python
 
     import numpy as np
-    # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/rmd
+    # see https://github.com/gagolews/genieclust/tree/master/.devel/sphinx/weave/
     strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
     strings[:5] # preview
 
 
 ::
 
-    ## /tmp/ipykernel_15571/1616393685.py:3: DeprecationWarning: `np.str` is
-    ## a deprecated alias for the builtin `str`. To silence this warning, use
-    ## `str` by itself. Doing this will not modify any behavior and is safe.
-    ## If you specifically wanted the numpy scalar type, use `np.str_` here.
-    ## Deprecated in NumPy 1.20; for more details and guidance:
-    ## https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
+    ## /tmp/ipykernel_42024/2791853717.py:3: FutureWarning: In the future
+    ## `np.str` will be defined as the corresponding NumPy scalar.
     ##   strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
 
 ::
 
-    ## ['tataacaaccctgattacatcaagctacgctccggtgcgttgcctcggacgagtgctaatccctccccactgactgtattcatcttgacaata',
-    ## 'atgtctccaaagcgtgaccttctagacccgagacgacatatggaggcttggagccgtacctgtgtgaggaaactgtagtacccaaagctattca',
-    ## 'gcaattgaagtccagatctaggtatcgtccaagcatattgcctttaagaaatatatttgaccctgtctcttcgtggaggtacacgtcacggaatcgtaagatttccttgg',
-    ## 'gacaattatcgcggctttcgccatgcagagtctcgtacaatttgtttcacgcccaatattttccgtgcttcgcgagctaggcagccagggcatttttgga',
-    ## 'ttagagcgcttaaccccacaggaaccgagttcccctcatgtggcaaggttctcccgcctcaggtatcacagaaacaaggtatgtagccctaggctacgagc']
+    ## ---------------------------------------------------------------------------AttributeError
+    ## Traceback (most recent call last)Cell In[1], line 3
+    ##       1 import numpy as np
+    ##       2 # see
+    ## https://github.com/gagolews/genieclust/tree/master/.devel/sphinx/weave/
+    ## ----> 3 strings = np.loadtxt("actg1.data.gz", dtype=np.str).tolist()
+    ##       4 strings[:5] # preview
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/numpy/__init__.py:319, in __getattr__(attr)
+    ##     314     warnings.warn(
+    ##     315         f"In the future `np.{attr}` will be defined as the "
+    ##     316         "corresponding NumPy scalar.", FutureWarning,
+    ## stacklevel=2)
+    ##     318 if attr in __former_attrs__:
+    ## --> 319     raise AttributeError(__former_attrs__[attr])
+    ##     321 if attr == 'testing':
+    ##     322     import numpy.testing as testing
+    ## AttributeError: module 'numpy' has no attribute 'str'.
+    ## `np.str` was a deprecated alias for the builtin `str`. To avoid this
+    ## error in existing code, use `str` by itself. Doing this will not
+    ## modify any behavior and is safe. If you specifically wanted the numpy
+    ## scalar type, use `np.str_` here.
+    ## The aliases was originally deprecated in NumPy 1.20; for more details
+    ## and guidance see the original release note at:
+    ##     https://numpy.org/devdocs/release/1.20.0-notes.html#deprecations
 
 
 
@@ -84,6 +100,21 @@ near-neighbour search routines implemented in the *nmslib* package.
     labels_pred = g.fit_predict(strings)
 
 
+::
+
+    ## ---------------------------------------------------------------------------NameError
+    ## Traceback (most recent call last)Cell In[1], line 8
+    ##       1 import genieclust
+    ##       2 g = genieclust.Genie(
+    ##       3     n_clusters=n_clusters,
+    ##       4     exact=False, # use nmslib
+    ##       5     cast_float32=False, # do not convert the string list to a
+    ## matrix
+    ##       6     nmslib_params_index=dict(post=0), # faster
+    ##       7     affinity="leven")
+    ## ----> 8 labels_pred = g.fit_predict(strings)
+    ## NameError: name 'strings' is not defined
+
 
 
 
@@ -97,7 +128,11 @@ The adjusted Rand index can be used as an external cluster validity metric:
 
 ::
 
-    ## 0.9352814722212013
+    ## ---------------------------------------------------------------------------NameError
+    ## Traceback (most recent call last)Cell In[1], line 1
+    ## ----> 1 genieclust.compare_partitions.adjusted_rand_score(labels_true,
+    ## labels_pred)
+    ## NameError: name 'labels_pred' is not defined
 
 
 

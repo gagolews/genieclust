@@ -104,6 +104,10 @@ sipu/worms_64  105000  64   Genie_0.3               76.7
 =============  ======  ===  ====================  =======  ======  ======= 
 
 
+/tmp/ipykernel_38846/4024770980.py:10: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  _dat.loc[which_repeated, "n"] = ""
+/tmp/ipykernel_38846/4024770980.py:11: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+  _dat.loc[which_repeated, "d"] = ""
 
 
 
@@ -227,7 +231,7 @@ a first run of the algorithm:
 
 ::
 
-    ## time elapsed - first run: 0.850
+    ## time elapsed - first run: 9.411
 
 
 
@@ -246,6 +250,6 @@ Changing some parameters and re-running the cluster search:
 
 ::
 
-    ## time elapsed - consecutive run: 0.027
+    ## time elapsed - consecutive run: 0.025
 
 

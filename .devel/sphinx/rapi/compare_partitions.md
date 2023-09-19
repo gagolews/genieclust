@@ -4,22 +4,22 @@
 
 The functions described in this section quantify the similarity between two label vectors `x` and `y` which represent two partitions of a set of $n$ elements into, respectively, $K$ and $L$ nonempty and pairwise disjoint subsets.
 
-For instance, `x` and `y` can be two clusterings of a dataset with $n$ observations specified by two vectors of labels. These functions can be used as external cluster validity measures, where we assume that `x` is the reference (ground-truth) partition (compare Gagolewski, 2022).
+For instance, `x` and `y` can represent two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described here can be used as external cluster validity measures, where we assume that `x` is a reference (ground-truth) partition.
 
 ## Usage
 
 ``` r
-adjusted_asymmetric_accuracy(x, y = NULL)
+normalized_clustering_accuracy(x, y = NULL)
 
-normalized_accuracy(x, y = NULL)
+normalized_pivoted_accuracy(x, y = NULL)
 
-pair_sets_index(x, y = NULL, simplified = FALSE)
+pair_sets_index(x, y = NULL, simplified = FALSE, clipped = TRUE)
 
-adjusted_rand_score(x, y = NULL)
+adjusted_rand_score(x, y = NULL, clipped = FALSE)
 
 rand_score(x, y = NULL)
 
-adjusted_fm_score(x, y = NULL)
+adjusted_fm_score(x, y = NULL, clipped = FALSE)
 
 fm_score(x, y = NULL)
 
@@ -27,7 +27,7 @@ mi_score(x, y = NULL)
 
 normalized_mi_score(x, y = NULL)
 
-adjusted_mi_score(x, y = NULL)
+adjusted_mi_score(x, y = NULL, clipped = FALSE)
 
 normalized_confusion_matrix(x, y = NULL)
 
@@ -41,18 +41,19 @@ normalizing_permutation(x, y = NULL)
 | `x`          | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
 | `y`          | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix)                                                |
 | `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).                                                                                                                                     |
+| `clipped`    | whether the result should be clipped to the unit interval, i.e., \[0, 1\]                                                                                                                                                                                                 |
 
 ## Details
 
-Each index except `adjusted_asymmetric_accuracy()` can act as a pairwise partition similarity score: it is symmetric, i.e., `index(x, y) == index(y, x)`.
+Each index except `normalized_clustering_accuracy()` can act as a pairwise partition similarity score: it is symmetric, i.e., `index(x, y) == index(y, x)`.
 
-Each index except `mi_score()` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a bijection of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
+Each index except `mi_score()` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a permutation (bijection) of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
 
-`adjusted_asymmetric_accuracy()` (Gagolewski, 2022) is an external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is a corrected-for-chance summary of the proportion of correctly classified points in each cluster (with cluster matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)), given by: $(\max_\sigma \sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)$, where $C$ is the confusion matrix.
+`normalized_clustering_accuracy()` (Gagolewski, 2023) is an external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is an average proportion of correctly classified points in each cluster above the worst case scenario of uniform membership assignment, with cluster matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)). It is given by: $\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k}$, where $C$ is a confusion matrix and $c_{i, \cdot}=c_{i, 1}+...+c_{i, K}$ is the i-th row sum. We assume that $K\ge L$.
 
-`normalized_accuracy()` is defined as $(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y` with columns permuted based on the solution to the maximal linear sum assignment problem. The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate or pivoted accuracy.
+`normalized_pivoted_accuracy()` is defined as $(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y` with columns permuted based on the solution to the maximal linear sum assignment problem. The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate or pivoted accuracy.
 
-`pair_sets_index()` gives the Pair Sets Index (PSI) adjusted for chance (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. Its simplified version assumes E=1 in the definition of the index, i.e., uses Eq. (20) instead of (18).
+`pair_sets_index()` gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. Its simplified version assumes E=1 in the definition of the index, i.e., uses Eq. (20) instead of (18).
 
 `rand_score()` gives the Rand score (the \"probability\" of agreement between the two partitions) and `adjusted_rand_score()` is its version corrected for chance, see (Hubert, Arabie, 1985), its expected value is 0.0 given two independent partitions. Due to the adjustment, the resulting index might also be negative for some inputs.
 
@@ -70,7 +71,9 @@ Also note that the built-in [`table()`](https://stat.ethz.ch/R-manual/R-devel/li
 
 Each cluster validity measure is a single numeric value.
 
-`normalized_confusion_matrix()` returns an integer matrix.
+`normalized_confusion_matrix()` returns a numeric matrix.
+
+`normalizing_permutation()` returns a vector of indexes.
 
 ## Author(s)
 
@@ -80,7 +83,7 @@ Each cluster validity measure is a single numeric value.
 
 Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*, 2022, <https://clustering-benchmarks.gagolewski.com>.
 
-Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external cluster validity measure, 2022, under review (preprint), [doi:10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
+Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, 2023, under review (preprint), [doi:10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
 
 Hubert L., Arabie P., Comparing partitions, *Journal of Classification* 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
@@ -106,9 +109,9 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 ```r
 y_true <- iris[[5]]
 y_pred <- kmeans(as.matrix(iris[1:4]), 3)$cluster
-adjusted_asymmetric_accuracy(y_true, y_pred)
+normalized_clustering_accuracy(y_true, y_pred)
 ## [1] 0.84
-normalized_accuracy(y_true, y_pred)
+normalized_pivoted_accuracy(y_true, y_pred)
 ## [1] 0.84
 pair_sets_index(y_true, y_pred)
 ## [1] 0.7568238

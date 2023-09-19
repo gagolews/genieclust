@@ -5,8 +5,8 @@ library("genieclust")
 # See also the http://clustering-benchmarks.gagolewski.com/ project
 
 scores <- list(adjusted_rand_score, rand_score, adjusted_fm_score, fm_score,
-    adjusted_mi_score, normalized_mi_score, normalized_accuracy,
-    pair_sets_index, adjusted_asymmetric_accuracy)
+    adjusted_mi_score, normalized_mi_score, normalized_pivoted_accuracy,
+    pair_sets_index, normalized_clustering_accuracy)
 
 for (score in scores) {
     x <- c(1, 1, 1, 3, 3, 2, 3)

@@ -12,7 +12,6 @@ let's perform a simple exercise in movie recommendation based on
 
 
 
-
 .. code-block:: python
 
     import numpy as np
@@ -119,8 +118,7 @@ First few observations:
 Let's extract 200 clusters with Genie with respect to the cosine similarity between films' ratings
 as given by users (two movies considered similar if they get similar reviews).
 Sparse inputs are supported by the approximate version of the algorithm
-which  relies on the
-near-neighbour search routines implemented in the *nmslib* package.
+which relies on the near-neighbour search routines implemented in the *nmslib* package.
 
 
 
@@ -130,6 +128,60 @@ near-neighbour search routines implemented in the *nmslib* package.
     g = genieclust.Genie(n_clusters=200, exact=False, affinity="cosinesimil_sparse")
     movies["cluster"] = g.fit_predict(X)
 
+
+::
+
+    ## ---------------------------------------------------------------------------ValueError
+    ## Traceback (most recent call last)Cell In[1], line 3
+    ##       1 import genieclust
+    ##       2 g = genieclust.Genie(n_clusters=200, exact=False,
+    ## affinity="cosinesimil_sparse")
+    ## ----> 3 movies["cluster"] = g.fit_predict(X)
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:548, in GenieBase.fit_predict(self, X, y)
+    ##     520 def fit_predict(self, X, y=None):
+    ##     521     """
+    ##     522     Perform cluster analysis of a dataset and return the
+    ## predicted labels.
+    ##     523
+    ##    (...)
+    ##     546
+    ##     547     """
+    ## --> 548     self.fit(X)
+    ##     549     return self.labels_
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:1051, in Genie.fit(self, X, y)
+    ##     972 """
+    ##     973 Perform cluster analysis of a dataset.
+    ##     974
+    ##    (...)
+    ##    1047
+    ##    1048 """
+    ##    1049 cur_state = self._check_params()  # re-check, they might have
+    ## changed
+    ## -> 1051 cur_state = self._get_mst(X, cur_state)
+    ##    1053 if cur_state["verbose"]:
+    ##    1054     print("[genieclust] Determining clusters with Genie++.",
+    ## file=sys.stderr)
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:511, in GenieBase._get_mst(self, X,
+    ## cur_state)
+    ##     509     cur_state = self._get_mst_exact(X, cur_state)
+    ##     510 else:
+    ## --> 511     cur_state = self._get_mst_approx(X, cur_state)
+    ##     513 # this might be an "intrinsic" dimensionality:
+    ##     514 self.n_features_  = cur_state["n_features"]
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:380, in GenieBase._get_mst_approx(self,
+    ## X, cur_state)
+    ##     378 def _get_mst_approx(self, X, cur_state):
+    ##     379     if nmslib is None:
+    ## --> 380         raise ValueError("Package `nmslib` is not available.")
+    ##     382     if cur_state["affinity"] == "precomputed":
+    ##     383         raise ValueError(
+    ##     384             "`affinity` of 'precomputed' can only be used "
+    ##     385             "with `exact` = True.")
+    ## ValueError: Package `nmslib` is not available.
 
 
 
@@ -145,56 +197,58 @@ Here are the members of an example cluster:
 
 ::
 
-    ## 2097                                     Airplane! (1980)
-    ## 2907                                 Almost Famous (2000)
-    ## 1914                                  Analyze This (1999)
-    ## 969                             Back to the Future (1985)
-    ## 1486                    Back to the Future Part II (1989)
-    ## 1487                   Back to the Future Part III (1990)
-    ## 2259                          Being John Malkovich (1999)
-    ## 2916                                  Best in Show (2000)
-    ## 921                            Blues Brothers, The (1980)
-    ## 89                                   Bottle Rocket (1996)
-    ## 2084                                     Bowfinger (1999)
-    ## 2190                                Boys Don't Cry (1999)
-    ## 2888                                     Cell, The (2000)
-    ## 832                                     Doors, The (1991)
-    ## 955                                      Duck Soup (1933)
-    ## 836                     E.T. the Extra-Terrestrial (1982)
-    ## 1960                                      Election (1999)
-    ## 2036                                Eyes Wide Shut (1999)
-    ## 819                           Fish Called Wanda, A (1988)
-    ## 1232                               Full Monty, The (1997)
-    ## 964                                  Groundhog Day (1993)
-    ## 2605                                 High Fidelity (2000)
-    ## 1211                     Hunt for Red October, The (1990)
-    ## 2382                                      Magnolia (1999)
-    ## 863                Monty Python and the Holy Grail (1975)
-    ## 2094    Monty Python's And Now for Something Completel...
-    ## 820                   Monty Python's Life of Brian (1979)
-    ## 4581            Monty Python's The Meaning of Life (1983)
-    ## 2892       Naked Gun 2 1/2: The Smell of Fear, The (1991)
-    ## 2891    Naked Gun: From the Files of Police Squad!, Th...
-    ## 3010                    O Brother, Where Art Thou? (2000)
-    ## 1394                                  Out of Sight (1998)
-    ## 2443                                 Patriot Games (1992)
-    ## 850                    People vs. Larry Flynt, The (1996)
-    ## 899                            Princess Bride, The (1987)
-    ## 2020                     Run Lola Run (Lola rennt) (1998)
-    ## 1796                                      Rushmore (1998)
-    ## 1979     Star Wars: Episode I - The Phantom Menace (1999)
-    ## 224             Star Wars: Episode IV - A New Hope (1977)
-    ## 898     Star Wars: Episode V - The Empire Strikes Back...
-    ## 911     Star Wars: Episode VI - Return of the Jedi (1983)
-    ## 934                                     Sting, The (1973)
-    ## 2030                                 Summer of Sam (1999)
-    ## 987                             This Is Spinal Tap (1984)
-    ## 2174                                   Three Kings (1999)
-    ## 839                                        Top Gun (1986)
-    ## 3016                                       Traffic (2000)
-    ## 1113                           Waiting for Guffman (1996)
-    ## 977                             Young Frankenstein (1974)
-    ## Name: title, dtype: object
+    ## ---------------------------------------------------------------------------ValueError
+    ## Traceback (most recent call last)Cell In[1], line 1
+    ## ----> 1 movies["cluster"] = g.fit_predict(X)
+    ##       2 which_cluster = movies.cluster[movies.title=="Monty Python's
+    ## The Meaning of Life (1983)"]
+    ##       3 movies.loc[movies.cluster ==
+    ## int(which_cluster)].title.sort_values()
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:548, in GenieBase.fit_predict(self, X, y)
+    ##     520 def fit_predict(self, X, y=None):
+    ##     521     """
+    ##     522     Perform cluster analysis of a dataset and return the
+    ## predicted labels.
+    ##     523
+    ##    (...)
+    ##     546
+    ##     547     """
+    ## --> 548     self.fit(X)
+    ##     549     return self.labels_
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:1051, in Genie.fit(self, X, y)
+    ##     972 """
+    ##     973 Perform cluster analysis of a dataset.
+    ##     974
+    ##    (...)
+    ##    1047
+    ##    1048 """
+    ##    1049 cur_state = self._check_params()  # re-check, they might have
+    ## changed
+    ## -> 1051 cur_state = self._get_mst(X, cur_state)
+    ##    1053 if cur_state["verbose"]:
+    ##    1054     print("[genieclust] Determining clusters with Genie++.",
+    ## file=sys.stderr)
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:511, in GenieBase._get_mst(self, X,
+    ## cur_state)
+    ##     509     cur_state = self._get_mst_exact(X, cur_state)
+    ##     510 else:
+    ## --> 511     cur_state = self._get_mst_approx(X, cur_state)
+    ##     513 # this might be an "intrinsic" dimensionality:
+    ##     514 self.n_features_  = cur_state["n_features"]
+    ## File ~/.virtualenvs/python3-default/lib/python3.11/site-
+    ## packages/genieclust/genie.py:380, in GenieBase._get_mst_approx(self,
+    ## X, cur_state)
+    ##     378 def _get_mst_approx(self, X, cur_state):
+    ##     379     if nmslib is None:
+    ## --> 380         raise ValueError("Package `nmslib` is not available.")
+    ##     382     if cur_state["affinity"] == "precomputed":
+    ##     383         raise ValueError(
+    ##     384             "`affinity` of 'precomputed' can only be used "
+    ##     385             "with `exact` = True.")
+    ## ValueError: Package `nmslib` is not available.
 
 
 

@@ -147,6 +147,4 @@ pair_sets_index(y_test, y_pred)
 ## [1] 0.9049708
 # Fast for low-dimensional Euclidean spaces:
 h <- gclust(emst_mlpack(X))
-## Warning in emst_mlpack(X): Package `mlpack` is not installed. Using mst()
-## instead.
 ```

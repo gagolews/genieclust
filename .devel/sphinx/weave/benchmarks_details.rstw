@@ -9,10 +9,11 @@ In this section we present more detailed results for
 some other partition similarity measures implemented in the `genieclust`
 package — Fowlkes–Mallows :cite:`fm`, adjusted Rand :cite:`comparing_partitions`,
 adjusted and normalised mutual information :cite:`nmi`,
-normalised accuracy (which is based on set-matching classification rate),
+normalised pivoted accuracy (which is based on set-matching classification rate),
+normalised clustering accuracy :cite:`nca`,
 and pair sets index :cite:`psi`,
 see the API documentation of :mod:`genieclust.compare_partitions` for more details.
-In each case, score of 1.0 denotes perfect agreement between the clustering
+In each case, a score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.
 
 At the preprocessing stage, features with variance of 0 were removed.
@@ -49,11 +50,11 @@ plt.rcParams.update({
 
 
 # Load results file:
-res  = pd.read_csv("v1-scores.csv")
-dims = pd.read_csv("v1-dims.csv")
+res  = pd.read_csv("v1-scores.csv.gz")
+#dims = pd.read_csv("v1-dims.csv")
 
 # ari, afm can be negative --> replace negative indexes with 0.0
-res.iloc[:,4:] = res.iloc[:,4:].transform(lambda x: np.maximum(x, 0.0), axis=1)
+res.iloc[:, 7:] = res.iloc[:, 7:].transform(lambda x: np.maximum(x, 0.0), axis=1)
 
 res = res.loc[res.method.isin([
     "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
@@ -80,7 +81,7 @@ res["method"] = res["method"].map({
 
 
 def det(res_max):
-    for similarity_measure in ["ar", "fm", "ami", "nmi", "nacc", "psi"]:
+    for similarity_measure in ["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]:
         print("%s\n%s\n" % (similarity_measure, "^"*len(similarity_measure)))
 
         print("Summary statistics for ``%s`` (best=1.0):\n\n" % similarity_measure)
@@ -112,7 +113,7 @@ Small Datasets
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
 
 # Subset: [large datasets]
-res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n<=10_000]), :]
+res2 = res2.loc[res2.n<=10_000, :]
 
 res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
 
@@ -141,7 +142,7 @@ Medians and means of the partition similarity scores
 (read row-wise, in groups of 2 columns):
 
 <<indices_small,echo=False,results="hidden",caption="Heat map of median and mean similarity scores">>=
-sns.heatmap(res_max.groupby("method")[["ar", "fm", "ami", "nmi", "nacc", "psi"]].\
+sns.heatmap(res_max.groupby("method")[["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]].\
 aggregate([np.median, np.mean]), annot=True, vmin=0.5, vmax=1.0, fmt=".2f")
 plt.yticks(rotation=0)
 plt.xticks(rotation=45)
@@ -162,7 +163,7 @@ Large Datasets
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
 
 # Subset: [large datasets]
-res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n>10_000]), :]
+res2 = res2.loc[res2.n>10_000, :]
 
 res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
 
@@ -189,7 +190,7 @@ Summary
 Medians and means of the partition similarity scores:
 
 <<indices_large,echo=False,results="hidden",caption="Heat map of median and mean similarity scores">>=
-sns.heatmap(res_max.groupby("method")[["ar", "fm", "ami", "nmi", "nacc", "psi"]].\
+sns.heatmap(res_max.groupby("method")[["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]].\
 aggregate([np.median, np.mean]), annot=True, vmin=0.5, vmax=1.0, fmt=".2f")
 plt.yticks(rotation=0)
 plt.xticks(rotation=45)

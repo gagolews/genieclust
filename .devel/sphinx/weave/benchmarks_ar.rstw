@@ -33,7 +33,6 @@ see the :any:`Appendix <benchmarks_details>`\ .
 
 
 
-
 <<imports,results="hidden",echo=False>>=
 import numpy as np
 import pandas as pd
@@ -63,11 +62,11 @@ similarity_measure = "ar"
 
 
 # Load results file:
-res  = pd.read_csv("v1-scores.csv")
-dims = pd.read_csv("v1-dims.csv")
+res  = pd.read_csv("v1-scores.csv.gz")
+#dims = pd.read_csv("v1-dims.csv")
 
 # ari, afm can be negative --> replace negative indexes with 0.0
-res.iloc[:,4:] = res.iloc[:,4:].transform(lambda x: np.maximum(x, 0.0), axis=1)
+res.iloc[:,7:] = res.iloc[:,7:].transform(lambda x: np.maximum(x, 0.0), axis=1)
 
 res = res.loc[res.method.isin([
     "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
@@ -172,7 +171,7 @@ Moreover, Gaussian mixtures used `n_init=100`.
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
 
 # Subset: [large datasets]
-res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n<=10_000]), :]
+res2 = res2.loc[res2.n<=10_000, :]
 
 res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
 
@@ -224,7 +223,7 @@ Below we provide the results for the larger datasets (70,000-105,600 points).
 res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
 
 # Subset: [large datasets]
-res2 = res2.loc[res2.dataset.isin(dims.dataset[dims.n>10_000]), :]
+res2 = res2.loc[res2.n>10_000, :]
 
 res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
 

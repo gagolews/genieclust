@@ -10,27 +10,27 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// adjusted_asymmetric_accuracy
-double adjusted_asymmetric_accuracy(RObject x, RObject y);
-RcppExport SEXP _genieclust_adjusted_asymmetric_accuracy(SEXP xSEXP, SEXP ySEXP) {
+// normalized_clustering_accuracy
+double normalized_clustering_accuracy(RObject x, RObject y);
+RcppExport SEXP _genieclust_normalized_clustering_accuracy(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(adjusted_asymmetric_accuracy(x, y));
+    rcpp_result_gen = Rcpp::wrap(normalized_clustering_accuracy(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// normalized_accuracy
-double normalized_accuracy(RObject x, RObject y);
-RcppExport SEXP _genieclust_normalized_accuracy(SEXP xSEXP, SEXP ySEXP) {
+// normalized_pivoted_accuracy
+double normalized_pivoted_accuracy(RObject x, RObject y);
+RcppExport SEXP _genieclust_normalized_pivoted_accuracy(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(normalized_accuracy(x, y));
+    rcpp_result_gen = Rcpp::wrap(normalized_pivoted_accuracy(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -365,8 +365,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_genieclust_adjusted_asymmetric_accuracy", (DL_FUNC) &_genieclust_adjusted_asymmetric_accuracy, 2},
-    {"_genieclust_normalized_accuracy", (DL_FUNC) &_genieclust_normalized_accuracy, 2},
+    {"_genieclust_normalized_clustering_accuracy", (DL_FUNC) &_genieclust_normalized_clustering_accuracy, 2},
+    {"_genieclust_normalized_pivoted_accuracy", (DL_FUNC) &_genieclust_normalized_pivoted_accuracy, 2},
     {"_genieclust_pair_sets_index", (DL_FUNC) &_genieclust_pair_sets_index, 4},
     {"_genieclust_adjusted_rand_score", (DL_FUNC) &_genieclust_adjusted_rand_score, 3},
     {"_genieclust_rand_score", (DL_FUNC) &_genieclust_rand_score, 2},

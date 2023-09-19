@@ -30,9 +30,8 @@ is definitely worth a try!
 
 Thanks to its being based on minimal spanning trees {cite}`clustering-msts`
 of the pairwise distance graphs, Genie is also **very fast** — determining
-the whole cluster hierarchy
-for datasets of millions of points, can be completed within
-{any}`minutes <weave/timings>`.
+the whole cluster hierarchy for datasets of millions of points, can be
+completed within {any}`minutes <weave/timings>`.
 Therefore, it is capable of solving **extreme clustering tasks**
 (large datasets with any number of clusters to detect)
 on data that fit into memory.
@@ -124,10 +123,10 @@ Other features:
 -   inequality measures: the normalised Gini, Bonferroni,
     and De Vergottini indices;
 
--   external cluster validity measures (see {cite}`aaa,clustering-benchmarks`
+-   external cluster validity measures (see {cite}`nca,clustering-benchmarks`
     for discussion):
-    adjusted asymmetric accuracy and partition similarity scores such as
-    normalised accuracy, pair sets index (PSI) {cite}`psi`,
+    normalised clustering accuracy (NCA) and partition similarity scores such as
+    normalised pivoted accuracy (NPA), pair sets index (PSI) {cite}`psi`,
     adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
     adjusted/normalised/unadjusted mutual information (MI) indices;
 
@@ -189,10 +188,15 @@ weave/sklearn_toy_example
 weave/benchmarks_ar
 weave/timings
 weave/noise
-weave/sparse
-weave/string
 weave/r
 ::::
+
+<!--
+weave/sparse
+weave/string
+require nmslib!
+which cannot be installed currently (hasn't been updated for a while)
+-->
 
 
 ::::{toctree}

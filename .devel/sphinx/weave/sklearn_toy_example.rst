@@ -20,7 +20,7 @@ on a larger data sample and with the Genie algorithm in the game.
     
     import numpy as np
     import matplotlib.pyplot as plt
-    
+    import pandas as pd
     from sklearn import cluster, datasets
     from sklearn.preprocessing import StandardScaler
     from itertools import cycle, islice
@@ -136,7 +136,7 @@ Then we run the clustering procedures and plot the results.
     
             t1 = time.time()
             if hasattr(algorithm, 'labels_'):
-                y_pred = algorithm.labels_.astype(np.int)
+                y_pred = algorithm.labels_.astype(np.int_)
             else:
                 y_pred = algorithm.predict(X)
     

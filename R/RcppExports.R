@@ -16,29 +16,30 @@
 #' a reference (ground-truth) partition.
 #'
 #' @details
-#' Each index except \code{adjusted_asymmetric_accuracy()}
+#' Each index except \code{normalized_clustering_accuracy()}
 #' can act as a pairwise partition similarity score: it is symmetric,
 #' i.e., \code{index(x, y) == index(y, x)}.
 #'
 #' Each index except \code{mi_score()} (which computes the mutual
 #' information score) outputs 1 given two identical partitions.
-#' Note that partitions are always defined up to a bijection of the set of
-#' possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
+#' Note that partitions are always defined up to a permutation (bijection)
+#' of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 #' represent the same 2-partition.
 #'
-#'
-#' \code{adjusted_asymmetric_accuracy()} (Gagolewski, 2022)
+#' \code{normalized_clustering_accuracy()} (Gagolewski, 2023)
 #' is an external cluster validity measure
 #' which assumes that the label vector \code{x} (or rows in the confusion
 #' matrix) represents the reference (ground truth) partition.
-#' It is a corrected-for-chance summary of the proportion of correctly
-#' classified points in each cluster (with cluster matching based on the
-#' solution to the maximal linear sum assignment problem;
-#' see \code{\link{normalized_confusion_matrix}}), given by:
-#' \eqn{(\max_\sigma \sum_{i=1}^K (c_{i, \sigma(i)}/(c_{i, 1}+...+c_{i, K})) - 1)/(K - 1)},
-#' where \eqn{C} is the confusion matrix.
+#' It is an average proportion of correctly classified points in each cluster
+#' above the worst case scenario of uniform membership assignment,
+#' with cluster matching based on the solution to the maximal linear
+#' sum assignment problem;
+#' see \code{\link{normalized_confusion_matrix}}). It is given by:
+#' \eqn{\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k}},
+#' where \eqn{C} is a confusion matrix and \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, K}}
+#' is the i-th row sum. We assume that \eqn{K\ge L}.
 #'
-#' \code{normalized_accuracy()} is defined as
+#' \code{normalized_pivoted_accuracy()} is defined as
 #' \eqn{(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))}, where \eqn{C_\sigma} is a version
 #' of the confusion matrix for given \code{x} and \code{y}
 #' with columns permuted based on the solution to the
@@ -46,8 +47,8 @@
 #' The \eqn{Accuracy(C_\sigma)} part is sometimes referred to as
 #' set-matching classification rate or pivoted accuracy.
 #'
-#' \code{pair_sets_index()} gives the Pair Sets Index (PSI)
-#' adjusted for chance (Rezaei, Franti, 2016).
+#' \code{pair_sets_index()} gives the pair sets index (PSI)
+#' (Rezaei, Franti, 2016).
 #' Pairing is based on the solution to the linear sum assignment problem
 #' of a transformed version of the confusion matrix.
 #' Its simplified version assumes E=1 in the definition of the index,
@@ -91,8 +92,8 @@
 #' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
 #' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
 #'
-#' Gagolewski M., Adjusted asymmetric accuracy: A well-behaving external
-#' cluster validity measure, 2022, under review (preprint),
+#' Gagolewski M., Normalised clustering accuracy: An asymmetric external
+#' cluster validity measure, 2023, under review (preprint),
 #' \doi{10.48550/arXiv.2209.02935}.
 #'
 #' Hubert L., Arabie P., Comparing partitions,
@@ -143,8 +144,8 @@
 #' @examples
 #' y_true <- iris[[5]]
 #' y_pred <- kmeans(as.matrix(iris[1:4]), 3)$cluster
-#' adjusted_asymmetric_accuracy(y_true, y_pred)
-#' normalized_accuracy(y_true, y_pred)
+#' normalized_clustering_accuracy(y_true, y_pred)
+#' normalized_pivoted_accuracy(y_true, y_pred)
 #' pair_sets_index(y_true, y_pred)
 #' pair_sets_index(y_true, y_pred, simplified=TRUE)
 #' adjusted_rand_score(y_true, y_pred)
@@ -160,14 +161,14 @@
 #' @rdname compare_partitions
 #' @name compare_partitions
 #' @export
-adjusted_asymmetric_accuracy <- function(x, y = NULL) {
-    .Call(`_genieclust_adjusted_asymmetric_accuracy`, x, y)
+normalized_clustering_accuracy <- function(x, y = NULL) {
+    .Call(`_genieclust_normalized_clustering_accuracy`, x, y)
 }
 
 #' @rdname compare_partitions
 #' @export
-normalized_accuracy <- function(x, y = NULL) {
-    .Call(`_genieclust_normalized_accuracy`, x, y)
+normalized_pivoted_accuracy <- function(x, y = NULL) {
+    .Call(`_genieclust_normalized_pivoted_accuracy`, x, y)
 }
 
 #' @rdname compare_partitions

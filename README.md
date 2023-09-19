@@ -54,6 +54,14 @@ number of clusters and hence it doesn't dependent on the *DBSCAN*'s somewhat
 difficult-to-set `eps` parameter.
 
 
+The package also features an implementation of economic inequity indices
+(the Gini, Bonferroni index), external cluster validity measures
+(e.g., the normalised clustering accuracy and partition similarity scores
+such as the adjusted Rand, Fowlkes-Mallows, adjusted mutual information,
+and the pair sets index), and internal cluster validity indices
+(e.g., the Calinski-Harabasz, Davies-Bouldin, Ball-Hall, Silhouette,
+and generalised Dunn indices).
+
 
 ## Author and Contributors
 
@@ -199,15 +207,15 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
 
 Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
-*Clustering with minimum spanning trees: How good can it be?*, 2023,
+Clustering with minimum spanning trees: How good can it be?, 2023,
 under review (preprint),
 [DOI: 10.48550/arXiv.2303.05679](https://doi.org/10.48550/arXiv.2303.05679).
 
-Gagolewski M., *Adjusted asymmetric accuracy: A well-behaving external
-cluster validity measure*, 2022, under review (preprint),
+Gagolewski M., Normalised clustering accuracy: An asymmetric external
+cluster validity measure, 2023, under review (preprint),
 [DOI: 10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
 
-Gagolewski M., A Framework for Benchmarking Clustering Algorithms,
+Gagolewski M., A framework for benchmarking clustering algorithms,
 *SoftwareX* **20**, 2022, 101270.
 [DOI: 10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270).
 <https://clustering-benchmarks.gagolewski.com>.
@@ -217,8 +225,8 @@ Density-based clustering based on hierarchical density estimates,
 *Lecture Notes in Computer Science* **7819**, 2013, 160–172.
 [DOI: 10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
-Mueller A., Nowozin S., Lampert C.H., Information Theoretic Clustering
-using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
+Mueller A., Nowozin S., Lampert C.H., Information theoretic clustering
+using minimum spanning trees, *DAGM-OAGM*, 2012.
 
 Rezaei M., Fränti P., Set matching measures for external cluster validity,
 *IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,

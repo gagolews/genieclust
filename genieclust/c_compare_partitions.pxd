@@ -63,9 +63,9 @@ cdef extern from "../src/c_compare_partitions.h":
     CComparePartitionsInfoResult Ccompare_partitions_info(const Py_ssize_t* C,
         Py_ssize_t xc, Py_ssize_t yc)
 
-    double Ccompare_partitions_nacc(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
+    double Ccompare_partitions_npa(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
 
-    double Ccompare_partitions_aaa(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
+    double Ccompare_partitions_nca(const Py_ssize_t* C, Py_ssize_t xc, Py_ssize_t yc)
 
     CCompareSetMatchingResult Ccompare_partitions_psi(const Py_ssize_t* C,
         Py_ssize_t xc, Py_ssize_t yc)
