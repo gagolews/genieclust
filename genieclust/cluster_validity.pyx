@@ -7,7 +7,7 @@
 
 
 """
-So-called internal cluster validity indices
+Internal cluster validity indices
 
 The greater the index value, the more *valid* (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
@@ -15,8 +15,8 @@ Davies-Bouldin indexes take negative values.
 
 These measures were critically reviewed in (Gagolewski, Bartoszuk, Cena, 2022;
 https://doi.org/10.1016/j.ins.2021.10.004;
-`preprint <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_).
-See Section 2 therein for the respective definitions.
+`preprint <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_);
+see Section 2 therein for the respective definitions.
 
 For even more details, see the
 `Framework for Benchmarking Clustering Algorithms

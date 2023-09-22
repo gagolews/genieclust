@@ -1,6 +1,6 @@
 import numpy as np
 from genieclust.genie import *
-from genieclust.inequity import *
+from genieclust.inequality import *
 from genieclust.compare_partitions import *
 import time
 import gc, os

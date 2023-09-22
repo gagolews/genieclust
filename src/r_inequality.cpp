@@ -1,4 +1,4 @@
-/*  Economic Inequity (Inequality) Measures.
+/*  Inequality Measures
  *
  *  Copyleft (C) 2018-2023, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -13,13 +13,13 @@
  *  If this is not the case, refer to <https://www.gnu.org/licenses/>.
  */
 
-#include "c_inequity.h"
+#include "c_inequality.h"
 #include <Rcpp.h>
 #include <algorithm>
 
 
 
-//' @title Inequity (Inequality) Measures
+//' @title Inequality Measures
 //'
 //' @description
 //' \code{gini_index()} gives the normalised Gini index,
@@ -27,15 +27,15 @@
 //' \code{devergottini_index()} implements the De Vergottini index.
 //'
 //' @details
-//' These indices can be used to quantify the "inequity" of a numeric sample.
-//' They can be perceived as measures of data dispersion.
+//' These indices can be used to quantify the "inequality" of a numeric sample.
+//' They can be conceived as normalised measures of data dispersion.
 //' For constant vectors (perfect equity), the indices yield values of 0.
-//' Vectors with all elements but one equal to 0 (perfect inequity),
+//' Vectors with all elements but one equal to 0 (perfect inequality),
 //' are assigned scores of 1.
 //' They follow the Pigou-Dalton principle (are Schur-convex):
 //' setting \eqn{x_i = x_i - h} and \eqn{x_j = x_j + h} with \eqn{h > 0}
 //' and \eqn{x_i - h \geq  x_j + h} (taking from the "rich" and
-//' giving to the "poor") decreases the inequity.
+//' giving to the "poor") decreases the inequality
 //'
 //' These indices have applications in economics, amongst others.
 //' The Genie clustering algorithm uses the Gini index as a measure
@@ -91,7 +91,7 @@
 //'
 //' @param x numeric vector of non-negative values
 //'
-//' @return The value of the inequity index, a number in \eqn{[0, 1]}.
+//' @return The value of the inequality index, a number in \eqn{[0, 1]}.
 //'
 //' @examples
 //' gini_index(c(2, 2, 2, 2, 2))   # no inequality
@@ -107,8 +107,8 @@
 //' devergottini_index(c(7, 0, 3, 0, 0))
 //' devergottini_index(c(6, 0, 3, 1, 0))
 //'
-//' @name inequity
-//' @rdname inequity
+//' @name inequality
+//' @rdname inequality
 //' @export
 // [[Rcpp::export]]
 double gini_index(Rcpp::NumericVector x)
@@ -128,7 +128,7 @@ double gini_index(Rcpp::NumericVector x)
 }
 
 
-//' @rdname inequity
+//' @rdname inequality
 //' @export
 // [[Rcpp::export]]
 double bonferroni_index(Rcpp::NumericVector x)
@@ -149,7 +149,7 @@ double bonferroni_index(Rcpp::NumericVector x)
 
 
 
-//' @rdname inequity
+//' @rdname inequality
 //' @export
 // [[Rcpp::export]]
 double devergottini_index(Rcpp::NumericVector x)

@@ -7,7 +7,7 @@
 
 
 """
-Inequity (inequality) measures
+Inequality measures
 """
 
 # ############################################################################ #
@@ -31,7 +31,7 @@ Inequity (inequality) measures
 cimport cython
 cimport numpy as np
 import numpy as np
-from . cimport c_inequity
+from . cimport c_inequality
 
 ctypedef fused T:
     int
@@ -48,7 +48,7 @@ cdef T square(T x):
 
 cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     """
-    genieclust.inequity.gini_index(x, is_sorted=False)
+    genieclust.inequality.gini_index(x, is_sorted=False)
 
     Computes the normalised Gini index
 
@@ -67,14 +67,14 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     -------
 
     double
-        The value of the inequity index, a number in [0,1].
+        The value of the inequality index, a number in [0,1].
 
 
     See Also
     --------
 
-    genieclust.inequity.bonferroni_index : The normalised Bonferroni index
-    genieclust.inequity.devergottini_index : The normalised De Vergottini index
+    genieclust.inequality.bonferroni_index : The normalised Bonferroni index
+    genieclust.inequality.devergottini_index : The normalised De Vergottini index
 
 
     Notes
@@ -103,14 +103,14 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     where :math:`\\sigma` is an ordering permutation of :math:`(x_1,\\dots,x_n)`.
 
     The Gini, Bonferroni, and De Vergottini indices can be used to quantify
-    the "inequity" of a numeric sample. They can be perceived as measures
-    of data dispersion. For constant vectors (perfect equity), the indices
-    yield values of 0. Vectors with all elements but one equal to 0
-    (perfect inequity), are assigned scores of 1.
+    the "inequality" of a numeric sample. They can be conceived as normalised
+    measures of data dispersion. For constant vectors (perfect equity),
+    the indices yield values of 0. Vectors with all elements but one equal to 0
+    (perfect inequality), are assigned scores of 1.
     They follow the Pigou-Dalton principle (are Schur-convex):
     setting :math:`x_i = x_i - h` and :math:`x_j = x_j + h` with :math:`h > 0`
     and :math:`x_i - h \\geq  x_j + h` (taking from the "rich" and giving away
-    to the "poor") decreases the inequity.
+    to the "poor") decreases the inequality.
 
     These indices have applications in economics, amongst others.
     The `Genie` clustering algorithm uses the Gini index as a measure
@@ -131,34 +131,34 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
 
     No inequality (perfect equality):
 
-    >>> round(genieclust.inequity.gini_index(np.r_[2, 2,  2, 2, 2]), 2)
+    >>> round(genieclust.inequality.gini_index(np.r_[2, 2,  2, 2, 2]), 2)
     0.0
 
-    One has it all (total inequity):
+    One has it all (total inequality):
 
-    >>> round(genieclust.inequity.gini_index(np.r_[0, 0, 10, 0, 0]), 2)
+    >>> round(genieclust.inequality.gini_index(np.r_[0, 0, 10, 0, 0]), 2)
     1.0
 
     Give to the poor, take away from the rich:
 
-    >>> round(genieclust.inequity.gini_index(np.r_[7, 0,  3, 0, 0]), 2)
+    >>> round(genieclust.inequality.gini_index(np.r_[7, 0,  3, 0, 0]), 2)
     0.85
 
     Robinhood even more:
 
-    >>> round(genieclust.inequity.gini_index(np.r_[6, 0,  3, 1, 0]), 2)
+    >>> round(genieclust.inequality.gini_index(np.r_[6, 0,  3, 1, 0]), 2)
     0.75
     """
 
     if not is_sorted: x = np.sort(x)
     else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
-    return c_inequity.Cgini_sorted(&x[0], x.shape[0])
+    return c_inequality.Cgini_sorted(&x[0], x.shape[0])
 
 
 
 cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     """
-    genieclust.inequity.bonferroni_index(x, is_sorted=False)
+    genieclust.inequality.bonferroni_index(x, is_sorted=False)
 
     Computes the normalised Bonferroni index
 
@@ -177,14 +177,14 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     -------
 
     double
-        The value of the inequity index, a number in [0,1].
+        The value of the inequality index, a number in [0,1].
 
 
     See Also
     --------
 
-    genieclust.inequity.devergottini_index : The normalised De Vergottini index
-    genieclust.inequity.gini_index : The normalised Gini index
+    genieclust.inequality.devergottini_index : The normalised De Vergottini index
+    genieclust.inequality.gini_index : The normalised Gini index
 
 
     Notes
@@ -218,35 +218,35 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
 
     No inequality (perfect equality):
 
-    >>> round(genieclust.inequity.bonferroni_index(np.r_[2, 2,  2, 2, 2]), 2)
+    >>> round(genieclust.inequality.bonferroni_index(np.r_[2, 2,  2, 2, 2]), 2)
     0.0
 
-    One has it all (total inequity):
+    One has it all (total inequality):
 
-    >>> round(genieclust.inequity.bonferroni_index(np.r_[0, 0, 10, 0, 0]), 2)
+    >>> round(genieclust.inequality.bonferroni_index(np.r_[0, 0, 10, 0, 0]), 2)
     1.0
 
     Give to the poor, take away from the rich:
 
-    >>> round(genieclust.inequity.bonferroni_index(np.r_[7, 0,  3, 0, 0]), 2)
+    >>> round(genieclust.inequality.bonferroni_index(np.r_[7, 0,  3, 0, 0]), 2)
     0.91
 
     Robinhood even more:
 
-    >>> round(genieclust.inequity.bonferroni_index(np.r_[6, 0,  3, 1, 0]), 2)
+    >>> round(genieclust.inequality.bonferroni_index(np.r_[6, 0,  3, 1, 0]), 2)
     0.83
     """
 
     if not is_sorted: x = np.sort(x)
     else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
 
-    return c_inequity.Cbonferroni_sorted(&x[0], x.shape[0])
+    return c_inequality.Cbonferroni_sorted(&x[0], x.shape[0])
 
 
 
 cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
     """
-    genieclust.inequity.devergottini_index(x, is_sorted=False)
+    genieclust.inequality.devergottini_index(x, is_sorted=False)
 
     Computes the normalised De Vergottini index
 
@@ -265,14 +265,14 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
     -------
 
     double
-        The value of the inequity index, a number in [0,1].
+        The value of the inequality index, a number in [0,1].
 
 
     See Also
     --------
 
-    genieclust.inequity.bonferroni_index : The normalised Bonferroni index
-    genieclust.inequity.gini_index : The normalised Gini index
+    genieclust.inequality.bonferroni_index : The normalised Bonferroni index
+    genieclust.inequality.gini_index : The normalised Gini index
 
 
     Notes
@@ -299,25 +299,25 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
 
     No inequality (perfect equality):
 
-    >>> round(genieclust.inequity.devergottini_index(np.r_[2, 2,  2, 2, 2]), 2)
+    >>> round(genieclust.inequality.devergottini_index(np.r_[2, 2,  2, 2, 2]), 2)
     0.0
 
-    One has it all (total inequity):
+    One has it all (total inequality):
 
-    >>> round(genieclust.inequity.devergottini_index(np.r_[0, 0, 10, 0, 0]), 2)
+    >>> round(genieclust.inequality.devergottini_index(np.r_[0, 0, 10, 0, 0]), 2)
     1.0
 
     Give to the poor, take away from the rich:
 
-    >>> round(genieclust.inequity.devergottini_index(np.r_[7, 0,  3, 0, 0]), 2)
+    >>> round(genieclust.inequality.devergottini_index(np.r_[7, 0,  3, 0, 0]), 2)
     0.77
 
     Robinhood even more:
 
-    >>> round(genieclust.inequity.devergottini_index(np.r_[6, 0,  3, 1, 0]), 2)
+    >>> round(genieclust.inequality.devergottini_index(np.r_[6, 0,  3, 1, 0]), 2)
     0.65
     """
 
     if not is_sorted: x = np.sort(x)
     else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
-    return c_inequity.Cdevergottini_sorted(&x[0], x.shape[0])
+    return c_inequality.Cdevergottini_sorted(&x[0], x.shape[0])

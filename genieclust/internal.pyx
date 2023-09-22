@@ -1410,7 +1410,7 @@ cpdef dict genie_from_mst(
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
     A new hierarchical clustering linkage criterion: the Genie algorithm
-    links two clusters in such a way that a chosen economic inequity measure
+    links two clusters in such a way that a chosen economic inequality measure
     (here, the Gini index) of the cluster sizes does not increase drastically
     above a given threshold. The introduced method most often outperforms
     the Ward or average linkage, k-means, spectral clustering,

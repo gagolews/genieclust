@@ -4,7 +4,7 @@ Basics
 
 *Genie* :cite:`genieins` is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
-the Gini index (a popular measure of inequity used in, amongst others,
+the Gini index (a popular measure of inequality used in, amongst others,
 economics) of the cluster sizes should not go too far beyond a given threshold.
 If this happens, instead of merging two closest clusters, a smallest cluster
 is joined with its nearest neighbour.

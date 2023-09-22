@@ -198,7 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequality.html">genieclust.inequality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_internal.html">genieclust.internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_tools.html">genieclust.tools</a></li>
@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="inequity.html">inequity: Inequity (Inequality) Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="inequality.html">inequality: Inequality Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
@@ -272,7 +272,7 @@
 <h1>gclust: Hierarchical Clustering Algorithm Genie<a class="headerlink" href="#gclust-hierarchical-clustering-algorithm-genie" title="Link to this heading">#</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">#</a></h2>
-<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequity.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">https://github.com/gagolews/clustering-benchmarks</a>.</p>
+<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016). The Genie algorithm is based on a minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequality.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, a forced merge of a point group of the smallest size is performed. Its appealing simplicity goes hand in hand with its usability; Genie often outperforms other clustering approaches on benchmark data, such as <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">https://github.com/gagolews/clustering-benchmarks</a>.</p>
 <p>The clustering can now also be computed with respect to the mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN* algorithm (see Campello et al., 2013). If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i,j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i,k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other.</p>
 <p>The Genie correction together with the smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1 (note that <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance) gives a robustified version of the HDBSCAN* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN’s somewhat magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or the HDBSCAN’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
 </section>
@@ -469,7 +469,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-22T11:29:44+1000.
+              Last updated on 2023-09-22T17:14:42+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

@@ -9,6 +9,6 @@ rapi/compare_partitions
 rapi/emst_mlpack
 rapi/gclust
 rapi/genieclust-package
-rapi/inequity
+rapi/inequality
 rapi/mst
 ```

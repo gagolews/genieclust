@@ -8,7 +8,7 @@
 
 
 """
-Provides access to inequity (inequality) measures.
+Provides access to inequality measures.
 """
 
 
@@ -30,7 +30,7 @@ Provides access to inequity (inequality) measures.
 # ############################################################################ #
 
 
-cdef extern from "../src/c_inequity.h":
+cdef extern from "../src/c_inequality.h":
     double Cgini_sorted[T](const T* x, Py_ssize_t n) except +
     double Cbonferroni_sorted[T](const T* x, Py_ssize_t n) except +
     double Cdevergottini_sorted[T](const T* x, Py_ssize_t n) except +

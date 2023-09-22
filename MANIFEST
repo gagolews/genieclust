@@ -13,14 +13,14 @@ genieclust/c_cvi.pxd
 genieclust/c_disjoint_sets.pxd
 genieclust/c_genie.pxd
 genieclust/c_gini_disjoint_sets.pxd
-genieclust/c_inequity.pxd
+genieclust/c_inequality.pxd
 genieclust/c_mst.pxd
 genieclust/c_postprocess.pxd
 genieclust/c_preprocess.pxd
 genieclust/cluster_validity.pyx
 genieclust/compare_partitions.pyx
 genieclust/genie.py
-genieclust/inequity.pyx
+genieclust/inequality.pyx
 genieclust/internal.pyx
 genieclust/plots.py
 genieclust/tools.pyx
@@ -32,7 +32,7 @@ src/c_disjoint_sets.h
 src/c_distance.h
 src/c_genie.h
 src/c_gini_disjoint_sets.h
-src/c_inequity.h
+src/c_inequality.h
 src/c_int_dict.h
 src/c_matrix.h
 src/c_mst.h

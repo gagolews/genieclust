@@ -330,7 +330,7 @@ public:
 /*!  The Genie++ Hierarchical Clustering Algorithm
  *
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
- *   in such a way that a chosen economic inequity measure
+ *   in such a way that a chosen economic inequality measure
  *   (here, the Gini index) of the cluster sizes does not increase drastically
  *   above a given threshold. The method most often outperforms
  *   the Ward or average linkage, k-means, spectral clustering,
@@ -410,7 +410,7 @@ protected:
 
 
             if (ds->get_gini() > gini_threshold) {
-                // the Genie correction for inequity of cluster sizes
+                // the Genie correction for inequality of cluster sizes
                 Py_ssize_t m = ds->get_smallest_count();
                 if (m != lastm || lastidx < mst_skiplist->get_key_min()) {
                     // need to start from the beginning of the MST skiplist

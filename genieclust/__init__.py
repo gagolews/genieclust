@@ -25,7 +25,7 @@ __version__ = "1.1.4.9004"
 
 
 from . import plots
-from . import inequity
+from . import inequality
 from . import tools
 from . import compare_partitions
 from . import cluster_validity

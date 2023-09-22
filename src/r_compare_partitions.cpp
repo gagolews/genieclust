@@ -99,11 +99,11 @@ std::vector<double> get_contingency_matrix(
 //' of a dataset with \eqn{n} observations specified by two vectors
 //' of labels. The functions described here can be used as external cluster
 //' validity measures, where we assume that \code{x} is
-//' a reference (ground-truth) partition.
+//' a reference (ground-truth) partition whilst \code{y} is the vector
+//' of predicted cluster memberships.
 //'
-//' @details
-//' Each index except \code{normalized_clustering_accuracy()}
-//' can act as a pairwise partition similarity score: it is symmetric,
+//' All indices except \code{normalized_clustering_accuracy()}
+//' can act as a pairwise partition similarity score: they are symmetric,
 //' i.e., \code{index(x, y) == index(y, x)}.
 //'
 //' Each index except \code{mi_score()} (which computes the mutual
@@ -112,49 +112,46 @@ std::vector<double> get_contingency_matrix(
 //' of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 //' represent the same 2-partition.
 //'
+//' @details
 //' \code{normalized_clustering_accuracy()} (Gagolewski, 2023)
-//' is an external cluster validity measure
+//' is an asymmetric external cluster validity measure
 //' which assumes that the label vector \code{x} (or rows in the confusion
 //' matrix) represents the reference (ground truth) partition.
 //' It is an average proportion of correctly classified points in each cluster
 //' above the worst case scenario of uniform membership assignment,
-//' with cluster matching based on the solution to the maximal linear
-//' sum assignment problem;
-//' see \code{\link{normalized_confusion_matrix}}). It is given by:
-//' \eqn{\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k}},
-//' where \eqn{C} is a confusion matrix and \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, K}}
-//' is the i-th row sum. We assume that \eqn{K\ge L}.
+//' with cluster ID matching based on the solution to the maximal linear
+//' sum assignment problem; see \code{\link{normalized_confusion_matrix}}).
+//' It is given by:
+//' \eqn{\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}},
+//' where \eqn{C} is a confusion matrix with \eqn{K} rows and \eqn{L} columns,
+//' \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}}, and
+//' \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, L}} is the i-th row sum,
+//' under the assumption that \eqn{c_{i,j}=0} for \eqn{i>K} or \eqn{j>L}
+//' and \eqn{0/0=0}.
 //'
 //' \code{normalized_pivoted_accuracy()} is defined as
-//' \eqn{(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))}, where \eqn{C_\sigma} is a version
-//' of the confusion matrix for given \code{x} and \code{y}
-//' with columns permuted based on the solution to the
-//' maximal linear sum assignment problem.
-//' The \eqn{Accuracy(C_\sigma)} part is sometimes referred to as
-//' set-matching classification rate or pivoted accuracy.
+//' \eqn{(\max_\sigma \sum_{j=1}^{\max(K,L)} c_{\sigma(j),j}/n-1/\max(K,L))/(1-1/\max(K,L))},
+//' where \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}},
+//' and \eqn{n} is the sum of all elements in \eqn{C}.
+//' For non-square matrices, missing rows/columns are assumed
+//' to be filled with 0s.
 //'
-//' \code{pair_sets_index()} gives the pair sets index (PSI)
-//' (Rezaei, Franti, 2016).
-//' Pairing is based on the solution to the linear sum assignment problem
-//' of a transformed version of the confusion matrix.
-//' For non-square matrices, missing rows/columns are assumed to be filled with 0s.
+//' \code{pair_sets_index()} (PSI) was introduced in (Rezaei, Franti, 2016).
 //' The simplified PSI assumes E=1 in the definition of the index,
 //' i.e., uses Eq. (20) in the said paper instead of Eq. (18).
+//' For non-square matrices, missing rows/columns are assumed
+//' to be filled with 0s.
 //'
 //' \code{rand_score()} gives the Rand score (the "probability" of agreement
 //' between the two partitions) and
 //' \code{adjusted_rand_score()} is its version corrected for chance,
-//' see (Hubert, Arabie, 1985),
-//' its expected value is 0.0 given two independent partitions.
-//' Due to the adjustment, the resulting index might also be negative
+//' see (Hubert, Arabie, 1985): its expected value is 0 given two independent
+//' partitions. Due to the adjustment, the resulting index may be negative
 //' for some inputs.
 //'
 //' Similarly, \code{fm_score()} gives the Fowlkes-Mallows (FM) score
-//' and \code{adjusted_fm_score()} is its adjusted-for-chance version,
+//' and \code{adjusted_fm_score()} is its adjusted-for-chance version;
 //' see (Hubert, Arabie, 1985).
-//'
-//' Note that both the (unadjusted) Rand and FM scores are bounded from below
-//' by \eqn{1/(K+1)} if \eqn{K=L}, hence their adjusted versions are preferred.
 //'
 //' \code{mi_score()}, \code{adjusted_mi_score()} and
 //' \code{normalized_mi_score()} are information-theoretic
@@ -168,7 +165,7 @@ std::vector<double> get_contingency_matrix(
 //' of the main diagonal is the largest possible (by solving
 //' the maximal assignment problem).
 //' The function only accepts \eqn{K \leq L}.
-//' The sole reordering of the columns of a confusion matrix can be determined
+//' The reordering of the columns of a confusion matrix can be determined
 //' by calling \code{normalizing_permutation()}.
 //'
 //' Also note that the built-in

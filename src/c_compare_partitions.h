@@ -403,10 +403,14 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
 
 /*! Computes the normalised pivoted accuracy
  *
- *  Normalised pivoted accuracy is (Accuracy(C[:,sigma])-1.0/max(xc,yc))/(1.0-1.0/max(xc,yc)),
+ *  Normalised pivoted accuracy is
+ *  (Accuracy(C[:,sigma])-1.0/max(xc,yc))/(1.0-1.0/max(xc,yc)),
  *  where C[:,sigma] is a version of the input confusion matrix
  *  with columns permuted based on the solution to the
  *  maximal linear sum assignment problem.
+ *
+ *  For non-square matrices, missing rows/columns are assumed
+ *  to be filled with 0s.
  *
  *  Accuracy(C[:,sigma]) is sometimes referred to as
  *  set-matching classification rate or pivoted accuracy.
@@ -443,7 +447,8 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
         }
     }
 
-    // if C is not a square matrix, treat the missing columns as if they were filled with 0s
+    // if C is not a square matrix, treat the missing columns
+    // as if they were filled with 0s
     Py_ssize_t xyc = std::max(xc, yc);
     std::vector<double> S(xyc*xyc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
@@ -477,6 +482,10 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  NCA is not symmetric - we assume that rows in C determine the true
  *  (reference) partition.
  *
+ *  For non-square confusion matrices, missing rows/columns
+ *  are assumed to be filled with 0s and that 0/0 is 0,
+ *  but the original row count is used for normalisation.
+ *
  *  References
  *  ==========
  *
@@ -506,6 +515,10 @@ double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
     // if xc>yc, treat C as if its missing columns were filled with 0s
     Py_ssize_t yc2 = std::max(xc, yc);
 
+    // if xc<yc, only xc items are matched;
+    // thus, overall, the behaviour is like filling missed rows/columns with 0s
+    // and assuming 0/0 == 0, while still using k=nrow(C)
+
     std::vector<double> S(xc*yc2, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
@@ -534,7 +547,10 @@ double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *
  *
  *  SPSI (simplified PSI) assumes E=1 in the definition of the index
- *  in (Rezaei, Franti 2016), i.e., uses Eq. (20) instead of (18) therein.
+ *  in (Rezaei, Franti 2016), i.e., uses Eq. (20) instead of Eq. (18) therein.
+ *
+ *  For non-square confusion matrices, missing rows/columns
+ *  are assumed to be filled with 0s.
  *
  *
  *  References
@@ -563,7 +579,8 @@ CCompareSetMatchingResult Ccompare_partitions_psi(
         }
     }
 
-    // if C is not a square matrix, treat the missing columns as if they were filled with 0s
+    // If C is not a square matrix, treat the missing columns or rows
+    // as if they were filled with 0s.
     Py_ssize_t xyc = std::max(xc, yc);
 
     std::vector<double> sum_x(xyc, 0.0);

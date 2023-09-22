@@ -3,6 +3,9 @@
 
 ## 1.1.4.9xxx
 
+* [BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures
+    are no longer referred to as inequity measures.
+
 * [BACKWARD INCOMPATIBILITY] [Python and R]
     Some external cluster validity measures were renamed
     (as per the major revision of <https://doi.org/10.48550/arXiv.2209.02935>):
@@ -110,9 +113,7 @@
 *  [Python] `plots.plot_scatter` now uses a more accessible default palette
    (from R 4.0.0).
 
-*  [Python] New function: `inequity.devergottini_index`.
-
-*  [R] New function: `devergottini_index`.
+*  [Python and R] New function: `devergottini_index`.
 
 
 ## 1.0.0 (2021-04-22)

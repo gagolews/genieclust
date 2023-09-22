@@ -4,7 +4,11 @@
 
 The functions described in this section quantify the similarity between two label vectors `x` and `y` which represent two partitions of a set of $n$ elements into, respectively, $K$ and $L$ nonempty and pairwise disjoint subsets.
 
-For instance, `x` and `y` can represent two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described here can be used as external cluster validity measures, where we assume that `x` is a reference (ground-truth) partition.
+For instance, `x` and `y` can represent two clusterings of a dataset with $n$ observations specified by two vectors of labels. The functions described here can be used as external cluster validity measures, where we assume that `x` is a reference (ground-truth) partition whilst `y` is the vector of predicted cluster memberships.
+
+All indices except `normalized_clustering_accuracy()` can act as a pairwise partition similarity score: they are symmetric, i.e., `index(x, y) == index(y, x)`.
+
+Each index except `mi_score()` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a permutation (bijection) of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
 
 ## Usage
 
@@ -45,25 +49,19 @@ normalizing_permutation(x, y = NULL)
 
 ## Details
 
-Each index except `normalized_clustering_accuracy()` can act as a pairwise partition similarity score: it is symmetric, i.e., `index(x, y) == index(y, x)`.
+`normalized_clustering_accuracy()` (Gagolewski, 2023) is an asymmetric external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is an average proportion of correctly classified points in each cluster above the worst case scenario of uniform membership assignment, with cluster ID matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)). It is given by: $\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}$, where $C$ is a confusion matrix with $K$ rows and $L$ columns, $\sigma$ is a permutation of the set $\{1,\dots,\max(K,L)\}$, and $c_{i, \cdot}=c_{i, 1}+...+c_{i, L}$ is the i-th row sum, under the assumption that $c_{i,j}=0$ for $i>K$ or $j>L$ and $0/0=0$.
 
-Each index except `mi_score()` (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a permutation (bijection) of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.
+`normalized_pivoted_accuracy()` is defined as $(\max_\sigma \sum_{j=1}^{\max(K,L)} c_{\sigma(j),j}/n-1/\max(K,L))/(1-1/\max(K,L))$, where $\sigma$ is a permutation of the set $\{1,\dots,\max(K,L)\}$, and $n$ is the sum of all elements in $C$. For non-square matrices, missing rows/columns are assumed to be filled with 0s.
 
-`normalized_clustering_accuracy()` (Gagolewski, 2023) is an external cluster validity measure which assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is an average proportion of correctly classified points in each cluster above the worst case scenario of uniform membership assignment, with cluster matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)). It is given by: $\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k}$, where $C$ is a confusion matrix and $c_{i, \cdot}=c_{i, 1}+...+c_{i, K}$ is the i-th row sum. We assume that $K\ge L$.
+`pair_sets_index()` (PSI) was introduced in (Rezaei, Franti, 2016). The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18). For non-square matrices, missing rows/columns are assumed to be filled with 0s.
 
-`normalized_pivoted_accuracy()` is defined as $(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y` with columns permuted based on the solution to the maximal linear sum assignment problem. The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate or pivoted accuracy.
+`rand_score()` gives the Rand score (the \"probability\" of agreement between the two partitions) and `adjusted_rand_score()` is its version corrected for chance, see (Hubert, Arabie, 1985): its expected value is 0 given two independent partitions. Due to the adjustment, the resulting index may be negative for some inputs.
 
-`pair_sets_index()` gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. For non-square matrices, missing rows/columns are assumed to be filled with 0s. The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18).
-
-`rand_score()` gives the Rand score (the \"probability\" of agreement between the two partitions) and `adjusted_rand_score()` is its version corrected for chance, see (Hubert, Arabie, 1985), its expected value is 0.0 given two independent partitions. Due to the adjustment, the resulting index might also be negative for some inputs.
-
-Similarly, `fm_score()` gives the Fowlkes-Mallows (FM) score and `adjusted_fm_score()` is its adjusted-for-chance version, see (Hubert, Arabie, 1985).
-
-Note that both the (unadjusted) Rand and FM scores are bounded from below by $1/(K+1)$ if $K=L$, hence their adjusted versions are preferred.
+Similarly, `fm_score()` gives the Fowlkes-Mallows (FM) score and `adjusted_fm_score()` is its adjusted-for-chance version; see (Hubert, Arabie, 1985).
 
 `mi_score()`, `adjusted_mi_score()` and `normalized_mi_score()` are information-theoretic scores, based on mutual information, see the definition of $AMI_{sum}$ and $NMI_{sum}$ in (Vinh et al., 2010).
 
-`normalized_confusion_matrix()` computes the confusion matrix and permutes its rows and columns so that the sum of the elements of the main diagonal is the largest possible (by solving the maximal assignment problem). The function only accepts $K \leq L$. The sole reordering of the columns of a confusion matrix can be determined by calling `normalizing_permutation()`.
+`normalized_confusion_matrix()` computes the confusion matrix and permutes its rows and columns so that the sum of the elements of the main diagonal is the largest possible (by solving the maximal assignment problem). The function only accepts $K \leq L$. The reordering of the columns of a confusion matrix can be determined by calling `normalizing_permutation()`.
 
 Also note that the built-in [`table()`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html) determines the standard confusion matrix.
 

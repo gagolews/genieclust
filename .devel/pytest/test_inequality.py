@@ -1,9 +1,9 @@
 import numpy as np
 import genieclust
-from genieclust.inequity import *
+from genieclust.inequality import *
 
 # np.random.seed(123)
-def test_inequity():
+def test_inequality():
     def gini_ref(x):
         n = len(x)
         s = 0.0
@@ -63,4 +63,4 @@ def test_inequity():
                 assert devergottini_index(x[::2], True) == devergottini_index(np.array(x[::2]))
 
 if __name__ == "__main__":
-    test_inequity()
+    test_inequality()

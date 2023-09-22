@@ -1,5 +1,5 @@
 import numpy as np
-from genieclust.inequity import *
+from genieclust.inequality import *
 from genieclust.internal import DisjointSets
 from genieclust.internal import GiniDisjointSets
 import time

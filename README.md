@@ -54,7 +54,7 @@ number of clusters and hence it doesn't dependent on the *DBSCAN*'s somewhat
 difficult-to-set `eps` parameter.
 
 
-The package also features an implementation of economic inequity indices
+The package also features an implementation of economic inequality indices
 (the Gini, Bonferroni index), external cluster validity measures
 (e.g., the normalised clustering accuracy and partition similarity scores
 such as the adjusted Rand, Fowlkes-Mallows, adjusted mutual information,

@@ -198,7 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequality.html">genieclust.inequality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/inequity.html">inequity: Inequity (Inequality) Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
@@ -273,6 +273,8 @@
 <section id="xxx">
 <h2>1.1.4.9xxx<a class="headerlink" href="#xxx" title="Link to this heading">#</a></h2>
 <ul class="simple">
+<li><p>[BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures
+are no longer referred to as inequity measures.</p></li>
 <li><p>[BACKWARD INCOMPATIBILITY] [Python and R]
 Some external cluster validity measures were renamed
 (as per the major revision of <a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">https://doi.org/10.48550/arXiv.2209.02935</a>):
@@ -368,8 +370,7 @@ SoftwareX 15, 100722, 2021, DOI:
 <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">10.1016/j.softx.2021.100722</a>.</p></li>
 <li><p>[Python] <code class="docutils literal notranslate"><span class="pre">plots.plot_scatter</span></code> now uses a more accessible default palette
 (from R 4.0.0).</p></li>
-<li><p>[Python] New function: <code class="docutils literal notranslate"><span class="pre">inequity.devergottini_index</span></code>.</p></li>
-<li><p>[R] New function: <code class="docutils literal notranslate"><span class="pre">devergottini_index</span></code>.</p></li>
+<li><p>[Python and R] New function: <code class="docutils literal notranslate"><span class="pre">devergottini_index</span></code>.</p></li>
 </ul>
 </section>
 <section id="id7">
@@ -468,7 +469,7 @@ by <code class="docutils literal notranslate"><span class="pre">nmslib</span></c
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-22T11:29:44+1000.
+              Last updated on 2023-09-22T17:14:42+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

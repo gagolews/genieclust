@@ -83,7 +83,7 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
 
     Determines the permutation of columns of a confusion matrix
     so that the sum of the elements on the main diagonal is the largest
-    possible (by solving the maximal assignment problem)
+    possible (by solving the maximal assignment problem).
 
 
     Parameters
@@ -157,10 +157,9 @@ cpdef np.ndarray normalize_confusion_matrix(C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
 
-    Permutes the rows and columns of a confusion matrix
-    so that the sum of the elements
-    on the main diagonal is the largest possible (by solving
-    the maximal assignment problem)
+    Permutes the rows and columns of a confusion matrix so that the sum
+    of the elements on the main diagonal is the largest possible
+    (by solving the maximal assignment problem).
 
 
     Parameters
@@ -222,7 +221,7 @@ cpdef np.ndarray normalize_confusion_matrix(C):
     cdef Py_ssize_t xc = _C_intp_or_double.shape[0]
     cdef Py_ssize_t yc = _C_intp_or_double.shape[1]
     if xc > yc:
-        raise ValueError("number of rows cannot be greater than the number of columns")
+        raise ValueError("the number of rows cannot be greater than the number of columns")
 
     cdef np.ndarray[Py_ssize_t,ndim=2] _Ci
     cdef np.ndarray[Py_ssize_t,ndim=2] _Di
@@ -462,13 +461,13 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     This function implements a few scores that aim to quantify
     the similarity between `x` and `y`.
-
-    These functions can be used as external cluster
+    They can be used as external cluster
     validity measures, where we assume that `x` is
-    the reference (ground-truth) partition; compare [5]_.
+    the reference (ground-truth) partition
+    whilst `y` is the vector of predicted cluster memberships; compare [5]_.
 
-    Each index except `normalized_clustering_accuracy`
-    can act as a pairwise partition similarity score: it is symmetric,
+    All indices except `normalized_clustering_accuracy`
+    can act as a pairwise partition similarity score: they are symmetric,
     i.e., ``index(x, y) == index(y, x)``.
 
     Each index except `mi_score` (which computes the mutual information score)
@@ -477,48 +476,44 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
     represent the same 2-partition.
 
-    `normalized_clustering_accuracy` [2]_ is an external cluster validity measure
-    which assumes that the label vector `x` (or rows in the confusion
-    matrix) represents the reference (ground truth) partition.
+    `normalized_clustering_accuracy` [2]_ is an asymmetric external cluster
+    validity measure which assumes that the label vector `x` (or rows in the
+    confusion matrix) represents the reference (ground truth) partition.
     It is an average proportion of correctly classified points in each cluster
     above the worst case scenario of uniform membership assignment,
-    with cluster matching based on the solution to the maximal linear
+    with cluster ID matching based on the solution to the maximal linear
     sum assignment problem; see :func:`normalized_confusion_matrix`).
     It is given by:
-    :math:`(\\max_\\sigma \\frac{1}{K} \\sum_{i=1}^K \\frac{c_{i, \\sigma(i)}-c_{i,\\cdot}/k}{c_{i,\\cdot}-c_{i,\\cdot}/k})`,
-    where :math:`C` is a confusion matrix
-    and :math`c_{i, \\cdot}=c_{i, 1}+...+c_{i, K}` is the i-th row sum.
-    We assume that :math:`K \\ge L`.
+    :math:`(\\max_\\sigma \\frac{1}{K} \\sum_{j=1}^K \\frac{c_{\\sigma(j), j}-c_{\\sigma(j),\\cdot}/K}{c_{\\sigma(j),\\cdot}-c_{\\sigma(j),\\cdot}/K})`,
+    where :math:`C` is a confusion matrix with :math:`K` rows and :math:`L`
+    columns, :math:`\\sigma` is a permutation of the set
+    :math:`\\{1,\\dots,\\max(K,L)\\}`, and
+    and :math:`c_{i, \\cdot}=c_{i, 1}+...+c_{i, L}` is the i-th row sum,
+    under the assumption that :math:`c_{i,j}=0` for
+    :math:`i>K` or :math:`j>L` and :math:`0/0=0`.
 
-    `normalized_pivoted_accuracy` is a measure defined as
-    :math:`(\\mathrm{Accuracy}(C_\\sigma)-1/\\max(K,L))/(1-1/\\max(K,L))`,
-    where :math:`C_\\sigma` is a version of the confusion matrix
-    for given `x` and `y` with columns permuted
-    based on the solution to the maximal linear sum assignment problem.
-    Note that the :math:`\\mathrm{Accuracy}(C_\\sigma)` part
-    is sometimes referred to as set-matching classification
-    rate or pivoted accuracy.
+    `normalized_pivoted_accuracy` is defined as
+    :math:`(\\max_\\sigma \\sum_{j=1}^{\\max(K,L)} c_{\\sigma(j),j}/n-1/\\max(K,L))/(1-1/\\max(K,L))`,
+    where :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,\\max(K,L)\\}`,
+    and :math:`n` is the sum of all elements in :math:`C`.
+    For non-square matrices, missing rows/columns are assumed
+    to be filled with 0s.
 
-    `pair_sets_index` gives the Pair Sets Index (PSI) [3]_.
-    Pairing is based on the solution to the linear sum assignment problem
-    of a transformed version of the confusion matrix.
-    For non-square matrices, missing rows/columns are assumed to be filled with 0s.
+    `pair_sets_index` (PSI) was introduced in [3]_.
     The simplified PSI assumes E=1 in the definition of the index,
-    i.e., uses Eq. (20) in the said paper instead of Eq. (18).
+    i.e., uses Eq. (20) in [3]_ instead of Eq. (18).
+    For non-square matrices, missing rows/columns are assumed
+    to be filled with 0s.
 
     `rand_score` gives the Rand score (the "probability" of agreement
     between the two partitions) and `adjusted_rand_score` is its version
     corrected for chance [1]_ (especially Eqs. (2) and (4) therein):
     its expected value is 0.0 for two independent
-    partitions. Due to the adjustment, the resulting index might also
+    partitions. Due to the adjustment, the resulting index may
     be negative for some inputs.
 
     Similarly, `fm_score` gives the Fowlkes-Mallows (FM) score
     and `adjusted_fm_score` is its adjusted-for-chance version [1]_.
-
-    Note that both the (unadjusted) Rand and FM scores are bounded from below
-    by :math:`1/(K+1)` if :math:`K = L`, hence their adjusted versions
-    are preferred.
 
     `mi_score`, `adjusted_mi_score` and `normalized_mi_score` are
     information-theoretic indices based on mutual information,
@@ -991,6 +986,8 @@ cpdef double normalized_clustering_accuracy(x, y=None):
 
     Normalised clustering accuracy (NCA) [1]_.
 
+    This measure is asymmetric – it is assumed that `x`
+    represents the ground truth labels, whilst `y` give predicted cluster IDs.
 
 
     Parameters
@@ -1026,25 +1023,7 @@ cpdef double normalized_clustering_accuracy(x, y=None):
     Notes
     -----
 
-    Let :math:`C` be a confusion matrix with :math:`K` rows and :math:`L`
-    columns. NCA is an external cluster validity measure
-    which assumes that the label vector `x` (or rows in the confusion
-    matrix) represents the reference (ground truth) partition.
-    It is an average proportion of correctly classified points in each cluster
-    above the worst case scenario of uniform membership assignment,
-    with cluster matching based on the solution to the maximal linear
-    sum assignment problem; see :func:`normalized_confusion_matrix`).
-    It is given by:
-    :math:`(\\max_\\sigma \\frac{1}{K} \\sum_{i=1}^K \\frac{c_{i, \\sigma(i)}-c_{i,\\cdot}/k}{c_{i,\\cdot}-c_{i,\\cdot}/k})`,
-    where :math:`C` is a confusion matrix
-    and :math:`c_{i, \\cdot}=c_{i, 1}+...+c_{i, K}` is the i-th row sum.
-    We assume that :math:`K \\ge L`.
-    Missing columns are treated as if they were filled with 0s.
-
-    Note that this measure is not symmetric, i.e., ``index(x, y)`` does not
-    have to be equal to ``index(y, x)``.
-
-    See [1]_ for more details and :func:`compare_partitions` for more functions.
+    See :func:`compare_partitions` for more details.
 
 
     References
@@ -1067,7 +1046,7 @@ cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True
     """
     genieclust.compare_partitions.pair_sets_index(x, y)
 
-    Pair sets index (PSI)
+    Pair sets index (PSI) [1]_
 
     For non-square confusion matrices, missing rows/columns
     are assumed to be filled with 0s.

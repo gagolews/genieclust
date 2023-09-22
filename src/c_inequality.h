@@ -1,4 +1,4 @@
-/*  Inequity (Inequality) Measures
+/*  Inequality Measures
  *
  *  Copyleft (C) 2018-2023, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -14,8 +14,8 @@
  */
 
 
-#ifndef __c_inequity_h
-#define __c_inequity_h
+#ifndef __c_inequality_h
+#define __c_inequality_h
 
 #include "c_common.h"
 #include <algorithm>
@@ -53,7 +53,7 @@
  * @param x non-decreasingly sorted c_contiguous input vector >= 0
  * @param n length of x
  *
- * @return the value of the inequity index, a number in [0,1].
+ * @return the value of the inequality index, a number in [0,1].
  */
 template<class T>
 double Cgini_sorted(const T* x, Py_ssize_t n)
@@ -98,7 +98,7 @@ double Cgini_sorted(const T* x, Py_ssize_t n)
  * @param x non-decreasingly sorted c_contiguous input vector >= 0
  * @param n length of x
  *
- * @return the value of the inequity index, a number in [0,1].
+ * @return the value of the inequality index, a number in [0,1].
  */
 template<class T>
 double Cbonferroni_sorted(const T* x, Py_ssize_t n)
@@ -129,7 +129,7 @@ double Cbonferroni_sorted(const T* x, Py_ssize_t n)
 //         #}}.
 //         #$$
 //
-//     #Is this an inequity measures BTW?
+//     #Is this an inequality measures BTW?
 //     #"""
 //
 //     ## sorting is not necessary
@@ -173,7 +173,7 @@ double Cbonferroni_sorted(const T* x, Py_ssize_t n)
  * @param x non-decreasingly sorted c_contiguous input vector >= 0
  * @param n length of x
  *
- * @return the value of the inequity index, a number in [0,1].
+ * @return the value of the inequality index, a number in [0,1].
  */
 template<class T>
 double Cdevergottini_sorted(const T* x, Py_ssize_t n)

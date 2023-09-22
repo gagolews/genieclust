@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" href="mst.html" /><link rel="prev" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" />
-        <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/inequity.html" />
+        <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/inequality.html" />
 
     <link rel="shortcut icon" href="../_static/favicon.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
-        <title>inequity: Inequity (Inequality) Measures - Python and R Package genieclust</title>
+        <title>inequality: Inequality Measures - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -198,7 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequality.html">genieclust.inequality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_internal.html">genieclust.internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../genieclust_tools.html">genieclust.tools</a></li>
@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">inequity: Inequity (Inequality) Measures</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">inequality: Inequality Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
@@ -268,8 +268,8 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="inequity-inequity-inequality-measures">
-<h1>inequity: Inequity (Inequality) Measures<a class="headerlink" href="#inequity-inequity-inequality-measures" title="Link to this heading">#</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="inequality-inequality-measures">
+<h1>inequality: Inequality Measures<a class="headerlink" href="#inequality-inequality-measures" title="Link to this heading">#</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code> gives the normalised Gini index, <code class="docutils literal notranslate"><span class="pre">bonferroni_index()</span></code> implements the Bonferroni index, and <code class="docutils literal notranslate"><span class="pre">devergottini_index()</span></code> implements the De Vergottini index.</p>
@@ -303,7 +303,7 @@
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">#</a></h2>
-<p>These indices can be used to quantify the “inequity” of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting <span class="math notranslate nohighlight">\(x_i = x_i - h\)</span> and <span class="math notranslate nohighlight">\(x_j = x_j + h\)</span> with <span class="math notranslate nohighlight">\(h &gt; 0\)</span> and <span class="math notranslate nohighlight">\(x_i - h \geq x_j + h\)</span> (taking from the “rich” and giving to the “poor”) decreases the inequity.</p>
+<p>These indices can be used to quantify the “inequality” of a numeric sample. They can be conceived as normalised measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequality), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting <span class="math notranslate nohighlight">\(x_i = x_i - h\)</span> and <span class="math notranslate nohighlight">\(x_j = x_j + h\)</span> with <span class="math notranslate nohighlight">\(h &gt; 0\)</span> and <span class="math notranslate nohighlight">\(x_i - h \geq x_j + h\)</span> (taking from the “rich” and giving to the “poor”) decreases the inequality</p>
 <p>These indices have applications in economics, amongst others. The Genie clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.</p>
 <p>The normalised Gini index is given by:</p>
 <div class="math-wrapper docutils container">
@@ -341,7 +341,7 @@
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">#</a></h2>
-<p>The value of the inequity index, a number in <span class="math notranslate nohighlight">\([0, 1]\)</span>.</p>
+<p>The value of the inequality index, a number in <span class="math notranslate nohighlight">\([0, 1]\)</span>.</p>
 </section>
 <section id="author-s">
 <h2>Author(s)<a class="headerlink" href="#author-s" title="Link to this heading">#</a></h2>
@@ -424,7 +424,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-22T11:29:44+1000.
+              Last updated on 2023-09-22T17:14:42+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -445,7 +445,7 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">inequity: Inequity (Inequality) Measures</a><ul>
+<li><a class="reference internal" href="#">inequality: Inequality Measures</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>

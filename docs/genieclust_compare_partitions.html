@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.inequity" href="genieclust_inequity.html" /><link rel="prev" title="genieclust.cluster_validity" href="genieclust_cluster_validity.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.inequality" href="genieclust_inequality.html" /><link rel="prev" title="genieclust.cluster_validity" href="genieclust_cluster_validity.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/genieclust_compare_partitions.html" />
 
     <link rel="shortcut icon" href="_static/favicon.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
@@ -198,7 +198,7 @@
 <li class="toctree-l2"><a class="reference internal" href="genieclust_gic.html">genieclust.GIc</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="genieclust_inequity.html">genieclust.inequity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust_inequality.html">genieclust.inequality</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_internal.html">genieclust.internal</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_plots.html">genieclust.plots</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust_tools.html">genieclust.tools</a></li>
@@ -210,7 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/inequity.html">inequity: Inequity (Inequality) Measures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
@@ -449,64 +449,62 @@ confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> ro
 corresponding to <cite>x</cite> and <cite>y</cite>; see also
 <a class="reference internal" href="#genieclust.compare_partitions.confusion_matrix" title="genieclust.compare_partitions.confusion_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">confusion_matrix()</span></code></a>.</p>
 <p>This function implements a few scores that aim to quantify
-the similarity between <cite>x</cite> and <cite>y</cite>.</p>
-<p>These functions can be used as external cluster
+the similarity between <cite>x</cite> and <cite>y</cite>.
+They can be used as external cluster
 validity measures, where we assume that <cite>x</cite> is
-the reference (ground-truth) partition; compare <a class="reference internal" href="#rb28289ab3e3a-5" id="id1">[5]</a>.</p>
-<p>Each index except <cite>normalized_clustering_accuracy</cite>
-can act as a pairwise partition similarity score: it is symmetric,
+the reference (ground-truth) partition
+whilst <cite>y</cite> is the vector of predicted cluster memberships; compare <a class="reference internal" href="#rb28289ab3e3a-5" id="id1">[5]</a>.</p>
+<p>All indices except <cite>normalized_clustering_accuracy</cite>
+can act as a pairwise partition similarity score: they are symmetric,
 i.e., <code class="docutils literal notranslate"><span class="pre">index(x,</span> <span class="pre">y)</span> <span class="pre">==</span> <span class="pre">index(y,</span> <span class="pre">x)</span></code>.</p>
 <p>Each index except <cite>mi_score</cite> (which computes the mutual information score)
 outputs the value of 1.0 if two identical partitions are given.
 Note that partitions are always defined up to a bijection of the set of
 possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 represent the same 2-partition.</p>
-<p><cite>normalized_clustering_accuracy</cite> <a class="reference internal" href="#rb28289ab3e3a-2" id="id2">[2]</a> is an external cluster validity measure
-which assumes that the label vector <cite>x</cite> (or rows in the confusion
-matrix) represents the reference (ground truth) partition.
+<p><cite>normalized_clustering_accuracy</cite> <a class="reference internal" href="#rb28289ab3e3a-2" id="id2">[2]</a> is an asymmetric external cluster
+validity measure which assumes that the label vector <cite>x</cite> (or rows in the
+confusion matrix) represents the reference (ground truth) partition.
 It is an average proportion of correctly classified points in each cluster
 above the worst case scenario of uniform membership assignment,
-with cluster matching based on the solution to the maximal linear
+with cluster ID matching based on the solution to the maximal linear
 sum assignment problem; see <a class="reference internal" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="genieclust.compare_partitions.normalized_confusion_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code></a>).
 It is given by:
-<span class="math notranslate nohighlight">\((\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k})\)</span>,
-where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix
-and :math`c_{i, cdot}=c_{i, 1}+…+c_{i, K}` is the i-th row sum.
-We assume that <span class="math notranslate nohighlight">\(K \ge L\)</span>.</p>
-<p><cite>normalized_pivoted_accuracy</cite> is a measure defined as
-<span class="math notranslate nohighlight">\((\mathrm{Accuracy}(C_\sigma)-1/\max(K,L))/(1-1/\max(K,L))\)</span>,
-where <span class="math notranslate nohighlight">\(C_\sigma\)</span> is a version of the confusion matrix
-for given <cite>x</cite> and <cite>y</cite> with columns permuted
-based on the solution to the maximal linear sum assignment problem.
-Note that the <span class="math notranslate nohighlight">\(\mathrm{Accuracy}(C_\sigma)\)</span> part
-is sometimes referred to as set-matching classification
-rate or pivoted accuracy.</p>
-<p><cite>pair_sets_index</cite> gives the Pair Sets Index (PSI) <a class="reference internal" href="#rb28289ab3e3a-3" id="id3">[3]</a>.
-Pairing is based on the solution to the linear sum assignment problem
-of a transformed version of the confusion matrix.
-For non-square matrices, missing rows/columns are assumed to be filled with 0s.
+<span class="math notranslate nohighlight">\((\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K})\)</span>,
+where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and <span class="math notranslate nohighlight">\(L\)</span>
+columns, <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set
+<span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and
+and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, L}\)</span> is the i-th row sum,
+under the assumption that <span class="math notranslate nohighlight">\(c_{i,j}=0\)</span> for
+<span class="math notranslate nohighlight">\(i&gt;K\)</span> or <span class="math notranslate nohighlight">\(j&gt;L\)</span> and <span class="math notranslate nohighlight">\(0/0=0\)</span>.</p>
+<p><cite>normalized_pivoted_accuracy</cite> is defined as
+<span class="math notranslate nohighlight">\((\max_\sigma \sum_{j=1}^{\max(K,L)} c_{\sigma(j),j}/n-1/\max(K,L))/(1-1/\max(K,L))\)</span>,
+where <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>,
+and <span class="math notranslate nohighlight">\(n\)</span> is the sum of all elements in <span class="math notranslate nohighlight">\(C\)</span>.
+For non-square matrices, missing rows/columns are assumed
+to be filled with 0s.</p>
+<p><cite>pair_sets_index</cite> (PSI) was introduced in <a class="reference internal" href="#rb28289ab3e3a-3" id="id3">[3]</a>.
 The simplified PSI assumes E=1 in the definition of the index,
-i.e., uses Eq. (20) in the said paper instead of Eq. (18).</p>
+i.e., uses Eq. (20) in <a class="reference internal" href="#rb28289ab3e3a-3" id="id4">[3]</a> instead of Eq. (18).
+For non-square matrices, missing rows/columns are assumed
+to be filled with 0s.</p>
 <p><cite>rand_score</cite> gives the Rand score (the “probability” of agreement
 between the two partitions) and <cite>adjusted_rand_score</cite> is its version
-corrected for chance <a class="reference internal" href="#rb28289ab3e3a-1" id="id4">[1]</a> (especially Eqs. (2) and (4) therein):
+corrected for chance <a class="reference internal" href="#rb28289ab3e3a-1" id="id5">[1]</a> (especially Eqs. (2) and (4) therein):
 its expected value is 0.0 for two independent
-partitions. Due to the adjustment, the resulting index might also
+partitions. Due to the adjustment, the resulting index may
 be negative for some inputs.</p>
 <p>Similarly, <cite>fm_score</cite> gives the Fowlkes-Mallows (FM) score
-and <cite>adjusted_fm_score</cite> is its adjusted-for-chance version <a class="reference internal" href="#rb28289ab3e3a-1" id="id5">[1]</a>.</p>
-<p>Note that both the (unadjusted) Rand and FM scores are bounded from below
-by <span class="math notranslate nohighlight">\(1/(K+1)\)</span> if <span class="math notranslate nohighlight">\(K = L\)</span>, hence their adjusted versions
-are preferred.</p>
+and <cite>adjusted_fm_score</cite> is its adjusted-for-chance version <a class="reference internal" href="#rb28289ab3e3a-1" id="id6">[1]</a>.</p>
 <p><cite>mi_score</cite>, <cite>adjusted_mi_score</cite> and <cite>normalized_mi_score</cite> are
 information-theoretic indices based on mutual information,
 see the definition of <span class="math notranslate nohighlight">\(\mathrm{AMI}_\mathrm{sum}\)</span>
-and <span class="math notranslate nohighlight">\(\mathrm{NMI}_\mathrm{sum}\)</span> in <a class="reference internal" href="#rb28289ab3e3a-4" id="id6">[4]</a>.</p>
+and <span class="math notranslate nohighlight">\(\mathrm{NMI}_\mathrm{sum}\)</span> in <a class="reference internal" href="#rb28289ab3e3a-4" id="id7">[4]</a>.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="rb28289ab3e3a-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id4">1</a>,<a role="doc-backlink" href="#id5">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Hubert L., Arabie P., Comparing partitions,
 <em>Journal of Classification</em> 2(1), 1985, 193-218.</p>
 </div>
@@ -517,13 +515,14 @@ cluster validity measure, 2023, under review (preprint).
 <a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">https://doi.org/10.48550/arXiv.2209.02935</a>.</p>
 </div>
 <div class="citation" id="rb28289ab3e3a-3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p>Rezaei M., Franti P., Set matching measures for external cluster validity,
 <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016,
 2173-2186. <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a>.</p>
 </div>
 <div class="citation" id="rb28289ab3e3a-4" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">4</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">4</a><span class="fn-bracket">]</span></span>
 <p>Vinh N.X., Epps J., Bailey J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
@@ -660,10 +659,9 @@ or a vector of labels (if y is not None)</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalize_confusion_matrix">
 <span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalize_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Link to this definition">#</a></dt>
-<dd><p>Permutes the rows and columns of a confusion matrix
-so that the sum of the elements
-on the main diagonal is the largest possible (by solving
-the maximal assignment problem)</p>
+<dd><p>Permutes the rows and columns of a confusion matrix so that the sum
+of the elements on the main diagonal is the largest possible
+(by solving the maximal assignment problem).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -713,7 +711,9 @@ by clustering algorithms, where the actual label values do not matter
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_clustering_accuracy">
 <span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_clustering_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_clustering_accuracy" title="Link to this definition">#</a></dt>
-<dd><p>Normalised clustering accuracy (NCA) <a class="reference internal" href="#r65a2fdd5c32a-1" id="id12">[1]</a>.</p>
+<dd><p>Normalised clustering accuracy (NCA) <a class="reference internal" href="#r65a2fdd5c32a-1" id="id13">[1]</a>.</p>
+<p>This measure is asymmetric – it is assumed that <cite>x</cite>
+represents the ground truth labels, whilst <cite>y</cite> give predicted cluster IDs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -741,28 +741,11 @@ or a vector of labels (if y is not None)</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>Let <span class="math notranslate nohighlight">\(C\)</span> be a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and <span class="math notranslate nohighlight">\(L\)</span>
-columns. NCA is an external cluster validity measure
-which assumes that the label vector <cite>x</cite> (or rows in the confusion
-matrix) represents the reference (ground truth) partition.
-It is an average proportion of correctly classified points in each cluster
-above the worst case scenario of uniform membership assignment,
-with cluster matching based on the solution to the maximal linear
-sum assignment problem; see <a class="reference internal" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="genieclust.compare_partitions.normalized_confusion_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code></a>).
-It is given by:
-<span class="math notranslate nohighlight">\((\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k})\)</span>,
-where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix
-and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, K}\)</span> is the i-th row sum.
-We assume that <span class="math notranslate nohighlight">\(K \ge L\)</span>.
-Missing columns are treated as if they were filled with 0s.</p>
-<p>Note that this measure is not symmetric, i.e., <code class="docutils literal notranslate"><span class="pre">index(x,</span> <span class="pre">y)</span></code> does not
-have to be equal to <code class="docutils literal notranslate"><span class="pre">index(y,</span> <span class="pre">x)</span></code>.</p>
-<p>See <a class="reference internal" href="#r65a2fdd5c32a-1" id="id13">[1]</a> for more details and <a class="reference internal" href="#genieclust.compare_partitions.compare_partitions" title="genieclust.compare_partitions.compare_partitions"><code class="xref py py-func docutils literal notranslate"><span class="pre">compare_partitions()</span></code></a> for more functions.</p>
+<p>See <a class="reference internal" href="#genieclust.compare_partitions.compare_partitions" title="genieclust.compare_partitions.compare_partitions"><code class="xref py py-func docutils literal notranslate"><span class="pre">compare_partitions()</span></code></a> for more details.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r65a2fdd5c32a-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id12">1</a>,<a role="doc-backlink" href="#id13">2</a>)</span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., Normalised clustering accuracy: An asymmetric external
 cluster validity measure, 2023, under review (preprint).
 <a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">https://doi.org/10.48550/arXiv.2209.02935</a></p>
@@ -886,7 +869,7 @@ or a vector of labels (if y is not None)</p>
 <span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalizing_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalizing_permutation" title="Link to this definition">#</a></dt>
 <dd><p>Determines the permutation of columns of a confusion matrix
 so that the sum of the elements on the main diagonal is the largest
-possible (by solving the maximal assignment problem)</p>
+possible (by solving the maximal assignment problem).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -938,7 +921,7 @@ by clustering algorithms, where the actual label values do not matter
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.pair_sets_index">
 <span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">pair_sets_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Link to this definition">#</a></dt>
-<dd><p>Pair sets index (PSI)</p>
+<dd><p>Pair sets index (PSI) <a class="reference internal" href="#r9c96f1d3d627-1" id="id15">[1]</a></p>
 <p>For non-square confusion matrices, missing rows/columns
 are assumed to be filled with 0s.</p>
 <dl class="field-list simple">
@@ -950,7 +933,7 @@ or a vector of labels (if y is not None)</p>
 <dt><strong>y</strong><span class="classifier">None or ndarray</span></dt><dd><p>a vector of labels or None</p>
 </dd>
 <dt><strong>simplified</strong><span class="classifier">bool</span></dt><dd><p>Whether to assume E=1 in the definition of the index,
-i.e.,use Eq. (20) in <a class="reference internal" href="#r9c96f1d3d627-1" id="id15">[1]</a> instead of Eq. (18).</p>
+i.e.,use Eq. (20) in <a class="reference internal" href="#r9c96f1d3d627-1" id="id16">[1]</a> instead of Eq. (18).</p>
 </dd>
 <dt><strong>clipped</strong><span class="classifier">bool</span></dt><dd><p>Whether the result should be clipped to the unit interval.</p>
 </dd>
@@ -977,7 +960,8 @@ i.e.,use Eq. (20) in <a class="reference internal" href="#r9c96f1d3d627-1" id="i
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r9c96f1d3d627-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">1</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id15">1</a>,<a role="doc-backlink" href="#id16">2</a>)</span>
 <p>Rezaei M., Franti P., Set matching measures for external cluster validity,
 <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016,
 2173-2186. <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a>.</p>
@@ -1024,12 +1008,12 @@ or a vector of labels (if y is not None)</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="genieclust_inequity.html">
+          <a class="next-page" href="genieclust_inequality.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">genieclust.inequity</div>
+                <div class="title">genieclust.inequality</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -1054,7 +1038,7 @@ or a vector of labels (if y is not None)</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-22T11:29:44+1000.
+              Last updated on 2023-09-22T17:14:42+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

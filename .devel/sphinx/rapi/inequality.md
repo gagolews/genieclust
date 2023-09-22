@@ -1,4 +1,4 @@
-# inequity: Inequity (Inequality) Measures
+# inequality: Inequality Measures
 
 ## Description
 
@@ -22,7 +22,7 @@ devergottini_index(x)
 
 ## Details
 
-These indices can be used to quantify the \"inequity\" of a numeric sample. They can be perceived as measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequity), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$ and $x_i - h \geq x_j + h$ (taking from the \"rich\" and giving to the \"poor\") decreases the inequity.
+These indices can be used to quantify the \"inequality\" of a numeric sample. They can be conceived as normalised measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequality), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$ and $x_i - h \geq x_j + h$ (taking from the \"rich\" and giving to the \"poor\") decreases the inequality
 
 These indices have applications in economics, amongst others. The Genie clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.
 
@@ -60,7 +60,7 @@ Time complexity: $O(n)$ for sorted (increasingly) data. Otherwise, the vector wi
 
 ## Value
 
-The value of the inequity index, a number in $[0, 1]$.
+The value of the inequality index, a number in $[0, 1]$.
 
 ## Author(s)
 
