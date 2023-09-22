@@ -99,7 +99,10 @@ clean:
 	python3 setup.py clean
 	rm -rf genieclust/__pycache__/
 	rm -rf genieclust.egg-info/
+	rm -rf ../genieclust.Rcheck/
 	rm -rf dist/
+	rm -rf build/
+	rm -rf .devel/pytest/__pycache__/
 	rm -f genieclust/*.cpp
 	find src -name '*.o' -exec rm {} \;
 	find src -name '*.so' -exec rm {} \;
