@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9003
+1.1.4.9004
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -320,7 +320,7 @@
 <td><p>an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with <code class="docutils literal notranslate"><span class="pre">x</span></code>), or NULL (if x is an K*L confusion matrix)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">simplified</span></code></p></td>
-<td><p>whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).</p></td>
+<td><p>whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">clipped</span></code></p></td>
 <td><p>whether the result should be clipped to the unit interval, i.e., [0, 1]</p></td>
@@ -335,7 +335,7 @@
 <p>Each index except <code class="docutils literal notranslate"><span class="pre">mi_score()</span></code> (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a permutation (bijection) of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.</p>
 <p><code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy()</span></code> (Gagolewski, 2023) is an external cluster validity measure which assumes that the label vector <code class="docutils literal notranslate"><span class="pre">x</span></code> (or rows in the confusion matrix) represents the reference (ground truth) partition. It is an average proportion of correctly classified points in each cluster above the worst case scenario of uniform membership assignment, with cluster matching based on the solution to the maximal linear sum assignment problem; see <a class="reference internal" href="#"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix</span></code></span></a>). It is given by: <span class="math notranslate nohighlight">\(\max_\sigma \frac{1}{K} \sum_{i=1}^K \frac{c_{i, \sigma(i)}-c_{i,\cdot}/k}{c_{i,\cdot}-c_{i,\cdot}/k}\)</span>, where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, K}\)</span> is the i-th row sum. We assume that <span class="math notranslate nohighlight">\(K\ge L\)</span>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy()</span></code> is defined as <span class="math notranslate nohighlight">\((Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))\)</span>, where <span class="math notranslate nohighlight">\(C_\sigma\)</span> is a version of the confusion matrix for given <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> with columns permuted based on the solution to the maximal linear sum assignment problem. The <span class="math notranslate nohighlight">\(Accuracy(C_\sigma)\)</span> part is sometimes referred to as set-matching classification rate or pivoted accuracy.</p>
-<p><code class="docutils literal notranslate"><span class="pre">pair_sets_index()</span></code> gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. Its simplified version assumes E=1 in the definition of the index, i.e., uses Eq. (20) instead of (18).</p>
+<p><code class="docutils literal notranslate"><span class="pre">pair_sets_index()</span></code> gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. For non-square matrices, missing rows/columns are assumed to be filled with 0s. The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18).</p>
 <p><code class="docutils literal notranslate"><span class="pre">rand_score()</span></code> gives the Rand score (the “probability” of agreement between the two partitions) and <code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code> is its version corrected for chance, see (Hubert, Arabie, 1985), its expected value is 0.0 given two independent partitions. Due to the adjustment, the resulting index might also be negative for some inputs.</p>
 <p>Similarly, <code class="docutils literal notranslate"><span class="pre">fm_score()</span></code> gives the Fowlkes-Mallows (FM) score and <code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code> is its adjusted-for-chance version, see (Hubert, Arabie, 1985).</p>
 <p>Note that both the (unadjusted) Rand and FM scores are bounded from below by <span class="math notranslate nohighlight">\(1/(K+1)\)</span> if <span class="math notranslate nohighlight">\(K=L\)</span>, hence their adjusted versions are preferred.</p>
@@ -441,7 +441,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-19T17:30:17+1000.
+              Last updated on 2023-09-22T11:29:44+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -483,7 +483,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=b3339ebc"></script>
+</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

@@ -9,12 +9,17 @@
     `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
     `normalized_accuracy` -> `normalized_pivoted_accuracy`.
 
+* [BACKWARD INCOMPATIBILITY] [Python] `compare_partitions2` has been removed,
+    as `compare_partitions` and other partition similarity scores
+    now support both pairs of label vectors `(x, y)` and confusion matrices
+    `(x=C, y=None)`.
+
 * [Python and R] New parameter to `pair_sets_index`: `clipped`.
 
-* [R] In `normalizing_permutation` and external cluster validity measures,
-    the input matrix can now be of the type `double`.
+* In `normalizing_permutation` and external cluster validity measures,
+    the input matrices can now be of the type `double`.
 
-* [BUGFIX] [Python] #80: fixed adjustment for `nmslib_n_neighbors`
+* [BUGFIX] [Python] #80: Fixed adjustment for `nmslib_n_neighbors`
     in small samples.
 
 * [BUGFIX] [Python] #82: `cluster_validity` submodule not imported.

@@ -40,7 +40,7 @@ normalizing_permutation(x, y = NULL)
 |--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `x`          | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
 | `y`          | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix)                                                |
-| `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).                                                                                                                                     |
+| `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)                                                                                                                                    |
 | `clipped`    | whether the result should be clipped to the unit interval, i.e., \[0, 1\]                                                                                                                                                                                                 |
 
 ## Details
@@ -53,7 +53,7 @@ Each index except `mi_score()` (which computes the mutual information score) out
 
 `normalized_pivoted_accuracy()` is defined as $(Accuracy(C_\sigma)-1/max(K,L))/(1-1/max(K,L))$, where $C_\sigma$ is a version of the confusion matrix for given `x` and `y` with columns permuted based on the solution to the maximal linear sum assignment problem. The $Accuracy(C_\sigma)$ part is sometimes referred to as set-matching classification rate or pivoted accuracy.
 
-`pair_sets_index()` gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. Its simplified version assumes E=1 in the definition of the index, i.e., uses Eq. (20) instead of (18).
+`pair_sets_index()` gives the pair sets index (PSI) (Rezaei, Franti, 2016). Pairing is based on the solution to the linear sum assignment problem of a transformed version of the confusion matrix. For non-square matrices, missing rows/columns are assumed to be filled with 0s. The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18).
 
 `rand_score()` gives the Rand score (the \"probability\" of agreement between the two partitions) and `adjusted_rand_score()` is its version corrected for chance, see (Hubert, Arabie, 1985), its expected value is 0.0 given two independent partitions. Due to the adjustment, the resulting index might also be negative for some inputs.
 

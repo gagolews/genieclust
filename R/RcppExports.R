@@ -51,8 +51,9 @@
 #' (Rezaei, Franti, 2016).
 #' Pairing is based on the solution to the linear sum assignment problem
 #' of a transformed version of the confusion matrix.
-#' Its simplified version assumes E=1 in the definition of the index,
-#' i.e., uses Eq. (20) instead of (18).
+#' For non-square matrices, missing rows/columns are assumed to be filled with 0s.
+#' The simplified PSI assumes E=1 in the definition of the index,
+#' i.e., uses Eq. (20) in the said paper instead of Eq. (18).
 #'
 #' \code{rand_score()} gives the Rand score (the "probability" of agreement
 #' between the two partitions) and
@@ -129,7 +130,7 @@
 #' or NULL (if x is an K*L confusion matrix)
 #'
 #' @param simplified whether to assume E=1 in the definition of the pair sets index index,
-#'     i.e., use Eq. (20) instead of (18); see (Rezaei, Franti, 2016).
+#'     i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)
 #'
 #' @param clipped whether the result should be clipped to the unit interval, i.e., [0, 1]
 #'

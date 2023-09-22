@@ -41,6 +41,42 @@ import numpy as np
 from . cimport c_compare_partitions
 
 
+cdef np.ndarray _get_confusion_matrix(x, y=None, bint force_double=False):
+    """
+    Internal function.
+
+    Parameters
+    ----------
+
+    x : array-like
+        a confusion matrix (if y is None) or a label vector
+
+    y : array-like or None
+        another label vector or None
+
+    force_double : bool
+
+
+    Returns
+    -------
+
+    ndarray
+        A confusion matrix of the dtype intp or double
+        (unless force_double is True, then it will be the latter)
+    """
+    cdef np.ndarray _C
+    if y is None:
+        _C = np.array(x)
+        if _C.ndim != 2 or _C.shape[0] < 2 or _C.shape[1] < 2:
+            raise ValueError("if `y` is None, `x` should be a confusion matrix")
+        if (not force_double) and np.can_cast(_C, np.intp):
+            return np.array(_C, dtype=np.intp)
+        else:
+            return np.array(_C, dtype=np.double)
+    else:
+        return confusion_matrix(x, y, force_double=force_double)
+
+
 cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
     """
     genieclust.compare_partitions.normalizing_permutation(C)
@@ -104,19 +140,20 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
            [2, 6, 0],
            [1, 0, 0]])
     """
-    cdef np.ndarray[double,ndim=2] _C = np.array(C, dtype=np.double)
+
+    cdef np.ndarray[double, ndim=2] _C = _get_confusion_matrix(C, None, force_double=True)
     cdef Py_ssize_t xc = _C.shape[0]
     cdef Py_ssize_t yc = _C.shape[1]
     cdef np.ndarray[Py_ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
     if xc > yc:
-        raise ValueError("number of rows cannot be greater than the number of columns")
+        raise ValueError("the number of rows cannot be greater than the number of columns")
 
     c_compare_partitions.Cnormalizing_permutation(&_C[0,0], xc, yc, &perm[0])
 
     return perm
 
 
-cpdef np.ndarray[Py_ssize_t,ndim=2] normalize_confusion_matrix(C):
+cpdef np.ndarray normalize_confusion_matrix(C):
     """
     genieclust.compare_partitions.normalize_confusion_matrix(C)
 
@@ -181,17 +218,29 @@ cpdef np.ndarray[Py_ssize_t,ndim=2] normalize_confusion_matrix(C):
            [2, 6, 0],
            [1, 0, 0]])
     """
-    cdef np.ndarray[Py_ssize_t,ndim=2] _C = np.array(C, dtype=np.intp)
-    cdef np.ndarray[Py_ssize_t,ndim=2] C_normalized = np.array(_C, dtype=np.intp)
-    cdef Py_ssize_t xc = C_normalized.shape[0]
-    cdef Py_ssize_t yc = C_normalized.shape[1]
+    cdef np.ndarray _C_intp_or_double = _get_confusion_matrix(C, None, force_double=False)
+    cdef Py_ssize_t xc = _C_intp_or_double.shape[0]
+    cdef Py_ssize_t yc = _C_intp_or_double.shape[1]
     if xc > yc:
         raise ValueError("number of rows cannot be greater than the number of columns")
-    c_compare_partitions.Capply_pivoting(&_C[0,0], xc, yc, &C_normalized[0,0])
-    return C_normalized
+
+    cdef np.ndarray[Py_ssize_t,ndim=2] _Ci
+    cdef np.ndarray[Py_ssize_t,ndim=2] _Di
+    cdef np.ndarray[double,ndim=2] _Cd
+    cdef np.ndarray[double,ndim=2] _Dd
+    if np.can_cast(_C_intp_or_double, np.intp):
+        _Ci = np.array(_C_intp_or_double, dtype=np.intp)
+        _Di = np.zeros_like(_Ci)
+        c_compare_partitions.Capply_pivoting(&_Ci[0,0], xc, yc, &_Di[0,0])
+        return _Di
+    else:
+        _Cd = np.array(_C_intp_or_double, dtype=np.double)
+        _Dd = np.zeros_like(_Cd)
+        c_compare_partitions.Capply_pivoting(&_Cd[0,0], xc, yc, &_Dd[0,0])
+        return _Dd
 
 
-cpdef np.ndarray[Py_ssize_t,ndim=2] confusion_matrix(x, y):
+cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
     """
     genieclust.compare_partitions.confusion_matrix(x, y)
 
@@ -250,21 +299,30 @@ cpdef np.ndarray[Py_ssize_t,ndim=2] confusion_matrix(x, y):
     if xc*yc > CONFUSION_MATRIX_MAXSIZE:
         raise ValueError("CONFUSION_MATRIX_MAXSIZE exceeded")
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = np.empty((xc, yc), dtype=np.intp)
-    c_compare_partitions.Ccontingency_table(&C[0,0], xc, yc,
-        xmin, ymin, &_x[0], &_y[0], n)
-    return C
+    cdef np.ndarray[Py_ssize_t,ndim=2] Ci
+    cdef np.ndarray[double,ndim=2] Cd
+
+    if not force_double:
+        Ci = np.empty((xc, yc), dtype=np.intp)
+        c_compare_partitions.Ccontingency_table(&Ci[0,0], xc, yc,
+            xmin, ymin, &_x[0], &_y[0], n)
+        return Ci
+    else:
+        Cd = np.empty((xc, yc), dtype=np.double)
+        c_compare_partitions.Ccontingency_table(&Cd[0,0], xc, yc,
+            xmin, ymin, &_x[0], &_y[0], n)
+        return Cd
 
 
 
-cpdef np.ndarray[Py_ssize_t,ndim=2] normalized_confusion_matrix(x, y):
+cpdef np.ndarray normalized_confusion_matrix(x, y, bint force_double=False):
     """
     genieclust.compare_partitions.normalized_confusion_matrix(x, y)
 
     Computes the confusion matrix for two label vectors and
     permutes its rows and columns so that the sum of the elements
     of the main diagonal is the largest possible (by solving
-    the maximal assignment problem)
+    the maximal assignment problem).
 
 
     Parameters
@@ -273,8 +331,8 @@ cpdef np.ndarray[Py_ssize_t,ndim=2] normalized_confusion_matrix(x, y):
     x, y : array_like
         Two vectors of "small" integers of identical lengths.
 
-    use_sum : bool
-        Whether the pivoting should be based on
+    force_double : bool
+        If the return dtype should be 'double'.
 
     Returns
     -------
@@ -308,12 +366,11 @@ cpdef np.ndarray[Py_ssize_t,ndim=2] normalized_confusion_matrix(x, y):
            [1, 0, 0]])
 
     """
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
-    return normalize_confusion_matrix(C)
+    return normalize_confusion_matrix(confusion_matrix(x, y, force_double=force_double))
 
 
 
-cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
+cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     """
     genieclust.compare_partitions.compare_partitions(C)
 
@@ -323,9 +380,15 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     Parameters
     ----------
 
-    C : ndarray
-        A ``c_contiguous`` confusion matrix (contingency table)
-        with :math:`K` rows and :math:`L` columns.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
+
+    psi_clipped : bool
+        Whether pair sets index should be clipped to 0
 
 
     Returns
@@ -370,10 +433,6 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
         Determines the confusion matrix and permutes the rows and columns
         so that the sum of the elements of the main diagonal is the largest
         possible
-
-    genieclust.compare_partitions.compare_partitions2 :
-        A wrapper around this function that accepts two label vectors on input
-
 
     genieclust.compare_partitions.normalized_clustering_accuracy
     genieclust.compare_partitions.normalized_pivoted_accuracy
@@ -443,8 +502,9 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     `pair_sets_index` gives the Pair Sets Index (PSI) [3]_.
     Pairing is based on the solution to the linear sum assignment problem
     of a transformed version of the confusion matrix.
-    Its simplified version assumes E=1 in the definition of the index,
-    i.e., uses Eq. (20) instead of (18); see [3]_.
+    For non-square matrices, missing rows/columns are assumed to be filled with 0s.
+    The simplified PSI assumes E=1 in the definition of the index,
+    i.e., uses Eq. (20) in the said paper instead of Eq. (18).
 
     `rand_score` gives the Rand score (the "probability" of agreement
     between the two partitions) and `adjusted_rand_score` is its version
@@ -508,12 +568,14 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
     ...      genieclust.compare_partitions.compare_partitions(C).items()}
     {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'npa': 0.71, 'psi': 0.65, 'spsi': 0.63, 'nca': 0.71}
     >>> {k : round(v, 2) for k, v in
-    ...      genieclust.compare_partitions.compare_partitions2(x,y).items()}
+    ...      genieclust.compare_partitions.compare_partitions(x,y).items()}
     {'ar': 0.49, 'r': 0.74, 'fm': 0.73, 'afm': 0.49, 'mi': 0.29, 'nmi': 0.41, 'ami': 0.39, 'npa': 0.71, 'psi': 0.65, 'spsi': 0.63, 'nca': 0.71}
     >>> round(genieclust.compare_partitions.normalized_clustering_accuracy(x, y), 2)
     0.71
 
     """
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
+
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
 
@@ -529,8 +591,9 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
         "spsi": res3["spsi_unclipped"],
     }
 
-    if res3_clipped["psi"]  < 0.0: res3_clipped["psi"]  = 0.0
-    if res3_clipped["spsi"] < 0.0: res3_clipped["spsi"] = 0.0
+    if psi_clipped:
+        if res3_clipped["psi"]  < 0.0: res3_clipped["psi"]  = 0.0
+        if res3_clipped["spsi"] < 0.0: res3_clipped["spsi"] = 0.0
 
     cdef double nca = np.nan
     if xc == yc:
@@ -547,58 +610,7 @@ cpdef dict compare_partitions(Py_ssize_t[:,::1] C):
 
 
 
-cpdef dict compare_partitions2(x, y):
-    """
-    genieclust.compare_partitions.compare_partitions2(x, y)
-
-    Computes a series of partition similarity scores
-
-
-    Parameters
-    ----------
-
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
-
-
-    Returns
-    -------
-
-    scores : dict
-        See `genieclust.compare_partitions.compare_partitions`.
-
-
-    See also
-    --------
-
-    genieclust.compare_partitions.compare_partitions :
-        The underlying function
-
-    genieclust.compare_partitions.confusion_matrix :
-        Determines the contingency table
-
-    genieclust.compare_partitions.normalized_confusion_matrix :
-        Determines the confusion matrix and permutes the rows and columns
-        so that the sum of the elements of the main diagonal is the largest
-        possible
-
-
-    Notes
-    -----
-
-    Calls :func:`compare_partitions` on the result of
-    returned by :func:`confusion_matrix`.
-
-
-    """
-    return compare_partitions(confusion_matrix(x, y))
-
-
-
-
-
-cpdef double adjusted_rand_score(x, y):
+cpdef double adjusted_rand_score(x, y=None):
     """
     genieclust.compare_partitions.adjusted_rand_score(x, y)
 
@@ -608,9 +620,12 @@ cpdef double adjusted_rand_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -624,9 +639,7 @@ cpdef double adjusted_rand_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -636,13 +649,13 @@ cpdef double adjusted_rand_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).ar
 
 
-cpdef double rand_score(x, y):
+cpdef double rand_score(x, y=None):
     """
     genieclust.compare_partitions.rand_score(x, y)
 
@@ -652,9 +665,12 @@ cpdef double rand_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -668,9 +684,7 @@ cpdef double rand_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -681,13 +695,13 @@ cpdef double rand_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).r
 
 
-cpdef double adjusted_fm_score(x, y):
+cpdef double adjusted_fm_score(x, y=None):
     """
     genieclust.compare_partitions.adjusted_fm_index(x, y)
 
@@ -697,9 +711,12 @@ cpdef double adjusted_fm_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -713,8 +730,7 @@ cpdef double adjusted_fm_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
+        Computes multiple similarity scores
         Computes multiple similarity scores based on two label vectors
 
 
@@ -726,13 +742,13 @@ cpdef double adjusted_fm_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).afm
 
 
-cpdef double fm_score(x, y):
+cpdef double fm_score(x, y=None):
     """
     genieclust.compare_partitions.fm_score(x, y)
 
@@ -742,9 +758,12 @@ cpdef double fm_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -758,9 +777,7 @@ cpdef double fm_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -771,13 +788,13 @@ cpdef double fm_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).fm
 
 
-cpdef double mi_score(x, y):
+cpdef double mi_score(x, y=None):
     """
     genieclust.compare_partitions.mi_score(x, y)
 
@@ -787,9 +804,12 @@ cpdef double mi_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -803,9 +823,7 @@ cpdef double mi_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -816,14 +834,14 @@ cpdef double mi_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).mi
 
 
 
-cpdef double normalized_mi_score(x, y):
+cpdef double normalized_mi_score(x, y=None):
     """
     genieclust.compare_partitions.normalised_mi_score(x, y)
 
@@ -833,9 +851,12 @@ cpdef double normalized_mi_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -849,9 +870,7 @@ cpdef double normalized_mi_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -862,13 +881,13 @@ cpdef double normalized_mi_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).nmi
 
 
-cpdef double adjusted_mi_score(x, y):
+cpdef double adjusted_mi_score(x, y=None):
     """
     genieclust.compare_partitions.adjusted_mi_score(x, y)
 
@@ -878,9 +897,12 @@ cpdef double adjusted_mi_score(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -894,9 +916,7 @@ cpdef double adjusted_mi_score(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
 
     Notes
@@ -907,14 +927,14 @@ cpdef double adjusted_mi_score(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).ami
 
 
 
-cpdef double normalized_pivoted_accuracy(x, y):
+cpdef double normalized_pivoted_accuracy(x, y=None):
     """
     genieclust.compare_partitions.normalized_pivoted_accuracy(x, y)
 
@@ -924,9 +944,12 @@ cpdef double normalized_pivoted_accuracy(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -940,10 +963,7 @@ cpdef double normalized_pivoted_accuracy(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
     genieclust.compare_partitions.normalized_confusion_matrix :
         Determines the confusion matrix and permutes the rows and columns
@@ -958,14 +978,14 @@ cpdef double normalized_pivoted_accuracy(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_npa(&C[0,0], xc, yc)
 
 
 
-cpdef double normalized_clustering_accuracy(x, y):
+cpdef double normalized_clustering_accuracy(x, y=None):
     """
     genieclust.compare_partitions.normalized_clustering_accuracy(x, y)
 
@@ -976,11 +996,12 @@ cpdef double normalized_clustering_accuracy(x, y):
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
-        `x` is the set of ground truth (reference) labels
-        and `y` is a partition whose quality we would like to asses
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
 
     Returns
@@ -994,10 +1015,7 @@ cpdef double normalized_clustering_accuracy(x, y):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
     genieclust.compare_partitions.normalized_confusion_matrix :
         Determines the confusion matrix and permutes the rows and columns
@@ -1039,29 +1057,34 @@ cpdef double normalized_clustering_accuracy(x, y):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     return c_compare_partitions.Ccompare_partitions_nca(&C[0,0], xc, yc)
 
 
-cpdef double pair_sets_index(x, y, bint simplified=False, bint clipped=True):
+cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True):
     """
     genieclust.compare_partitions.pair_sets_index(x, y)
 
     Pair sets index (PSI)
 
+    For non-square confusion matrices, missing rows/columns
+    are assumed to be filled with 0s.
 
     Parameters
     ----------
 
-    x, y : array_like
-        Two vectors of "small" integers of identical lengths,
-        representing two partitions of the same set.
+    x : ndarray
+        A confusion matrix (contingency table)
+        or a vector of labels (if y is not None)
+
+    y : None or ndarray
+        a vector of labels or None
 
     simplified : bool
         Whether to assume E=1 in the definition of the index,
-        i.e., use Eq. (20) instead of (18); see [1]_.
+        i.e.,use Eq. (20) in [1]_ instead of Eq. (18).
 
     clipped : bool
         Whether the result should be clipped to the unit interval.
@@ -1078,10 +1101,7 @@ cpdef double pair_sets_index(x, y, bint simplified=False, bint clipped=True):
     --------
 
     genieclust.compare_partitions.compare_partitions :
-        Computes multiple similarity scores based on a confusion matrix
-
-    genieclust.compare_partitions.compare_partitions2 :
-        Computes multiple similarity scores based on two label vectors
+        Computes multiple similarity scores
 
     genieclust.compare_partitions.normalized_confusion_matrix :
         Determines the confusion matrix and permutes the rows and columns
@@ -1105,7 +1125,7 @@ cpdef double pair_sets_index(x, y, bint simplified=False, bint clipped=True):
 
     """
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] C = confusion_matrix(x, y)
+    cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
     cdef double res

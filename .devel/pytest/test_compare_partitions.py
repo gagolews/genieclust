@@ -46,6 +46,8 @@ def test_compare_partitions():
             assert -1e-9<pair_sets_index(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y, True)<1.0+1e-9
 
+            assert normalized_clustering_accuracy(x, y) == normalized_clustering_accuracy(confusion_matrix(x, y))
+
             y = x.copy()
             y[:5] = 1
             compare_with_sklearn(x, y)

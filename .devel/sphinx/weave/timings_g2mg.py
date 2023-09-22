@@ -133,7 +133,7 @@ def register_result(
         labels_true):
     #########################################################
     partsims = [
-        genieclust.compare_partitions.compare_partitions2(labels_pred, l)
+        genieclust.compare_partitions.compare_partitions(labels_pred, l)
         for l in labels_true
         ]
     partsims = {
