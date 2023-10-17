@@ -1,19 +1,20 @@
 # Copyright (c) 2013-2023, Marek Gagolewski <https://www.gagolewski.com>
 
 FILES_RMD = \
+	basics.Rmd              \
+	sklearn_toy_example.Rmd \
 	r.Rmd
 
 
 FILES_RSTW = \
-	sklearn_toy_example.rstw \
-	basics.rstw              \
 	benchmarks_ar.rstw       \
 	benchmarks_details.rstw  \
 	benchmarks_approx.rstw   \
 	noise.rstw               \
-	sparse.rstw              \
-	string.rstw              \
 	timings.rstw
+
+#	string.rstw              \
+#	sparse.rstw              \
 
 
 RMD_MD_OUTPUTS=$(patsubst %.Rmd,%.md,$(FILES_RMD))
@@ -22,7 +23,7 @@ RMD_MD_OUTPUTS=$(patsubst %.Rmd,%.md,$(FILES_RMD))
 RSTW_RST_OUTPUTS=$(patsubst %.rstw,%.rst,$(FILES_RSTW))
 
 %.md: %.Rmd
-	Rscript -e 'knitr::knit("$<", "$@")'
+	./Rmd2md.sh "$<"
 
 #%.rst: %.md
 #	pandoc -f markdown+grid_tables --wrap=none "$<" -o "$@"

@@ -1,8 +1,13 @@
+
+
+
+
 # R Interface Examples
 
 The latest stable release of the R package `genieclust` is available from the
 [CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
 We can install it by calling:
+
 
 
 ```r
@@ -11,7 +16,7 @@ install.packages("genieclust")
 
 
 Below are a few basic examples of how to interact with the package.
-<!-- (partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)). -->
+
 
 
 
@@ -24,7 +29,8 @@ library("genieclust")
 
 Let's consider the [Sustainable Society Indices](http://www.ssfindex.com/)
 dataset that measures the Human, Environmental, and Economic Wellbeing
-in each country based on seven categories on the scale $[0, 10]$.
+in each country. There are seven categories on the scale $[0, 10]$.
+
 
 
 ```r
@@ -33,23 +39,28 @@ ssi <- read.csv("ssi_2016_categories.csv", comment.char="#")
 X <- as.matrix(ssi[,-1])    # everything except the Country (1st) column
 dimnames(X)[[1]] <- ssi[,1] # set row names
 head(X)  # preview
+##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety
+## Albania       9.6058                       7.9596              6.9926
+## Algeria       9.0212                       7.3365              4.2039
+## Angola        5.9728                       5.6928              2.1401
+## Argentina     9.8320                       8.3506              3.8952
+## Armenia       9.4469                       7.4205              6.2892
+## Australia    10.0000                       8.5909              6.1055
+##           NaturalResources ClimateAndEnergy Transition Economy
+## Albania             6.6343           4.6217     2.1025  3.0565
+## Algeria             5.2772           2.6627     3.0741  6.1543
+## Angola              6.7594           6.2122     1.8988  3.7535
+## Argentina           5.4535           3.3003     6.3899  5.3406
+## Armenia             6.4363           2.8543     2.4342  3.8296
+## Australia           4.1307           1.6278     7.5395  7.5931
 ```
 
-```
-##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy
-## Albania     9.605769                     7.959609            6.992649         6.634251         4.621681   2.102542 3.056494
-## Algeria     9.021185                     7.336496            4.203906         5.277173         2.662674   3.074134 6.154272
-## Angola      5.972848                     5.692808            2.140138         6.759396         6.212197   1.898812 3.753476
-## Argentina   9.831955                     8.350592            3.895167         5.453451         3.300326   6.389867 5.340636
-## Armenia     9.446943                     7.420523            6.289224         6.436303         2.854317   2.434233 3.829620
-## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052
-```
 
-
-`genieclust` has an interface compatible with R's workhorse
+The `genieclust` interface is compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`.
-Yet, for efficiency reasons, it's better to feed `genieclust::glust()`
+Yet, for efficiency reasons, it is better to feed `genieclust::glust()`
 with the input matrix directly:
+
 
 
 
@@ -57,9 +68,6 @@ with the input matrix directly:
 # faster than gclust(dist(X)):
 h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
-```
-
-```
 ## 
 ## Call:
 ## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)
@@ -72,18 +80,33 @@ print(h)
 In order to extract a desired *k*-partition, we can call `stats::cutree()`:
 
 
+
 ```r
 y_pred <- cutree(h, k=3)
 sample(y_pred, 25)  # preview
+##                Iran            Slovenia             Morocco 
+##                   1                   3                   1 
+## Trinidad and Tobago        Sierra Leone            Colombia 
+##                   1                   2                   1 
+##        Turkmenistan               Syria             Nigeria 
+##                   1                   1                   2 
+##             Tunisia               Ghana              Sweden 
+##                   1                   2                   1 
+##         Netherlands              Bhutan              Mexico 
+##                   3                   1                   1 
+##             Jamaica        Saudi Arabia             Hungary 
+##                   1                   1                   3 
+##                Peru          Kazakhstan               Spain 
+##                   1                   1                   3 
+##               Japan        Korea, North               China 
+##                   1                   1                   1 
+##             Liberia 
+##                   2
 ```
 
-```
-##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d'Ivoire        Panama       Tunisia 
-##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1
-```
-
-This gives the cluster ID allocated to each country.
+This gives the cluster IDs allocated to each country.
 Let's depict the obtained partition using the `rworldmap` package:
+
 
 
 ```r
@@ -95,31 +118,33 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
     mapTitle="")
 ```
 
-![Countries grouped w.r.t. the SSI categories.](figures/r_ssi-map-1.png)
+(fig:ssi-map)=
+```{figure} r-figures/ssi-map-1.*
+Countries grouped w.r.t. the SSI categories.
+```
 
 
 We can compute, e.g., the average indicators in each identified group:
 
 
+
 ```r
 t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
-```
-
-```
-##                                  [,1]     [,2]     [,3]
-## BasicNeeds                   9.067901 5.268879 9.817850
-## PersonalDevelopmentAndHealth 7.508130 5.931156 8.299537
-## WellBalancedSociety          4.886885 2.868176 6.827154
-## NaturalResources             5.663252 7.004013 6.374348
-## ClimateAndEnergy             3.624147 7.081801 3.594718
-## Transition                   4.074894 2.630009 7.340152
-## Economy                      5.512709 3.541081 4.274155
+##                                [,1]   [,2]   [,3]
+## BasicNeeds                   9.0679 5.2689 9.8178
+## PersonalDevelopmentAndHealth 7.5081 5.9312 8.2995
+## WellBalancedSociety          4.8869 2.8682 6.8272
+## NaturalResources             5.6633 7.0040 6.3743
+## ClimateAndEnergy             3.6241 7.0818 3.5947
+## Transition                   4.0749 2.6300 7.3402
+## Economy                      5.5127 3.5411 4.2742
 ```
 
 
 Dendrogram plotting is also possible.
-For greater readability, we'll restrict ourselves to a smaller sample;
+For greater readability, we will restrict ourselves to a smaller sample;
 namely, to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
+
 
 
 ```r
@@ -130,16 +155,14 @@ oecd <- c("Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia",
 "New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia",
 "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")
 X_oecd <- X[dimnames(X)[[1]] %in% oecd, ]
-```
-
-
-
-```r
 h_oecd <- gclust(X_oecd)
-plot(h_oecd)
+plot(as.dendrogram(h_oecd), horiz=TRUE)
 ```
 
-![Cluster dendrogram for the OECD countries.](figures/r_ssi-oecd-dendrogram-1.png)
+(fig:ssi-oecd-dendrogram)=
+```{figure} r-figures/ssi-oecd-dendrogram-1.*
+Cluster dendrogram for the OECD countries.
+```
 
 
 
@@ -150,11 +173,11 @@ calling `genie()` directly will be slightly faster than referring to
 `cutree(gclust(...))`.
 
 * `genieclust` also features partition similarity scores
-(such as the Adjusted Rand or the Pair Sets Index) that can be used as
+(such as the adjusted Rand index) that can be used as
 external cluster validity measures.
 
 For more details, refer to the package's {any}`documentation <../rapi>`.
-Don't forget to check out the Python examples regarding noise points detection,
+Also, see the Python examples regarding noise points detection,
 benchmarking, timing, etc.
 
 *To learn more about R, check out Marek's recent open-access (free!) textbook*

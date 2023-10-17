@@ -277,39 +277,41 @@ We can install it by calling:</p>
 </pre></div>
 </div>
 <p>Below are a few basic examples of how to interact with the package.</p>
-<!-- (partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)). -->
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Let’s consider the <a class="reference external" href="http://www.ssfindex.com/">Sustainable Society Indices</a>
 dataset that measures the Human, Environmental, and Economic Wellbeing
-in each country based on seven categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
+in each country. There are seven categories on the scale <span class="math notranslate nohighlight">\([0, 10]\)</span>.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">ssi</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">read.csv</span><span class="p">(</span><span class="s">&quot;ssi_2016_categories.csv&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">comment.char</span><span class="o">=</span><span class="s">&quot;#&quot;</span><span class="p">)</span>
 <span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">ssi</span><span class="p">[,</span><span class="m">-1</span><span class="p">])</span><span class="w">    </span><span class="c1"># everything except the Country (1st) column</span>
 <span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ssi</span><span class="p">[,</span><span class="m">1</span><span class="p">]</span><span class="w"> </span><span class="c1"># set row names</span>
 <span class="nf">head</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># preview</span>
+<span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety</span>
+<span class="c1">## Albania       9.6058                       7.9596              6.9926</span>
+<span class="c1">## Algeria       9.0212                       7.3365              4.2039</span>
+<span class="c1">## Angola        5.9728                       5.6928              2.1401</span>
+<span class="c1">## Argentina     9.8320                       8.3506              3.8952</span>
+<span class="c1">## Armenia       9.4469                       7.4205              6.2892</span>
+<span class="c1">## Australia    10.0000                       8.5909              6.1055</span>
+<span class="c1">##           NaturalResources ClimateAndEnergy Transition Economy</span>
+<span class="c1">## Albania             6.6343           4.6217     2.1025  3.0565</span>
+<span class="c1">## Algeria             5.2772           2.6627     3.0741  6.1543</span>
+<span class="c1">## Angola              6.7594           6.2122     1.8988  3.7535</span>
+<span class="c1">## Argentina           5.4535           3.3003     6.3899  5.3406</span>
+<span class="c1">## Armenia             6.4363           2.8543     2.4342  3.8296</span>
+<span class="c1">## Australia           4.1307           1.6278     7.5395  7.5931</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##           BasicNeeds PersonalDevelopmentAndHealth WellBalancedSociety NaturalResources ClimateAndEnergy Transition  Economy</span>
-<span class="c1">## Albania     9.605769                     7.959609            6.992649         6.634251         4.621681   2.102542 3.056494</span>
-<span class="c1">## Algeria     9.021185                     7.336496            4.203906         5.277173         2.662674   3.074134 6.154272</span>
-<span class="c1">## Angola      5.972848                     5.692808            2.140138         6.759396         6.212197   1.898812 3.753476</span>
-<span class="c1">## Argentina   9.831955                     8.350592            3.895167         5.453451         3.300326   6.389867 5.340636</span>
-<span class="c1">## Armenia     9.446943                     7.420523            6.289224         6.436303         2.854317   2.434233 3.829620</span>
-<span class="c1">## Australia  10.000000                     8.590927            6.105539         4.130701         1.627805   7.539498 7.593052</span>
-</pre></div>
-</div>
-<p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> has an interface compatible with R’s workhorse
+<p>The <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> interface is compatible with R’s workhorse
 for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>.
-Yet, for efficiency reasons, it’s better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code>
+Yet, for efficiency reasons, it is better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code>
 with the input matrix directly:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
 <span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## </span>
+<span class="c1">## </span>
 <span class="c1">## Call:</span>
 <span class="c1">## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)</span>
 <span class="c1">## </span>
@@ -321,13 +323,27 @@ with the input matrix directly:</p>
 <p>In order to extract a desired <em>k</em>-partition, we can call <code class="docutils literal notranslate"><span class="pre">stats::cutree()</span></code>:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
 <span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">  </span><span class="c1"># preview</span>
+<span class="c1">##                Iran            Slovenia             Morocco </span>
+<span class="c1">##                   1                   3                   1 </span>
+<span class="c1">## Trinidad and Tobago        Sierra Leone            Colombia </span>
+<span class="c1">##                   1                   2                   1 </span>
+<span class="c1">##        Turkmenistan               Syria             Nigeria </span>
+<span class="c1">##                   1                   1                   2 </span>
+<span class="c1">##             Tunisia               Ghana              Sweden </span>
+<span class="c1">##                   1                   2                   1 </span>
+<span class="c1">##         Netherlands              Bhutan              Mexico </span>
+<span class="c1">##                   3                   1                   1 </span>
+<span class="c1">##             Jamaica        Saudi Arabia             Hungary </span>
+<span class="c1">##                   1                   1                   3 </span>
+<span class="c1">##                Peru          Kazakhstan               Spain </span>
+<span class="c1">##                   1                   1                   3 </span>
+<span class="c1">##               Japan        Korea, North               China </span>
+<span class="c1">##                   1                   1                   1 </span>
+<span class="c1">##             Liberia </span>
+<span class="c1">##                   2</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##       Bolivia         Ghana        Russia      Ethiopia      Zimbabwe         Yemen    Mauritania     Mauritius United States        Mexico      Thailand       Namibia  Korea, North         Chile       Austria       Ukraine       Lebanon         Libya       Vietnam     Nicaragua       Romania          Laos Cote d&#39;Ivoire        Panama       Tunisia </span>
-<span class="c1">##             1             2             1             2             2             2             2             1             1             1             1             2             1             1             3             1             1             1             1             1             1             1             2             1             1</span>
-</pre></div>
-</div>
-<p>This gives the cluster ID allocated to each country.
+<p>This gives the cluster IDs allocated to each country.
 Let’s depict the obtained partition using the <code class="docutils literal notranslate"><span class="pre">rworldmap</span></code> package:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1"># see the package&#39;s manual for details</span>
 <span class="n">mapdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
@@ -337,23 +353,26 @@ Let’s depict the obtained partition using the <code class="docutils literal no
 <span class="w">    </span><span class="n">mapTitle</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><img alt="Countries grouped w.r.t. the SSI categories." src="../_images/r_ssi-map-1.png" /></p>
+<figure class="align-default" id="id2">
+<span id="fig-ssi-map"></span><img alt="../_images/ssi-map-1.png" src="../_images/ssi-map-1.png" />
+<figcaption>
+<p><span class="caption-number">Figure 20 </span><span class="caption-text">Countries grouped w.r.t. the SSI categories.</span><a class="headerlink" href="#id2" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>We can compute, e.g., the average indicators in each identified group:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">t</span><span class="p">(</span><span class="nf">aggregate</span><span class="p">(</span><span class="nf">as.data.frame</span><span class="p">(</span><span class="n">X</span><span class="p">),</span><span class="w"> </span><span class="nf">list</span><span class="p">(</span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">),</span><span class="w"> </span><span class="n">mean</span><span class="p">))[</span><span class="m">-1</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">##                                  [,1]     [,2]     [,3]</span>
-<span class="c1">## BasicNeeds                   9.067901 5.268879 9.817850</span>
-<span class="c1">## PersonalDevelopmentAndHealth 7.508130 5.931156 8.299537</span>
-<span class="c1">## WellBalancedSociety          4.886885 2.868176 6.827154</span>
-<span class="c1">## NaturalResources             5.663252 7.004013 6.374348</span>
-<span class="c1">## ClimateAndEnergy             3.624147 7.081801 3.594718</span>
-<span class="c1">## Transition                   4.074894 2.630009 7.340152</span>
-<span class="c1">## Economy                      5.512709 3.541081 4.274155</span>
+<span class="c1">##                                [,1]   [,2]   [,3]</span>
+<span class="c1">## BasicNeeds                   9.0679 5.2689 9.8178</span>
+<span class="c1">## PersonalDevelopmentAndHealth 7.5081 5.9312 8.2995</span>
+<span class="c1">## WellBalancedSociety          4.8869 2.8682 6.8272</span>
+<span class="c1">## NaturalResources             5.6633 7.0040 6.3743</span>
+<span class="c1">## ClimateAndEnergy             3.6241 7.0818 3.5947</span>
+<span class="c1">## Transition                   4.0749 2.6300 7.3402</span>
+<span class="c1">## Economy                      5.5127 3.5411 4.2742</span>
 </pre></div>
 </div>
 <p>Dendrogram plotting is also possible.
-For greater readability, we’ll restrict ourselves to a smaller sample;
+For greater readability, we will restrict ourselves to a smaller sample;
 namely, to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Austria&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Belgium&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Canada&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Chile&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Denmark&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Estonia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Finland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;France&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Germany&quot;</span><span class="p">,</span>
@@ -362,24 +381,27 @@ namely, to the 37 members of the <a class="reference external" href="https://en.
 <span class="s">&quot;New Zealand&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Norway&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Poland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Portugal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovak Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovenia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Spain&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sweden&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Switzerland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Turkey&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United Kingdom&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United States&quot;</span><span class="p">)</span>
 <span class="n">X_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">oecd</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
+<span class="n">h_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
+<span class="nf">plot</span><span class="p">(</span><span class="nf">as.dendrogram</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">),</span><span class="w"> </span><span class="n">horiz</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">h_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><img alt="Cluster dendrogram for the OECD countries." src="../_images/r_ssi-oecd-dendrogram-1.png" /></p>
+<figure class="align-default" id="id3">
+<span id="fig-ssi-oecd-dendrogram"></span><img alt="../_images/ssi-oecd-dendrogram-1.png" src="../_images/ssi-oecd-dendrogram-1.png" />
+<figcaption>
+<p><span class="caption-number">Figure 21 </span><span class="caption-text">Cluster dendrogram for the OECD countries.</span><a class="headerlink" href="#id3" title="Link to this image">#</a></p>
+</figcaption>
+</figure>
 <p>Final notes:</p>
 <ul class="simple">
 <li><p>If we are only interested in a specific partition,
 calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to
 <code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">genieclust</span></code> also features partition similarity scores
-(such as the Adjusted Rand or the Pair Sets Index) that can be used as
+(such as the adjusted Rand index) that can be used as
 external cluster validity measures.</p></li>
 </ul>
 <p>For more details, refer to the package’s <a class="reference internal" href="../rapi.html"><span class="doc">documentation</span></a>.
-Don’t forget to check out the Python examples regarding noise points detection,
+Also, see the Python examples regarding noise points detection,
 benchmarking, timing, etc.</p>
 <p><em>To learn more about R, check out Marek’s recent open-access (free!) textbook</em>
 <a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a>
@@ -421,7 +443,7 @@ benchmarking, timing, etc.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-09-22T17:20:51+1000.
+              Last updated on 2023-10-17T15:11:17+1000.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
