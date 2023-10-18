@@ -1,5 +1,4 @@
-Code of Conduct
-===============
+# Code of Conduct
 
 This is a project conveyed in its authors' free time. It is their little
 act of charity to make this world an (even) better place.

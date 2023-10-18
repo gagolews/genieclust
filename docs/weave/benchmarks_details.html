@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,20 +268,20 @@
           </label>
         </div>
         <article role="main">
-          <section id="benchmarks-detailed-results">
+          <section class="tex2jax_ignore mathjax_ignore" id="benchmarks-detailed-results">
 <h1>Benchmarks — Detailed Results<a class="headerlink" href="#benchmarks-detailed-results" title="Link to this heading">#</a></h1>
-<p>In one of the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">above sections</span></a>
+<p>In one of the <a class="reference internal" href="benchmarks_ar.html"><span class="doc std std-doc">above sections</span></a>,
 we have summarised the AR indices based on the datasets from
-the <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms – Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M. and others. (2020).  Benchmark Suite for Clustering Algorithms – Version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>.
-In this section we present more detailed results for
-some other partition similarity measures implemented in the <cite>genieclust</cite>
-package — Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id40" title="Fowlkes, E.B. and Mallows, C.L. (1983).  A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569.">8</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id21" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">21</a>]</span>,
-adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id29" title="Vinh, N.X., Epps, J., and Bailey, J. (2010).  Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854. URL: http://jmlr.org/papers/v11/vinh10a.html.">35</a>]</span>,
+the <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Benchmark Suite for Clustering Algorithms (Version 1.0)</a>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span>.
+In this section, we present more detailed results for
+some other partition similarity measures implemented in the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code>
+package: Fowlkes–Mallows <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id39" title="Fowlkes, E.B. and Mallows, C.L. (1983).  A method for comparing two hierarchical clusterings. Journal of the American Statistical Association, 78(383):553–569.">8</a>]</span>, adjusted Rand <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id20" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">20</a>]</span>,
+adjusted and normalised mutual information <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id28" title="Vinh, N.X., Epps, J., and Bailey, J. (2010).  Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance. Journal of Machine Learning Research, 11(95):2837–2854. URL: http://jmlr.org/papers/v11/vinh10a.html.">34</a>]</span>,
 normalised pivoted accuracy (which is based on set-matching classification rate),
 normalised clustering accuracy <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id5" title="Gagolewski, M. (2023).  Normalised clustering accuracy: An asymmetric external cluster validity measure. under review (preprint). URL: https://arxiv.org/pdf/2209.02935.pdf, DOI: 10.48550/arXiv.2209.02935.">15</a>]</span>,
-and pair sets index <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id28" title="Rezaei, M. and Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">33</a>]</span>,
-see the API documentation of <a class="reference internal" href="../genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">genieclust.compare_partitions</span></code></a> for more details.
+and pair sets index <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id27" title="Rezaei, M. and Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">32</a>]</span>;  for more details,
+see the API documentation of <a class="reference internal" href="../genieclust_compare_partitions.html#module-genieclust.compare_partitions" title="genieclust.compare_partitions"><span class="xref myst py py-mod">genieclust.compare_partitions</span></a>.
 In each case, a score of 1.0 denotes perfect agreement between the clustering
 results and the reference partitions.</p>
 <p>At the preprocessing stage, features with variance of 0 were removed.
@@ -295,10 +295,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="nca">
 <h3>nca<a class="headerlink" href="#nca" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -434,10 +434,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -573,10 +573,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -1621,10 +1621,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="ar">
 <h3>ar<a class="headerlink" href="#ar" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -1760,10 +1760,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -1899,10 +1899,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -2947,10 +2947,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="fm">
 <h3>fm<a class="headerlink" href="#fm" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -3086,10 +3086,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -3225,10 +3225,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -4273,10 +4273,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="ami">
 <h3>ami<a class="headerlink" href="#ami" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -4412,10 +4412,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -4551,10 +4551,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -5599,10 +5599,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="nmi">
 <h3>nmi<a class="headerlink" href="#nmi" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -5738,10 +5738,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -5877,10 +5877,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -6925,10 +6925,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="npa">
 <h3>npa<a class="headerlink" href="#npa" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -7064,10 +7064,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -7203,10 +7203,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -8251,10 +8251,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="psi">
 <h3>psi<a class="headerlink" href="#psi" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -8390,10 +8390,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -8529,10 +8529,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Average linkage</p></th>
 <th class="head"><p>Birch_0.01</p></th>
 <th class="head"><p>Complete linkage</p></th>
@@ -9579,22 +9579,25 @@ item. Clustering is performed with respect to the Euclidean distance
 <p>Medians and means of the partition similarity scores
 (read row-wise, in groups of 2 columns):</p>
 <figure class="align-default" id="id15">
-<img alt="../_images/benchmarks_details_indices_small_1.png" src="../_images/benchmarks_details_indices_small_1.png" style="width: 15cm;" />
+<span id="fig-indices-small"></span><img alt="../_images/indices_small-1.png" src="../_images/indices_small-1.png" />
 <figcaption>
 <p><span class="caption-number">Figure 22 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 </section>
-<section id="large-datasets">
-<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Link to this heading">#</a></h2>
+<section id="large-datase">
+<h2>Large Datase<a class="headerlink" href="#large-datase" title="Link to this heading">#</a></h2>
+<section id="results">
+<h3>Results<a class="headerlink" href="#results" title="Link to this heading">#</a></h3>
+</section>
 <section id="id7">
 <h3>nca<a class="headerlink" href="#id7" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9680,10 +9683,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9769,10 +9772,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nca</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -9844,10 +9847,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id8">
 <h3>ar<a class="headerlink" href="#id8" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -9933,10 +9936,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10022,10 +10025,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ar</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10097,10 +10100,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id9">
 <h3>fm<a class="headerlink" href="#id9" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10186,10 +10189,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10275,10 +10278,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">fm</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10350,10 +10353,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id10">
 <h3>ami<a class="headerlink" href="#id10" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10439,10 +10442,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10528,10 +10531,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">ami</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10603,10 +10606,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id11">
 <h3>nmi<a class="headerlink" href="#id11" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10692,10 +10695,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10781,10 +10784,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">nmi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -10856,10 +10859,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id12">
 <h3>npa<a class="headerlink" href="#id12" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -10945,10 +10948,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -11034,10 +11037,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">npa</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -11109,10 +11112,10 @@ item. Clustering is performed with respect to the Euclidean distance
 <section id="id13">
 <h3>psi<a class="headerlink" href="#id13" title="Link to this heading">#</a></h3>
 <p>Summary statistics for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -11198,10 +11201,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Ranks for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -11287,10 +11290,10 @@ item. Clustering is performed with respect to the Euclidean distance
 </table>
 </div>
 <p>Raw results for <code class="docutils literal notranslate"><span class="pre">psi</span></code> (best=1.0):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>Genie_0.1</p></th>
 <th class="head"><p>Genie_0.3</p></th>
 <th class="head"><p>Genie_0.5</p></th>
@@ -11363,7 +11366,7 @@ item. Clustering is performed with respect to the Euclidean distance
 <h3>Summary<a class="headerlink" href="#id14" title="Link to this heading">#</a></h3>
 <p>Medians and means of the partition similarity scores:</p>
 <figure class="align-default" id="id16">
-<img alt="../_images/benchmarks_details_indices_large_1.png" src="../_images/benchmarks_details_indices_large_1.png" style="width: 15cm;" />
+<span id="fig-indices-large"></span><img alt="../_images/indices_large-3.png" src="../_images/indices_large-3.png" />
 <figcaption>
 <p><span class="caption-number">Figure 23 </span><span class="caption-text">Heat map of median and mean similarity scores</span><a class="headerlink" href="#id16" title="Link to this image">#</a></p>
 </figcaption>
@@ -11407,7 +11410,7 @@ item. Clustering is performed with respect to the Euclidean distance
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -11440,7 +11443,8 @@ item. Clustering is performed with respect to the Euclidean distance
 <li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#large-datasets">Large Datasets</a><ul>
+<li><a class="reference internal" href="#large-datase">Large Datase</a><ul>
+<li><a class="reference internal" href="#results">Results</a></li>
 <li><a class="reference internal" href="#id7">nca</a></li>
 <li><a class="reference internal" href="#id8">ar</a></li>
 <li><a class="reference internal" href="#id9">fm</a></li>
@@ -11462,7 +11466,7 @@ item. Clustering is performed with respect to the Euclidean distance
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

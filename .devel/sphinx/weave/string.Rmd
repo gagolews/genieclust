@@ -1,0 +1,70 @@
+# Example: String Data and Grouping of DNA
+
+The *genieclust* package also allows for clustering of character string
+data. Let's perform an example grouping based on
+[Levenshtein's](https://en.wikipedia.org/wiki/Levenshtein_distance) edit distance.
+
+::::{important}
+Make sure that the [*nmslib*](https://github.com/nmslib/nmslib) package
+(an optional dependency) is installed.
+
+```{python}
+import nmslib
+```
+::::
+
+
+As an example, we will use one of the benchmark datasets mentioned
+in {cite}`genieins`:
+
+
+
+```{python settings,results="hide",echo=FALSE}
+#import pweave
+from tabulate import tabulate
+import numpy as np
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+```
+
+
+
+```{python string-example-strings}
+import numpy as np
+# see https://github.com/gagolews/genieclust/tree/master/.devel/sphinx/weave/
+strings = np.loadtxt("actg1.data.gz", dtype=str).tolist()
+strings[:5]  # preview
+```
+
+The dataset comes with a set of reference labels that give the "true" grouping
+assigned by an expert:
+
+```{python string-example-labels}
+labels_true = np.loadtxt("actg1.labels0.gz", dtype=np.intp) - 1
+n_clusters = len(np.unique(labels_true))
+print(n_clusters)
+```
+
+
+Clustering in the string domain relies on the
+near-neighbour search routines implemented in the *nmslib* package.
+
+```{python string-example-cluster}
+import genieclust
+g = genieclust.Genie(
+    n_clusters=n_clusters,
+    exact=False,  # use nmslib
+    cast_float32=False,  # do not convert the string list to a matrix
+    nmslib_params_index=dict(post=0),  # faster
+    affinity="leven")
+labels_pred = g.fit_predict(strings)
+```
+
+
+The adjusted Rand index can be used as an external cluster validity metric:
+
+```{python string-example-ar}
+genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_pred)
+```
+
+It indicates a very high degree of similarity between the reference
+and the obtained clusterings.

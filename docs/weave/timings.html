@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,34 +268,33 @@
           </label>
         </div>
         <article role="main">
-          <section id="timings-how-fast-is-it">
+          <section class="tex2jax_ignore mathjax_ignore" id="timings-how-fast-is-it">
 <h1>Timings (How Fast Is It?)<a class="headerlink" href="#timings-how-fast-is-it" title="Link to this heading">#</a></h1>
-<p>In the <a class="reference internal" href="benchmarks_ar.html"><span class="doc">previous section</span></a> we have demonstrated
-that Genie generates partitions of high <em>quality</em>. Now the crucial question is:
-does it do this quickly?</p>
-<p>Genie will be compared against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span> version 0.23.1
-(<cite>sklearn.cluster.KMeans</cite>) for different number of threads
-(by default it uses all available resources;
-note that the number of restarts, <cite>n_init</cite>, defaults to 10)
+<p>In the <a class="reference internal" href="benchmarks_ar.html"><span class="doc std std-doc">previous section</span></a>, we have demonstrated
+that Genie generates partitions of decent <em>quality</em>. However, is it quick?
+Let’s compare it against K-means from <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id35" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">31</a>]</span> version 0.23.1
+(<code class="docutils literal notranslate"><span class="pre">sklearn.cluster.KMeans</span></code>) for different number of threads
+(by default, it uses all available resources;
+note that the number of restarts, <code class="docutils literal notranslate"><span class="pre">n_init</span></code>, defaults to 10)
 and hierarchical agglomerative algorithms
 with the centroid, median, and Ward linkage implemented in the
 <a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package
-<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id22" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">29</a>]</span>.</p>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id21" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">28</a>]</span>.</p>
 <p>Genie, just like the single linkage, is based on a minimum spanning tree (MST)
 <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span> of the pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
 and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-method  <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id20" title="Olson, C.F. (1995).  Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325. DOI: 10.1016/0167-8191(95)00017-I.">31</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
-However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id25" title="Curtin, R.R., Edel, M., Lozhnikov, M., Mentekidis, Y., Ghaisas, S., and Zhang, S. (2018).  Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726. DOI: 10.21105/joss.00726.">4</a>]</span> provides a very fast
+method <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id19" title="Olson, C.F. (1995).  Parallel algorithms for hierarchical clustering. Parallel Computing, 21:1313–1325. DOI: 10.1016/0167-8191(95)00017-I.">30</a>]</span> will be called to compute an MST, which takes <span class="math notranslate nohighlight">\(O(d n^2)\)</span> time.
+However, <a class="reference external" href="https://www.mlpack.org/">mlpack.emst</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id24" title="Curtin, R.R., Edel, M., Lozhnikov, M., Mentekidis, Y., Ghaisas, S., and Zhang, S. (2018).  Mlpack 3: A fast, flexible machine learning library. Journal of Open Source Software, 3(26):726. DOI: 10.21105/joss.00726.">4</a>]</span> provides a very fast
 alternative in the case of Euclidean spaces of (very) low dimensionality,
-see <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id26" title="March, W.B., Ram, P., and Gray, A.G. (2010).  Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In: Proc. 16th ACM SIGKDD'10, pp. 603–612. DOI: 10.1145/1835804.1835882.">26</a>]</span> and the <cite>mlpack_enabled</cite> parameter, which is automatically used
+see <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id25" title="March, W.B., Ram, P., and Gray, A.G. (2010).  Fast Euclidean minimum spanning tree: Algorithm, analysis, and applications. In: Proc. 16th ACM SIGKDD'10, pp. 603–612. DOI: 10.1145/1835804.1835882.">25</a>]</span> and the <code class="docutils literal notranslate"><span class="pre">mlpack_enabled</span></code> parameter, which is automatically used
 for datasets with up to <span class="math notranslate nohighlight">\(d=6\)</span> features.
-Moreover, in the approximate method (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>), we apply
+Moreover, in the approximate method (<code class="docutils literal notranslate"><span class="pre">exact=False</span></code>), we apply
 the Kruskal algorithm on the near-neighbour graph determined
-by <cite>nmslib</cite> <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id27" title="Naidan, B., Boytsov, L., Malkov, Y., and Novak, D. (2019).  Non-metric space library (NMSLIB) manual, version 2.0. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">30</a>]</span>. Albeit this only gives <em>some</em> sort of a spanning <em>forest</em>,
-such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc">turns out to be very suitable for our clustering task</span></a>.</p>
+by <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id26" title="Naidan, B., Boytsov, L., Malkov, Y., and Novak, D. (2019).  Non-metric space library (NMSLIB) manual, version 2.0. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">29</a>]</span>. Even though this only gives <em>some</em> sort of a spanning <em>forest</em>,
+such a data structure <a class="reference internal" href="benchmarks_approx.html"><span class="doc std std-doc">turns out to be very suitable for our clustering task</span></a>.</p>
 <p>All timings will be performed on a PC running GNU/Linux 5.4.0-40-generic #44-Ubuntu
 SMP x86_64 kernel with an Intel(R) Core(TM) i7-9750H CPU &#64; 2.60GHz (12M cache, 6 cores, 12 threads)
 and total memory of 16,242,084 kB.</p>
@@ -303,20 +302,20 @@ and total memory of 16,242,084 kB.</p>
 <h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Link to this heading">#</a></h2>
 <p>Let’s study the algorithm’s run times for some of the
 “larger” datasets (70,000-105,600 observations,
-see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc">benchmark results</span></a> for discussion)
+see section on <a class="reference internal" href="benchmarks_ar.html"><span class="doc std std-doc">benchmark results</span></a> for discussion)
 from the
-<a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M. and others. (2020).  Benchmark Suite for Clustering Algorithms – Version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Benchmark Suite for Clustering Algorithms (Version 1.0)</a>,
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span>.
 Features with variance of 0 were removed,
 datasets were centred at <strong>0</strong> and scaled so that they have total variance of 1.
 Tiny bit of Gaussian noise was added to each observation.
 Clustering is performed with respect to the Euclidean distance.</p>
 <p>Here are the results (in seconds) if 6 threads are requested
-(except for <cite>fastcluster</cite> which is not parallelised).
+(except for <code class="docutils literal notranslate"><span class="pre">fastcluster</span></code> which is not parallelised).
 For K-means, the timings are listed as a function of the number of clusters to detect,
 for the other hierarchical methods the run-times are almost identical irrespective of the
 partitions’ cardinality.</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>dataset</p></th>
@@ -334,44 +333,44 @@ partitions’ cardinality.</p>
 <td><p>719</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>412.72</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>Genie_0.3_approx</p></td>
 <td><p>42.77</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_centroid</p></td>
 <td><p>4170.98</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_median</p></td>
 <td><p>3927.93</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_ward</p></td>
 <td><p>4114.05</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>26.3</p></td>
 <td><p>217.62</p></td>
@@ -382,44 +381,44 @@ partitions’ cardinality.</p>
 <td><p>784</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>445.81</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>Genie_0.3_approx</p></td>
 <td><p>38.02</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_centroid</p></td>
 <td><p>4486.32</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_median</p></td>
 <td><p>4384.62</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_ward</p></td>
 <td><p>4757.32</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>24.9</p></td>
 <td><p>225.04</p></td>
@@ -430,44 +429,44 @@ partitions’ cardinality.</p>
 <td><p>2</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>0.57</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>Genie_0.3_approx</p></td>
 <td><p>3.67</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_centroid</p></td>
 <td><p>66.3</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_median</p></td>
 <td><p>64.11</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_ward</p></td>
 <td><p>60.92</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>0.86</p></td>
 <td><p>10.96</p></td>
@@ -478,44 +477,44 @@ partitions’ cardinality.</p>
 <td><p>64</p></td>
 <td><p>Genie_0.3</p></td>
 <td><p>76.7</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>Genie_0.3_approx</p></td>
 <td><p>8.26</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_centroid</p></td>
 <td><p>4945.91</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_median</p></td>
 <td><p>2854.27</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-even"><td></td>
-<td></td>
-<td></td>
+<tr class="row-even"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>fastcluster_ward</p></td>
 <td><p>778.18</p></td>
-<td></td>
-<td></td>
+<td><p></p></td>
+<td><p></p></td>
 </tr>
-<tr class="row-odd"><td></td>
-<td></td>
-<td></td>
+<tr class="row-odd"><td><p></p></td>
+<td><p></p></td>
+<td><p></p></td>
 <td><p>sklearn_kmeans</p></td>
 <td><p>3.35</p></td>
 <td><p>37.89</p></td>
@@ -524,29 +523,23 @@ partitions’ cardinality.</p>
 </tbody>
 </table>
 </div>
-<dl class="simple">
-<dt>/tmp/ipykernel_38846/4024770980.py:10: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.</dt><dd><p>_dat.loc[which_repeated, “n”] = “”</p>
-</dd>
-<dt>/tmp/ipykernel_38846/4024770980.py:11: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.</dt><dd><p>_dat.loc[which_repeated, “d”] = “”</p>
-</dd>
-</dl>
 <p>Of course, the K-means algorithm is the fastest.
 However, its performance degrades as K increases. Hence, it might not be
-a good choice for the so-called <em>extreme clustering</em> (compare <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id31" title="Kobren, A., Monath, N., Krishnamurthy, A., and McCallum, A. (2017).  A hierarchical algorithm for extreme clustering. In: Proc. 23rd ACM SIGKDD'17, pp. 255–264. DOI: 10.1145/3097983.3098079.">24</a>]</span>)
-problems. Most importantly, the approximate version of Genie (based on <cite>nmslib</cite>)
+a good choice for the so-called <em>extreme clustering</em> (compare <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id30" title="Kobren, A., Monath, N., Krishnamurthy, A., and McCallum, A. (2017).  A hierarchical algorithm for extreme clustering. In: Proc. 23rd ACM SIGKDD'17, pp. 255–264. DOI: 10.1145/3097983.3098079.">23</a>]</span>)
+problems. Most importantly, the approximate version of Genie (based on <code class="docutils literal notranslate"><span class="pre">nmslib</span></code>)
 is only slightly slower.
 The exact variant is extremely performant in Euclidean spaces of low dimensionality
-(thanks to <cite>mlpack</cite>) and overall at least 10 times more efficient than the other
+(thanks to <code class="docutils literal notranslate"><span class="pre">mlpack</span></code>) and overall at least 10 times more efficient than the other
 hierarchical algorithms in this study.</p>
 </section>
 <section id="timings-as-a-function-of-n-and-d">
-<h2>Timings as a Function of <cite>n</cite> and <cite>d</cite><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Link to this heading">#</a></h2>
+<h2>Timings as a Function of <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code><a class="headerlink" href="#timings-as-a-function-of-n-and-d" title="Link to this heading">#</a></h2>
 <p>In order to study the run-times as a function dataset size and dimensionality,
-let’s consider a series of synthetic benchmarks, each with two Gaussian blobs of size <cite>n/2</cite>
-(with i.i.d. coordinates), in a <cite>d</cite>-dimensional space.</p>
-<p>Here are the medians of 3-10 timings (depending on the dataset size), in seconds,
+let’s consider a series of synthetic benchmarks, each with two Gaussian blobs of size <code class="docutils literal notranslate"><span class="pre">n/2</span></code>
+(with i.i.d. coordinates), in a <code class="docutils literal notranslate"><span class="pre">d</span></code>-dimensional space.</p>
+<p>Here are the medians of 3–10 timings (depending on the dataset size), in seconds,
 on 6 threads:</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>method</p></th>
@@ -567,7 +560,7 @@ on 6 threads:</p>
 <td><p>14.93</p></td>
 <td><p>33.79</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>5</p></td>
 <td><p>0.2</p></td>
 <td><p>1.3</p></td>
@@ -575,7 +568,7 @@ on 6 threads:</p>
 <td><p>22.75</p></td>
 <td><p>54.66</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>10</p></td>
 <td><p>0.25</p></td>
 <td><p>1.69</p></td>
@@ -583,7 +576,7 @@ on 6 threads:</p>
 <td><p>36.18</p></td>
 <td><p>92.03</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>25</p></td>
 <td><p>0.29</p></td>
 <td><p>1.95</p></td>
@@ -591,7 +584,7 @@ on 6 threads:</p>
 <td><p>62.25</p></td>
 <td><p>158.27</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>50</p></td>
 <td><p>0.36</p></td>
 <td><p>3.15</p></td>
@@ -599,7 +592,7 @@ on 6 threads:</p>
 <td><p>81.95</p></td>
 <td><p>202.08</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>100</p></td>
 <td><p>0.48</p></td>
 <td><p>4.6</p></td>
@@ -615,7 +608,7 @@ on 6 threads:</p>
 <td><p>3.03</p></td>
 <td><p>6.58</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>5</p></td>
 <td><p>0.28</p></td>
 <td><p>1.96</p></td>
@@ -623,7 +616,7 @@ on 6 threads:</p>
 <td><p>28.4</p></td>
 <td><p>62.75</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>10</p></td>
 <td><p>3.08</p></td>
 <td><p>35.54</p></td>
@@ -639,7 +632,7 @@ on 6 threads:</p>
 <td><p>267.76</p></td>
 <td><p>1657.86</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>5</p></td>
 <td><p>0.14</p></td>
 <td><p>2.62</p></td>
@@ -647,7 +640,7 @@ on 6 threads:</p>
 <td><p>421.46</p></td>
 <td><p>2997.11</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>10</p></td>
 <td><p>0.15</p></td>
 <td><p>3.21</p></td>
@@ -655,7 +648,7 @@ on 6 threads:</p>
 <td><p>719.33</p></td>
 <td><p>4388.26</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>25</p></td>
 <td><p>0.28</p></td>
 <td><p>6.51</p></td>
@@ -663,7 +656,7 @@ on 6 threads:</p>
 <td><p>1627.9</p></td>
 <td><p>7708.23</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>50</p></td>
 <td><p>0.47</p></td>
 <td><p>11.97</p></td>
@@ -671,7 +664,7 @@ on 6 threads:</p>
 <td><p>2175.3</p></td>
 <td><p>11346.3</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>100</p></td>
 <td><p>1</p></td>
 <td><p>26.07</p></td>
@@ -682,15 +675,15 @@ on 6 threads:</p>
 </tbody>
 </table>
 </div>
-<p>By default, <cite>mlpack_enabled</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, which translates
-to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the requested metric is Euclidean,  Python package <cite>mlpack</cite> is available,
-and <cite>d</cite> is not greater than 6.
+<p>By default, <code class="docutils literal notranslate"><span class="pre">mlpack_enabled</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, which translates
+to <code class="docutils literal notranslate"><span class="pre">True</span></code> if the requested metric is Euclidean,  Python package <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> is available,
+and <code class="docutils literal notranslate"><span class="pre">d</span></code> is not greater than 6.
 The effect of the curse of dimensionality is clearly visible – clustering
 in very low-dimensional Euclidean spaces is extremely fast.
 On the other hand, the approximate version of Genie can easily cluster
 very large datasets. Only the system’s memory limits might become a problem then.</p>
 <figure class="align-default" id="id10">
-<img alt="../_images/timings_g2mg-plot_1.png" src="../_images/timings_g2mg-plot_1.png" style="width: 15cm;" />
+<span id="fig-g2mg-plot"></span><img alt="../_images/g2mg-plot-1.png" src="../_images/g2mg-plot-1.png" />
 <figcaption>
 <p><span class="caption-number">Figure 12 </span><span class="caption-text">Timings [s] as a function of the dataset size and dimensionality — problem sizes that can be solved in a few minutes.</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
 </figcaption>
@@ -699,10 +692,9 @@ very large datasets. Only the system’s memory limits might become a problem th
 <section id="timings-as-a-function-of-the-number-of-threads">
 <h2>Timings as a Function of the Number of Threads<a class="headerlink" href="#timings-as-a-function-of-the-number-of-threads" title="Link to this heading">#</a></h2>
 <p>Recall that the timings are done on a PC with 6 physical cores.
-Genie turns out to be nicely parallelisable — as evidenced on
-the <code class="docutils literal notranslate"><span class="pre">mnist/digits</span></code> dataset:</p>
+Genie turns out to be nicely parallelisable, as seen on the <code class="docutils literal notranslate"><span class="pre">mnist/digits</span></code> dataset:</p>
 <figure class="align-default" id="id11">
-<img alt="../_images/timings_digits_1.png" src="../_images/timings_digits_1.png" style="width: 15cm;" />
+<span id="fig-digits"></span><img alt="../_images/digits-3.png" src="../_images/digits-3.png" />
 <figcaption>
 <p><span class="caption-number">Figure 13 </span><span class="caption-text">Timings [s] as a function of the number of clusters and threads.</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
 </figcaption>
@@ -710,16 +702,16 @@ the <code class="docutils literal notranslate"><span class="pre">mnist/digits</s
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>The approximate (<cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>) version of Genie is much faster
+<p>The approximate (<code class="docutils literal notranslate"><span class="pre">exact=False</span></code>) version of Genie is much faster
 than the original one. At the same time, it is still
-<a class="reference internal" href="benchmarks_approx.html"><span class="doc">highly compatible</span></a> with it
+<a class="reference internal" href="benchmarks_approx.html"><span class="doc std std-doc">highly compatible</span></a> with it
 (at least at higher levels of the cluster hierarchy). Therefore, we
 can safely recommend its use in large problem instances.
 Most importantly, its performance is not much worse than the K-means method
 with small K. Once a complete cluster hierarchy is determined,
-partitioning of any cardinality can be extracted in less than 0.34 s on a 1M dataset.
+partitioning of any cardinality can be extracted in less than 0.34s on a 1M dataset.
 Still, even the exact Genie is amongst the fastest clustering algorithms in the pool.</p>
-<p>On top of that, we are also allowed to change our mind about the <cite>gini_threshold</cite>
+<p>On top of that, we are also allowed to change our mind about the <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>
 parameter once the clustering is has been determined. The MST is stored for further
 reference and is not recomputed unless needed. Here are the timings for
 a first run of the algorithm:</p>
@@ -729,9 +721,8 @@ a first run of the algorithm:</p>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - first run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - first run: 9.411</span>
+<span class="c1">## Genie()</span>
+<span class="c1">## time elapsed - first run: 33.114</span>
 </pre></div>
 </div>
 <p>Changing some parameters and re-running the cluster search:</p>
@@ -740,9 +731,10 @@ a first run of the algorithm:</p>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - consecutive run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## time elapsed - consecutive run: 0.025</span>
+<span class="c1">## Genie(n_clusters=10)</span>
+<span class="c1">## Genie(gini_threshold=0.1, n_clusters=10)</span>
+<span class="c1">## Genie(gini_threshold=0.1, n_clusters=10)</span>
+<span class="c1">## time elapsed - consecutive run: 0.048</span>
 </pre></div>
 </div>
 </section>
@@ -783,7 +775,7 @@ a first run of the algorithm:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -806,7 +798,7 @@ a first run of the algorithm:</p>
             <ul>
 <li><a class="reference internal" href="#">Timings (How Fast Is It?)</a><ul>
 <li><a class="reference internal" href="#large-datasets">Large Datasets</a></li>
-<li><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <cite>n</cite> and <cite>d</cite></a></li>
+<li><a class="reference internal" href="#timings-as-a-function-of-n-and-d">Timings as a Function of <code class="docutils literal notranslate"><span class="pre">n</span></code> and <code class="docutils literal notranslate"><span class="pre">d</span></code></a></li>
 <li><a class="reference internal" href="#timings-as-a-function-of-the-number-of-threads">Timings as a Function of the Number of Threads</a></li>
 <li><a class="reference internal" href="#summary">Summary</a></li>
 </ul>
@@ -820,7 +812,7 @@ a first run of the algorithm:</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

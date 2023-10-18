@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,33 +268,33 @@
           </label>
         </div>
         <article role="main">
-          <section id="benchmarks-how-good-is-it">
+          <section class="tex2jax_ignore mathjax_ignore" id="benchmarks-how-good-is-it">
 <h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Link to this heading">#</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We use our <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">framework for benchmarking clustering algorithms (benchmark suite version 1.0.1)</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id8" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
-including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id38" title="Dua, D. and Graff, C. (2019).  UCI Machine Learning Repository. URL: http://archive.ics.uci.edu/ml.">6</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="Fränti, P., Mariescu-Istodor, R., and Zhong, C. (2016).  XNN graph. Lecture Notes in Computer Science, 10029:207–217. DOI: 10.1007/978-3-319-49055-7_19.">9</a>, <a class="reference internal" href="../z_bibliography.html#id39" title="Fränti, P. and Sieranoja, S. (2018).  K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759. DOI: 10.1007/s10489-018-1238-7.">10</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="Graves, D. and Pedrycz, W. (2010).  Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543. DOI: 10.1016/j.fss.2009.10.021.">20</a>, <a class="reference internal" href="../z_bibliography.html#id44" title="Karypis, G., Han, E.H., and Kumar, V. (1999).  CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75. DOI: 10.1109/2.781637.">23</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="Ultsch, A. (2005).  Clustering with SOM: U*C. In: Workshop on Self-Organizing Maps, pp. 75–82.">34</a>]</span>.
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
+including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id37" title="Dua, D. and Graff, C. (2019).  UCI Machine Learning Repository. URL: http://archive.ics.uci.edu/ml.">6</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="Fränti, P., Mariescu-Istodor, R., and Zhong, C. (2016).  XNN graph. Lecture Notes in Computer Science, 10029:207–217. DOI: 10.1007/978-3-319-49055-7_19.">9</a>, <a class="reference internal" href="../z_bibliography.html#id38" title="Fränti, P. and Sieranoja, S. (2018).  K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759. DOI: 10.1007/s10489-018-1238-7.">10</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="Graves, D. and Pedrycz, W. (2010).  Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543. DOI: 10.1016/j.fss.2009.10.021.">19</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="Karypis, G., Han, E.H., and Kumar, V. (1999).  CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75. DOI: 10.1109/2.781637.">22</a>, <a class="reference internal" href="../z_bibliography.html#id40" title="Ultsch, A. (2005).  Clustering with SOM: U*C. In: Workshop on Self-Organizing Maps, pp. 75–82.">33</a>]</span>.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study
-the algorithms that allow for setting of <cite>n_clusters</cite> explicitly.</p>
+the algorithms that allow for setting of <code class="docutils literal notranslate"><span class="pre">n_clusters</span></code> explicitly.</p>
 <p>We will apply a few agglomerative hierarchical
 methods (average, centroid, complete, single, and Ward linkage; implemented in the
-<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id22" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">29</a>]</span>),
+<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id21" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">28</a>]</span>),
 k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
-(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span>),
-<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id18" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">28</a>]</span>,
-and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
-<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id21" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">21</a>]</span>) will be used
+(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">31</a>]</span>),
+<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id17" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">27</a>]</span>,
+and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
+<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id20" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">20</a>]</span>) will be used
 to quantify the agreement between
-a reference and a predicted clustering on the scale [0,1],
+a reference and a predicted clustering on the scale <span class="math notranslate nohighlight">\([0,1]\)</span>,
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id37" title="Dasgupta, S. and Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M. and others. (2020).  Benchmark Suite for Clustering Algorithms – Version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span> for discussion),
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id36" title="Dasgupta, S. and Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> for discussion),
 the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
 <p>For more detailed results based on other partition similarity scores,
-see the <a class="reference internal" href="benchmarks_details.html"><span class="doc">Appendix</span></a>.</p>
+see the <a class="reference internal" href="benchmarks_details.html"><span class="doc std std-doc">Appendix</span></a>.</p>
 <section id="small-datasets">
 <h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Link to this heading">#</a></h2>
 <p>As some of the algorithms tested here have failed to generate a solution
@@ -306,43 +306,31 @@ As suggested in the benchmark suite’s description, we omit the over-populous
 We report the results for Birch and spectral clustering with parameters
 that lead to the highest average AR score
 (the former was tested on a parameter grid of
-<cite>branching_factor in [10, 50, 100]</cite>
-and <cite>threshold in [0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0]</cite>
-and the latter on <cite>affinity in [“rbf”, “laplacian”, “poly”, “sigmoid”]</cite>
-and <cite>gamma in [0.25, 0.5, 1.0, 2.5, 5.0]</cite>).
-Moreover, Gaussian mixtures used <cite>n_init=100</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-</span>
-<span class="c1">## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype</span>
-<span class="c1">## is deprecated and will be removed in a future version. Use</span>
-<span class="c1">## isinstance(dtype, CategoricalDtype) instead</span>
-<span class="c1">##   if pd.api.types.is_categorical_dtype(vector):</span>
-<span class="c1">## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-</span>
-<span class="c1">## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype</span>
-<span class="c1">## is deprecated and will be removed in a future version. Use</span>
-<span class="c1">## isinstance(dtype, CategoricalDtype) instead</span>
-<span class="c1">##   if pd.api.types.is_categorical_dtype(vector):</span>
-</pre></div>
-</div>
-<figure class="align-default" id="id14">
-<img alt="../_images/benchmarks_ar_plot_small_1.png" src="../_images/benchmarks_ar_plot_small_1.png" style="width: 15cm;" />
+<code class="docutils literal notranslate"><span class="pre">branching_factor</span> <span class="pre">in</span> <span class="pre">[10,</span> <span class="pre">50,</span> <span class="pre">100]</span></code>
+and <code class="docutils literal notranslate"><span class="pre">threshold</span> <span class="pre">in</span> <span class="pre">[0.005,</span> <span class="pre">0.01,</span> <span class="pre">0.025,</span> <span class="pre">0.05,</span> <span class="pre">0.1,</span> <span class="pre">0.25,</span> <span class="pre">0.5,</span> <span class="pre">1.0]</span></code>
+and the latter on <code class="docutils literal notranslate"><span class="pre">affinity</span> <span class="pre">in</span> <span class="pre">[&quot;rbf&quot;,</span> <span class="pre">&quot;laplacian&quot;,</span> <span class="pre">&quot;poly&quot;,</span> <span class="pre">&quot;sigmoid&quot;]</span></code>
+and <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">in</span> <span class="pre">[0.25,</span> <span class="pre">0.5,</span> <span class="pre">1.0,</span> <span class="pre">2.5,</span> <span class="pre">5.0]</span></code>).
+Moreover, Gaussian mixtures used <code class="docutils literal notranslate"><span class="pre">n_init=100</span></code>.</p>
+<figure class="align-default" id="id13">
+<span id="fig-plot-small"></span><img alt="../_images/plot_small-1.png" src="../_images/plot_small-1.png" />
 <figcaption>
-<p><span class="caption-number">Figure 10 </span><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 10 </span><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id13" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>The Genie algorithm with <cite>gini_threshold</cite> of 0.3 gives the highest average
+<p>The Genie algorithm with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 0.3 gives the highest average
 and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
-<span id="id11">[<a class="reference internal" href="../z_bibliography.html#id18" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">28</a>]</span> method (which is also based on a minimum spanning tree;
-compare <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span>)
+<span id="id10">[<a class="reference internal" href="../z_bibliography.html#id17" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">27</a>]</span> method (which is also based on a minimum spanning tree;
+compare <span id="id11">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2023).  Clustering with minimum spanning trees: How good can it be? under review (preprint). URL: https://arxiv.org/pdf/2303.05679.pdf, DOI: 10.48550/arXiv.2303.05679.">18</a>]</span>)
 tend to output good quality outcomes as well.</p>
 <p>Descriptive statistics for the ranks (for each dataset,
 each algorithm that gets the highest AR index rounded to 2 decimal digits,
 gets a rank of 1); lower ranks are better:</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -481,31 +469,19 @@ gets a rank of 1); lower ranks are better:</p>
 <section id="large-datasets">
 <h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Link to this heading">#</a></h2>
 <p>Below we provide the results for the larger datasets (70,000-105,600 points).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-</span>
-<span class="c1">## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype</span>
-<span class="c1">## is deprecated and will be removed in a future version. Use</span>
-<span class="c1">## isinstance(dtype, CategoricalDtype) instead</span>
-<span class="c1">##   if pd.api.types.is_categorical_dtype(vector):</span>
-<span class="c1">## /home/gagolews/.virtualenvs/python3-default/lib/python3.11/site-</span>
-<span class="c1">## packages/seaborn/_oldcore.py:1498: FutureWarning: is_categorical_dtype</span>
-<span class="c1">## is deprecated and will be removed in a future version. Use</span>
-<span class="c1">## isinstance(dtype, CategoricalDtype) instead</span>
-<span class="c1">##   if pd.api.types.is_categorical_dtype(vector):</span>
-</pre></div>
-</div>
-<figure class="align-default" id="id15">
-<img alt="../_images/benchmarks_ar_plot_large_1.png" src="../_images/benchmarks_ar_plot_large_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id14">
+<span id="fig-plot-large"></span><img alt="../_images/plot_large-3.png" src="../_images/plot_large-3.png" />
 <figcaption>
-<p><span class="caption-number">Figure 11 </span><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id15" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 11 </span><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id14" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>This time, the ITM method and Genie with <cite>gini_threshold</cite> of 0.1 give
+<p>This time, the ITM method and Genie with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 0.1 give
 the highest typical scores.</p>
 <p>Descriptive statistics for the ranks (AR index):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
-<tr class="row-odd"><th class="head"></th>
+<tr class="row-odd"><th class="head"><p></p></th>
 <th class="head"><p>count</p></th>
 <th class="head"><p>mean</p></th>
 <th class="head"><p>std</p></th>
@@ -593,13 +569,13 @@ the highest typical scores.</p>
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
-<p>Overall, the Genie algorithm tends to outperform other algorithms considered
+<p>Overall, the Genie algorithm often outperforms other algorithms considered
 in this study, at least on this rich benchmark battery.
-In <span id="id13">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
-we have recommended <cite>gini_threshold</cite> of 0.3,
-which is set as the default also in the <cite>genieclust</cite> package.
+In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
+we have recommended using <code class="docutils literal notranslate"><span class="pre">gini_threshold=0.3</span></code>,
+which is set as the default also in the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package.
 However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
-interestingly, the algorithm is quite stable in the sense that
+Interestingly, the algorithm is quite stable in the sense that
 small changes of this parameter should not affect the generated clusterings
 in a significant way.</p>
 </section>
@@ -640,7 +616,7 @@ in a significant way.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -676,9 +652,11 @@ in a significant way.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

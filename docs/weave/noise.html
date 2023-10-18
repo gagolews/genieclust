@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,7 +268,7 @@
           </label>
         </div>
         <article role="main">
-          <section id="clustering-with-noise-points-detection">
+          <section class="tex2jax_ignore mathjax_ignore" id="clustering-with-noise-points-detection">
 <h1>Clustering with Noise Points Detection<a class="headerlink" href="#clustering-with-noise-points-detection" title="Link to this heading">#</a></h1>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
@@ -277,40 +277,39 @@
 </pre></div>
 </div>
 <p>Let’s load an example dataset that can be found
-the on <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id45" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">27</a>]</span> package’s project site:</p>
+the at <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id44" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">26</a>]</span> package’s project site:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;hdbscan&quot;</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.data.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.labels0.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
+<span class="n">labels_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">.labels0.gz&quot;</span> <span class="o">%</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
 <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_true</span><span class="p">[</span><span class="n">labels_true</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">]))</span>
 </pre></div>
 </div>
 <p>Here are the “reference” labels as identified by an expert (of course,
 each dataset might reveal many different clusterings that a user might
 find useful for whatever their goal is).
-Labels -1 denote noise points (light grey markers).</p>
+The <code class="docutils literal notranslate"><span class="pre">-1</span></code> labels denote noise points (light grey markers).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n=</span><span class="si">%d</span><span class="s2">, true n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_clusters</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id6">
-<img alt="../_images/noise_noise-scatter_1.png" src="../_images/noise_noise-scatter_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id5">
+<span id="fig-noise-scatter"></span><img alt="../_images/noise-scatter-1.png" src="../_images/noise-scatter-1.png" />
 <figcaption>
-<p><span class="caption-number">Figure 14 </span><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 14 </span><span class="caption-text">Reference labels.</span><a class="headerlink" href="#id5" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="smoothing-factor">
 <h2>Smoothing Factor<a class="headerlink" href="#smoothing-factor" title="Link to this heading">#</a></h2>
-<p>The <cite>genieclust</cite> package allows for clustering with respect
-to a mutual reachability distance,
-<span class="math notranslate nohighlight">\(d_M\)</span>,
-known from the HDBSCAN* algorithm <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id16" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>.
-It is parameterised with <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
+<p>The <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package allows for clustering with respect
+to a mutual reachability distance, <span class="math notranslate nohighlight">\(d_M\)</span>,
+known from the HDBSCAN* algorithm <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id15" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>.
+It is parameterised by <em>a smoothing factor</em>, <code class="docutils literal notranslate"><span class="pre">M</span></code>, which
 controls how eagerly we tend to classify points as noise.</p>
-<p>Here are the effects of playing with the <cite>M</cite> parameter
-(we keep the default <cite>gini_threshold</cite>):</p>
+<p>Here are the effects of playing with the <code class="docutils literal notranslate"><span class="pre">M</span></code> parameter
+(we keep the default <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Ms</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Ms</span><span class="p">)):</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">M</span><span class="o">=</span><span class="n">Ms</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -322,15 +321,15 @@ controls how eagerly we tend to classify points as noise.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id7">
-<img alt="../_images/noise_noise-Genie1_1.png" src="../_images/noise_noise-Genie1_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id6">
+<span id="fig-noise-genie1"></span><img alt="../_images/noise-Genie1-3.png" src="../_images/noise-Genie1-3.png" />
 <figcaption>
-<p><span class="caption-number">Figure 15 </span><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 15 </span><span class="caption-text">Labels predicted by Genie with noise point detection.</span><a class="headerlink" href="#id6" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>For a more natural look-and-feel, it can be a good idea to first identify
-the noise points with Genie, remove them from the data set (or at least
-temporarily disable), and then apply the clustering procedure once again
+the noise points with Genie, remove them from the data set (at least temporarily),
+and then apply the clustering procedure once again
 (did we mention that our algorithm is fast?)
 but now with respect to the original distance (here: Euclidean):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Step 1: Noise point identification</span>
@@ -349,18 +348,18 @@ but now with respect to the original distance (here: Euclidean):</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id8">
-<img alt="../_images/noise_noise-Genie2_1.png" src="../_images/noise_noise-Genie2_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id7">
+<span id="fig-noise-genie2"></span><img alt="../_images/noise-Genie2-5.png" src="../_images/noise-Genie2-5.png" />
 <figcaption>
-<p><span class="caption-number">Figure 16 </span><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 16 </span><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id7" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>Contrary to an excellent implementation of HDBSCAN*
+<p>Contrary to the excellent implementation of HDBSCAN*
 that is featured in the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a>
-package <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id45" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">27</a>]</span> and which also relies on a minimum spanning tree
-with respect to <span class="math notranslate nohighlight">\(d_M\)</span>,
-we still have the hierarchical Genie <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span> algorithm under the hood here.
-This means we can ask for any number of clusters and get what we asked for.
+package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id44" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">26</a>]</span> and which also relies on a minimum spanning tree
+with respect to <span class="math notranslate nohighlight">\(d_M\)</span>, here,
+we still have the hierarchical Genie <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span> algorithm under the hood.
+It means that we can request a <em>specific</em> number of clusters.
 Moreover, we can easily switch between partitions
 of finer or coarser granularity.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ncs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
@@ -375,20 +374,18 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id9">
-<img alt="../_images/noise_noise-Genie3_1.png" src="../_images/noise_noise-Genie3_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id8">
+<span id="fig-noise-genie3"></span><img alt="../_images/noise-Genie3-7.png" src="../_images/noise-Genie3-7.png" />
 <figcaption>
-<p><span class="caption-number">Figure 17 </span><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset.</span><a class="headerlink" href="#id9" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 17 </span><span class="caption-text">Labels predicted by Genie when noise points were removed from the dataset – different number of clusters requested.</span><a class="headerlink" href="#id8" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
 <section id="a-comparision-with-hdbscan">
 <h2>A Comparision with HDBSCAN*<a class="headerlink" href="#a-comparision-with-hdbscan" title="Link to this heading">#</a></h2>
-<p>Here are the results returned by <cite>hdbscan</cite> with default parameters:</p>
+<p>Here are the results returned by <code class="docutils literal notranslate"><span class="pre">hdbscan</span></code> with default parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
-</pre></div>
-</div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
+<span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
 <span class="n">labels_hdbscan</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
@@ -397,14 +394,14 @@ of finer or coarser granularity.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id10">
-<img alt="../_images/noise_noise-HDBSCAN1_1.png" src="../_images/noise_noise-HDBSCAN1_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id9">
+<span id="fig-noise-hdbscan1"></span><img alt="../_images/noise-HDBSCAN1-9.png" src="../_images/noise-HDBSCAN1-9.png" />
 <figcaption>
-<p><span class="caption-number">Figure 18 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 18 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id9" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
-<p>By tuning <cite>min_cluster_size</cite> and/or <cite>min_samples</cite> (which corresponds to our <cite>M</cite> parameter;
-by the way, <cite>min_samples</cite> defaults to <cite>min_cluster_size</cite> if not provided explicitly),
+<p>By tuning up <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> and/or <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> (which corresponds to our <code class="docutils literal notranslate"><span class="pre">M</span></code> parameter;
+by the way, <code class="docutils literal notranslate"><span class="pre">min_samples</span></code> defaults to <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> if not provided explicitly),
 we can obtain a partition that is even closer to the reference one:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mcss</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">25</span><span class="p">]</span>
 <span class="n">mss</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
@@ -420,10 +417,10 @@ we can obtain a partition that is even closer to the reference one:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<figure class="align-default" id="id11">
-<img alt="../_images/noise_noise-HDBSCAN2_1.png" src="../_images/noise_noise-HDBSCAN2_1.png" style="width: 15cm;" />
+<figure class="align-default" id="id10">
+<span id="fig-noise-hdbscan2"></span><img alt="../_images/noise-HDBSCAN2-11.png" src="../_images/noise-HDBSCAN2-11.png" />
 <figcaption>
-<p><span class="caption-number">Figure 19 </span><span class="caption-text">Labels predicted by HDBSCAN*.</span><a class="headerlink" href="#id11" title="Link to this image">#</a></p>
+<p><span class="caption-number">Figure 19 </span><span class="caption-text">Labels predicted by HDBSCAN* – different settings.</span><a class="headerlink" href="#id10" title="Link to this image">#</a></p>
 </figcaption>
 </figure>
 <p>Neat.</p>
@@ -465,7 +462,7 @@ we can obtain a partition that is even closer to the reference one:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -500,7 +497,7 @@ we can obtain a partition that is even closer to the reference one:</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

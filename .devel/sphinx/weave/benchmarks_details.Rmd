@@ -1,0 +1,196 @@
+# Benchmarks — Detailed Results
+
+In one of the [above sections](benchmarks_ar),
+we have summarised the AR indices based on the datasets from
+the [Benchmark Suite for Clustering Algorithms (Version 1.0)](https://clustering-benchmarks.gagolewski.com)
+{cite}`clustering-benchmarks`.
+In this section, we present more detailed results for
+some other partition similarity measures implemented in the `genieclust`
+package: Fowlkes–Mallows {cite}`fm`, adjusted Rand {cite}`comparing_partitions`,
+adjusted and normalised mutual information {cite}`nmi`,
+normalised pivoted accuracy (which is based on set-matching classification rate),
+normalised clustering accuracy {cite}`nca`,
+and pair sets index {cite}`psi`;  for more details,
+see the API documentation of [genieclust.compare_partitions](genieclust.compare_partitions).
+In each case, a score of 1.0 denotes perfect agreement between the clustering
+results and the reference partitions.
+
+At the preprocessing stage, features with variance of 0 were removed.
+Every dataset has been centred at **0** and scaled so that is has total
+variance of 1. Then, a tiny bit of Gaussian noise has been added to each
+item. Clustering is performed with respect to the Euclidean distance
+(wherever applicable).
+
+All raw results can be found [here](https://github.com/gagolews/clustering_results_v1/).
+
+```{python imports,results="hide",echo=FALSE}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import os.path, glob, re
+import scipy.stats
+#from natsort import natsorted
+#import genieclust
+import sklearn.metrics
+import seaborn as sns
+import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("display.min_rows", 200)
+plt.style.use("bmh")
+plt.rcParams.update({
+    'font.size': 9,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
+
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+#``````````````````````````````````````````````````````````````````````````````
+
+
+# Load results file:
+res  = pd.read_csv("v1-scores.csv.gz")
+#dims = pd.read_csv("v1-dims.csv")
+
+# ari, afm can be negative --> replace negative indexes with 0.0
+res.iloc[:, 7:] = res.iloc[:, 7:].transform(lambda x: np.maximum(x, 0.0), axis=1)
+
+res = res.loc[res.method.isin([
+    "Genie_G0.1", "Genie_G0.3", "Genie_G0.5", "Genie_G1.0", "ITM",
+    "fastcluster_complete", "fastcluster_centroid", "fastcluster_average",
+    "fastcluster_ward", "sklearn_kmeans", "sklearn_gm", "sklearn_spectral_Arbf_G5",
+    "sklearn_birch_T0.01_BF100"]), :]
+
+res["method"] = res["method"].map({
+    "Genie_G0.1": "Genie_0.1",
+    "Genie_G0.3": "Genie_0.3",
+    "Genie_G1.0": "Single linkage",
+    "ITM": "ITM",
+    "Genie_G0.5": "Genie_0.5",
+    "fastcluster_complete": "Complete linkage",
+    "fastcluster_average": "Average linkage",
+    "fastcluster_centroid": "Centroid linkage",
+    "fastcluster_ward": "Ward linkage",
+    "sklearn_kmeans": "K-means",
+    "sklearn_gm": "Gaussian mixtures ",
+    "sklearn_spectral_Arbf_G5": "Spectral_RBF_5",
+    "sklearn_birch_T0.01_BF100": "Birch_0.01",
+    })
+
+
+
+def det(res_max):
+    for similarity_measure in ["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]:
+        print("### %s\n\n" % (similarity_measure,))
+
+        print("Summary statistics for ``%s`` (best=1.0):\n\n" % similarity_measure)
+        _dat = res_max.set_index(["dataset", "method"])[similarity_measure].unstack().\
+        describe().T.round(2)
+        print(tabulate(_dat, _dat.columns, tablefmt="github"), "\n\n")
+
+        print("Ranks for ``%s`` (best=1):\n\n" % similarity_measure)
+
+        r = lambda x: scipy.stats.rankdata(-x, method="min")
+        _dat = res_max.set_index(["dataset", "method"])[similarity_measure].unstack().\
+        round(2).T.apply(r).T.describe().T.round(1)
+        print(tabulate(_dat, _dat.columns, tablefmt="github"), "\n\n")
+
+        print("Raw results for ``%s`` (best=1.0):\n\n" % similarity_measure)
+
+        _dat = res_max.set_index(["dataset", "method"])[similarity_measure].unstack().round(2)
+        print(tabulate(_dat, _dat.columns, tablefmt="github"), "\n\n")
+```
+
+
+## Small Datasets
+
+```{python prepare_small,results="hide",echo=FALSE}
+# We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
+# Subset: not g2mg, not h2mg
+res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
+
+# Subset: [large datasets]
+res2 = res2.loc[res2.n<=10_000, :]
+
+res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
+
+
+
+# For each dataset, method, compute maximal scores across
+# all available true (reference) labels (if there alternative labellings
+# of a given dataset):
+res_max = res2.groupby(["dataset", "method"]).max().\
+    reset_index().drop(["labels"], axis=1)
+#res_max.head()
+```
+
+
+
+
+```{python det_small,echo=FALSE,results="asis",fig.cap=""}
+det(res_max)
+```
+
+
+### Summary
+
+Medians and means of the partition similarity scores
+(read row-wise, in groups of 2 columns):
+
+```{python indices_small,echo=FALSE,results="hide",fig.cap="Heat map of median and mean similarity scores"}
+sns.heatmap(res_max.groupby("method")[["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]].\
+aggregate([np.median, np.mean]), annot=True, vmin=0.5, vmax=1.0, fmt=".2f")
+plt.yticks(rotation=0)
+plt.xticks(rotation=45)
+plt.xlabel('')
+plt.ylabel('')
+plt.show()
+```
+
+
+
+
+## Large Datase
+
+### Results
+
+```{python prepare_large,results="hide",echo=FALSE}
+# We suggested that "parametric" datasets g2mg, h2mg should be studied separately.
+# Subset: not g2mg, not h2mg
+res2 = res.loc[~res.battery.isin(["g2mg", "h2mg"]), :]
+
+# Subset: [large datasets]
+res2 = res2.loc[res2.n>10_000, :]
+
+res2["dataset"] = res2["battery"] + "/" + res2["dataset"]
+
+
+
+# For each dataset, method, compute maximal scores across
+# all available true (reference) labels (if there alternative labellings
+# of a given dataset):
+res_max = res2.groupby(["dataset", "method"]).max().\
+    reset_index().drop(["labels"], axis=1)
+#res_max.head()
+```
+
+
+```{python det_large,echo=FALSE,results="asis",fig.cap=""}
+det(res_max)
+```
+
+
+
+### Summary
+
+Medians and means of the partition similarity scores:
+
+```{python indices_large,echo=FALSE,results="hide",fig.cap="Heat map of median and mean similarity scores"}
+sns.heatmap(res_max.groupby("method")[["nca", "ar", "fm", "ami", "nmi", "npa", "psi"]].\
+aggregate([np.median, np.mean]), annot=True, vmin=0.5, vmax=1.0, fmt=".2f")
+plt.yticks(rotation=0)
+plt.xticks(rotation=45)
+plt.xlabel('')
+plt.ylabel('')
+plt.show()
+```

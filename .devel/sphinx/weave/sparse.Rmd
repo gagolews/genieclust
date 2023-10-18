@@ -1,0 +1,140 @@
+# Example: Sparse Data and Movie Recommendation
+
+To illustrate how *genieclust* handles
+[sparse data](https://en.wikipedia.org/wiki/Sparse_matrix),
+let's perform a simple exercise in movie recommendation based on
+the [MovieLens](https://grouplens.org/datasets/movielens/latest/) data.
+
+::::{important}
+Make sure that the [*nmslib*](https://github.com/nmslib/nmslib)
+package (an optional dependency) is installed.
+
+```{python}
+import nmslib
+```
+::::
+
+```{python sparse-example-imports}
+import numpy as np
+import scipy.sparse
+import pandas as pd
+```
+
+```{python settings,results="hide",echo=FALSE}
+#import pweave
+from tabulate import tabulate
+np.set_printoptions(precision=3, threshold=50, edgeitems=50)
+pd.set_option("display.min_rows", 200)
+#pd.set_option("display.width", 80)
+#pd.set_option("display.max_colwidth", 30)
+#plt.style.use("bmh")
+#plt.rcParams.update({
+#    'font.size': 9,
+#    'font.family': 'sans-serif',
+#    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
+```
+
+
+First, we load the `ratings` data frame
+and map the movie IDs to consecutive integers.
+
+```{python sparse-example-ratings}
+ratings = pd.read_csv("ml-9-2018-small/ratings.csv")
+ratings["movieId"] -= 1
+ratings["userId"] -= 1
+old_movieId_map = np.unique(ratings["movieId"])
+ratings["movieId"] = np.searchsorted(old_movieId_map, ratings["movieId"])
+ratings.head()
+```
+
+Then, we read the movie metadata and transform the movie IDs
+in the same way:
+
+```{python sparse-example-movies}
+movies = pd.read_csv("ml-9-2018-small/movies.csv")
+movies["movieId"] -= 1
+movies = movies.loc[movies.movieId.isin(old_movieId_map), :]
+movies["movieId"] = np.searchsorted(old_movieId_map, movies["movieId"])
+movies.iloc[:, :2].head()
+```
+
+
+Conversion of ratings to a CSR-format sparse matrix:
+
+```{python sparse-example-create}
+n = ratings.movieId.max()+1
+d = ratings.userId.max()+1
+X = scipy.sparse.dok_matrix((n,d), dtype=np.float32)
+X[ratings.movieId, ratings.userId] = ratings.rating
+X = X.tocsr()
+print(repr(X))
+```
+
+
+First few observations:
+
+```{python sparse-example-show}
+X[:5, :10].todense()
+```
+
+Let's extract 200 clusters with Genie using the cosine similarity between films' ratings
+as given by users (two movies considered similar if they get similar reviews).
+Sparse inputs are supported by the approximate version of the algorithm
+which relies on the near-neighbour search routines implemented in the *nmslib* package.
+
+
+```{python sparse-example-cluster}
+import genieclust
+g = genieclust.Genie(n_clusters=200, exact=False, affinity="cosinesimil_sparse")
+movies["cluster"] = g.fit_predict(X)
+```
+
+Here are the members of an example cluster:
+
+```{python sparse-example-report}
+movies["cluster"] = g.fit_predict(X)
+which_cluster = movies.cluster[movies.title=="Monty Python's The Meaning of Life (1983)"]
+movies.loc[movies.cluster == int(which_cluster)].title.sort_values()
+```
+
+
+
+
+The above was performed on an abridged version of the MovieLens dataset.
+The project's [website](https://grouplens.org/datasets/movielens/latest/)
+also features a full database that yields a 53,889x283,228 ratings table
+(with 27,753,444 non-zero elements). Such a matrix would definitely
+not fit into our RAM if it was given in the dense form.
+Determining the whole cluster hierarchy takes only 144 seconds.
+Here is one of the 500 clusters extracted:
+
+```
+## 13327                       Blackadder Back & Forth (1999)
+## 13328                  Blackadder's Christmas Carol (1988)
+## 3341                              Creature Comforts (1989)
+## 1197       Grand Day Out with Wallace and Gromit, A (1989)
+## 2778                            Hard Day's Night, A (1964)
+## 2861                                          Help! (1965)
+## 2963                              How I Won the War (1967)
+## 6006        Monty Python Live at the Hollywood Bowl (1982)
+## 1113                Monty Python and the Holy Grail (1975)
+## 2703     Monty Python's And Now for Something Completel...
+## 1058                   Monty Python's Life of Brian (1979)
+## 6698             Monty Python's The Meaning of Life (1983)
+## 27284                                  Oliver Twist (1997)
+## 2216                                 Producers, The (1968)
+## 4716                                   Quadrophenia (1979)
+## 6027             Secret Policeman's Other Ball, The (1982)
+## 27448                                    The Basket (2000)
+## 2792                                          Tommy (1975)
+## 10475    Wallace & Gromit in The Curse of the Were-Rabb...
+## 732                 Wallace & Gromit: A Close Shave (1995)
+## 708      Wallace & Gromit: The Best of Aardman Animatio...
+## 1125           Wallace & Gromit: The Wrong Trousers (1993)
+## 13239    Wallace and Gromit in 'A Matter of Loaf and De...
+## 2772                               Yellow Submarine (1968)
+## 1250                             Young Frankenstein (1974)
+## Name: title, dtype: object
+```
+
+

@@ -1,7 +1,6 @@
 # Changelog
 
-
-## 1.1.4.9xxx
+## 1.1.5 (2023-10-18)
 
 * [BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures
     are no longer referred to as inequity measures.
@@ -66,9 +65,6 @@
 
 ## 1.1.0 (2022-09-05)
 
-*  [GENERAL] The below-mentioned cluster validity measures are discussed
-   in more detail at <https://clustering-benchmarks.gagolewski.com>.
-
 *  [Python and R] New function: `adjusted_asymmetric_accuracy`.
 
 *  [Python and R] Implementations of the so-called internal cluster
@@ -88,6 +84,9 @@
    `silhouette_index`,
    `silhouette_w_index`,
    `wcnn_index`.
+
+   These cluster validity measures are discussed
+   in more detail at <https://clustering-benchmarks.gagolewski.com>.
 
 *  [BACKWARD INCOMPATIBILITY] `normalized_confusion_matrix`
    now solves the maximal assignment problem instead of applying

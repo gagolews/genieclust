@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -270,7 +270,7 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="basics">
 <h1>Basics<a class="headerlink" href="#basics" title="Link to this heading">#</a></h1>
-<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id12" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span> is an agglomerative hierarchical clustering
+<p><em>Genie</em> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span> is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a measure of inequality used in, amongst others,
 economics) of the cluster sizes should not go too far above a given threshold.
@@ -279,7 +279,7 @@ is joined with its nearest neighbour.</p>
 <p>In the following sections, we will show that Genie might outperform other popular methods
 in terms of clustering <a class="reference internal" href="benchmarks_ar.html"><span class="doc std std-doc">quality</span></a> and <a class="reference internal" href="timings.html"><span class="doc std std-doc">speed</span></a>.</p>
 <p>Here are a few examples of basic interactions with the Python version
-of the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M. (2021).  genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722. DOI: 10.1016/j.softx.2021.100722.">11</a>]</span> package,
+of the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id10" title="Gagolewski, M. (2021).  genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722. DOI: 10.1016/j.softx.2021.100722.">11</a>]</span> package,
 which can be installed from
 <a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a>, e.g.,
 via a call to <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">genieclust</span></code> from the command line.</p>
@@ -291,7 +291,7 @@ via a call to <code class="docutils literal notranslate"><span class="pre">pip3<
 </div>
 <section id="breaking-the-ice">
 <h2>Breaking the Ice<a class="headerlink" href="#breaking-the-ice" title="Link to this heading">#</a></h2>
-<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id32" title="Jain, A.K. and Law, M.H.C. (2005).  Data clustering: A user's dilemma. Lecture Notes in Computer Science, 3776:1–10.">22</a>]</span>, which  comes
+<p>Let’s load an example benchmark set, <code class="docutils literal notranslate"><span class="pre">jain</span></code> <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id31" title="Jain, A.K. and Law, M.H.C. (2005).  Data clustering: A user's dilemma. Lecture Notes in Computer Science, 3776:1–10.">21</a>]</span>, which  comes
 with the true corresponding partition (as assigned by experts).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave</span>
 <span class="n">dataset</span> <span class="o">=</span> <span class="s2">&quot;jain&quot;</span>
@@ -322,9 +322,9 @@ with the true corresponding partition (as assigned by experts).</p>
 <p>Let us apply the Genie algorithm (with the default/recommended
 <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> parameter value). The <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package’s interface
 is compatible with the one from the popular
-<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id36" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">32</a>]</span>.
+<a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> library <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">31</a>]</span>.
 In particular, an object of class <code class="docutils literal notranslate"><span class="pre">Genie</span></code> is equipped with the
-<code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">fit_predict</span></code> methods <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id35" title="Buitinck, L. and others. (2013).  API design for machine learning software: Experiences from the scikit-learn project. In: ECML PKDD Workshop: Languages for Data Mining and Machine Learning, pp. 108–122.">1</a>]</span>.</p>
+<code class="docutils literal notranslate"><span class="pre">fit</span></code> and <code class="docutils literal notranslate"><span class="pre">fit_predict</span></code> methods <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id34" title="Buitinck, L. and others. (2013).  API design for machine learning software: Experiences from the scikit-learn project. In: ECML PKDD Workshop: Languages for Data Mining and Machine Learning, pp. 108–122.">1</a>]</span>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
 <span class="n">labels_genie</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 </pre></div>
@@ -399,11 +399,11 @@ so we should not be very surprised with this result.</p>
 <section id="a-comparison-with-hdbscan">
 <h2>A Comparison with HDBSCAN*<a class="headerlink" href="#a-comparison-with-hdbscan" title="Link to this heading">#</a></h2>
 <p>Let’s also make a comparison against a version of the DBSCAN
-<span id="id6">[<a class="reference internal" href="../z_bibliography.html#id34" title="Ester, M., Kriegel, H.P., Sander, J., and Xu, X. (1996).  A density-based algorithm for discovering clusters in large spatial databases with noise. In: Proc. KDD'96, pp. 226–231.">7</a>, <a class="reference internal" href="../z_bibliography.html#id33" title="Ling, R.F. (1973).  A probability theory of cluster analysis. Journal of the American Statistical Association, 68(341):159–164.">25</a>]</span> algorithm. The original DBSCAN relies on a somewhat
+<span id="id6">[<a class="reference internal" href="../z_bibliography.html#id33" title="Ester, M., Kriegel, H.P., Sander, J., and Xu, X. (1996).  A density-based algorithm for discovering clusters in large spatial databases with noise. In: Proc. KDD'96, pp. 226–231.">7</a>, <a class="reference internal" href="../z_bibliography.html#id32" title="Ling, R.F. (1973).  A probability theory of cluster analysis. Journal of the American Statistical Association, 68(341):159–164.">24</a>]</span> algorithm. The original DBSCAN relies on a somewhat
 magical <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter, which might be hard to tune in practice. However,
 the <a class="reference external" href="https://github.com/scikit-learn-contrib/hdbscan">hdbscan</a> package
-<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id45" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">27</a>]</span> implements its robustified variant
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id16" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>, which makes the algorithm much more user-friendly.</p>
+<span id="id7">[<a class="reference internal" href="../z_bibliography.html#id44" title="McInnes, L., Healy, J., and Astels, S. (2017).  hdbscan: Hierarchical density based clustering. The Journal of Open Source Software, 2(11):205. DOI: 10.21105/joss.00205.">26</a>]</span> implements its robustified variant
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id15" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>, which makes the algorithm much more user-friendly.</p>
 <p>Here are the clustering results with the <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameter
 of 3, 5, 10, and 15:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
@@ -520,7 +520,7 @@ into two subgroups. This makes the resulting partitions more stable.</p>
 manual: <a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><span class="xref myst py py-class">genieclust.Genie</span></a>.
 To learn more about Python, check out Marek’s open-access (free!) textbook
 <a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a>
-<span id="id9">[<a class="reference internal" href="../z_bibliography.html#id9" title="Gagolewski, M. (2022).  Minimalist Data Wrangling with Python. Zenodo, Melbourne. ISBN 978-0-6455719-1-2. URL: https://datawranglingpy.gagolewski.com/, DOI: 10.5281/zenodo.6451068.">13</a>]</span>.</p>
+<span id="id9">[<a class="reference internal" href="../z_bibliography.html#id8" title="Gagolewski, M. (2022).  Minimalist Data Wrangling with Python. Zenodo, Melbourne. ISBN 978-0-6455719-1-2. URL: https://datawranglingpy.gagolewski.com/, DOI: 10.5281/zenodo.6451068.">13</a>]</span>.</p>
 </section>
 </section>
 
@@ -559,7 +559,7 @@ To learn more about Python, check out Marek’s open-access (free!) textbook
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -597,7 +597,7 @@ To learn more about Python, check out Marek’s open-access (free!) textbook
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

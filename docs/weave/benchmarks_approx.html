@@ -165,7 +165,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.4.9004
+1.1.5
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -268,19 +268,18 @@
           </label>
         </div>
         <article role="main">
-          <section id="benchmarks-approximate-method">
+          <section class="tex2jax_ignore mathjax_ignore" id="benchmarks-approximate-method">
 <h1>Benchmarks — Approximate Method<a class="headerlink" href="#benchmarks-approximate-method" title="Link to this heading">#</a></h1>
-<p>In one of the <a class="reference internal" href="timings.html"><span class="doc">previous sections</span></a> we have demonstrated that the approximate version
-of the Genie algorithm (<a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><code class="xref py py-class docutils literal notranslate"><span class="pre">genieclust.Genie(exact=False,</span> <span class="pre">...)</span></code></a>), i.e.,
-one which relies on <a class="reference external" href="https://github.com/nmslib/nmslib/tree/master/python_bindings">nmslib</a>‘s
-approximate nearest neighbour search, is much faster than the exact one
-on large, high-dimensional datasets. In particular, we have noted that
-clustering of 1 million points in a 100d Euclidean space
-takes less than 5 minutes on a laptop.</p>
+<p>In one of the <a class="reference internal" href="timings.html"><span class="doc std std-doc">previous sections</span></a>, we have demonstrated that the approximate version
+of the Genie algorithm (<a class="reference internal" href="../genieclust_genie.html#genieclust.Genie" title="genieclust.Genie"><span class="xref myst py py-class"><code class="docutils literal notranslate"><span class="pre">genieclust.Genie(exact=False,</span> <span class="pre">...)</span></code></span></a>), i.e.,
+one which relies on <code class="docutils literal notranslate"><span class="pre">nmslib</span></code>’s <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id26" title="Naidan, B., Boytsov, L., Malkov, Y., and Novak, D. (2019).  Non-metric space library (NMSLIB) manual, version 2.0. URL: https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.">29</a>]</span> approximate nearest neighbour search,
+is much faster than the exact one on large, high-dimensional datasets.
+In particular, we have noted that clustering of 1 million points
+in a 100d Euclidean space takes less than 5 minutes on a laptop.</p>
 <p>As <em>fast</em> does not necessarily mean <em>meaningful</em> (tl;dr spoiler alert: in our case, it does),
 let’s again consider  all the datasets
-from the <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">Benchmark Suite for Clustering Algorithms — Version 1</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id6" title="Gagolewski, M. and others. (2020).  Benchmark Suite for Clustering Algorithms – Version 1. URL: https://github.com/gagolews/clustering-benchmarks, DOI: 10.5281/zenodo.3815066.">19</a>]</span>
+from the <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Benchmark Suite for Clustering Algorithms (Version 1.0)</a>
+<span id="id2">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span>
 (except the <code class="docutils literal notranslate"><span class="pre">h2mg</span></code> and <code class="docutils literal notranslate"><span class="pre">g2mg</span></code> batteries). Features with variance of 0 were
 removed, datasets were centred at <strong>0</strong> and scaled so that they have total
 variance of 1. Tiny bit of Gaussian noise was added to each observation.
@@ -291,8 +290,8 @@ and computed the adjusted Rand (AR) indices to quantify the similarity between t
 outputs and the reference ones.</p>
 <p>We’ve computed the differences between each of the 10 AR indices
 and the AR index for the exact method. Here is the complete list of datasets
-and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digits of precision:</p>
-<div class="table-wrapper docutils container">
+and <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s where this discrepancy is seen at least 2 digits of precision:</p>
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>dataset</p></th>
@@ -319,7 +318,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>-0.01</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>1</p></td>
 <td><p>10</p></td>
 <td><p>-0.35</p></td>
@@ -341,7 +340,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>-0.02</p></td>
 <td><p>-0.02</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>0.3</p></td>
 <td><p>10</p></td>
 <td><p>0.02</p></td>
@@ -352,7 +351,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>0.03</p></td>
 <td><p>0.03</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>0.5</p></td>
 <td><p>10</p></td>
 <td><p>0.23</p></td>
@@ -374,7 +373,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>0</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>0.3</p></td>
 <td><p>10</p></td>
 <td><p>-0</p></td>
@@ -385,7 +384,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>0</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>0.5</p></td>
 <td><p>10</p></td>
 <td><p>-0</p></td>
@@ -396,7 +395,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>0</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-even"><td></td>
+<tr class="row-even"><td><p></p></td>
 <td><p>0.7</p></td>
 <td><p>10</p></td>
 <td><p>-0</p></td>
@@ -407,7 +406,7 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 <td><p>0</p></td>
 <td><p>0</p></td>
 </tr>
-<tr class="row-odd"><td></td>
+<tr class="row-odd"><td><p></p></td>
 <td><p>1</p></td>
 <td><p>10</p></td>
 <td><p>-0.1</p></td>
@@ -423,12 +422,12 @@ and <cite>gini_threshold</cite>s where this discrepancy is seen at least 2 digit
 </div>
 <p>The only noteworthy  difference is for the <code class="docutils literal notranslate"><span class="pre">sipu/birch2</span></code> dataset
 where we observe that the approximate method generates worse results
-(although recall that <cite>gini_threshold</cite> of 1 corresponds to the single linkage method).
-Interestingly, for <code class="docutils literal notranslate"><span class="pre">sipu/worms_64</span></code>, the in-exact algorithm with <cite>gini_threshold</cite>
+(although recall that <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 1 corresponds to the single linkage method).
+Interestingly, for <code class="docutils literal notranslate"><span class="pre">sipu/worms_64</span></code>, the in-exact algorithm with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>
 of 0.5 yields a much better outcome than the original one.</p>
 <p>Here are the descriptive statistics for the AR indices across all the datasets
 (for the approximate method we chose the median AR in each of the 10 runs):</p>
-<div class="table-wrapper docutils container">
+<div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
 <tr class="row-odd"><th class="head"><p>method</p></th>
@@ -546,9 +545,9 @@ of 0.5 yields a much better outcome than the original one.</p>
 </tbody>
 </table>
 </div>
-<p>For the recommended ranges of the <cite>gini_threshold</cite> parameter,
+<p>For the recommended ranges of the <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> parameter,
 i.e., between 0.1 and 0.5, we see that the approximate version of Genie
-behaves as good as the original one.</p>
+behaves similarly to the original one.</p>
 </section>
 
         </article>
@@ -586,7 +585,7 @@ behaves as good as the original one.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-17T15:11:17+1000.
+              Last updated on 2023-10-18T17:51:22+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -601,7 +600,7 @@ behaves as good as the original one.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=78ba0e71"></script>
+</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>
