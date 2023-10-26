@@ -170,7 +170,7 @@
 #' pair_sets_index(y_test, y_pred)
 #'
 #' # Fast for low-dimensional Euclidean spaces:
-#' h <- gclust(emst_mlpack(X))
+#' # h <- gclust(emst_mlpack(X))
 #'
 #' @rdname gclust
 #' @export

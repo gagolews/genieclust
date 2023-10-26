@@ -274,8 +274,8 @@
 <div><p><strong>Genie finds meaningful clusters quickly – even on large data sets.</strong></p>
 </div></blockquote>
 <img alt="Genie" class="img-right-align-always" src="_images/genie_toy_example.png" style="width: 128px;" />
-<p>The <em>genieclust</em> package <span id="id1">[<a class="reference internal" href="z_bibliography.html#id10" title="Gagolewski, M. (2021).  genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722. DOI: 10.1016/j.softx.2021.100722.">11</a>]</span> for Python and R implements
-a robust and outlier resistant clustering algorithm called <em>Genie</em> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
+<p>The <em>genieclust</em> package <span id="id1">[<a class="reference internal" href="z_bibliography.html#id10" title="Gagolewski, M. (2021).  genieclust: Fast and robust hierarchical clustering. SoftwareX, 15:100722. URL: https://genieclust.gagolewski.com/, DOI: 10.1016/j.softx.2021.100722.">11</a>]</span> for Python and R implements
+a robust and outlier resistant clustering algorithm called <em>Genie</em> <span id="id2">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
 <p>The idea behind <em>Genie</em> is beautifully simple. First, make each individual
 point the sole member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to <strong>prevent
@@ -354,7 +354,7 @@ by calling:</p>
 <ul class="simple">
 <li><p><em>Genie++</em> – a reimplementation of the original Genie algorithm
 from the R package <a class="reference external" href="https://cran.r-project.org/web/packages/genie"><em>genie</em></a>
-<span id="id9">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>: much faster than the original one;
+<span id="id9">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>: much faster than the original one;
 supports approximate disconnected MSTs;</p></li>
 <li><p><em>Genie+HDBSCAN*</em> – a robustified (Geniefied) retake on the <em>HDBSCAN*</em>
 <span id="id10">[<a class="reference internal" href="z_bibliography.html#id15" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span> method that detects noise points in data and
@@ -368,13 +368,13 @@ theoretic criterion <span id="id12">[<a class="reference internal" href="z_bibli
 <ul class="simple">
 <li><p>inequality measures: the normalised Gini, Bonferroni,
 and De Vergottini indices;</p></li>
-<li><p>external cluster validity measures (see <span id="id14">[<a class="reference internal" href="z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>, <a class="reference internal" href="z_bibliography.html#id5" title="Gagolewski, M. (2023).  Normalised clustering accuracy: An asymmetric external cluster validity measure. under review (preprint). URL: https://arxiv.org/pdf/2209.02935.pdf, DOI: 10.48550/arXiv.2209.02935.">15</a>]</span>
+<li><p>external cluster validity measures (see <span id="id14">[<a class="reference internal" href="z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com/, DOI: 10.1016/j.softx.2022.101270.">12</a>, <a class="reference internal" href="z_bibliography.html#id5" title="Gagolewski, M. (2023).  Normalised clustering accuracy: An asymmetric external cluster validity measure. under review (preprint). URL: https://arxiv.org/pdf/2209.02935.pdf, DOI: 10.48550/arXiv.2209.02935.">15</a>]</span>
 for discussion):
 normalised clustering accuracy (NCA) and partition similarity scores such as
 normalised pivoted accuracy (NPA), pair sets index (PSI) <span id="id15">[<a class="reference internal" href="z_bibliography.html#id27" title="Rezaei, M. and Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">32</a>]</span>,
 adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
 adjusted/normalised/unadjusted mutual information (MI) indices;</p></li>
-<li><p>internal cluster validity measures (see <span id="id16">[<a class="reference internal" href="z_bibliography.html#id13" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2021).  Are cluster validity measures (in)valid? Information Sciences, 581:620–636. DOI: 10.1016/j.ins.2021.10.004.">17</a>]</span> for discussion):
+<li><p>internal cluster validity measures (see <span id="id16">[<a class="reference internal" href="z_bibliography.html#id13" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2021).  Are cluster validity measures (in)valid? Information Sciences, 581:620–636. URL: https://arxiv.org/pdf/2208.01261.">17</a>]</span> for discussion):
 the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
 generalised Dunn indices, etc.;</p></li>
 <li><p><em>(Python only)</em> union-find (disjoint sets) data structures (with
@@ -394,12 +394,12 @@ any valuable contributions are welcome (Julia, Matlab, etc.).</p>
 <p>Contributors:
 <a class="reference external" href="http://bartoszuk.rexamine.com">Maciej Bartoszuk</a> and
 <a class="reference external" href="https://cena.rexamine.com">Anna Cena</a>
-(<em>genieclust</em>’s predecessor <a class="reference external" href="https://cran.r-project.org/web/packages/genie"><em>genie</em></a>  <span id="id17">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>
-and some internal cluster validity measures <a class="reference external" href="https://github.com/gagolews/optim_cvi"><em>CVI</em></a>  <span id="id18">[<a class="reference internal" href="z_bibliography.html#id13" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2021).  Are cluster validity measures (in)valid? Information Sciences, 581:620–636. DOI: 10.1016/j.ins.2021.10.004.">17</a>]</span>);
+(<em>genieclust</em>’s predecessor <a class="reference external" href="https://cran.r-project.org/web/packages/genie"><em>genie</em></a>  <span id="id17">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>
+and some internal cluster validity measures <a class="reference external" href="https://github.com/gagolews/optim_cvi"><em>CVI</em></a>  <span id="id18">[<a class="reference internal" href="z_bibliography.html#id13" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2021).  Are cluster validity measures (in)valid? Information Sciences, 581:620–636. URL: https://arxiv.org/pdf/2208.01261.">17</a>]</span>);
 <a class="reference external" href="https://github.com/pmla/">Peter M. Larsen</a>
 (an <a class="reference external" href="https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp">implementation</a>
 of the shortest augmenting path algorithm for the rectangular assignment problem
-which we use for computing some external cluster validity measures <span id="id19">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>, <a class="reference internal" href="z_bibliography.html#id27" title="Rezaei, M. and Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">32</a>]</span>).</p>
+which we use for computing some external cluster validity measures <span id="id19">[<a class="reference internal" href="z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>, <a class="reference internal" href="z_bibliography.html#id27" title="Rezaei, M. and Fränti, P. (2016).  Set matching measures for external cluster validity. IEEE Transactions on Knowledge and Data Engineering, 28(8):2173–2186. DOI: 10.1109/TKDE.2016.2551240.">32</a>]</span>).</p>
 <div class="toctree-wrapper compound">
 </div>
 <div class="toctree-wrapper compound">
@@ -501,7 +501,7 @@ Indices and Tables
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-18T18:07:50+1100.
+              Last updated on 2023-10-26T14:00:36+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

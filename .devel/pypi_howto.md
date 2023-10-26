@@ -30,4 +30,6 @@ https://pypi.org/help/#apitoken
 
 ```
 twine upload dist/*
+username: __token__
+password: pypi-----generate-new-token-via-pypi
 ```

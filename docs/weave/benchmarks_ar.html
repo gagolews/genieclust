@@ -272,7 +272,7 @@
 <h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Link to this heading">#</a></h1>
 <p>In this section we evaluate the usefulness of different clustering algorithms.
 We use our <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">framework for benchmarking clustering algorithms (benchmark suite version 1.0.1)</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com/, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
 including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id37" title="Dua, D. and Graff, C. (2019).  UCI Machine Learning Repository. URL: http://archive.ics.uci.edu/ml.">6</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="Fränti, P., Mariescu-Istodor, R., and Zhong, C. (2016).  XNN graph. Lecture Notes in Computer Science, 10029:207–217. DOI: 10.1007/978-3-319-49055-7_19.">9</a>, <a class="reference internal" href="../z_bibliography.html#id38" title="Fränti, P. and Sieranoja, S. (2018).  K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759. DOI: 10.1007/s10489-018-1238-7.">10</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="Graves, D. and Pedrycz, W. (2010).  Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543. DOI: 10.1016/j.fss.2009.10.021.">19</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="Karypis, G., Han, E.H., and Kumar, V. (1999).  CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75. DOI: 10.1109/2.781637.">22</a>, <a class="reference internal" href="../z_bibliography.html#id40" title="Ultsch, A. (2005).  Clustering with SOM: U*C. In: Workshop on Self-Organizing Maps, pp. 75–82.">33</a>]</span>.
 Ground-truth/reference label vectors are provided alongside each dataset.
 They define the desired number of clusters. Hence, we only study
@@ -283,13 +283,13 @@ methods (average, centroid, complete, single, and Ward linkage; implemented in t
 k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
 (implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">31</a>]</span>),
 <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id17" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">27</a>]</span>,
-and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
+and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
 <p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id20" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">20</a>]</span>) will be used
 to quantify the agreement between
 a reference and a predicted clustering on the scale <span class="math notranslate nohighlight">\([0,1]\)</span>,
 with score of 1.0 denoting perfect agreement. However, as there might be
 multiple equally valid/plausible/useful partitions (see also
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id36" title="Dasgupta, S. and Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> for discussion),
+<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id36" title="Dasgupta, S. and Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com/, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> for discussion),
 the outputs generated by a single algorithm is evaluated
 against all the available reference labellings and the maximal similarity score
 is reported.</p>
@@ -571,7 +571,7 @@ the highest typical scores.</p>
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
 <p>Overall, the Genie algorithm often outperforms other algorithms considered
 in this study, at least on this rich benchmark battery.
-In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
+In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
 we have recommended using <code class="docutils literal notranslate"><span class="pre">gini_threshold=0.3</span></code>,
 which is set as the default also in the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package.
 However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
@@ -616,7 +616,7 @@ in a significant way.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-18T18:07:50+1100.
+              Last updated on 2023-10-26T14:00:36+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

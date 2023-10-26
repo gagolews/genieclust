@@ -146,5 +146,5 @@ adjusted_rand_score(y_test, y_pred)
 pair_sets_index(y_test, y_pred)
 ## [1] 0.9049708
 # Fast for low-dimensional Euclidean spaces:
-h <- gclust(emst_mlpack(X))
+# h <- gclust(emst_mlpack(X))
 ```
