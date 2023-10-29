@@ -86,7 +86,7 @@
    `wcnn_index`.
 
    These cluster validity measures are discussed
-   in more detail at <https://clustering-benchmarks.gagolewski.com>.
+   in more detail at <https://clustering-benchmarks.gagolewski.com/>.
 
 *  [BACKWARD INCOMPATIBILITY] `normalized_confusion_matrix`
    now solves the maximal assignment problem instead of applying

@@ -87,27 +87,96 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ```r
 gini_index(c(2, 2, 2, 2, 2))   # no inequality
+```
+
+```
 ## [1] 0
+```
+
+```r
 gini_index(c(0, 0, 10, 0, 0))  # one has it all
+```
+
+```
 ## [1] 1
+```
+
+```r
 gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
+```
+
+```
 ## [1] 0.85
+```
+
+```r
 gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
+```
+
+```
 ## [1] 0.75
+```
+
+```r
 bonferroni_index(c(2, 2, 2, 2, 2))
+```
+
+```
 ## [1] 0
+```
+
+```r
 bonferroni_index(c(0, 0, 10, 0, 0))
+```
+
+```
 ## [1] 1
+```
+
+```r
 bonferroni_index(c(7, 0, 3, 0, 0))
+```
+
+```
 ## [1] 0.90625
+```
+
+```r
 bonferroni_index(c(6, 0, 3, 1, 0))
+```
+
+```
 ## [1] 0.8333333
+```
+
+```r
 devergottini_index(c(2, 2, 2, 2, 2))
+```
+
+```
 ## [1] 0
+```
+
+```r
 devergottini_index(c(0, 0, 10, 0, 0))
+```
+
+```
 ## [1] 1
+```
+
+```r
 devergottini_index(c(7, 0, 3, 0, 0))
+```
+
+```
 ## [1] 0.7662338
+```
+
+```r
 devergottini_index(c(6, 0, 3, 1, 0))
+```
+
+```
 ## [1] 0.6493506
 ```

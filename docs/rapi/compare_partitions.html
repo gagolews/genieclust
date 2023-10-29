@@ -372,34 +372,34 @@
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_true</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">iris</span><span class="p">[[</span><span class="m">5</span><span class="p">]]</span>
 <span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">kmeans</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">4</span><span class="p">]),</span><span class="w"> </span><span class="m">3</span><span class="p">)</span><span class="o">$</span><span class="n">cluster</span>
 <span class="nf">normalized_clustering_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.84</span>
-<span class="nf">normalized_pivoted_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.84</span>
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.7568238</span>
-<span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="n">simplified</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
-<span class="c1">## [1] 0.7470968</span>
-<span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.7302383</span>
-<span class="nf">rand_score</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">))</span><span class="w"> </span><span class="c1"># the same</span>
-<span class="c1">## [1] 0.8797315</span>
-<span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.7304411</span>
-<span class="nf">fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.8208081</span>
-<span class="nf">mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.8255911</span>
-<span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.7581757</span>
-<span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 0.7551192</span>
-<span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">##      [,1] [,2] [,3]</span>
+<span></span><span class="c1">## [1] 0.84</span>
+<span></span><span class="nf">normalized_pivoted_accuracy</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.84</span>
+<span></span><span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7568238</span>
+<span></span><span class="nf">pair_sets_index</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="n">simplified</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7470968</span>
+<span></span><span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7302383</span>
+<span></span><span class="nf">rand_score</span><span class="p">(</span><span class="nf">table</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">))</span><span class="w"> </span><span class="c1"># the same</span>
+<span></span><span class="c1">## [1] 0.8797315</span>
+<span></span><span class="nf">adjusted_fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7304411</span>
+<span></span><span class="nf">fm_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.8208081</span>
+<span></span><span class="nf">mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.8255911</span>
+<span></span><span class="nf">normalized_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7581757</span>
+<span></span><span class="nf">adjusted_mi_score</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7551192</span>
+<span></span><span class="nf">normalized_confusion_matrix</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">##      [,1] [,2] [,3]</span>
 <span class="c1">## [1,]   50    0    0</span>
 <span class="c1">## [2,]    0   48    2</span>
 <span class="c1">## [3,]    0   14   36</span>
-<span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span class="c1">## [1] 1 2 3</span>
+<span></span><span class="nf">normalizing_permutation</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 1 2 3</span>
 </pre></div>
 </div>
 </section>
@@ -440,7 +440,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-10-26T14:00:36+1100.
+              Last updated on 2023-10-29T14:39:18+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

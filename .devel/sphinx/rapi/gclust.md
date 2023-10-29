@@ -142,9 +142,21 @@ plot(iris[,2], iris[,3], col=y_pred,
 
 ```r
 adjusted_rand_score(y_test, y_pred)
+```
+
+```
 ## [1] 0.8857921
+```
+
+```r
 pair_sets_index(y_test, y_pred)
+```
+
+```
 ## [1] 0.9049708
+```
+
+```r
 # Fast for low-dimensional Euclidean spaces:
 # h <- gclust(emst_mlpack(X))
 ```

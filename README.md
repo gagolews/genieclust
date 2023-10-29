@@ -33,7 +33,7 @@ the *smallest* size will sometimes be matched with its nearest neighbour.
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, Ward, and complete linkage
-on [benchmark data](https://github.com/gagolews/clustering-benchmarks/).
+on [benchmark data](https://github.com/gagolews/clustering-benchmarks).
 Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
@@ -65,14 +65,14 @@ and generalised Dunn indices).
 
 ## Author and Contributors
 
-**Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)
+**Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
 
 Contributors:
-[Maciej Bartoszuk](http://bartoszuk.rexamine.com),
-[Anna Cena](https://cena.rexamine.com) (R packages
+Maciej Bartoszuk,
+[Anna Cena](https://cena.rexamine.com/) (R packages
 [**genie**](https://CRAN.R-project.org/package=genie)
 and [**CVI**](https://github.com/gagolews/optim_cvi)),
-[Peter M. Larsen](https://github.com/pmla/)
+[Peter M. Larsen](https://github.com/pmla)
 ([rectangular_lsap](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
 
 
@@ -120,7 +120,7 @@ Tutorials and the package documentation are available
 
 
 
-To install via `pip` (see [PyPI](https://pypi.org/project/genieclust/)):
+To install via `pip` (see [PyPI](https://pypi.org/project/genieclust)):
 
 ```bash
 pip3 install genieclust
@@ -164,7 +164,7 @@ Any contributions are welcome (e.g., Julia, Matlab, ...).
 
 ## License
 
-Copyright (C) 2018–2023 Marek Gagolewski <https://www.gagolewski.com>
+Copyright (C) 2018–2023 Marek Gagolewski <https://www.gagolewski.com/>
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
@@ -180,7 +180,7 @@ received a copy of the License along with this program. If not, see
 --------------
 
 The file `src/c_scipy_rectangular_lsap.h` is adapted from the
-**scipy** project (https://scipy.org/scipylib/), source:
+**scipy** project (https://scipy.org/scipylib), source:
 `/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp`.
 Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 
@@ -195,7 +195,7 @@ Originally distributed under the GNU Affero General Public License Version 3.
 Gagolewski M., genieclust: Fast and robust hierarchical clustering,
 *SoftwareX* **15**, 2021, 100722.
 [DOI: 10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
-<https://genieclust.gagolewski.com>.
+<https://genieclust.gagolewski.com/>.
 
 Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, *Information
@@ -218,7 +218,7 @@ cluster validity measure, 2023, under review (preprint),
 Gagolewski M., A framework for benchmarking clustering algorithms,
 *SoftwareX* **20**, 2022, 101270.
 [DOI: 10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270).
-<https://clustering-benchmarks.gagolewski.com>.
+<https://clustering-benchmarks.gagolewski.com/>.
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,
@@ -232,5 +232,5 @@ Rezaei M., Fränti P., Set matching measures for external cluster validity,
 *IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,
 2173–2186 [DOI: 10.1109/TKDE.2016.2551240](https://doi.org/10.1109/TKDE.2016.2551240).
 
-See the package's [homepage](https://genieclust.gagolewski.com) for more
+See the package's [homepage](https://genieclust.gagolewski.com/) for more
 references.

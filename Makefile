@@ -1,4 +1,4 @@
-# Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
+# Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com/>
 
 .PHONY: python py-test py-check r r-check r r-build sphinx docs clean
 
@@ -56,16 +56,17 @@ r-build: r-autoconf
 r-check: stop-on-utf8 r-build
 	cd .. && R_DEFAULT_INTERNET_TIMEOUT=240 \
 	    _R_CHECK_CRAN_INCOMING_REMOTE_=FALSE \
-	    _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t ${PKGNAME}*.tar.gz | head -1` --no-manual --as-cran
+	    _R_CHECK_FORCE_SUGGESTS_=0 \
+	    R CMD check `ls -t ${PKGNAME}*.tar.gz | head -1` --no-manual --as-cran
 
 ################################################################################
 
 rd2myst:
+	# https://github.com/gagolews/Rd2rst
 	cd .devel/sphinx && Rscript -e "Rd2rst::Rd2myst('${PKGNAME}')"
 
 weave-examples:
 	cd .devel/sphinx/rapi && Rscript -e "Rd2rst::weave_examples('${PKGNAME}', '.')"
-	.devel/sphinx/fix-code-blocks.sh .devel/sphinx/rapi
 
 weave:
 	cd .devel/sphinx/weave && make && cd ../../../
@@ -76,6 +77,8 @@ news:
 html: python r news weave rd2myst weave-examples
 	rm -rf .devel/sphinx/_build/
 	cd .devel/sphinx && make html
+	.devel/sphinx/fix-html.sh .devel/sphinx/_build/html/rapi/
+	.devel/sphinx/fix-html.sh .devel/sphinx/_build/html/weave/
 	rm -rf .devel/sphinx/_build/html/_sources
 	@echo "*** Browse the generated documentation at"\
 	    "file://`pwd`/.devel/sphinx/_build/html/index.html"
