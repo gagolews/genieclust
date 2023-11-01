@@ -1,6 +1,7 @@
+<a href="https://genieclust.gagolewski.com"><img src="https://www.gagolewski.com/_static/img/genieclust.png" align="right" height="128" width="128" /></a>
 # [**genieclust**](https://genieclust.gagolewski.com/) Package for R and Python
 
-## *Genie*: Fast and Robust Hierarchical Clustering with Noise Point Detection
+### *Genie*: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
 
 ![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
@@ -8,7 +9,7 @@
 
 
 > **Genie finds meaningful clusters quickly – even on large data sets.**
-
+> 
 > A comprehensive tutorial, benchmarks, and a reference manual is available
 at <https://genieclust.gagolewski.com/>.
 
