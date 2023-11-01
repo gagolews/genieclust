@@ -182,6 +182,7 @@ CRAN Entry <https://CRAN.R-project.org/package=genieclust>
 ::::{toctree}
 :maxdepth: 2
 :caption: Examples and Tutorials
+:hidden:
 
 weave/basics
 weave/sklearn_toy_example
@@ -202,6 +203,7 @@ which cannot be installed currently (hasn't been updated for a while)
 ::::{toctree}
 :maxdepth: 1
 :caption: API Documentation
+:hidden:
 
 genieclust
 rapi
@@ -211,6 +213,7 @@ rapi
 ::::{toctree}
 :maxdepth: 1
 :caption: See Also
+:hidden:
 
 Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com>
 Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
@@ -221,6 +224,7 @@ Deep R Programming <https://deepr.gagolewski.com>
 ::::{toctree}
 :maxdepth: 1
 :caption: Appendix
+:hidden:
 
 news
 weave/benchmarks_details

@@ -14,6 +14,7 @@ pkg_title = "genieclust"
 pkg_version = genieclust.__version__
 copyright_year = "2018–2023"
 html_baseurl = "https://genieclust.gagolewski.com/"
+html_logo = "https://www.gagolewski.com/_static/img/genieclust.png"
 github_url = "https://github.com/gagolews/genieclust"
 github_star_repo = "gagolews/genieclust"
 analytics_id = None  # don't use it! this site does not track its users
