@@ -35,7 +35,7 @@ head(X)  # preview
 
 The `genieclust` interface is compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`.
-Yet, for efficiency reasons, it is better to feed `genieclust::glust()`
+Yet, for efficiency reasons, it is better to feed `genieclust::gclust()`
 with the input matrix directly:
 
 
