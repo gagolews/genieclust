@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Python Package genieclust Reference" href="../genieclust.html" /><link rel="prev" title="Clustering with Noise Points Detection" href="noise.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/weave/r.html" />
 
-    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.2.5 and Furo 2023.08.19 -->
+    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
         <title>R Interface Examples - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=135e06be" />
@@ -309,7 +309,7 @@ in each country. There are seven categories on the scale <span class="math notra
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> interface is compatible with R’s workhorse
 for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>.
-Yet, for efficiency reasons, it is better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::glust()</span></code>
+Yet, for efficiency reasons, it is better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::gclust()</span></code>
 with the input matrix directly:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
 <span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
@@ -446,7 +446,7 @@ benchmarking, timing, etc.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2023-11-05T12:27:48+1100.
+              Last updated on 2024-01-04T00:05:36+1100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
