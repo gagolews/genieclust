@@ -85,8 +85,8 @@
 #' the resulting partition tree (dendrogram) might violate
 #' the ultrametricity property (merges might occur at levels that
 #' are not increasing w.r.t. a between-cluster distance).
-#' Departures from ultrametricity are corrected by applying
-#' \code{height = rev(cummin(rev(height)))}.
+#' \code{gclust()} automatically corrects departures from
+#' ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 #'
 #'
 #' @param d a numeric matrix (or an object coercible to one,

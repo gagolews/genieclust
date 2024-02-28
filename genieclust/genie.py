@@ -793,10 +793,11 @@ class Genie(GenieBase):
         the distance between two clusters merged in each iteration,
         see the description of ``Z[:,2]`` in `scipy.cluster.hierarchy.linkage`.
 
-        As the original Genie algorithm does not guarantee that that distances
-        are ordered increasingly (there are other hierarchical
-        clustering linkages that violate the ultrametricity property as well),
-        these are corrected by applying
+        As the original Genie algorithm does not guarantee that distances
+        are ordered increasingly (there are other hierarchical clustering
+        linkages that violate the ultrametricity property as well), Genie
+        automatically applies the following correction:
+
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
 
     counts_ : None or ndarray
