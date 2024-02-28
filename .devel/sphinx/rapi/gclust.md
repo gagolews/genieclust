@@ -92,7 +92,7 @@ If `d` is a numeric matrix or an object of class `dist`, [`mst()`](mst.md) will 
 
 Given an minimum spanning tree, the algorithm runs in $O(n \sqrt{n})$ time. Therefore, if you want to test different `gini_threshold`s, (or `k`s), it is best to explicitly compute the MST first.
 
-According to the algorithm\'s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). Departures from ultrametricity are corrected by applying `height = rev(cummin(rev(height)))`.
+According to the algorithm\'s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). `gclust()` automatically corrects departures from ultrametricity by applying `height = rev(cummin(rev(height)))`.
 
 ## Value
 
