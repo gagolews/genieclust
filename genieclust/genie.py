@@ -31,13 +31,13 @@ import warnings
 
 try:
     import nmslib
-except ImportError:
+except:
     nmslib = None
 
 
 try:
     import mlpack
-except ImportError:
+except:
     mlpack = None
 
 

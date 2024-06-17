@@ -166,8 +166,8 @@ According to the algorithm's original definition,
 the resulting partition tree (dendrogram) might violate
 the ultrametricity property (merges might occur at levels that
 are not increasing w.r.t. a between-cluster distance).
-Departures from ultrametricity are corrected by applying
-\code{height = rev(cummin(rev(height)))}.
+\code{gclust()} automatically corrects departures from
+ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 }
 \examples{
 library("datasets")

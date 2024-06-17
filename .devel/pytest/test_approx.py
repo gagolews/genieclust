@@ -26,12 +26,12 @@ except:
 
 try:
     import mlpack
-except ImportError:
+except:
     mlpack = None
 
 try:
     import nmslib
-except ImportError:
+except:
     nmslib = None
 
 
@@ -52,7 +52,7 @@ verbose = True  # codecov!
 
 def __test_genie_approx(metric='euclidean'):
     if nmslib is None: return
-
+    if mlpack is None: return
 
     for dataset in ["t4_8k", "h2mg_64_50"]:#, "bigger"]:#[, "bigger""s1", "Aggregation", "unbalance", "h2mg_64_50"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
         if dataset == "bigger":
@@ -133,6 +133,7 @@ def __test_genie_approx(metric='euclidean'):
 
 def __test_sparse(affinity='euclidean_sparse'):
     if nmslib is None: return
+    if mlpack is None: return
 
     np.random.seed(123)
     X = np.random.choice(np.arange(-2.0, 3.0), 1000).reshape(100,-1)
@@ -148,6 +149,7 @@ def __test_sparse(affinity='euclidean_sparse'):
 
 def __test_string(affinity='leven'):
     if nmslib is None: return
+    if mlpack is None: return
 
     np.random.seed(123)
     X = []
