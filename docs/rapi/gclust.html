@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dd03ec4f" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5282ffc2" />
     
     
 
@@ -168,7 +168,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.5
+1.1.5.9001
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -389,7 +389,7 @@
 <p>Note that, as in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, <a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> will be called to compute an MST, which generally takes at most <span class="math notranslate nohighlight">\(O(n^2)\)</span> time (the algorithm we provide is parallelised, environment variable <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> controls the number of threads in use). However, see <a class="reference internal" href="emst_mlpack.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in the case of Euclidean spaces of (very) low dimensionality and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1.</p>
 <p>Given an minimum spanning tree, the algorithm runs in <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time. Therefore, if you want to test different <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s, (or <code class="docutils literal notranslate"><span class="pre">k</span></code>s), it is best to explicitly compute the MST first.</p>
-<p>According to the algorithm’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). Departures from ultrametricity are corrected by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
+<p>According to the algorithm’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). <code class="docutils literal notranslate"><span class="pre">gclust()</span></code> automatically corrects departures from ultrametricity by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">#</a></h2>
@@ -468,11 +468,11 @@
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2023 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2024 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-01-04T00:05:36+1100.
+              Last updated on 2024-06-17T16:06:11+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -514,7 +514,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=a48ae3df"></script>
+</div><script src="../_static/documentation_options.js?v=bff10455"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=32e29ea5"></script>

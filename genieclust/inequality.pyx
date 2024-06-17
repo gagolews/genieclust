@@ -12,7 +12,7 @@ Inequality measures
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -151,7 +151,8 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+
     return c_inequality.Cgini_sorted(&x[0], x.shape[0])
 
 
@@ -238,7 +239,7 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
 
     return c_inequality.Cbonferroni_sorted(&x[0], x.shape[0])
 
@@ -319,5 +320,6 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+
     return c_inequality.Cdevergottini_sorted(&x[0], x.shape[0])

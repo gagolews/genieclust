@@ -4,7 +4,7 @@ The Genie++ Clustering Algorithm
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2018-2023, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2018-2024, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -285,7 +285,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 if scipy.sparse.isspmatrix(X):
                     raise ValueError("Sparse matrices are (currently) only "
                                      "supported when `exact` is False")
-                X = np.array(X, dtype=np.float32, order="C", copy=False, ndmin=2)
+                X = np.asarray(X, dtype=np.float32, order="C")
 
             n_samples  = X.shape[0]
             if cur_state["n_features"] < 0:
@@ -392,7 +392,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             if scipy.sparse.isspmatrix(X):
                 X = scipy.sparse.csr_matrix(X, dtype=np.float32, copy=False)
             else:
-                X = np.array(X, dtype=np.float32, order="C", copy=False, ndmin=2)
+                X = np.asarray(X, dtype=np.float32, order="C")
 
         n_samples  = np.shape(X)[0]
 
@@ -684,7 +684,7 @@ class Genie(GenieBase):
         *requires* ``float32`` data anyway when using dense or sparse
         numeric matrix inputs.
 
-        By setting `cast_float32` to ``False`` a user assures themself
+        By setting `cast_float32` to ``False``, you must ensure
         that the inputs are of acceptable form.
 
     mlpack_enabled : "auto" or bool
@@ -1021,7 +1021,7 @@ class Genie(GenieBase):
             This way the method becomes translation and scale invariant.
             What's more, if data are recorded with small precision (say, up
             to few decimal digits), adding a tiny bit of Gaussian noise will
-            assure the solution is unique (note that this generally applies
+            ensure the solution is unique (note that this generally applies
             to other distance-based clustering algorithms as well).
 
         *   `X` when `exact` = ``False``.

@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=dd03ec4f" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5282ffc2" />
     
     
 
@@ -168,7 +168,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.5
+1.1.5.9001
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -375,7 +375,7 @@ Furthermore, <code class="docutils literal notranslate"><span class="pre">&quot;
 at a cost of greater memory use. Otherwise, note that <cite>nmslib</cite>
 <em>requires</em> <code class="docutils literal notranslate"><span class="pre">float32</span></code> data anyway when using dense or sparse
 numeric matrix inputs.</p>
-<p>By setting <cite>cast_float32</cite> to <code class="docutils literal notranslate"><span class="pre">False</span></code> a user assures themself
+<p>By setting <cite>cast_float32</cite> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, you must ensure
 that the inputs are of acceptable form.</p>
 </dd>
 <dt><strong>mlpack_enabled</strong><span class="classifier">“auto” or bool</span></dt><dd><p>Whether <cite>mlpack.emst</cite> should be used for computing the Euclidean
@@ -571,11 +571,11 @@ plotting the dendrogram.</p>
 <dt><strong>distances_</strong><span class="classifier">None or ndarray</span></dt><dd><p>If <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is a vector that gives
 the distance between two clusters merged in each iteration,
 see the description of <code class="docutils literal notranslate"><span class="pre">Z[:,2]</span></code> in <cite>scipy.cluster.hierarchy.linkage</cite>.</p>
-<p>As the original Genie algorithm does not guarantee that that distances
-are ordered increasingly (there are other hierarchical
-clustering linkages that violate the ultrametricity property as well),
-these are corrected by applying
-<code class="docutils literal notranslate"><span class="pre">distances_</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(distances_[::-1])[::-1]</span></code>.</p>
+<p>As the original Genie algorithm does not guarantee that distances
+are ordered increasingly (there are other hierarchical clustering
+linkages that violate the ultrametricity property as well), Genie
+automatically applies the following correction:</p>
+<p><code class="docutils literal notranslate"><span class="pre">distances_</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(distances_[::-1])[::-1]</span></code>.</p>
 </dd>
 <dt><strong>counts_</strong><span class="classifier">None or ndarray</span></dt><dd><p>If <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is a vector giving
 the number of elements in a cluster created in each iteration.
@@ -649,7 +649,7 @@ so that the dataset is centred at 0 and has total variance of 1.
 This way the method becomes translation and scale invariant.
 What’s more, if data are recorded with small precision (say, up
 to few decimal digits), adding a tiny bit of Gaussian noise will
-assure the solution is unique (note that this generally applies
+ensure the solution is unique (note that this generally applies
 to other distance-based clustering algorithms as well).</p>
 </li>
 <li><p><cite>X</cite> when <cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
@@ -709,11 +709,11 @@ an array of ASCII strings.</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2023 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2024 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-01-04T00:05:36+1100.
+              Last updated on 2024-06-17T16:06:11+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -750,7 +750,7 @@ an array of ASCII strings.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=a48ae3df"></script>
+</div><script src="_static/documentation_options.js?v=bff10455"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=32e29ea5"></script>

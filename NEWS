@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.5.9001 (under development)
+
+* [PYTHON] The packages now works with *numpy* 2.0.
+
+
 ## 1.1.5 (2023-10-18)
 
 * [BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures

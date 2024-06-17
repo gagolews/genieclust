@@ -13,7 +13,7 @@ Provides access to the Cargsort() and Cargkmin() functions.
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #

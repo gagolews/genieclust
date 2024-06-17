@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com>
 
 options(encoding="UTF-8")
 set.seed(666)

@@ -17,7 +17,7 @@ Functions one might find useful, but not necessarily
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2023, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -231,7 +231,7 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
     >>> genieclust.tools.argkmin(x, 1) # index of the 2nd smallest value
     0
     """
-    x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
+    x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
     cdef Py_ssize_t n = x.shape[0]
     return c_argfuns.Cargkmin(&x[0], n, k, <Py_ssize_t*>0)
 
@@ -273,7 +273,7 @@ cpdef np.ndarray[Py_ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
     will be generated.
 
     """
-    x = np.array(x, dtype=x.dtype, copy=False, order="C") # assure c_contiguity
+    x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
     cdef Py_ssize_t n = x.shape[0]
     cdef np.ndarray[Py_ssize_t] ret = np.empty(n, dtype=np.intp)
     c_argfuns.Cargsort(&ret[0], &x[0], n, stable)

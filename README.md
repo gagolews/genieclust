@@ -9,7 +9,7 @@
 
 
 > **Genie finds meaningful clusters quickly – even on large data sets.**
-> 
+>
 > A comprehensive tutorial, benchmarks, and a reference manual is available
 at <https://genieclust.gagolewski.com/>.
 
@@ -165,7 +165,7 @@ Any contributions are welcome (e.g., Julia, Matlab, ...).
 
 ## License
 
-Copyright (C) 2018–2023 Marek Gagolewski <https://www.gagolewski.com/>
+Copyright (C) 2018–2024 Marek Gagolewski <https://www.gagolewski.com/>
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU Affero General Public License Version 3, 19
