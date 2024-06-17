@@ -21,12 +21,12 @@ except:
 
 try:
     import mlpack
-except ImportError:
+except:
     mlpack = None
 
 try:
     import nmslib
-except ImportError:
+except:
     nmslib = None
 
 
@@ -58,7 +58,7 @@ def test_cache(metric='euclidean'):
 
     for C in [genieclust.Genie, genieclust.GIc]:
         for exact in [True, False]:
-            if not exact and not nmslib:
+            if not exact and (not nmslib or not mlpack):
                 continue
 
             for M in [10,2,1]:

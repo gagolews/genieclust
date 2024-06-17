@@ -23,12 +23,12 @@ except ImportError:
 
 try:
     import mlpack
-except ImportError:
+except:
     mlpack = None
 
 try:
     import nmslib
-except ImportError:
+except:
     nmslib = None
 
 

@@ -21,7 +21,7 @@ except:
 
 try:
     import mlpack
-except ImportError:
+except:
     mlpack = None
 
 
