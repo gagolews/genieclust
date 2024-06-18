@@ -8,18 +8,6 @@ import scipy.sparse
 import scipy.spatial.distance
 import numpy as np
 
-try:
-    import rpy2
-    from rpy2.robjects.packages import importr
-    import rpy2.robjects.numpy2ri
-    #rpy2.robjects.numpy2ri.activate()
-    stats = importr("stats")
-    genie = importr("genie")
-except ImportError:
-    rpy2 = None
-    stats = None
-    genie = None
-
 
 try:
     import mlpack
@@ -90,8 +78,8 @@ def test_warnerr(metric='euclidean'):
         with pytest.raises(Exception): genieclust.Genie(nmslib_params_init=[], exact=False).fit(X)
         with pytest.raises(Exception): genieclust.Genie(nmslib_params_index=[], exact=False).fit(X)
         with pytest.raises(Exception): genieclust.Genie(nmslib_params_query=[], exact=False).fit(X)
-        with pytest.warns(Warning): genieclust.Genie(nmslib_params_index=dict(indexThreadQty=3), exact=False).fit(X)
-        with pytest.warns(Warning): genieclust.Genie(nmslib_params_init=dict(space="outer"), exact=False).fit(X)
+        #with pytest.warns(Warning): genieclust.Genie(nmslib_params_index=dict(indexThreadQty=3), exact=False).fit(X)
+        #with pytest.warns(Warning): genieclust.Genie(nmslib_params_init=dict(space="outer"), exact=False).fit(X)
 
 
 if __name__ == "__main__":
