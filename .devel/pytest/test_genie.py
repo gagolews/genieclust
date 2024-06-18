@@ -9,8 +9,9 @@ import numpy as np
 try:
     import rpy2
     from rpy2.robjects.packages import importr
-    import rpy2.robjects.numpy2ri
-    rpy2.robjects.numpy2ri.activate()
+    from rpy2.robjects import numpy2ri
+    from rpy2.robjects import default_converter
+    #rpy2.robjects.numpy2ri.activate()
     stats = importr("stats")
     genie = importr("genie")
 except:
@@ -39,69 +40,71 @@ else:
 
 
 def __test_genie(metric='euclidean'):
-    for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50", "bigger"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
-        if dataset == "bigger":
-            np.random.seed(123)
-            n = 10_000
-            d = 10
-            K = 2
-            X = np.random.normal(size=(n,d))
-            labels = np.random.choice(np.r_[0:K], n)
-        else:
-            X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
-            labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
+    np_cv_rules = default_converter + numpy2ri.converter
+    with np_cv_rules.context():
+        for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50", "bigger"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
+            if dataset == "bigger":
+                np.random.seed(123)
+                n = 10_000
+                d = 10
+                K = 2
+                X = np.random.normal(size=(n,d))
+                labels = np.random.choice(np.r_[0:K], n)
+            else:
+                X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
+                labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 
-        k = len(np.unique(labels[labels>=0]))
+            k = len(np.unique(labels[labels>=0]))
 
-        # center X + scale (NOT: standardize!)
-        X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
-        X += np.random.normal(0, 0.0001, X.shape)
+            # center X + scale (NOT: standardize!)
+            X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
+            X += np.random.normal(0, 0.0001, X.shape)
 
-        #t01 = time.time()
-        #hdbscan.RobustSingleLinkage().fit_predict(X)
-        #t11 = time.time()
-        #print("t_robustsl=%.3f" % (t11-t01), end="\t")
+            #t01 = time.time()
+            #hdbscan.RobustSingleLinkage().fit_predict(X)
+            #t11 = time.time()
+            #print("t_robustsl=%.3f" % (t11-t01), end="\t")
 
-        #t01 = time.time()
-        #hdbscan.HDBSCAN().fit_predict(X)
-        #t11 = time.time()
-        #print("t_hdbscan=%.3f" % (t11-t01), end="\t")
+            #t01 = time.time()
+            #hdbscan.HDBSCAN().fit_predict(X)
+            #t11 = time.time()
+            #print("t_hdbscan=%.3f" % (t11-t01), end="\t")
 
-        for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
-            gc.collect()
+            for g in [0.01, 0.3, 0.5, 0.7, 1.0]:
+                gc.collect()
 
-            #D = scipy.spatial.distance.pdist(X)
-            #D = scipy.spatial.distance.squareform(D)
+                #D = scipy.spatial.distance.pdist(X)
+                #D = scipy.spatial.distance.squareform(D)
 
-            print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
+                print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
-            t01 = time.time()
-            _res1 = genieclust.Genie(
-                k, gini_threshold=g, exact=True, affinity=metric, compute_full_tree=True)
-            res1 = _res1.fit_predict(X)+1
-            t11 = time.time()
-            print("t_py=%.3f" % (t11-t01), end="\t")
+                t01 = time.time()
+                _res1 = genieclust.Genie(
+                    k, gini_threshold=g, exact=True, affinity=metric, compute_full_tree=True)
+                res1 = _res1.fit_predict(X)+1
+                t11 = time.time()
+                print("t_py=%.3f" % (t11-t01), end="\t")
 
-            assert np.all(np.diff(_res1.distances_)>= 0.0)
-            assert len(np.unique(res1)) == k
+                assert np.all(np.diff(_res1.distances_)>= 0.0)
+                assert len(np.unique(res1)) == k
 
-            if stats is not None and genie is not None and metric != 'cosine':
-                t02 = time.time()
-                res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
-                t12 = time.time()
-                print("t_r=%.3f" % (t12-t02), end="\t")
-                res2 = np.array(res2, np.intp)
-                assert len(np.unique(res2)) == k
+                if stats is not None and genie is not None and metric != 'cosine':
+                    t02 = time.time()
+                    res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
+                    t12 = time.time()
+                    print("t_r=%.3f" % (t12-t02), end="\t")
+                    res2 = np.array(res2, np.intp)
+                    assert len(np.unique(res2)) == k
 
-                ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
-                print("ARI=%.3f" % ari, end="\t")
-                assert ari>1.0-1e-12
+                    ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
+                    print("ARI=%.3f" % ari, end="\t")
+                    assert ari>1.0-1e-12
 
-                print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
+                    print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
 
 
-            res1, res2 = None, None
-            print("")
+                res1, res2 = None, None
+                print("")
 
 
 

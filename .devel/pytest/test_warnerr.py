@@ -12,7 +12,7 @@ try:
     import rpy2
     from rpy2.robjects.packages import importr
     import rpy2.robjects.numpy2ri
-    rpy2.robjects.numpy2ri.activate()
+    #rpy2.robjects.numpy2ri.activate()
     stats = importr("stats")
     genie = importr("genie")
 except ImportError:

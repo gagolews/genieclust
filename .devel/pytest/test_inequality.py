@@ -39,19 +39,19 @@ def test_inequality():
                 x = np.random.random(n)*8 + 3
 
             xg1 = gini_index(np.array(x))
-            xg2 = gini_index(np.array(x, dtype=np.float_))
+            xg2 = gini_index(np.array(x, dtype=np.float64))
             xg3 = gini_ref(x)
             assert abs(xg1 - xg2) < 1e-9
             assert abs(xg1 - xg3) < 1e-9
 
             xb1 = bonferroni_index(np.array(x))
-            xb2 = bonferroni_index(np.array(x, dtype=np.float_))
+            xb2 = bonferroni_index(np.array(x, dtype=np.float64))
             xb3 = bonferroni_ref(x)
             assert abs(xb1 - xb2) < 1e-9
             assert abs(xb1 - xb3) < 1e-9
 
             xv1 = devergottini_index(np.array(x))
-            xv2 = devergottini_index(np.array(x, dtype=np.float_))
+            xv2 = devergottini_index(np.array(x, dtype=np.float64))
             xv3 = devergottini_ref(x)
             assert abs(xv1 - xv2) < 1e-9
             assert abs(xv1 - xv3) < 1e-9

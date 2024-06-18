@@ -23,7 +23,7 @@ stats = importr("stats")
 genie = importr("genie")
 import numpy as np
 import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+#rpy2.robjects.numpy2ri.activate()
 import time
 import gc
 np.random.seed(12345)

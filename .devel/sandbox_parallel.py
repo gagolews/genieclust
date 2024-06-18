@@ -13,7 +13,7 @@ genie = importr("genie")
 genieclustr = importr("genieclust")
 import numpy as np
 import rpy2.robjects.numpy2ri
-rpy2.robjects.numpy2ri.activate()
+#rpy2.robjects.numpy2ri.activate()
 
 
 verbose = False
