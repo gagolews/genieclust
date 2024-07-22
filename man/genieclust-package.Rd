@@ -2,6 +2,7 @@
 % Please edit documentation in R/genieclust-package.R
 \docType{package}
 \name{genieclust-package}
+\alias{-package}
 \alias{genieclust-package}
 \alias{genieclust}
 \title{The Genie Hierarchical Clustering Algorithm (with Extras)}

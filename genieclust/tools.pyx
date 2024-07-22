@@ -33,13 +33,9 @@ Functions one might find useful, but not necessarily
 # ############################################################################ #
 
 
-
-
-
-
-cimport cython
-cimport numpy as np
 import numpy as np
+cimport numpy as np
+np.import_array()
 
 
 cimport libc.math

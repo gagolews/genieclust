@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
 Title: Fast and Robust Hierarchical Clustering with Noise Points Detection
-Version: 1.1.5-9001
-Date: 2024-06-17
+Version: 1.1.5-9002
+Date: 2024-07-22
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -49,4 +49,4 @@ Suggests:
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2

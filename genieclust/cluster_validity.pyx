@@ -42,8 +42,9 @@ For even more details, see the
 # ############################################################################ #
 
 
-cimport numpy as np
 import numpy as np
+cimport numpy as np
+np.import_array()
 from . cimport c_compare_partitions
 from . cimport c_cvi
 

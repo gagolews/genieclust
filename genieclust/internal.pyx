@@ -36,11 +36,9 @@ Internal functions and classes
 # ############################################################################ #
 
 
-
-
-cimport cython
-cimport numpy as np
 import numpy as np
+cimport numpy as np
+np.import_array()
 import os
 
 cimport libc.math

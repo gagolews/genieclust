@@ -28,9 +28,9 @@ Inequality measures
 # ############################################################################ #
 
 
-cimport cython
-cimport numpy as np
 import numpy as np
+cimport numpy as np
+np.import_array()
 from . cimport c_inequality
 
 ctypedef fused T:
