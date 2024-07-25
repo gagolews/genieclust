@@ -6,12 +6,12 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.inequality" href="genieclust_inequality.html" /><link rel="prev" title="genieclust.cluster_validity" href="genieclust_cluster_validity.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/genieclust_compare_partitions.html" />
 
-    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>genieclust.compare_partitions - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5282ffc2" />
     
@@ -84,7 +84,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -99,7 +99,7 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
@@ -107,7 +107,7 @@
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
       <path d="M13 12h5" />
@@ -115,6 +115,60 @@
       <path d="M13 18h1" />
       <path d="M13 9h4" />
       <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -168,7 +222,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.5.9001
+1.1.5.9002
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -250,11 +304,7 @@
         <div class="content-icon-container">
           <div class="edit-this-page">
   <a class="muted-link" href="https://github.com/gagolews/genieclust/issues/" title="Edit this page">
-    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
-      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
-    </svg>
+    <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
 </div><div class="theme-toggle-container theme-toggle-content">
@@ -272,7 +322,7 @@
         </div>
         <article role="main">
           <section id="module-genieclust.compare_partitions">
-<span id="genieclust-compare-partitions"></span><h1>genieclust.compare_partitions<a class="headerlink" href="#module-genieclust.compare_partitions" title="Link to this heading">#</a></h1>
+<span id="genieclust-compare-partitions"></span><h1>genieclust.compare_partitions<a class="headerlink" href="#module-genieclust.compare_partitions" title="Link to this heading">¶</a></h1>
 <p>External cluster validity measures and partition similarity scores</p>
 <p>These indices can be used for comparing the outputs of clustering algorithms
 with reference (ground truth) labels.</p>
@@ -280,7 +330,7 @@ with reference (ground truth) labels.</p>
 <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Framework for Benchmarking Clustering Algorithms</a>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_fm_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_fm_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_fm_score" title="Link to this definition">¶</a></dt>
 <dd><p>The Fowlkes-Mallows index adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -312,7 +362,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_mi_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_mi_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_mi_score" title="Link to this definition">¶</a></dt>
 <dd><p>Adjusted mutual information score <span class="math notranslate nohighlight">\((\mathrm{AMI}_\mathrm{sum})\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -344,7 +394,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.adjusted_rand_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_rand_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">adjusted_rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.adjusted_rand_score" title="Link to this definition">¶</a></dt>
 <dd><p>The Rand index adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -376,7 +426,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.compare_partitions">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">compare_partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">compare_partitions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.compare_partitions" title="Link to this definition">¶</a></dt>
 <dd><p>Computes a series of external cluster validity measures</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -514,8 +564,8 @@ and <span class="math notranslate nohighlight">\(\mathrm{NMI}_\mathrm{sum}\)</sp
 <div class="citation" id="rb28289ab3e3a-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, 2023, under review (preprint).
-<a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">https://doi.org/10.48550/arXiv.2209.02935</a>.</p>
+cluster validity measure, <em>Journal of Classification</em>, 2024, in press,
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a>.</p>
 </div>
 <div class="citation" id="rb28289ab3e3a-3" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
@@ -534,7 +584,8 @@ Variants, properties, normalization and correction for chance,
 <div class="citation" id="rb28289ab3e3a-5" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">5</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 </div>
 <p class="rubric">Examples</p>
@@ -558,7 +609,7 @@ Variants, properties, normalization and correction for chance,
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.confusion_matrix">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.confusion_matrix" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.confusion_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the confusion matrix for two label vectors</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -597,7 +648,7 @@ and  <code class="docutils literal notranslate"><span class="pre">max(y)-min(y)+
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.fm_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.fm_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">fm_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.fm_score" title="Link to this definition">¶</a></dt>
 <dd><p>The original Fowlkes-Mallows index (not adjusted for chance)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -629,7 +680,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.mi_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.mi_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.mi_score" title="Link to this definition">¶</a></dt>
 <dd><p>Mutual information score</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -661,7 +712,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalize_confusion_matrix">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalize_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalize_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalize_confusion_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Permutes the rows and columns of a confusion matrix so that the sum
 of the elements on the main diagonal is the largest possible
 (by solving the maximal assignment problem).</p>
@@ -713,7 +764,7 @@ by clustering algorithms, where the actual label values do not matter
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_clustering_accuracy">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_clustering_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_clustering_accuracy" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_clustering_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_clustering_accuracy" title="Link to this definition">¶</a></dt>
 <dd><p>Normalised clustering accuracy (NCA) <a class="reference internal" href="#r65a2fdd5c32a-1" id="id13">[1]</a>.</p>
 <p>This measure is asymmetric – it is assumed that <cite>x</cite>
 represents the ground truth labels, whilst <cite>y</cite> give predicted cluster IDs.</p>
@@ -750,15 +801,15 @@ or a vector of labels (if y is not None)</p>
 <div class="citation" id="r65a2fdd5c32a-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, 2023, under review (preprint).
-<a class="reference external" href="https://doi.org/10.48550/arXiv.2209.02935">https://doi.org/10.48550/arXiv.2209.02935</a></p>
+cluster validity measure, <em>Journal of Classification</em>, 2024, in press,
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a>.</p>
 </div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_confusion_matrix">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_confusion_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the confusion matrix for two label vectors and
 permutes its rows and columns so that the sum of the elements
 of the main diagonal is the largest possible (by solving
@@ -803,7 +854,7 @@ and  <code class="docutils literal notranslate"><span class="pre">max(y)-min(y)+
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_mi_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_mi_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_mi_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_mi_score" title="Link to this definition">¶</a></dt>
 <dd><p>Normalised mutual information score <span class="math notranslate nohighlight">\((\mathrm{NMI}_\mathrm{sum})\)</span></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -835,7 +886,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalized_pivoted_accuracy">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_pivoted_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_pivoted_accuracy" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalized_pivoted_accuracy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalized_pivoted_accuracy" title="Link to this definition">¶</a></dt>
 <dd><p>Normalised pivoted accuracy (NPA)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -869,7 +920,7 @@ or a vector of labels (if y is not None)</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.normalizing_permutation">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalizing_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalizing_permutation" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">normalizing_permutation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.normalizing_permutation" title="Link to this definition">¶</a></dt>
 <dd><p>Determines the permutation of columns of a confusion matrix
 so that the sum of the elements on the main diagonal is the largest
 possible (by solving the maximal assignment problem).</p>
@@ -923,7 +974,7 @@ by clustering algorithms, where the actual label values do not matter
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.pair_sets_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">pair_sets_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">pair_sets_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.pair_sets_index" title="Link to this definition">¶</a></dt>
 <dd><p>Pair sets index (PSI) <a class="reference internal" href="#r9c96f1d3d627-1" id="id15">[1]</a></p>
 <p>For non-square confusion matrices, missing rows/columns
 are assumed to be filled with 0s.</p>
@@ -974,7 +1025,7 @@ i.e.,use Eq. (20) in <a class="reference internal" href="#r9c96f1d3d627-1" id="i
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.compare_partitions.rand_score">
-<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.rand_score" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.compare_partitions.</span></span><span class="sig-name descname"><span class="pre">rand_score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.compare_partitions.rand_score" title="Link to this definition">¶</a></dt>
 <dd><p>The original Rand index not adjusted for chance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1041,7 +1092,7 @@ or a vector of labels (if y is not None)</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-06-17T16:06:11+0200.
+              Last updated on 2024-07-25T16:21:29+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -1089,10 +1140,10 @@ or a vector of labels (if y is not None)</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=bff10455"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+</div><script src="_static/documentation_options.js?v=88098e3f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

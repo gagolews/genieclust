@@ -195,7 +195,7 @@ and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic [ITM](https://github.com/amueller/information-theoretic-mst)
 {cite}`itm` method (which is also based on a minimum spanning tree;
-compare {cite}`clustering-msts`)
+compare {cite}`cvimst`)
 tend to output good quality outcomes as well.
 
 

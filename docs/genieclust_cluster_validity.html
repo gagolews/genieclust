@@ -6,12 +6,12 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.compare_partitions" href="genieclust_compare_partitions.html" /><link rel="prev" title="genieclust.GIc" href="genieclust_gic.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/genieclust_cluster_validity.html" />
 
-    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.2.6 and Furo 2023.09.10 -->
+    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>genieclust.cluster_validity - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=135e06be" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=eafc0fe6" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=36a5483c" />
     <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=5282ffc2" />
     
@@ -84,7 +84,7 @@
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -99,7 +99,7 @@
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
@@ -107,7 +107,7 @@
   <symbol id="svg-sun-half" viewBox="0 0 24 24">
     <title>Auto light/dark mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
       <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
       <circle cx="12" cy="12" r="9" />
       <path d="M13 12h5" />
@@ -115,6 +115,60 @@
       <path d="M13 18h1" />
       <path d="M13 9h4" />
       <path d="M13 6h1" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" /
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -168,7 +222,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.5.9001
+1.1.5.9002
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -250,11 +304,7 @@
         <div class="content-icon-container">
           <div class="edit-this-page">
   <a class="muted-link" href="https://github.com/gagolews/genieclust/issues/" title="Edit this page">
-    <svg aria-hidden="true" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
-      <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
-    </svg>
+    <svg><use href="#svg-pencil"></use></svg>
     <span class="visually-hidden">Edit this page</span>
   </a>
 </div><div class="theme-toggle-container theme-toggle-content">
@@ -272,7 +322,7 @@
         </div>
         <article role="main">
           <section id="module-genieclust.cluster_validity">
-<span id="genieclust-cluster-validity"></span><h1>genieclust.cluster_validity<a class="headerlink" href="#module-genieclust.cluster_validity" title="Link to this heading">#</a></h1>
+<span id="genieclust-cluster-validity"></span><h1>genieclust.cluster_validity<a class="headerlink" href="#module-genieclust.cluster_validity" title="Link to this heading">¶</a></h1>
 <p>Internal cluster validity indices</p>
 <p>The greater the index value, the more <em>valid</em> (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
@@ -285,7 +335,7 @@ see Section 2 therein for the respective definitions.</p>
 <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Framework for Benchmarking Clustering Algorithms</a>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.calinski_harabasz_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">calinski_harabasz_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.calinski_harabasz_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">calinski_harabasz_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.calinski_harabasz_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the Caliński-Harabasz index <a class="reference internal" href="#r2beb019b66a8-3" id="id1">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r2beb019b66a8-1" id="id2">[1]</a> and <a class="reference internal" href="#r2beb019b66a8-2" id="id3">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -336,7 +386,8 @@ the assessed partition.</p>
 <div class="citation" id="r2beb019b66a8-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r2beb019b66a8-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">2</a><span class="fn-bracket">]</span></span>
@@ -356,7 +407,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.dunnowa_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">dunnowa_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_numerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SMin:5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_denominator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Const'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.dunnowa_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">dunnowa_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_numerator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SMin:5'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owa_denominator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Const'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.dunnowa_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the generalised Dunn indices based on near-neighbours and
 OWA operators <a class="reference internal" href="#r20e856f1accc-2" id="id8">[2]</a>.</p>
 <p>See <a class="reference internal" href="#r20e856f1accc-1" id="id9">[1]</a> and <a class="reference internal" href="#r20e856f1accc-2" id="id10">[2]</a> for the definition and discussion.</p>
@@ -415,7 +466,8 @@ the assessed partition.</p>
 <div class="citation" id="r20e856f1accc-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r20e856f1accc-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
@@ -430,7 +482,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.generalised_dunn_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">generalised_dunn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uppercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.generalised_dunn_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">generalised_dunn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uppercase_d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.generalised_dunn_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the generalised Dunn indices (by Bezdek and Pal) <a class="reference internal" href="#r460ccc59a877-3" id="id14">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r460ccc59a877-1" id="id15">[1]</a> and <a class="reference internal" href="#r460ccc59a877-2" id="id16">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -496,7 +548,8 @@ the assessed partition.</p>
 <div class="citation" id="r460ccc59a877-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r460ccc59a877-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">2</a><span class="fn-bracket">]</span></span>
@@ -516,7 +569,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_ball_hall_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_ball_hall_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_ball_hall_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_ball_hall_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_ball_hall_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the negated Ball-Hall index <a class="reference internal" href="#r87c09c79f043-3" id="id21">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r87c09c79f043-1" id="id22">[1]</a> and <a class="reference internal" href="#r87c09c79f043-2" id="id23">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -567,7 +620,8 @@ the assessed partition.</p>
 <div class="citation" id="r87c09c79f043-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r87c09c79f043-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">2</a><span class="fn-bracket">]</span></span>
@@ -587,7 +641,7 @@ Technical report No. AD699616, Stanford Research Institute, 1965.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_davies_bouldin_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_davies_bouldin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_davies_bouldin_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_davies_bouldin_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the Davies-Bouldin index <a class="reference internal" href="#r1f1dc6981684-3" id="id28">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r1f1dc6981684-1" id="id29">[1]</a> and <a class="reference internal" href="#r1f1dc6981684-2" id="id30">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -638,7 +692,8 @@ the assessed partition.</p>
 <div class="citation" id="r1f1dc6981684-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id29">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r1f1dc6981684-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id30">2</a><span class="fn-bracket">]</span></span>
@@ -658,7 +713,7 @@ PAMI-1 (2), 1979, 224-227, <a class="reference external" href="https://doi.org/1
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.negated_wcss_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_wcss_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_wcss_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">negated_wcss_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.negated_wcss_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the negated within-cluster sum of squares
 (used as the objective function in the k-means and Ward algorithm)</p>
 <p>See <a class="reference internal" href="#rebb7938d47db-1" id="id35">[1]</a> and <a class="reference internal" href="#rebb7938d47db-2" id="id36">[2]</a> for the definition and discussion.</p>
@@ -710,7 +765,8 @@ the assessed partition.</p>
 <div class="citation" id="rebb7938d47db-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id35">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="rebb7938d47db-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id36">2</a><span class="fn-bracket">]</span></span>
@@ -724,7 +780,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the The Silhouette index
 (average silhouette score) <a class="reference internal" href="#r22bdb84f562e-3" id="id40">[3]</a>.</p>
 <p>See <a class="reference internal" href="#r22bdb84f562e-1" id="id41">[1]</a> and <a class="reference internal" href="#r22bdb84f562e-2" id="id42">[2]</a> for the definition and discussion.</p>
@@ -776,7 +832,8 @@ the assessed partition.</p>
 <div class="citation" id="r22bdb84f562e-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id41">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="r22bdb84f562e-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id42">2</a><span class="fn-bracket">]</span></span>
@@ -796,7 +853,7 @@ Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.silhouette_w_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_w_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_w_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">silhouette_w_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.silhouette_w_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the value of the The Silhouette W index
 (mean of the cluster average silhouette widths) <a class="reference internal" href="#rc10181437a2c-3" id="id47">[3]</a>.</p>
 <p>See <a class="reference internal" href="#rc10181437a2c-1" id="id48">[1]</a> and <a class="reference internal" href="#rc10181437a2c-2" id="id49">[2]</a> for the definition and discussion.</p>
@@ -848,7 +905,8 @@ the assessed partition.</p>
 <div class="citation" id="rc10181437a2c-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id48">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="rc10181437a2c-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id49">2</a><span class="fn-bracket">]</span></span>
@@ -868,7 +926,7 @@ Validation of Cluster Analysis, <em>Computational and Applied Mathematics</em>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="genieclust.cluster_validity.wcnn_index">
-<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">wcnn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.wcnn_index" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">genieclust.cluster_validity.</span></span><span class="sig-name descname"><span class="pre">wcnn_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.cluster_validity.wcnn_index" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the within-cluster near-neighbours index <a class="reference internal" href="#rc3cb1f0779f0-2" id="id54">[2]</a>.</p>
 <p>See <a class="reference internal" href="#rc3cb1f0779f0-1" id="id55">[1]</a> and <a class="reference internal" href="#rc3cb1f0779f0-2" id="id56">[2]</a> for the definition and discussion.</p>
 <dl class="field-list simple">
@@ -921,7 +979,8 @@ the assessed partition.</p>
 <div class="citation" id="rc3cb1f0779f0-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id55">1</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
+<em>SoftwareX</em> 20, 2022, 101270.
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
 </div>
 <div class="citation" id="rc3cb1f0779f0-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
@@ -971,7 +1030,7 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-06-17T16:06:11+0200.
+              Last updated on 2024-07-25T16:21:29+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -1013,10 +1072,10 @@ Are cluster validity measures (in)valid?, <em>Information Sciences</em> <strong>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=bff10455"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
+</div><script src="_static/documentation_options.js?v=88098e3f"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="_static/scripts/furo.js?v=32e29ea5"></script>
+    <script src="_static/scripts/furo.js?v=4e2eecee"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

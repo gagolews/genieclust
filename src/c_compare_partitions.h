@@ -421,14 +421,14 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *
  *  Steinley D., Properties of the Hubert-Arabie adjusted Rand index,
  *  Psychological Methods 9(3), 2004, pp. 386-396,
- *  doi:10.1037/1082-989X.9.3.386.
+ *  DOI:10.1037/1082-989X.9.3.386.
  *
  *  Meila M., Heckerman D., An experimental comparison of model-based clustering
- *  methods, Machine Learning 42, 2001, pp. 9--29, doi:10.1023/A:1007648401407.
+ *  methods, Machine Learning 42, 2001, pp. 9-29, DOI:10.1023/A:1007648401407.
  *
  *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
- *  cluster validity measure, 2023, submitted for publication.
- *  URL: https://arxiv.org/pdf/2209.02935.pdf
+ *  cluster validity measure, Journal of Classification, 2024, in press,
+ *  DOI:10.1007/s00357-024-09482-2.
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
@@ -490,8 +490,8 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  ==========
  *
  *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
- *  cluster validity measure, 2023, submitted for publication.
- *  URL: https://arxiv.org/pdf/2209.02935.pdf
+ *  cluster validity measure, Journal of Classification, 2024, in press,
+ *  DOI:10.1007/s00357-024-09482-2.
  *
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc

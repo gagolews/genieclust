@@ -12,12 +12,12 @@ emst_mlpack(X, leaf_size = 1, naive = FALSE, verbose = FALSE)
 
 ## Arguments
 
-|             |                                                                                                |
-|-------------|------------------------------------------------------------------------------------------------|
-| `X`         | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) |
-| `leaf_size` | size of leaves in the kd-tree, controls the trade-off between speed and memory consumption     |
-| `naive`     | logical; whether to use the naive, quadratic-time algorithm                                    |
-| `verbose`   | logical; whether to print diagnostic messages                                                  |
+|  |  |
+|----|----|
+| `X` | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) |
+| `leaf_size` | size of leaves in the kd-tree, controls the trade-off between speed and memory consumption |
+| `naive` | logical; whether to use the naive, quadratic-time algorithm |
+| `verbose` | logical; whether to print diagnostic messages |
 
 ## Value
 

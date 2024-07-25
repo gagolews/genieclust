@@ -40,12 +40,12 @@ normalizing_permutation(x, y = NULL)
 
 ## Arguments
 
-|              |                                                                                                                                                                                                                                                                           |
-|--------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `x`          | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
-| `y`          | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix)                                                |
-| `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)                                                                                                                                    |
-| `clipped`    | whether the result should be clipped to the unit interval, i.e., \[0, 1\]                                                                                                                                                                                                 |
+|  |  |
+|----|----|
+| `x` | an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see [`table(x, y)`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html)) |
+| `y` | an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with `x`), or NULL (if x is an K\*L confusion matrix) |
+| `simplified` | whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18) |
+| `clipped` | whether the result should be clipped to the unit interval, i.e., \[0, 1\] |
 
 ## Details
 
@@ -79,9 +79,9 @@ Each cluster validity measure is a single numeric value.
 
 ## References
 
-Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*, 2022, <https://clustering-benchmarks.gagolewski.com>.
+Gagolewski M., A framework for benchmarking clustering algorithms, *SoftwareX* 20, 2022, 101270, [doi:10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270), <https://clustering-benchmarks.gagolewski.com>.
 
-Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, 2023, under review (preprint), [doi:10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
+Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, *Journal of Classification*, 2024, in press, [doi:10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
 
 Hubert L., Arabie P., Comparing partitions, *Journal of Classification* 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
@@ -104,7 +104,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 
-```r
+``` r
 y_true <- iris[[5]]
 y_pred <- kmeans(as.matrix(iris[1:4]), 3)$cluster
 normalized_clustering_accuracy(y_true, y_pred)
@@ -114,7 +114,7 @@ normalized_clustering_accuracy(y_true, y_pred)
 ## [1] 0.84
 ```
 
-```r
+``` r
 normalized_pivoted_accuracy(y_true, y_pred)
 ```
 
@@ -122,7 +122,7 @@ normalized_pivoted_accuracy(y_true, y_pred)
 ## [1] 0.84
 ```
 
-```r
+``` r
 pair_sets_index(y_true, y_pred)
 ```
 
@@ -130,7 +130,7 @@ pair_sets_index(y_true, y_pred)
 ## [1] 0.7568238
 ```
 
-```r
+``` r
 pair_sets_index(y_true, y_pred, simplified=TRUE)
 ```
 
@@ -138,7 +138,7 @@ pair_sets_index(y_true, y_pred, simplified=TRUE)
 ## [1] 0.7470968
 ```
 
-```r
+``` r
 adjusted_rand_score(y_true, y_pred)
 ```
 
@@ -146,7 +146,7 @@ adjusted_rand_score(y_true, y_pred)
 ## [1] 0.7302383
 ```
 
-```r
+``` r
 rand_score(table(y_true, y_pred)) # the same
 ```
 
@@ -154,7 +154,7 @@ rand_score(table(y_true, y_pred)) # the same
 ## [1] 0.8797315
 ```
 
-```r
+``` r
 adjusted_fm_score(y_true, y_pred)
 ```
 
@@ -162,7 +162,7 @@ adjusted_fm_score(y_true, y_pred)
 ## [1] 0.7304411
 ```
 
-```r
+``` r
 fm_score(y_true, y_pred)
 ```
 
@@ -170,7 +170,7 @@ fm_score(y_true, y_pred)
 ## [1] 0.8208081
 ```
 
-```r
+``` r
 mi_score(y_true, y_pred)
 ```
 
@@ -178,7 +178,7 @@ mi_score(y_true, y_pred)
 ## [1] 0.8255911
 ```
 
-```r
+``` r
 normalized_mi_score(y_true, y_pred)
 ```
 
@@ -186,7 +186,7 @@ normalized_mi_score(y_true, y_pred)
 ## [1] 0.7581757
 ```
 
-```r
+``` r
 adjusted_mi_score(y_true, y_pred)
 ```
 
@@ -194,7 +194,7 @@ adjusted_mi_score(y_true, y_pred)
 ## [1] 0.7551192
 ```
 
-```r
+``` r
 normalized_confusion_matrix(y_true, y_pred)
 ```
 
@@ -205,7 +205,7 @@ normalized_confusion_matrix(y_true, y_pred)
 ## [3,]    0   14   36
 ```
 
-```r
+``` r
 normalizing_permutation(y_true, y_pred)
 ```
 

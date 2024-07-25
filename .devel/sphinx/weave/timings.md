@@ -19,7 +19,7 @@ with the centroid, median, and Ward linkage implemented in the
 
 
 Genie, just like the single linkage, is based on a minimum spanning tree (MST)
-{cite}`clustering-msts` of the pairwise distance graph of an input point set.
+{cite}`cvimst` of the pairwise distance graph of an input point set.
 Given the MST (the slow part), Genie itself has $O(n \sqrt{n})$ time
 and $O(n)$ memory complexity.
 Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
@@ -95,7 +95,7 @@ partitions' cardinality.
 |               |        |     | fastcluster_centroid | 4945.91 |     |      |
 |               |        |     | fastcluster_median   | 2854.27 |     |      |
 |               |        |     | fastcluster_ward     |  778.18 |     |      |
-|               |        |     | sklearn_kmeans       |    3.35 |  37.89 |  357.84 | 
+|               |        |     | sklearn_kmeans       |    3.35 |  37.89 |  357.84 |
 
 
 Of course, the K-means algorithm is the fastest.
@@ -137,7 +137,7 @@ on 6 threads:
 |                    |  10 |    0.15 |    3.21 |    12.74 |   719.33 |   4388.26 |
 |                    |  25 |    0.28 |    6.51 |    26.65 |  1627.9  |   7708.23 |
 |                    |  50 |    0.47 |   11.97 |    54.52 |  2175.3  |  11346.3  |
-|                    | 100 |    1    |   26.07 |   132.47 |  4408.07 |  16021.8  | 
+|                    | 100 |    1    |   26.07 |   132.47 |  4408.07 |  16021.8  |
 
 
 By default, `mlpack_enabled` is `"auto"`, which translates

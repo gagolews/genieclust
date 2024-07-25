@@ -36,14 +36,14 @@ wcnn_index(X, y, M = 25L)
 
 ## Arguments
 
-|                                    |                                                                                                                                                                                                                                                                         |
-|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `X`                                | numeric matrix with `n` rows and `d` columns, representing `n` points in a `d`-dimensional space                                                                                                                                                                        |
-| `y`                                | vector of `n` integer labels, representing a partition whose *quality* is to be assessed; `y[i]` is the cluster ID of the `i`-th point, `X[i, ]`; `1 <= y[i] <= K`, where `K` is the number or clusters                                                                 |
-| `M`                                | number of nearest neighbours                                                                                                                                                                                                                                            |
-| `owa_numerator`, `owa_denominator` | single string specifying the OWA operators to use in the definition of the DuNN index; one of: `"Mean"`, `"Min"`, `"Max"`, `"Const"`, `"SMin:D"`, `"SMax:D"`, where `D` is an integer defining the degree of smoothness                                                 |
-| `lowercase_d`                      | an integer between 1 and 5, denoting $d_1$, \..., $d_5$ in the definition of the generalised Dunn (Bezdek-Pal) index (numerator: min, max, and mean pairwise intracluster distance, distance between cluster centroids, weighted point-centroid distance, respectively) |
-| `uppercase_d`                      | an integer between 1 and 3, denoting $D_1$, \..., $D_3$ in the definition of the generalised Dunn (Bezdek-Pal) index (denominator: max and min pairwise intracluster distance, average point-centroid distance, respectively)                                           |
+|  |  |
+|----|----|
+| `X` | numeric matrix with `n` rows and `d` columns, representing `n` points in a `d`-dimensional space |
+| `y` | vector of `n` integer labels, representing a partition whose *quality* is to be assessed; `y[i]` is the cluster ID of the `i`-th point, `X[i, ]`; `1 <= y[i] <= K`, where `K` is the number or clusters |
+| `M` | number of nearest neighbours |
+| `owa_numerator`, `owa_denominator` | single string specifying the OWA operators to use in the definition of the DuNN index; one of: `"Mean"`, `"Min"`, `"Max"`, `"Const"`, `"SMin:D"`, `"SMax:D"`, where `D` is an integer defining the degree of smoothness |
+| `lowercase_d` | an integer between 1 and 5, denoting $d_1$, \..., $d_5$ in the definition of the generalised Dunn (Bezdek-Pal) index (numerator: min, max, and mean pairwise intracluster distance, distance between cluster centroids, weighted point-centroid distance, respectively) |
+| `uppercase_d` | an integer between 1 and 3, denoting $D_1$, \..., $D_3$ in the definition of the generalised Dunn (Bezdek-Pal) index (denominator: max and min pairwise intracluster distance, average point-centroid distance, respectively) |
 
 ## Value
 
@@ -67,7 +67,7 @@ Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting Comp
 
 Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?, *Information Sciences* 581, 620-636, 2021, [doi:10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004); preprint: <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>.
 
-Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*, 2022, <https://clustering-benchmarks.gagolewski.com>.
+Gagolewski M., A Framework for Benchmarking Clustering Algorithms, *SoftwareX* 20, 2022, 101270, [doi:10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270), <https://clustering-benchmarks.gagolewski.com>.
 
 Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and Validation of Cluster Analysis, *Computational and Applied Mathematics* 20, 1987, 53-65, [doi:10.1016/0377-0427(87)90125-7](https://doi.org/10.1016/0377-0427%2887%2990125-7).
 
@@ -82,7 +82,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 
-```r
+``` r
 X <- as.matrix(iris[,1:4])
 X[,] <- jitter(X)  # otherwise we get a non-unique solution
 y <- as.integer(iris[[5]])
@@ -93,7 +93,7 @@ calinski_harabasz_index(X, y)  # good
 ## [1] 486.6681
 ```
 
-```r
+``` r
 calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
 ```
 

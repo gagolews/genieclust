@@ -908,7 +908,8 @@ class Genie(GenieBase):
     .. [7]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
-        2023, under review (preprint), doi:10.48550/arXiv.2303.05679.
+        *Journal of Classification*, 2024, in press,
+        doi:10.1007/s00357-024-09483-1.
 
     """
 
@@ -1226,7 +1227,8 @@ class GIc(GenieBase):
     .. [4]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
-        2023, under review (preprint), doi:10.48550/arXiv.2303.05679.
+        *Journal of Classification*, 2024, in press,
+        doi:10.1007/s00357-024-09483-1.
 
     """
     def __init__(

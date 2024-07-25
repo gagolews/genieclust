@@ -532,8 +532,8 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     .. [2]
         Gagolewski M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, 2023, under review (preprint).
-        https://doi.org/10.48550/arXiv.2209.02935.
+        cluster validity measure, *Journal of Classification*, 2024, in press,
+        https://doi.org/10.1007/s00357-024-09482-2.
 
     .. [3]
         Rezaei M., Franti P., Set matching measures for external cluster validity,
@@ -548,7 +548,8 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     .. [5]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
 
     Examples
@@ -1032,8 +1033,8 @@ cpdef double normalized_clustering_accuracy(x, y=None):
 
     .. [1]
         Gagolewski M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, 2023, under review (preprint).
-        https://doi.org/10.48550/arXiv.2209.02935
+        cluster validity measure, *Journal of Classification*, 2024, in press,
+        https://doi.org/10.1007/s00357-024-09482-2.
 
     """
 

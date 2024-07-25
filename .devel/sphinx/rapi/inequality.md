@@ -22,7 +22,7 @@ devergottini_index(x)
 
 ## Details
 
-These indices can be used to quantify the \"inequality\" of a numeric sample. They can be conceived as normalised measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequality), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$ and $x_i - h \geq x_j + h$ (taking from the \"rich\" and giving to the \"poor\") decreases the inequality
+These indices can be used to quantify the \"inequality\" of a numeric sample. They can be conceived as normalised measures of data dispersion. For constant vectors (perfect equity), the indices yield values of 0. Vectors with all elements but one equal to 0 (perfect inequality), are assigned scores of 1. They follow the Pigou-Dalton principle (are Schur-convex): setting $x_i = x_i - h$ and $x_j = x_j + h$ with $h > 0$ and $x_i - h \geq  x_j + h$ (taking from the \"rich\" and giving to the \"poor\") decreases the inequality
 
 These indices have applications in economics, amongst others. The Genie clustering algorithm uses the Gini index as a measure of the inequality of cluster sizes.
 
@@ -85,7 +85,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 
-```r
+``` r
 gini_index(c(2, 2, 2, 2, 2))   # no inequality
 ```
 
@@ -93,7 +93,7 @@ gini_index(c(2, 2, 2, 2, 2))   # no inequality
 ## [1] 0
 ```
 
-```r
+``` r
 gini_index(c(0, 0, 10, 0, 0))  # one has it all
 ```
 
@@ -101,7 +101,7 @@ gini_index(c(0, 0, 10, 0, 0))  # one has it all
 ## [1] 1
 ```
 
-```r
+``` r
 gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
 ```
 
@@ -109,7 +109,7 @@ gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
 ## [1] 0.85
 ```
 
-```r
+``` r
 gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
 ```
 
@@ -117,7 +117,7 @@ gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
 ## [1] 0.75
 ```
 
-```r
+``` r
 bonferroni_index(c(2, 2, 2, 2, 2))
 ```
 
@@ -125,7 +125,7 @@ bonferroni_index(c(2, 2, 2, 2, 2))
 ## [1] 0
 ```
 
-```r
+``` r
 bonferroni_index(c(0, 0, 10, 0, 0))
 ```
 
@@ -133,7 +133,7 @@ bonferroni_index(c(0, 0, 10, 0, 0))
 ## [1] 1
 ```
 
-```r
+``` r
 bonferroni_index(c(7, 0, 3, 0, 0))
 ```
 
@@ -141,7 +141,7 @@ bonferroni_index(c(7, 0, 3, 0, 0))
 ## [1] 0.90625
 ```
 
-```r
+``` r
 bonferroni_index(c(6, 0, 3, 1, 0))
 ```
 
@@ -149,7 +149,7 @@ bonferroni_index(c(6, 0, 3, 1, 0))
 ## [1] 0.8333333
 ```
 
-```r
+``` r
 devergottini_index(c(2, 2, 2, 2, 2))
 ```
 
@@ -157,7 +157,7 @@ devergottini_index(c(2, 2, 2, 2, 2))
 ## [1] 0
 ```
 
-```r
+``` r
 devergottini_index(c(0, 0, 10, 0, 0))
 ```
 
@@ -165,7 +165,7 @@ devergottini_index(c(0, 0, 10, 0, 0))
 ## [1] 1
 ```
 
-```r
+``` r
 devergottini_index(c(7, 0, 3, 0, 0))
 ```
 
@@ -173,7 +173,7 @@ devergottini_index(c(7, 0, 3, 0, 0))
 ## [1] 0.7662338
 ```
 
-```r
+``` r
 devergottini_index(c(6, 0, 3, 1, 0))
 ```
 

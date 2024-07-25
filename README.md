@@ -208,13 +208,13 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
 
 Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
-Clustering with minimum spanning trees: How good can it be?, 2023,
-under review (preprint),
-[DOI: 10.48550/arXiv.2303.05679](https://doi.org/10.48550/arXiv.2303.05679).
+Clustering with minimum spanning trees: How good can it be?,
+*Journal of Classification*, 2024, in press,
+[DOI: 10.1007/s00357-024-09483-1](https://doi.org/10.1007/s00357-024-09483-1).
 
 Gagolewski M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, 2023, under review (preprint),
-[DOI: 10.48550/arXiv.2209.02935](https://doi.org/10.48550/arXiv.2209.02935).
+cluster validity measure, *Journal of Classification*, 2024, in press,
+[DOI: 10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
 
 Gagolewski M., A framework for benchmarking clustering algorithms,
 *SoftwareX* **20**, 2022, 101270.

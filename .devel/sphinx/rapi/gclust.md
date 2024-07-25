@@ -71,18 +71,18 @@ genie(
 
 ## Arguments
 
-|                  |                                                                                                                                                                                                                                                                                                                                                                                      |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `d`              | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) or an object of class `mst`, see [`mst()`](mst.md).                                                                                                                    |
-| `...`            | further arguments passed to other methods.                                                                                                                                                                                                                                                                                                                                           |
-| `gini_threshold` | threshold for the Genie correction, i.e., the Gini index of the cluster size distribution; Threshold of 1.0 disables the correction. Low thresholds highly penalise the formation of small clusters.                                                                                                                                                                                 |
-| `distance`       | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"`.                                                                                                                                                                                                                                            |
-| `cast_float32`   | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster).                                                                                                                                                                                                                                                      |
-| `verbose`        | logical; whether to print diagnostic messages and progress information.                                                                                                                                                                                                                                                                                                              |
-| `k`              | the desired number of clusters to detect, `k` = 1 with `M` \> 1 acts as a noise point detector.                                                                                                                                                                                                                                                                                      |
-| `M`              | smoothing factor; `M` \<= 2 gives the selected `distance`; otherwise, the mutual reachability distance is used.                                                                                                                                                                                                                                                                      |
-| `postprocess`    | one of `"boundary"` (default), `"none"` or `"all"`; in effect only if `M` \> 1. By default, only \"boundary\" points are merged with their nearest \"core\" points (A point is a boundary point if it is a noise point and it\'s amongst its adjacent vertex\'s `M`-1 nearest neighbours). To force a classical k-partition of a data set (with no notion of noise), choose \"all\". |
-| `detect_noise`   | whether the minimum spanning tree\'s leaves should be marked as noise points, defaults to `TRUE` if `M` \> 1 for compatibility with HDBSCAN\*.                                                                                                                                                                                                                                       |
+|  |  |
+|----|----|
+| `d` | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) or an object of class `mst`, see [`mst()`](mst.md). |
+| `...` | further arguments passed to other methods. |
+| `gini_threshold` | threshold for the Genie correction, i.e., the Gini index of the cluster size distribution; Threshold of 1.0 disables the correction. Low thresholds highly penalise the formation of small clusters. |
+| `distance` | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"`. |
+| `cast_float32` | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster). |
+| `verbose` | logical; whether to print diagnostic messages and progress information. |
+| `k` | the desired number of clusters to detect, `k` = 1 with `M` \> 1 acts as a noise point detector. |
+| `M` | smoothing factor; `M` \<= 2 gives the selected `distance`; otherwise, the mutual reachability distance is used. |
+| `postprocess` | one of `"boundary"` (default), `"none"` or `"all"`; in effect only if `M` \> 1. By default, only \"boundary\" points are merged with their nearest \"core\" points (A point is a boundary point if it is a noise point and it\'s amongst its adjacent vertex\'s `M`-1 nearest neighbours). To force a classical k-partition of a data set (with no notion of noise), choose \"all\". |
+| `detect_noise` | whether the minimum spanning tree\'s leaves should be marked as noise points, defaults to `TRUE` if `M` \> 1 for compatibility with HDBSCAN\*. |
 
 ## Details
 
@@ -110,7 +110,7 @@ Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and outlier-resistant 
 
 Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, *Lecture Notes in Computer Science* 7819, 2013, 160-172, [doi:10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
-Gagolewski M., Cena A., Bartoszuk M., Brzozowski L., *Clustering with minimum spanning trees: How good can it be?*, 2023, under review (preprint), [doi:10.48550/arXiv.2303.05679](https://doi.org/10.48550/arXiv.2303.05679).
+Gagolewski M., Cena A., Bartoszuk M., Brzozowski L., Clustering with minimum spanning trees: How good can it be?, *Journal of Classification*, 2024, in press, [doi:10.1007/s00357-024-09483-1](https://doi.org/10.1007/s00357-024-09483-1).
 
 ## See Also
 
@@ -127,7 +127,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 
-```r
+``` r
 library("datasets")
 data("iris")
 X <- iris[1:4]
@@ -140,7 +140,7 @@ plot(iris[,2], iris[,3], col=y_pred,
 
 ![plot of chunk gclust](figure/gclust-1.png)
 
-```r
+``` r
 adjusted_rand_score(y_test, y_pred)
 ```
 
@@ -148,7 +148,7 @@ adjusted_rand_score(y_test, y_pred)
 ## [1] 0.8857921
 ```
 
-```r
+``` r
 pair_sets_index(y_test, y_pred)
 ```
 
@@ -156,7 +156,7 @@ pair_sets_index(y_test, y_pred)
 ## [1] 0.9049708
 ```
 
-```r
+``` r
 # Fast for low-dimensional Euclidean spaces:
 # h <- gclust(emst_mlpack(X))
 ```

@@ -73,7 +73,7 @@ and median AR index and, at the same time, is subject to the least variability.
 The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
 information-theoretic [ITM](https://github.com/amueller/information-theoretic-mst)
 {cite}`itm` method (which is also based on a minimum spanning tree;
-compare {cite}`clustering-msts`)
+compare {cite}`cvimst`)
 tend to output good quality outcomes as well.
 
 
@@ -96,7 +96,7 @@ gets a rank of 1); lower ranks are better:
 | K-means           |      72 |    5.6 |   3.8 |     1 |   1   |     6 |   9   |    12 |
 | Single linkage    |      72 |    7.4 |   5.1 |     1 |   1   |    11 |  12   |    12 |
 | Spectral_RBF_5    |      72 |    5.2 |   3.5 |     1 |   1   |     6 |   8   |    11 |
-| Ward linkage      |      72 |    6   |   3   |     1 |   4   |     6 |   8   |    12 | 
+| Ward linkage      |      72 |    6   |   3   |     1 |   4   |     6 |   8   |    12 |
 
 
 ## Large Datasets
@@ -127,7 +127,7 @@ Descriptive statistics for the ranks (AR index):
 | ITM            |       6 |    3.3 |   2.3 |     1 |   1.5 |   3   |   5.2 |     6 |
 | K-means        |       6 |    3.3 |   1.6 |     1 |   2.2 |   3.5 |   4.8 |     5 |
 | Single linkage |       6 |    6.8 |   0.4 |     6 |   7   |   7   |   7   |     7 |
-| Ward linkage   |       6 |    3.2 |   1.5 |     1 |   2.2 |   3.5 |   4   |     5 | 
+| Ward linkage   |       6 |    3.2 |   1.5 |     1 |   2.2 |   3.5 |   4   |     5 |
 
 
 

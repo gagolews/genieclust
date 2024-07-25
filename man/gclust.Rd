@@ -197,8 +197,9 @@ Density-based clustering based on hierarchical density estimates,
 \doi{10.1007/978-3-642-37456-2_14}.
 
 Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
-\emph{Clustering with minimum spanning trees: How good can it be?},
-2023, under review (preprint), \doi{10.48550/arXiv.2303.05679}.
+Clustering with minimum spanning trees: How good can it be?,
+\emph{Journal of Classification}, 2024, in press,
+\doi{10.1007/s00357-024-09483-1}.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

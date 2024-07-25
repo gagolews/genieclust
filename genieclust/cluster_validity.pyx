@@ -140,7 +140,8 @@ cpdef double calinski_harabasz_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -236,7 +237,8 @@ cpdef double negated_ball_hall_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -331,7 +333,8 @@ cpdef double negated_davies_bouldin_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -428,7 +431,8 @@ cpdef double negated_wcss_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -520,7 +524,8 @@ cpdef double silhouette_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -617,7 +622,8 @@ cpdef double silhouette_w_index(X, y):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -715,7 +721,8 @@ cpdef double wcnn_index(X, y, int M=25):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -821,7 +828,8 @@ cpdef double dunnowa_index(
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,
@@ -935,7 +943,8 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
 
     .. [1]
         Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
-        https://clustering-benchmarks.gagolewski.com
+        *SoftwareX* 20, 2022, 101270.
+        https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
         Gagolewski M., Bartoszuk M., Cena A.,

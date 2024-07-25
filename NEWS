@@ -11,8 +11,7 @@
     are no longer referred to as inequity measures.
 
 * [BACKWARD INCOMPATIBILITY] [Python and R]
-    Some external cluster validity measures were renamed
-    (as per the major revision of <https://doi.org/10.48550/arXiv.2209.02935>):
+    Some external cluster validity measures were renamed:
     `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
     `normalized_accuracy` -> `normalized_pivoted_accuracy`.
 
@@ -38,8 +37,8 @@
 ## 1.1.4 (2023-03-31)
 
 *  [Python] The GIc algorithm is no longer marked as experimental;
-   its description will be provided in a forthcoming paper; see
-   <https://doi.org/10.48550/arXiv.2303.05679>.
+   its description is provided in
+   <https://doi.org/10.1007/s00357-024-09483-1>.
 
 
 ## 1.1.3 (2023-01-17)

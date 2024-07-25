@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: Fast and Robust Hierarchical Clustering with Noise Points Detection
 Version: 1.1.5-9002
-Date: 2024-07-22
+Date: 2024-07-25
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),

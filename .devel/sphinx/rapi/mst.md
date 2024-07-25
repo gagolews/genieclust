@@ -27,14 +27,14 @@ mst(d, M = 1L, verbose = FALSE, ...)
 
 ## Arguments
 
-|                |                                                                                                                                                                                                                      |
-|----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `d`            | either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) |
-| `...`          | further arguments passed to or from other methods                                                                                                                                                                    |
-| `distance`     | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"`                                                                             |
-| `M`            | smoothing factor; `M` = 1 gives the selected `distance`; otherwise, the mutual reachability distance is used                                                                                                         |
-| `cast_float32` | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster)                                                                                       |
-| `verbose`      | logical; whether to print diagnostic messages and progress information                                                                                                                                               |
+|  |  |
+|----|----|
+| `d` | either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`, see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) |
+| `...` | further arguments passed to or from other methods |
+| `distance` | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"` |
+| `M` | smoothing factor; `M` = 1 gives the selected `distance`; otherwise, the mutual reachability distance is used |
+| `cast_float32` | logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster) |
+| `verbose` | logical; whether to print diagnostic messages and progress information |
 
 ## Details
 
@@ -83,7 +83,7 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 
 
-```r
+``` r
 library("datasets")
 data("iris")
 X <- iris[1:4]

@@ -87,12 +87,14 @@
 #'
 #'
 #' @references
-#' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
-#' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
+#' Gagolewski M., A framework for benchmarking clustering algorithms,
+#' \emph{SoftwareX} 20, 2022, 101270,
+#' \doi{10.1016/j.softx.2022.101270},
+#' \url{https://clustering-benchmarks.gagolewski.com}.
 #'
 #' Gagolewski M., Normalised clustering accuracy: An asymmetric external
-#' cluster validity measure, 2023, under review (preprint),
-#' \doi{10.48550/arXiv.2209.02935}.
+#' cluster validity measure, \emph{Journal of Classification}, 2024, in press,
+#' \doi{10.1007/s00357-024-09482-2}.
 #'
 #' Hubert L., Arabie P., Comparing partitions,
 #' \emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
@@ -303,8 +305,10 @@ normalizing_permutation <- function(x, y = NULL) {
 #' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 #' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 #'
-#' Gagolewski M., \emph{A Framework for Benchmarking Clustering Algorithms},
-#' 2022, \url{https://clustering-benchmarks.gagolewski.com}.
+#' Gagolewski M., A Framework for Benchmarking Clustering Algorithms,
+#' \emph{SoftwareX} 20, 2022, 101270,
+#' \doi{10.1016/j.softx.2022.101270},
+#' \url{https://clustering-benchmarks.gagolewski.com}.
 #'
 #' Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
 #' Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
