@@ -2,5 +2,6 @@
 requires = [
     "Cython",  # not: cython
     "numpy>=2.0.0rc1",
-    "scipy"
+    "scipy",
+    "setuptools"
 ]
