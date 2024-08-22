@@ -2,19 +2,35 @@
 % Please edit documentation in R/genieclust-package.R
 \docType{package}
 \name{genieclust-package}
-\alias{-package}
-\alias{genieclust-package}
 \alias{genieclust}
+\alias{genieclust-package}
 \title{The Genie Hierarchical Clustering Algorithm (with Extras)}
 \description{
 See \code{\link{genie}()} for more details.
-}
-\author{
-\href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 
 Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
 
+Useful links:
+\itemize{
+  \item \url{https://genieclust.gagolewski.com/}
+  \item \url{https://clustering-benchmarks.gagolewski.com/}
+  \item \url{https://github.com/gagolews/genieclust}
+  \item Report bugs at \url{https://github.com/gagolews/genieclust/issues}
 }
+
+}
+\author{
+\strong{Maintainer}: Marek Gagolewski \email{marek@gagolewski.com} (\href{https://orcid.org/0000-0003-0637-6028}{ORCID}) [copyright holder]
+
+Other contributors:
+\itemize{
+  \item Maciej Bartoszuk [contributor]
+  \item Anna Cena [contributor]
+  \item Peter M. Larsen [contributor]
+}
+
+}
+\keyword{internal}

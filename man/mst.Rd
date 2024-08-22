@@ -77,8 +77,8 @@ used.
 Time complexity is \eqn{O(n^2)} for the method accepting an object of
 class \code{dist} and \eqn{O(p n^2)} otherwise.
 
-If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)} with smoothing
-factor \code{M} (see Campello et al. 2013)
+If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
+with smoothing factor \code{M} (see Campello et al. 2013)
 is used instead of the chosen "raw" distance \eqn{d(i,j)}.
 It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
 \eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
@@ -87,8 +87,8 @@ Genie++ clustering algorithm (see \code{\link{gclust}})
 with respect to the mutual reachability distance gains the ability to
 identify some observations are noise points.
 
-Note that the case \code{M} = 2 corresponds to the original distance, but we are
-determining the 1-nearest neighbours separately as well, which is a bit
+Note that the case \code{M} = 2 corresponds to the original distance, but we
+determine the 1-nearest neighbours separately as well, which is a bit
 suboptimal; you can file a feature request if this makes your data analysis
 tasks too slow.
 }

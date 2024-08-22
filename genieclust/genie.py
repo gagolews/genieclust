@@ -1222,7 +1222,7 @@ class GIc(GenieBase):
         Gagolewski M., Bartoszuk M., Cena A.,
         Genie: A new, fast, and outlier-resistant hierarchical clustering
         algorithm, *Information Sciences* 363, 2016, 8-23.
-        doi:10.1016/j.ins.2016.05.003.
+        doi:10.1016/j.ins.2016.05.003.ing
 
     .. [4]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,

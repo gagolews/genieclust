@@ -46,7 +46,7 @@ Time complexity is $O(n^2)$ for the method accepting an object of class `dist` a
 
 If `M` \>= 2, then the mutual reachability distance $m(i,j)$ with smoothing factor `M` (see Campello et al. 2013) is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $m(i, j)=\max(d(i,j), c(i), c(j))$, where $c(i)$ is $d(i, k)$ with $k$ being the (`M`-1)-th nearest neighbour of $i$. This makes \"noise\" and \"boundary\" points being \"pulled away\" from each other. Genie++ clustering algorithm (see [`gclust`](gclust.md)) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.
 
-Note that the case `M` = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.
+Note that the case `M` = 2 corresponds to the original distance, but we determine the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.
 
 ## Value
 

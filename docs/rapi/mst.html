@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.5.9002
+1.1.6
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -385,7 +385,7 @@
 <p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a> to control the number of threads used.</p>
 <p>Time complexity is <span class="math notranslate nohighlight">\(O(n^2)\)</span> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <span class="math notranslate nohighlight">\(O(p n^2)\)</span> otherwise.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2013) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
-<p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we are determining the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
+<p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we determine the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">¶</a></h2>
@@ -456,7 +456,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-07-25T16:23:35+0200.
+              Last updated on 2024-08-22T09:48:31+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -498,7 +498,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=88098e3f"></script>
+</div><script src="../_static/documentation_options.js?v=937269b5"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

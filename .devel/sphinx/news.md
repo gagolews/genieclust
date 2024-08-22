@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.1.5.9001 (under development)
+## 1.1.6 (2024-08-22)
 
-* [PYTHON] The packages now works with *numpy* 2.0.
+* [PYTHON] The package now works with *numpy* 2.0.
 
 
 ## 1.1.5 (2023-10-18)
@@ -46,8 +46,8 @@
 *  [R] `mst.default` now throws an error if any element in the input matrix
    is missing/infinite.
 
-*  [Python] Fixed the call to `mlpack.emst` that stopped working
-   with the new version of `mlpack`.
+*  [Python] The call to `mlpack.emst` that stopped working
+   with the new version of `mlpack` has been fixed.
 
 
 ## 1.1.2 (2022-09-17)

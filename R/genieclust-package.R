@@ -24,16 +24,11 @@
 #' @description
 #' See \code{\link{genie}()} for more details.
 #'
-#'
-#' @name genieclust-package
-#' @rdname genieclust-package
-#' @aliases genieclust
-#' @docType package
-#'
 #' @useDynLib genieclust, .registration=TRUE
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats hclust
 #' @importFrom stats cutree
 #' @importFrom stats dist
 #' @importFrom utils capture.output
-invisible(NULL)
+#' @keywords internal
+"_PACKAGE"
