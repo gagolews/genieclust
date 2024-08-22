@@ -10,7 +10,7 @@ env:
     # TODO: manylinux aarch64
     # TODO: macos arm64
     CIBW_SKIP: cp2* pp* cp35* cp36* cp37* *-win32 *-musllinux* *-macosx_*_universal2* *win_arm64* *-manylinux_arm64 *-manylinux_i686 *-manylinux_ppc64le *-manylinux_s390x *-manylinux_aarch64
-    CIBW_BEFORE_BUILD: pip3 install -r requirements.txt --upgrade
+    CIBW_BEFORE_BUILD: python -m pip install -r requirements.txt --upgrade
     CIBW_TEST_SKIP: "*-macosx_arm64"
     #CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
     CIBW_ARCHS: all
@@ -29,10 +29,10 @@ jobs:
       - uses: actions/setup-python@v5
 
       - name: Install cibuildwheel
-        run: python3 -m pip install cibuildwheel==2.20.0
+        run: python -m pip install cibuildwheel==2.20.0
 
       - name: Build wheels
-        run: python3 -m cibuildwheel --output-dir wheelhouse
+        run: python -m cibuildwheel --output-dir wheelhouse
 
       - uses: actions/upload-artifact@v4
         with:
