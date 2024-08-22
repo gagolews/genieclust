@@ -155,7 +155,7 @@ setuptools.setup(
     install_requires=[
         "numpy",
         "scipy",
-        "cython",
+        "Cython",  # not: cython
         "matplotlib",
         "scikit-learn",
       ],
