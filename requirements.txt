@@ -1,5 +1,5 @@
 numpy
 scipy
-cython
+Cython
 matplotlib
 scikit-learn
