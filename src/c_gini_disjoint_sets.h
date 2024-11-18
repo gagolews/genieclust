@@ -92,6 +92,13 @@ public:
         if (x == y) throw std::invalid_argument("find(x) == find(y)");
         if (y < x) std::swap(x, y);
 
+
+        // NOTE: we could have implemented union-by-size here,
+        // as we have the cluster size info;
+        // but then we wouldn't have that the new parent=minimum ID of members;
+        // which we need elsewhere.
+
+
         // DisjointSet's merge part:
         this->par[y] = x; // update the parent of y
         this->k -= 1;     // decrease the subset count
