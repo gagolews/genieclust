@@ -13,10 +13,17 @@ import numpy as np
 try:
     import rpy2
     from rpy2.robjects.packages import importr
-    import rpy2.robjects.numpy2ri
+    from rpy2.robjects import numpy2ri
+    from rpy2.robjects import default_converter
+    #import rpy2.robjects.numpy2ri
     #rpy2.robjects.numpy2ri.activate()
     stats = importr("stats")
-    genie = importr("genie")
+
+    r_base = importr("base")
+    lib_loc = r_base.Sys_getenv("R_LIBS_USER")[0]
+    print(lib_loc)
+
+    genie = importr("genie", lib_loc=lib_loc)
 except:
     rpy2 = None
     stats = None
@@ -93,18 +100,20 @@ def __test_genie_approx(metric='euclidean'):
                 #assert len(np.unique(res1[res1>=0])) == k
 
                 if stats is not None and genie is not None and M == 1 and not (metric in ['cosine', 'maximum']):
-                    t02 = time.time()
-                    res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
-                    t12 = time.time()
-                    print("t_r=%.3f" % (t12-t02), end="\t")
-                    res2 = np.array(res2, np.intp)
-                    assert len(np.unique(res2)) == k
+                    np_cv_rules = default_converter + numpy2ri.converter
+                    with np_cv_rules.context():
+                        t02 = time.time()
+                        res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
+                        t12 = time.time()
+                        print("t_r=%.3f" % (t12-t02), end="\t")
+                        res2 = np.array(res2, np.intp)
+                        assert len(np.unique(res2)) == k
 
-                    ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
-                    print("ARI=%.3f" % ari, end="\t")
-                    assert ari>1.0-1e-12
+                        ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
+                        print("ARI=%.3f" % ari, end="\t")
+                        assert ari>1.0-1e-12
 
-                    print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
+                        print("t_rel=%.3f" % ((t11-t01)/(t12-t02),), end="\t")
 
 
 

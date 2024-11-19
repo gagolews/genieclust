@@ -6,17 +6,19 @@ import pytest
 import scipy.spatial.distance
 import numpy as np
 
-try:
-    import rpy2
-    from rpy2.robjects.packages import importr
-    import rpy2.robjects.numpy2ri
-    #rpy2.robjects.numpy2ri.activate()
-    stats = importr("stats")
-    genie = importr("genie")
-except:
-    rpy2 = None
-    stats = None
-    genie = None
+# try:
+#     import rpy2
+#     from rpy2.robjects.packages import importr
+#     from rpy2.robjects import numpy2ri
+#     from rpy2.robjects import default_converter
+#     #import rpy2.robjects.numpy2ri
+#     #rpy2.robjects.numpy2ri.activate()
+#     stats = importr("stats")
+#     genie = importr("genie")
+# except:
+#     rpy2 = None
+#     stats = None
+#     genie = None
 
 
 try:
