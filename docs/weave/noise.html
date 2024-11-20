@@ -345,7 +345,7 @@ The <code class="docutils literal notranslate"><span class="pre">-1</span></code
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_true</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n=</span><span class="si">%d</span><span class="s2">, true n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n_clusters</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id5">
@@ -371,7 +371,7 @@ controls how eagerly we tend to classify points as noise.</p>
     <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_genie</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(gini_threshold=</span><span class="si">%g</span><span class="s2">, M=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id6">
@@ -398,7 +398,7 @@ but now with respect to the original distance (here: Euclidean):</p>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_noise</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(gini_threshold=</span><span class="si">%g</span><span class="s2">, noise points removed first; M=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g2</span><span class="o">.</span><span class="n">gini_threshold</span><span class="p">,</span> <span class="n">g1</span><span class="o">.</span><span class="n">M</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id7">
@@ -424,7 +424,7 @@ of finer or coarser granularity.</p>
     <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_noise</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(n_clusters=</span><span class="si">%d</span><span class="s2">)&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">))</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id8">
@@ -438,13 +438,13 @@ of finer or coarser granularity.</p>
 <h2>A Comparision with HDBSCAN*<a class="headerlink" href="#a-comparision-with-hdbscan" title="Link to this heading">¶</a></h2>
 <p>Here are the results returned by <code class="docutils literal notranslate"><span class="pre">hdbscan</span></code> with default parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
-<span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
+<span></span><span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
 <span class="n">labels_hdbscan</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
     <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">min_samples</span> <span class="ow">or</span> <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id9">
@@ -467,7 +467,7 @@ we can obtain a partition that is even closer to the reference one:</p>
         <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
             <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">min_samples</span> <span class="ow">or</span> <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">))</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span></span><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id10">
@@ -515,7 +515,7 @@ we can obtain a partition that is even closer to the reference one:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-08-22T09:48:31+0200.
+              Last updated on 2024-11-20T12:33:00+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

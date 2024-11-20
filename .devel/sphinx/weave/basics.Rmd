@@ -1,6 +1,5 @@
 # Basics
 
-
 *Genie* {cite}`genieins` is an agglomerative hierarchical clustering
 algorithm that links clusters minding that
 the Gini index (a measure of inequality used in, amongst others,
@@ -16,7 +15,6 @@ of the `genieclust` {cite}`genieclust` package,
 which can be installed from
 [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
-
 
 
 
@@ -72,9 +70,8 @@ plt.show()
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The `genieclust` package's interface
-is compatible with the one from the popular
-[scikit-learn](https://scikit-learn.org/) library {cite}`sklearn`.
+`gini_threshold` parameter value). The `genieclust` package's programming
+interface is [scikit-learn](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
 
@@ -159,8 +156,6 @@ genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_kmeans)
 The adjusted Rand score of $\sim 0.3$ indicates a far-from-perfect fit.
 
 
-
-
 ## A Comparison with HDBSCAN\*
 
 Let's also make a comparison against a version of the DBSCAN
@@ -169,7 +164,6 @@ magical `eps` parameter, which might be hard to tune in practice. However,
 the [hdbscan](https://github.com/scikit-learn-contrib/hdbscan) package
 {cite}`hdbscanpkg` implements its robustified variant
 {cite}`hdbscan`, which makes the algorithm much more user-friendly.
-
 
 Here are the clustering results with the `min_cluster_size` parameter
 of 3, 5, 10, and 15:
@@ -247,7 +241,7 @@ plt.show()
 
 Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
 
-```{python basics-dendrogram-1,fig.cap="Example dendrogram."}
+```{python basics-dendrogram-1,fig.cap="Example dendrogram.",results="hide"}
 import scipy.cluster.hierarchy
 g = genieclust.Genie(compute_full_tree=True)
 g.fit(X)
@@ -259,7 +253,7 @@ plt.show()
 
 Another example:
 
-```{python basics-dendrogram-2,fig.cap="Another example dendrogram."}
+```{python basics-dendrogram-2,fig.cap="Another example dendrogram.",results="hide"}
 scipy.cluster.hierarchy.dendrogram(linkage_matrix,
     truncate_mode="lastp", p=15, orientation="left")
 plt.show()

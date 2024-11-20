@@ -1,4 +1,6 @@
 # Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com/>
+# pip3 install pweave tabulate hdbscan mlpack nmslib pytest rpy2 scanpy
+
 
 .PHONY: python py-test py-check r r-check r r-build html docs clean
 

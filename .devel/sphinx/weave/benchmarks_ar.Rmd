@@ -30,8 +30,6 @@ For more detailed results based on other partition similarity scores,
 see the [Appendix](benchmarks_details).
 
 
-
-
 ```{python imports,results="hide",echo=FALSE}
 import numpy as np
 import pandas as pd
@@ -185,7 +183,6 @@ res_max = res2.groupby(["dataset", "method"]).max().\
 
 
 
-
 ```{python plot_small,echo=FALSE,results="hide",warn=FALSE,fig.cap="Distribution of the AR index for each algorithm (small datasets); best=1.0.",fig.height=5.9375}
 do_plot(res_max)
 ```
@@ -197,8 +194,6 @@ information-theoretic [ITM](https://github.com/amueller/information-theoretic-ms
 {cite}`itm` method (which is also based on a minimum spanning tree;
 compare {cite}`cvimst`)
 tend to output good quality outcomes as well.
-
-
 
 
 Descriptive statistics for the ranks (for each dataset,

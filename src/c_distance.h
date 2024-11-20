@@ -158,8 +158,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
             Py_ssize_t w = M[j];
             const T* y = X+d*w;
 
-            // or we could use the BLAS snrm2() for increased numerical
-            // stability; are we building a rocket though?
+            // or we could use the BLAS nrm2 / dot
             __buf[w] = 0.0;
             for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
@@ -211,8 +210,7 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
             Py_ssize_t w = M[j];
             const T* y = X+d*w;
 
-            // or we could use the BLAS snrm2() for increased numerical
-            // stability; are we building a rocket though?
+            // or we could use the BLAS nrm2 / dot
             __buf[w] = 0.0;
             for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += (x[u]-y[u])*(x[u]-y[u]);

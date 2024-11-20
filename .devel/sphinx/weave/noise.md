@@ -5,8 +5,7 @@
 # Clustering with Noise Points Detection
 
 
-
-```python
+``` python
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -22,8 +21,7 @@ the at [hdbscan](https://github.com/scikit-learn-contrib/hdbscan)
 {cite}`hdbscanpkg` package's project site:
 
 
-
-```python
+``` python
 dataset = "hdbscan"
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
 labels_true = np.loadtxt("%s.labels0.gz" % dataset, dtype=np.intp) - 1
@@ -38,11 +36,13 @@ find useful for whatever their goal is).
 The `-1` labels denote noise points (light grey markers).
 
 
-
-```python
+``` python
 genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5)
 plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
 plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 
@@ -66,8 +66,7 @@ Here are the effects of playing with the `M` parameter
 (we keep the default `gini_threshold`):
 
 
-
-```python
+``` python
 Ms = [2, 5, 10, 25]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
@@ -76,6 +75,9 @@ for i in range(len(Ms)):
     genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
     plt.title("(gini_threshold=%g, M=%d)"%(g.gini_threshold, g.M))
     plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 
@@ -91,8 +93,7 @@ and then apply the clustering procedure once again
 but now with respect to the original distance (here: Euclidean):
 
 
-
-```python
+``` python
 # Step 1: Noise point identification
 g1 = genieclust.Genie(n_clusters=n_clusters, M=50)
 labels_noise = g1.fit_predict(X)
@@ -106,6 +107,9 @@ labels_noise[non_noise] = labels_genie
 genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
 plt.title("(gini_threshold=%g, noise points removed first; M=%d)"%(g2.gini_threshold, g1.M))
 plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 
@@ -126,8 +130,7 @@ of finer or coarser granularity.
 
 
 
-
-```python
+``` python
 ncs = [5, 6, 7, 8, 10, 15]
 for i in range(len(ncs)):
     g = genieclust.Genie(n_clusters=ncs[i])
@@ -137,6 +140,9 @@ for i in range(len(ncs)):
     genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
     plt.title("(n_clusters=%d)"%(g.n_clusters))
     plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 
@@ -153,15 +159,21 @@ Labels predicted by Genie when noise points were removed from the dataset – di
 Here are the results returned by `hdbscan` with default parameters:
 
 
-
-```python
+``` python
 import hdbscan
+```
+
+
+``` python
 h = hdbscan.HDBSCAN()
 labels_hdbscan = h.fit_predict(X)
 genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5)
 plt.title("(min_cluster_size=%d, min_samples=%d)" % (
     h.min_cluster_size, h.min_samples or h.min_cluster_size))
 plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 
@@ -177,8 +189,7 @@ we can obtain a partition that is even closer to the reference one:
 
 
 
-
-```python
+``` python
 mcss = [5, 10, 25]
 mss = [5, 10]
 for i in range(len(mcss)):
@@ -190,6 +201,9 @@ for i in range(len(mcss)):
         plt.title("(min_cluster_size=%d, min_samples=%d)" % (
             h.min_cluster_size, h.min_samples or h.min_cluster_size))
         plt.axis("equal")
+```
+
+``` python
 plt.show()
 ```
 

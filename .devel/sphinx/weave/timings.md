@@ -70,6 +70,11 @@ For K-means, the timings are listed as a function of the number of clusters to d
 for the other hierarchical methods the run-times are almost identical irrespective of the
 partitions' cardinality.
 
+<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '['70000' '70000' '70000' '70000' '70000' '70000' '70000' '70000' '70000'
+ '70000' '70000' '70000' '105600' '105600' '105600' '105600' '105600'
+ '105600' '105000' '105000' '105000' '105000' '105000' '105000']' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '['719' '719' '719' '719' '719' '719' '784' '784' '784' '784' '784' '784'
+ '2' '2' '2' '2' '2' '2' '64' '64' '64' '64' '64' '64']' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
 | dataset       | n      | d   | method               |      10 |    100 |    1000 |
 |---------------|--------|-----|----------------------|---------|--------|---------|
 | mnist/digits  | 70000  | 719 | Genie_0.3            |  412.72 |     |      |
@@ -95,7 +100,7 @@ partitions' cardinality.
 |               |        |     | fastcluster_centroid | 4945.91 |     |      |
 |               |        |     | fastcluster_median   | 2854.27 |     |      |
 |               |        |     | fastcluster_ward     |  778.18 |     |      |
-|               |        |     | sklearn_kmeans       |    3.35 |  37.89 |  357.84 |
+|               |        |     | sklearn_kmeans       |    3.35 |  37.89 |  357.84 | 
 
 
 Of course, the K-means algorithm is the fastest.
@@ -137,7 +142,7 @@ on 6 threads:
 |                    |  10 |    0.15 |    3.21 |    12.74 |   719.33 |   4388.26 |
 |                    |  25 |    0.28 |    6.51 |    26.65 |  1627.9  |   7708.23 |
 |                    |  50 |    0.47 |   11.97 |    54.52 |  2175.3  |  11346.3  |
-|                    | 100 |    1    |   26.07 |   132.47 |  4408.07 |  16021.8  |
+|                    | 100 |    1    |   26.07 |   132.47 |  4408.07 |  16021.8  | 
 
 
 By default, `mlpack_enabled` is `"auto"`, which translates
@@ -191,8 +196,7 @@ reference and is not recomputed unless needed. Here are the timings for
 a first run of the algorithm:
 
 
-
-```python
+``` python
 import time, genieclust, numpy as np
 X = np.loadtxt("worms_2.data.gz", ndmin=2)
 g = genieclust.Genie(n_clusters=2, gini_threshold=0.3)
@@ -200,15 +204,14 @@ t0 = time.time()
 g.fit(X)
 print("time elapsed - first run: %.3f" % (time.time()-t0))
 ## Genie()
-## time elapsed - first run: 33.114
+## time elapsed - first run: 0.607
 ```
 
 
 Changing some parameters and re-running the cluster search:
 
 
-
-```python
+``` python
 g.set_params(n_clusters=10)
 g.set_params(gini_threshold=0.1)
 t0 = time.time()
@@ -217,5 +220,5 @@ print("time elapsed - consecutive run: %.3f" % (time.time()-t0))
 ## Genie(n_clusters=10)
 ## Genie(gini_threshold=0.1, n_clusters=10)
 ## Genie(gini_threshold=0.1, n_clusters=10)
-## time elapsed - consecutive run: 0.048
+## time elapsed - consecutive run: 0.026
 ```

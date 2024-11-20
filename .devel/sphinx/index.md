@@ -57,7 +57,7 @@ pip3 install genieclust
 ```
 
 from the command line or through your favourite package manager.
-Note a familiar *scikit-learn*-like {cite}`sklearn_api` look-and-feel:
+Note the *scikit-learn*-like {cite}`sklearn_api` API:
 
 ```python
 import genieclust
@@ -71,6 +71,7 @@ labels = g.fit_predict(X)
 [Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.
 ::::
+
 
 
 ## R Version

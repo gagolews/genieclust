@@ -10,8 +10,6 @@ install.packages("genieclust")
 
 
 Below are a few basic examples of how to interact with the package.
-<!-- (partially based on Marek's [forthcoming book](https://lmlcr.gagolewski.com)). -->
-
 
 ```{r load}
 library("genieclust")

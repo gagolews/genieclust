@@ -16,8 +16,7 @@ on a larger data sample and with the Genie algorithm in the game.
 
 
 
-
-```python
+``` python
 import time
 import warnings
 
@@ -41,8 +40,7 @@ First, we generate the datasets. Note that in the
 `n_samples` was set to 1500.
 
 
-
-```python
+``` python
 n_samples = 10000
 noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5,
                                       noise=.05)
@@ -66,8 +64,7 @@ varied = datasets.make_blobs(n_samples=n_samples,
 Then, we run the clustering procedures and plot the results.
 
 
-
-```python
+``` python
 # Set up cluster parameters
 plt.figure(figsize=(9 * 1.3 + 2, 14.5))
 plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,

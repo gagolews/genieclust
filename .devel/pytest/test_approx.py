@@ -19,11 +19,11 @@ try:
     #rpy2.robjects.numpy2ri.activate()
     stats = importr("stats")
 
-    r_base = importr("base")
-    lib_loc = r_base.Sys_getenv("R_LIBS_USER")[0]
-    print(lib_loc)
+    # r_base = importr("base")
+    # lib_loc = r_base.Sys_getenv("R_LIBS_USER")[0]
+    # print(lib_loc)
 
-    genie = importr("genie", lib_loc=lib_loc)
+    genie = importr("genie")  #, lib_loc=lib_loc)
 except:
     rpy2 = None
     stats = None

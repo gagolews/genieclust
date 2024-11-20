@@ -37,8 +37,6 @@ see the [Appendix](benchmarks_details).
 
 
 
-
-
 ## Small Datasets
 
 As some of the algorithms tested here have failed to generate a solution
@@ -62,7 +60,6 @@ Moreover, Gaussian mixtures used `n_init=100`.
 
 
 
-
 (fig:plot_small)=
 ```{figure} benchmarks_ar-figures/plot_small-1.*
 Distribution of the AR index for each algorithm (small datasets); best=1.0.
@@ -75,8 +72,6 @@ information-theoretic [ITM](https://github.com/amueller/information-theoretic-ms
 {cite}`itm` method (which is also based on a minimum spanning tree;
 compare {cite}`cvimst`)
 tend to output good quality outcomes as well.
-
-
 
 
 Descriptive statistics for the ranks (for each dataset,
@@ -96,7 +91,7 @@ gets a rank of 1); lower ranks are better:
 | K-means           |      72 |    5.6 |   3.8 |     1 |   1   |     6 |   9   |    12 |
 | Single linkage    |      72 |    7.4 |   5.1 |     1 |   1   |    11 |  12   |    12 |
 | Spectral_RBF_5    |      72 |    5.2 |   3.5 |     1 |   1   |     6 |   8   |    11 |
-| Ward linkage      |      72 |    6   |   3   |     1 |   4   |     6 |   8   |    12 |
+| Ward linkage      |      72 |    6   |   3   |     1 |   4   |     6 |   8   |    12 | 
 
 
 ## Large Datasets
@@ -127,7 +122,7 @@ Descriptive statistics for the ranks (AR index):
 | ITM            |       6 |    3.3 |   2.3 |     1 |   1.5 |   3   |   5.2 |     6 |
 | K-means        |       6 |    3.3 |   1.6 |     1 |   2.2 |   3.5 |   4.8 |     5 |
 | Single linkage |       6 |    6.8 |   0.4 |     6 |   7   |   7   |   7   |     7 |
-| Ward linkage   |       6 |    3.2 |   1.5 |     1 |   2.2 |   3.5 |   4   |     5 |
+| Ward linkage   |       6 |    3.2 |   1.5 |     1 |   2.2 |   3.5 |   4   |     5 | 
 
 
 

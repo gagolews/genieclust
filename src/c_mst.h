@@ -453,11 +453,20 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
+    // TODO: optimise distance computation for the Euclidean and EuclideanSquared distances
+    // cache sum(x_i^2) in a vector d
+    // note that sum((x_i-x_j)^2) = sum(x_i^2) - 2*sum(x_i*x_j) + sum(x_j^2)
+    //                            = -2 * t(x_j)*x_i + 1 * d[j] + d[i]
+    // d[i] = const in each iter
+    // BLAS GEMV can be used in the remaining part
+    // store a copy of X, swap rows after selecting the min to keep data
+    //    contiguous + keep the permutation vector
+
     Py_ssize_t lastj = 0, bestj, bestjpos;
     for (Py_ssize_t i=0; i<n-1; ++i) {
         // M[1], ... M[n-i-1] - points not yet in the MST
 
-        // compute the distances from lastj (on the fly)
+        // compute the distances between lastj (on the fly) and all j=M[1], ... M[n-i-1]
         // dist_from_lastj[j] == d(lastj, j)
         // pragma omp parallel for inside:
         const T* dist_from_lastj = (*D)(lastj, M.data()+1, n-i-1);

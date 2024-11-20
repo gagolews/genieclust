@@ -368,6 +368,11 @@ Clustering is performed with respect to the Euclidean distance.</p>
 For K-means, the timings are listed as a function of the number of clusters to detect,
 for the other hierarchical methods the run-times are almost identical irrespective of the
 partitions’ cardinality.</p>
+<p><string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘[‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’
+‘70000’ ‘70000’ ‘70000’ ‘105600’ ‘105600’ ‘105600’ ‘105600’ ‘105600’
+‘105600’ ‘105000’ ‘105000’ ‘105000’ ‘105000’ ‘105000’ ‘105000’]’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
+<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘[‘719’ ‘719’ ‘719’ ‘719’ ‘719’ ‘719’ ‘784’ ‘784’ ‘784’ ‘784’ ‘784’ ‘784’
+‘2’ ‘2’ ‘2’ ‘2’ ‘2’ ‘2’ ‘64’ ‘64’ ‘64’ ‘64’ ‘64’ ‘64’]’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -775,7 +780,7 @@ a first run of the algorithm:</p>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - first run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 <span class="c1">## Genie()</span>
-<span class="c1">## time elapsed - first run: 33.114</span>
+<span class="c1">## time elapsed - first run: 0.607</span>
 </pre></div>
 </div>
 <p>Changing some parameters and re-running the cluster search:</p>
@@ -787,7 +792,7 @@ a first run of the algorithm:</p>
 <span class="c1">## Genie(n_clusters=10)</span>
 <span class="c1">## Genie(gini_threshold=0.1, n_clusters=10)</span>
 <span class="c1">## Genie(gini_threshold=0.1, n_clusters=10)</span>
-<span class="c1">## time elapsed - consecutive run: 0.048</span>
+<span class="c1">## time elapsed - consecutive run: 0.026</span>
 </pre></div>
 </div>
 </section>
@@ -828,7 +833,7 @@ a first run of the algorithm:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-08-22T09:48:31+0200.
+              Last updated on 2024-11-20T12:33:00+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
