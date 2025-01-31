@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
 
     env:
         R_LIBS_SITE: /usr/lib/R/site-library
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
@@ -31,11 +31,13 @@ jobs:
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild'), lib='/usr/lib/R/site-library')"
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
         sudo make r
-        sudo python3 -m pip install --upgrade pip
-        if [ -f requirements.txt ]; then sudo pip3 install -r requirements.txt --upgrade; fi
-        sudo pip3 install wheel flake8 pytest --upgrade
-        sudo pip3 install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
-        sudo pip3 install rpy2 pweave ipython jupyter tabulate --upgrade
+        python3 -m venv python-venv
+        source python-venv/bin/activate
+        python3 -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt --upgrade; fi
+        python3 -m pip install wheel flake8 pytest --upgrade
+        python3 -m pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
+        python3 -m pip install rpy2 pweave ipython jupyter tabulate --upgrade
     - name: Install optional dependencies (nmslib)
       continue-on-error: true
       run: |
@@ -46,5 +48,6 @@ jobs:
         #sudo pip3 install mlpack --upgrade
     - name: Test and check Python
       run: |
-        sudo make py-test
-        sudo make py-check
+        source python-venv/bin/activate
+        python3 -m pip install .
+        pytest
