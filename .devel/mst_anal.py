@@ -42,7 +42,8 @@ def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
 mst_s = np.zeros((n-1, 2), dtype=int)
 labels = np.zeros(n, dtype=int)
 mst_labels = np.zeros(n-1, dtype=int)
-#mst_labels[24] = -1  # skiplist   # TODO
+mst_labels[112] = -1  # skiplist   # TODO
+mst_labels[88] = -1
 c = 0
 while True:
     v = np.argmin(labels)
@@ -53,34 +54,35 @@ while True:
     for e in adj_list[v]:
         visit(v, e, c)
     print(labels)
-
-
 counts = np.bincount(labels)
 for i in range(n-1):
     j = int(mst_s[i, 1] == 0)
     mst_s[i, j] = counts[mst_labels[i]]-mst_s[i, 1-j]
 
 
-
-
-ax1 = plt.subplot(121)
+min_cluster_size = 20
+min_mst_s = np.min(mst_s, axis=1)
 op = np.argsort(mst_w)[::-1]
+#(mst_w[op])[min_mst_s[op]>min_cluster_size]
+which_cut = op[np.nonzero(min_mst_s[op]>min_cluster_size)]
+print(which_cut)
+#
+ax1 = plt.subplot(2, 2, 1)
 ax1.plot(mst_w[op])
 ax2 = ax1.twinx()
-min_mst_s = np.min(mst_s[op,:], axis=1)
-ax2.plot(min_mst_s, c='orange')
-
-np.where(mst_w[min_mst_s>20])[0]
-
-plt.subplot(122)
-genieclust.plots.plot_scatter(X)
-genieclust.plots.plot_segments(mst_e, X, style="g-.")
-genieclust.plots.plot_segments(mst_e[np.argsort(mst_w)[-25:],:], X, style="r-")
+ax2.plot(np.arange(n-1), min_mst_s[op], c='orange')
+for i in which_cut:
+    plt.text(op[i], min_mst_s[i], i, ha='center')
+#
+plt.subplot(2, 2, (2, 4))
+genieclust.plots.plot_scatter(X, labels=labels)
+genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
+genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, style="r-")
+genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
 plt.axis("equal")
 for i in range(n-1):
     plt.text(
         (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
         (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
-        "!!!!!!!!!!!!" if mst_labels[i] < 0 else min(mst_s[i, 0], mst_s[i, 1])
+        "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1]))
     )
-
