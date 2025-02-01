@@ -67,6 +67,8 @@ op = np.argsort(mst_w)[::-1]
 which_cut = op[np.nonzero(min_mst_s[op]>min_cluster_size)]
 print(which_cut)
 #
+plt.cld()
+#
 ax1 = plt.subplot(2, 2, 1)
 ax1.plot(mst_w[op])
 ax2 = ax1.twinx()
@@ -86,3 +88,6 @@ for i in range(n-1):
         (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
         "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1]))
     )
+#
+plt.subplot(2, 2, 3)
+
