@@ -9,8 +9,7 @@ The latest stable release of the R package `genieclust` is available from the
 We can install it by calling:
 
 
-
-```r
+``` r
 install.packages("genieclust")
 ```
 
@@ -18,12 +17,9 @@ install.packages("genieclust")
 Below are a few basic examples of how to interact with the package.
 
 
-
-
-```r
+``` r
 library("genieclust")
 ```
-
 
 
 
@@ -32,8 +28,7 @@ dataset that measures the Human, Environmental, and Economic Wellbeing
 in each country. There are seven categories on the scale $[0, 10]$.
 
 
-
-```r
+``` r
 # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
 ssi <- read.csv("ssi_2016_categories.csv", comment.char="#")
 X <- as.matrix(ssi[,-1])    # everything except the Country (1st) column
@@ -63,8 +58,7 @@ with the input matrix directly:
 
 
 
-
-```r
+``` r
 # faster than gclust(dist(X)):
 h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
@@ -80,8 +74,7 @@ print(h)
 In order to extract a desired *k*-partition, we can call `stats::cutree()`:
 
 
-
-```r
+``` r
 y_pred <- cutree(h, k=3)
 sample(y_pred, 25)  # preview
 ##                Iran            Slovenia             Morocco 
@@ -108,8 +101,7 @@ This gives the cluster IDs allocated to each country.
 Let's depict the obtained partition using the `rworldmap` package:
 
 
-
-```r
+``` r
 library("rworldmap")  # see the package's manual for details
 mapdata <- data.frame(Country=dimnames(X)[[1]], Cluster=y_pred)
 mapdata <- joinCountryData2Map(mapdata, joinCode="NAME", nameJoinColumn="Country")
@@ -127,8 +119,7 @@ Countries grouped w.r.t. the SSI categories.
 We can compute, e.g., the average indicators in each identified group:
 
 
-
-```r
+``` r
 t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
 ##                                [,1]   [,2]   [,3]
 ## BasicNeeds                   9.0679 5.2689 9.8178
@@ -146,8 +137,7 @@ For greater readability, we will restrict ourselves to a smaller sample;
 namely, to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
 
 
-
-```r
+``` r
 oecd <- c("Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia",
 "Czech Republic", "Denmark", "Estonia", "Finland", "France", "Germany",
 "Greece", "Hungary", "Iceland", "Ireland", "Israel", "Italy", "Japan",
@@ -155,6 +145,11 @@ oecd <- c("Australia", "Austria", "Belgium", "Canada", "Chile", "Colombia",
 "New Zealand", "Norway", "Poland", "Portugal", "Slovak Republic", "Slovenia",
 "Spain", "Sweden", "Switzerland", "Turkey", "United Kingdom", "United States")
 X_oecd <- X[dimnames(X)[[1]] %in% oecd, ]
+```
+
+
+
+``` r
 h_oecd <- gclust(X_oecd)
 plot(as.dendrogram(h_oecd), horiz=TRUE)
 ```
@@ -166,7 +161,7 @@ Cluster dendrogram for the OECD countries.
 
 
 
-Final notes:
+Conclusion:
 
 * If we are only interested in a specific partition,
 calling `genie()` directly will be slightly faster than referring to

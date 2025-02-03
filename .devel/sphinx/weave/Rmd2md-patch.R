@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com/>
+# Copyright (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com/>
 
 # I only want ```{r...``` and ```{python...``` to be recognised as
 # chunks to-be processed by knitr so that they can be placed within

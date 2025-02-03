@@ -1,6 +1,6 @@
-# Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com/>
+# Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com/>
 # pip3 install pweave tabulate hdbscan mlpack nmslib pytest rpy2 scanpy
-
+# R: rworldmap [gdal-devel geos-devel proj-devel udunits2-devel gdal proj]
 
 .PHONY: python py-test py-check r r-check r r-build html docs clean
 

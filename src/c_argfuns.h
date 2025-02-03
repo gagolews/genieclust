@@ -3,7 +3,7 @@
  *  a. find the (stable) ordering permutation of a vector
  *  b. find the k-th smallest value in a vector
  *
- *  Copyleft (C) 2018-2024, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License

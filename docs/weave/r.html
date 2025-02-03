@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=5282ffc2" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
     
     
 
@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6
+1.1.6.9001
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -434,7 +434,7 @@ namely, to the 37 members of the <a class="reference external" href="https://en.
 <span class="s">&quot;New Zealand&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Norway&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Poland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Portugal&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovak Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Slovenia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Spain&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Sweden&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Switzerland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Turkey&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United Kingdom&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;United States&quot;</span><span class="p">)</span>
 <span class="n">X_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">X</span><span class="p">[</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="o">%in%</span><span class="w"> </span><span class="n">oecd</span><span class="p">,</span><span class="w"> </span><span class="p">]</span>
-<span class="n">h_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
+<span></span><span class="n">h_oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X_oecd</span><span class="p">)</span>
 <span class="nf">plot</span><span class="p">(</span><span class="nf">as.dendrogram</span><span class="p">(</span><span class="n">h_oecd</span><span class="p">),</span><span class="w"> </span><span class="n">horiz</span><span class="o">=</span><span class="kc">TRUE</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -444,7 +444,7 @@ namely, to the 37 members of the <a class="reference external" href="https://en.
 <p><span class="caption-number">Figure 21 </span><span class="caption-text">Cluster dendrogram for the OECD countries.</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>Final notes:</p>
+<p>Conclusion:</p>
 <ul class="simple">
 <li><p>If we are only interested in a specific partition,
 calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to
@@ -458,7 +458,7 @@ Also, see the Python examples regarding noise points detection,
 benchmarking, timing, etc.</p>
 <p><em>To learn more about R, check out Marek’s recent open-access (free!) textbook</em>
 <a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id9" title="Gagolewski, M. (2024).  Deep R Programming. Zenodo, Melbourne. ISBN 978-0-6455719-2-9. URL: https://deepr.gagolewski.com/, DOI: 10.5281/zenodo.7490464.">13</a>]</span>.</p>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id9" title="Gagolewski, M. (2025).  Deep R Programming. Zenodo, Melbourne. ISBN 978-0-6455719-2-9. URL: https://deepr.gagolewski.com/, DOI: 10.5281/zenodo.7490464.">14</a>]</span>.</p>
 </section>
 
         </article>
@@ -492,11 +492,11 @@ benchmarking, timing, etc.</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2024 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2024-11-20T12:33:00+0100.
+              Last updated on 2025-02-03T16:58:47+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -511,7 +511,7 @@ benchmarking, timing, etc.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=937269b5"></script>
+</div><script src="../_static/documentation_options.js?v=c547bfba"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

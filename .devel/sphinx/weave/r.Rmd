@@ -17,7 +17,6 @@ library("genieclust")
 
 
 
-
 Let's consider the [Sustainable Society Indices](http://www.ssfindex.com/)
 dataset that measures the Human, Environmental, and Economic Wellbeing
 in each country. There are seven categories on the scale $[0, 10]$.
@@ -95,7 +94,7 @@ plot(as.dendrogram(h_oecd), horiz=TRUE)
 
 
 
-Final notes:
+Conclusion:
 
 * If we are only interested in a specific partition,
 calling `genie()` directly will be slightly faster than referring to

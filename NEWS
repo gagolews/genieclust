@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.x.x (2025-xx-xx)
+
+* ...
+
+
 ## 1.1.6 (2024-08-22)
 
 * [PYTHON] The package now works with *numpy* 2.0.

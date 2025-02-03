@@ -14,7 +14,7 @@ Noisy k-partition post-processing
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2024, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
