@@ -16,7 +16,12 @@ import os.path
 
 
 examples = [
-    ["sipu", "aggregation", [785, 784, 786]],
+    ["wut", "z2", [897, 895, 893, 892]],
+    ["wut", "z2", [897, 895, 893, 892, 683]],
+    ["wut", "z2", [897, 895, 893]],
+    ["wut", "labirynth", [3544, 3543, 3541, 3533]],
+    ["sipu", "spiral", [310, 309]],
+    ["sipu", "aggregation", [785, 784, 786, 783]],
     ["sipu", "pathbased", [293, 271, 294]],
 ]
 
