@@ -16,7 +16,7 @@ import os.path
 
 
 examples = [
-    ["wut", "z2", [897, 895, 893, 892]],
+    ["wut", "z2", [894, 895, 893, 889]],
     ["wut", "z2", [897, 895, 893, 892, 683]],
     ["wut", "z2", [897, 895, 893]],
     ["wut", "labirynth", [3544, 3543, 3541, 3533]],
@@ -32,10 +32,12 @@ b = clustbench.load_dataset(example[0], example[1], path=data_path)
 X, labels = b.data, b.labels[0]
 skiplist = example[2]
 
+SKIPEDGE = np.iinfo(int).min
 
 
 n = X.shape[0]
-min_cluster_size = n/20
+min_cluster_size = 50
+noise_size = 3
 
 mst = genieclust.internal.mst_from_distance(X, "euclidean")
 mst_w, mst_e = mst
@@ -47,83 +49,71 @@ for i in range(n):
     adj_list[i] = np.array(adj_list[i])
 
 def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
-    if mst_labels[e] < 0:  # skiplist
+    if c > 0 and (mst_labels[e] == SKIPEDGE or mst_labels[e] == 0):
         return 0
-    assert mst_labels[e] == 0
     iv = int(mst_e[e, 1] == v)
     w = mst_e[e, 1-iv]
-    labels[w] = c
-    mst_labels[e] = c
     tot = 1
     for e2 in adj_list[w]:
         if mst_e[e2, 0] != v and mst_e[e2, 1] != v:
             tot += visit(w, e2, c)
     mst_s[e, iv] = tot
     mst_s[e, 1-iv] = 0
+
+    if c > 0 or tot < noise_size:
+        labels[w] = c
+        mst_labels[e] = c
+
     return tot
 
 
-# TODO: store mst_s in each iteration
-# TODO: restart from the vertices adjacent to the skipped edge
 mst_s = np.zeros((n-1, 2), dtype=int)
-labels = np.zeros(n, dtype=int)
-mst_labels = np.zeros(n-1, dtype=int)
+labels = -np.ones(n, dtype=int)
+mst_labels = -np.ones(n-1, dtype=int)
 for s in skiplist:
-    mst_labels[s] = -1  # skiplist
+    mst_labels[s] = SKIPEDGE  # skiplist
+#
+# preprocess – noise points:
 c = 0
-while True:
-    v = np.argmin(labels)
-    print(v, labels[v])
-    if labels[v] > 0: break
-    c += 1
-    labels[v] = c
-    for e in adj_list[v]:
-        visit(v, e, c)
-    print(labels)
+v = 0  # anything
+for e in adj_list[v]:
+    visit(v, e, c)
+#
+# mark clusters
+for v in range(n):
+    if labels[v] == -1:
+        c += 1
+        labels[v] = c
+        for e in adj_list[v]:
+            visit(v, e, c)
 counts = np.bincount(labels)
 for i in range(n-1):
-    j = int(mst_s[i, 1] == 0)
-    mst_s[i, j] = counts[mst_labels[i]]-mst_s[i, 1-j]
+    if mst_labels[i] != SKIPEDGE:
+        j = int(mst_s[i, 1] == 0)
+        mst_s[i, j] = counts[np.abs(mst_labels[i])]-mst_s[i, 1-j]
 min_mst_s = np.min(mst_s, axis=1)
-op = np.argsort(mst_w)[::-1]
-#(mst_w[op])[min_mst_s[op]>min_cluster_size]
-which_cut = op[np.nonzero(min_mst_s[op]>min_cluster_size)]
-print(which_cut)
+
+
 
 
 #
 plt.clf()
 #
+# Edge weights + cluster sizes
 ax1 = plt.subplot(3, 2, 1)
+op = np.argsort(mst_w)[::-1]
+op = op[mst_labels[op]>0]
+#(mst_w[op])[min_mst_s[op]>min_cluster_size]
 ax1.plot(mst_w[op])
 ax2 = ax1.twinx()
-ax2.plot(np.arange(n-1), min_mst_s[op], c='orange', alpha=0.3)
+ax2.plot(np.arange(len(op)), min_mst_s[op], c='orange', alpha=0.3)
+# mark potential cut edges
+which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)
+print(op[which_cut])
 for i in which_cut:
-    plt.text(op[i], min_mst_s[i], i, ha='center')
+    plt.text(i, min_mst_s[op[i]], op[i], ha='center')
 #
-# treelhouette
-plt.subplot(3, 2, 5)
-cluster_distances = np.ones((c, c))*np.inf
-for e in skiplist:
-    i, j = mst_e[e, :]
-    cluster_distances[labels[i]-1, labels[j]-1] = mst_w[e]
-    cluster_distances[labels[j]-1, labels[i]-1] = mst_w[e]
-# leave the diagonal to inf
-min_intercluster_distances = np.min(cluster_distances, axis=0)
-#
-a = np.zeros(n)
-for i in range(n):
-    a[i] = np.min(mst_w[adj_list[i][mst_labels[adj_list[i]] == labels[i]]])
-b = min_intercluster_distances[labels-1]
-s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
-#
-o1 = np.argsort(s)[::-1]
-o2 = np.argsort(labels[o1], kind='stable')
-#plt.plot(s[o1][o2])
-#plt.ylim(0, 1)
-plt.bar(np.arange(n), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[labels[o1]][o2])
-#
-#
+# MST edges per cluster
 ax1 = plt.subplot(3, 2, 3)
 ax2 = ax1.twinx()
 last = 0
@@ -133,29 +123,58 @@ for i in range(1, c+1):
     ax1.plot(
         np.arange(last, last+counts[i]-1),
         _w[_o],
-        color=genieclust.plots.col[i]
+        color=genieclust.plots.col[i-1]
     )
     ax2.plot(
         np.arange(last, last+counts[i]-1),
         min_mst_s[mst_labels==i][_o],
-        color=genieclust.plots.col[i],
+        color=genieclust.plots.col[i-1],
         alpha=0.2
     )
     last += counts[i] - 1
 #
+#
+# treelhouette
+plt.subplot(3, 2, 5)
+cluster_distances = np.ones((c, c))*np.inf
+for e in skiplist:
+    i, j = mst_e[e, :]
+    assert labels[i] > 0
+    assert labels[j] > 0
+    cluster_distances[labels[i]-1, labels[j]-1] = mst_w[e]
+    cluster_distances[labels[j]-1, labels[i]-1] = mst_w[e]
+# leave the diagonal to inf
+min_intercluster_distances = np.min(cluster_distances, axis=0)
+#
+# Variant 1) per-vertex:
+# a = np.zeros(n)
+# for i in range(n):
+    # a[i] = np.min(mst_w[adj_list[i][mst_labels[adj_list[i]] == labels[i]]])
+# l = labels
+#
+# Variant 2) per-edge:
+a = mst_w[mst_labels > 0]
+l = mst_labels[mst_labels > 0]
+#
+b = min_intercluster_distances[l - 1]
+s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
+o1 = np.argsort(s)[::-1]
+o2 = np.argsort(l[o1], kind='stable')
+plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
+#
 # MST
 plt.subplot(3, 2, (2, 6))
-genieclust.plots.plot_scatter(X, labels=labels)
+genieclust.plots.plot_scatter(X, labels=labels-1)
 genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
-genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, alpha=0.5)
-genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
+#genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, alpha=0.5)
+#genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
 plt.axis("equal")
 for i in range(n-1):
     plt.text(
         (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
         (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
         "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1])),
-        color=genieclust.plots.col[mst_labels[i]]
+        color="gray" if mst_labels[i] == SKIPEDGE else genieclust.plots.col[mst_labels[i]-1],
     )
 
 
