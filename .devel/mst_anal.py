@@ -16,13 +16,17 @@ import os.path
 
 
 examples = [
+    ["other", "hdbscan", [2051, 2047, 2034, 1975, 1942]],
+    ["graves", "parabolic", [956]],
+    ["fcps", "wingnut", [1014]],
+    ["fcps", "engytime", [3597]],
+    ["sipu", "pathbased", [293, 271]],
+    ["sipu", "aggregation", [785, 784, 786, 783, 360]],
     ["wut", "z2", [894, 895, 893, 889]],
     ["wut", "z2", [897, 895, 893, 892, 683]],
     ["wut", "z2", [897, 895, 893]],
     ["wut", "labirynth", [3544, 3543, 3541, 3533]],
     ["sipu", "spiral", [310, 309]],
-    ["sipu", "aggregation", [785, 784, 786, 783]],
-    ["sipu", "pathbased", [293, 271, 294]],
 ]
 
 example = examples[0]
@@ -36,8 +40,8 @@ SKIPEDGE = np.iinfo(int).min
 
 
 n = X.shape[0]
-min_cluster_size = 50
-noise_size = 3
+min_cluster_size = n/(len(skiplist)+1)/10
+noise_size = 5
 
 mst = genieclust.internal.mst_from_distance(X, "euclidean")
 mst_w, mst_e = mst
@@ -161,6 +165,7 @@ s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
 o1 = np.argsort(s)[::-1]
 o2 = np.argsort(l[o1], kind='stable')
 plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
+plt.axhline(np.mean(s), color='gray')
 #
 # MST
 plt.subplot(3, 2, (2, 6))
