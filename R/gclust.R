@@ -130,7 +130,7 @@
 #' an arbitrary k-partition.
 #'
 #' \code{genie()} returns a \code{k}-partition - a vector with elements in 1,...,k,
-#' whose i-th element denotes the i-th input point's cluster identifier.
+#' whose i-th element denotes the i-th input point's cluster label.
 #' Missing values (\code{NA}) denote noise points (if \code{detect_noise}
 #' is \code{TRUE}).
 #'
