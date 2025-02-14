@@ -16,27 +16,17 @@ import scipy.spatial
 
 
 examples = [
-    ["sipu", "pathbased", [293]],
-    ["fcps", "wingnut", []],
-    ["wut", "labirynth", []],
+    ["sipu", "aggregation", [1,  2]],
     ["sipu", "aggregation", []],
+    ["wut", "labirynth", []],
+    ["fcps", "wingnut", []],
+    ["sipu", "pathbased", []],
     ["sipu", "compound", []],
     ["graves", "parabolic", []],
     ["wut", "z2", []],
-    ["fcps", "wingnut", [1014]],
     ["fcps", "engytime", []],
-    ["fcps", "engytime", [3597]],
-    ["graves", "parabolic", [956]],
-    ["wut", "z2", [895]],
-    ["sipu", "compound", [397, 396, 328, 347]],
-    ["sipu", "aggregation", [785, 784, 786, 783]],
-    ["sipu", "spiral", [310, 309]],
-    ["wut", "labirynth", [3544, 3543, 3541, 3533]],
-    ["wut", "z2", [897, 895, 893, 892, 683]],
-    ["sipu", "pathbased", [293, 271]],
-    ["other", "hdbscan", [2051, 2047, 2034, 1975, 1942]],
-    ["wut", "z2", [894, 895, 893, 889]],
-    ["wut", "z2", [897, 895, 893]],
+    ["sipu", "spiral", []],
+    ["other", "hdbscan", []],
 ]
 
 example = examples[0]
@@ -56,6 +46,10 @@ gini_threshold = 0.5
 
 mst = genieclust.internal.mst_from_distance(X, "euclidean")
 mst_w, mst_e = mst
+op = np.argsort(mst_w)[::-1]
+mst_w = mst_w[op]
+mst_e = mst_e[op, :]
+
 adj_list = [ [] for i in range(n) ]
 for i in range(n-1):
     adj_list[mst_e[i, 0]].append(i)
@@ -116,61 +110,92 @@ nn_w, nn_e = kd.query(X, nn_k+1)
 nn_w = np.array(nn_w)[:, 1:]  # exclude self
 nn_e = np.array(nn_e)[:, 1:]
 
-# nn_threshold = np.mean(nn_w[:, -1])
-# nn_w[:, -1] > nn_threshold
 
-plt.clf()
-#nn_var = np.apply_along_axis(genieclust.inequality.gini_index, 1, nn_w)
-#noise_point = (nn_var>0.2)
-
-k = -1
-Q13 = np.array([np.percentile(nn_w[labels==j+1, k], [25, 75]) for j in range(c)])
+# a point is a noise point if its k-th nearest neighbour is just too far away -
+# - relative to the "typical" distances to k-nearest neighbours within the point's cluster;
+# they're outliers (each cluster can be of different density, so we take this into account)
+noise_k = -1  # which nearest neighbour do we take into account?
+Q13 = np.array([np.percentile(nn_w[labels==j+1, noise_k], [25, 75]) for j in range(c)])
 bnd = (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))[labels-1]
-noise_point = nn_w[:, k]>bnd
-genieclust.plots.plot_scatter(X, labels=-(noise_point).astype(int))
-genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
-plt.axis("equal")
-noise_edge = noise_point[mst_e[:,0]] | noise_point[mst_e[:,1]]
-k = 1
-noise_edge |= mst_w > np.maximum(nn_w[mst_e[:,0], k], nn_w[mst_e[:,1], k])
-genieclust.plots.plot_segments(mst_e[noise_edge,:], X, style="r-", alpha=0.7)
+noise_points = (nn_w[:, noise_k]>bnd)
+labels[noise_points] = 0
 
-raise Exception("")
+# a noise edge is incident to a noise point,
+# provided that its removal leads to too small a cluster
+noise_edges = (noise_points[mst_e[:,0]] | noise_points[mst_e[:,1]])
+noise_edges &= (np.min(mst_s, axis=1) < min_cluster_size)
+# a cut edge ...
+cut_k = -1
+cut_edges = (noise_points[mst_e[:,0]] | noise_points[mst_e[:,1]])
+#cut_edges |= (mst_w > np.maximum(nn_w[mst_e[:,0], cut_k], nn_w[mst_e[:,1], cut_k]))
+#cut_edges |=
+cut_edges &= (np.min(mst_s, axis=1) >= min_cluster_size)
+
+genieclust.plots.plot_scatter(X, labels=labels-1)
+genieclust.plots.plot_segments(mst_e[(~noise_edges)&(~cut_edges),:], X, style="g-", alpha=0.3)
+genieclust.plots.plot_segments(mst_e[noise_edges,:], X, style="b:", alpha=0.1)
+genieclust.plots.plot_segments(mst_e[cut_edges,:], X, style="r-", alpha=0.7)
 
 
-plt.clf()
-genieclust.plots.plot_scatter(X)
-plt.axis("equal")
-for i in range(nn_k):
-    genieclust.plots.plot_segments(np.c_[np.arange(n), nn_e[:,i]], X)
+which_cut = np.flatnonzero(cut_edges)
+print(which_cut)
+
+
+
+# raise Exception("")
+
+
+# plt.clf()
+# genieclust.plots.plot_scatter(X)
+# plt.axis("equal")
+# for i in range(nn_k):
+#     genieclust.plots.plot_segments(np.c_[np.arange(n), nn_e[:,i]], X)
 
 
 
 
-plt.clf()
-plt.boxplot([nn_w[labels==j+1, i] for i in range(nn_k) for j in range(c)])
+# plt.clf()
+# plt.boxplot([nn_w[labels==j+1, i] for i in range(nn_k) for j in range(c)])
 
 # plt.clf()
 # plt.boxplot([nn_w[labels==j+1, :].std(axis=1) for j in range(c)])
 # plt.boxplot([nn_var[labels==j+1] for j in range(c)])
 
 
-
 #
 plt.clf()
 #
+# MST
+plt.subplot(3, 2, (2, 6))
+# nn_threshold = np.mean(nn_w[:, -1])
+# nn_w[:, -1] > nn_threshold
+# labels[nn_w[:, -1] > nn_threshold] = 0
+genieclust.plots.plot_scatter(X, labels=labels-1)
+genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
+genieclust.plots.plot_segments(mst_e[which_cut, :], X, style="r-", alpha=0.7)
+#genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, alpha=0.5)
+#genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
+plt.axis("equal")
+for i in range(n-1):
+    plt.text(
+        (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
+        (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
+        "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1])),
+        color="gray" if mst_labels[i] == SKIPEDGE else genieclust.plots.col[mst_labels[i]-1],
+    )
+#
 # Edge weights + cluster sizes
 ax1 = plt.subplot(3, 2, 1)
-op = np.argsort(mst_w)[::-1]
+op = np.argsort(mst_w)[::-1]   # TODO: no need - already sorted
 op = op[mst_labels[op]>0]
 #(mst_w[op])[min_mst_s[op]>min_cluster_size]
 ax1.plot(mst_w[op])
 ax2 = ax1.twinx()
 ax2.plot(np.arange(len(op)), min_mst_s[op], c='orange', alpha=0.3)
 # Variant 1) mark candidate cut edges based on cut sizes
-which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)
+# which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)
 for i in which_cut:
-   plt.text(i, min_mst_s[op[i]], op[i], ha='center', color=genieclust.plots.col[mst_labels[op[i]]-1])
+   plt.text(i, min_mst_s[i], i, ha='center', color=genieclust.plots.col[mst_labels[op[i]]-1])
 # Variant 2) mark candidate cut edges based on Gini indices of cluster sizes
 # which_cut = []
 # for i in range(len(op)):
@@ -181,7 +206,7 @@ for i in which_cut:
 #         plt.text(i, min_mst_s[op[i]], op[i], ha="center")
 #        which_cut.append(i)
 #
-print(op[which_cut])
+# print(op[which_cut])
 #
 # MST edges per cluster
 ax1 = plt.subplot(3, 2, 3)
@@ -234,22 +259,6 @@ plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots
 treelhouette_score = np.mean(s)
 print(treelhouette_score)
 plt.axhline(treelhouette_score, color='gray')
-#
-# MST
-plt.subplot(3, 2, (2, 6))
-labels[nn_w[:, -1] > nn_threshold] = 0
-genieclust.plots.plot_scatter(X, labels=labels-1)
-genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
-#genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, alpha=0.5)
-#genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
-plt.axis("equal")
-for i in range(n-1):
-    plt.text(
-        (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
-        (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
-        "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1])),
-        color="gray" if mst_labels[i] == SKIPEDGE else genieclust.plots.col[mst_labels[i]-1],
-    )
 
 
 
