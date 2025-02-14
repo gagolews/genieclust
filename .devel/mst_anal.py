@@ -16,19 +16,27 @@ import scipy.spatial
 
 
 examples = [
+    ["sipu", "pathbased", [293]],
+    ["fcps", "wingnut", []],
+    ["wut", "labirynth", []],
+    ["sipu", "aggregation", []],
+    ["sipu", "compound", []],
+    ["graves", "parabolic", []],
+    ["wut", "z2", []],
     ["fcps", "wingnut", [1014]],
-    ["sipu", "spiral", [310, 309]],
-    ["wut", "z2", [895]],
-    ["sipu", "aggregation", [785, 784, 786, 783]],
-    ["graves", "parabolic", [956]],
-    ["sipu", "pathbased", [293, 271]],
-    ["sipu", "compound", [397, 396, 328, 347]],
-    ["other", "hdbscan", [2051, 2047, 2034, 1975, 1942]],
+    ["fcps", "engytime", []],
     ["fcps", "engytime", [3597]],
+    ["graves", "parabolic", [956]],
+    ["wut", "z2", [895]],
+    ["sipu", "compound", [397, 396, 328, 347]],
+    ["sipu", "aggregation", [785, 784, 786, 783]],
+    ["sipu", "spiral", [310, 309]],
+    ["wut", "labirynth", [3544, 3543, 3541, 3533]],
     ["wut", "z2", [897, 895, 893, 892, 683]],
+    ["sipu", "pathbased", [293, 271]],
+    ["other", "hdbscan", [2051, 2047, 2034, 1975, 1942]],
     ["wut", "z2", [894, 895, 893, 889]],
     ["wut", "z2", [897, 895, 893]],
-    ["wut", "labirynth", [3544, 3543, 3541, 3533]],
 ]
 
 example = examples[0]
@@ -108,8 +116,27 @@ nn_w, nn_e = kd.query(X, nn_k+1)
 nn_w = np.array(nn_w)[:, 1:]  # exclude self
 nn_e = np.array(nn_e)[:, 1:]
 
-nn_threshold = np.mean(nn_w[:, -1])
-nn_w[:, -1] > nn_threshold
+# nn_threshold = np.mean(nn_w[:, -1])
+# nn_w[:, -1] > nn_threshold
+
+plt.clf()
+#nn_var = np.apply_along_axis(genieclust.inequality.gini_index, 1, nn_w)
+#noise_point = (nn_var>0.2)
+
+k = -1
+Q13 = np.array([np.percentile(nn_w[labels==j+1, k], [25, 75]) for j in range(c)])
+bnd = (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))[labels-1]
+noise_point = nn_w[:, k]>bnd
+genieclust.plots.plot_scatter(X, labels=-(noise_point).astype(int))
+genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
+plt.axis("equal")
+noise_edge = noise_point[mst_e[:,0]] | noise_point[mst_e[:,1]]
+k = 1
+noise_edge |= mst_w > np.maximum(nn_w[mst_e[:,0], k], nn_w[mst_e[:,1], k])
+genieclust.plots.plot_segments(mst_e[noise_edge,:], X, style="r-", alpha=0.7)
+
+raise Exception("")
+
 
 plt.clf()
 genieclust.plots.plot_scatter(X)
@@ -117,7 +144,17 @@ plt.axis("equal")
 for i in range(nn_k):
     genieclust.plots.plot_segments(np.c_[np.arange(n), nn_e[:,i]], X)
 
-raise Exception("")
+
+
+
+plt.clf()
+plt.boxplot([nn_w[labels==j+1, i] for i in range(nn_k) for j in range(c)])
+
+# plt.clf()
+# plt.boxplot([nn_w[labels==j+1, :].std(axis=1) for j in range(c)])
+# plt.boxplot([nn_var[labels==j+1] for j in range(c)])
+
+
 
 #
 plt.clf()
