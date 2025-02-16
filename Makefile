@@ -39,12 +39,15 @@ stop-on-utf8:
 
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
+	R CMD INSTALL . --preclean
+	# Roxygen2 adds the -O0 flag if load_installed is not passed!
 	Rscript -e "\
 	    source('.devel/roxygen2-patch.R');\
 	    roxygenise(\
-	        roclets=c('rd', 'collate', 'namespace', 'vignette'),\
-	    )"
-# 	        load_code=roxygen2::load_installed\
+	        roclets=c('rd', 'collate', 'namespace', 'vignette'), \
+	        load_code=roxygen2::load_installed\
+	)"
+	R CMD INSTALL .
 
 r: r-autoconf
 	R CMD INSTALL . --html

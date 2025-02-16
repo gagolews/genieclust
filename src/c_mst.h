@@ -1,5 +1,4 @@
 /*  Minimum Spanning Tree Algorithms:
-/*
  *  1. Prim-Jarnik's for complete undirected graphs,
  *  2. Kruskal's for k-NN graphs.
  *
@@ -23,10 +22,10 @@
 #include "c_common.h"
 #include <vector>
 #include <algorithm>
+#include <cmath>
 // #include <queue>
 // #include <deque>
-#include <cmath>
-#include "c_argfuns.h"
+//#include "c_argfuns.h"
 #include "c_disjoint_sets.h"
 #include "c_distance.h"
 
@@ -50,7 +49,8 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
  *  Features a comparer used to sort MST edges w.r.t. increasing weights.
  */
 template <class T>
-class CMstTriple {
+class CMstTriple
+{
 public:
     Py_ssize_t i1;  //!< first  vertex defining an edge
     Py_ssize_t i2;  //!< second vertex defining an edge
@@ -58,7 +58,11 @@ public:
 
     CMstTriple() {}
 
-    CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bool order=true) {
+    CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bool order=true)
+    {
+        GENIECLUST_ASSERT(i1 != i2);
+        GENIECLUST_ASSERT(i1 >= 0);
+        GENIECLUST_ASSERT(i2 >= 0);
         this->d = d;
         if (!order || (i1 < i2)) {
             this->i1 = i1;
@@ -70,7 +74,8 @@ public:
         }
     }
 
-    bool operator<(const CMstTriple<T>& other) const {
+    bool operator<(const CMstTriple<T>& other) const
+    {
         if (d == other.d) {
             if (i1 == other.i1)
                 return i2 < other.i2;
@@ -81,8 +86,6 @@ public:
             return d < other.d;
     }
 };
-
-
 
 
 
@@ -114,7 +117,7 @@ public:
  *
  *
  * @param D a CDistance object such that a call to
- *        <T*>D(j, <Py_ssize_t*>M, Py_ssize_t k) returns an array
+ *        <T*>D(j, <Py_ssize_t*>M, Py_ssize_t k) returns a length-n array
  *        with the distances from the j-th point to k points whose indices
  *        are given in array M
  * @param n number of points
@@ -129,14 +132,15 @@ template <class T>
 void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
 {
-    std::vector<T> Dnn(n, INFTY);
-    std::vector<Py_ssize_t> Fnn(n);
-    std::vector<Py_ssize_t> M(n);
-    std::vector< CMstTriple<T> > res(n-1);
-
-    for (Py_ssize_t i=0; i<n; ++i) M[i] = i;
-
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+
+    // if i == ind_nn[j], then vertex i from the tree constructed so far is the closest to vertex j
+    std::vector<Py_ssize_t> ind_nn(n);
+    std::vector<T> dist_nn(n, INFTY);  // dist_nn[j] = d(j, ind_nn[j])
+
+    std::vector<Py_ssize_t> ind_left(n);
+    for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
+
 
     // TODO: optimise distance computation for the Euclidean and EuclideanSquared distances
     // cache sum(x_i^2) in a vector d
@@ -147,52 +151,64 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     // store a copy of X, swap rows after selecting the min to keep data
     //    contiguous + keep the permutation vector
 
-    Py_ssize_t lastj = 0, bestj, bestjpos;
-    for (Py_ssize_t i=0; i<n-1; ++i) {
-        // M[1], ... M[n-i-1] - points not yet in the MST
+    std::vector< CMstTriple<T> > mst(n-1);
 
-        // compute the distances between lastj (on the fly) and all j=M[1], ... M[n-i-1]
-        // dist_from_lastj[j] == d(lastj, j)
+    Py_ssize_t ind_cur = 0;  // start with the first vertex (because we can start with any)
+    // ind_left[0] = -1;  // for readability only
+    for (Py_ssize_t i=1; i<n; ++i) {
+        // ind_cur is the vertex most recently added to the tree
+        // ind_left[i], ind_left[i+1], ..., ind_left[n-1] - vertices not yet in the tree
+
+        // compute the distances (on the fly)
+        // between ind_cur and all j=ind_left[i], ind_left[i+1], ..., ind_left[n-1]:
+        // dist_from_ind_cur[j] == d(ind_cur, j)
         // pragma omp parallel for inside:
-        const T* dist_from_lastj = (*D)(lastj, M.data()+1, n-i-1);
+        const T* dist_from_ind_cur = (*D)(ind_cur, ind_left.data()+i, n-i);
 
+
+        // update ind_nn and dist_nn as maybe now ind_cur (recently added to the tree)
+        // is closer to some of the remaining vertices?
         #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
         #endif
-        for (Py_ssize_t j=1; j<n-i; ++j) {
-            Py_ssize_t M_j = M[j];
-            T curdist = dist_from_lastj[M_j]; // d(lastj, M_j)
-            if (curdist < Dnn[M_j]) {
-                Dnn[M_j] = curdist;
-                Fnn[M_j] = lastj;
+        for (Py_ssize_t j=i; j<n; ++j) {
+            Py_ssize_t cur_ind_left = ind_left[j];
+            T cur_dist = dist_from_ind_cur[cur_ind_left]; // d(ind_cur, cur_ind_left)
+            if (cur_dist < dist_nn[cur_ind_left]) {
+                ind_nn[cur_ind_left] = ind_cur;
+                dist_nn[cur_ind_left] = cur_dist;
             }
         }
 
-        //GENIECLUST_ASSERT(!std::isfinite(Dnn[0]));
-        // Dnn[0] == INFTY
-        // find min and argmin in Dnn:
-        bestjpos = 1;
-        bestj = M[1];
-        for (Py_ssize_t j=2; j<n-i; ++j) {
-            Py_ssize_t M_j = M[j];
-            if (Dnn[M_j] < Dnn[bestj]) {
-                bestj = M_j;
-                bestjpos = j;
+        // let best_ind_left and best_ind_left_pos = min and argmin of dist_nn,
+        // for we want to include the vertex that is closest to the vertices
+        // of the tree constructed so far
+        Py_ssize_t best_ind_left_pos = i;
+        Py_ssize_t best_ind_left = ind_left[i];
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+            Py_ssize_t cur_ind_left = ind_left[j];
+            if (dist_nn[cur_ind_left] < dist_nn[best_ind_left]) {
+                best_ind_left = cur_ind_left;
+                best_ind_left_pos = j;
             }
         }
-        GENIECLUST_ASSERT(std::isfinite(Dnn[bestj]));
-        GENIECLUST_ASSERT(bestj > 0);
-        GENIECLUST_ASSERT(Fnn[bestj] != bestj);
 
-        lastj = bestj;          // start from bestj next time
+        // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
+        mst[i-1] = CMstTriple<T>(best_ind_left, ind_nn[best_ind_left], dist_nn[best_ind_left], /*order=*/true);
 
-        // M[bestjpos] = M[n-i-1]; // don't visit bestj again
-        // (#62) new version: keep M sorted (more CPU cache-friendly):
-        for (Py_ssize_t j=bestjpos; j<n-i-1; ++j)
-            M[j] = M[j+1];
 
-        // and an edge to MST: (smaller index first)
-        res[i] = CMstTriple<T>(Fnn[bestj], bestj, Dnn[bestj], true);
+        // don't visit best_ind_left again
+#if 0
+        ind_left[best_ind_left_pos] = ind_left[i];
+#else
+        // keep ind_left sorted (a bit better locality of reference) (#62)
+        for (Py_ssize_t j=best_ind_left_pos; j>i; --j)
+            ind_left[j] = ind_left[j-1];
+#endif
+        // ind_left[i] = -1;  // for readability only
+
+
+        ind_cur = best_ind_left;  // start from best_ind_left next time
 
         if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
@@ -204,12 +220,12 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
-    std::sort(res.begin(), res.end());
+    std::sort(mst.begin(), mst.end());
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        mst_dist[i]    = res[i].d;
-        mst_ind[2*i+0] = res[i].i1; // i1 < i2
-        mst_ind[2*i+1] = res[i].i2;
+        mst_dist[i]    = mst[i].d;
+        mst_ind[2*i+0] = mst[i].i1; // i1 < i2
+        mst_ind[2*i+1] = mst[i].i2;
     }
 
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
@@ -435,7 +451,7 @@ Py_ssize_t Cmst_from_nn(
 
 
 
-///*! Computes a minimum spanning forest of a near-neighbour
+// *! Computes a minimum spanning forest of a near-neighbour
 // *  graph using Kruskal's algorithm, and orders
 // *  its edges w.r.t. increasing weights.
 // *
@@ -462,7 +478,7 @@ Py_ssize_t Cmst_from_nn(
 // * @param verbose output diagnostic/progress messages?
 // *
 // * @return number of edges in the minimal spanning forest
-// */
+// *
 // template <class T>
 // Py_ssize_t Cmst_from_nn_list(CMstTriple<T>* nns, Py_ssize_t c,
 //     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)

@@ -1,2 +1,2 @@
 CompileFlags:
-    Add: [-xc++, -Wall, -std=c++11, -I/usr/share/R/include, -I/home/gagolews/R/x86_64-pc-linux-gnu-library/4.2/Rcpp/include, -fopenmp]
+    Add: [-xc++, -Wall, -Wpedantic, -Wextra -std=c++11, -I/usr/lib64/R/include, -I/home/gagolews/R/x86_64-suse-linux-gnu-library/4.4/Rcpp/include, -fopenmp, -DGENIECLUST_R]
