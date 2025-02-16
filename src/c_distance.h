@@ -182,6 +182,7 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
     Py_ssize_t n;
     Py_ssize_t d;
     std::vector<T> buf;
+//    std::vector<T> x2;
 
     /*!
      * @param X n*d c_contiguous array
@@ -189,11 +190,23 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
      * @param d dimensionality
      */
     CDistanceEuclideanSquared(const T* X, Py_ssize_t n, Py_ssize_t d)
-            : buf(n)
+            : buf(n) /*, x2(n, 0.0)*/
     {
         this->n = n;
         this->d = d;
         this->X = X;
+
+//         T* _x2 = x2.data();
+// #ifdef _OPENMP
+//         #pragma omp parallel for schedule(static)
+// #endif
+//         for (Py_ssize_t i=0; i<n; ++i) {
+//             const T* x = X+d*i;
+//             for (Py_ssize_t u=0; u<d; ++u) {
+//                 _x2[i] += (*x)*(*x);
+//                 ++x;
+//             }
+//         }
     }
 
     CDistanceEuclideanSquared()
@@ -211,6 +224,13 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
             const T* y = X+d*w;
 
             // or we could use the BLAS nrm2 / dot
+
+            // this is not significantly faster (x-y)*(x-y)=x**2+y**2-2*x*y
+            // __buf[w] = x2[i]+x2[w];
+            // for (Py_ssize_t u=0; u<d; ++u) {
+            //     __buf[w] -= 2.0*x[u]*y[u];
+            // }
+
             __buf[w] = 0.0;
             for (Py_ssize_t u=0; u<d; ++u) {
                 __buf[w] += (x[u]-y[u])*(x[u]-y[u]);
