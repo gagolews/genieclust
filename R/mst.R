@@ -25,23 +25,24 @@
 #' @description
 #' An parallelised implementation of a Jarnik (Prim/Dijkstra)-like
 #' algorithm for determining
-#' a(*) minimum spanning tree (MST) of a complete undirected graph
+#' a(*) minimum spanning tree (MST) of the complete undirected graph
 #' representing a set of n points
 #' with weights given by a pairwise distance matrix.
 #'
 #' (*) Note that there might be multiple minimum trees spanning a given graph.
 #'
 #' @details
-#' If \code{d} is a numeric matrix of size \eqn{n p},
+#' If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
+#' \eqn{n} points in a \eqn{p}-dimensional space,
 #' the \eqn{n (n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
 #' memory is used.
 #'
 #'
-#' The algorithm is parallelised; set the \code{OMP_NUM_THREADS} environment
-#' variable \code{\link[base]{Sys.setenv}} to control the number of threads
-#' used.
+#' The algorithm is parallelised; to control the number of threads
+#' used, set the \code{OMP_NUM_THREADS} environment
+#' variable; see \code{\link[base]{Sys.setenv}}.
 #'
-#' Time complexity is \eqn{O(n^2)} for the method accepting an object of
+#' The time complexity is \eqn{O(n^2)} for the method accepting an object of
 #' class \code{dist} and \eqn{O(p n^2)} otherwise.
 #'
 #' If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
@@ -83,9 +84,9 @@
 #'
 #' @param d either a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
-#'     object of class \code{dist}, see \code{\link[stats]{dist}}
+#'     object of class \code{dist}; see \code{\link[stats]{dist}}
 #'
-#' @param distance metric used to compute the linkage, one of:
+#' @param distance metric used in the case where \code{d} is a matrix; one of:
 #'     \code{"euclidean"} (synonym: \code{"l2"}),
 #'     \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 #'     \code{"cosine"}
@@ -186,7 +187,7 @@ registerS3method("mst", "dist",    "mst.dist")
 #' Provides access to the implementation of the Dual-Tree Boruvka
 #' algorithm from the \code{mlpack} package (if available).
 #' It is based on kd-trees and is fast for (very) low-dimensional
-#' Euclidean spaces. For higher dimensional spaces (say, over 5 features)
+#' Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
 #' or other metrics, use the parallelised Prim-like algorithm implemented
 #' in \code{\link{mst}()}.
 #'

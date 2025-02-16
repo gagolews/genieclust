@@ -104,7 +104,8 @@
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information.
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
-#'     instead of 64-bit precision floating-point arithmetic (up to 2x faster).
+#'     instead of 64-bit precision floating-point arithmetic
+#'     (up to 2x faster in high-dimensional spaces).
 #' @param ... further arguments passed to other methods.
 #' @param k the desired number of clusters to detect, \code{k} = 1 with \code{M} > 1
 #'     acts as a noise point detector.

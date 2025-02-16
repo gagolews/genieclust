@@ -24,7 +24,7 @@ An object of class \code{mst}, see \code{\link{mst}()} for details.
 Provides access to the implementation of the Dual-Tree Boruvka
 algorithm from the \code{mlpack} package (if available).
 It is based on kd-trees and is fast for (very) low-dimensional
-Euclidean spaces. For higher dimensional spaces (say, over 5 features)
+Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
 or other metrics, use the parallelised Prim-like algorithm implemented
 in \code{\link{mst}()}.
 }

@@ -81,7 +81,8 @@ Low thresholds highly penalise the formation of small clusters.}
 \code{"cosine"}.}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic (up to 2x faster).}
+instead of 64-bit precision floating-point arithmetic
+(up to 2x faster in high-dimensional spaces).}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information.}
@@ -112,7 +113,7 @@ see \code{\link[stats]{hclust}}. Use \code{\link[stats]{cutree}} to obtain
 an arbitrary k-partition.
 
 \code{genie()} returns a \code{k}-partition - a vector with elements in 1,...,k,
-whose i-th element denotes the i-th input point's cluster identifier.
+whose i-th element denotes the i-th input point's cluster label.
 Missing values (\code{NA}) denote noise points (if \code{detect_noise}
 is \code{TRUE}).
 }
