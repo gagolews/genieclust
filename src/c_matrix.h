@@ -86,11 +86,11 @@ public:
      * @param j
      * @return a reference to the indicated matrix element
      */
-    T& operator()(const size_t i, const size_t j) {
+    inline T& operator()(const size_t i, const size_t j) {
         return elems[d*i + j];
     }
 
-    const T& operator()(const size_t i, const size_t j) const {
+    inline const T& operator()(const size_t i, const size_t j) const {
         return elems[d*i + j];
     }
 

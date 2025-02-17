@@ -80,7 +80,7 @@ struct CDistancePrecomputedMatrix : public CDistance<T> {
 
 
 /*! A class to "compute" the distances from the i-th point
- *  to all n points based on a pre-computed a vector-form
+ *  to all n points based on a pre-computed
  *  c_contiguous distance vector.
  */
 template<class T>

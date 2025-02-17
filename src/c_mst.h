@@ -90,6 +90,140 @@ public:
 
 
 
+/*! Specialised version of 'Cmst_from_complete' for Euclidean distance
+ *
+ *
+ * @param X [destroyable] a C-contiguous data matrix
+ * @param n number of rows
+ * @param d number of columns
+ * @param mst_d [out] vector of length n-1, gives weights of the
+ *        resulting MST edges in nondecreasing order
+ * @param mst_i [out] vector of length 2*(n-1), representing
+ *        a c_contiguous array of shape (n-1,2), defining the edges
+ *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
+ * @param verbose output diagnostic/progress messages?
+ */
+template <class T>
+void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
+    T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
+{
+    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+
+    // see Cmst_from_complete for comments
+
+    std::vector<Py_ssize_t> ind_nn(n);
+    std::vector<T> dist_nn(n, INFTY);
+
+    //std::vector<T> distances(n);
+    //T* _distances = distances.data();
+
+    std::vector<Py_ssize_t> ind_left(n);
+    for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
+
+
+    // TODO: optimise distance computation for the Euclidean and EuclideanSquared distances
+    // cache sum(x_i^2) in a vector d
+    // note that sum((x_i-x_j)^2) = sum(x_i^2) - 2*sum(x_i*x_j) + sum(x_j^2)
+    //                            = -2 * t(x_j)*x_i + 1 * d[j] + d[i]
+    // d[i] = const in each iter
+    // BLAS GEMV can be used in the remaining part
+
+
+    std::vector< CMstTriple<T> > mst(n-1);
+
+    Py_ssize_t ind_cur = 0;
+    for (Py_ssize_t i=1; i<n; ++i) {
+        // i, i+1, ..., n-1 - vertices not yet in the tree
+
+        GENIECLUST_ASSERT(ind_left[i-1] == ind_cur);
+
+        T* x_cur = X+(i-1)*d;
+
+        // compute the distances
+        // between ind_cur=ind_left[i-1] and all j=i, i+1, ..., n-1:
+#if 0
+        // two-stage - slower
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t j=i; j<n; ++j) {
+            _distances[j] = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                _distances[j] += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+        }
+
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t j=i; j<n; ++j) {
+            if (_distances[j] < dist_nn[ind_left[j]]) {
+                ind_nn[ind_left[j]] = ind_cur;
+                dist_nn[ind_left[j]] = _distances[j];
+            }
+        }
+#else
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t j=i; j<n; ++j) {
+            T dd = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                dd += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+
+            if (dd < dist_nn[ind_left[j]]) {
+                ind_nn[ind_left[j]] = ind_cur;
+                dist_nn[ind_left[j]] = dd;
+            }
+        }
+#endif
+
+        // let best_ind_left and best_ind_left_pos = min and argmin of dist_nn,
+        // for we want to include the vertex that is closest to the vertices
+        // of the tree constructed so far
+        Py_ssize_t best_ind_left_pos = i;
+        Py_ssize_t best_ind_left = ind_left[i];
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+            if (dist_nn[ind_left[j]] < dist_nn[best_ind_left]) {
+                best_ind_left_pos = j;
+                best_ind_left = ind_left[j];
+            }
+        }
+
+        // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
+        mst[i-1] = CMstTriple<T>(best_ind_left, ind_nn[best_ind_left], dist_nn[best_ind_left], /*order=*/true);
+
+
+        // don't visit best_ind_left again
+        std::swap(ind_left[best_ind_left_pos], ind_left[i]);
+        for (Py_ssize_t u=0; u<d; ++u) {
+            std::swap(X[i*d+u], X[best_ind_left_pos*d+u]);
+        }
+
+        ind_cur = best_ind_left;  // start from best_ind_left next time
+
+        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
+    }
+
+    // sort the resulting MST edges in increasing order w.r.t. d
+    std::sort(mst.begin(), mst.end());
+
+    for (Py_ssize_t i=0; i<n-1; ++i) {
+        mst_dist[i]    = sqrt(mst[i].d);
+        mst_ind[2*i+0] = mst[i].i1; // i1 < i2
+        mst_ind[2*i+1] = mst[i].i2;
+    }
+
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
+}
+
+
+
 /*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
  *  a(*) minimum spanning tree (MST) of a complete undirected graph
  *  with weights given by, e.g., a symmetric n*n matrix.
@@ -134,27 +268,18 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 {
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
-    // if i == ind_nn[j], then vertex i from the tree constructed so far is the closest to vertex j
+    // NOTE: all changes should also be mirrored in Cmst_euclidean()
+
+    // ind_nn[j] is the vertex from the current tree closest to vertex j
     std::vector<Py_ssize_t> ind_nn(n);
     std::vector<T> dist_nn(n, INFTY);  // dist_nn[j] = d(j, ind_nn[j])
 
     std::vector<Py_ssize_t> ind_left(n);
     for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
 
-
-    // TODO: optimise distance computation for the Euclidean and EuclideanSquared distances
-    // cache sum(x_i^2) in a vector d
-    // note that sum((x_i-x_j)^2) = sum(x_i^2) - 2*sum(x_i*x_j) + sum(x_j^2)
-    //                            = -2 * t(x_j)*x_i + 1 * d[j] + d[i]
-    // d[i] = const in each iter
-    // BLAS GEMV can be used in the remaining part
-    // store a copy of X, swap rows after selecting the min to keep data
-    //    contiguous + keep the permutation vector
-
     std::vector< CMstTriple<T> > mst(n-1);
 
     Py_ssize_t ind_cur = 0;  // start with the first vertex (because we can start with any)
-    // ind_left[0] = -1;  // for readability only
     for (Py_ssize_t i=1; i<n; ++i) {
         // ind_cur is the vertex most recently added to the tree
         // ind_left[i], ind_left[i+1], ..., ind_left[n-1] - vertices not yet in the tree
@@ -199,13 +324,13 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
         // don't visit best_ind_left again
 #if 0
-        ind_left[best_ind_left_pos] = ind_left[i];
+        std::swap(ind_left[best_ind_left_pos], ind_left[i]);
 #else
         // keep ind_left sorted (a bit better locality of reference) (#62)
         for (Py_ssize_t j=best_ind_left_pos; j>i; --j)
             ind_left[j] = ind_left[j-1];
+        ind_left[i] = best_ind_left;  // for readability only
 #endif
-        // ind_left[i] = -1;  // for readability only
 
 
         ind_cur = best_ind_left;  // start from best_ind_left next time
@@ -279,7 +404,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
         // let dij[j] == d(x_i, x_j)
 
 
-        // TODO: the 2nd if below can be OpenMP'd
+        // TODO: the 2nd `if` below can be OpenMP'd
         for (Py_ssize_t j=i+1; j<n; ++j) {
 
             if (dij[j] < dist[i*k+k-1]) {

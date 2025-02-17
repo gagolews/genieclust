@@ -151,11 +151,10 @@ NumericMatrix internal_compute_mst(CDistance<T>* D, Py_ssize_t n, Py_ssize_t M, 
     if (D2) delete D2;
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-//         Rprintf("%d,%d\n", mst_i(i,0), mst_i(i,1));
         GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
         GENIECLUST_ASSERT(std::isfinite(mst_d[i]));
-        ret(i,0) = mst_i(i,0)+1; // R-based indexing
-        ret(i,1) = mst_i(i,1)+1; // R-based indexing
+        ret(i,0) = mst_i(i,0)+1;  // R-based indexing
+        ret(i,1) = mst_i(i,1)+1;  // R-based indexing
         ret(i,2) = mst_d[i];
     }
 
@@ -180,16 +179,40 @@ NumericMatrix internal_mst_default(
 
     CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
-    for (Py_ssize_t i=0; i<n; i++) {
-        for (Py_ssize_t j=0; j<d; j++) {
-            if (!std::isfinite(X2(i,j)))
-                Rf_error("All elements in the input matrix must be finite/non-missing.");
-        }
+    T* _X2 = X2.data();
+    for (Py_ssize_t i=0; i<n*d; i++) {
+        if (!std::isfinite(_X2[i]))
+            Rf_error("All elements in the input matrix must be finite and non-missing.");
     }
+
+
+#if 1
+    // Special case (most frequently used)
+    if (M == 1 && (distance == "euclidean" || distance == "l2"))
+    {
+        NumericMatrix ret(n-1, 3);
+        CMatrix<Py_ssize_t> mst_i(n-1, 2);
+        std::vector<T>  mst_d(n-1);
+        if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
+        Cmst_euclidean<T>(_X2, n, d, mst_d.data(), mst_i.data(), verbose);
+        if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+        for (Py_ssize_t i=0; i<n-1; ++i) {
+            GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
+            GENIECLUST_ASSERT(std::isfinite(mst_d[i]));
+            ret(i,0) = mst_i(i,0)+1;  // R-based indexing
+            ret(i,1) = mst_i(i,1)+1;  // R-based indexing
+            ret(i,2) = mst_d[i];
+        }
+
+        return ret;
+    }
+#endif
+
 
     CDistance<T>* D = NULL;
     if (distance == "euclidean" || distance == "l2")
-        D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
+       D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
     else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
         D = (CDistance<T>*)(new CDistanceManhattan<T>(X2.data(), n, d));
     else if (distance == "cosine")

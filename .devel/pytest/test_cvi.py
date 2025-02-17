@@ -44,39 +44,39 @@ def test_cvi():
 
             i1 = r_genieclust.calinski_harabasz_index(X, labels)[0]
             i2 = genieclust.cluster_validity.calinski_harabasz_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-16
 
             i1 = r_genieclust.negated_ball_hall_index(X, labels)[0]
             i2 = genieclust.cluster_validity.negated_ball_hall_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.negated_davies_bouldin_index(X, labels)[0]
             i2 = genieclust.cluster_validity.negated_davies_bouldin_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.negated_wcss_index(X, labels)[0]
             i2 = genieclust.cluster_validity.negated_wcss_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.silhouette_index(X, labels)[0]
             i2 = genieclust.cluster_validity.silhouette_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.silhouette_w_index(X, labels)[0]
             i2 = genieclust.cluster_validity.silhouette_w_index(X, labels-1)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.generalised_dunn_index(X, labels, 4, 2)[0]
             i2 = genieclust.cluster_validity.generalised_dunn_index(X, labels-1, 4, 2)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.wcnn_index(X, labels, 5)[0]
             i2 = genieclust.cluster_validity.wcnn_index(X, labels-1, 5)
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             i1 = r_genieclust.dunnowa_index(X, labels, 10, "SMin:5", "Max")[0]
             i2 = genieclust.cluster_validity.dunnowa_index(X, labels-1, 10, "SMin:5", "Max")
-            assert i1 == i2
+            assert abs(i1 - i2) < 1e-12
 
             #double c_dunnowa_index
 

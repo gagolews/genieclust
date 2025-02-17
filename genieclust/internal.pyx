@@ -478,7 +478,7 @@ cpdef tuple mst_from_distance(
     """A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
-    Memory use: O(n).
+    Memory use: O(n*d).
 
 
     References
@@ -534,10 +534,22 @@ cpdef tuple mst_from_distance(
     if d == 1 and metric == "precomputed":
         n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
         assert n*(n-1)//2 == X.shape[0]
-    cdef Py_ssize_t i
+    #cdef Py_ssize_t i
     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+    cdef np.ndarray[floatT] mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
+
+    # the most frequent special case:
+    cdef np.ndarray[floatT,ndim=2] X2
+    if (d_core is None) and (metric == "euclidean" or metric == "l2"):
+        _openmp_set_num_threads()
+
+        X2 = np.asarray(X, order="C", copy=True)
+        c_mst.Cmst_euclidean(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], verbose)
+
+        return mst_dist, mst_ind
+
+
     cdef c_mst.CDistance[floatT]* D = NULL
     cdef c_mst.CDistance[floatT]* D2 = NULL
 
@@ -578,7 +590,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
     """Determines the first k nearest neighbours of each point in X,
     with respect to a given metric (distance).
     Distances are computed on the fly.
-    Memory use: O(k*n).
+    Memory use: O(n*k).
 
     It is assumed that each query point is not its own neighbour.
 
