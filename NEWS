@@ -2,9 +2,10 @@
 
 ## 1.x.x (2025-xx-xx)
 
-* [Python and R] A specialised (slightly faster) version of the Jarnik-Prim
-    algorithm for computing Euclidean MSTs has been added and now it is
-    applied automatically when applicable.
+* [Python and R] A specialised (slightly faster due to better locality
+    of reference) version of the Jarnik–Prim algorithm for computing
+    Euclidean MSTs has been added and now it is applied automatically
+    where applicable.
 
 
 ## 1.1.6 (2024-08-22)

@@ -91,6 +91,7 @@ public:
 
 
 /*! Specialised version of 'Cmst_from_complete' for Euclidean distance
+/* (has better locality of reference)
  *
  *
  * @param X [destroyable] a C-contiguous data matrix
@@ -198,6 +199,7 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
         for (Py_ssize_t u=0; u<d; ++u) {
             std::swap(X[i*d+u], X[best_ind_left_pos*d+u]);
         }
+        // this has better locality of reference
 
         ind_cur = best_ind_left;  // start from best_ind_left next time
 
