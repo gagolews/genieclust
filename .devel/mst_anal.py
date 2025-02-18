@@ -16,18 +16,22 @@ import scipy.spatial
 
 
 examples = [
-    ["sipu", "aggregation", [1,  2, 536, 0, 24, 3]],
-    ["wut", "z2", [4, 9]],
+    ["other", "hdbscan", [256,260,273,404,332]],
+    ["other", "hdbscan", []],
+    ["fcps", "wingnut", []],
+    ["sipu", "pathbased", [4,5,7,19,27]],
+    ["wut", "labirynth", [0,1,3,11, 18,72,77,120]],
+    ["wut", "labirynth", []],
+    ["sipu", "compound", [0, 1, 54, 153]],
+    ["sipu", "aggregation", []],
+    ["fcps", "engytime", []],
+    ["wut", "z2", [1, 3, 5, 6]],
+    ["sipu", "aggregation", [0, 1, 2, 536, 3, 24]],
     ["wut", "z2", []],
     ["sipu", "compound", []],
-    ["fcps", "engytime", []],
-    ["fcps", "wingnut", []],
-    ["wut", "labirynth", []],
-    ["sipu", "aggregation", []],
     ["sipu", "pathbased", []],
     ["graves", "parabolic", []],
     ["sipu", "spiral", []],
-    ["other", "hdbscan", []],
 ]
 
 example = examples[0]
@@ -44,8 +48,8 @@ UNSET = -1 # must be negative
 NOISE = 0  # must be 0
 
 
-min_cluster_size = n/(len(skiplist)+1)/4  # this should be a function of the desired number of clusters
-max_noise_size = 5
+min_cluster_size = n/20  # this should be a function of the desired number of clusters
+max_noise_size = n/100
 nn_k = 5
 # gini_threshold = 0.5
 
@@ -164,29 +168,17 @@ c, counts, min_mst_s = mark_clusters()
 # cut_k = -1
 cut_edges  = (outliers[mst_e[:,0]] | outliers[mst_e[:,1]])
 cut_edges &= (min_mst_s >= min_cluster_size)
-which_cut = np.flatnonzero(cut_edges)
-print(which_cut)
+which_cut_edges = np.flatnonzero(cut_edges)
+print("which_cut_edges=%s" % (which_cut_edges, ))
 
 
-# raise Exception("")
-
-
-# plt.clf()
-# genieclust.plots.plot_scatter(X)
-# plt.axis("equal")
-# for i in range(nn_k):
-#     genieclust.plots.plot_segments(np.c_[np.arange(n), nn_e[:,i]], X)
+x  = pd.DataFrame(np.c_[np.arange(n-1), mst_w, np.sort(mst_s, axis=1), mst_labels][mst_labels>0, :], columns=["i", "w", "s0", "s1", "label"])
+print(x.loc[x.s0 >= min_cluster_size, :].head(10))
 
 
 
-
-# plt.clf()
-# plt.boxplot([nn_w[labels==j+1, i] for i in range(nn_k) for j in range(c)])
-
-# plt.clf()
-# plt.boxplot([nn_w[labels==j+1, :].std(axis=1) for j in range(c)])
-# plt.boxplot([nn_var[labels==j+1] for j in range(c)])
-
+# TODO mark candidate cut edges based on cut sizes
+# which_cut_edges = np.flatnonzero(min_mst_s[op]>min_cluster_size)  # TODO.....
 
 #
 plt.clf()
@@ -202,57 +194,44 @@ for i in range(n-1):
     plt.text(
         (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
         (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
-        "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1])),
+        "%d (%d-%d)" % (i, mst_s[i, 0], mst_s[i, 1]),
         color="gray" if mst_labels[i] == SKIP else genieclust.plots.col[mst_labels[i]-1],
+        va='top'
     )
 for i in range(c+1):
     genieclust.plots.plot_segments(mst_e[mst_labels == i, :], X, color=genieclust.plots.col[i-1],
-                                   alpha=0.2, linestyle="-" if i>0 else ":")
-genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="--")
-genieclust.plots.plot_segments(mst_e[cut_edges,:], X, color="blue", linestyle="--", alpha=0.7)
+        alpha=0.2, linestyle="-" if i>0 else ":")
+genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="-", linewidth=3)
+genieclust.plots.plot_segments(mst_e[cut_edges,:], X, color="blue", linestyle="--", alpha=0.7, linewidth=3)
 #
 #
 # Edge weights + cluster sizes
 ax1 = plt.subplot(3, 2, 1)
-op = np.flatnonzero(mst_labels[op]>0)
-ax1.plot(mst_w[op])
+op = np.flatnonzero(mst_labels>0)
+ax1.plot(mst_w[op], color='blue')
 ax2 = ax1.twinx()
-ax2.plot(np.arange(len(op)), min_mst_s[op], c='orange', alpha=0.3)
-# Variant 1) mark candidate cut edges based on cut sizes
-# which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)  # TODO.....
-for i in which_cut:  # TODO this is wrong - numbering...
-   plt.text(i, min_mst_s[i], i, ha='center', color=genieclust.plots.col[mst_labels[i]-1])
-# Variant 2) mark candidate cut edges based on Gini indices of cluster sizes
-# which_cut = []
-# for i in range(len(op)):
-#     assert mst_labels[op[i]] > 0
-#     #g = genieclust.inequality.gini_index(np.r_[np.delete(counts, [0, mst_labels[op[i]]]), mst_s[op[i], :]])  # doesn't work well
-#     g = genieclust.inequality.gini_index(mst_s[op[i], :])
-#     if g < gini_threshold and min_mst_s[op[i]] > min_cluster_size:
-#         plt.text(i, min_mst_s[op[i]], op[i], ha="center")
-#        which_cut.append(i)
-#
-# print(op[which_cut])
+ax2.plot(np.arange(len(op)), min_mst_s[op], c='blue', alpha=0.2)
+ce = (np.arange(1, n)*cut_edges)[op]   # 1-shift
+for j in np.flatnonzero(ce):  # TODO this is wrong - numbering...
+    idx = ce[j]-1 # unshift
+    plt.text(j, min_mst_s[idx], idx, ha='center', color=genieclust.plots.col[mst_labels[idx]-1])
 #
 # MST edges per cluster
 ax1 = plt.subplot(3, 2, 3)
 ax2 = ax1.twinx()
 last = 0
 for i in range(1, c+1):
-    _w = mst_w[mst_labels==i]
-    _o = np.argsort(_w)[::-1]
-    ax1.plot(
-        np.arange(last, last+counts[i]-1),
-        _w[_o],
-        color=genieclust.plots.col[i-1]
-    )
-    ax2.plot(
-        np.arange(last, last+counts[i]-1),
-        min_mst_s[mst_labels==i][_o],
-        color=genieclust.plots.col[i-1],
-        alpha=0.2
-    )
-    last += counts[i] - 1
+    op = np.flatnonzero(mst_labels == i)
+    len_op = len(op)
+    ax1.plot(np.arange(last, last+len_op), mst_w[op],
+        color=genieclust.plots.col[i-1])
+    ax2.plot(np.arange(last, last+len_op), min_mst_s[op], c=genieclust.plots.col[i-1], alpha=0.2)
+    ce = (np.arange(1, n)*cut_edges)[op]   # 1-shift
+    for j in np.flatnonzero(ce):  # TODO this is wrong - numbering...
+        idx = ce[j]-1 # unshift
+        plt.text(j, min_mst_s[idx], idx, ha='center', color=genieclust.plots.col[mst_labels[idx]-1])
+
+    last += len_op
 #
 #
 # treelhouette
