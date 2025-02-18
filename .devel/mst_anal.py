@@ -16,15 +16,16 @@ import scipy.spatial
 
 
 examples = [
-    ["sipu", "aggregation", [1,  2]],
-    ["sipu", "aggregation", []],
-    ["wut", "labirynth", []],
-    ["fcps", "wingnut", []],
-    ["sipu", "pathbased", []],
-    ["sipu", "compound", []],
-    ["graves", "parabolic", []],
+    ["sipu", "aggregation", [1,  2, 536, 0, 24, 3]],
+    ["wut", "z2", [4, 9]],
     ["wut", "z2", []],
+    ["sipu", "compound", []],
     ["fcps", "engytime", []],
+    ["fcps", "wingnut", []],
+    ["wut", "labirynth", []],
+    ["sipu", "aggregation", []],
+    ["sipu", "pathbased", []],
+    ["graves", "parabolic", []],
     ["sipu", "spiral", []],
     ["other", "hdbscan", []],
 ]
@@ -36,18 +37,22 @@ b = clustbench.load_dataset(example[0], example[1], path=data_path)
 X, labels = b.data, b.labels[0]
 skiplist = example[2]
 
-SKIPEDGE = np.iinfo(int).min
-
-
 n = X.shape[0]
-min_cluster_size = n/(len(skiplist)+1)/4
-noise_size = 3
-gini_threshold = 0.5
+
+SKIP = np.iinfo(int).min  # must be negative
+UNSET = -1 # must be negative
+NOISE = 0  # must be 0
+
+
+min_cluster_size = n/(len(skiplist)+1)/4  # this should be a function of the desired number of clusters
+max_noise_size = 5
+nn_k = 5
+# gini_threshold = 0.5
 
 mst = genieclust.internal.mst_from_distance(X, "euclidean")
 mst_w, mst_e = mst
 op = np.argsort(mst_w)[::-1]
-mst_w = mst_w[op]
+mst_w = mst_w[op]  # sorted decreasingly
 mst_e = mst_e[op, :]
 
 adj_list = [ [] for i in range(n) ]
@@ -57,8 +62,19 @@ for i in range(n-1):
 for i in range(n):
     adj_list[i] = np.array(adj_list[i])
 
+
+
+
+kd = scipy.spatial.KDTree(X)
+nn_w, nn_e = kd.query(X, nn_k+1)
+nn_w = np.array(nn_w)[:, 1:]  # exclude self
+nn_e = np.array(nn_e)[:, 1:]
+
+
+
+
 def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
-    if c > 0 and (mst_labels[e] == SKIPEDGE or mst_labels[e] == 0):
+    if mst_labels[e] == SKIP or (c != NOISE and mst_labels[e] == NOISE):
         return 0
     iv = int(mst_e[e, 1] == v)
     w = mst_e[e, 1-iv]
@@ -66,80 +82,90 @@ def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
     for e2 in adj_list[w]:
         if mst_e[e2, 0] != v and mst_e[e2, 1] != v:
             tot += visit(w, e2, c)
-    mst_s[e, iv] = tot
+    mst_s[e, iv] = tot if c != NOISE else -1
     mst_s[e, 1-iv] = 0
 
-    if c > 0 or tot < noise_size:
-        labels[w] = c
-        mst_labels[e] = c
+    labels[w] = c
+    mst_labels[e] = c
 
     return tot
 
 
 mst_s = np.zeros((n-1, 2), dtype=int)
-labels = -np.ones(n, dtype=int)
-mst_labels = -np.ones(n-1, dtype=int)
+labels = np.repeat(UNSET, n)
+mst_labels = np.repeat(UNSET, n-1)
 for s in skiplist:
-    mst_labels[s] = SKIPEDGE  # skiplist
-#
-# preprocess – noise points:
-c = 0
-# v = 0  # anything
-# for e in adj_list[v]:
-#     visit(v, e, c)
-#
-# mark clusters
-c = 0
-for v in range(n):
-    if labels[v] == -1:
-        c += 1
-        labels[v] = c
-        for e in adj_list[v]:
-            visit(v, e, c)
-counts = np.bincount(labels)
-for i in range(n-1):
-    if mst_labels[i] != SKIPEDGE:
-        j = int(mst_s[i, 1] == 0)
-        mst_s[i, j] = counts[np.abs(mst_labels[i])]-mst_s[i, 1-j]
-min_mst_s = np.min(mst_s, axis=1)
+    mst_labels[s] = SKIP  # skiplist
 
 
-nn_k = 5
-kd = scipy.spatial.KDTree(X)
-nn_w, nn_e = kd.query(X, nn_k+1)
-nn_w = np.array(nn_w)[:, 1:]  # exclude self
-nn_e = np.array(nn_e)[:, 1:]
+
+def mark_clusters():
+    c = 0
+    for v in range(n):
+        if labels[v] == UNSET:
+            c += 1
+            labels[v] = c
+            for e in adj_list[v]:
+                visit(v, e, c)
+
+    # c is the number of clusters
+    counts = np.bincount(labels)  # cluster counts, counts[0] == number of noise points
+
+    # fix mst_s now that we know the cluster sizes
+    for i in range(n-1):
+        if mst_labels[i] > 0:
+            j = int(mst_s[i, 1] == 0)
+            mst_s[i, j] = counts[np.abs(mst_labels[i])]-mst_s[i, 1-j]
+    min_mst_s = np.min(mst_s, axis=1)
+
+    return c, counts, min_mst_s
 
 
-# a point is a noise point if its k-th nearest neighbour is just too far away -
-# - relative to the "typical" distances to k-nearest neighbours within the point's cluster;
-# they're outliers (each cluster can be of different density, so we take this into account)
+c, counts, min_mst_s = mark_clusters()
+
+
+# a point is an outlier if its k-th nearest neighbour is just too far away -
+# - relative to the "typical" distances to k-nearest neighbours within the point's cluster
+# (each cluster can be of different density, so we take this into account)
+# or may be considered outliers after a cluster breaks down to smaller ones
 noise_k = -1  # which nearest neighbour do we take into account?
 Q13 = np.array([np.percentile(nn_w[labels==j+1, noise_k], [25, 75]) for j in range(c)])
 bnd = (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))[labels-1]
-noise_points = (nn_w[:, noise_k]>bnd)
-labels[noise_points] = 0
+outliers = (nn_w[:, noise_k]>bnd)
 
 # a noise edge is incident to a noise point,
 # provided that its removal leads to too small a cluster
-noise_edges = (noise_points[mst_e[:,0]] | noise_points[mst_e[:,1]])
-noise_edges &= (np.min(mst_s, axis=1) < min_cluster_size)
-# a cut edge ...
-cut_k = -1
-cut_edges = (noise_points[mst_e[:,0]] | noise_points[mst_e[:,1]])
-#cut_edges |= (mst_w > np.maximum(nn_w[mst_e[:,0], cut_k], nn_w[mst_e[:,1], cut_k]))
-#cut_edges |=
-cut_edges &= (np.min(mst_s, axis=1) >= min_cluster_size)
+noise_edges  = (outliers[mst_e[:,0]] | outliers[mst_e[:,1]])
+noise_edges &= (min_mst_s <= max_noise_size)
 
-genieclust.plots.plot_scatter(X, labels=labels-1)
-genieclust.plots.plot_segments(mst_e[(~noise_edges)&(~cut_edges),:], X, style="g-", alpha=0.3)
-genieclust.plots.plot_segments(mst_e[noise_edges,:], X, style="b:", alpha=0.1)
-genieclust.plots.plot_segments(mst_e[cut_edges,:], X, style="r-", alpha=0.7)
+# now all descendants of non-outliers in the direction of noise edges
+# should be marked as noise
 
 
+for i in [0, 1]:
+    wh = np.flatnonzero(noise_edges & (~outliers[mst_e[:, i]]))
+    for e in wh:
+        if mst_labels[e] == SKIP or mst_labels[e] == NOISE: continue
+
+        v = mst_e[e, i]
+        assert not outliers[v]
+
+        if mst_s[e, i] <= max_noise_size:
+            visit(v, e, NOISE)
+
+mst_s[:,:] = 0
+labels[labels != NOISE] = UNSET
+mst_labels[(mst_labels != SKIP) & (mst_labels != NOISE)] = UNSET
+c, counts, min_mst_s = mark_clusters()
+
+
+#
+# a cut edge is incident to a noise point, its removal leads to a new cluster of "considerable" size
+# cut_k = -1
+cut_edges  = (outliers[mst_e[:,0]] | outliers[mst_e[:,1]])
+cut_edges &= (min_mst_s >= min_cluster_size)
 which_cut = np.flatnonzero(cut_edges)
 print(which_cut)
-
 
 
 # raise Exception("")
@@ -171,31 +197,31 @@ plt.subplot(3, 2, (2, 6))
 # nn_w[:, -1] > nn_threshold
 # labels[nn_w[:, -1] > nn_threshold] = 0
 genieclust.plots.plot_scatter(X, labels=labels-1)
-genieclust.plots.plot_segments(mst_e, X, style="b-", alpha=0.1)
-genieclust.plots.plot_segments(mst_e[which_cut, :], X, style="r-", alpha=0.7)
-#genieclust.plots.plot_segments(mst_e[min_mst_s>min_cluster_size,:], X, alpha=0.5)
-#genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, style="w-")
 plt.axis("equal")
 for i in range(n-1):
     plt.text(
         (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
         (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
         "%d (%d)" % (i, min(mst_s[i, 0], mst_s[i, 1])),
-        color="gray" if mst_labels[i] == SKIPEDGE else genieclust.plots.col[mst_labels[i]-1],
+        color="gray" if mst_labels[i] == SKIP else genieclust.plots.col[mst_labels[i]-1],
     )
+for i in range(c+1):
+    genieclust.plots.plot_segments(mst_e[mst_labels == i, :], X, color=genieclust.plots.col[i-1],
+                                   alpha=0.2, linestyle="-" if i>0 else ":")
+genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="--")
+genieclust.plots.plot_segments(mst_e[cut_edges,:], X, color="blue", linestyle="--", alpha=0.7)
+#
 #
 # Edge weights + cluster sizes
 ax1 = plt.subplot(3, 2, 1)
-op = np.argsort(mst_w)[::-1]   # TODO: no need - already sorted
-op = op[mst_labels[op]>0]
-#(mst_w[op])[min_mst_s[op]>min_cluster_size]
+op = np.flatnonzero(mst_labels[op]>0)
 ax1.plot(mst_w[op])
 ax2 = ax1.twinx()
 ax2.plot(np.arange(len(op)), min_mst_s[op], c='orange', alpha=0.3)
 # Variant 1) mark candidate cut edges based on cut sizes
-# which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)
-for i in which_cut:
-   plt.text(i, min_mst_s[i], i, ha='center', color=genieclust.plots.col[mst_labels[op[i]]-1])
+# which_cut = np.flatnonzero(min_mst_s[op]>min_cluster_size)  # TODO.....
+for i in which_cut:  # TODO this is wrong - numbering...
+   plt.text(i, min_mst_s[i], i, ha='center', color=genieclust.plots.col[mst_labels[i]-1])
 # Variant 2) mark candidate cut edges based on Gini indices of cluster sizes
 # which_cut = []
 # for i in range(len(op)):
