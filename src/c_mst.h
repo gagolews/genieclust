@@ -91,7 +91,7 @@ public:
 
 
 /*! Specialised version of 'Cmst_from_complete' for Euclidean distance
-/* (has better locality of reference)
+ * (has better locality of reference)
  *
  *
  * @param X [destroyable] a C-contiguous data matrix

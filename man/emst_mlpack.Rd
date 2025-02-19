@@ -4,10 +4,10 @@
 \alias{emst_mlpack}
 \title{Euclidean Minimum Spanning Tree}
 \usage{
-emst_mlpack(X, leaf_size = 1, naive = FALSE, verbose = FALSE)
+emst_mlpack(d, leaf_size = 1, naive = FALSE, verbose = FALSE)
 }
 \arguments{
-\item{X}{a numeric matrix (or an object coercible to one,
+\item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns)}
 
 \item{leaf_size}{size of leaves in the kd-tree,

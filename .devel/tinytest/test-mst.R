@@ -32,6 +32,8 @@ for (distance in c("euclidean", "manhattan")) {
         expect_true(all(t1[,1] < t1[,2]))
         expect_true(!is.unsorted(t1[,3]))
         expect_true(abs(sum(t0[,3])-sum(t1[,3])) < 1e-16)
+        expect_true(attr(t1, "method") == distance)
+        expect_true(attr(t1, "Size") == n)
     }
 
 }

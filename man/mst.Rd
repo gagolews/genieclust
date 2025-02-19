@@ -41,57 +41,53 @@ instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
 and progress information}
 }
 \value{
-Matrix of class \code{mst} with n-1 rows and 3 columns:
-\code{from}, \code{to} and \code{dist}. It holds \code{from} < \code{to}.
-Moreover, \code{dist} is sorted nondecreasingly.
-The i-th row gives the i-th edge of the MST.
-\code{(from[i], to[i])} defines the vertices (in 1,...,n)
-and \code{dist[i]} gives the weight, i.e., the
-distance between the corresponding points.
+Returns a numeric matrix of class \code{mst} with n-1 rows and 3 columns:
+\code{from}, \code{to}, and \code{dist} sorted nondecreasingly.
+Its i-th row specifies the i-th edge of the MST which is incident to the
+vertices \code{from[i]} and \code{to[i]} \code{from[i] < to[i]}  (in 1,...,n)
+and \code{dist[i]} gives the corresponding weight, i.e., the
+distance between the point pair.
 
+The \code{Size} attribute specifies the number of points, \eqn{n}.
+The \code{Labels} attribute gives the labels of the input points (optionally).
 The \code{method} attribute gives the name of the distance used.
-The \code{Labels} attribute gives the labels of all the input points.
 
 If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
 nearest neighbours of each point.
 }
 \description{
-An parallelised implementation of a Jarnik (Prim/Dijkstra)-like
-algorithm for determining
-a(*) minimum spanning tree (MST) of the complete undirected graph
-representing a set of n points
-with weights given by a pairwise distance matrix.
-
-(*) Note that there might be multiple minimum trees spanning a given graph.
+An implementation of a Jarnik (Prim/Dijkstra)-like
+algorithm for determining a(*) minimum spanning tree (MST) of the complete
+undirected graph representing a set of \eqn{n} points
+whose weights correspond to the pairwise distances between the points.
 }
 \details{
+(*) Note that if the distances are non unique,
+there might be multiple minimum trees spanning a given graph.
+
 If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
 \eqn{n} points in a \eqn{p}-dimensional space,
-the \eqn{n (n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
-memory is used.
+the \eqn{n (n-1)/2} distances are computed on the fly: the algorithm
+requires \eqn{O(n)} memory.
 
-
-The algorithm is parallelised; to control the number of threads
-used, set the \code{OMP_NUM_THREADS} environment
-variable; see \code{\link[base]{Sys.setenv}}.
+The algorithm is parallelised; the number of threads is determined by
+the \code{OMP_NUM_THREADS} environment variable;
+see \code{\link[base]{Sys.setenv}}.
 
 The time complexity is \eqn{O(n^2)} for the method accepting an object of
 class \code{dist} and \eqn{O(p n^2)} otherwise.
 
 If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
-with smoothing factor \code{M} (see Campello et al. 2013)
+with the smoothing factor \code{M} (see Campello et al. 2013)
 is used instead of the chosen "raw" distance \eqn{d(i,j)}.
 It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
 \eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
 This makes "noise" and "boundary" points being "pulled away" from each other.
-Genie++ clustering algorithm (see \code{\link{gclust}})
-with respect to the mutual reachability distance gains the ability to
-identify some observations are noise points.
+The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
+the mutual reachability distance can mark some observations are noise points.
 
 Note that the case \code{M} = 2 corresponds to the original distance, but we
-determine the 1-nearest neighbours separately as well, which is a bit
-suboptimal; you can file a feature request if this makes your data analysis
-tasks too slow.
+return the (1-)nearest neighbours as well.
 }
 \examples{
 library("datasets")
@@ -121,7 +117,7 @@ The official online manual of \pkg{genieclust} at \url{https://genieclust.gagole
 Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
 
 \code{\link{emst_mlpack}()} for a very fast alternative
-in case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
+in the case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

@@ -23,47 +23,44 @@
 #' @title Minimum Spanning Tree of the Pairwise Distance Graph
 #'
 #' @description
-#' An parallelised implementation of a Jarnik (Prim/Dijkstra)-like
-#' algorithm for determining
-#' a(*) minimum spanning tree (MST) of the complete undirected graph
-#' representing a set of n points
-#' with weights given by a pairwise distance matrix.
+#' An implementation of a Jarnik (Prim/Dijkstra)-like
+#' algorithm for determining a(*) minimum spanning tree (MST) of the complete
+#' undirected graph representing a set of \eqn{n} points
+#' whose weights correspond to the pairwise distances between the points.
 #'
-#' (*) Note that there might be multiple minimum trees spanning a given graph.
 #'
 #' @details
+#' (*) Note that if the distances are non unique,
+#' there might be multiple minimum trees spanning a given graph.
+#'
 #' If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
 #' \eqn{n} points in a \eqn{p}-dimensional space,
-#' the \eqn{n (n-1)/2} distances are computed on the fly, so that \eqn{O(n M)}
-#' memory is used.
+#' the \eqn{n (n-1)/2} distances are computed on the fly: the algorithm
+#' requires \eqn{O(n)} memory.
 #'
-#'
-#' The algorithm is parallelised; to control the number of threads
-#' used, set the \code{OMP_NUM_THREADS} environment
-#' variable; see \code{\link[base]{Sys.setenv}}.
+#' The algorithm is parallelised; the number of threads is determined by
+#' the \code{OMP_NUM_THREADS} environment variable;
+#' see \code{\link[base]{Sys.setenv}}.
 #'
 #' The time complexity is \eqn{O(n^2)} for the method accepting an object of
 #' class \code{dist} and \eqn{O(p n^2)} otherwise.
 #'
 #' If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
-#' with smoothing factor \code{M} (see Campello et al. 2013)
+#' with the smoothing factor \code{M} (see Campello et al. 2013)
 #' is used instead of the chosen "raw" distance \eqn{d(i,j)}.
 #' It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
 #' \eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
 #' This makes "noise" and "boundary" points being "pulled away" from each other.
-#' Genie++ clustering algorithm (see \code{\link{gclust}})
-#' with respect to the mutual reachability distance gains the ability to
-#' identify some observations are noise points.
+#' The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
+#' the mutual reachability distance can mark some observations are noise points.
 #'
 #' Note that the case \code{M} = 2 corresponds to the original distance, but we
-#' determine the 1-nearest neighbours separately as well, which is a bit
-#' suboptimal; you can file a feature request if this makes your data analysis
-#' tasks too slow.
+#' return the (1-)nearest neighbours as well.
 #'
 #'
 #' @seealso
 #' \code{\link{emst_mlpack}()} for a very fast alternative
-#' in case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
+#' in the case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
 #'
 #'
 #' @references
@@ -104,16 +101,16 @@
 #'
 #'
 #' @return
-#' Matrix of class \code{mst} with n-1 rows and 3 columns:
-#' \code{from}, \code{to} and \code{dist}. It holds \code{from} < \code{to}.
-#' Moreover, \code{dist} is sorted nondecreasingly.
-#' The i-th row gives the i-th edge of the MST.
-#' \code{(from[i], to[i])} defines the vertices (in 1,...,n)
-#' and \code{dist[i]} gives the weight, i.e., the
-#' distance between the corresponding points.
+#' Returns a numeric matrix of class \code{mst} with n-1 rows and 3 columns:
+#' \code{from}, \code{to}, and \code{dist} sorted nondecreasingly.
+#' Its i-th row specifies the i-th edge of the MST which is incident to the
+#' vertices \code{from[i]} and \code{to[i]} \code{from[i] < to[i]}  (in 1,...,n)
+#' and \code{dist[i]} gives the corresponding weight, i.e., the
+#' distance between the point pair.
 #'
+#' The \code{Size} attribute specifies the number of points, \eqn{n}.
+#' The \code{Labels} attribute gives the labels of the input points (optionally).
 #' The \code{method} attribute gives the name of the distance used.
-#' The \code{Labels} attribute gives the labels of all the input points.
 #'
 #' If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
 #' nearest neighbours of each point.
@@ -137,7 +134,8 @@ mst <- function(d, ...)
 #' @export
 #' @rdname mst
 #' @method mst default
-mst.default <- function(d,
+mst.default <- function(
+    d,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=1L,
     cast_float32=TRUE,
@@ -147,30 +145,36 @@ mst.default <- function(d,
     d <- as.matrix(d)
 
     result <- .mst.default(d, distance, M, cast_float32, verbose)
-    attr(result, "method") <- if (M == 1L) distance else
-        sprintf("mutual reachability distance (%s, M=%d)", distance, M)
-    attr(result, "Labels") <- dimnames(d)[[1]]
 
-    class(result) <- "mst"
-
-    result
+    structure(
+        result,
+        class="mst",
+        Size=nrow(d),
+        Labels=dimnames(d)[[1]],  # dist() returns `Labels`, not `labels`
+        method=if (M == 1L) distance else
+            sprintf("mutual reachability distance (%s, M=%d)", distance, M)
+    )
 }
 
 
 #' @export
 #' @rdname mst
 #' @method mst dist
-mst.dist <- function(d,
+mst.dist <- function(
+    d,
     M=1L,
     verbose=FALSE, ...)
 {
     result <- .mst.dist(d, M, verbose)
-    attr(result, "method") <- if (M == 1L) attr(d, "method") else
-        sprintf("mutual reachability distance (%s, M=%d)", attr(d, "method"), M)
-    attr(result, "Labels") <- attr(d, "Labels")
-    class(result) <- "mst"
 
-    result
+    structure(
+        result,
+        class="mst",
+        Size=nrow(result)+1,
+        Labels=attr(d, "Labels"),  # dist() returns `Labels`, not `labels`
+        method=if (M == 1L) attr(d, "method") else
+            sprintf("mutual reachability distance (%s, M=%d)", attr(d, "method"), M)
+    )
 }
 
 
@@ -192,7 +196,7 @@ registerS3method("mst", "dist",    "mst.dist")
 #' in \code{\link{mst}()}.
 #'
 #'
-#' @param X a numeric matrix (or an object coercible to one,
+#' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns)
 #'
 #' @param leaf_size size of leaves in the kd-tree,
@@ -217,16 +221,16 @@ registerS3method("mst", "dist",    "mst.dist")
 #' \emph{Journal of Open Source Software} 3(26), 2018, 726.
 #'
 #' @export
-emst_mlpack <- function(X, leaf_size=1, naive=FALSE, verbose=FALSE)
+emst_mlpack <- function(d, leaf_size=1, naive=FALSE, verbose=FALSE)
 {
-    X <- as.matrix(X)
+    d <- as.matrix(d)
 
     if (!requireNamespace("mlpack", quietly=TRUE)) {
         warning("Package `mlpack` is not installed. Using mst() instead.")
         return(mst.default(X, verbose=verbose, cast_float32=FALSE))
     }
 
-    mst <- mlpack::emst(X, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+    mst <- mlpack::emst(d, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
 
     mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
     mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
@@ -236,7 +240,8 @@ emst_mlpack <- function(X, leaf_size=1, naive=FALSE, verbose=FALSE)
     structure(
         mst,
         class="mst",
-        method="euclidean",
-        Labels=dimnames(X)[[1]]
+        Size=nrow(d),
+        Labels=dimnames(d)[[1]],
+        method="euclidean"
     )
 }
