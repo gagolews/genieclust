@@ -1,4 +1,4 @@
-n <- 100000
+n <- 1000000
 env <- "-O3 -march=native"
 
 system2("R", c("CMD", "INSTALL", ".", "--preclean"),
@@ -8,7 +8,7 @@ library("genieclust")
 
 res <- list()
 
-for (d in c(2, 5)) {
+for (d in c(2, 7)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), nrow=n)
 
@@ -16,7 +16,7 @@ for (d in c(2, 5)) {
 
     t1 <- system.time(mst1 <- mst(X, cast_float32=FALSE))
 
-    if (d > 5)
+    if (d > 7)
         t2 <- system.time(mst2 <- NULL)
     else
         t2 <- system.time(mst2 <- emst_mlpack(X))

@@ -158,10 +158,10 @@ setuptools.setup(
         "Cython",  # not: cython
         "matplotlib",
         "scikit-learn",
+        "mlpack"
       ],
     extras_require={
         "nmslib": ["nmslib"],  # nmslib does not build on 32bit Windows...
-        "mlpack": ["mlpack"]
     },
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",

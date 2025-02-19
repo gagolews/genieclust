@@ -28,7 +28,7 @@ jobs:
         sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc libtirpc-dev
         sudo mkdir -p /usr/lib/R/site-library
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild'), lib='/usr/lib/R/site-library')"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack'), lib='/usr/lib/R/site-library')"
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
         sudo make r
         python3 -m venv python-venv
@@ -42,10 +42,6 @@ jobs:
       continue-on-error: true
       run: |
         #sudo pip3 install nmslib --upgrade
-    - name: Install optional dependencies (mlpack)
-      continue-on-error: true
-      run: |
-        #sudo pip3 install mlpack --upgrade
     - name: Test and check Python
       run: |
         source python-venv/bin/activate

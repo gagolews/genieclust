@@ -17,7 +17,7 @@ gclust(d, ...)
   d,
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  cast_float32 = TRUE,
+  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )
@@ -36,7 +36,7 @@ genie(d, ...)
   M = 1L,
   postprocess = c("boundary", "none", "all"),
   detect_noise = M > 1L,
-  cast_float32 = TRUE,
+  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )
@@ -72,8 +72,8 @@ or an object of class \code{mst}, see \code{\link{mst}()}.}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
-Threshold of 1.0 disables the correction.
-Low thresholds highly penalise the formation of small clusters.}
+threshold of 1.0 leads to the single linkage algorithm;
+low thresholds highly penalise the formation of small clusters.}
 
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -120,7 +120,7 @@ is \code{TRUE}).
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
 clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016).
-The Genie algorithm is based on a minimum spanning tree (MST) of the
+The Genie algorithm is based on the minimum spanning tree (MST) of the
 pairwise distance graph of a given point set.
 Just like the single linkage, it consumes the edges
 of the MST in an increasing order of weights. However, it prevents
@@ -180,7 +180,7 @@ y_test <- iris[,5]
 plot(iris[,2], iris[,3], col=y_pred,
    pch=as.integer(iris[,5]), asp=1, las=1)
 adjusted_rand_score(y_test, y_pred)
-pair_sets_index(y_test, y_pred)
+normalized_clustering_accuracy(y_test, y_pred)
 
 # Fast for low-dimensional Euclidean spaces:
 h <- gclust(emst_mlpack(X))
@@ -209,8 +209,8 @@ Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{
 
 \code{\link{mst}()} for the minimum spanning tree routines.
 
-\code{\link{adjusted_rand_score}()} (amongst others) for external
-cluster validity measures (partition similarity scores).
+\code{\link{normalized_clustering_accuracy}()} (amongst others) for external
+cluster validity measures.
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

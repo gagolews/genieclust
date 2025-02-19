@@ -22,7 +22,7 @@ for (distance in c("euclidean", "manhattan")) {
     t0 <- ade4_mstree(D)
 
     ts <- list(
-        mst(X, cast_float32=FALSE, distance=distance),
+        mst(X, distance=distance),
         mst(D),
         if (distance == "euclidean") emst_mlpack(X)
     )
@@ -42,7 +42,7 @@ for (distance in c("euclidean", "manhattan")) {
 X <- jitter(as.matrix(iris[1:4]))
 for (M in c(1, 5, 10)) {
     for (distance in c("euclidean", "manhattan")) {
-        t1 <- mst(X, distance=distance, M=M, cast_float32=FALSE)
+        t1 <- mst(X, distance=distance, M=M)
 #         print(t1)
         expect_true(all(t1[,1] < t1[,2]))
         expect_true(all(diff(t1[,3])>=0))

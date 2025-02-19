@@ -12,7 +12,7 @@ mst(d, ...)
   d,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 1L,
-  cast_float32 = TRUE,
+  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )

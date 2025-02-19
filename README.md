@@ -97,8 +97,7 @@ cutree(h, k=2)
 
 
 
-The Python language version of **genieclust** has a familiar
-**scikit-learn**-like look-and-feel:
+The Python language version of **genieclust** follows a **scikit-learn**-like API:
 
 ```python
 import genieclust
@@ -119,8 +118,6 @@ Tutorials and the package documentation are available
 
 ### Python Version
 
-
-
 To install via `pip` (see [PyPI](https://pypi.org/project/genieclust)):
 
 ```bash
@@ -128,8 +125,8 @@ pip3 install genieclust
 ```
 
 The package requires Python 3.7+ together with **cython** as well as
-**numpy**, **scipy**, **matplotlib**, and **scikit-learn**.
-Optional dependencies: **nmslib** and **mlpack**.
+**numpy**, **scipy**, **matplotlib**, **scikit-learn**, and **mlpack**.
+Optional dependency: **nmslib**.
 
 
 
@@ -155,10 +152,9 @@ See the package entry on
 ### Other
 
 The core functionality is implemented in the form of a header-only
-C++ library. It can thus be easily adapted for use in
-other environments.
+C++ library. It can thus be easily adapted for use in other environments.
 
-Any contributions are welcome (e.g., Julia, Matlab, ...).
+New contributions are welcome (e.g., Julia, Matlab, ...).
 
 
 

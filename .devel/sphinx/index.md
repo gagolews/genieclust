@@ -28,7 +28,7 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
-Thanks to its being based on minimal spanning trees {cite}`cvimst`
+Thanks to its being based on minimum spanning trees {cite}`cvimst`
 of the pairwise distance graphs, Genie is also **very fast** — determining
 the whole cluster hierarchy for datasets of millions of points, can be
 completed within {any}`minutes <weave/timings>`.
