@@ -440,7 +440,7 @@ of finer or coarser granularity.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
 <span></span><span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">()</span>
 <span class="n">labels_hdbscan</span> <span class="o">=</span> <span class="n">h</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
-<span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span></span><span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_hdbscan</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;(min_cluster_size=</span><span class="si">%d</span><span class="s2">, min_samples=</span><span class="si">%d</span><span class="s2">)&quot;</span> <span class="o">%</span> <span class="p">(</span>
     <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">,</span> <span class="n">h</span><span class="o">.</span><span class="n">min_samples</span> <span class="ow">or</span> <span class="n">h</span><span class="o">.</span><span class="n">min_cluster_size</span><span class="p">))</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s2">&quot;equal&quot;</span><span class="p">)</span>
@@ -515,7 +515,7 @@ we can obtain a partition that is even closer to the reference one:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-02-19T16:37:19+0100.
+              Last updated on 2025-02-19T16:53:18+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

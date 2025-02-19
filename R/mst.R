@@ -255,8 +255,6 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @return
 #' An object of class \code{mst}, see \code{\link{mst}()} for details.
 #'
-#' @references
-#'
 #' @export
 emst_mlpack <- function(d, leaf_size=1, verbose=FALSE)
 {

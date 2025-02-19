@@ -167,6 +167,9 @@ import hdbscan
 ``` python
 h = hdbscan.HDBSCAN()
 labels_hdbscan = h.fit_predict(X)
+```
+
+``` python
 genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5)
 plt.title("(min_cluster_size=%d, min_samples=%d)" % (
     h.min_cluster_size, h.min_samples or h.min_cluster_size))

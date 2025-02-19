@@ -64,7 +64,7 @@ h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
 ## 
 ## Call:
-## gclust.mst(d = mst.default(d, M = 1L, distance = distance, verbose = verbose,     cast_float32 = cast_float32), gini_threshold = gini_threshold,     verbose = verbose)
+## gclust.mst(d = mst.default(d, distance = distance, verbose = verbose,     ...), gini_threshold = gini_threshold, verbose = verbose)
 ## 
 ## Cluster method   : Genie(0.3) 
 ## Distance         : euclidean 

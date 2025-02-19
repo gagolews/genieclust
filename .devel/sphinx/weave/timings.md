@@ -204,7 +204,7 @@ t0 = time.time()
 g.fit(X)
 print("time elapsed - first run: %.3f" % (time.time()-t0))
 ## Genie()
-## time elapsed - first run: 0.607
+## time elapsed - first run: 0.613
 ```
 
 

@@ -30,7 +30,7 @@ jobs:
         sudo mkdir -p /usr/lib/R/site-library
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack'), lib='/usr/lib/R/site-library')"
         #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
-        sudo make r
+        sudo R CMD INSTALL .
         python3 -m venv python-venv
         source python-venv/bin/activate
         python3 -m pip install --upgrade pip

@@ -47,7 +47,6 @@ r-autoconf:
 	        roclets=c('rd', 'collate', 'namespace', 'vignette'), \
 	        load_code=roxygen2::load_installed\
 	)"
-	R CMD INSTALL .
 
 r: r-autoconf
 	R CMD INSTALL . --html
