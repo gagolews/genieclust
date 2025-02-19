@@ -1,4 +1,4 @@
-n <- 1000000
+n <- 100000
 env <- "-O3 -march=native"
 
 system2("R", c("CMD", "INSTALL", ".", "--preclean"),
@@ -14,12 +14,12 @@ for (d in c(2, 7)) {
 
     cat(sprintf("env='%s' n=%d d=%d threads=%d\n", env, n, d, as.integer(Sys.getenv("OMP_NUM_THREADS"))))
 
-    t1 <- system.time(mst1 <- mst(X, cast_float32=FALSE))
+    t1 <- system.time(mst1 <- mst(X, algorithm="jarnik"))
 
     if (d > 7)
         t2 <- system.time(mst2 <- NULL)
     else
-        t2 <- system.time(mst2 <- emst_mlpack(X))
+        t2 <- system.time(mst2 <- mst(X, algorithm="mlpack"))
 
     if (!is.null(mst2))
         stopifnot(abs(sum(mst1[,3])-sum(mst2[,3])) < 1e-16)

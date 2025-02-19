@@ -2,9 +2,9 @@
 % Please edit documentation in R/mst.R
 \name{emst_mlpack}
 \alias{emst_mlpack}
-\title{Euclidean Minimum Spanning Tree}
+\title{Euclidean Minimum Spanning Tree [DEPRECATED]}
 \usage{
-emst_mlpack(d, leaf_size = 1, naive = FALSE, verbose = FALSE)
+emst_mlpack(d, leaf_size = 1, verbose = FALSE)
 }
 \arguments{
 \item{d}{a numeric matrix (or an object coercible to one,
@@ -19,22 +19,7 @@ controls the trade-off between speed and memory consumption}
 An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
-Gives access to the implementation of the Dual-Tree Boruvka
-algorithm from the \code{mlpack} package (if available).
-It is based on K-d trees and is fast for (very) low-dimensional
-Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
-or other metrics, use the parallelised Prim-like algorithm implemented
-in \code{\link{mst}()}.
-}
-\references{
-March W.B., Ram P., Gray A.G.,
-Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-\emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
-\url{https://mlpack.org/papers/emst.pdf}.
-
-Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
-mlpack 3: A fast, flexible machine learning library,
-\emph{Journal of Open Source Software} 3(26), 2018, 726.
+This function is deprecated. Use \code{\link{mst}()} instead.
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

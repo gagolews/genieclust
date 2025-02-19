@@ -17,7 +17,6 @@ gclust(d, ...)
   d,
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )
@@ -36,7 +35,6 @@ genie(d, ...)
   M = 1L,
   postprocess = c("boundary", "none", "all"),
   detect_noise = M > 1L,
-  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )
@@ -65,10 +63,10 @@ genie(d, ...)
 \arguments{
 \item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
-object of class \code{dist}, see \code{\link[stats]{dist}}
-or an object of class \code{mst}, see \code{\link{mst}()}.}
+object of class \code{dist} (see \code{\link[stats]{dist}}),
+or an object of class \code{mst} (\code{\link{mst}}).}
 
-\item{...}{further arguments passed to other methods.}
+\item{...}{further arguments passed to \code{\link{mst}()}.}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
@@ -79,10 +77,6 @@ low thresholds highly penalise the formation of small clusters.}
 \code{"euclidean"} (synonym: \code{"l2"}),
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 \code{"cosine"}.}
-
-\item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic
-(up to 2x faster in high-dimensional spaces).}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information.}
@@ -132,7 +126,7 @@ in hand with its usability; Genie often outperforms
 other clustering approaches on benchmark data,
 such as \url{https://github.com/gagolews/clustering-benchmarks}.
 
-The clustering can now also be computed with respect to the
+As an experimental feature, the clustering can now also be computed with respect to the
 mutual reachability distance (based, e.g., on the Euclidean metric),
 which is used in the definition of the HDBSCAN* algorithm
 (see Campello et al., 2013). If \code{M} > 1, then the mutual reachability
@@ -151,15 +145,15 @@ clusters. Hence it does not dependent on the DBSCAN's somewhat magical
 \details{
 Note that, as in the case of all the distance-based methods,
 the standardisation of the input features is definitely worth giving a try.
+Oftentimes, more sophisticated feature engineering (e.g., dimensionality
+reduction) will lead to more meaningful results.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
 \code{\link{mst}()} will be called to compute an MST, which generally
-takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised,
-environment variable \code{OMP_NUM_THREADS} controls the number of threads
-in use). However, see \code{\link{emst_mlpack}()} for a very fast alternative
-in the case of Euclidean spaces of (very) low dimensionality and \code{M} = 1.
+takes at most \eqn{O(n^2)} time (by default, a faster algorithm is selected
+automatically for low-dimensional Euclidean spaces).
 
-Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
+Given a minimum spanning tree, the Genie algorithm runs in \eqn{O(n \sqrt{n})} time.
 Therefore, if you want to test different \code{gini_threshold}s,
 (or \code{k}s), it is best to explicitly compute the MST first.
 
@@ -181,9 +175,6 @@ plot(iris[,2], iris[,3], col=y_pred,
    pch=as.integer(iris[,5]), asp=1, las=1)
 adjusted_rand_score(y_test, y_pred)
 normalized_clustering_accuracy(y_test, y_pred)
-
-# Fast for low-dimensional Euclidean spaces:
-h <- gclust(emst_mlpack(X))
 
 }
 \references{

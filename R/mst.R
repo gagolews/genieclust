@@ -23,8 +23,7 @@
 #' @title Minimum Spanning Tree of the Pairwise Distance Graph
 #'
 #' @description
-#' An implementation of a Jarnik (Prim/Dijkstra)-like
-#' algorithm for determining a(*) minimum spanning tree (MST) of the complete
+#' Determine a(*) minimum spanning tree (MST) of the complete
 #' undirected graph representing a set of \eqn{n} points
 #' whose weights correspond to the pairwise distances between the points.
 #'
@@ -33,17 +32,26 @@
 #' (*) Note that if the distances are non unique,
 #' there might be multiple minimum trees spanning a given graph.
 #'
+#'
+#' Two MST algorithms are available.
+#' First, our implementation of the Jarnik (Prim/Dijkstra)-like method
+#' requires \eqn{O(n^2)} time. The algorithm is parallelised; the number of
+#' threads is determined by the \code{OMP_NUM_THREADS} environment variable;
+#' see \code{\link[base]{Sys.setenv}}. This method is recommended for
+#' high-dimensional spaces. As a rule of thumb, datasets up to 100000 points
+#' should be processed quite quickly. For 1M points, give it an hour or so.
+#'
+#' Second, we give access to the implementation of the Dual-Tree Boruvka
+#' algorithm from the \code{mlpack} library. The algorithm is based on K-d trees
+#' and is very fast but only for low-dimensional Euclidean spaces
+#' (due to the curse of dimensionality). The Jarnik algorithm should be
+#' used if there are more than 5-10 features.
+#'
+#'
 #' If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
 #' \eqn{n} points in a \eqn{p}-dimensional space,
-#' the \eqn{n (n-1)/2} distances are computed on the fly: the algorithm
+#' the \eqn{n (n-1)/2} distances are computed on the fly: the algorithms
 #' requires \eqn{O(n)} memory.
-#'
-#' The algorithm is parallelised; the number of threads is determined by
-#' the \code{OMP_NUM_THREADS} environment variable;
-#' see \code{\link[base]{Sys.setenv}}.
-#'
-#' The time complexity is \eqn{O(n^2)} for the method accepting an object of
-#' class \code{dist} and \eqn{O(p n^2)} otherwise.
 #'
 #' If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
 #' with the smoothing factor \code{M} (see Campello et al. 2013)
@@ -73,6 +81,15 @@
 #' Prim R., Shortest connection networks and some generalisations,
 #' \emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
 #'
+#' March W.B., Ram P., Gray A.G.,
+#' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+#' \emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
+#' \url{https://mlpack.org/papers/emst.pdf}.
+#'
+#' Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+#' mlpack 3: A fast, flexible machine learning library,
+#' \emph{Journal of Open Source Software} 3(26), 2018, 726.
+#'
 #' Campello R.J.G.B., Moulavi D., Sander J.,
 #' Density-based clustering based on hierarchical density estimates,
 #' \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
@@ -91,11 +108,19 @@
 #' @param M smoothing factor; \code{M} = 1 gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used
 #'
-#' @param verbose logical; whether to print diagnostic messages
-#'     and progress information
+#' @param algorithm MST algorithm to use: \code{"auto"} (default),
+#'     \code{"jarnik"}, or \code{"mlpack"};
+#'     if \code{"auto"}, select \code{"mlpack"} for low-dimensional Euclidean
+#'     spaces and \code{"jarnik"} otherwise
+#'
+#' @param leaf_size size of leaves in the K-d tree (\code{"mlpack"});
+#'     controls the trade-off between speed and memory consumption
 #'
 #' @param cast_float32 logical; whether to compute the distances using 32-bit
 #'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
+#'
+#' @param verbose logical; whether to print diagnostic messages
+#'     and progress information
 #'
 #' @param ... further arguments passed to or from other methods
 #'
@@ -138,16 +163,37 @@ mst.default <- function(
     d,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=1L,
+    algorithm=c("auto", "jarnik", "mlpack"),
+    leaf_size=1L,
     cast_float32=FALSE,
     verbose=FALSE, ...)
 {
     d <- as.matrix(d)
     distance <- match.arg(distance)
+    algorithm <- match.arg(algorithm)
     cast_float32 <- !identical(cast_float32, FALSE)
     verbose <- !identical(verbose, FALSE)
     M <- as.integer(M)[1]
+    leaf_size <- as.integer(leaf_size)[1]
 
-    result <- .mst.default(d, distance, M, cast_float32, verbose)
+    if (algorithm == "auto") {
+        if (distance %in% c("euclidean", "l2") && ncol(d) <= 7L && M == 1L)
+            algorithm <- "mlpack"
+        else
+            algorithm <- "jarnik"
+    }
+
+    if (algorithm == "mlpack") {
+        stopifnot(M == 1L)
+        stopifnot(distance %in% c("euclidean", "l2"))
+        result <- .emst_mlpack(d, leaf_size, verbose)
+    }
+    else {
+        result <- .mst.default(d, distance, M, cast_float32, verbose)
+    }
+
+    stopifnot(result[, 1] < result[, 2])
+    stopifnot(!is.unsorted(result[, 3]))
 
     structure(
         result,
@@ -191,15 +237,10 @@ registerS3method("mst", "dist",    "mst.dist")
 
 
 
-#' @title Euclidean Minimum Spanning Tree
+#' @title Euclidean Minimum Spanning Tree [DEPRECATED]
 #'
 #' @description
-#' Gives access to the implementation of the Dual-Tree Boruvka
-#' algorithm from the \code{mlpack} package (if available).
-#' It is based on K-d trees and is fast for (very) low-dimensional
-#' Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
-#' or other metrics, use the parallelised Prim-like algorithm implemented
-#' in \code{\link{mst}()}.
+#' This function is deprecated. Use \code{\link{mst}()} instead.
 #'
 #'
 #' @param d a numeric matrix (or an object coercible to one,
@@ -215,24 +256,10 @@ registerS3method("mst", "dist",    "mst.dist")
 #' An object of class \code{mst}, see \code{\link{mst}()} for details.
 #'
 #' @references
-#' March W.B., Ram P., Gray A.G.,
-#' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-#' \emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
-#' \url{https://mlpack.org/papers/emst.pdf}.
-#'
-#' Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
-#' mlpack 3: A fast, flexible machine learning library,
-#' \emph{Journal of Open Source Software} 3(26), 2018, 726.
 #'
 #' @export
-emst_mlpack <- function(d, leaf_size=1, naive=FALSE, verbose=FALSE)
+emst_mlpack <- function(d, leaf_size=1, verbose=FALSE)
 {
-    d <- as.matrix(d)
-    #cast_float32 <- !identical(cast_float32, FALSE)
-    #M <- as.integer(M)[1]
-    verbose <- !identical(verbose, FALSE)
-    leaf_size <- as.integer(leaf_size)[1]
-
     # if (!requireNamespace("mlpack", quietly=TRUE)) {
     #     warning("Package `mlpack` is not installed. Using mst() instead.")
     #     return(mst.default(d, verbose=verbose, cast_float32=FALSE))
@@ -241,16 +268,6 @@ emst_mlpack <- function(d, leaf_size=1, naive=FALSE, verbose=FALSE)
     # mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
     # mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
 
-    mst <- .emst_mlpack(d, leaf_size, verbose)
-
-    stopifnot(mst[, 1] < mst[, 2])
-    stopifnot(!is.unsorted(mst[, 3]))
-
-    structure(
-        mst,
-        class="mst",
-        Size=nrow(d),
-        Labels=dimnames(d)[[1]],
-        method="euclidean"
-    )
+    warning("`emst_mlpack` is deprecated; use `mst(..., algorithm='mlpack')` instead")
+    mst.default(d, leaf_size=leaf_size, verbose=verbose, algorithm="mlpack")
 }

@@ -49,7 +49,7 @@
 #' other clustering approaches on benchmark data,
 #' such as \url{https://github.com/gagolews/clustering-benchmarks}.
 #'
-#' The clustering can now also be computed with respect to the
+#' As an experimental feature, the clustering can now also be computed with respect to the
 #' mutual reachability distance (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
 #' (see Campello et al., 2013). If \code{M} > 1, then the mutual reachability
@@ -69,15 +69,15 @@
 #' @details
 #' Note that, as in the case of all the distance-based methods,
 #' the standardisation of the input features is definitely worth giving a try.
+#' Oftentimes, more sophisticated feature engineering (e.g., dimensionality
+#' reduction) will lead to more meaningful results.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},
 #' \code{\link{mst}()} will be called to compute an MST, which generally
-#' takes at most \eqn{O(n^2)} time (the algorithm we provide is parallelised,
-#' environment variable \code{OMP_NUM_THREADS} controls the number of threads
-#' in use). However, see \code{\link{emst_mlpack}()} for a very fast alternative
-#' in the case of Euclidean spaces of (very) low dimensionality and \code{M} = 1.
+#' takes at most \eqn{O(n^2)} time (by default, a faster algorithm is selected
+#' automatically for low-dimensional Euclidean spaces).
 #'
-#' Given an minimum spanning tree, the algorithm runs in \eqn{O(n \sqrt{n})} time.
+#' Given a minimum spanning tree, the Genie algorithm runs in \eqn{O(n \sqrt{n})} time.
 #' Therefore, if you want to test different \code{gini_threshold}s,
 #' (or \code{k}s), it is best to explicitly compute the MST first.
 #'
@@ -91,8 +91,8 @@
 #'
 #' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
-#'     object of class \code{dist}, see \code{\link[stats]{dist}}
-#'     or an object of class \code{mst}, see \code{\link{mst}()}.
+#'     object of class \code{dist} (see \code{\link[stats]{dist}}),
+#'     or an object of class \code{mst} (\code{\link{mst}}).
 #' @param gini_threshold threshold for the Genie correction, i.e.,
 #'     the Gini index of the cluster size distribution;
 #'     threshold of 1.0 leads to the single linkage algorithm;
@@ -103,10 +103,7 @@
 #'     \code{"cosine"}.
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information.
-#' @param cast_float32 logical; whether to compute the distances using 32-bit
-#'     instead of 64-bit precision floating-point arithmetic
-#'     (up to 2x faster in high-dimensional spaces).
-#' @param ... further arguments passed to other methods.
+#' @param ... further arguments passed to \code{\link{mst}()}.
 #' @param k the desired number of clusters to detect, \code{k} = 1 with \code{M} > 1
 #'     acts as a noise point detector.
 #' @param detect_noise whether the minimum spanning tree's leaves
@@ -171,9 +168,6 @@
 #' adjusted_rand_score(y_test, y_pred)
 #' normalized_clustering_accuracy(y_test, y_pred)
 #'
-#' # Fast for low-dimensional Euclidean spaces:
-#' h <- gclust(emst_mlpack(X))
-#'
 #' @rdname gclust
 #' @export
 gclust <- function(d, ...)
@@ -189,21 +183,11 @@ gclust <- function(d, ...)
 gclust.default <- function(d,
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-    cast_float32=FALSE,
     verbose=FALSE, ...)
 {
-    gini_threshold <- as.double(gini_threshold)[1]
-    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     distance <- match.arg(distance)
-    verbose <- !identical(verbose, FALSE)
-
-    d <- as.matrix(d)
-
     gclust.mst(
-        mst.default(
-            d, M=1L, distance=distance,
-            verbose=verbose, cast_float32=cast_float32
-        ),
+        mst.default(d, distance=distance, verbose=verbose, ...),
         gini_threshold=gini_threshold, verbose=verbose
     )
 }
@@ -216,17 +200,18 @@ gclust.dist <- function(d,
     gini_threshold=0.3,
     verbose=FALSE, ...)
 {
-    gini_threshold <- as.double(gini_threshold)[1]
-    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
-    gclust.mst(mst.dist(d, M=1L, verbose=verbose),
-        gini_threshold=gini_threshold, verbose=verbose)
+    gclust.mst(
+        mst.dist(d, verbose=verbose, ...),
+        gini_threshold=gini_threshold, verbose=verbose
+    )
 }
 
 
 #' @export
 #' @rdname gclust
 #' @method gclust mst
-gclust.mst <- function(d,
+gclust.mst <- function(
+    d,
     gini_threshold=0.3,
     verbose=FALSE, ...)
 {
@@ -260,56 +245,52 @@ genie <- function(d, ...)
 #' @export
 #' @rdname gclust
 #' @method genie default
-genie.default <- function(d,
+genie.default <- function(
+    d,
     k,
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=1L,
     postprocess=c("boundary", "none", "all"),
     detect_noise=M>1L,
-    cast_float32=FALSE,
-    verbose=FALSE, ...)
+    verbose=FALSE,
+    ...)
 {
-    gini_threshold <- as.double(gini_threshold)[1]
-    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
-    postprocess <- match.arg(postprocess)
     distance <- match.arg(distance)
-    verbose <- !identical(verbose, FALSE)
-
-    d <- as.matrix(d)
-
-    genie.mst(mst.default(d, M=M, distance=distance,
-                verbose=verbose, cast_float32=cast_float32),
+    postprocess <- match.arg(postprocess)
+    genie.mst(
+        mst.default(d, M=M, distance=distance, verbose=verbose, ...),
         k=k,
         gini_threshold=gini_threshold,
         postprocess=postprocess,
         detect_noise=detect_noise,
-        verbose=verbose)
+        verbose=verbose
+    )
 }
 
 
 #' @export
 #' @rdname gclust
 #' @method genie dist
-genie.dist <- function(d,
+genie.dist <- function(
+    d,
     k,
     gini_threshold=0.3,
     M=1L,
     postprocess=c("boundary", "none", "all"),
     detect_noise=M>1L,
-    verbose=FALSE, ...)
+    verbose=FALSE,
+    ...)
 {
-    gini_threshold <- as.double(gini_threshold)[1]
-    stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     postprocess <- match.arg(postprocess)
-    verbose <- !identical(verbose, FALSE)
-
-    genie.mst(mst.dist(d, M=M, verbose=verbose),
+    genie.mst(
+        mst.dist(d, M=M, verbose=verbose, ...),
         k=k,
         gini_threshold=gini_threshold,
         postprocess=postprocess,
         detect_noise=detect_noise,
-        verbose=verbose)
+        verbose=verbose
+    )
 }
 
 
@@ -321,12 +302,14 @@ genie.mst <- function(d,
     gini_threshold=0.3,
     postprocess=c("boundary", "none", "all"),
     detect_noise=FALSE,
-    verbose=FALSE, ...)
+    verbose=FALSE,
+    ...)
 {
     gini_threshold <- as.double(gini_threshold)[1]
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     postprocess <- match.arg(postprocess)
     verbose <- !identical(verbose, FALSE)
+    detect_noise <- !identical(detect_noise, FALSE)
 
     structure(
         .genie(d, k, gini_threshold, postprocess, detect_noise, verbose),

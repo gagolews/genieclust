@@ -12,6 +12,8 @@ mst(d, ...)
   d,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 1L,
+  algorithm = c("auto", "jarnik", "mlpack"),
+  leaf_size = 1L,
   cast_float32 = FALSE,
   verbose = FALSE,
   ...
@@ -33,6 +35,14 @@ object of class \code{dist}; see \code{\link[stats]{dist}}}
 
 \item{M}{smoothing factor; \code{M} = 1 gives the selected \code{distance};
 otherwise, the mutual reachability distance is used}
+
+\item{algorithm}{MST algorithm to use: \code{"auto"} (default),
+\code{"jarnik"}, or \code{"mlpack"};
+if \code{"auto"}, select \code{"mlpack"} for low-dimensional Euclidean
+spaces and \code{"jarnik"} otherwise}
+
+\item{leaf_size}{size of leaves in the K-d tree (\code{"mlpack"});
+controls the trade-off between speed and memory consumption}
 
 \item{cast_float32}{logical; whether to compute the distances using 32-bit
 instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
@@ -56,8 +66,7 @@ If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
 nearest neighbours of each point.
 }
 \description{
-An implementation of a Jarnik (Prim/Dijkstra)-like
-algorithm for determining a(*) minimum spanning tree (MST) of the complete
+Determine a(*) minimum spanning tree (MST) of the complete
 undirected graph representing a set of \eqn{n} points
 whose weights correspond to the pairwise distances between the points.
 }
@@ -65,17 +74,26 @@ whose weights correspond to the pairwise distances between the points.
 (*) Note that if the distances are non unique,
 there might be multiple minimum trees spanning a given graph.
 
+
+Two MST algorithms are available.
+First, our implementation of the Jarnik (Prim/Dijkstra)-like method
+requires \eqn{O(n^2)} time. The algorithm is parallelised; the number of
+threads is determined by the \code{OMP_NUM_THREADS} environment variable;
+see \code{\link[base]{Sys.setenv}}. This method is recommended for
+high-dimensional spaces. As a rule of thumb, datasets up to 100000 points
+should be processed quite quickly. For 1M points, give it an hour or so.
+
+Second, we give access to the implementation of the Dual-Tree Boruvka
+algorithm from the \code{mlpack} library. The algorithm is based on K-d trees
+and is very fast but only for low-dimensional Euclidean spaces
+(due to the curse of dimensionality). The Jarnik algorithm should be
+used if there are more than 5-10 features.
+
+
 If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
 \eqn{n} points in a \eqn{p}-dimensional space,
-the \eqn{n (n-1)/2} distances are computed on the fly: the algorithm
+the \eqn{n (n-1)/2} distances are computed on the fly: the algorithms
 requires \eqn{O(n)} memory.
-
-The algorithm is parallelised; the number of threads is determined by
-the \code{OMP_NUM_THREADS} environment variable;
-see \code{\link[base]{Sys.setenv}}.
-
-The time complexity is \eqn{O(n^2)} for the method accepting an object of
-class \code{dist} and \eqn{O(p n^2)} otherwise.
 
 If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
 with the smoothing factor \code{M} (see Campello et al. 2013)
@@ -105,6 +123,15 @@ Olson C.F., Parallel algorithms for hierarchical clustering,
 
 Prim R., Shortest connection networks and some generalisations,
 \emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
+
+March W.B., Ram P., Gray A.G.,
+Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
+\emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
+\url{https://mlpack.org/papers/emst.pdf}.
+
+Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
+mlpack 3: A fast, flexible machine learning library,
+\emph{Journal of Open Source Software} 3(26), 2018, 726.
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,
