@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9001
+1.1.6.9003
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -264,7 +264,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
@@ -389,14 +389,12 @@ Yet, <cite>affinity</cite> of <code class="docutils literal notranslate"><span c
 </div>
 <p class="rubric">Notes</p>
 <p>GIc (Genie+Information Criterion) is an Information-Theoretic
-Clustering Algorithm.
-It was proposed by Anna Cena in <a class="reference internal" href="#r32c47d027f4e-1" id="id1">[1]</a> and had been inspired
+Clustering Algorithm. It was proposed by Anna Cena in <a class="reference internal" href="#r32c47d027f4e-1" id="id1">[1]</a>. It was inspired
 by Mueller’s (et al.) ITM <a class="reference internal" href="#r32c47d027f4e-2" id="id2">[2]</a> and Gagolewski’s (et al.) Genie <a class="reference internal" href="#r32c47d027f4e-3" id="id3">[3]</a>;
 see also <a class="reference internal" href="#r32c47d027f4e-4" id="id4">[4]</a>.</p>
-<p>GIc computes an <cite>n_clusters</cite>-partition
-based on a pre-computed minimum spanning tree. Clusters are merged
-so as to maximise (heuristically) the information
-criterion discussed in <a class="reference internal" href="#r32c47d027f4e-2" id="id5">[2]</a>.</p>
+<p>GIc computes an <cite>n_clusters</cite>-partition based on the pre-computed minimum
+spanning tree. Clusters are merged so as to maximise (heuristically)
+the information criterion discussed in <a class="reference internal" href="#r32c47d027f4e-2" id="id5">[2]</a>.</p>
 <p>GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
 which follows a divisive scheme). It greedily selects for merging
 a pair of clusters that maximises the information criterion <a class="reference internal" href="#r32c47d027f4e-2" id="id6">[2]</a>.
@@ -406,8 +404,8 @@ the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7], which
 we observe to be a sensible choice for most clustering activities.
 Hence, contrary to the Genie method, we can say that GIc as virtually
 parameter-less. However, when run with different <cite>n_clusters</cite> parameter,
-it does not yield a hierarchy of nested partitions (unless some more manual
-parameter tuning is applied).</p>
+it does not yield a hierarchy of nested partitions (unless some more
+laborious parameter tuning is applied).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Environment variables<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -546,7 +544,7 @@ parameter must be set explicitly.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-02-03T16:58:47+0100.
+              Last updated on 2025-02-19T16:37:19+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -583,7 +581,7 @@ parameter must be set explicitly.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c547bfba"></script>
+</div><script src="_static/documentation_options.js?v=56c7b1c9"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

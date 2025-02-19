@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9001
+1.1.6.9003
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -264,7 +264,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
@@ -362,7 +362,8 @@ for storing of points’ nearest neighbours.</p>
 <code class="docutils literal notranslate"><span class="pre">&quot;cosinesimil&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code>), or
 <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>.</p>
 <p>In the latter case, the <cite>X</cite> argument to the <cite>fit</cite> method
-must be a distance vector or a square-form distance matrix, see <cite>scipy.spatial.distance.pdist</cite>.</p>
+must be a distance vector or a square-form distance matrix;
+see <cite>scipy.spatial.distance.pdist</cite>.</p>
 </li>
 <li><p>For <cite>exact</cite> = <code class="docutils literal notranslate"><span class="pre">False</span></code>:</p>
 <p>Any dissimilarity supported by <cite>nmslib</cite>, see <a class="reference internal" href="#r6050e59d50fb-5" id="id3">[5]</a> and
@@ -421,22 +422,22 @@ Furthermore, <code class="docutils literal notranslate"><span class="pre">&quot;
 (including the boundary ones) as-is.</p>
 </dd>
 <dt><strong>cast_float32</strong><span class="classifier">bool</span></dt><dd><p>Whether casting of data type to <code class="docutils literal notranslate"><span class="pre">float32</span></code> is to be performed.</p>
-<p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it decreases the run-time ca. 2 times
-at a cost of greater memory use. Otherwise, note that <cite>nmslib</cite>
+<p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, it decreases the run-time up to two times
+at the cost of greater memory use. Note that <cite>nmslib</cite>
 <em>requires</em> <code class="docutils literal notranslate"><span class="pre">float32</span></code> data anyway when using dense or sparse
 numeric matrix inputs.</p>
 <p>By setting <cite>cast_float32</cite> to <code class="docutils literal notranslate"><span class="pre">False</span></code>, you must ensure
 that the inputs are of acceptable form.</p>
 </dd>
-<dt><strong>mlpack_enabled</strong><span class="classifier">“auto” or bool</span></dt><dd><p>Whether <cite>mlpack.emst</cite> should be used for computing the Euclidean
-minimum spanning tree instead of the Jarník-Prim algorithm
-when <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
-<p>Often fast for very low-dimensional spaces. As the name suggests,
-only <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">'l2'</span></code> is supported (and <cite>M</cite> = 1).
-By default, we rely on <cite>mlpack</cite> if it is installed and
-<cite>n_features</cite> &lt;= 6.</p>
+<dt><strong>mlpack_enabled</strong><span class="classifier">“auto” or bool</span></dt><dd><p>If <cite>exact</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, controls whether <cite>mlpack.emst</cite>
+(the Dual-Tree Boruvka algorithm over K-d trees)
+should be used for computing the Euclidean minimum spanning tree
+instead of the parallelised Jarník-Prim algorithm.</p>
+<p><cite>mlpack.emst</cite> is oftentimes very fast in low-dimensional spaces.
+It only supports the <cite>affinity</cite> of <code class="docutils literal notranslate"><span class="pre">'l2'</span></code> and <cite>M</cite> = 1.
+By default, we rely on <cite>mlpack</cite> if <cite>n_features</cite> &lt;= 7.</p>
 </dd>
-<dt><strong>mlpack_leaf_size</strong><span class="classifier">int</span></dt><dd><p>Leaf size in the kd-tree when <cite>mlpack.emst</cite> is used.</p>
+<dt><strong>mlpack_leaf_size</strong><span class="classifier">int</span></dt><dd><p>Leaf size in the K-d tree when <cite>mlpack.emst</cite> is used.</p>
 <p>According to the <cite>mlpack</cite> manual, leaves of size 1 give the best
 performance at the cost of greater memory use.</p>
 </dd>
@@ -472,10 +473,10 @@ on <code class="docutils literal notranslate"><span class="pre">stderr</span></c
 <p class="rubric">Notes</p>
 <p><strong>Genie</strong> is a robust and outlier resistant
 hierarchical clustering algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id6">[1]</a>, originally published
-as an R package <code class="docutils literal notranslate"><span class="pre">genie</span></code>. This new implementation is, amongst others,
+in the R package <code class="docutils literal notranslate"><span class="pre">genie</span></code>. This new implementation is, amongst others,
 much faster and now features optional smoothing and noise
 point detection (if <cite>M</cite> &gt; 1).</p>
-<p>Genie is based on a minimum spanning tree (MST) of the
+<p>Genie is based on the minimum spanning tree (MST) of the
 pairwise distance graph of a given point set.
 Just like the single linkage, it consumes the edges
 of the MST in increasing order of weights. However, it prevents
@@ -498,8 +499,7 @@ by <cite>nmslib</cite> <a class="reference internal" href="#r6050e59d50fb-5" id=
 such a data structure turns out to be very suitable for our clustering task
 (note that the set of connected components will determine the top
 level of the identified cluster hierarchy).</p>
-<p>Note that the <cite>mlpack</cite> and <cite>nmslib</cite> dependencies are optional.
-Make sure they are installed on your system.</p>
+<p>Note that the <cite>nmslib</cite> dependency is optional.</p>
 <p>The Genie correction together with the smoothing factor <cite>M</cite> &gt; 1
 gives a robustified version of the HDBSCAN* <a class="reference internal" href="#r6050e59d50fb-6" id="id11">[6]</a> algorithm that,
 contrary to its predecessor, is able to detect a <em>predefined</em> number of
@@ -764,7 +764,7 @@ an array of ASCII strings.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-02-03T16:58:47+0100.
+              Last updated on 2025-02-19T16:37:19+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -801,7 +801,7 @@ an array of ASCII strings.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=c547bfba"></script>
+</div><script src="_static/documentation_options.js?v=56c7b1c9"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=4e2eecee"></script>

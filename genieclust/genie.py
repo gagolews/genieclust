@@ -28,17 +28,13 @@ import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
 import warnings
+import mlpack
 
 try:
     import nmslib
 except:
     nmslib = None
 
-
-try:
-    import mlpack
-except:
-    mlpack = None
 
 
 ###############################################################################
@@ -292,15 +288,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 cur_state["n_features"] = X.shape[1]
 
         if cur_state["mlpack_enabled"] == "auto":
-            cur_state["mlpack_enabled"] = mlpack is not None and \
-                    cur_state["affinity"] == "l2" and \
-                    X.shape[1] <= 6 and \
+            cur_state["mlpack_enabled"] = cur_state["affinity"] == "l2" and \
+                    X.shape[1] <= 7 and \
                     cur_state["M"] == 1
 
         if cur_state["mlpack_enabled"]:
-            if mlpack is None:
-                raise ValueError("Package `mlpack` is not available.")
-            elif cur_state["affinity"] != "l2":
+            if cur_state["affinity"] != "l2":
                 raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
             elif cur_state["M"] != 1:
                 raise ValueError("`mlpack` can only be used with `M` = 1.")
@@ -608,7 +601,8 @@ class Genie(GenieBase):
             ``"precomputed"``.
 
             In the latter case, the `X` argument to the `fit` method
-            must be a distance vector or a square-form distance matrix, see `scipy.spatial.distance.pdist`.
+            must be a distance vector or a square-form distance matrix;
+            see `scipy.spatial.distance.pdist`.
 
         *   For `exact` = ``False``:
 
@@ -679,8 +673,8 @@ class Genie(GenieBase):
     cast_float32 : bool
         Whether casting of data type to ``float32`` is to be performed.
 
-        If `exact` is ``True``, it decreases the run-time ca. 2 times
-        at a cost of greater memory use. Otherwise, note that `nmslib`
+        If `exact` is ``True``, it decreases the run-time up to two times
+        at the cost of greater memory use. Note that `nmslib`
         *requires* ``float32`` data anyway when using dense or sparse
         numeric matrix inputs.
 
@@ -688,17 +682,17 @@ class Genie(GenieBase):
         that the inputs are of acceptable form.
 
     mlpack_enabled : "auto" or bool
-        Whether `mlpack.emst` should be used for computing the Euclidean
-        minimum spanning tree instead of the Jarník-Prim algorithm
-        when `exact` is ``True``.
+        If `exact` is ``True``, controls whether `mlpack.emst`
+        (the Dual-Tree Boruvka algorithm over K-d trees)
+        should be used for computing the Euclidean minimum spanning tree
+        instead of the parallelised Jarník-Prim algorithm.
 
-        Often fast for very low-dimensional spaces. As the name suggests,
-        only `affinity` of ``'l2'`` is supported (and `M` = 1).
-        By default, we rely on `mlpack` if it is installed and
-        `n_features` <= 6.
+        `mlpack.emst` is oftentimes very fast in low-dimensional spaces.
+        It only supports the `affinity` of ``'l2'`` and `M` = 1.
+        By default, we rely on `mlpack` if `n_features` <= 7.
 
     mlpack_leaf_size : int
-        Leaf size in the kd-tree when `mlpack.emst` is used.
+        Leaf size in the K-d tree when `mlpack.emst` is used.
 
         According to the `mlpack` manual, leaves of size 1 give the best
         performance at the cost of greater memory use.
@@ -812,11 +806,11 @@ class Genie(GenieBase):
 
     **Genie** is a robust and outlier resistant
     hierarchical clustering algorithm [1]_, originally published
-    as an R package ``genie``. This new implementation is, amongst others,
+    in the R package ``genie``. This new implementation is, amongst others,
     much faster and now features optional smoothing and noise
     point detection (if `M` > 1).
 
-    Genie is based on a minimum spanning tree (MST) of the
+    Genie is based on the minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
     Just like the single linkage, it consumes the edges
     of the MST in increasing order of weights. However, it prevents
@@ -841,8 +835,7 @@ class Genie(GenieBase):
     (note that the set of connected components will determine the top
     level of the identified cluster hierarchy).
 
-    Note that the `mlpack` and `nmslib` dependencies are optional.
-    Make sure they are installed on your system.
+    Note that the `nmslib` dependency is optional.
 
     The Genie correction together with the smoothing factor `M` > 1
     gives a robustified version of the HDBSCAN\\* [6]_ algorithm that,
@@ -1178,15 +1171,13 @@ class GIc(GenieBase):
     -----
 
     GIc (Genie+Information Criterion) is an Information-Theoretic
-    Clustering Algorithm.
-    It was proposed by Anna Cena in [1]_ and had been inspired
+    Clustering Algorithm. It was proposed by Anna Cena in [1]_. It was inspired
     by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_;
     see also [4]_.
 
-    GIc computes an `n_clusters`-partition
-    based on a pre-computed minimum spanning tree. Clusters are merged
-    so as to maximise (heuristically) the information
-    criterion discussed in [2]_.
+    GIc computes an `n_clusters`-partition based on the pre-computed minimum
+    spanning tree. Clusters are merged so as to maximise (heuristically)
+    the information criterion discussed in [2]_.
 
     GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
     which follows a divisive scheme). It greedily selects for merging
@@ -1197,8 +1188,8 @@ class GIc(GenieBase):
     we observe to be a sensible choice for most clustering activities.
     Hence, contrary to the Genie method, we can say that GIc as virtually
     parameter-less. However, when run with different `n_clusters` parameter,
-    it does not yield a hierarchy of nested partitions (unless some more manual
-    parameter tuning is applied).
+    it does not yield a hierarchy of nested partitions (unless some more
+    laborious parameter tuning is applied).
 
 
     :Environment variables:

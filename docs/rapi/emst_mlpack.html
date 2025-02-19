@@ -7,7 +7,7 @@
         <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/emst_mlpack.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
-        <title>emst_mlpack: Euclidean Minimum Spanning Tree - Python and R Package genieclust</title>
+        <title>emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED] - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9001
+1.1.6.9003
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -264,7 +264,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inequality.html">inequality: Inequality Measures</a></li>
@@ -321,15 +321,15 @@
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="emst-mlpack-euclidean-minimum-spanning-tree">
-<h1>emst_mlpack: Euclidean Minimum Spanning Tree<a class="headerlink" href="#emst-mlpack-euclidean-minimum-spanning-tree" title="Link to this heading">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="emst-mlpack-euclidean-minimum-spanning-tree-deprecated">
+<h1>emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]<a class="headerlink" href="#emst-mlpack-euclidean-minimum-spanning-tree-deprecated" title="Link to this heading">¶</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>Provides access to the implementation of the Dual-Tree Boruvka algorithm from the <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> package (if available). It is based on kd-trees and is fast for (very) low-dimensional Euclidean spaces. For higher dimensional spaces (say, over 5 features) or other metrics, use the parallelised Prim-like algorithm implemented in <a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a>.</p>
+<p>This function is deprecated. Use <a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> instead.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">leaf_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">naive</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">emst_mlpack</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">leaf_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -343,16 +343,13 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
 <td><p>a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">leaf_size</span></code></p></td>
-<td><p>size of leaves in the kd-tree, controls the trade-off between speed and memory consumption</p></td>
+<td><p>size of leaves in the K-d tree, controls the trade-off between speed and memory consumption</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">naive</span></code></p></td>
-<td><p>logical; whether to use the naive, quadratic-time algorithm</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
 <td><p>logical; whether to print diagnostic messages</p></td>
 </tr>
 </tbody>
@@ -366,11 +363,6 @@
 <section id="author-s">
 <h2>Author(s)<a class="headerlink" href="#author-s" title="Link to this heading">¶</a></h2>
 <p><a class="reference external" href="https://www.gagolewski.com/">Marek Gagolewski</a> and other contributors</p>
-</section>
-<section id="references">
-<h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p>March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, <em>Proc. ACM SIGKDD’10</em>, 2010, 603-611, <a class="reference external" href="https://mlpack.org/papers/emst.pdf">https://mlpack.org/papers/emst.pdf</a>.</p>
-<p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 3: A fast, flexible machine learning library, <em>Journal of Open Source Software</em> 3(26), 2018, 726.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
@@ -414,7 +406,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-02-03T16:58:47+0100.
+              Last updated on 2025-02-19T16:37:19+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -435,13 +427,12 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">emst_mlpack: Euclidean Minimum Spanning Tree</a><ul>
+<li><a class="reference internal" href="#">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a><ul>
 <li><a class="reference internal" href="#description">Description</a></li>
 <li><a class="reference internal" href="#usage">Usage</a></li>
 <li><a class="reference internal" href="#arguments">Arguments</a></li>
 <li><a class="reference internal" href="#value">Value</a></li>
 <li><a class="reference internal" href="#author-s">Author(s)</a></li>
-<li><a class="reference internal" href="#references">References</a></li>
 <li><a class="reference internal" href="#see-also">See Also</a></li>
 </ul>
 </li>
@@ -454,7 +445,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=c547bfba"></script>
+</div><script src="../_static/documentation_options.js?v=56c7b1c9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

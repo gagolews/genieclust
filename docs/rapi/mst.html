@@ -222,7 +222,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9001
+1.1.6.9003
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -264,7 +264,7 @@
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree</a></li>
+<li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inequality.html">inequality: Inequality Measures</a></li>
@@ -325,8 +325,7 @@
 <h1>mst: Minimum Spanning Tree of the Pairwise Distance Graph<a class="headerlink" href="#mst-minimum-spanning-tree-of-the-pairwise-distance-graph" title="Link to this heading">¶</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>An parallelised implementation of a Jarnik (Prim/Dijkstra)-like algorithm for determining a(*) minimum spanning tree (MST) of a complete undirected graph representing a set of n points with weights given by a pairwise distance matrix.</p>
-<p>(*) Note that there might be multiple minimum trees spanning a given graph.</p>
+<p>Determine a(*) minimum spanning tree (MST) of the complete undirected graph representing a set of <span class="math notranslate nohighlight">\(n\)</span> points whose weights correspond to the pairwise distances between the points.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
@@ -337,7 +336,9 @@
 <span class="w">  </span><span class="n">d</span><span class="p">,</span>
 <span class="w">  </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;manhattan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cityblock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cosine&quot;</span><span class="p">),</span>
 <span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
-<span class="w">  </span><span class="n">cast_float32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">TRUE</span><span class="p">,</span>
+<span class="w">  </span><span class="n">algorithm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;auto&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;jarnik&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;mlpack&quot;</span><span class="p">),</span>
+<span class="w">  </span><span class="n">leaf_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
+<span class="w">  </span><span class="n">cast_float32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
 <span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
 <span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
@@ -358,16 +359,22 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
-<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html"><code class="docutils literal notranslate"><span class="pre">dist</span></code></a></p></td>
+<td><p>either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>; see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html"><code class="docutils literal notranslate"><span class="pre">dist</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
 <td><p>further arguments passed to or from other methods</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
-<td><p>metric used to compute the linkage, one of: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code></p></td>
+<td><p>metric used in the case where <code class="docutils literal notranslate"><span class="pre">d</span></code> is a matrix; one of: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
 <td><p>smoothing factor; <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1 gives the selected <code class="docutils literal notranslate"><span class="pre">distance</span></code>; otherwise, the mutual reachability distance is used</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">algorithm</span></code></p></td>
+<td><p>MST algorithm to use: <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;jarnik&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;mlpack&quot;</span></code>; if <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, select <code class="docutils literal notranslate"><span class="pre">&quot;mlpack&quot;</span></code> for low-dimensional Euclidean spaces and <code class="docutils literal notranslate"><span class="pre">&quot;jarnik&quot;</span></code> otherwise</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">leaf_size</span></code></p></td>
+<td><p>size of leaves in the K-d tree (<code class="docutils literal notranslate"><span class="pre">&quot;mlpack&quot;</span></code>); controls the trade-off between speed and memory consumption</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cast_float32</span></code></p></td>
 <td><p>logical; whether to compute the distances using 32-bit instead of 64-bit precision floating-point arithmetic (up to 2x faster)</p></td>
@@ -381,16 +388,17 @@
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
-<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n p\)</span>, the <span class="math notranslate nohighlight">\(n (n-1)/2\)</span> distances are computed on the fly, so that <span class="math notranslate nohighlight">\(O(n M)\)</span> memory is used.</p>
-<p>The algorithm is parallelised; set the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a> to control the number of threads used.</p>
-<p>Time complexity is <span class="math notranslate nohighlight">\(O(n^2)\)</span> for the method accepting an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> and <span class="math notranslate nohighlight">\(O(p n^2)\)</span> otherwise.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2013) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance gains the ability to identify some observations are noise points.</p>
-<p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we determine the 1-nearest neighbours separately as well, which is a bit suboptimal; you can file a feature request if this makes your data analysis tasks too slow.</p>
+<p>(*) Note that if the distances are non unique, there might be multiple minimum trees spanning a given graph.</p>
+<p>Two MST algorithms are available. First, our implementation of the Jarnik (Prim/Dijkstra)-like method requires <span class="math notranslate nohighlight">\(O(n^2)\)</span> time. The algorithm is parallelised; the number of threads is determined by the <code class="docutils literal notranslate"><span class="pre">OMP_NUM_THREADS</span></code> environment variable; see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/help/Sys.setenv.html"><code class="docutils literal notranslate"><span class="pre">Sys.setenv</span></code></a>. This method is recommended for high-dimensional spaces. As a rule of thumb, datasets up to 100000 points should be processed quite quickly. For 1M points, give it an hour or so.</p>
+<p>Second, we give access to the implementation of the Dual-Tree Boruvka algorithm from the <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> library. The algorithm is based on K-d trees and is very fast but only for low-dimensional Euclidean spaces (due to the curse of dimensionality). The Jarnik algorithm should be used if there are more than 5-10 features.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix of size <span class="math notranslate nohighlight">\(n\)</span> by <span class="math notranslate nohighlight">\(p\)</span>, representing <span class="math notranslate nohighlight">\(n\)</span> points in a <span class="math notranslate nohighlight">\(p\)</span>-dimensional space, the <span class="math notranslate nohighlight">\(n (n-1)/2\)</span> distances are computed on the fly: the algorithms requires <span class="math notranslate nohighlight">\(O(n)\)</span> memory.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt;= 2, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with the smoothing factor <code class="docutils literal notranslate"><span class="pre">M</span></code> (see Campello et al. 2013) is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i, j)=\max(d(i,j), c(i), c(j))\)</span>, where <span class="math notranslate nohighlight">\(c(i)\)</span> is <span class="math notranslate nohighlight">\(d(i, k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being the (<code class="docutils literal notranslate"><span class="pre">M</span></code>-1)-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise” and “boundary” points being “pulled away” from each other. The Genie++ clustering algorithm (see <a class="reference internal" href="gclust.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gclust</span></code></span></a>) with respect to the mutual reachability distance can mark some observations are noise points.</p>
+<p>Note that the case <code class="docutils literal notranslate"><span class="pre">M</span></code> = 2 corresponds to the original distance, but we return the (1-)nearest neighbours as well.</p>
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">¶</a></h2>
-<p>Matrix of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> with n-1 rows and 3 columns: <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code> and <code class="docutils literal notranslate"><span class="pre">dist</span></code>. It holds <code class="docutils literal notranslate"><span class="pre">from</span></code> &lt; <code class="docutils literal notranslate"><span class="pre">to</span></code>. Moreover, <code class="docutils literal notranslate"><span class="pre">dist</span></code> is sorted nondecreasingly. The i-th row gives the i-th edge of the MST. <code class="docutils literal notranslate"><span class="pre">(from[i],</span> <span class="pre">to[i])</span></code> defines the vertices (in 1,…,n) and <code class="docutils literal notranslate"><span class="pre">dist[i]</span></code> gives the weight, i.e., the distance between the corresponding points.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">method</span></code> attribute gives the name of the distance used. The <code class="docutils literal notranslate"><span class="pre">Labels</span></code> attribute gives the labels of all the input points.</p>
+<p>Returns a numeric matrix of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> with n-1 rows and 3 columns: <code class="docutils literal notranslate"><span class="pre">from</span></code>, <code class="docutils literal notranslate"><span class="pre">to</span></code>, and <code class="docutils literal notranslate"><span class="pre">dist</span></code> sorted nondecreasingly. Its i-th row specifies the i-th edge of the MST which is incident to the vertices <code class="docutils literal notranslate"><span class="pre">from[i]</span></code> and <code class="docutils literal notranslate"><span class="pre">to[i]</span></code> <code class="docutils literal notranslate"><span class="pre">from[i]</span> <span class="pre">&lt;</span> <span class="pre">to[i]</span></code> (in 1,…,n) and <code class="docutils literal notranslate"><span class="pre">dist[i]</span></code> gives the corresponding weight, i.e., the distance between the point pair.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Size</span></code> attribute specifies the number of points, <span class="math notranslate nohighlight">\(n\)</span>. The <code class="docutils literal notranslate"><span class="pre">Labels</span></code> attribute gives the labels of the input points (optionally). The <code class="docutils literal notranslate"><span class="pre">method</span></code> attribute gives the name of the distance used.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">M</span></code> &gt; 1, the <code class="docutils literal notranslate"><span class="pre">nn</span></code> attribute gives the indices of the <code class="docutils literal notranslate"><span class="pre">M</span></code>-1 nearest neighbours of each point.</p>
 </section>
 <section id="author-s">
@@ -402,13 +410,15 @@
 <p>Jarnik V., O jistem problemu minimalnim, <em>Prace Moravske Prirodovedecke Spolecnosti</em> 6, 1930, 57-63.</p>
 <p>Olson C.F., Parallel algorithms for hierarchical clustering, <em>Parallel Comput.</em> 21, 1995, 1313-1325.</p>
 <p>Prim R., Shortest connection networks and some generalisations, <em>Bell Syst. Tech. J.</em> 36, 1957, 1389-1401.</p>
+<p>March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, <em>Proc. ACM SIGKDD’10</em>, 2010, 603-611, <a class="reference external" href="https://mlpack.org/papers/emst.pdf">https://mlpack.org/papers/emst.pdf</a>.</p>
+<p>Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 3: A fast, flexible machine learning library, <em>Journal of Open Source Software</em> 3(26), 2018, 726.</p>
 <p>Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172, <a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">doi:10.1007/978-3-642-37456-2_14</a>.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
-<p><a class="reference internal" href="emst_mlpack.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
+<p><a class="reference internal" href="emst_mlpack.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">emst_mlpack()</span></code></span></a> for a very fast alternative in the case of (very) low-dimensional Euclidean spaces (and <code class="docutils literal notranslate"><span class="pre">M</span></code> = 1).</p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
@@ -456,7 +466,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-02-03T16:58:47+0100.
+              Last updated on 2025-02-19T16:37:19+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -498,7 +508,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=c547bfba"></script>
+</div><script src="../_static/documentation_options.js?v=56c7b1c9"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=4e2eecee"></script>

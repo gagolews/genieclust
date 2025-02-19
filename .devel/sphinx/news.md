@@ -2,12 +2,22 @@
 
 ## 1.x.x (2025-xx-xx)
 
-* ...
+* [Python and R] A specialised (slightly faster due to better locality
+    of reference) version of the Jarnik-Prim algorithm for computing
+    Euclidean MSTs has been added and now it is applied automatically
+    where applicable.
+
+* [Python and R] The `mlpack` package is now required.
+
+* [R] The `mst` family of methods has been refactored. `mst.default` is now
+    equipped with the `algorithm` argument (default: `"auto"`),
+    which allows for choosing between the Jarnik and the Dual-Tree Boruvka
+    algorithm from `mlpack`.
 
 
 ## 1.1.6 (2024-08-22)
 
-* [PYTHON] The package now works with *numpy* 2.0.
+* [Python] The package now works with *numpy* 2.0.
 
 
 ## 1.1.5 (2023-10-18)
