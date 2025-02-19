@@ -10,10 +10,8 @@ emst_mlpack(d, leaf_size = 1, naive = FALSE, verbose = FALSE)
 \item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns)}
 
-\item{leaf_size}{size of leaves in the kd-tree,
+\item{leaf_size}{size of leaves in the K-d tree,
 controls the trade-off between speed and memory consumption}
-
-\item{naive}{logical; whether to use the naive, quadratic-time algorithm}
 
 \item{verbose}{logical; whether to print diagnostic messages}
 }
@@ -21,9 +19,9 @@ controls the trade-off between speed and memory consumption}
 An object of class \code{mst}, see \code{\link{mst}()} for details.
 }
 \description{
-Provides access to the implementation of the Dual-Tree Boruvka
+Gives access to the implementation of the Dual-Tree Boruvka
 algorithm from the \code{mlpack} package (if available).
-It is based on kd-trees and is fast for (very) low-dimensional
+It is based on K-d trees and is fast for (very) low-dimensional
 Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
 or other metrics, use the parallelised Prim-like algorithm implemented
 in \code{\link{mst}()}.

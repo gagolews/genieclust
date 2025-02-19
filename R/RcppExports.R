@@ -378,6 +378,10 @@ wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 
+.emst_mlpack <- function(X, leaf_size = 1L, verbose = FALSE) {
+    .Call(`_genieclust_dot_emst_mlpack`, X, leaf_size, verbose)
+}
+
 .mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
     .Call(`_genieclust_dot_mst_default`, X, distance, M, cast_float32, verbose)
 }

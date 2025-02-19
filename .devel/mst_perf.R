@@ -8,7 +8,7 @@ library("genieclust")
 
 res <- list()
 
-for (d in c(2, 10)) {
+for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), nrow=n)
 

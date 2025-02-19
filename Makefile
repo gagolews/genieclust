@@ -39,7 +39,7 @@ stop-on-utf8:
 
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
-	R CMD INSTALL . --preclean
+	CXX_DEFS="-UNDEBUG -DDEBUG" R CMD INSTALL . --preclean
 	# Roxygen2 adds the -O0 flag if load_installed is not passed!
 	Rscript -e "\
 	    source('.devel/roxygen2-patch.R');\

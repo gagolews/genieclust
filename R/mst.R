@@ -141,8 +141,11 @@ mst.default <- function(
     cast_float32=TRUE,
     verbose=FALSE, ...)
 {
-    distance <- match.arg(distance)
     d <- as.matrix(d)
+    distance <- match.arg(distance)
+    cast_float32 <- !identical(cast_float32, FALSE)
+    verbose <- !identical(verbose, FALSE)
+    M <- as.integer(M)[1]
 
     result <- .mst.default(d, distance, M, cast_float32, verbose)
 
@@ -165,6 +168,9 @@ mst.dist <- function(
     M=1L,
     verbose=FALSE, ...)
 {
+    #cast_float32 <- !identical(cast_float32, FALSE)
+    verbose <- !identical(verbose, FALSE)
+    M <- as.integer(M)[1]
     result <- .mst.dist(d, M, verbose)
 
     structure(
@@ -188,9 +194,9 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @title Euclidean Minimum Spanning Tree
 #'
 #' @description
-#' Provides access to the implementation of the Dual-Tree Boruvka
+#' Gives access to the implementation of the Dual-Tree Boruvka
 #' algorithm from the \code{mlpack} package (if available).
-#' It is based on kd-trees and is fast for (very) low-dimensional
+#' It is based on K-d trees and is fast for (very) low-dimensional
 #' Euclidean spaces. For spaces of higher dimensionality (more than 5-10 features)
 #' or other metrics, use the parallelised Prim-like algorithm implemented
 #' in \code{\link{mst}()}.
@@ -199,10 +205,8 @@ registerS3method("mst", "dist",    "mst.dist")
 #' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns)
 #'
-#' @param leaf_size size of leaves in the kd-tree,
+#' @param leaf_size size of leaves in the K-d tree,
 #'     controls the trade-off between speed and memory consumption
-#'
-#' @param naive logical; whether to use the naive, quadratic-time algorithm
 #'
 #' @param verbose logical; whether to print diagnostic messages
 #'
@@ -224,16 +228,21 @@ registerS3method("mst", "dist",    "mst.dist")
 emst_mlpack <- function(d, leaf_size=1, naive=FALSE, verbose=FALSE)
 {
     d <- as.matrix(d)
+    #cast_float32 <- !identical(cast_float32, FALSE)
+    #M <- as.integer(M)[1]
+    verbose <- !identical(verbose, FALSE)
+    leaf_size <- as.integer(leaf_size)[1]
 
-    if (!requireNamespace("mlpack", quietly=TRUE)) {
-        warning("Package `mlpack` is not installed. Using mst() instead.")
-        return(mst.default(X, verbose=verbose, cast_float32=FALSE))
-    }
+    # if (!requireNamespace("mlpack", quietly=TRUE)) {
+    #     warning("Package `mlpack` is not installed. Using mst() instead.")
+    #     return(mst.default(d, verbose=verbose, cast_float32=FALSE))
+    # }
+    # mst <- mlpack::emst(d, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+    # mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
+    # mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
 
-    mst <- mlpack::emst(d, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
+    mst <- .emst_mlpack(d, leaf_size, verbose)
 
-    mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
-    mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
     stopifnot(mst[, 1] < mst[, 2])
     stopifnot(!is.unsorted(mst[, 3]))
 
