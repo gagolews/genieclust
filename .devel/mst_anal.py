@@ -16,15 +16,18 @@ import scipy.spatial
 
 
 examples = [
-    ["other", "hdbscan", [256,260,273,404,332]],
-    ["other", "hdbscan", []],
-    ["fcps", "wingnut", []],
+    ["sipu", "unbalance", [2,0,3,1,4,5,7], 8],
+    ["sipu", "s1", [2, 1, 3, 4, 6, 15, 46, 54, 70, 84, 85, 94, 9, 87]],
+    ["wut", "x3", [14, 11, 24]],
     ["sipu", "pathbased", [4,5,7,19,27]],
+    ["fcps", "engytime", [497]],
+    ["other", "hdbscan", []],
+    ["fcps", "wingnut", [0]],
+    ["other", "hdbscan", [256,260,273,404,332]],
     ["wut", "labirynth", [0,1,3,11, 18,72,77,120]],
     ["wut", "labirynth", []],
     ["sipu", "compound", [0, 1, 54, 153]],
     ["sipu", "aggregation", []],
-    ["fcps", "engytime", []],
     ["wut", "z2", [1, 3, 5, 6]],
     ["sipu", "aggregation", [0, 1, 2, 536, 3, 24]],
     ["wut", "z2", []],
@@ -40,6 +43,7 @@ np.random.seed(123)
 b = clustbench.load_dataset(example[0], example[1], path=data_path)
 X, labels = b.data, b.labels[0]
 skiplist = example[2]
+n_clusters = example[3]
 
 n = X.shape[0]
 
@@ -48,8 +52,8 @@ UNSET = -1 # must be negative
 NOISE = 0  # must be 0
 
 
-min_cluster_size = n/20  # this should be a function of the desired number of clusters
-max_noise_size = n/100
+min_cluster_size = max(5, 0.1*n/n_clusters)  # this should be a function of the desired number of clusters
+max_noise_size = max(3, 0.01*n/n_clusters)
 nn_k = 5
 # gini_threshold = 0.5
 
@@ -172,8 +176,28 @@ which_cut_edges = np.flatnonzero(cut_edges)
 print("which_cut_edges=%s" % (which_cut_edges, ))
 
 
-x  = pd.DataFrame(np.c_[np.arange(n-1), mst_w, np.sort(mst_s, axis=1), mst_labels][mst_labels>0, :], columns=["i", "w", "s0", "s1", "label"])
-print(x.loc[x.s0 >= min_cluster_size, :].head(10))
+
+# Q13 = np.array([np.percentile(mst_w[mst_labels==j+1], [25, 75]) for j in range(c)])
+# bnd = np.r_[np.nan, (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))]
+# outlier_edges = (mst_w>bnd)  # x > np.nan == False
+# Q13 = np.array([np.percentile(min_mst_s[mst_labels==j+1], [25, 75]) for j in range(c)])
+# bnd = np.r_[np.nan, (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))]
+bnd = np.r_[np.nan, np.maximum(min_cluster_size, 0.1*counts[1:])]
+bnd = bnd[np.where(mst_labels > 0, mst_labels, 0)]
+outlier_edges = (min_mst_s>bnd)  # x > np.nan == False
+outlier_edges &= (min_mst_s >= min_cluster_size)
+outlier_edges &= ~cut_edges
+which_outlier_edges = np.flatnonzero(outlier_edges)[:10]
+print("which_outlier_edges=%s" % (which_outlier_edges, ))
+
+_x = []
+for _w in [which_cut_edges, which_outlier_edges]:
+    _x.append(pd.DataFrame(np.c_[_w, mst_w[_w], np.sort(mst_s, axis=1)[_w,:], mst_labels[_w]], columns=["i", "w", "s0", "s1", "label"]))
+print(pd.concat(_x, keys=["cut", "outlier"]))
+
+
+#x  = pd.DataFrame(np.c_[np.arange(n-1), mst_w, np.sort(mst_s, axis=1), mst_labels][mst_labels>0, :], columns=["i", "w", "s0", "s1", "label"])
+#print(x.loc[x.s0 >= min_cluster_size, :].head(10))
 
 
 
