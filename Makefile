@@ -15,7 +15,7 @@ all: r python
 python:
 	# python3 setup.py install --user  # deprecated
 	# python3 -m build  # requires the 'build' package, creates an isolated envir
-	python3 -m pip install .
+	CPPFLAGS="-UNDEBUG -DDEBUG -Wpedantic -Wextra -Wall" python3 -m pip install .
 
 py-test: python
 	pytest
@@ -39,7 +39,7 @@ stop-on-utf8:
 
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
-	CXX_DEFS="-UNDEBUG -DDEBUG" R CMD INSTALL . --preclean
+	CXX_DEFS="-UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --preclean
 	# Roxygen2 adds the -O0 flag if load_installed is not passed!
 	Rscript -e "\
 	    source('.devel/roxygen2-patch.R');\

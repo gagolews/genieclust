@@ -100,9 +100,6 @@ protected:
         }
     }
 
-
-
-
     /** internal, used by get_labels(n_clusters, res) */
     Py_ssize_t get_labels(CGiniDisjointSets* ds, Py_ssize_t* res) {
         std::vector<Py_ssize_t> res_cluster_id(n, -1);
