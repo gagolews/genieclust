@@ -23,27 +23,27 @@ mst_draw_edge_labels = False
 
 
 examples = [
-    ["fcps", "engytime", [], 2],
-    ["wut", "x3", [], 3],
-    ["graves", "dense", [], 2],
-    ["sipu", "compound", [], 5],  # :/
-    ["wut", "z2", [], 5],
+    ["new", "blobs4b", [0,2], 4],
+    ["new", "blobs4a", [], 4],
+    ["sipu", "aggregation", [0,1,2,3,175,536], 7],
+    ["sipu", "compound", [0,1,50,54], 5],
+    ["fcps", "twodiamonds", [], 2],
     ["graves", "parabolic", [], 2],
-    ["new", "blobs4b", [0, 1, 3], 4],
-    ["new", "blobs4a", [0, 1, 2], 4],
-    ["fcps", "twodiamonds", [3], 2],
+    ["wut", "x3", [], 3],
+    ["fcps", "wingnut", [], 2],
+    ["fcps", "engytime", [], 2],
+    ["graves", "dense", [], 2],
+    ["wut", "z2", [], 5],
     ["sipu", "unbalance", [2,0,3,1,4,5,7], 8],
     ["sipu", "s1", [2, 1, 3, 4, 6, 15, 46, 54, 70, 84, 85, 94, 9, 87]],
     ["sipu", "pathbased", [4,5,7,19,27]],
     ["other", "hdbscan", []],
-    ["fcps", "wingnut", [0]],
     ["other", "hdbscan", [256,260,273,404,332]],
     ["wut", "labirynth", [0,1,3,11, 18,72,77,120]],
     ["wut", "labirynth", []],
     ["sipu", "compound", [0, 1, 54, 153]],
     ["sipu", "aggregation", []],
     ["wut", "z2", [1, 3, 5, 6]],
-    ["sipu", "aggregation", [0, 1, 2, 536, 3, 24]],
     ["sipu", "pathbased", []],
     ["sipu", "spiral", []],
 ]
@@ -62,7 +62,7 @@ else:
     from sklearn.datasets import make_blobs
     if dataset == "blobs4a":
         X, labels = make_blobs(
-            n_samples=[1000, 1000, 100, 100],
+            n_samples=[900, 900, 100, 100],
             cluster_std=[0.05, 0.2, 0.2, 0.2],
             centers=[[1,1], [1,-1], [-1,-1], [-1,1]],
             random_state=42
@@ -77,7 +77,7 @@ else:
         labels = np.r_[labels+1, np.repeat(0, xapp.shape[0])]
     if dataset == "blobs4b":
         X, labels = make_blobs(
-            n_samples=[1000, 1000, 100, 100],
+            n_samples=[900, 900, 100, 100],
             cluster_std=[0.05, 0.2, 0.3, 0.2],
             centers=[[1,1], [1,-1], [-1,-1], [-1,1]],
             random_state=42
@@ -99,7 +99,8 @@ UNSET = -1 # must be negative
 NOISE = 0  # must be 0
 
 
-min_cluster_size = max(10, 0.1*n/n_clusters)  # this should be a function of the desired number of clusters
+min_cluster_size = max(15, 0.1*n/n_clusters)  # this should be a function of the desired number of clusters?
+#min_cluster_size_frac = 0.1
 max_noise_size = max(5, 0.01*n/n_clusters)
 nn_k = 5
 # gini_threshold = 0.5
@@ -182,10 +183,10 @@ c, counts, min_mst_s = mark_clusters()
 # - relative to the "typical" distances to k-nearest neighbours within the point's cluster
 # (each cluster can be of different density, so we take this into account)
 # or may be considered as an outlier after a cluster breaks down to smaller ones
-noise_k = -1  # which nearest neighbour do we take into account?
-Q13 = np.array([np.percentile(nn_w[labels==j+1, noise_k], [25, 75]) for j in range(c)])
-bnd = (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))[labels-1]
-is_outlier = (nn_w[:, noise_k]>bnd)
+outlier_k = -1  # which nearest neighbour do we take into account?
+Q13 = np.array([np.percentile(nn_w[labels==j+1, outlier_k], [25, 75]) for j in range(c)])
+bnd_outlier = np.r_[np.nan, (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))]
+is_outlier = (nn_w[:, outlier_k] > bnd_outlier[labels])
 
 
 
@@ -198,12 +199,11 @@ is_leaf = np.repeat(False, n)
 is_leaf[leaves] = True
 
 
-# a noise edge is incident to a noise point,
-# provided that its removal leads to too small a cluster
-outlier_edges  = (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
-outlier_edges &= (min_mst_s <= max_noise_size)
-outlier_edges &= (mst_labels != SKIP)
-
+# # a noise edge is incident to a noise point,
+# # provided that its removal leads to too small a cluster
+# outlier_edges  = (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
+# outlier_edges &= (min_mst_s <= max_noise_size)
+# outlier_edges &= (mst_labels != SKIP)
 
 def mark_noise(v):
     if not is_outlier[v]: return
@@ -224,7 +224,7 @@ def mark_noise(v):
 
     labels[v] = NOISE
     mst_labels[e] = NOISE
-    print(v, e, mst_e[e,:])
+    # print(v, e, mst_e[e,:])
 
     iv = int(mst_e[e, 1] == v)
     v = mst_e[e, 1-iv]
@@ -265,10 +265,12 @@ c, counts, min_mst_s = mark_clusters()
 # cut_k = -1
 cut_edges  = (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
 cut_edges &= (min_mst_s >= min_cluster_size)
+# cut_edges &= (min_mst_s >= min_cluster_size_frac*np.sum(mst_s, axis=1))
 cut_edges &= (mst_labels != SKIP)
-which_cut_edges = np.flatnonzero(cut_edges)[:5]
+which_cut_edges = np.flatnonzero(cut_edges)
+# dist_nn_cut_edges = np.maximum(nn_w[mst_e[which_cut_edges,0], outlier_k], nn_w[mst_e[which_cut_edges,1], outlier_k])
+# which_cut_edges = which_cut_edges[np.argsort(dist_nn_cut_edges)]
 print("which_cut_edges=%s" % (which_cut_edges, ))
-
 
 
 # Q13 = np.array([np.percentile(mst_w[mst_labels==j+1], [25, 75]) for j in range(c)])
@@ -276,22 +278,26 @@ print("which_cut_edges=%s" % (which_cut_edges, ))
 # outlier_edges = (mst_w>bnd)  # x > np.nan == False
 # Q13 = np.array([np.percentile(min_mst_s[mst_labels==j+1], [25, 75]) for j in range(c)])
 # bnd = np.r_[np.nan, (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))]
-bnd = np.r_[np.nan, np.maximum(min_cluster_size, 0.1*counts[1:])]
-bnd = bnd[np.where(mst_labels > 0, mst_labels, 0)]
-outlier_edges = (min_mst_s>bnd)  # x > np.nan == False
-outlier_edges &= (min_mst_s >= min_cluster_size)
-outlier_edges &= (mst_labels != SKIP)
-outlier_edges &= ~cut_edges
-which_outlier_edges = np.flatnonzero(outlier_edges)[:5]
-print("which_outlier_edges=%s" % (which_outlier_edges, ))
+
+#bnd = np.r_[np.nan, np.maximum(min_cluster_size, 0.1*counts[1:])]
+#bnd = bnd[np.where(mst_labels > 0, mst_labels, 0)]
+#long_edges = (min_mst_s>bnd)  # x > np.nan == False
+long_edges = mst_labels > 0
+long_edges &= (min_mst_s >= min_cluster_size)
+# long_edges &= (min_mst_s >= min_cluster_size_frac*np.sum(mst_s, axis=1))
+long_edges &= (mst_labels != SKIP)
+long_edges &= ~cut_edges
+which_long_edges = np.flatnonzero(long_edges)
+print("which_long_edges=%s" % (which_long_edges, ))
 
 _x = []
-for _w in [which_cut_edges, which_outlier_edges]:
+for _w in [which_cut_edges, which_long_edges]:
     _x.append(pd.DataFrame(np.c_[_w, mst_w[_w], np.sort(mst_s, axis=1)[_w,:], mst_labels[_w]], columns=["i", "w", "s0", "s1", "label"]))
-print(pd.concat(_x, keys=["cut", "outlier"]))
+_x = pd.concat(_x, keys=["cut", "outlier"])#.reset_index(level=0)#.groupby(["level_0", "label"]).head(1)
+print(_x)
 
 
-candidate_edge = which_cut_edges[0] if len(which_cut_edges) else which_outlier_edges[0]
+candidate_edge = which_cut_edges[0] if len(which_cut_edges) else which_long_edges[0]
 print("candidate_edge=%d" % candidate_edge)
 
 #
