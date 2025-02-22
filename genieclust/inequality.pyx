@@ -102,6 +102,9 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
 
     where :math:`\\sigma` is an ordering permutation of :math:`(x_1,\\dots,x_n)`.
 
+    In particular, if :math:`n=2`, then
+    :math:`G(x_1,x_2) = (x_{(2)}-x_{(1)})/(x_{(2)}+x_{(1)})`.
+
     The Gini, Bonferroni, and De Vergottini indices can be used to quantify
     the "inequality" of a numeric sample. They can be conceived as normalised
     measures of data dispersion. For constant vectors (perfect equity),
