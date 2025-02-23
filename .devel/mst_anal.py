@@ -23,6 +23,9 @@ mst_draw_edge_labels = False
 
 
 examples = [
+    ["wut", "mk3", [], 3],
+    ["wut", "graph", [], 10],
+    ["wut", "twosplashes", [], 2],
     ["sipu", "jain", [], 2],
     ["sipu", "flame", [], 2],
     ["fcps", "twodiamonds", [], 2],
