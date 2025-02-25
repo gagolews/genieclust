@@ -23,48 +23,50 @@ The Lumbermark Clustering Algorithm
 import numpy as np
 import scipy.spatial
 import genieclust
+from sklearn.base import BaseEstimator, ClusterMixin
+import matplotlib.pyplot as plt
+
+SKIP = np.iinfo(int).min  # must be negative
+UNSET = -1 # must be negative
+NOISE = 0  # must be 0
+
+
+# TODO: 0-based -> 1-based!!!
 
 
 
-def lumbermark(
+def _lumbermark(
     X,
     n_clusters,
-    min_cluster_size=None,
-    max_twig_size=None,
-    noise_cluster=False,
-    n_neighbors=5,
-    cut_internodes=True,
-    skiplist=None
+    min_cluster_size,
+    max_twig_size,
+    noise_cluster,
+    n_neighbors,
+    cut_internodes,
+    mst_skiplist,
+    verbose
 ):
-    """
-    set n_neighbors to 0 to disable cutting a internodes and noise point detection
-
-    twig = any small, leafless branch of a woody plant
-    internode =  the part of a plant stem between two nodes
-    limb = one of the larger branches of a tree
-    """
-    X = np.ascontiguousarray(X)
-    n = X.shape[0]
-
     assert n_clusters > 0
     assert n_neighbors >= 0
 
-    if n_neighbors == 0:
-        cut_internodes = False
-        mark_noise = False
+    n = X.shape[0]
 
     if min_cluster_size is None:
-        min_cluster_size = max(15, 0.1*n/n_clusters)
+        min_cluster_size = max(15, 0.075*n/n_clusters)
 
     if max_twig_size is None:
         max_twig_size = max(5, 0.01*n/n_clusters)
 
-    if skiplist is None:
-        skiplist = []
+    if n_neighbors <= 0:
+        max_twig_size = 0
+        cut_internodes = False
 
-    SKIP = np.iinfo(int).min  # must be negative
-    UNSET = -1 # must be negative
-    NOISE = 0  # must be 0
+    if max_twig_size <= 0:
+        noise_cluster = False
+
+
+    if mst_skiplist is None:
+        mst_skiplist = []
 
 
     if n_neighbors > 0:
@@ -78,7 +80,6 @@ def lumbermark(
     _o = np.argsort(mst_w)[::-1]
     mst_w = mst_w[_o]  # weights sorted decreasingly
     mst_e = mst_e[_o, :]
-
 
     # TODO: store as two arrays: indices, indptr (compressed sparse row format)
     mst_a = [ [] for i in range(n) ]
@@ -162,16 +163,14 @@ def lumbermark(
         mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when
         labels = np.repeat(UNSET, n)
         mst_labels = np.repeat(UNSET, n-1)
-        for s in skiplist:
-            mst_labels[s] = SKIP  # skiplist
-
-
+        for s in mst_skiplist:
+            mst_labels[s] = SKIP  # mst_skiplist
         c, counts, min_mst_s = mark_clusters()
 
-        if c >= n_clusters and not noise_cluster:
-            assert c == n_clusters
-            return labels
+        last_iteration = (c >= n_clusters)
 
+        # leaves are vertices of degree 1 (in the forest with the SKIP edges removed!)
+        which_leaves = mst_e[:,::-1][mst_s == 1]
 
         if n_neighbors == 0:
             is_outlier = np.repeat(False, n)
@@ -184,64 +183,243 @@ def lumbermark(
             Q13 = np.array([np.percentile(nn_w[labels==j+1, outlier_k], [25, 75]) for j in range(c)])
             bnd_outlier = np.r_[np.nan, (Q13[:, 1]+1.5*(Q13[:, 1]-Q13[:, 0]))]
             is_outlier = (nn_w[:, outlier_k] > bnd_outlier[labels])
+            # plt.clf()
+            # plt.boxplot([nn_w[labels==j+1, outlier_k] for j in range(c)])
+            # plt.show()
+            # stop()
+
+        which_outliers = np.flatnonzero(is_outlier)
 
 
+        if max_twig_size > 0 and (not last_iteration or noise_cluster):
             # cut out all twigs ("small" branches of size <= max_twig_size)
             # that solely consist of outliers, starting from leaves
+            for v in which_leaves:
+                mark_noise(v)
 
-            if max_twig_size > 0:
-                # leaves are vertices of degree 1 (in the forest with the SKIP edges removed!)
-                leaves = mst_e[:,::-1][mst_s == 1]
-                #is_leaf = np.repeat(False, n)
-                #is_leaf[leaves] = True
+            mst_s[:,:] = 0
+            labels[labels != NOISE] = UNSET
+            mst_labels[(mst_labels != SKIP) & (mst_labels != NOISE)] = UNSET
 
-                for v in leaves:  #np.flatnonzero(is_leaf):
-                    mark_noise(v)
-
-
-                mst_s[:,:] = 0
-                labels[labels != NOISE] = UNSET
-                mst_labels[(mst_labels != SKIP) & (mst_labels != NOISE)] = UNSET
-                c, counts, min_mst_s = mark_clusters()
+            c, counts, min_mst_s = mark_clusters()
 
 
-        if c >= n_clusters:
-            assert c == n_clusters
-            return labels
+        # the longest node that yields not too small a cluster
+        is_limb = (mst_labels > 0)
+        is_limb &= (min_mst_s >= min_cluster_size)
+        is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= 0.075
 
+        which_limbs = np.flatnonzero(is_limb)
+        cutting_e = which_limbs[0]
+        cutting_w = mst_w[cutting_e]
+
+
+        if verbose: print("cand=(%g,%g,[%d,%d])." % (cutting_e, cutting_w, mst_s[cutting_e,0], mst_s[cutting_e,1]))
 
         if not cut_internodes:
-            internodes = np.repeat(False, n-1)
+            is_internode = np.repeat(False, n-1)
+            which_internodes = []
         else:
             # an internode is an edge incident to an outlier, whose removal leads to a new cluster of "considerable" size
-            internodes  = (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
-            internodes &= (min_mst_s >= min_cluster_size)
-            # internodes &= (min_mst_s >= min_cluster_size_frac*np.sum(mst_s, axis=1))
-            internodes &= (mst_labels != SKIP)
+            is_internode = (mst_labels > 0)
+            is_internode &= (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
+            is_internode &= (min_mst_s >= min_cluster_size)
+            is_internode &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= 0.075
 
-        which_internodes = np.flatnonzero(internodes)
-        #print("which_internodes=%s" % (which_internodes, ))
+            which_internodes = np.flatnonzero(is_internode)
 
+            # OLD version: internodes have priority over limbs
+            #if len(which_internodes) > 0:
+            #    cutting = which_internodes[0]
 
-        limbs = (mst_labels > 0)
-        limbs &= (min_mst_s >= min_cluster_size)
-        # limbs &= (min_mst_s >= min_cluster_size_frac*np.sum(mst_s, axis=1))
-        limbs &= (mst_labels != SKIP)
-        limbs &= ~internodes
-
-        which_limbs = np.flatnonzero(limbs)
-        #print("which_limbs=%s" % (which_limbs, ))
-
-        # _x = []
-        # import pandas as pd
-        # for _w in [which_internodes, which_limbs]:
-        #     _x.append(pd.DataFrame(np.c_[_w, mst_w[_w], np.sort(mst_s, axis=1)[_w,:], mst_labels[_w]], columns=["i", "w", "s0", "s1", "label"]))
-        # _x = pd.concat(_x, keys=["cut", "outlier"])#.reset_index(level=0)#.groupby(["level_0", "label"]).head(1)
-        # print(_x)
+            # NEW version: "merge" incident internodes (those sharing a vertex of degree 2), competing against the longest limb
 
 
-        cutting = which_internodes[0] if len(which_internodes) > 0 else which_limbs[0]
-        #print("cutting=%d" % cutting)
+            def _visit(e):
+                assert not _visited[e]
 
-        skiplist.append(cutting)
+                if not is_internode[e]:
+                    return 0.0
 
+                tot = mst_w[e]
+                _visited[e] = True
+
+                if verbose: print("(%d,%g)"%(e, tot), end=", ")
+
+                for i in [0, 1]:
+                    (v, w) = mst_e[e, i], mst_e[e, 1-i]
+
+                    enext = -1
+                    for e2 in mst_a[w]:
+                        if e2 != e and is_internode[e2]:
+                            if enext >= 0:
+                                enext = -1
+                                break
+                            else:
+                                enext = e2
+
+                    if enext >= 0 and not _visited[enext]: tot += _visit(enext)
+
+                return tot
+
+            _visited = np.repeat(False, n-1)
+            for e in which_internodes:
+                # edges are sorted decreasingly
+
+                if _visited[e]: continue
+
+                cur_w = _visit(e)
+
+                if verbose: print("total=%g." % cur_w)
+
+                if cur_w > cutting_w:
+                    cutting_w = cur_w
+                    cutting_e = e
+
+
+
+        if verbose: print("%3d: cutting e=%d w=%g" % (c, cutting_e, cutting_w))
+
+        # if verbose:
+        #     _x = []
+        #     import pandas as pd
+        #     for _w in [which_internodes, which_limbs]:
+        #         _x.append(pd.DataFrame(dict(
+        #             i=_w,
+        #             w=mst_w[_w],
+        #             s0=np.sort(mst_s, axis=1)[_w, 0],
+        #             s1=np.sort(mst_s, axis=1)[_w, 1],
+        #             label=mst_labels[_w]
+        #         )))
+        #     _x = pd.concat(_x, keys=["internode", "limb"])#.reset_index(level=0)#.groupby(["level_0", "label"]).head(1)
+        #     print(_x)
+        #     #print(_x.loc[["internode"],:])
+        #     #print(_x.loc[["limb"],:])
+
+
+
+        if last_iteration:
+            assert c == n_clusters
+            return (
+                labels, mst_w, mst_e, mst_labels, mst_s, mst_skiplist,
+                which_internodes, cutting_e,
+                which_leaves, which_outliers
+            )
+        else:
+            mst_skiplist.append(cutting_e)
+
+
+
+class Lumbermark(BaseEstimator, ClusterMixin):
+
+    def __init__(
+        self,
+        *,
+        n_clusters,
+        min_cluster_size=None,  # use default
+        max_twig_size=None,     # use default
+        noise_cluster=False,
+        n_neighbors=5,
+        cut_internodes=True,
+        verbose=False
+    ):
+        """
+        set n_neighbors to 0 to disable cutting a internodes and noise point detection
+
+        noise_cluster applies to the final labelling
+
+        twig = any small, leafless branch of a woody plant
+        internode =  the part of a plant stem between two nodes
+        limb = one of the larger branches of a tree
+        """
+
+        self.n_clusters       = n_clusters
+        self.min_cluster_size = min_cluster_size
+        self.max_twig_size    = max_twig_size
+        self.noise_cluster    = noise_cluster
+        self.n_neighbors      = n_neighbors
+        self.cut_internodes   = cut_internodes
+        self.verbose          = verbose
+
+
+    def fit(self, X, y=None, mst_skiplist=None):
+        """
+        Perform cluster analysis of a dataset.
+
+
+        Parameters
+        ----------
+
+        X : object
+            Typically a matrix with ``n_samples`` rows and ``n_features``
+            columns.
+
+        y : None
+            Ignored.
+
+        mst_skiplist : None
+
+
+        Returns
+        -------
+
+        self : genieclust.Genie
+            The object that the method was called on.
+        """
+
+        self.X = np.ascontiguousarray(X)
+        self.n_samples_ = self.X.shape[0]
+
+        (
+            self.labels_, self._mst_w, self._mst_e, self._mst_labels,
+            self._mst_s, self._mst_skiplist,
+            self._mst_internodes, self._mst_cutting,
+            self._which_leaves, self._which_outliers
+        ) = _lumbermark(
+            self.X,
+            self.n_clusters,
+            self.min_cluster_size,
+            self.max_twig_size,
+            self.noise_cluster,
+            self.n_neighbors,
+            self.cut_internodes,
+            mst_skiplist,
+            self.verbose
+        )
+
+        return self
+
+
+
+    def fit_predict(self, X, y=None, mst_skiplist=None):
+        """
+        Perform cluster analysis of a dataset and return the predicted labels.
+
+
+        Parameters
+        ----------
+
+        X : object
+            See `genieclust.Genie.fit`.
+
+        y : None
+            See `genieclust.Genie.fit`.
+
+        mst_skiplist : None
+
+
+        Returns
+        -------
+
+        labels_ : ndarray
+            `self.labels_` attribute.
+
+
+        See also
+        --------
+
+        genieclust.Genie.fit
+
+        """
+        self.fit(X, y, mst_skiplist)
+        return self.labels_

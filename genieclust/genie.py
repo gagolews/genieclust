@@ -944,7 +944,7 @@ class Genie(GenieBase):
             verbose=verbose)
 
         self.gini_threshold = gini_threshold
-        self._experimental_forced_merge = False  # experimental, likely to be removed - wors (#51)
+        self._experimental_forced_merge = False  # experimental, likely to be removed - worse (#51)
 
         self._check_params()
 
