@@ -9,6 +9,8 @@ import sys
 from importlib import reload
 import lumbermark
 lumbermark = reload(lumbermark)
+import robustsl
+lumbermark = reload(robustsl)
 import mst_examples
 mst_examples = reload(mst_examples)
 sys.setrecursionlimit(100000)
@@ -24,7 +26,8 @@ for ex in range(12):
     _i += 1
     plt.subplot(3, 4, _i)
     X, y_true, n_clusters, skiplist, example = mst_examples.get_example(ex, data_path)
-    L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.1, outlier_factor=1.5, noise_cluster=True)
+    L = robustsl.RobustSingleLinkageClustering(n_clusters=n_clusters)
+    #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.1, outlier_factor=1.5, noise_cluster=True)
     y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
     mst_examples.plot_mst_2d(L)
     plt.title(example)
@@ -45,7 +48,7 @@ mst_labels = L._mst_labels
 n = X.shape[0]
 skiplist = L._mst_skiplist
 cutting = L._mst_cutting
-mst_internodes = L._mst_internodes
+mst_internodes = L.__dict__.get("_mst_internodes", [])
 
 #
 plt.clf()

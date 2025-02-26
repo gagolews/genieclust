@@ -119,7 +119,7 @@ def plot_mst_2d(L, mst_draw_edge_labels=False):
     n = X.shape[0]
     skiplist = L._mst_skiplist
     cutting = L._mst_cutting
-    mst_internodes = L._mst_internodes
+    mst_internodes = L.__dict__.get("_mst_internodes", [])
     genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1)
     plt.axis("equal")
     if mst_draw_edge_labels:

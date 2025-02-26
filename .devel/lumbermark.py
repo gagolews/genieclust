@@ -67,10 +67,8 @@ def _lumbermark(
     if max_twig_size <= 0:
         noise_cluster = False
 
-
     if mst_skiplist is None:
         mst_skiplist = []
-
 
     if n_neighbors > 0:
         kd = scipy.spatial.KDTree(X)
@@ -212,7 +210,7 @@ def _lumbermark(
         is_limb &= (min_mst_s >= min_cluster_size)
         is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor
 
-        which_limbs = np.flatnonzero(is_limb)
+        which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
         cutting_e = which_limbs[0]
         cutting_w = mst_w[cutting_e]
 
