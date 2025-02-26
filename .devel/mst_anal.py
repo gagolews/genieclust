@@ -26,7 +26,7 @@ for ex in range(12):
     _i += 1
     plt.subplot(3, 4, _i)
     X, y_true, n_clusters, skiplist, example = mst_examples.get_example(ex, data_path)
-    L = robustsl.RobustSingleLinkageClustering(n_clusters=n_clusters)
+    L = robustsl.RobustSingleLinkageClustering(n_clusters=n_clusters, cluster_size_factor_abs=0.2, cluster_size_factor_rel=0)
     #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.1, outlier_factor=1.5, noise_cluster=True)
     y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
     mst_examples.plot_mst_2d(L)
