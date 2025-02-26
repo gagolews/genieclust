@@ -5,115 +5,33 @@ import matplotlib.pyplot as plt
 import clustbench
 import os.path
 import scipy.spatial
-
-
-
-data_path = os.path.join("~", "Projects", "clustering-data-v1")
-np.random.seed(123)
-
-
-
-examples = [
-    ["new", "blobs4a", [], 4],
-    ["new", "blobs4b", [], 4],
-    ["wut", "mk4", [], 3],
-    ["wut", "mk3", [], 3],
-    ["sipu", "pathbased", [], 3],  # :/
-    ["wut", "mk2", [], 2],  # :/
-    ["wut", "graph", [], 10],
-    ["graves", "fuzzyx", [], 4],
-    ["fcps", "engytime", [], 2],
-    ["new", "blobs3a", [], 3],
-    ["graves", "zigzag_outliers", [], 3],
-    ["fcps", "target", [], 2],
-    ["sipu", "spiral", [], 3],
-    ["sipu", "jain", [], 2],
-    ["sipu", "unbalance", [], 8],
-    ["sipu", "aggregation", [], 7],
-    ["wut", "z2", [], 5],
-    ["wut", "isolation", [], 3],
-    ["wut", "x3", [], 3],
-    ["sipu", "compound", [], 5],
-    ["graves", "parabolic", [], 2],
-    ["sipu", "flame", [], 2],
-    ["graves", "dense", [], 2],
-    ["wut", "circles", [], 1],
-    ["wut", "twosplashes", [], 2],
-    ["fcps", "twodiamonds", [], 2],
-    ["other", "chameleon_t8_8k", [], 8],
-    ["other", "chameleon_t7_10k", [], 9],
-    ["other", "chameleon_t5_8k", [], 6],
-    ["other", "chameleon_t4_8k", [], 6],
-    ["wut", "labirynth", [], 6],
-    ["wut", "z3", [], 4],
-    ["other", "hdbscan", [], 6],
-    ["sipu", "s1", [], 15],
-    ["fcps", "wingnut", [], 2],
-]
-
-
-battery, dataset, skiplist, n_clusters = examples[0]
-
-if battery != "new":
-    b = clustbench.load_dataset(battery, dataset, path=data_path)
-    X, y_true = b.data, b.labels[0]
-else:
-    from sklearn.datasets import make_blobs
-    if dataset == "blobs4a":
-        X, y_true = make_blobs(
-            n_samples=[500, 500, 100, 100],
-            cluster_std=[0.05, 0.2, 0.2, 0.2],
-            centers=[[1,1], [1,-1], [-1,-1], [-1,1]],
-            random_state=42
-        )
-        xapp = np.array([
-            [0,0],
-            [-0.1,0.25],
-            [-0.1,-0.1],
-            [0.1,0.25],
-        ])
-        X = np.append(X, xapp, axis=0)
-        y_true = np.r_[y_true+1, np.repeat(0, xapp.shape[0])]
-    elif dataset == "blobs4b":
-        X, y_true = make_blobs(
-            n_samples=[800, 800, 100, 100],
-            cluster_std=[0.05, 0.2, 0.3, 0.2],
-            centers=[[1,1], [1,-1], [-1,-1], [-1,1]],
-            random_state=42
-        )
-        xapp = np.array([
-            [0,0],
-            [-0.1,0.25],
-            [-0.1,-0.1],
-            [0.1,0.25],
-        ])
-        X = np.append(X, xapp, axis=0)
-        y_true = np.r_[y_true+1, np.repeat(0, xapp.shape[0])]
-    elif dataset == "blobs3a":
-        # see https://github.com/gagolews/genieclust/issues/91
-        X, y_true = make_blobs(
-            n_samples=[1000, 100, 100],
-            cluster_std=1,
-            random_state=42
-        )
-
+import sys
 from importlib import reload
 import lumbermark
 lumbermark = reload(lumbermark)
-
-import sys
+import mst_examples
+mst_examples = reload(mst_examples)
 sys.setrecursionlimit(100000)
 
 
-L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=True, n_neighbors=5)
-y_pred = L.fit_predict(X, mst_skiplist=skiplist)
-# TODO: 0-based -> 1-based!!!
+data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 
-print(np.bincount(y_pred))
+plt.clf()
+_i = 0
+for ex in range(12):
+    _i += 1
+    plt.subplot(3, 4, _i)
+    X, y_true, n_clusters, skiplist, example = mst_examples.get_example(ex, data_path)
+    L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.1, outlier_factor=1.5, noise_cluster=True)
+    y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
+    mst_examples.plot_mst_2d(L)
+    plt.title(example)
+plt.tight_layout()
 
-## TODO: n_neighbors -- robust single linkage?
+
+stop()
 
 
 
