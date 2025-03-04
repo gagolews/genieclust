@@ -21,9 +21,9 @@ examples = [
     ["wut", "cross", [], 4],  #  Genie fails :/ !!!
     ["graves", "fuzzyx", [], 4], #  Genie fails
     ["wut", "z2", [], 5],
+    ["graves", "parabolic", [], 2],
+
     ["other", "hdbscan", [], 6],
-
-
     ["wut", "graph", [], 12],  # Genie fails
     ["wut", "mk4", [], 3],
     ["graves", "zigzag_outliers", [], 3],
@@ -36,7 +36,6 @@ examples = [
     ["sipu", "jain", [], 2],
     ["wut", "isolation", [], 3],
     ["wut", "x3", [], 3],
-    ["graves", "parabolic", [], 2],
     ["sipu", "flame", [], 2],
     ["graves", "dense", [], 2],
     ["wut", "circles", [], 1],

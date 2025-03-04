@@ -1,5 +1,5 @@
 """
-A Robust Single Linkage Clustering Algorithm (Divisive)
+A Robust Single Linkage Clustering Algorithm (Divisive; Robust Single Divide)
 """
 
 # ############################################################################ #
@@ -38,18 +38,18 @@ NOISE = 0  # must be 0
 def _robust_single_linkage_clustering(
     X,
     n_clusters,
-    min_cluster_size=None,  # use default
-    cluster_size_factor_abs=0.075,
-    cluster_size_factor_rel=0.075,
+    min_cluster_size=10,
+    min_cluster_factor=0.2,
     mst_skiplist=None,      # default = empty
     verbose=False
 ):
     assert n_clusters > 0
+    assert min_cluster_size >= 0
+    assert min_cluster_factor >= 0
 
     n = X.shape[0]
 
-    if min_cluster_size is None:
-        min_cluster_size = max(15, cluster_size_factor_abs*n/n_clusters)
+    min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
 
     if mst_skiplist is None:
         mst_skiplist = []
@@ -112,7 +112,7 @@ def _robust_single_linkage_clustering(
 
 
     while True:
-        mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when
+        mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when we .... TODO
         labels = np.repeat(UNSET, n)
         mst_labels = np.repeat(UNSET, n-1)
         for s in mst_skiplist:
@@ -124,8 +124,8 @@ def _robust_single_linkage_clustering(
 
         # the longest node that yields not too small a cluster
         is_limb = (mst_labels > 0)
-        is_limb &= (min_mst_s >= min_cluster_size)
-        is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel
+        is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
+        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel   # NOTE: doesn't really help
 
         which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
         cutting_e = which_limbs[0]
@@ -148,15 +148,13 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         self,
         *,
         n_clusters,
-        min_cluster_size=None,  # use default
-        cluster_size_factor_abs=0.075,
-        cluster_size_factor_rel=0.075,
+        min_cluster_size=10,
+        min_cluster_factor=0.2,
         verbose=False
     ):
         self.n_clusters              = n_clusters
         self.min_cluster_size        = min_cluster_size
-        self.cluster_size_factor_abs = cluster_size_factor_abs
-        self.cluster_size_factor_rel = cluster_size_factor_rel
+        self.min_cluster_factor = min_cluster_factor
         self.verbose                 = verbose
 
 
@@ -195,8 +193,7 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
             self.X,
             n_clusters=self.n_clusters,
             min_cluster_size=self.min_cluster_size,
-            cluster_size_factor_abs=self.cluster_size_factor_abs,
-            cluster_size_factor_rel=self.cluster_size_factor_rel,
+            min_cluster_factor=self.min_cluster_factor,
             verbose=self.verbose,
             mst_skiplist=mst_skiplist
         )
