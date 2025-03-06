@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import clustbench
 import os.path
 import scipy.spatial
-
+import lumbermark
 
 
 
@@ -113,7 +113,7 @@ def plot_mst_2d(L, mst_draw_edge_labels=False):
     mst_e = L._mst_e
     mst_w = L._mst_w
     mst_s = L._mst_s
-    min_mst_s = np.min(mst_s, axis=1)
+    min_mst_s = np.min(mst_s[:,:], axis=1)
     mst_labels = L._mst_labels
     n = X.shape[0]
     skiplist = L._mst_skiplist
@@ -126,7 +126,7 @@ def plot_mst_2d(L, mst_draw_edge_labels=False):
             plt.text(
                 (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
                 (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
-                "%d (%d-%d)" % (i, mst_s[i, 0], mst_s[i, 1]),
+                "%d\n(%d-%d)" % (i, *sorted((mst_s[i, 0], mst_s[i, 1]))),
                 color="gray" if mst_labels[i] == lumbermark.SKIP else genieclust.plots.col[mst_labels[i]-1],
                 va='top'
             )

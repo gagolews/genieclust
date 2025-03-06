@@ -10,7 +10,7 @@ from importlib import reload
 import lumbermark
 lumbermark = reload(lumbermark)
 import robust_single_linkage
-lumbermark = reload(robust_single_linkage)
+robust_single_linkage = reload(robust_single_linkage)
 import mst_examples
 mst_examples = reload(mst_examples)
 sys.setrecursionlimit(100000)
@@ -31,8 +31,8 @@ for ex in range(12):
 
     n_clusters = max(y_true)
 
-    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters*3)
-    #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.1, outlier_factor=1.5, noise_cluster=True)
+    #L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters*3)
+    L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.2, outlier_factor=1.5, noise_cluster=False)
 
     y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
 
