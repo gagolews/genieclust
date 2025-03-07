@@ -106,7 +106,7 @@ def get_example(i, data_path="."):
 
 
 
-def plot_mst_2d(L, mst_draw_edge_labels=False):
+def plot_mst_2d(L, mst_draw_edge_labels=False, alpha=0.2):
     y_pred = L.labels_
     X = L.X
     n_clusters = L.n_clusters
@@ -132,9 +132,29 @@ def plot_mst_2d(L, mst_draw_edge_labels=False):
             )
     for i in range(n_clusters+1):
         genieclust.plots.plot_segments(mst_e[mst_labels == i, :], X, color=genieclust.plots.col[i-1],
-            alpha=0.2, linestyle="-" if i>0 else ":")
+            alpha=alpha, linestyle="-" if i>0 else ":")
     genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="-", linewidth=3)
     genieclust.plots.plot_segments(mst_e[mst_internodes,:], X, color="orange", linestyle="-", linewidth=3)
     if cutting is not None:
         genieclust.plots.plot_segments(mst_e[[cutting],:], X, color="blue", linestyle="--", alpha=1.0, linewidth=3)
+
+
+
+
+
+
+def split(x, f):
+    f = np.array(f)
+    x = np.array(x)
+    assert f.shape[0] == x.shape[0]
+    assert f.ndim == 1
+    _o = np.argsort(f, kind="stable")
+    _u, _s = np.unique(f[_o], return_index=True)
+    _v = np.split(x[_o], _s)[1:]
+    return np.array(_v, dtype=object), _u
+
+
+def aggregate(x, f, a):
+    _x, _f = split(x, f)
+    return np.array([a(gx) for gx in _x]), _f
 
