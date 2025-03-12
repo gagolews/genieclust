@@ -286,7 +286,7 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
 
     .. math::
 
-        \\frac{1}{\\sum_{i=2}^n \\frac{1}{i}}
+        V(x_1,\\dots,x_n) = \\frac{1}{\\sum_{i=2}^n \\frac{1}{i}}
         \\left(
         \\frac{ \\sum_{i=1}^n \\left(
             \\sum_{j=i}^{n} \\frac{1}{j}
