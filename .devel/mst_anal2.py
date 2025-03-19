@@ -23,31 +23,27 @@ data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 plt.clf()
-X, y_true, n_clusters, skiplist, example = mst_examples.get_example(5, data_path)
+X, y_true, n_clusters, skiplist, example = mst_examples.get_example(10, data_path)
 
 n_clusters = max(y_true)
 
-#L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters*3)
-L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.2, outlier_factor=1.5, noise_cluster=True)
+L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters)
+#L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.2, outlier_factor=1.5, noise_cluster=False)
 
 y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
+
 
 mst_examples.plot_mst_2d(L, mst_draw_edge_labels=True)
 npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
 nca = GNCA(y_true[y_true>0], y_pred[y_true>0])
-
 plt.title("%s NA=%.2f NCA=%.2f" % (example, npa, nca))
 plt.tight_layout()
 
-
-
-
-stop()
+#stop()
 
 
 
 mst_draw_edge_labels = False
-
 mst_e = L._mst_e
 mst_w = L._mst_w
 mst_s = L._mst_s
@@ -57,7 +53,6 @@ n = X.shape[0]
 skiplist = L._mst_skiplist
 cutting = L._mst_cutting
 mst_internodes = L.__dict__.get("_mst_internodes", [])
-
 #
 plt.clf()
 #
@@ -84,7 +79,6 @@ genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linesty
 genieclust.plots.plot_segments(mst_e[mst_internodes,:], X, color="orange", linestyle="-", linewidth=3)
 if cutting is not None:
     genieclust.plots.plot_segments(mst_e[[cutting],:], X, color="blue", linestyle="--", alpha=1.0, linewidth=3)
-stop()
 #
 #
 # Edge weights + cluster sizes
@@ -120,13 +114,47 @@ for i in range(1, n_clusters+1):
 #
 # treelhouette
 plt.subplot(3, 2, 5)
-cluster_distances = np.ones((n_clusters, n_clusters))*np.inf
-for e in skiplist:
-    i, j = mst_e[e, :]
-    assert y_pred[i] > 0
-    assert y_pred[j] > 0
-    cluster_distances[y_pred[i]-1, y_pred[j]-1] = mst_w[e]
-    cluster_distances[y_pred[j]-1, y_pred[i]-1] = mst_w[e]
+def get_intercluster_distances():
+    mst_a = [ [] for i in range(n) ]
+    for i in range(n-1):
+        mst_a[mst_e[i, 0]].append(i)
+        mst_a[mst_e[i, 1]].append(i)
+    for i in range(n):
+        mst_a[i] = np.array(mst_a[i])
+    mst_a = np.array(mst_a, dtype="object")
+
+    def visit(v, e):  # from v along e
+        iv = int(mst_e[e, 1] == v)
+        w = mst_e[e, 1-iv]
+
+        if y_pred[w] > 0:
+            # reached a coloured vertex - stop
+            return [(y_pred[w], 0.0)]
+        if len(mst_a[w]) == 1:
+            # reached a leaf - stop
+            return []
+
+        res = []
+        for e2 in mst_a[w]:
+            if mst_e[e2, 0] != v and mst_e[e2, 1] != v:
+                res += [(l, w+mst_w[e2]) for (l, w) in visit(w, e2)]
+
+        return res
+
+    D = np.ones((n_clusters, n_clusters))*np.inf
+    for e in skiplist:
+        res = []
+        v, w = mst_e[e, :]
+        res_v = visit(v, e)
+        res_w = visit(w, e)
+        for (lv, dv) in res_v:
+            for (lw, dw) in res_w:
+                D[lv-1, lw-1] = np.minimum(D[lv-1, lw-1], dv+dw+mst_w[e])
+                D[lw-1, lv-1] = D[lv-1, lw-1]
+    return D
+#
+cluster_distances = get_intercluster_distances()
+print(np.round(cluster_distances, 2))
 # leave the diagonal to inf
 min_intercluster_distances = np.min(cluster_distances, axis=0)
 #
@@ -146,9 +174,10 @@ o1 = np.argsort(s)[::-1]
 o2 = np.argsort(l[o1], kind='stable')
 plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
 treelhouette_score = np.mean(s)
-print("treelhouette_score=%.3f" % treelhouette_score)
+weighted_treelhouette_score = np.mean(mst_examples.aggregate(s, mst_labels[mst_labels>0], np.mean)[0])
+print("treelhouette_score=%.3f, weighted_treelhouette_score=%.3f" % (treelhouette_score, weighted_treelhouette_score))
 plt.axhline(treelhouette_score, color='gray')
-
+plt.axhline(weighted_treelhouette_score, color='lightgray')
 
 
 # DBSCAN is non-adaptive - cannot detect clusters of different densities well

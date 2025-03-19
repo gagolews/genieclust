@@ -154,7 +154,7 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
     ):
         self.n_clusters              = n_clusters
         self.min_cluster_size        = min_cluster_size
-        self.min_cluster_factor = min_cluster_factor
+        self.min_cluster_factor      = min_cluster_factor
         self.verbose                 = verbose
 
 

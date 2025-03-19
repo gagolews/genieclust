@@ -26,7 +26,7 @@ import matplotlib.colors
 import numpy as np
 
 
-# Using the (new in v4.0.0) default R pallette - more accessible
+# Using the (new in v4.0.0) default R palette - more accessible
 
 # module globals:
 col = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5C710"] + \
