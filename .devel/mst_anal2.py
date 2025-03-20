@@ -9,6 +9,8 @@ import sys
 from importlib import reload
 import lumbermark
 lumbermark = reload(lumbermark)
+import lumbermark2
+lumbermark2 = reload(lumbermark2)
 import robust_single_linkage
 robust_single_linkage = reload(robust_single_linkage)
 import mst_examples
@@ -23,12 +25,13 @@ data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 plt.clf()
-X, y_true, n_clusters, skiplist, example = mst_examples.get_example(4, data_path)
+X, y_true, n_clusters, skiplist, example = mst_examples.get_example(0, data_path)
 
 n_clusters = max(y_true)
 
-# L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters)
-L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
+# L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, min_cluster_factor=0.2)
+# L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
+L = lumbermark2.Lumbermark2(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
 
 y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
 
@@ -39,7 +42,7 @@ nca = GNCA(y_true[y_true>0], y_pred[y_true>0])
 plt.title("%s NA=%.2f NCA=%.2f" % (example, npa, nca))
 plt.tight_layout()
 
-#stop()
+stop()
 
 
 
