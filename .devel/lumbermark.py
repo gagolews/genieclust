@@ -41,9 +41,9 @@ def _lumbermark(
     noise_cluster=False,
     n_neighbors=5,
     outlier_factor=1.5,
-    min_cluster_size=None,  # use default
-    max_twig_size=None,     # use default
-    cluster_size_factor=0.075,
+    min_cluster_size=10,
+    min_cluster_factor=0.2,
+    max_twig_size=5,
     twig_size_factor=0.01,
     cut_internodes=True,
     mst_skiplist=None,      # default = empty
@@ -54,21 +54,20 @@ def _lumbermark(
 
     n = X.shape[0]
 
-    if min_cluster_size is None:
-        min_cluster_size = max(15, cluster_size_factor*n/n_clusters)
+    min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
 
-    if max_twig_size is None:
-        max_twig_size = max(5, twig_size_factor*n/n_clusters)
+    if mst_skiplist is None:
+        mst_skiplist = []
+
+    max_twig_size = max(max_twig_size, twig_size_factor*n/n_clusters)
 
     if n_neighbors <= 0:
         max_twig_size = 0
         cut_internodes = False
 
     if max_twig_size <= 0:
+        max_twig_size = 0
         noise_cluster = False
-
-    if mst_skiplist is None:
-        mst_skiplist = []
 
     if n_neighbors > 0:
         kd = scipy.spatial.KDTree(X)
@@ -207,8 +206,7 @@ def _lumbermark(
 
         # the longest node that yields not too small a cluster
         is_limb = (mst_labels > 0)
-        is_limb &= (min_mst_s >= min_cluster_size)
-        is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor
+        is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
 
         which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
         cutting_e = which_limbs[0]
@@ -225,7 +223,7 @@ def _lumbermark(
             is_internode = (mst_labels > 0)
             is_internode &= (is_outlier[mst_e[:,0]] | is_outlier[mst_e[:,1]])
             is_internode &= (min_mst_s >= min_cluster_size)
-            is_internode &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor
+            # is_internode &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor
 
             which_internodes = np.flatnonzero(is_internode)
 
@@ -318,9 +316,9 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         noise_cluster=False,
         n_neighbors=5,
         outlier_factor=1.5,
-        min_cluster_size=None,      # use default
-        max_twig_size=None,         # use default
-        cluster_size_factor=0.075,
+        min_cluster_size=10,
+        min_cluster_factor=0.2,
+        max_twig_size=5,
         twig_size_factor=0.01,
         cut_internodes=True,
         verbose=False
@@ -340,8 +338,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.n_neighbors         = n_neighbors
         self.outlier_factor      = outlier_factor
         self.min_cluster_size    = min_cluster_size
+        self.min_cluster_factor  = min_cluster_factor
         self.max_twig_size       = max_twig_size
-        self.cluster_size_factor = cluster_size_factor
         self.twig_size_factor    = twig_size_factor
         self.cut_internodes      = cut_internodes
         self.verbose             = verbose
@@ -387,8 +385,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             n_neighbors=self.n_neighbors,
             outlier_factor=self.outlier_factor,
             min_cluster_size=self.min_cluster_size,
+            min_cluster_factor=self.min_cluster_factor,
             max_twig_size=self.max_twig_size,
-            cluster_size_factor=self.cluster_size_factor,
             twig_size_factor=self.twig_size_factor,
             cut_internodes=self.cut_internodes,
             verbose=self.verbose,

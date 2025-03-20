@@ -125,7 +125,7 @@ def _robust_single_linkage_clustering(
         # the longest node that yields not too small a cluster
         is_limb = (mst_labels > 0)
         is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
-        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel   # NOTE: doesn't really help
+        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel   # NOTE: no benefit
 
         which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
         cutting_e = which_limbs[0]
@@ -135,7 +135,8 @@ def _robust_single_linkage_clustering(
         if last_iteration:
             assert c == n_clusters
             return (
-                labels, mst_w, mst_e, mst_labels, mst_s, mst_skiplist, cutting_e
+                labels, mst_w, mst_e, mst_labels, mst_s,
+                mst_skiplist, cutting_e
             )
         else:
             mst_skiplist.append(cutting_e)
