@@ -17,32 +17,32 @@ import mst_examples
 mst_examples = reload(mst_examples)
 sys.setrecursionlimit(100000)
 
-from generalized_normalized_clustering_accuracy import generalized_normalized_clustering_accuracy as GNCA
-from generalized_normalized_clustering_accuracy import generalized_normalized_pivoted_accuracy as GNPA
+#from generalized_normalized_clustering_accuracy import generalized_normalized_clustering_accuracy as GNCA
+#from generalized_normalized_clustering_accuracy import generalized_normalized_pivoted_accuracy as GNPA
 
 data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 
 plt.clf()
-X, y_true, n_clusters, skiplist, example = mst_examples.get_example(0, data_path)
+X, y_true, n_clusters, skiplist, example = mst_examples.get_example(10, data_path)
 
 n_clusters = max(y_true)
 
-L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters)
-L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
+L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.1)
+#L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True, M=5)
 # L = lumbermark2.Lumbermark2(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
 
 y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
 
 
-mst_examples.plot_mst_2d(L, mst_draw_edge_labels=True)
-npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
-nca = GNCA(y_true[y_true>0], y_pred[y_true>0])
-plt.title("%s NA=%.2f NCA=%.2f" % (example, npa, nca))
-plt.tight_layout()
-
-stop()
+# mst_examples.plot_mst_2d(L, mst_draw_edge_labels=True)
+# npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
+# nca = GNCA(y_true[y_true>0], y_pred[y_true>0])
+# plt.title("%s NA=%.2f NCA=%.2f" % (example, npa, nca))
+# plt.tight_layout()
+#
+# stop()
 
 
 
@@ -56,6 +56,12 @@ n = X.shape[0]
 skiplist = L._mst_skiplist
 cutting = L._mst_cutting
 mst_internodes = L.__dict__.get("_mst_internodes", [])
+
+y_pred[mst_e[(mst_s[:,0] <= 1) & (mst_labels > 0), 1]] = 0
+y_pred[mst_e[(mst_s[:,1] <= 1) & (mst_labels > 0), 0]] = 0
+mst_labels[(min_mst_s <= 1) & (mst_labels > 0)] = 0
+
+
 #
 plt.clf()
 #
@@ -176,6 +182,7 @@ s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
 o1 = np.argsort(s)[::-1]
 o2 = np.argsort(l[o1], kind='stable')
 plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
+plt.ylim(-1, 1)
 treelhouette_score = np.mean(s)
 weighted_treelhouette_score = np.mean(mst_examples.aggregate(s, mst_labels[mst_labels>0], np.mean)[0])
 print("treelhouette_score=%.3f, weighted_treelhouette_score=%.3f" % (treelhouette_score, weighted_treelhouette_score))

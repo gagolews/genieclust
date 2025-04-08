@@ -67,9 +67,14 @@ def _robust_single_linkage_clustering(
 
         d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M)
 
+        _o = np.argsort(d_core)[::-1]  # TODO: ?
         mst_w, mst_e = genieclust.internal.mst_from_distance(
-            X, metric="euclidean", d_core=d_core, verbose=verbose
+            np.ascontiguousarray(X[_o, :]),
+            metric="euclidean",
+            d_core=np.ascontiguousarray(d_core[_o]),
+            verbose=verbose
         )
+        mst_e = np.c_[ _o[mst_e[:, 0]], _o[mst_e[:, 1]] ]
 
 
     _o = np.argsort(mst_w)[::-1]

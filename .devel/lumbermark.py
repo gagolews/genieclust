@@ -152,7 +152,7 @@ def _lumbermark(
                 if e < 0:
                     e = e2  # first non-NOISE, non-SKIP edge
                 else:
-                    return  # we want a vertex that's incident of only one such edge
+                    return  # we want a vertex that's incident to only one such edge
 
         if e == -1:
             return
