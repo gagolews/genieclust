@@ -31,8 +31,8 @@ for ex in range(12):
 
     n_clusters = max(y_true)
 
-    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters)
-    #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, cluster_size_factor=0.2, outlier_factor=1.5, noise_cluster=False)
+    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=7, min_cluster_factor=0.1)
+    #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=0, M=5, min_cluster_factor=0.125, outlier_factor=1.5, noise_cluster=False)
 
     y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
 

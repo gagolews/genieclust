@@ -70,11 +70,6 @@ For K-means, the timings are listed as a function of the number of clusters to d
 for the other hierarchical methods the run-times are almost identical irrespective of the
 partitions' cardinality.
 
-<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '['70000' '70000' '70000' '70000' '70000' '70000' '70000' '70000' '70000'
- '70000' '70000' '70000' '105600' '105600' '105600' '105600' '105600'
- '105600' '105000' '105000' '105000' '105000' '105000' '105000']' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
-<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value '['719' '719' '719' '719' '719' '719' '784' '784' '784' '784' '784' '784'
- '2' '2' '2' '2' '2' '2' '64' '64' '64' '64' '64' '64']' has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
 | dataset       | n      | d   | method               |      10 |    100 |    1000 |
 |---------------|--------|-----|----------------------|---------|--------|---------|
 | mnist/digits  | 70000  | 719 | Genie_0.3            |  412.72 |     |      |
@@ -204,7 +199,7 @@ t0 = time.time()
 g.fit(X)
 print("time elapsed - first run: %.3f" % (time.time()-t0))
 ## Genie()
-## time elapsed - first run: 0.613
+## time elapsed - first run: 0.609
 ```
 
 

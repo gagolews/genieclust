@@ -45,11 +45,13 @@ def _lumbermark(
     min_cluster_factor=0.2,
     max_twig_size=5,
     twig_size_factor=0.01,
+    M=1,
     cut_internodes=True,
     mst_skiplist=None,      # default = empty
     verbose=False
 ):
     assert n_clusters > 0
+    assert M >= 0
     assert n_neighbors >= 0
 
     n = X.shape[0]
@@ -69,14 +71,22 @@ def _lumbermark(
         max_twig_size = 0
         noise_cluster = False
 
-    if n_neighbors > 0:
+    if n_neighbors > 0 or M > 1:
         kd = scipy.spatial.KDTree(X)
-        nn_w, nn_a = kd.query(X, n_neighbors+1)
-        nn_w = np.array(nn_w)[:, 1:]  # exclude self
-        nn_a = np.array(nn_a)[:, 1:]
+        nn_w, nn_a = kd.query(X, max(n_neighbors+1, M+1))
+        nn_w = np.ascontiguousarray(np.array(nn_w)[:, 1:])  # exclude self
+        nn_a = np.ascontiguousarray(np.array(nn_a)[:, 1:])
 
 
-    mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+    if M <= 1:
+        mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+    else:
+        d_core = genieclust.internal.get_d_core(nn_w, nn_a, M)
+
+        mst_w, mst_e = genieclust.internal.mst_from_distance(
+            X, metric="euclidean", d_core=d_core, verbose=verbose
+        )
+
     _o = np.argsort(mst_w)[::-1]
     mst_w = mst_w[_o]  # weights sorted decreasingly
     mst_e = mst_e[_o, :]
@@ -179,7 +189,7 @@ def _lumbermark(
             # - relative to the "typical" distances to k-nearest neighbours within the point's cluster
             # (each cluster can be of different density, so we take this into account)
             # or may be considered as an outlier after a cluster breaks down to smaller ones
-            outlier_k = -1  # which nearest neighbour do we take into account?
+            outlier_k = n_neighbors-1  # which nearest neighbour do we take into account?
             Q13 = np.array([np.percentile(nn_w[labels==j+1, outlier_k], [25, 75]) for j in range(c)])
             bnd_outlier = np.r_[np.nan, (Q13[:, 1]+outlier_factor*(Q13[:, 1]-Q13[:, 0]))]
             is_outlier = (nn_w[:, outlier_k] > bnd_outlier[labels])
@@ -320,6 +330,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         min_cluster_factor=0.2,
         max_twig_size=5,
         twig_size_factor=0.01,
+        M=1,
         cut_internodes=True,
         verbose=False
     ):
@@ -341,6 +352,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.min_cluster_factor  = min_cluster_factor
         self.max_twig_size       = max_twig_size
         self.twig_size_factor    = twig_size_factor
+        self.M                   = M
         self.cut_internodes      = cut_internodes
         self.verbose             = verbose
 
@@ -388,6 +400,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             min_cluster_factor=self.min_cluster_factor,
             max_twig_size=self.max_twig_size,
             twig_size_factor=self.twig_size_factor,
+            M=self.M,
             cut_internodes=self.cut_internodes,
             verbose=self.verbose,
             mst_skiplist=mst_skiplist

@@ -8,7 +8,7 @@
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Basics - Python and R Package genieclust</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -336,10 +336,10 @@ of the <code class="docutils literal notranslate"><span class="pre">genieclust</
 which can be installed from
 <a class="reference external" href="https://pypi.org/project/genieclust/">PyPI</a>, e.g.,
 via a call to <code class="docutils literal notranslate"><span class="pre">pip3</span> <span class="pre">install</span> <span class="pre">genieclust</span></code> from the command line.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">genieclust</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">genieclust</span>
 </pre></div>
 </div>
 <section id="breaking-the-ice">
@@ -418,7 +418,7 @@ similarity measures, such as the adjusted Rand index (<code class="docutils lite
 <section id="a-comparison-with-k-means">
 <h2>A Comparison with k-means<a class="headerlink" href="#a-comparison-with-k-means" title="Link to this heading">¶</a></h2>
 <p>For the sake of comparison, let us apply the k-means algorithm on the same dataset.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn.cluster</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sklearn.cluster</span>
 <span class="n">km</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">cluster</span><span class="o">.</span><span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_clusters</span><span class="p">)</span>
 <span class="n">labels_kmeans</span> <span class="o">=</span> <span class="n">km</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">genieclust</span><span class="o">.</span><span class="n">plots</span><span class="o">.</span><span class="n">plot_scatter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels_kmeans</span><span class="p">)</span>
@@ -458,7 +458,7 @@ the <a class="reference external" href="https://github.com/scikit-learn-contrib/
 <span id="id8">[<a class="reference internal" href="../z_bibliography.html#id15" title="Campello, R.J.G.B., Moulavi, D., and Sander, J. (2013).  Density-based clustering based on hierarchical density estimates. Lecture Notes in Computer Science, 7819:160–172. DOI: 10.1007/978-3-642-37456-2_14.">2</a>]</span>, which makes the algorithm much more user-friendly.</p>
 <p>Here are the clustering results with the <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameter
 of 3, 5, 10, and 15:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">hdbscan</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">hdbscan</span>
 <span class="n">mcs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mcs</span><span class="p">)):</span>
     <span class="n">h</span> <span class="o">=</span> <span class="n">hdbscan</span><span class="o">.</span><span class="n">HDBSCAN</span><span class="p">(</span><span class="n">min_cluster_size</span><span class="o">=</span><span class="n">mcs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
@@ -534,7 +534,7 @@ into two subgroups. This makes the resulting partitions more stable.</p>
 <section id="dendrograms">
 <h2>Dendrograms<a class="headerlink" href="#dendrograms" title="Link to this heading">¶</a></h2>
 <p>Dendrogram plotting is possible with <code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.cluster.hierarchy</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.cluster.hierarchy</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">compute_full_tree</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span></span><span class="n">linkage_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">([</span><span class="n">g</span><span class="o">.</span><span class="n">children_</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">distances_</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">counts_</span><span class="p">])</span>
@@ -608,7 +608,7 @@ To learn more about Python, check out Marek’s open-access (free!) textbook
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-03-12T11:41:25+0100.
+              Last updated on 2025-04-08T14:04:15+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

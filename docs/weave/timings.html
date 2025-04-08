@@ -8,7 +8,7 @@
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
         <title>Timings (How Fast Is It?) - Python and R Package genieclust</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -368,11 +368,6 @@ Clustering is performed with respect to the Euclidean distance.</p>
 For K-means, the timings are listed as a function of the number of clusters to detect,
 for the other hierarchical methods the run-times are almost identical irrespective of the
 partitions’ cardinality.</p>
-<p><string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘[‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’ ‘70000’
-‘70000’ ‘70000’ ‘70000’ ‘105600’ ‘105600’ ‘105600’ ‘105600’ ‘105600’
-‘105600’ ‘105000’ ‘105000’ ‘105000’ ‘105000’ ‘105000’ ‘105000’]’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.
-<string>:1: FutureWarning: Setting an item of incompatible dtype is deprecated and will raise in a future error of pandas. Value ‘[‘719’ ‘719’ ‘719’ ‘719’ ‘719’ ‘719’ ‘784’ ‘784’ ‘784’ ‘784’ ‘784’ ‘784’
-‘2’ ‘2’ ‘2’ ‘2’ ‘2’ ‘2’ ‘64’ ‘64’ ‘64’ ‘64’ ‘64’ ‘64’]’ has dtype incompatible with int64, please explicitly cast to a compatible dtype first.</p>
 <div class="table-wrapper colwidths-auto docutils container">
 <table class="docutils align-default">
 <thead>
@@ -773,14 +768,14 @@ Still, even the exact Genie is amongst the fastest clustering algorithms in the 
 parameter once the clustering is has been determined. The MST is stored for further
 reference and is not recomputed unless needed. Here are the timings for
 a first run of the algorithm:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">genieclust</span><span class="o">,</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span><span class="o">,</span><span class="w"> </span><span class="nn">genieclust</span><span class="o">,</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;worms_2.data.gz&quot;</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">genieclust</span><span class="o">.</span><span class="n">Genie</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">gini_threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 <span class="n">g</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;time elapsed - first run: </span><span class="si">%.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t0</span><span class="p">))</span>
 <span class="c1">## Genie()</span>
-<span class="c1">## time elapsed - first run: 0.613</span>
+<span class="c1">## time elapsed - first run: 0.609</span>
 </pre></div>
 </div>
 <p>Changing some parameters and re-running the cluster search:</p>
@@ -833,7 +828,7 @@ a first run of the algorithm:</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-03-12T11:41:25+0100.
+              Last updated on 2025-04-08T14:04:15+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>

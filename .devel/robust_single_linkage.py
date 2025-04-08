@@ -41,6 +41,7 @@ def _robust_single_linkage_clustering(
     min_cluster_size=10,
     min_cluster_factor=0.2,
     mst_skiplist=None,      # default = empty
+    M=1,  # TODO: mutual reachability distance
     verbose=False
 ):
     assert n_clusters > 0
@@ -54,7 +55,23 @@ def _robust_single_linkage_clustering(
     if mst_skiplist is None:
         mst_skiplist = []
 
-    mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+    if M <= 1:
+        mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+    else:
+        if M-1 >= X.shape[0]:
+            raise ValueError("`M` is too large")
+
+        nn_dist, nn_ind = genieclust.internal.knn_from_distance(
+            X, k=M-1, metric="euclidean", verbose=verbose
+        )
+
+        d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M)
+
+        mst_w, mst_e = genieclust.internal.mst_from_distance(
+            X, metric="euclidean", d_core=d_core, verbose=verbose
+        )
+
+
     _o = np.argsort(mst_w)[::-1]
     mst_w = mst_w[_o]  # weights sorted decreasingly
     mst_e = mst_e[_o, :]
@@ -151,11 +168,13 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         n_clusters,
         min_cluster_size=10,
         min_cluster_factor=0.2,
+        M=1,
         verbose=False
     ):
         self.n_clusters              = n_clusters
         self.min_cluster_size        = min_cluster_size
         self.min_cluster_factor      = min_cluster_factor
+        self.M                       = M
         self.verbose                 = verbose
 
 
@@ -195,6 +214,7 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
             n_clusters=self.n_clusters,
             min_cluster_size=self.min_cluster_size,
             min_cluster_factor=self.min_cluster_factor,
+            M=self.M,
             verbose=self.verbose,
             mst_skiplist=mst_skiplist
         )
