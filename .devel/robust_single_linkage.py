@@ -1,5 +1,6 @@
 """
-A Robust Single Linkage Clustering Algorithm (Divisive; Robust Single Divide)
+A Robust Single Linkage Clustering Algorithm
+(Divisive; aka Robust Single Divide)
 """
 
 # ############################################################################ #
@@ -42,6 +43,7 @@ def _robust_single_linkage_clustering(
     min_cluster_factor=0.2,
     mst_skiplist=None,      # default = empty
     M=1,  # TODO: mutual reachability distance
+    skip_leaves=False,
     verbose=False
 ):
     assert n_clusters > 0
@@ -49,8 +51,6 @@ def _robust_single_linkage_clustering(
     assert min_cluster_factor >= 0
 
     n = X.shape[0]
-
-    min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
 
     if mst_skiplist is None:
         mst_skiplist = []
@@ -67,7 +67,7 @@ def _robust_single_linkage_clustering(
 
         d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M)
 
-        _o = np.argsort(d_core)[::-1]  # TODO: ?
+        _o = np.argsort(d_core)[::-1]  # order wrt decreasing "core" size
         mst_w, mst_e = genieclust.internal.mst_from_distance(
             np.ascontiguousarray(X[_o, :]),
             metric="euclidean",
@@ -87,11 +87,17 @@ def _robust_single_linkage_clustering(
     for i in range(n-1):
         mst_a[mst_e[i, 0]].append(i)
         mst_a[mst_e[i, 1]].append(i)
+    n_leaves = 0
     for i in range(n):
         mst_a[i] = np.array(mst_a[i])
+        if len(mst_a[i]) == 1:
+            n_leaves += 1
     mst_a = np.array(mst_a, dtype="object")
 
-
+    if skip_leaves:
+        min_cluster_size = max(min_cluster_size, min_cluster_factor*(n-n_leaves)/n_clusters)
+    else:
+        min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
 
     def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
         if mst_labels[e] == SKIP or (c != NOISE and mst_labels[e] == NOISE):
@@ -132,22 +138,33 @@ def _robust_single_linkage_clustering(
 
         return c, counts, min_mst_s
 
-
+    c = len(mst_skiplist)
     while True:
+        last_iteration = (len(mst_skiplist)+1 >= n_clusters)
+
         mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when we .... TODO
         labels = np.repeat(UNSET, n)
         mst_labels = np.repeat(UNSET, n-1)
         for s in mst_skiplist:
             mst_labels[s] = SKIP  # mst_skiplist
-        c, counts, min_mst_s = mark_clusters()
 
-        last_iteration = (c >= n_clusters)
+        if skip_leaves and not last_iteration:
+            for i in range(n):
+                if len(mst_a[i]) == 1:  # a leaf
+                    labels[i] = NOISE
+                    mst_labels[mst_a[i][0]] = NOISE
+
+        c, counts, min_mst_s = mark_clusters()
+        assert c == len(mst_skiplist)+1
 
 
         # the longest node that yields not too small a cluster
         is_limb = (mst_labels > 0)
         is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
         # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel   # NOTE: no benefit
+
+        #_ee = min_mst_s[(mst_labels > 0)]/min_cluster_size
+        #print(np.round(_ee[_ee>0.49], 2))
 
         which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
         cutting_e = which_limbs[0]
@@ -174,12 +191,14 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         min_cluster_size=10,
         min_cluster_factor=0.2,
         M=1,
+        skip_leaves=False,
         verbose=False
     ):
         self.n_clusters              = n_clusters
         self.min_cluster_size        = min_cluster_size
         self.min_cluster_factor      = min_cluster_factor
         self.M                       = M
+        self.skip_leaves             = skip_leaves
         self.verbose                 = verbose
 
 
@@ -220,6 +239,7 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
             min_cluster_size=self.min_cluster_size,
             min_cluster_factor=self.min_cluster_factor,
             M=self.M,
+            skip_leaves=self.skip_leaves,
             verbose=self.verbose,
             mst_skiplist=mst_skiplist
         )

@@ -25,11 +25,11 @@ data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 plt.clf()
-X, y_true, n_clusters, skiplist, example = mst_examples.get_example(10, data_path)
+X, y_true, n_clusters, skiplist, example = mst_examples.get_example(3, data_path)
 
 n_clusters = max(y_true)
 
-L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.1)
+L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=1, min_cluster_factor=0.25, skip_leaves=False, min_cluster_size=10)
 #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True, M=5)
 # L = lumbermark2.Lumbermark2(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
 
@@ -59,8 +59,18 @@ mst_internodes = L.__dict__.get("_mst_internodes", [])
 
 y_pred[mst_e[(mst_s[:,0] <= 1) & (mst_labels > 0), 1]] = 0
 y_pred[mst_e[(mst_s[:,1] <= 1) & (mst_labels > 0), 0]] = 0
-mst_labels[(min_mst_s <= 1) & (mst_labels > 0)] = 0
+mst_labels[   (min_mst_s <= 1) & (mst_labels > 0)] = 0
 
+
+# nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, k=M-1, metric="euclidean")
+# nn_tick = np.zeros(n, dtype=int)
+# for v in nn_ind.ravel():
+#     nn_tick[v] += 1
+# plt.clf()
+# plt.axis("equal")
+# genieclust.plots.plot_scatter(X[:,:2], labels=nn_tick>3)
+# genieclust.plots.plot_segments(mst_e, X)
+# #genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1)
 
 #
 plt.clf()
@@ -123,46 +133,9 @@ for i in range(1, n_clusters+1):
 #
 # treelhouette
 plt.subplot(3, 2, 5)
-def get_intercluster_distances():
-    mst_a = [ [] for i in range(n) ]
-    for i in range(n-1):
-        mst_a[mst_e[i, 0]].append(i)
-        mst_a[mst_e[i, 1]].append(i)
-    for i in range(n):
-        mst_a[i] = np.array(mst_a[i])
-    mst_a = np.array(mst_a, dtype="object")
 
-    def visit(v, e):  # from v along e
-        iv = int(mst_e[e, 1] == v)
-        w = mst_e[e, 1-iv]
-
-        if y_pred[w] > 0:
-            # reached a coloured vertex - stop
-            return [(y_pred[w], 0.0)]
-        if len(mst_a[w]) == 1:
-            # reached a leaf - stop
-            return []
-
-        res = []
-        for e2 in mst_a[w]:
-            if mst_e[e2, 0] != v and mst_e[e2, 1] != v:
-                res += [(l, w+mst_w[e2]) for (l, w) in visit(w, e2)]
-
-        return res
-
-    D = np.ones((n_clusters, n_clusters))*np.inf
-    for e in skiplist:
-        res = []
-        v, w = mst_e[e, :]
-        res_v = visit(v, e)
-        res_w = visit(w, e)
-        for (lv, dv) in res_v:
-            for (lw, dw) in res_w:
-                D[lv-1, lw-1] = np.minimum(D[lv-1, lw-1], dv+dw+mst_w[e])
-                D[lw-1, lv-1] = D[lv-1, lw-1]
-    return D
 #
-cluster_distances = get_intercluster_distances()
+cluster_distances = treelhouette.get_intercluster_distances(L)
 # print(np.round(cluster_distances, 2))
 # leave the diagonal to inf
 min_intercluster_distances = np.min(cluster_distances, axis=0)

@@ -6,7 +6,7 @@ import clustbench
 import os.path
 import scipy.spatial
 import lumbermark
-
+from numba import jit
 
 
 examples = [
@@ -143,6 +143,22 @@ def plot_mst_2d(L, mst_draw_edge_labels=False, alpha=0.2):
 
 
 
+@jit
+def first_nonzero(x, missing=None):
+    for i in range(len(x)):
+        if x[i]:
+            return x[i]
+    return missing
+
+@jit
+def arg_first_nonzero(x, missing=None):
+    for i in range(len(x)):
+        if x[i]:
+            return i
+    return missing
+
+
+
 def split(x, f):
     f = np.array(f)
     x = np.array(x)
@@ -158,3 +174,49 @@ def aggregate(x, f, a):
     _x, _f = split(x, f)
     return np.array([a(gx) for gx in _x]), _f
 
+
+def reindex(idx, mask, filler=-1):
+    """
+    Often, we operate on subsets of datasets. When calling functions
+    returning index vectors (permutations), their outputs need to be
+    adjusted as such indexes are relative to a chosen subset:
+
+    ```
+    idx = function_returning_an_index_vector(X[mask])
+    idx_corr = reindex(idx, mask)
+    ```
+
+    and now `X[idx_corr[idx_corr>=0]]` is equivalent to `X[mask][idx]`.
+
+    Given a permutation `idx` of the set {0, ..., k-1} and
+    a Boolean mask vector with k positive values,
+    returns a vector `out` such that
+    `out[~mask] = -1` and `out[mask] = idx` with elements shifted
+    accordingly, taking into account the number of preceding elements
+    that were masked out.
+
+    Examples:
+
+    ```
+    np.random.seed(123)
+    x = np.round(np.random.rand(10), 2)  # example vector
+    ## array([0.7 , 0.29, 0.23, 0.55, 0.72, 0.42, 0.98, 0.68, 0.48, 0.39])
+    mask = (np.random.rand(len(x)) >= 0.5)  # example mask
+    ## array([False,  True, False, False, False,  True, False, False,  True, True])
+    idx = np.argsort(x[mask])  # example index vector
+    ## array([0, 3, 1, 2])
+    idx_corr = reindex(idx, mask)
+    ## array([-1,  1, -1, -1, -1,  9, -1, -1,  5,  8])
+    x[idx_corr[idx_corr>=0]]
+    ## array([0.29, 0.39, 0.42, 0.48])
+    np.r_[x, np.nan][idx_corr]
+    ## array([ nan, 0.29,  nan,  nan,  nan, 0.39,  nan,  nan, 0.42, 0.48])
+    ```
+    """
+    k = np.sum(mask)
+    assert len(idx) == k
+    if k == len(mask): return idx
+    out = np.repeat(filler, len(mask))
+    out[mask] = np.cumsum(~mask)[mask][idx]+idx
+    assert np.all(idx == np.argsort(np.argsort(out[out>=0])))
+    return out

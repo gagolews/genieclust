@@ -13,6 +13,8 @@ import robust_single_linkage
 robust_single_linkage = reload(robust_single_linkage)
 import mst_examples
 mst_examples = reload(mst_examples)
+import treelhouette
+treelhouette = reload(treelhouette)
 sys.setrecursionlimit(100000)
 
 from generalized_normalized_clustering_accuracy import generalized_normalized_clustering_accuracy as GNCA
@@ -31,15 +33,17 @@ for ex in range(12):
 
     n_clusters = max(y_true)
 
-    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=7, min_cluster_factor=0.1)
+    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=1, min_cluster_factor=0.25, skip_leaves=False, min_cluster_size=10)
     #L = lumbermark.Lumbermark(n_clusters=n_clusters, verbose=False, n_neighbors=0, M=5, min_cluster_factor=0.125, outlier_factor=1.5, noise_cluster=False)
 
     y_pred = L.fit_predict(X, mst_skiplist=skiplist)  # TODO: 0-based -> 1-based!!!
 
 
     mst_examples.plot_mst_2d(L)
-    npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
+    # npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
     nca = GNCA(y_true[y_true>0], y_pred[y_true>0])
 
-    plt.title("%s NPA=%.2f NCA=%.2f" % (example, npa, nca))
+    s1, s2 = treelhouette.treelhouette_score(L)
+    plt.title("%s NCA=%.2f T=%.2f T'=%.2f" % (example, nca, s1, s2))
+
 plt.tight_layout()

@@ -58,12 +58,12 @@ protected:
 
 
     Py_ssize_t* mst_i;   /*!< n-1 edges of the MST,
-                       * given by c_contiguous (n-1)*2 indices;
-                       * (-1, -1) denotes a no-edge and will be ignored
-                       */
-    T* mst_d;         //<! n-1 edge weights
+                          * given by c_contiguous (n-1)*2 indices;
+                          * (-1, -1) denotes a no-edge and will be ignored
+                          */
+    T* mst_d;            //<! n-1 edge weights
     Py_ssize_t n;        //<! number of points
-    bool noise_leaves;//<! mark leaves as noise points?
+    bool noise_leaves;   //<! mark leaves as noise points?
 
     std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
 

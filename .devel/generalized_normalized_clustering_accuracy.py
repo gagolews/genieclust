@@ -92,14 +92,14 @@ def generalized_normalized_clustering_accuracy(y_true, y_pred):
     return (np.sum(Cp*R)/k_true-1.0/k_true)/(1.0-1.0/k_true)
 
 
-y_true = [1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1]
-y_pred = [1, 1, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2, 3, 3, 4]
-print(genieclust.compare_partitions.confusion_matrix(y_true, y_pred, force_double=True))
-
-print(genieclust.compare_partitions.normalized_pivoted_accuracy(y_true, y_pred))
-print(genieclust.compare_partitions.normalized_clustering_accuracy(y_true, y_pred))
-print(genieclust.compare_partitions.adjusted_rand_score(y_true, y_pred))
-print(genieclust.compare_partitions.normalized_mi_score(y_true, y_pred))
-
-print(generalized_normalized_pivoted_accuracy(y_true, y_pred))
-print(generalized_normalized_clustering_accuracy(y_true, y_pred))
+# y_true = [1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 1, 2, 1, 1, 1]
+# y_pred = [1, 1, 2, 2, 2, 1, 1, 2, 1, 1, 1, 2, 3, 3, 4]
+# print(genieclust.compare_partitions.confusion_matrix(y_true, y_pred, force_double=True))
+#
+# print(genieclust.compare_partitions.normalized_pivoted_accuracy(y_true, y_pred))
+# print(genieclust.compare_partitions.normalized_clustering_accuracy(y_true, y_pred))
+# print(genieclust.compare_partitions.adjusted_rand_score(y_true, y_pred))
+# print(genieclust.compare_partitions.normalized_mi_score(y_true, y_pred))
+#
+# print(generalized_normalized_pivoted_accuracy(y_true, y_pred))
+# print(generalized_normalized_clustering_accuracy(y_true, y_pred))
