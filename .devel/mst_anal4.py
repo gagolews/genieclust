@@ -22,10 +22,12 @@ data_path = os.path.join("~", "Projects", "clustering-data-v1")
 # noise point detection
 
 
-def clusterise_without_noise_points(L, n_neighbors, n_neighbors_threshold=None):
+def clusterise_without_noise_points(L, M, noise_threshold=None):
 
-    if n_neighbors_threshold is None:
-        n_neighbors_threshold = n_neighbors-1
+    n_neighbors = M-1
+
+    if noise_threshold is None:
+        noise_threshold = n_neighbors-1
 
     n = X.shape[0]
 
@@ -36,17 +38,33 @@ def clusterise_without_noise_points(L, n_neighbors, n_neighbors_threshold=None):
     nn_a = np.array(nn_a)[:, 1:]
 
     how_many = np.bincount(nn_a.ravel(), minlength=n)
-    is_noise = (how_many<=n_neighbors_threshold)
-    y_pred_unadj = L.fit_predict(X[~is_noise, :].copy())
+    is_noise = (how_many<=noise_threshold)
+    X2 = X[~is_noise, :].copy()
+    y_pred_unadj = L.fit_predict(X2)
 
     y_pred = np.zeros(n, dtype=y_pred_unadj.dtype)
     y_pred[~is_noise] = y_pred_unadj
 
+    # q = np.flatnonzero(y_pred <= 0)
+    # j = 0
+    # while len(q) > 0 and j < n_neighbors:
+    #     q_prev = q
+    #     q = []
+    #     for i in q_prev:
+    #         if y_pred[nn_a[i, j]] > 0:
+    #             y_pred[i] = y_pred[nn_a[i, j]]
+    #         else:
+    #             q.append(i)
+    #     j += 1
+    #
+    # assert np.all(y_pred > 0)  # not necessarily true...
 
-    for i in range(n):
-        if y_pred[i] <= 0:
-            y_pred[i] = mst_examples.first_nonzero(y_pred[nn_a[i,:]], 0)
-    if not np.all(y_pred > 0): print("!!!!!!!!!")
+
+    q = np.flatnonzero(y_pred <= 0)
+    if len(q) > 0:
+        kd2 = scipy.spatial.KDTree(X2)
+        nn_w2, nn_a2 = kd2.query(X[q, :], 1)  # find closest points
+        y_pred[q] = y_pred[~is_noise][nn_a2]
 
     return y_pred, is_noise
 
@@ -56,9 +74,9 @@ def clusterise_without_noise_points(L, n_neighbors, n_neighbors_threshold=None):
 
 plt.clf()
 _i = 0
-for ex in range(12):
+for ex in range(16):
     _i += 1
-    plt.subplot(3, 4, _i)
+    plt.subplot(4, 4, _i)
     X, y_true, n_clusters, skiplist, example = mst_examples.get_example(ex, data_path)
 
     n_clusters = max(y_true)
@@ -66,7 +84,7 @@ for ex in range(12):
     L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=1, min_cluster_factor=0.1, skip_leaves=False, min_cluster_size=5)
 
 
-    y_pred, is_noise = clusterise_without_noise_points(L, 5, 4)
+    y_pred, is_noise = clusterise_without_noise_points(L, 25)
 
     genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
     genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)

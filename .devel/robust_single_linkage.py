@@ -160,8 +160,12 @@ def _robust_single_linkage_clustering(
 
         # the longest node that yields not too small a cluster
         is_limb = (mst_labels > 0)
+
         is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
-        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= cluster_size_factor_rel   # NOTE: no benefit
+
+        # alternatively - worse
+        # is_limb &= (min_mst_s >= 10)
+        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= 0.25
 
         #_ee = min_mst_s[(mst_labels > 0)]/min_cluster_size
         #print(np.round(_ee[_ee>0.49], 2))

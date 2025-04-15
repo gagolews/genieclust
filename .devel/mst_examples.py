@@ -20,21 +20,22 @@ examples = [
     ["sipu", "spiral", [], 3],
     ["wut", "cross", [], 4],  #  Genie fails :/ !!!
     ["graves", "fuzzyx", [], 4], #  Genie fails
+    ["sipu", "jain", [], 2],
+    ["wut", "isolation", [], 3],
+    ["wut", "labirynth", [], 6],
+
     ["wut", "z2", [], 5],
     ["graves", "parabolic", [], 2],
-
     ["other", "hdbscan", [], 6],
     ["wut", "graph", [], 12],  # Genie fails
+    ["wut", "x2", [], 4],
     ["wut", "mk4", [], 3],
     ["graves", "zigzag_outliers", [], 3],
     ["new", "blobs4b", [], 4],
     ["wut", "mk3", [], 3],
     ["fcps", "engytime", [], 2],
     ["new", "blobs3a", [], 3],
-    ["wut", "x2", [], 4],
     ["fcps", "target", [], 2],
-    ["sipu", "jain", [], 2],
-    ["wut", "isolation", [], 3],
     ["wut", "x3", [], 3],
     ["sipu", "flame", [], 2],
     ["graves", "dense", [], 2],
@@ -45,7 +46,6 @@ examples = [
     ["other", "chameleon_t7_10k", [], 9],
     ["other", "chameleon_t5_8k", [], 6],
     ["other", "chameleon_t4_8k", [], 6],
-    ["wut", "labirynth", [], 6],
     ["wut", "z3", [], 4],
     ["other", "hdbscan", [], 6],
     ["sipu", "s1", [], 15],
