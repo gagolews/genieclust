@@ -1,6 +1,7 @@
 """
 A Robust Single Linkage Clustering Algorithm
-(Divisive; aka Robust Single Divide)
+(Divisive; aka Robust Single Divide);
+Honours n_clusters
 """
 
 # ############################################################################ #

@@ -1,3 +1,25 @@
+"""
+...
+"""
+
+# ############################################################################ #
+#                                                                              #
+#   Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>      #
+#                                                                              #
+#                                                                              #
+#   This program is free software: you can redistribute it and/or modify       #
+#   it under the terms of the GNU Affero General Public License                #
+#   Version 3, 19 November 2007, published by the Free Software Foundation.    #
+#   This program is distributed in the hope that it will be useful,            #
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of             #
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the               #
+#   GNU Affero General Public License Version 3 for more details.              #
+#   You should have received a copy of the License along with this program.    #
+#   If this is not the case, refer to <https://www.gnu.org/licenses/>.         #
+#                                                                              #
+# ############################################################################ #
+
+
 import genieclust
 import numpy as np
 import pandas as pd
@@ -10,17 +32,17 @@ from numba import jit
 
 
 examples = [
+    ["sipu", "pathbased", [], 3],  # :/
+    ["sipu", "jain", [], 2],
     ["sipu", "aggregation", [], 7], # !!!  Genie fails
     ["sipu", "compound", [], 5],  # Genie fails
     ["wut", "windows", [], 5],  # !!!  Genie fails
-    ["sipu", "pathbased", [], 3],  # :/
     ["sipu", "unbalance", [], 8], # ! !!  Genie fails
     ["new", "blobs4a", [], 4],
     ["wut", "mk2", [], 2],  # :/ !!!
     ["sipu", "spiral", [], 3],
     ["wut", "cross", [], 4],  #  Genie fails :/ !!!
     ["graves", "fuzzyx", [], 4], #  Genie fails
-    ["sipu", "jain", [], 2],
     ["wut", "isolation", [], 3],
     ["wut", "labirynth", [], 6],
 
@@ -29,27 +51,28 @@ examples = [
     ["other", "hdbscan", [], 6],
     ["wut", "graph", [], 12],  # Genie fails
     ["wut", "x2", [], 4],
-    ["wut", "mk4", [], 3],
     ["graves", "zigzag_outliers", [], 3],
-    ["new", "blobs4b", [], 4],
-    ["wut", "mk3", [], 3],
+    ["sipu", "flame", [], 2],
     ["fcps", "engytime", [], 2],
+    ["other", "chameleon_t8_8k", [], 8],
+    ["other", "chameleon_t7_10k", [], 9],
+    ["other", "chameleon_t4_8k", [], 6],
+    ["other", "chameleon_t5_8k", [], 6],
+    ["wut", "twosplashes", [], 2],
+    ["fcps", "twodiamonds", [], 2],
+    ["sipu", "s1", [], 15],
+    ["fcps", "wingnut", [], 2],
+    ["wut", "olympic", [], 3],
+    ["wut", "mk3", [], 3],
+
+    ["graves", "dense", [], 2],
+    ["wut", "mk4", [], 3],
+    ["new", "blobs4b", [], 4],
     ["new", "blobs3a", [], 3],
     ["fcps", "target", [], 2],
     ["wut", "x3", [], 3],
-    ["sipu", "flame", [], 2],
-    ["graves", "dense", [], 2],
-    ["wut", "circles", [], 1],
-    ["wut", "twosplashes", [], 2],
-    ["fcps", "twodiamonds", [], 2],
-    ["other", "chameleon_t8_8k", [], 8],
-    ["other", "chameleon_t7_10k", [], 9],
-    ["other", "chameleon_t5_8k", [], 6],
-    ["other", "chameleon_t4_8k", [], 6],
     ["wut", "z3", [], 4],
     ["other", "hdbscan", [], 6],
-    ["sipu", "s1", [], 15],
-    ["fcps", "wingnut", [], 2],
 ]
 
 
