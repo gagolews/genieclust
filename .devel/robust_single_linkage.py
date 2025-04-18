@@ -235,15 +235,24 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         self.X = np.ascontiguousarray(X)
         self.n_samples_ = self.X.shape[0]
 
+        self.M_ = self.M
+        if self.M_ is None:
+            self.M_ = max(5, int(np.sqrt(self.n_samples_/self.n_clusters*self.min_cluster_factor))) + 1
+
         (
-            self.labels_, self._mst_w, self._mst_e, self._mst_labels,
-            self._mst_s, self._mst_skiplist, self._mst_cutting
+            self.labels_,
+            self._tree_w,
+            self._tree_e,
+            self._tree_labels,
+            self._tree_s,
+            self._tree_skiplist,
+            self._tree_cutting,
         ) = _robust_single_linkage_clustering(
             self.X,
             n_clusters=self.n_clusters,
             min_cluster_size=self.min_cluster_size,
             min_cluster_factor=self.min_cluster_factor,
-            M=self.M,
+            M=self.M_,
             skip_leaves=self.skip_leaves,
             verbose=self.verbose,
             mst_skiplist=mst_skiplist

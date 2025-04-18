@@ -1,5 +1,9 @@
 """
-The Lumbermark Clustering Algorithm
+A stupid clustering algorithm v2. Do not use it. Don't trip.
+(Despite many attempts to come up with some useful heuristics, the simple
+robust single linkage-like method is similarly fine)
+
+March 2025
 """
 
 # ############################################################################ #
@@ -35,7 +39,7 @@ NOISE = 0  # must be 0
 
 
 
-def _lumbermark2(
+def _lumberdupa2(
     X,
     n_clusters,
     noise_cluster=False,
@@ -224,7 +228,7 @@ def _lumbermark2(
 
 
 
-class Lumbermark2(BaseEstimator, ClusterMixin):
+class Lumberdupa2(BaseEstimator, ClusterMixin):
 
     def __init__(
         self,
@@ -292,7 +296,7 @@ class Lumbermark2(BaseEstimator, ClusterMixin):
             self.labels_, self._mst_w, self._mst_e, self._mst_labels,
             self._mst_s, self._mst_skiplist,
             self._mst_cutting, self._which_leaves, self._which_outliers
-        ) = _lumbermark2(
+        ) = _lumberdupa2(
             self.X,
             n_clusters=self.n_clusters,
             noise_cluster=self.noise_cluster,
