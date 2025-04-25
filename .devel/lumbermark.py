@@ -236,11 +236,11 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         )
 
         self.n_neighbors_ = self.n_neighbors
-        if self.n_neighbors_ is None:
+        if self.n_neighbors_ is None: # TODO: default
             self.n_neighbors_ = max(5, int(np.sqrt(self.n_samples_/self.n_clusters*self.min_cluster_factor)))
 
         self.noise_threshold_ = self.noise_threshold
-        if self.noise_threshold_ is None:
+        if self.noise_threshold_ is None: # TODO: default
             self.noise_threshold_ = self.n_neighbors_ - 1
         elif self.noise_threshold_ in [str(i) for i in range(-self.n_neighbors_, self.n_neighbors_+1)]:
             self.noise_threshold_ = self.n_neighbors_ - int(self.noise_threshold_)
@@ -248,6 +248,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             self.noise_threshold_ = np.floor(self.n_neighbors_ / 2)
         elif self.noise_threshold_ == "uhalf":
             self.noise_threshold_ = np.ceil(self.n_neighbors_ / 2)
+        elif type(self.noise_threshold_) is int:
+            pass
         else:
             raise Exception("incorrect `noise_threshold`")
 

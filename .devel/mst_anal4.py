@@ -60,13 +60,12 @@ for ex in range(n_examples):
 
     n_clusters = max(y_true)
 
-    #L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=1, min_cluster_factor=0.1, skip_leaves=True, min_cluster_size=5)
-    L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=15, noise_threshold="half")
-
+    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.25, skip_leaves=True, min_cluster_size=10)
+    #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.125, skip_leaves=True, noise_threshold="uhalf")
     y_pred = L.fit_predict(X)
 
 
-    is_noise = L._is_noise
+    is_noise = np.repeat(False, X.shape[0])#L._is_noise
     tree_e = L._tree_e
     tree_w = L._tree_w
     tree_skiplist = L._tree_skiplist
