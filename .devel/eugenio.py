@@ -1,7 +1,5 @@
 """
-A Robust Single Linkage Clustering Algorithm
-(Divisive; aka Robust Single Divide);
-Honours n_clusters
+Eugenio – A remix of the Genie clustering algorithm
 """
 
 # ############################################################################ #
@@ -36,25 +34,18 @@ NOISE = 0  # must be 0
 # TODO: 0-based -> 1-based!!!
 
 
-
-def _robust_single_linkage_clustering(
+def _eugenio(
     X,
     n_clusters,
+    gini_threshold=0.3,
     min_cluster_size=10,
-    min_cluster_factor=0.2,
-    mst_skiplist=None,      # default = empty
     M=1,
-    skip_leaves=False,
     verbose=False
 ):
     assert n_clusters > 0
     assert min_cluster_size >= 0
-    assert min_cluster_factor >= 0
 
     n = X.shape[0]
-
-    if mst_skiplist is None:
-        mst_skiplist = []
 
     if M <= 1:
         mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
@@ -95,10 +86,9 @@ def _robust_single_linkage_clustering(
             n_leaves += 1
     mst_a = np.array(mst_a, dtype="object")
 
-    if skip_leaves:
-        min_cluster_size = max(min_cluster_size, min_cluster_factor*(n-n_leaves)/n_clusters)
-    else:
-        min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
+    # NOTE/TODO ???
+    #min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
+
 
     def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
         if mst_labels[e] == SKIP or (c != NOISE and mst_labels[e] == NOISE):
@@ -139,75 +129,92 @@ def _robust_single_linkage_clustering(
 
         return c, counts, min_mst_s
 
-    c = len(mst_skiplist)
-    while True:
-        last_iteration = (len(mst_skiplist)+1 >= n_clusters)
 
-        mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when we .... TODO
-        labels = np.repeat(UNSET, n)
-        mst_labels = np.repeat(UNSET, n-1)
-        for s in mst_skiplist:
-            mst_labels[s] = SKIP  # mst_skiplist
+    mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when we .... TODO
+    labels = np.repeat(UNSET, n)
+    mst_labels = np.repeat(UNSET, n-1)
 
-        if skip_leaves and not last_iteration:
-            for i in range(n):
-                if len(mst_a[i]) == 1:  # a leaf
-                    labels[i] = NOISE
-                    mst_labels[mst_a[i][0]] = NOISE
-
-        c, counts, min_mst_s = mark_clusters()
-        assert c == len(mst_skiplist)+1
+    c, counts, min_mst_s = mark_clusters()
+    assert c == 1
 
 
-        # the longest node that yields not too small a cluster
-        is_limb = (mst_labels > 0)
+    ds = genieclust.internal.GiniDisjointSets(n)
 
-        is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
+    if False:
+        peripheral_edges = (min_mst_s < min_cluster_size)
+        for i in np.flatnonzero(peripheral_edges):
+            ds.union(mst_e[i, 0], mst_e[i, 1])
 
-        # alternatively - worse
-        # is_limb &= (min_mst_s >= 10)
-        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= 0.25
+        left_edges = np.flatnonzero(~peripheral_edges)
+        while ds.get_k() > n_clusters:
+            if ds.get_gini() < gini_threshold:
+                # edges are sorted decreasingly wrt their weights
+                i = left_edges[0]
+                left_edges = left_edges[1:]  # cheap
+                ds.union(mst_e[i, 0], mst_e[i, 1])
+            else:
+                s = ds.get_smallest_count()
+                i = 0
+                while min(ds.get_count(mst_e[left_edges[i], 0]), ds.get_count(mst_e[left_edges[i], 1])) > s:
+                    i += 1
+                ds.union(mst_e[left_edges[i], 0], mst_e[left_edges[i], 1])
+                left_edges = np.r_[left_edges[:i], left_edges[(i+1):]]  # costly
+    else:
+        peripheral_edges = (min_mst_s < min_cluster_size)
+        peripheral_nodes = mst_e[mst_s < min_cluster_size]
 
-        #_ee = min_mst_s[(mst_labels > 0)]/min_cluster_size
-        #print(np.round(_ee[_ee>0.49], 2))
+        left_edges = np.flatnonzero(~peripheral_edges)
+        while len(left_edges)+1 > n_clusters:
+            if ds.get_gini() < gini_threshold:
+                # edges are sorted decreasingly wrt their weights
+                i = left_edges[0]
+                left_edges = left_edges[1:]  # cheap
+                ds.union(mst_e[i, 0], mst_e[i, 1])
+            else:
+                s = np.inf
+                i = -1
+                j = 0
+                while j < len(left_edges):
+                    t = min(ds.get_count(mst_e[left_edges[j], 0]), ds.get_count(mst_e[left_edges[j], 1]))
+                    if t < s:
+                        i = j
+                        s = t
+                    j += 1
+                ds.union(mst_e[left_edges[i], 0], mst_e[left_edges[i], 1])
+                left_edges = np.r_[left_edges[:i], left_edges[(i+1):]]  # costly
 
-        which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
-        cutting_e = which_limbs[0]
-        cutting_w = mst_w[cutting_e]
+        for i in np.flatnonzero(peripheral_edges):
+            ds.union(mst_e[i, 0], mst_e[i, 1])
 
+    labels = ds.to_list_normalized() + 1  # 0 = noise cluster
+    mst_labels = None
 
-        if last_iteration:
-            assert c == n_clusters
-            return (
-                labels, mst_w, mst_e, mst_labels, mst_s,
-                mst_skiplist, cutting_e
-            )
-        else:
-            mst_skiplist.append(cutting_e)
+    return (
+        labels, mst_w, mst_e, mst_labels, mst_s,
+        left_edges, np.inf
+    )
 
 
 
-class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
+class Eugenio(BaseEstimator, ClusterMixin):
 
     def __init__(
         self,
         *,
         n_clusters,
+        gini_threshold=0.3,
         min_cluster_size=10,
-        min_cluster_factor=0.2,
         M=1,
-        skip_leaves=False,
         verbose=False
     ):
         self.n_clusters              = n_clusters
+        self.gini_threshold          = gini_threshold
         self.min_cluster_size        = min_cluster_size
-        self.min_cluster_factor      = min_cluster_factor
         self.M                       = M
-        self.skip_leaves             = skip_leaves
         self.verbose                 = verbose
 
 
-    def fit(self, X, y=None, mst_skiplist=None):
+    def fit(self, X, y=None):
         """
         Perform cluster analysis of a dataset.
 
@@ -222,8 +229,6 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         y : None
             Ignored.
 
-        mst_skiplist : None
-
 
         Returns
         -------
@@ -235,10 +240,6 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         self.X = np.ascontiguousarray(X)
         self.n_samples_ = self.X.shape[0]
 
-        self.M_ = self.M
-        if self.M_ is None:
-            self.M_ = max(5, int(np.sqrt(self.n_samples_/self.n_clusters*self.min_cluster_factor))) + 1
-
         (
             self.labels_,
             self._tree_w,
@@ -247,22 +248,20 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
             self._tree_s,
             self._tree_skiplist,
             self._tree_cutting,
-        ) = _robust_single_linkage_clustering(
+        ) = _eugenio(
             self.X,
             n_clusters=self.n_clusters,
+            gini_threshold=self.gini_threshold,
             min_cluster_size=self.min_cluster_size,
-            min_cluster_factor=self.min_cluster_factor,
-            M=self.M_,
-            skip_leaves=self.skip_leaves,
-            verbose=self.verbose,
-            mst_skiplist=mst_skiplist
+            M=self.M,
+            verbose=self.verbose
         )
 
         return self
 
 
 
-    def fit_predict(self, X, y=None, mst_skiplist=None):
+    def fit_predict(self, X, y=None):
         """
         Perform cluster analysis of a dataset and return the predicted labels.
 
@@ -275,8 +274,6 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
 
         y : None
             See `genieclust.Genie.fit`.
-
-        mst_skiplist : None
 
 
         Returns
@@ -292,5 +289,5 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
         genieclust.Genie.fit
 
         """
-        self.fit(X, y, mst_skiplist)
+        self.fit(X, y)
         return self.labels_

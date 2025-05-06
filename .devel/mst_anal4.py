@@ -1,5 +1,6 @@
 """
 2025-04-17: Test Lumbermark - Robust SL with noise point detection
+2025-05-06: Test Eugenio   - Robust SL with noise point detection
 """
 
 # ############################################################################ #
@@ -38,6 +39,9 @@ lumbermark = reload(lumbermark)
 import robust_single_linkage
 robust_single_linkage = reload(robust_single_linkage)
 
+import eugenio
+eugenio = reload(eugenio)
+
 import mst_examples
 mst_examples = reload(mst_examples)
 
@@ -60,8 +64,10 @@ for ex in range(n_examples):
 
     n_clusters = max(y_true)
 
-    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.25, skip_leaves=True, min_cluster_size=10)
+    #L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.25, skip_leaves=True, min_cluster_size=10)
     #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.125, skip_leaves=True, noise_threshold="uhalf")
+    #L = lumbermark.Lumbermark(n_clusters=n_clusters)
+    L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=2, M=6)
     y_pred = L.fit_predict(X)
 
 
