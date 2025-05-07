@@ -1,7 +1,6 @@
 """
-A Robust Single Linkage Clustering Algorithm
-(Divisive; aka Robust Single Divide);
-Honours n_clusters
+Lumbermark: A Robust Divisive Clustering Algorithm based on Spanning Trees
+Detects a specific number of clusters as well as classifies points as noise/outliers.
 """
 
 # ############################################################################ #
@@ -33,11 +32,8 @@ UNSET = -1 # must be negative
 NOISE = 0  # must be 0
 
 
-# TODO: 0-based -> 1-based!!!
 
-
-
-def _robust_single_linkage_clustering(
+def _lumbermark(
     X,
     n_clusters,
     min_cluster_size=10,
@@ -66,7 +62,8 @@ def _robust_single_linkage_clustering(
             X, k=M-1, metric="euclidean", verbose=verbose
         )
 
-        d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M)
+        # d_core = nn_dist.mean(axis=1).astype(X.dtype, order="C") NOTE: not better ;)
+        d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M) # i.e., d_core = nn_dist[:, M-2].astype(X.dtype, order="C")
 
         _o = np.argsort(d_core)[::-1]  # order wrt decreasing "core" size
         mst_w, mst_e = genieclust.internal.mst_from_distance(
@@ -188,16 +185,16 @@ def _robust_single_linkage_clustering(
 
 
 
-class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
+class Lumbermark(BaseEstimator, ClusterMixin):
 
     def __init__(
         self,
         *,
         n_clusters,
         min_cluster_size=10,
-        min_cluster_factor=0.2,
+        min_cluster_factor=0.25,
         M=1,
-        skip_leaves=False,
+        skip_leaves=True,  # better
         verbose=False
     ):
         self.n_clusters              = n_clusters
@@ -248,7 +245,7 @@ class RobustSingleLinkageClustering(BaseEstimator, ClusterMixin):
             self._tree_s,
             self._tree_skiplist,
             self._tree_cutting,
-        ) = _robust_single_linkage_clustering(
+        ) = _lumbermark(
             self.X,
             n_clusters=self.n_clusters,
             min_cluster_size=self.min_cluster_size,

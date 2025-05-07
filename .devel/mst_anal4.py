@@ -20,11 +20,10 @@
 # ############################################################################ #
 
 
-import genieclust
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import clustbench
+
 import os.path
 import scipy.spatial
 import sys
@@ -32,17 +31,21 @@ import scipy.spatial.distance
 
 from importlib import reload
 
+import genieclust
+genieclust = reload(genieclust)
+import clustbench
 
-import robust_single_linkage
-robust_single_linkage = reload(robust_single_linkage)
+import lumbermark
+lumbermark = reload(lumbermark)
 
 import mst_examples
 mst_examples = reload(mst_examples)
 
 sys.setrecursionlimit(100000)
 
-
-
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+import hdbscan
 
 
 
@@ -61,24 +64,84 @@ for ex in range(n_examples):
 
     n_clusters = max(y_true)
 
-    L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=6, min_cluster_factor=0.25, skip_leaves=True, min_cluster_size=10)
-    #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
-    #L = lumbermark.Lumbermark(n_clusters=n_clusters)
-    # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
-    y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
+    algo = 0
+    if algo == 0:
+        L = lumbermark.Lumbermark(n_clusters=n_clusters, M=7, min_cluster_factor=0.25, skip_leaves=False, min_cluster_size=10)
+        #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
+        #L = lumbermark.Lumbermark(n_clusters=n_clusters)
+        # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
+        y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
 
 
-    is_noise = np.repeat(False, X.shape[0])#L._is_noise
-    tree_e = L._tree_e
-    tree_w = L._tree_w
-    tree_skiplist = L._tree_skiplist
+        is_noise = np.repeat(False, X.shape[0])#L._is_noise
+        tree_e = L._tree_e
+        tree_w = L._tree_w
+        tree_skiplist = L._tree_skiplist
+    else:
+        # Can't force hdbscan to always output a given number of clusters
+        if algo == 1:
+            s1, s2 = 2, int(X.shape[0])
+
+            while 1 < s1 <= s2:
+                s = int((s1+s2)/2)
+                h = hdbscan.HDBSCAN(min_cluster_size=s, min_samples=7)  # min_samples = mutreach dist param
+
+                y_pred = h.fit_predict(X) + 1
+                k = max(y_pred)
+
+                print(s, k, n_clusters)
+
+                if k == n_clusters: break
+                elif k < n_clusters: s2 = s-1
+                else: s1 = s+1
+        else:
+            s1, s2 = 0, 100
+
+            maxit = 10
+            while maxit > 0:
+                maxit -= 1
+                s = (s1+s2)/2
+                y_pred, _ = hdbscan.robust_single_linkage(X, s, k=5)
 
 
-    genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
+                y_pred = y_pred + 1
+                k = max(y_pred)
+
+                print(s, k, n_clusters)
+
+                if k == n_clusters: break
+                elif k < n_clusters: s2 = s
+                else: s1 = s
+
+        if k != n_clusters:
+            plt.text(X[:,0].mean(), X[:,1].mean(), "!!!!")
+
+        is_noise = (y_pred == 0)
+
+        assert sum(~is_noise) > 0
+
+        if sum(is_noise) > 0:
+            kd2 = scipy.spatial.KDTree(X[~is_noise,:])
+            nn_w2, nn_a2 = kd2.query(X[is_noise, :], 1)  # find closest points
+            y_pred[is_noise] = y_pred[~is_noise][nn_a2]
+
+        tree_e = None
+        tree_w = None
+        tree_skiplist = None
+
+
+
+    if is_noise is not None:
+        genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
+
     genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)
-    genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
+
+    if tree_e is not None:
+        genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
+
     if tree_skiplist is not None:
         genieclust.plots.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
+
     plt.axis("equal")
 
     # npa = GNPA(y_true[y_true>0], y_pred[y_true>0])

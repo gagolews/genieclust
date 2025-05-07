@@ -27,7 +27,6 @@ import matplotlib.pyplot as plt
 import clustbench
 import os.path
 import scipy.spatial
-import lumbermark
 from numba import jit
 
 
@@ -150,7 +149,7 @@ def plot_mst_2d(L, mst_draw_edge_labels=False, alpha=0.2):
                 (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
                 (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
                 "%d\n(%d-%d)" % (i, *sorted((mst_s[i, 0], mst_s[i, 1]))),
-                color="gray" if mst_labels[i] == lumbermark.SKIP else genieclust.plots.col[mst_labels[i]-1],
+                color="gray" if mst_labels[i] < -1 else genieclust.plots.col[mst_labels[i]-1],
                 va='top'
             )
     for i in range(n_clusters+1):
