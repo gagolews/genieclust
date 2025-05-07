@@ -294,8 +294,8 @@ IntegerVector dot_genie(
     std::vector<double>  mst_d(n-1);
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        mst_i(i, 0) = (Py_ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
-        mst_i(i, 1) = (Py_ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_i(i, 0) = (Py_ssize_t)mst(i, 0)-1;  // 1-based to 0-based indices
+        mst_i(i, 1) = (Py_ssize_t)mst(i, 1)-1;  // 1-based to 0-based indices
         mst_d[i] = mst(i, 2);
     }
 
@@ -309,7 +309,7 @@ IntegerVector dot_genie(
     Py_ssize_t k_detected = g.get_labels(k, xres.data());
 
     if (k_detected != k)
-        Rf_warning("Number of clusters detected is different than the requested one due to the presence of noise points.");
+        Rf_warning("The number of clusters detected is different from the requested one due to the presence of noise points.");
 
     if (detect_noise && postprocess == "boundary") {
         NumericMatrix nn_r = mst.attr("nn");

@@ -1,5 +1,12 @@
 """
-The Lumbermark clustering algorithm.
+The Silentmark clustering algorithm:
+
+Detect noise points based on how many points have a point amongst
+    their nearest neighbours,
+clusterise a dataset with noise points omitted using RSL (better) or Genie (worse),
+assign points to "nearest" clusters.
+
+Overall, clustering with RSL wrt a mutual reachability distance is better.
 """
 
 # ############################################################################ #
@@ -115,7 +122,7 @@ def _clusterise_without_noise_points(X, L, n_neighbors, noise_threshold, noise_p
         is_noise = np.repeat(False, n)
 
     X_core = X[~is_noise, :]
-    y_pred_unadj = L.fit_predict(X_core)
+    y_pred_unadj = L.fit_predict(X_core)+1  # 0-based -> 1-based
 
     y_pred = np.zeros(n, dtype=y_pred_unadj.dtype)
     y_pred[~is_noise] = y_pred_unadj
@@ -162,8 +169,9 @@ def _clusterise_without_noise_points(X, L, n_neighbors, noise_threshold, noise_p
     if add_e is not None: tree_e = np.concatenate((tree_e, add_e))
 
 
-
     assert np.all(y_pred > 0)
+    y_pred = y_pred - 1   # 1-based to 0-based !!!
+
 
     return y_pred, tree_w, tree_e, tree_skiplist, is_noise
 
@@ -171,16 +179,17 @@ def _clusterise_without_noise_points(X, L, n_neighbors, noise_threshold, noise_p
 
 
 
-class Lumbermark(BaseEstimator, ClusterMixin):
+class Silentmark(BaseEstimator, ClusterMixin):
 
     def __init__(
         self,
         *,
         n_clusters,
         n_neighbors=None,
-        min_cluster_size=5,
-        min_cluster_factor=0.15,
-        skip_leaves=True,
+        min_cluster_size=5,       # RobustSingleLinkage
+        min_cluster_factor=0.15,  # RobustSingleLinkage
+        skip_leaves=True,         # RobustSingleLinkage
+        gini_threshold=0.3,       # Genie
         noise_threshold=None,
         noise_postprocess="tree",
         verbose=False
@@ -192,9 +201,10 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.n_clusters          = n_clusters
         self.n_neighbors         = n_neighbors
         self.noise_threshold     = noise_threshold
-        self.min_cluster_size    = min_cluster_size
-        self.min_cluster_factor  = min_cluster_factor
-        self.skip_leaves         = skip_leaves
+        self.min_cluster_size    = min_cluster_size    # RobustSingleLinkage
+        self.min_cluster_factor  = min_cluster_factor  # RobustSingleLinkage
+        self.skip_leaves         = skip_leaves         # RobustSingleLinkage
+        self.gini_threshold      = gini_threshold      # Genie
         self.noise_postprocess   = noise_postprocess
         self.verbose             = verbose
 
@@ -220,20 +230,23 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         Returns
         -------
 
-        self : genieclust.Lumbermark
+        self : genieclust.Silentmark
             The object that the method was called on.
         """
 
         self.X = np.ascontiguousarray(X)
         self.n_samples_ = self.X.shape[0]
 
-        L = robust_single_linkage.RobustSingleLinkageClustering(
-            n_clusters=self.n_clusters,
-            M=1,  # ordinary distance, not the mutual reachability one
-            min_cluster_factor=self.min_cluster_factor,
-            min_cluster_size=self.min_cluster_size,
-            skip_leaves=self.skip_leaves
-        )
+        # L = robust_single_linkage.RobustSingleLinkageClustering(
+        #     n_clusters=self.n_clusters,
+        #     M=1,  # ordinary distance, not the mutual reachability one
+        #     min_cluster_factor=self.min_cluster_factor,
+        #     min_cluster_size=self.min_cluster_size,
+        #     skip_leaves=self.skip_leaves
+        # )
+
+        L = genieclust.Genie(n_clusters=self.n_clusters, gini_threshold=self.gini_threshold)
+
 
         self.n_neighbors_ = self.n_neighbors
         if self.n_neighbors_ is None: # TODO: default
@@ -280,10 +293,10 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         ----------
 
         X : object
-            See `genieclust.Lumbermark.fit`.
+            See `genieclust.Silentmark.fit`.
 
         y : None
-            See `genieclust.Lumbermark.fit`.
+            See `genieclust.Silentmark.fit`.
 
         mst_skiplist : None
 
@@ -298,7 +311,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         See also
         --------
 
-        genieclust.Lumbermark.fit
+        genieclust.Silentmark.fit
 
         """
         self.fit(X, y, mst_skiplist)

@@ -175,6 +175,7 @@ def _robust_single_linkage_clustering(
         cutting_e = which_limbs[0]
         cutting_w = mst_w[cutting_e]
 
+        labels = labels - 1   # 1-based to 0-based !!!
 
         if last_iteration:
             assert c == n_clusters

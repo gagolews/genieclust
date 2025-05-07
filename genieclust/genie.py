@@ -87,24 +87,25 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.nmslib_params_query = nmslib_params_query
         self.verbose             = verbose
 
-        self.n_samples_           = None
-        self.n_features_          = None
-        self.n_clusters_          = 0  # should not be confused with self.n_clusters
-        self.labels_              = None
-        # self.is_noise_            = None
-        self.children_            = None
-        self.distances_           = None
-        self.counts_              = None
+        self.n_samples_          = None
+        self.n_features_         = None
+        self.n_clusters_         = 0  # should not be confused with self.n_clusters
+        self.labels_             = None
+        self.children_           = None
+        self.distances_          = None
+        self.counts_             = None
 
-        self._mst_dist_           = None
-        self._mst_ind_            = None
-        self._nn_dist_            = None
-        self._nn_ind_             = None
-        self._d_core_             = None
-        self._links_              = None
-        self._iters_              = None
+        self._is_noise           = None  # TODO
+        self._tree_skiplist      = None  # TODO
+        self._tree_w             = None
+        self._tree_e             = None
+        self._nn_w               = None
+        self._nn_e               = None
+        self._d_core             = None
+        self._links_             = None
+        self._iters_             = None
 
-        self._last_state_         = None
+        self._last_state         = None
 
 
 
@@ -121,7 +122,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         if res["n_clusters"] != cur_state["n_clusters"]:
             warnings.warn("The number of clusters detected (%d) is "
-                          "different than the requested one (%d)." % (
+                          "different from the requested one (%d)." % (
                             res["n_clusters"],
                             cur_state["n_clusters"]))
         self.n_clusters_ = res["n_clusters"]
@@ -139,22 +140,22 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
                 start_partition = 1  # do not postprocess the "0"-partition
 
-            #self.is_noise_    = (self.labels_[0, :] < 0)
+            #self._is_noise    = (self.labels_[0, :] < 0)
 
             # postprocess labels, if requested to do so
             if cur_state["M"] < 2 or cur_state["postprocess"] == "none":
                 pass
             elif cur_state["postprocess"] == "boundary":
-                assert self._nn_ind_ is not None
-                assert self._nn_ind_.shape[1] >= cur_state["M"] - 1
+                assert self._nn_e is not None
+                assert self._nn_e.shape[1] >= cur_state["M"] - 1
                 for i in range(start_partition, self.labels_.shape[0]):
                     self.labels_[i, :] = internal.merge_boundary_points(
-                        self._mst_ind_, self.labels_[i, :],
-                        self._nn_ind_, cur_state["M"])
+                        self._tree_e, self.labels_[i, :],
+                        self._nn_e, cur_state["M"])
             elif cur_state["postprocess"] == "all":
                 for i in range(start_partition, self.labels_.shape[0]):
                     self.labels_[i, :] = internal.merge_noise_points(
-                        self._mst_ind_, self.labels_[i, :])
+                        self._tree_e, self.labels_[i, :])
 
         if reshaped:
             self.labels_.shape = (self.labels_.shape[1],)
@@ -163,8 +164,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             assert cur_state["exact"] and cur_state["M"] == 1
             Z = internal.get_linkage_matrix(
                 self._links_,
-                self._mst_dist_,
-                self._mst_ind_)
+                self._tree_w,
+                self._tree_e)
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
@@ -298,40 +299,40 @@ class GenieBase(BaseEstimator, ClusterMixin):
             elif cur_state["M"] != 1:
                 raise ValueError("`mlpack` can only be used with `M` = 1.")
 
-        mst_dist = None
-        mst_ind  = None
-        nn_dist  = None
-        nn_ind   = None
-        d_core   = None
+        tree_w = None
+        tree_e = None
+        nn_w   = None
+        nn_e   = None
+        d_core = None
 
-        if self._last_state_ is not None and \
-                cur_state["X"]            == self._last_state_["X"] and \
-                cur_state["affinity"]     == self._last_state_["affinity"] and \
-                cur_state["exact"]        == self._last_state_["exact"] and \
-                cur_state["cast_float32"] == self._last_state_["cast_float32"]:
+        if self._last_state is not None and \
+                cur_state["X"]            == self._last_state["X"] and \
+                cur_state["affinity"]     == self._last_state["affinity"] and \
+                cur_state["exact"]        == self._last_state["exact"] and \
+                cur_state["cast_float32"] == self._last_state["cast_float32"]:
 
-            if cur_state["M"] == self._last_state_["M"]:
-                mst_dist = self._mst_dist_
-                mst_ind  = self._mst_ind_
-                nn_dist  = self._nn_dist_
-                nn_ind   = self._nn_ind_
-            elif cur_state["M"] < self._last_state_["M"]:
-                nn_dist  = self._nn_dist_
-                nn_ind   = self._nn_ind_
+            if cur_state["M"] == self._last_state["M"]:
+                tree_w = self._tree_w
+                tree_e  = self._tree_e
+                nn_w  = self._nn_w
+                nn_e   = self._nn_e
+            elif cur_state["M"] < self._last_state["M"]:
+                nn_w  = self._nn_w
+                nn_e   = self._nn_e
 
         if cur_state["mlpack_enabled"]:
             assert cur_state["M"] == 1
             assert cur_state["affinity"] == "l2"
 
-            if mst_dist is None or mst_ind is None:
+            if tree_w is None or tree_e is None:
                 _res = mlpack.emst(
                     X,
                     leaf_size=cur_state["mlpack_leaf_size"],
                     naive=False,
                     copy_all_inputs=False,
                     verbose=cur_state["verbose"])["output"]
-                mst_dist = _res[:,  2].astype(X.dtype, order="C")
-                mst_ind  = _res[:, :2].astype(np.intp, order="C")
+                tree_w = _res[:,  2].astype(X.dtype, order="C")
+                tree_e  = _res[:, :2].astype(np.intp, order="C")
         else:
             if cur_state["M"] >= 2:  # else d_core   = None
                 # Genie+HDBSCAN --- determine d_core
@@ -340,30 +341,33 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 if cur_state["M"]-1 >= X.shape[0]:
                     raise ValueError("`M` is too large")
 
-                if nn_dist is None or nn_ind is None:
-                    nn_dist, nn_ind = internal.knn_from_distance(
+                if nn_w is None or nn_e is None:
+                    nn_w, nn_e = internal.knn_from_distance(
                         X,  # if not c_contiguous, raises an error
                         k=cur_state["M"]-1,
                         metric=cur_state["affinity"],  # supports "precomputed"
                         verbose=cur_state["verbose"])
 
-                d_core = internal.get_d_core(nn_dist, nn_ind, cur_state["M"])
+                d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
 
             # Use Prim's algorithm to determine the MST
             # w.r.t. the distances computed on the fly
-            if mst_dist is None or mst_ind is None:
-                mst_dist, mst_ind = internal.mst_from_distance(
+            if tree_w is None or tree_e is None:
+                tree_w, tree_e = internal.mst_from_distance(
                     X,  # if not c_contiguous, raises an error
                     metric=cur_state["affinity"],
                     d_core=d_core,
                     verbose=cur_state["verbose"])
 
         self.n_samples_   = n_samples
-        self._mst_dist_   = mst_dist
-        self._mst_ind_    = mst_ind
-        self._nn_dist_    = nn_dist
-        self._nn_ind_     = nn_ind
-        self._d_core_     = d_core
+        self._tree_w      = tree_w
+        self._tree_e      = tree_e
+        self._nn_w        = nn_w
+        self._nn_e        = nn_e
+        self._d_core      = d_core
+
+        self._is_noise           = None  # TODO
+        self._tree_skiplist      = None  # TODO
 
         return cur_state
 
@@ -429,32 +433,32 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:
             raise ValueError("Increase `nmslib_n_neighbors` or decrease `M`.")
 
-        mst_dist = None
-        mst_ind  = None
-        nn_dist  = None
-        nn_ind   = None
+        tree_w = None
+        tree_e  = None
+        nn_w  = None
+        nn_e   = None
         d_core   = None
 
 
-        if self._last_state_ is not None and \
-                cur_state["X"]                   == self._last_state_["X"] and \
-                cur_state["affinity"]            == self._last_state_["affinity"] and \
-                cur_state["exact"]               == self._last_state_["exact"] and \
-                cur_state["nmslib_n_neighbors"]  == self._last_state_["nmslib_n_neighbors"] and \
-                cur_state["nmslib_params_init"]  == self._last_state_["nmslib_params_init"] and \
-                cur_state["nmslib_params_index"] == self._last_state_["nmslib_params_index"] and \
-                cur_state["nmslib_params_query"] == self._last_state_["nmslib_params_query"]:
+        if self._last_state is not None and \
+                cur_state["X"]                   == self._last_state["X"] and \
+                cur_state["affinity"]            == self._last_state["affinity"] and \
+                cur_state["exact"]               == self._last_state["exact"] and \
+                cur_state["nmslib_n_neighbors"]  == self._last_state["nmslib_n_neighbors"] and \
+                cur_state["nmslib_params_init"]  == self._last_state["nmslib_params_init"] and \
+                cur_state["nmslib_params_index"] == self._last_state["nmslib_params_index"] and \
+                cur_state["nmslib_params_query"] == self._last_state["nmslib_params_query"]:
 
-            if cur_state["M"] == self._last_state_["M"]:
-                mst_dist = self._mst_dist_
-                mst_ind  = self._mst_ind_
-                nn_dist  = self._nn_dist_
-                nn_ind   = self._nn_ind_
-            elif cur_state["M"] < self._last_state_["M"]:
-                nn_dist  = self._nn_dist_
-                nn_ind   = self._nn_ind_
+            if cur_state["M"] == self._last_state["M"]:
+                tree_w = self._tree_w
+                tree_e  = self._tree_e
+                nn_w  = self._nn_w
+                nn_e   = self._nn_e
+            elif cur_state["M"] < self._last_state["M"]:
+                nn_w  = self._nn_w
+                nn_e   = self._nn_e
 
-        if nn_dist is None or nn_ind is None:
+        if nn_w is None or nn_e is None:
             index = nmslib.init(**cur_state["nmslib_params_init"])
             index.addDataPointBatch(X)
             index.createIndex(
@@ -466,28 +470,28 @@ class GenieBase(BaseEstimator, ClusterMixin):
                 k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
                 num_threads=n_threads)
             index = None  # no longer needed
-            nn_dist, nn_ind = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
+            nn_w, nn_e = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
             nns = None  # no longer needed
 
         if cur_state["M"] > 1:
-            d_core = internal.get_d_core(nn_dist, nn_ind, cur_state["M"])
+            d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
 
 
-        if mst_dist is None or mst_ind is None:
-            mst_dist, mst_ind = internal.mst_from_nn(
-                nn_dist,
-                nn_ind,
+        if tree_w is None or tree_e is None:
+            tree_w, tree_e = internal.mst_from_nn(
+                nn_w,
+                nn_e,
                 d_core,
                 stop_disconnected=False,
                 verbose=cur_state["verbose"])
             # We can have a forest here...
 
         self.n_samples_   = n_samples
-        self._mst_dist_   = mst_dist
-        self._mst_ind_    = mst_ind
-        self._nn_dist_    = nn_dist
-        self._nn_ind_     = nn_ind
-        self._d_core_     = d_core
+        self._tree_w      = tree_w
+        self._tree_e      = tree_e
+        self._nn_w        = nn_w
+        self._nn_e        = nn_e
+        self._d_core      = d_core
 
         return cur_state
 
@@ -505,7 +509,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         # this might be an "intrinsic" dimensionality:
         self.n_features_  = cur_state["n_features"]
-        self._last_state_ = cur_state  # will be modified in-place further on
+        self._last_state  = cur_state  # will be modified in-place further on
 
         return cur_state
 
@@ -1050,8 +1054,8 @@ class Genie(GenieBase):
 
         # apply the Genie++ algorithm (the fast part):
         res = internal.genie_from_mst(
-            self._mst_dist_,
-            self._mst_ind_,
+            self._tree_w,
+            self._tree_e,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
             noise_leaves=(cur_state["M"] > 1),
@@ -1337,8 +1341,8 @@ class GIc(GenieBase):
 
         # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(
-            self._mst_dist_,
-            self._mst_ind_,
+            self._tree_w,
+            self._tree_e,
             n_features=cur_state["n_features"],
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],

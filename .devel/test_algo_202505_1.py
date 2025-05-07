@@ -1,5 +1,6 @@
 """
-Eugenio – A remix of the Genie clustering algorithm
+A remix of the Genie clustering algorithm - premerge limbs (min_cluster_size)
+or postmerge them. Not so good.
 """
 
 # ############################################################################ #
@@ -34,7 +35,7 @@ NOISE = 0  # must be 0
 # TODO: 0-based -> 1-based!!!
 
 
-def _eugenio(
+def _eugeniusz(
     X,
     n_clusters,
     gini_threshold=0.3,
@@ -196,7 +197,7 @@ def _eugenio(
 
 
 
-class Eugenio(BaseEstimator, ClusterMixin):
+class Eugeniusz(BaseEstimator, ClusterMixin):
 
     def __init__(
         self,
@@ -248,7 +249,7 @@ class Eugenio(BaseEstimator, ClusterMixin):
             self._tree_s,
             self._tree_skiplist,
             self._tree_cutting,
-        ) = _eugenio(
+        ) = _eugeniusz(
             self.X,
             n_clusters=self.n_clusters,
             gini_threshold=self.gini_threshold,
