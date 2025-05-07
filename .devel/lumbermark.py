@@ -1,6 +1,8 @@
 """
 Lumbermark: A Robust Divisive Clustering Algorithm based on Spanning Trees
 Detects a specific number of clusters as well as classifies points as noise/outliers.
+
+TODO: self._is_noise !!!!
 """
 
 # ############################################################################ #
@@ -36,11 +38,10 @@ NOISE = 0  # must be 0
 def _lumbermark(
     X,
     n_clusters,
-    min_cluster_size=10,
-    min_cluster_factor=0.2,
-    mst_skiplist=None,      # default = empty
-    M=1,
-    skip_leaves=False,
+    min_cluster_size,
+    min_cluster_factor,
+    M,
+    skip_leaves,
     verbose=False
 ):
     assert n_clusters > 0
@@ -49,8 +50,6 @@ def _lumbermark(
 
     n = X.shape[0]
 
-    if mst_skiplist is None:
-        mst_skiplist = []
 
     if M <= 1:
         mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
@@ -136,6 +135,8 @@ def _lumbermark(
 
         return c, counts, min_mst_s
 
+
+    mst_skiplist = []
     c = len(mst_skiplist)
     while True:
         last_iteration = (len(mst_skiplist)+1 >= n_clusters)
@@ -192,8 +193,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         *,
         n_clusters,
         min_cluster_size=10,
-        min_cluster_factor=0.25,
-        M=1,
+        min_cluster_factor=0.25,  # try also 0.1 or less for clusters of imbalanced sizes
+        M=1,  # try also M=6 or M=4 or M=11  (mutual reachability distance)
         skip_leaves=True,  # better
         verbose=False
     ):
@@ -205,7 +206,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.verbose                 = verbose
 
 
-    def fit(self, X, y=None, mst_skiplist=None):
+    def fit(self, X, y=None):
         """
         Perform cluster analysis of a dataset.
 
@@ -219,9 +220,6 @@ class Lumbermark(BaseEstimator, ClusterMixin):
 
         y : None
             Ignored.
-
-        mst_skiplist : None
-
 
         Returns
         -------
@@ -252,15 +250,14 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             min_cluster_factor=self.min_cluster_factor,
             M=self.M_,
             skip_leaves=self.skip_leaves,
-            verbose=self.verbose,
-            mst_skiplist=mst_skiplist
+            verbose=self.verbose
         )
 
         return self
 
 
 
-    def fit_predict(self, X, y=None, mst_skiplist=None):
+    def fit_predict(self, X, y=None):
         """
         Perform cluster analysis of a dataset and return the predicted labels.
 
@@ -273,8 +270,6 @@ class Lumbermark(BaseEstimator, ClusterMixin):
 
         y : None
             See `genieclust.Genie.fit`.
-
-        mst_skiplist : None
 
 
         Returns
@@ -290,5 +285,5 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         genieclust.Genie.fit
 
         """
-        self.fit(X, y, mst_skiplist)
+        self.fit(X, y)
         return self.labels_

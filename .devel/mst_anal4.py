@@ -66,7 +66,7 @@ for ex in range(n_examples):
 
     algo = 0
     if algo == 0:
-        L = lumbermark.Lumbermark(n_clusters=n_clusters, M=7, min_cluster_factor=0.25, skip_leaves=False, min_cluster_size=10)
+        L = lumbermark.Lumbermark(n_clusters=n_clusters)
         #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
         #L = lumbermark.Lumbermark(n_clusters=n_clusters)
         # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
