@@ -45,9 +45,18 @@ sys.setrecursionlimit(100000)
 
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-import hdbscan
 
 
+
+
+# np.random.seed(123)
+# X = np.random.rand(100000, 8)
+#
+# import hdbscan
+# import timeit
+# timeit.timeit("hdbscan.hdbscan_._hdbscan_boruvka_kdtree(X, 1, gen_min_span_tree=False)", globals=dict(hdbscan=hdbscan, X=X), number=3)
+#
+# timeit.timeit("genieclust.Genie(M=1).fit_predict(X)", globals=dict(genieclust=genieclust, X=X), number=3)
 
 
 data_path = os.path.join("~", "Projects", "clustering-data-v1")

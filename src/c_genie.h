@@ -61,7 +61,7 @@ protected:
                           * given by c_contiguous (n-1)*2 indices;
                           * (-1, -1) denotes a no-edge and will be ignored
                           */
-    T* mst_d;            //<! n-1 edge weights
+    T* mst_d;            //<! n-1 edge weights, sorted increasingly
     Py_ssize_t n;        //<! number of points
     bool noise_leaves;   //<! mark leaves as noise points?
 
@@ -328,28 +328,27 @@ public:
  *
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
  *   in such a way that a chosen economic inequality measure
- *   (here, the Gini index) of the cluster sizes does not increase drastically
- *   above a given threshold. The method most often outperforms
- *   the Ward or average linkage, k-means, spectral clustering,
- *   DBSCAN, Birch and others in terms of the clustering
- *   quality on benchmark data while retaining the speed of the single
- *   linkage algorithm.
+ *   (here, the Gini index) of the cluster sizes does not increase too much
+ *   above a given threshold. The method outperforms the Ward or average
+ *   linkages, k-means, spectral clustering, DBSCAN, Birch and others in terms
+ *   of the clustering quality on benchmark data (on average) while retaining
+ *   the speed of the single linkage algorithm.
  *
  *   This is a re-implementation of the original (Gagolewski et al., 2016)
  *   algorithm. New features include:
- *   1. Given a pre-computed minimum spanning tree (MST),
- *   it only requires amortised O(n sqrt(n))-time.
- *   2. MST leaves can be
- *   marked as noise points (if `noise_leaves==True`). This is useful,
- *   if the Genie algorithm is applied on the MST with respect to
- *   the HDBSCAN-like mutual reachability distance.
- *   3. (option-experimental) During merge, first pair of clusters that would
- *   give a decrease of the Gini index below the threshold is chosen
- *   (or the one that gives the smallest Gini index if that's not possible)
- *       -- turns out to be slower and worse on benchmark data.
- *   4. The MST need not be connected (is a spanning forest) (e.g., if it
- *   computed based on a disconnected k-NN graph) - each component
- *   will never be merged with any other one.
+ *
+ *   1. Given a pre-computed minimum spanning tree (MST) /actually, any kind
+ *   of a spanning tree/,
+ *   this implementation requires amortised O(n sqrt(n))-time only.
+ *
+ *   2. The leaves of the MST can be marked as noise points
+ *   (if `noise_leaves==True`).  This is useful, if the Genie algorithm is
+ *   applied on the MST with respect to the HDBSCAN-like mutual reachability
+ *   distance.
+ *
+ *   3. The MST does not need to be connected (is a spanning forest)
+ *   (e.g., if it is computed based on a disconnected k-NN graph) -
+ *   each connected component will never be merged with any other one.
  *
  *
  *
@@ -475,6 +474,8 @@ protected:
      * (provided that is possible)
      *
      *  **EXPERIMENTAL** This is slower and not that awesome.
+     *
+     *  TODO: remove it.
      *
      *  @param ds
      *  @param mst_skiplist

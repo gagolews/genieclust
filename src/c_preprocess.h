@@ -17,22 +17,15 @@
 #ifndef __c_preprocess_h
 #define __c_preprocess_h
 
+#include <stdexcept>
 #include "c_common.h"
-#include <algorithm>
-#include <vector>
-#include <deque>
-#include <cmath>
-
-#include "c_gini_disjoint_sets.h"
-#include "c_int_dict.h"
 
 
 /*! Compute the degree of each vertex in an undirected graph
- * over vertex set {0,...,n-1}
+ *  over a vertex set {0,...,n-1}.
  *
  * @param ind c_contiguous matrix of size num_edges*2,
- *     where {ind[i,0], ind[i,1]} is the i-th edge
- *     with ind[i,j] < n.
+ *     where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n.
  *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored.
  * @param num_edges number of edges (rows in ind)
  * @param n number of vertices

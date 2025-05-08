@@ -434,10 +434,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
             raise ValueError("Increase `nmslib_n_neighbors` or decrease `M`.")
 
         tree_w = None
-        tree_e  = None
-        nn_w  = None
+        tree_e = None
+        nn_w   = None
         nn_e   = None
-        d_core   = None
+        d_core = None
 
 
         if self._last_state is not None and \
@@ -451,11 +451,11 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
             if cur_state["M"] == self._last_state["M"]:
                 tree_w = self._tree_w
-                tree_e  = self._tree_e
-                nn_w  = self._nn_w
+                tree_e = self._tree_e
+                nn_w   = self._nn_w
                 nn_e   = self._nn_e
             elif cur_state["M"] < self._last_state["M"]:
-                nn_w  = self._nn_w
+                nn_w   = self._nn_w
                 nn_e   = self._nn_e
 
         if nn_w is None or nn_e is None:
