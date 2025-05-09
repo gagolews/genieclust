@@ -74,7 +74,7 @@ cdef extern from "../src/c_mst.h":
 
     Py_ssize_t Cmst_from_nn[T](
         T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
-        T* mst_dist, Py_ssize_t* mst_ind, bint* maybe_inexact, bint verbose) except +
+        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
 
     void Cknn_from_complete[T](
         CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,

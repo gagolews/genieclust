@@ -29,7 +29,7 @@ The idea behind Genie is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes** a point group of
-the *smallest* size will sometimes be matched with its nearest neighbour.
+the *smallest* size will sometimes be combined with its nearest counterpart.
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
@@ -39,27 +39,24 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
-Thanks to its being based on minimal spanning trees of the pairwise distance
-graphs, Genie is also **very fast** – determining the whole cluster hierarchy
+Genie is based on minimal spanning trees of the pairwise distance
+graphs. Thus, it is also **very fast** – determining the whole cluster hierarchy
 for datasets of millions of points can be completed within minutes. Therefore,
 it is nicely suited for solving **extreme clustering tasks** (large datasets
 with any number of clusters to detect) for data (also sparse) that fit into
-memory. Thanks to the use of [**nmslib**](https://github.com/nmslib/nmslib)
-(if available), sparse or string inputs are also supported.
+memory.
 
-It also allows clustering with respect to mutual reachability distances
-so that it can act as a **noise point detector** or a
-robustified version of *HDBSCAN\**  (see Campello et al., 2013)
-that is able to detect a predefined
-number of clusters and hence it doesn't dependent on the *DBSCAN*'s somewhat
-difficult-to-set `eps` parameter.
-
+Genie also allows clustering with respect to mutual reachability distances
+so that it can act as a **noise point detector** or a robustified version
+of *HDBSCAN\**  (see Campello et al., 2013) that is able to detect a predefined
+number of clusters (actually, a whole hierarchy thereof). Hence, it doesn't
+dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 The package also features an implementation of economic inequality indices
 (the Gini, Bonferroni index), external cluster validity measures
-(e.g., the normalised clustering accuracy and partition similarity scores
-such as the adjusted Rand, Fowlkes-Mallows, adjusted mutual information,
-and the pair sets index), and internal cluster validity indices
+(e.g., the normalised clustering accuracy and partition similarity indices
+such as the adjusted Rand, Fowlkes-Mallows, or mutual information scores),
+and internal cluster validity indices
 (e.g., the Calinski-Harabasz, Davies-Bouldin, Ball-Hall, Silhouette,
 and generalised Dunn indices).
 
@@ -205,11 +202,11 @@ Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
 
 Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
 Clustering with minimum spanning trees: How good can it be?,
-*Journal of Classification*, 2024, in press,
+*Journal of Classification* **42**, 2025, 90–112.
 [DOI: 10.1007/s00357-024-09483-1](https://doi.org/10.1007/s00357-024-09483-1).
 
 Gagolewski M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, *Journal of Classification*, 2024, in press,
+cluster validity measure, *Journal of Classification* **42**, 2025, 2–30.
 [DOI: 10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
 
 Gagolewski M., A framework for benchmarking clustering algorithms,

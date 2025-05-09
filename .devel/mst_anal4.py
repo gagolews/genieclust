@@ -47,6 +47,20 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
+# TODO...
+np.random.seed(123)
+X = np.random.rand(100, 2)
+mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+n = X.shape[0]
+n_clusters = 3
+min_cluster_size = 10
+min_cluster_factor = 0.25
+skip_leaves = True
+l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
+stop()
+# TODO...
+
+
 
 
 # np.random.seed(123)
@@ -85,7 +99,7 @@ for ex in range(n_examples):
         is_noise = np.repeat(False, X.shape[0])#L._is_noise
         tree_e = L._tree_e
         tree_w = L._tree_w
-        tree_skiplist = L._tree_skiplist
+        tree_skiplist = L._tree_cutlist
     else:
         # Can't force hdbscan to always output a given number of clusters
         if algo == 1:

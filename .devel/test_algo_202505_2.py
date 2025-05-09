@@ -159,7 +159,7 @@ def _clusterise_without_noise_points(X, L, n_neighbors, noise_threshold, noise_p
     else:
         raise Exception("incorrect `noise_postprocess`")
 
-    tree_skiplist = L._tree_skiplist
+    tree_skiplist = L._tree_cutlist
     tree_w = L._tree_w
     tree_e = L._tree_e
     which_core  = np.flatnonzero(~is_noise)
@@ -270,7 +270,7 @@ class Silentmark(BaseEstimator, ClusterMixin):
             self.labels_,
             self._tree_w,
             self._tree_e,
-            self._tree_skiplist,
+            self._tree_cutlist,
             self._is_noise,
         ) = _clusterise_without_noise_points(
             self.X,

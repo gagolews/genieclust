@@ -492,7 +492,7 @@ Py_ssize_t Cmst_from_nn(
     Py_ssize_t k,
     T* mst_dist,
     Py_ssize_t* mst_ind,
-    bool* maybe_inexact,
+    int* maybe_inexact,
     bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
@@ -568,6 +568,8 @@ Py_ssize_t Cmst_from_nn(
         if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
         #endif
     }
+
+    *maybe_inexact = 0;  // TODO !!!!
 
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
 

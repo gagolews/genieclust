@@ -96,7 +96,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.counts_             = None
 
         self._is_noise           = None  # TODO
-        self._tree_skiplist      = None  # TODO
+        self._tree_cutlist      = None  # TODO
         self._tree_w             = None
         self._tree_e             = None
         self._nn_w               = None
@@ -367,7 +367,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self._d_core      = d_core
 
         self._is_noise           = None  # TODO
-        self._tree_skiplist      = None  # TODO
+        self._tree_cutlist      = None  # TODO
 
         return cur_state
 
@@ -1058,7 +1058,7 @@ class Genie(GenieBase):
             self._tree_e,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            noise_leaves=(cur_state["M"] > 1),
+            skip_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"],
             experimental_forced_merge=cur_state["experimental_forced_merge"])
@@ -1347,7 +1347,7 @@ class GIc(GenieBase):
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
-            noise_leaves=(cur_state["M"] > 1),
+            skip_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
 

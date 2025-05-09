@@ -37,7 +37,7 @@ class CGenieBase {
 protected:
 
     /*!  Stores the clustering result as obtained by
-     *   CGenie::apply_genie() or CGIc::apply_gic()
+     *   CGenie::compute() or CGIc::compute()
      */
     struct CGenieResult {
 
@@ -63,7 +63,7 @@ protected:
                           */
     T* mst_d;            //<! n-1 edge weights, sorted increasingly
     Py_ssize_t n;        //<! number of points
-    bool noise_leaves;   //<! mark leaves as noise points?
+    bool skip_leaves;    //<! mark leaves as noise points?
 
     std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
 
@@ -94,7 +94,7 @@ protected:
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
-            if (!this->noise_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
+            if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
                 (*mst_skiplist)[i] = i; /*only the key is important, not the value*/
             }
         }
@@ -129,17 +129,17 @@ protected:
 
 
 public:
-    CGenieBase(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool noise_leaves)
+    CGenieBase(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves)
         : deg(n), denoise_index(n), denoise_index_rev(n)
     {
         this->mst_d = mst_d;
         this->mst_i = mst_i;
         this->n = n;
-        this->noise_leaves = noise_leaves;
+        this->skip_leaves = skip_leaves;
 
         // Py_ssize_t missing_mst_edges = 0;
         for (Py_ssize_t i=0; i<n-1; ++i) {
-            if (mst_i[i] < 0 || mst_i[i] < 0) {
+            if (mst_i[2*i+0] < 0 || mst_i[2*i+1] < 0) {
                 // missing_mst_edges++;
                 continue;
             }
@@ -153,7 +153,7 @@ public:
 
         // Create the non-noise points' translation table (for GiniDisjointSets)
         // and count the number of noise points
-        if (noise_leaves) {
+        if (skip_leaves) {
             noise_count = 0;
             Py_ssize_t j = 0;
             for (Py_ssize_t i=0; i<n; ++i) {
@@ -187,7 +187,7 @@ public:
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
-            if (!this->noise_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
+            if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
                 forest_components.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
             }
         }
@@ -308,15 +308,19 @@ public:
         return this->results.it;
     }
 
-    /*! Set res[i] to true if the i-th point is a noise one.
+
+    /*! Set res[i] to true if skip_leaves is true and
+     * the i-th point is a noise/boundary node,
+     * i.e., a leaf of the spanning tree.
      *
-     *  Makes sense only if noise_leaves==true
+     * TODO: Like in Lumbermark, this could depend on n_clusters
+     * and mark nodes incident to cut edges as boundary points too.
      *
      *  @param res [out] array of length n
      */
-    void get_noise_status(bool* res) const {
+    void get_is_noise(int* res) const {
         for (Py_ssize_t i=0; i<n; ++i) {
-            res[i] = (this->noise_leaves && this->deg[i] <= 1);
+            res[i] = (this->skip_leaves && this->deg[i] <= 1);
         }
     }
 
@@ -328,8 +332,8 @@ public:
  *
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
  *   in such a way that a chosen economic inequality measure
- *   (here, the Gini index) of the cluster sizes does not increase too much
- *   above a given threshold. The method outperforms the Ward or average
+ *   (here, the Gini index) of the cluster sizes does not go too far above
+ *   a given threshold. The method outperforms the Ward or average
  *   linkages, k-means, spectral clustering, DBSCAN, Birch and others in terms
  *   of the clustering quality on benchmark data (on average) while retaining
  *   the speed of the single linkage algorithm.
@@ -338,11 +342,11 @@ public:
  *   algorithm. New features include:
  *
  *   1. Given a pre-computed minimum spanning tree (MST) /actually, any kind
- *   of a spanning tree/,
- *   this implementation requires amortised O(n sqrt(n))-time only.
+ *   of a spanning tree/, this implementation requires amortised
+ *   O(n sqrt(n))-time only.
  *
  *   2. The leaves of the MST can be marked as noise points
- *   (if `noise_leaves==True`).  This is useful, if the Genie algorithm is
+ *   (if `skip_leaves==True`).  This is useful, if the Genie algorithm is
  *   applied on the MST with respect to the HDBSCAN-like mutual reachability
  *   distance.
  *
@@ -565,8 +569,8 @@ protected:
 
 
 public:
-    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool noise_leaves=false, bool experimental_forced_merge=false)
-        : CGenieBase<T>(mst_d, mst_i, n, noise_leaves), experimental_forced_merge(experimental_forced_merge)
+    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false, bool experimental_forced_merge=false)
+        : CGenieBase<T>(mst_d, mst_i, n, skip_leaves), experimental_forced_merge(experimental_forced_merge)
     {
         ;
     }
@@ -581,7 +585,7 @@ public:
      *     or the number of clusters to detect is > 1).
      * @param gini_threshold the Gini index threshold
      */
-    void apply_genie(Py_ssize_t n_clusters, double gini_threshold)
+    void compute(Py_ssize_t n_clusters, double gini_threshold)
     {
         if (n_clusters < 1)
             throw std::domain_error("n_clusters must be >= 1");
@@ -664,7 +668,7 @@ protected:
                 Py_ssize_t i2 = this->mst_i[2*i+1];
                 if (i1 < 0 || i2 < 0)
                     continue; // a no-edge -> ignore
-                if (!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
+                if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
                     unused_edges.push_back(i);
             }
             unused_edges.push_back(this->n - 1);  // sentinel
@@ -708,8 +712,8 @@ protected:
     }
 
 public:
-    CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool noise_leaves=false)
-        : CGenie<T>(mst_d, mst_i, n, noise_leaves)
+    CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false)
+        : CGenie<T>(mst_d, mst_i, n, skip_leaves)
     {
         if (this->forest_components.get_k() > 1)
             throw std::domain_error("MST is not connected; this is not (yet) supported");
@@ -729,7 +733,7 @@ public:
      * @param gini_thresholds array of size n_thresholds
      * @param n_thresholds size of gini_thresholds
      */
-    void apply_gic(Py_ssize_t n_clusters,
+    void compute(Py_ssize_t n_clusters,
                    Py_ssize_t add_clusters, double n_features,
                    double* gini_thresholds, Py_ssize_t n_thresholds)
     {
@@ -776,7 +780,7 @@ public:
             if (i1 < 0 || i2 < 0)
                 continue; // a no-edge -> ignore
 
-            if (!this->noise_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1)) {
+            if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1)) {
                 GENIECLUST_ASSERT(this->results.it < this->n-1);
                 this->results.links[this->results.it++] = i;
                 i1 = this->results.ds.find(this->denoise_index_rev[i1]);

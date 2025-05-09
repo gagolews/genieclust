@@ -76,7 +76,7 @@ min_mst_s = np.min(mst_s, axis=1)
 mst_labels = L._mst_labels
 n = X.shape[0]
 skiplist = L._mst_skiplist
-cutting = L._mst_cutting
+cutting = None
 mst_internodes = L.__dict__.get("_mst_internodes", [])
 
 y_pred[mst_e[(mst_s[:,0] <= 1) & (mst_labels > 0), 1]] = 0

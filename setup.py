@@ -191,7 +191,6 @@ setuptools.setup(
         "Operating System :: MacOS",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: GNU Affero General Public License v3",
         "Development Status :: 5 - Production/Stable",
         "Topic :: Scientific/Engineering",
     ],

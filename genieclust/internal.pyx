@@ -44,7 +44,7 @@ import os
 cimport libc.math
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from numpy.math cimport INFINITY
+from libc.math cimport INFINITY
 
 
 ctypedef fused T:
@@ -68,7 +68,7 @@ from . cimport c_postprocess
 from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
-
+from . cimport c_lumbermark
 
 
 ################################################################################
@@ -367,7 +367,7 @@ cpdef tuple mst_from_nn(
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
-    cdef bool maybe_inexact
+    cdef int maybe_inexact
 
     cdef floatT* d_core_ptr = NULL
     if d_core is not None:
@@ -676,12 +676,9 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
 ################################################################################
 
 
-
-
-
 cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
     """Given an adjacency list representing an undirected simple graph over
-    vertex set {0,...,n-1}, return an array deg with deg[i] denoting
+    a vertex set {0,...,n-1}, return an array deg with deg[i] denoting
     the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
 
 
@@ -711,9 +708,7 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
     return deg
 
 
-
-
-
+# Cget_graph_node_adjlists - ignore
 
 
 ################################################################################
@@ -1399,7 +1394,7 @@ cdef class GiniDisjointSets():
 
 
 #############################################################################
-# The Genie+ Clustering Algorithm (internal)
+# The Genie++ Clustering Algorithm (internal)
 #############################################################################
 
 cpdef dict genie_from_mst(
@@ -1407,44 +1402,46 @@ cpdef dict genie_from_mst(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
-        bint noise_leaves=False,
+        bint skip_leaves=False,
         bint compute_full_tree=True,
         bint compute_all_cuts=False,
         bint experimental_forced_merge=False):
-    """Compute a k-partition based on a precomputed MST.
+    """The Genie++ Clustering Algorithm (with extensions)
 
-    The Genie+ Clustering Algorithm (with extensions)
+    Determines a dataset's partition based on a precomputed MST.
 
     Gagolewski M., Bartoszuk M., Cena A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
-    A new hierarchical clustering linkage criterion: the Genie algorithm
-    links two clusters in such a way that a chosen economic inequality measure
-    (here, the Gini index) of the cluster sizes does not increase drastically
-    above a given threshold. The introduced method most often outperforms
+    The Genie algorithm links two clusters in such a way that a chosen
+    economic inequality measure (here, the Gini index) of the cluster sizes
+    does not increase drastically above a given threshold.
+    The introduced method most often outperforms
     the Ward or average linkage, k-means, spectral clustering,
     DBSCAN, Birch, and others in terms of the clustering
     quality on benchmark data while retaining the single linkage speed.
 
-    This is a new implementation of the O(n sqrt(n))-time version
-    of the original algorithm. Additionally, MST leaves can be
-    marked as noise points (if `noise_leaves==True`). This is useful,
+    This is a new implementation of the original algorithm,
+    which runs in O(n sqrt(n))-time. Additionally, MST leaves can be
+    marked as noise points (if `skip_leaves==True`). This is useful,
     if the Genie algorithm is applied on the MST with respect to
     the HDBSCAN-like mutual reachability distance.
 
+    The input tree can actually be any spanning tree.
+    Moreover, it does not even have to be a connected graph.
 
-    gini_threshold==1.0 and noise_leaves==False, gives the single linkage
-    algorithm. Set gini_threshold==1.0 and noise_leaves==True to get
-    a HDBSCAN-like behaviour (and make sure
-    the MST is computed w.r.t. the mutual reachability distance).
+    gini_threshold==1.0 and skip_leaves==False, gives the single linkage
+    algorithm. Set gini_threshold==1.0 and skip_leaves==True to get
+    a HDBSCAN-like behaviour (but ensure that the MST is computed
+    w.r.t. a mutual reachability distance).
 
 
     Parameters
     ----------
 
     mst_d, mst_i : ndarray
-        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        A spanning tree defined by a pair (mst_i, mst_d),
         see genieclust.mst.
     n_clusters : int
         Number of clusters the dataset is split into.
@@ -1452,7 +1449,7 @@ cpdef dict genie_from_mst(
         is determined.
     gini_threshold : float
         The threshold for the Genie correction
-    noise_leaves : bool
+    skip_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.
     compute_full_tree : bool
@@ -1478,10 +1475,10 @@ cpdef dict genie_from_mst(
             If compute_all_cuts==False, this gives the predicted labels,
             representing an n_clusters-partition of X.
             labels[i] gives the cluster id of the i-th input point.
-            If noise_leaves==True, then label -1 denotes a noise point.
+            If skip_leaves==True, then label -1 denotes a noise point.
 
             If compute_all_cuts==True, then
-            labels[i,:] gives the (i+1)-partition, i=0,...,n_cluster-1.
+            labels[i,:] gives the (i+1)-partition, i=0,...,n_clusters-1.
 
         links : ndarray, shape (n-1,)
             links[i] gives the MST edge merged at the i-th iteration
@@ -1490,7 +1487,7 @@ cpdef dict genie_from_mst(
         iters : int
             number of merge steps performed
 
-        n_cluster : integer
+        n_clusters : integer
             actual number of clusters found, 0 if labels is None
 
     """
@@ -1514,12 +1511,12 @@ cpdef dict genie_from_mst(
     _openmp_set_num_threads()
 
     cdef c_genie.CGenie[floatT] g
-    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves, experimental_forced_merge)
+    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves, experimental_forced_merge)
 
     if compute_all_cuts:
         compute_full_tree = True
 
-    g.apply_genie(1 if compute_full_tree else n_clusters, gini_threshold)
+    g.compute(1 if compute_full_tree else n_clusters, gini_threshold)
 
     iters_ = g.get_links(&links_[0])
 
@@ -1557,14 +1554,14 @@ cpdef dict gic_from_mst(
         Py_ssize_t n_clusters=1,
         Py_ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
-        bint noise_leaves=False,
+        bint skip_leaves=False,
         bint compute_full_tree=True,
         bint compute_all_cuts=False):
     """GIc (Genie+Information Criterion) Information-Theoretic
     Hierarchical Clustering Algorithm
 
-    Computes a k-partition based on a pre-computed MST
-    maximising (heuristically) the information criterion [2].
+    Determines a dataset's partition based on a precomputed MST,
+    maximising (heuristically) an information criterion [2].
 
     GIc has been proposed by Anna Cena in [1] and was inspired
     by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3]
@@ -1618,7 +1615,7 @@ cpdef dict gic_from_mst(
         (singletons), which we call Agglomerative-IC (ICA).
         If gini_thresholds is of length 1 and add_clusters==0,
         then the procedure is equivalent to the classical Genie algorithm.
-    noise_leaves : bool
+    skip_leaves : bool
         Mark leaves as noise;
         Prevents forming singleton-clusters.
     compute_full_tree : bool
@@ -1635,7 +1632,7 @@ cpdef dict gic_from_mst(
         labels : ndarray, shape (n,) or None
             Predicted labels, representing an n_clusters-partition of X.
             labels[i] gives the cluster id of the i-th input point.
-            If noise_leaves==True, then label -1 denotes a noise point.
+            If skip_leaves==True, then label -1 denotes a noise point.
             Is None if n_clusters==0.
 
         links : ndarray, shape (n-1,)
@@ -1645,7 +1642,7 @@ cpdef dict gic_from_mst(
         iters : int
             number of merge steps performed
 
-        n_cluster : integer
+        n_clusters : integer
             actual number of clusters found, 0 if labels is None
     """
     cdef Py_ssize_t n = mst_i.shape[0]+1
@@ -1669,12 +1666,12 @@ cpdef dict gic_from_mst(
     _openmp_set_num_threads()
 
     cdef c_genie.CGIc[floatT] g
-    g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, noise_leaves)
+    g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
 
     if compute_all_cuts:
         compute_full_tree = True
 
-    g.apply_gic(1 if compute_full_tree else n_clusters,
+    g.compute(1 if compute_full_tree else n_clusters,
                 n_clusters-1+add_clusters if compute_full_tree else add_clusters,
                 n_features,
             &gini_thresholds[0], gini_thresholds.shape[0])
@@ -1698,3 +1695,108 @@ cpdef dict gic_from_mst(
                 n_clusters=n_clusters_,
                 links=links_,
                 iters=iters_)
+
+
+
+
+#############################################################################
+# The Lumbermark Clustering Algorithm (internal)
+#############################################################################
+
+cpdef dict lumbermark_from_mst(
+        floatT[::1] mst_d,
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t n_clusters,
+        Py_ssize_t min_cluster_size=10,
+        floatT min_cluster_factor=0.25,
+        bint skip_leaves=True
+        ):
+    """The Lumbermark Clustering Algorithm
+
+    Determines a dataset's partition based on a precomputed MST.
+
+    TODO: citation
+    Gagolewski M., TODO, 2025
+
+
+
+    Parameters
+    ----------
+
+    mst_d, mst_i : ndarray
+        A spanning tree defined by a pair (mst_i, mst_d),
+        see genieclust.mst.
+    n_clusters : int
+        Number of clusters the dataset is split into.
+    min_cluster_size : int
+        Minimal cluster size
+    min_cluster_factor : float
+        Output cluster sizes won't be smaller than min_cluster_factor/n_clusters*n_points (noise points excluding)
+    skip_leaves : bool
+        Marks leaves and degree-2 nodes incident to cut edges as noise
+        and does not take them into account whilst determining the partition
+        sizes.  Noise markers can be fetched separately.
+        Noise points will still be assigned to nearest clusters.
+
+
+    Returns
+    -------
+
+    res : dict, with the following elements:
+        labels : ndarray, shape (n,)
+
+            labels[i] gives the cluster id of the i-th input point;
+            a number between 0 and n_clusters-1.
+
+        n_clusters : integer
+            actual number of clusters found, 0 if labels is None.
+
+        links : ndarray, shape (n_clusters-1, )
+            cut edges (indexes) of the spanning tree whose removal
+            leads to the formation of clusters (connected components).
+
+        is_noise : ndarray, shape (n,)
+            is_noise[i] is True if the i-th point is a noise/boundary node.
+
+
+    """
+    cdef Py_ssize_t n = mst_i.shape[0]+1
+
+    if not 1 <= n_clusters <= n:
+        raise ValueError("incorrect n_clusters")
+    if not n-1 == mst_d.shape[0]:
+        raise ValueError("ill-defined MST")
+
+
+    cdef np.ndarray[Py_ssize_t] labels_
+    cdef np.ndarray[Py_ssize_t] links_
+    cdef np.ndarray[int] is_noise_
+    cdef Py_ssize_t n_clusters_
+
+    _openmp_set_num_threads()
+
+    cdef c_lumbermark.CLumbermark[floatT] l
+    l = c_lumbermark.CLumbermark[floatT](&mst_d[0], &mst_i[0,0], n)
+
+    n_clusters_ = l.compute(
+        n_clusters, min_cluster_size, min_cluster_factor, skip_leaves
+    )
+
+    if n_clusters_ <= 0:
+        raise RuntimeError("no clusters detected")
+
+    links_ = np.empty(n_clusters_-1, dtype=np.intp)
+    l.get_links(&links_[0])
+
+    labels_ = np.empty(n, dtype=np.intp)
+    l.get_labels(&labels_[0])
+
+    is_noise_ = np.empty(n, dtype=np.int)
+    l.get_is_noise(&is_noise_[0])
+
+    return dict(
+        labels=labels_,
+        n_clusters=n_clusters_,
+        links=links_,
+        is_noise=is_noise_
+    )

@@ -191,8 +191,7 @@ def _eugeniusz(
     mst_labels = None
 
     return (
-        labels, mst_w, mst_e, mst_labels, mst_s,
-        left_edges, np.inf
+        labels, mst_w, mst_e, mst_labels, mst_s, left_edges
     )
 
 
@@ -247,8 +246,7 @@ class Eugeniusz(BaseEstimator, ClusterMixin):
             self._tree_e,
             self._tree_labels,
             self._tree_s,
-            self._tree_skiplist,
-            self._tree_cutting,
+            self._tree_cutlist
         ) = _eugeniusz(
             self.X,
             n_clusters=self.n_clusters,

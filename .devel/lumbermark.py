@@ -1,8 +1,8 @@
 """
-Lumbermark: A Robust Divisive Clustering Algorithm based on Spanning Trees.
+Lumbermark: A Robust Divisive Clustering Algorithm based on Spanning Trees
+(a first Python prototype)
 
-Detects a specific number of clusters
-as well as classifies points as noise/outliers.
+May 2025 (no longer updated)
 
 TODO: self._is_noise !!!!
 """
@@ -77,7 +77,7 @@ def _lumbermark(
 
 
     _o = np.argsort(mst_w)[::-1]
-    mst_w = mst_w[_o]  # weights sorted decreasingly
+    mst_w = mst_w[_o]  # weights sorted decreasingly TODO: they're already sorted increasingly...
     mst_e = mst_e[_o, :]
 
 
@@ -184,7 +184,7 @@ def _lumbermark(
             assert c == n_clusters
             return (
                 labels, mst_w, mst_e, mst_labels, mst_s,
-                mst_skiplist, cutting_e
+                mst_skiplist
             )
         else:
             mst_skiplist.append(cutting_e)
@@ -246,8 +246,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             self._tree_e,
             self._tree_labels,
             self._tree_s,
-            self._tree_skiplist,
-            self._tree_cutting,
+            self._tree_cutlist
         ) = _lumbermark(
             self.X,
             n_clusters=self.n_clusters,

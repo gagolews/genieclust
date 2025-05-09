@@ -8,8 +8,9 @@
 
 
 """
-Graph pre-processing and other functions
+Provides access to the CGenie and CGIc classes.
 """
+
 
 # ############################################################################ #
 #                                                                              #
@@ -29,9 +30,15 @@ Graph pre-processing and other functions
 # ############################################################################ #
 
 
-cdef extern from "../src/c_preprocess.h":
-    cdef void Cget_graph_node_degrees(Py_ssize_t* ind, Py_ssize_t m,
-            Py_ssize_t n, Py_ssize_t* deg)
+cdef extern from "../src/c_lumbermark.h":
 
-    cdef void Cget_graph_node_adjlists(Py_ssize_t* ind, Py_ssize_t m,
-            Py_ssize_t n, Py_ssize_t* deg, Py_ssize_t* data, Py_ssize_t** adj)
+    cdef cppclass CLumbermark[T]:
+        CLumbermark() except +
+        CLumbermark(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n) except +
+        Py_ssize_t compute(
+            Py_ssize_t n_clusters, Py_ssize_t min_cluster_size,
+            T min_cluster_factor, bint skip_leaves
+        ) except +
+        void get_labels(Py_ssize_t* res)
+        void get_links(Py_ssize_t* res)
+        void get_is_noise(int* res)

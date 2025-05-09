@@ -1,10 +1,10 @@
 # Changelog
 
-## 1.x.x (2025-xx-xx)
+## 1.2.x (2025-xx-xx)
 
 * [Python and R] A specialised (slightly faster due to better locality
     of reference) version of the Jarnik-Prim algorithm for computing
-    Euclidean MSTs has been added and now it is applied automatically
+    Euclidean MSTs has been added. It is now applied automatically
     where applicable.
 
 * [Python and R] The `mlpack` package is now required.

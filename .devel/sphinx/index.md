@@ -18,7 +18,7 @@ The idea behind *Genie* is beautifully simple. First, make each individual
 point the sole member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes** a point group of the
-smallest size will sometimes be matched with its nearest neighbours.
+smallest size will sometimes be combined with its nearest counterpart.
 
 Genie's appealing simplicity goes hand in hand with its usability;
 it **often outperforms other clustering approaches**
@@ -28,21 +28,18 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
-Thanks to its being based on minimum spanning trees {cite}`cvimst`
-of the pairwise distance graphs, Genie is also **very fast** — determining
+Genie is based on minimum spanning trees {cite}`cvimst`
+of the pairwise distance graphs. Thus, it is also **very fast** — determining
 the whole cluster hierarchy for datasets of millions of points, can be
-completed within {any}`minutes <weave/timings>`.
-Therefore, it is capable of solving **extreme clustering tasks**
-(large datasets with any number of clusters to detect)
-on data that fit into memory.
-Thanks to the use of *nmslib* {cite}`nmslib` (if available),
-sparse or string inputs are also supported.
+completed within {any}`minutes <weave/timings>`. Therefore, it is capable
+of solving **extreme clustering tasks** (large datasets with any number
+of clusters to detect) on data that fit into memory.
 
 Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a robustified version
 of *HDBSCAN\** {cite}`hdbscan` that is able to detect a predefined
-number of clusters and so it doesn't dependent on the *DBSCAN*'s somewhat
-difficult-to-set `eps` parameter.
+number of clusters (actually, a whole hierarchy thereof). Hence, it doesn't
+dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 
 
@@ -115,8 +112,7 @@ The implemented algorithms include:
     outputs clusters of predefined sizes;
 
 -   *GIc* (*Genie+Information Criterion*) –
-    a heuristic agglomerative algorithm {cite}`cenaphd` to minimise the information
-    theoretic criterion {cite}`itm`; see {cite}`cvimst`
+    a heuristic agglomerative algorithm {cite}`cenaphd` to minimise an information-theoretic criterion {cite}`itm`; see {cite}`cvimst`
     *(Python only)*.
 
 Other features:
@@ -125,10 +121,9 @@ Other features:
     and De Vergottini indices;
 
 -   external cluster validity measures (see {cite}`nca,clustering-benchmarks`
-    for discussion):
-    normalised clustering accuracy (NCA) and partition similarity scores such as
-    normalised pivoted accuracy (NPA), pair sets index (PSI) {cite}`psi`,
-    adjusted/unadjusted Rand, adjusted/unadjusted Fowlkes–Mallows (FM),
+    for discussion): normalised clustering accuracy (NCA) and partition
+    similarity scores such as normalised pivoted accuracy (NPA),
+    adjusted/unadjusted Rand (AR), adjusted/unadjusted Fowlkes–Mallows (FM),
     adjusted/normalised/unadjusted mutual information (MI) indices;
 
 -   internal cluster validity measures (see {cite}`cvi` for discussion):
@@ -144,9 +139,8 @@ Other features:
 
 ## Contributing
 
-*genieclust* is distributed
-under the open source GNU AGPL v3 license and can be downloaded from
-[GitHub](https://github.com/gagolews/genieclust).
+*genieclust* is distributed under the open source GNU AGPL v3 license
+and can be downloaded from [GitHub](https://github.com/gagolews/genieclust).
 The core functionality is implemented in the form of a header-only C++
 library, so it may be adapted to new environments relatively easily —
 any valuable contributions are welcome (Julia, Matlab, etc.).
@@ -157,7 +151,7 @@ any valuable contributions are welcome (Julia, Matlab, etc.).
 Contributors:
 [Maciej Bartoszuk](http://bartoszuk.rexamine.com) and
 [Anna Cena](https://cena.rexamine.com)
-(*genieclust*'s predecessor [*genie*](https://cran.r-project.org/web/packages/genie)  {cite}`genieins`
+(*genieclust*'s predecessor [*genie*](https://cran.r-project.org/web/packages/genie) {cite}`genieins`
 and some internal cluster validity measures [*CVI*](https://github.com/gagolews/optim_cvi)  {cite}`cvi`);
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)

@@ -31,19 +31,22 @@ Provides access to the CGenie and CGIc classes.
 
 
 cdef extern from "../src/c_genie.h":
+
     cdef cppclass CGenie[T]:
         CGenie() except +
-        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint noise_leaves, bint experimental_forced_merge) except +
-        void apply_genie(Py_ssize_t n_clusters, double gini_threshold)  except +
+        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves, bint experimental_forced_merge) except +
+        void compute(Py_ssize_t n_clusters, double gini_threshold) except +
         Py_ssize_t get_max_n_clusters()
         Py_ssize_t get_links(Py_ssize_t* res)
         Py_ssize_t get_labels(Py_ssize_t n_clusters, Py_ssize_t* res)
         void get_labels_matrix(Py_ssize_t n_clusters, Py_ssize_t* res)
+        void get_is_noise(int* res)
+
 
     cdef cppclass CGIc[T]:
         CGIc() except +
-        CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint noise_leaves) except +
-        void apply_gic(Py_ssize_t n_clusters, Py_ssize_t add_clusters,
+        CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
+        void compute(Py_ssize_t n_clusters, Py_ssize_t add_clusters,
             double n_features, double* gini_thresholds, Py_ssize_t n_thresholds)  except +
         Py_ssize_t get_max_n_clusters()
         Py_ssize_t get_links(Py_ssize_t* res)
