@@ -300,7 +300,7 @@ IntegerVector dot_genie(
     }
 
     CGenie<double> g(mst_d.data(), mst_i.data(), n, detect_noise);
-    g.apply_genie(k, gini_threshold);
+    g.compute(k, gini_threshold);
 
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
@@ -367,7 +367,7 @@ List dot_gclust(
     }
 
     CGenie<double> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
-    g.apply_genie(1, gini_threshold);
+    g.compute(1, gini_threshold);
 
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
