@@ -34,10 +34,10 @@ cdef extern from "../src/c_lumbermark.h":
 
     cdef cppclass CLumbermark[T]:
         CLumbermark() except +
-        CLumbermark(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n) except +
+        CLumbermark(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
         Py_ssize_t compute(
             Py_ssize_t n_clusters, Py_ssize_t min_cluster_size,
-            T min_cluster_factor, bint skip_leaves
+            T min_cluster_factor
         ) except +
         void get_labels(Py_ssize_t* res)
         void get_links(Py_ssize_t* res)

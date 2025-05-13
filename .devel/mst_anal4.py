@@ -49,7 +49,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # TODO...
 np.random.seed(123)
-X = np.random.rand(100, 2)
+X = np.random.rand(10, 2)
 mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
 n = X.shape[0]
 n_clusters = 3
@@ -57,6 +57,8 @@ min_cluster_size = 10
 min_cluster_factor = 0.25
 skip_leaves = True
 l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
+
+print(l)
 stop()
 # TODO...
 

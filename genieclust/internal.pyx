@@ -40,6 +40,7 @@ import numpy as np
 cimport numpy as np
 np.import_array()
 import os
+import warnings
 
 cimport libc.math
 from libcpp cimport bool
@@ -1764,7 +1765,7 @@ cpdef dict lumbermark_from_mst(
 
     if not 1 <= n_clusters <= n:
         raise ValueError("incorrect n_clusters")
-    if not n-1 == mst_d.shape[0]:
+    if not n-1 == mst_d.shape[0] and n > 1:
         raise ValueError("ill-defined MST")
 
 
@@ -1776,14 +1777,16 @@ cpdef dict lumbermark_from_mst(
     _openmp_set_num_threads()
 
     cdef c_lumbermark.CLumbermark[floatT] l
-    l = c_lumbermark.CLumbermark[floatT](&mst_d[0], &mst_i[0,0], n)
+    l = c_lumbermark.CLumbermark[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
 
     n_clusters_ = l.compute(
-        n_clusters, min_cluster_size, min_cluster_factor, skip_leaves
+        n_clusters, min_cluster_size, min_cluster_factor
     )
 
     if n_clusters_ <= 0:
         raise RuntimeError("no clusters detected")
+    elif n_clusters_ != n_clusters:
+        warnings.warn("the number of clusters detected does not match the requested one")
 
     links_ = np.empty(n_clusters_-1, dtype=np.intp)
     l.get_links(&links_[0])

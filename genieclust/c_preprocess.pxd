@@ -33,5 +33,5 @@ cdef extern from "../src/c_preprocess.h":
     cdef void Cget_graph_node_degrees(Py_ssize_t* ind, Py_ssize_t m,
             Py_ssize_t n, Py_ssize_t* deg)
 
-    cdef void Cget_graph_node_adjlists(Py_ssize_t* ind, Py_ssize_t m,
+    cdef void Cget_graph_node_inclists(Py_ssize_t* ind, Py_ssize_t m,
             Py_ssize_t n, Py_ssize_t* deg, Py_ssize_t* data, Py_ssize_t** adj)

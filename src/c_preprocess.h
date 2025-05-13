@@ -63,7 +63,7 @@ void Cget_graph_node_degrees(
 
 
 
-/*! Compute the adjacency list of each vertex in an undirected graph
+/*! Compute the incidence list of each vertex in an undirected graph
  *  over a vertex set {0,...,n-1}.
  *
  * @param ind c_contiguous matrix of size m*2,
@@ -74,21 +74,21 @@ void Cget_graph_node_degrees(
  * @param deg array of size n, where deg[i] gives the degree of the i-th vertex.
  * @param data [out] a data buffer of length 2*m, provides data for adj
  * @param adj [out] an array of length n+1, where adj[i] will be an array
- *     of length deg[i] giving the nodes adjacent to the i-th vertex;
+ *     of length deg[i] giving the edges incident on the i-th vertex;
  *     adj[n] is a sentinel element
  */
-void Cget_graph_node_adjlists(
+void Cget_graph_node_inclists(
     const Py_ssize_t* ind,
     const Py_ssize_t m,
     const Py_ssize_t n,
     const Py_ssize_t* deg,
     Py_ssize_t* data,
-    Py_ssize_t** adj
+    Py_ssize_t** inc
 ) {
     Py_ssize_t cumdeg = 0;
-    adj[0] = data;
+    inc[0] = data;
     for (Py_ssize_t i=0; i<n; ++i) {
-        adj[i+1] = data+cumdeg;
+        inc[i+1] = data+cumdeg;
         cumdeg += deg[i];
     }
 
@@ -107,18 +107,18 @@ void Cget_graph_node_adjlists(
             throw std::domain_error("Self-loops are not allowed");
 #endif
 
-        *(adj[u+1]) = v;
-        ++(adj[u+1]);
+        *(inc[u+1]) = i;
+        ++(inc[u+1]);
 
-        *(adj[v+1]) = u;
-        ++(adj[v+1]);
+        *(inc[v+1]) = i;
+        ++(inc[v+1]);
     }
 
 #ifdef DEBUG
     cumdeg = 0;
-    adj[0] = data;
+    inc[0] = data;
     for (Py_ssize_t i=0; i<n; ++i) {
-        GENIECLUST_ASSERT(adj[i] == data+cumdeg);
+        GENIECLUST_ASSERT(inc[i] == data+cumdeg);
         cumdeg += deg[i];
     }
 #endif
