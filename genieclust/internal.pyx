@@ -1771,7 +1771,7 @@ cpdef dict lumbermark_from_mst(
 
     cdef np.ndarray[Py_ssize_t] labels_
     cdef np.ndarray[Py_ssize_t] links_
-    cdef np.ndarray[int] is_noise_
+    cdef np.ndarray[bool] is_noise_
     cdef Py_ssize_t n_clusters_
 
     _openmp_set_num_threads()
@@ -1794,7 +1794,7 @@ cpdef dict lumbermark_from_mst(
     labels_ = np.empty(n, dtype=np.intp)
     l.get_labels(&labels_[0])
 
-    is_noise_ = np.empty(n, dtype=np.int)
+    is_noise_ = np.empty(n, dtype=np.bool)
     l.get_is_noise(&is_noise_[0])
 
     return dict(

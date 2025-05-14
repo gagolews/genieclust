@@ -41,4 +41,4 @@ cdef extern from "../src/c_lumbermark.h":
         ) except +
         void get_labels(Py_ssize_t* res)
         void get_links(Py_ssize_t* res)
-        void get_is_noise(int* res)
+        void get_is_noise(bint* res)

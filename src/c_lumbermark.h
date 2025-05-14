@@ -28,6 +28,8 @@
 #include "c_preprocess.h"
 
 #include <limits>
+
+// special vertex/edge markers - must be negative!
 #define LUMBERMARK_UNSET     (std::numeric_limits<Py_ssize_t>::min())
 #define LUMBERMARK_CUTEDGE   (LUMBERMARK_UNSET+1)
 #define LUMBERMARK_NOISEEDGE (LUMBERMARK_UNSET+2)
@@ -68,16 +70,17 @@ protected:
     std::vector<Py_ssize_t> mst_labels;  //<! edge labels, size n-1
     std::vector<Py_ssize_t> labels;  //<! node labels, size n, in 1..n_clusters and -1..-n_clusters (noise/boundary points)
     std::vector<Py_ssize_t> mst_cutsizes;  //<!  size (n-1)*2, each pair gives the sizes of the clusters that are formed when we cut out the corresponding edge
-    std::vector<Py_ssize_t> cluster_sizes; //<!  size n_clusters
+
+    //std::vector<Py_ssize_t> cluster_sizes; //<!  size n_clusters
     std::vector<Py_ssize_t> cut_edges; //<!  size n_clusters-1
 
 
-    /*! vertex visitor (0th pass):
+    /*! vertex visitor (1st pass):
      *  going from v, visits w and then all its neighbours, mst_i[e,:] = {v,w};
      *  marks edges incident on leaves as noise edges,
      *  checks if the graph is acyclic
      */
-    void visit0(Py_ssize_t v, Py_ssize_t e)
+    Py_ssize_t visit1(Py_ssize_t v, Py_ssize_t e)
     {
         Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
         Py_ssize_t w = mst_i[2*e+(1-iv)];
@@ -86,50 +89,22 @@ protected:
         GENIECLUST_ASSERT(e >= 0 && e < n-1);
         GENIECLUST_ASSERT(v >= 0 && v < n);
         GENIECLUST_ASSERT(w >= 0 && w < n);
-        GENIECLUST_ASSERT(labels[v] == 0);
+        GENIECLUST_ASSERT(labels[v] == 1 || labels[v] == -1);
         GENIECLUST_ASSERT(mst_labels[e] == LUMBERMARK_UNSET);
         GENIECLUST_ASSERT(labels[w] == LUMBERMARK_UNSET);
 
-        labels[w] = 0;
-
-        if (skip_leaves && deg[w] == 1)
+        Py_ssize_t tot = 0;
+        if (skip_leaves && deg[w] == 1) {
+            labels[w] = -1;
             mst_labels[e] = LUMBERMARK_NOISEEDGE;
-        else
-            mst_labels[e] = 0;
-
-        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
-            if (*e2 != e) visit0(w, *e2);
-        }
-
-    }
-
-    /*! vertex visitor (kth pass):
-     *  going from v, visits w and then all its neighbours, mst_i[e,:] = {v,w};
-     *  marks them as members of the c-th cluster. */
-    Py_ssize_t visit(Py_ssize_t v, Py_ssize_t e, Py_ssize_t c)
-    {
-        if (mst_labels[e] == LUMBERMARK_CUTEDGE)
-            return 0;
-
-        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
-        Py_ssize_t w = mst_i[2*e+(1-iv)];
-        //     so v == mst_i[2*e+iv]
-
-        // don't count vertices incident to noise edges
-        Py_ssize_t tot = (mst_labels[e] != LUMBERMARK_NOISEEDGE);
-
-        GENIECLUST_ASSERT(c > 0);
-        if (mst_labels[e] != LUMBERMARK_NOISEEDGE) {
-            labels[w] = c;
-            mst_labels[e] = c;
         }
         else {
-            labels[w] = -c;
-            // mst_labels[e] = LUMBERMARK_NOISEEDGE;  // already is
+            labels[w] = 1;
+            mst_labels[e] = 1;
         }
 
         for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
-            if (*e2 != e) tot += visit(w, *e2, c);
+            if (*e2 != e) tot += visit1(w, *e2);
         }
 
         mst_cutsizes[2*e+(1-iv)] = tot;
@@ -139,6 +114,82 @@ protected:
     }
 
 
+    /*! vertex visitor (kth pass):
+     *  going from v, visits w and then all its neighbours, mst_i[e,:] = {v,w};
+     *  marks them as members of the c-th cluster. */
+    Py_ssize_t visitk(Py_ssize_t v, Py_ssize_t e, Py_ssize_t c)
+    {
+        if (mst_labels[e] == LUMBERMARK_CUTEDGE)
+            return 0;
+
+        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
+        Py_ssize_t w = mst_i[2*e+(1-iv)];
+        //     so v == mst_i[2*e+iv]
+
+        Py_ssize_t tot = 0;
+        GENIECLUST_ASSERT(c > 0);
+        if (mst_labels[e] == LUMBERMARK_NOISEEDGE) {
+            labels[w] = -c;
+            // mst_labels[e] = LUMBERMARK_NOISEEDGE;  // already is
+            // don't count vertices incident to noise edges
+        }
+        else {
+            labels[w] = c;
+            mst_labels[e] = c;
+            tot++;
+        }
+
+        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
+            if (*e2 != e) tot += visitk(w, *e2, c);
+        }
+
+        mst_cutsizes[2*e+(1-iv)] = tot;
+        mst_cutsizes[2*e+iv] = LUMBERMARK_UNSET;  // t.b.d. later
+
+        return tot;
+    }
+
+
+    void init_labels()
+    {
+        labels.resize(n);
+        for (Py_ssize_t v=0; v<n; ++v)
+            labels[v] = LUMBERMARK_UNSET;
+
+        mst_labels.resize(n-1);
+        for (Py_ssize_t e=0; e<n-1; ++e)
+            mst_labels[e] = LUMBERMARK_UNSET;
+
+        mst_cutsizes.resize((n-1)*2);
+
+        // ensure that the graph is acyclic:
+        // visit all nodes starting from a non-leaf and incident to edge 0,
+        // and mark edges as noise/boundary is skip_leaves is true
+        Py_ssize_t v = mst_i[2*0+0];
+        if (deg[v] <= 1) {
+            v = mst_i[2*0+1];
+            GENIECLUST_ASSERT(deg[v] > 1);
+        }
+
+        Py_ssize_t tot = 1;
+        labels[v] = 1;
+        for (Py_ssize_t* e2 = inc[v]; e2 != inc[v+1]; e2++) {
+            tot += visit1(v, *e2);
+        }
+
+        // ensure all vertices and edges are reachable:
+        for (Py_ssize_t v=0; v<n; ++v)
+            GENIECLUST_ASSERT(labels[v] == 1 || labels[v] == -1);
+        for (Py_ssize_t e=0; e<n-1; ++e)
+            GENIECLUST_ASSERT(mst_labels[e] != LUMBERMARK_UNSET);
+
+        for (Py_ssize_t e=0; e<n-1; ++e) {
+            if (mst_cutsizes[2*e+0] == LUMBERMARK_UNSET)
+                mst_cutsizes[2*e+0] = tot - mst_cutsizes[2*e+1];
+            else
+                mst_cutsizes[2*e+1] = tot - mst_cutsizes[2*e+0];
+        }
+    }
 
 
 public:
@@ -203,63 +254,49 @@ public:
             n_skip += (n_clusters-1)*2;
 
             // n_skip += n_leaves;
-            for (Py_ssize_t i=0; i<n; ++i)
-                if (deg[i] <= 1) n_skip++;
+            for (Py_ssize_t v=0; v<n; ++v)
+                if (deg[v] <= 1) n_skip++;
         }
         // else {  // TODO: not true if the graph is not connected
-        //     for (Py_ssize_t i=0; i<n; ++i)
-        //         if (deg[i] <= 0) n_skip++;
+        //     for (Py_ssize_t v=0; v<n; ++v)
+        //         if (deg[v] <= 0) n_skip++;
         // }
-
 
         min_cluster_size = std::max(
             min_cluster_size,
             (Py_ssize_t)(min_cluster_factor*(n-n_skip)/n_clusters)
         );
 
-        labels.resize(n);
-        for (Py_ssize_t i=0; i<n; ++i)
-            labels[i] = LUMBERMARK_UNSET;
 
-        mst_labels.resize(n-1);
-        for (Py_ssize_t i=0; i<n-1; ++i)
-            mst_labels[i] = LUMBERMARK_UNSET;
+        init_labels();
 
-        // ensure that the graph is acyclic:
-        // visit all nodes starting from a non-leaf and incident to edge 0,
-        // and mark edges as noise/boundary is skip_leaves is true
-        Py_ssize_t v = mst_i[2*0+0];
-        if (deg[v] <= 1) {
-            v = mst_i[2*0+1];
-            GENIECLUST_ASSERT(deg[v] > 1);
-        }
-
-        labels[v] = 0;
-        for (Py_ssize_t* e2 = inc[v]; e2 != inc[v+1]; e2++) {
-            visit0(v, *e2);
-        }
-
-        // ensure all vertices and edges are reachable:
-        for (Py_ssize_t i=0; i<n;   ++i)
-            GENIECLUST_ASSERT(labels[i] == 0);
-        for (Py_ssize_t i=0; i<n-1; ++i)
-            GENIECLUST_ASSERT(mst_labels[i] != LUMBERMARK_UNSET);
-
-
-        mst_cutsizes.resize((n-1)*2);
-        cluster_sizes.resize(n_clusters);
         cut_edges.resize(n_clusters-1);
+        //cluster_sizes.resize(n_clusters);
 
-        // todo: mark as 1 in visit0?
+        Py_ssize_t n_clusters_ = 1;
+        Py_ssize_t e_last = n-1;  // edges are consumed in decreasing order
 
-        Py_ssize_t iter = 0;
-        // while (iter < n_clusters)
-        // {
-        //
-        //     iter++;
-        // }
 
-        return iter;
+        while (n_clusters_ <= n_clusters)
+        {
+            do {
+                e_last--;
+                if (e_last < 0) {
+                    cut_edges.resize(n_clusters_);
+                    return n_clusters_; // unfortunately, that's it.
+                }
+            } while (!(
+                mst_labels[e_last] > 0 &&
+                std::min(mst_cutsizes[2*e_last+0], mst_cutsizes[2*e_last+1]) > min_cluster_size
+            ));
+
+            cut_edges[n_clusters_-1] = e_last;
+
+            n_clusters_++;
+        }
+
+        // return n_clusters_ TODO
+        return 0;
     }
 
 
@@ -269,15 +306,13 @@ public:
      *
      *  @param res [out] array of length n
      */
-    void get_is_noise(int* res) const
+    void get_is_noise(bool* res) const
     {
-        // TODO
-
-        for (Py_ssize_t i=0; i<n; ++i) {
-            res[i] = (this->skip_leaves && this->deg[i] <= 1);
+        for (Py_ssize_t v=0; v<n; ++v) {
+            GENIECLUST_ASSERT(labels[v] != LUMBERMARK_UNSET);
+            GENIECLUST_ASSERT(labels[v] != 0);
+            res[v] = (bool)(labels[v] < 0);
         }
-
-        // ... TODO .... // or is of degree two but is adjacent to one of the cut edges.
     }
 
 
@@ -290,7 +325,12 @@ public:
      */
     void get_labels(Py_ssize_t* res)
     {
-        // TODO ...
+        for (Py_ssize_t v=0; v<n; ++v) {
+            GENIECLUST_ASSERT(labels[v] != LUMBERMARK_UNSET);
+            GENIECLUST_ASSERT(labels[v] != 0);
+            if (labels[v] > 0) res[v] = labels[v]-1;
+            else res[v] = (-labels[v])-1;
+        }
     }
 
 
@@ -301,7 +341,8 @@ public:
      */
     void get_links(Py_ssize_t* res)
     {
-        // TODO ...
+        for (Py_ssize_t i=0; i<cut_edges.size(); ++i)
+            res[i] = cut_edges[i];
     }
 };
 
