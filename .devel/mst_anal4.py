@@ -46,21 +46,27 @@ sys.setrecursionlimit(100000)
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-
-# TODO...
-np.random.seed(123)
-X = np.random.rand(10, 2)
-mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
-n = X.shape[0]
-n_clusters = 3
-min_cluster_size = 10
-min_cluster_factor = 0.25
-skip_leaves = True
-l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
-
-print(l)
-stop()
-# TODO...
+# np.random.seed(123)
+# X = np.random.randn(100, 2)
+# mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+# n = X.shape[0]
+# n_clusters = 3
+# min_cluster_size = 10
+# min_cluster_factor = 0.25
+# skip_leaves = True
+# l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
+#
+# print(l)
+#
+# y_pred = l["labels"]+1
+# is_noise = l["is_noise"]
+# genieclust.plots.plot_segments(mst_e, X, alpha=0.2)
+# genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
+# genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)
+# plt.axis("equal")
+# plt.show()
+# stop()
+# # TODO...
 
 
 
@@ -91,7 +97,7 @@ for ex in range(n_examples):
 
     algo = 0
     if algo == 0:
-        L = lumbermark.Lumbermark(n_clusters=n_clusters)
+        L = lumbermark.Lumbermark(n_clusters=n_clusters, skip_leaves=True)
         #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
         #L = lumbermark.Lumbermark(n_clusters=n_clusters)
         # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
@@ -178,3 +184,4 @@ for ex in range(n_examples):
 
 plt.tight_layout()
 print("Average NCA=%.2f" % np.mean(ncas))
+plt.show()

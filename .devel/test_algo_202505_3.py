@@ -1,5 +1,10 @@
 """
 Lumbermark: A Robust Divisive Clustering Algorithm based on Spanning Trees
+(a first Python prototype)
+
+May 2025 (no longer updated) - prototype, rewritten in C++ later
+
+TODO: self._is_noise !!!!
 """
 
 # ############################################################################ #
@@ -26,6 +31,11 @@ import genieclust
 from sklearn.base import BaseEstimator, ClusterMixin
 import matplotlib.pyplot as plt
 
+SKIP = np.iinfo(int).min  # must be negative
+UNSET = -1 # must be negative
+NOISE = 0  # must be 0
+
+
 
 def _lumbermark(
     X,
@@ -43,7 +53,7 @@ def _lumbermark(
     n = X.shape[0]
 
 
-    if M <= 2:
+    if M <= 1:
         mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
     else:
         if M-1 >= X.shape[0]:
@@ -66,20 +76,118 @@ def _lumbermark(
         mst_e = np.c_[ _o[mst_e[:, 0]], _o[mst_e[:, 1]] ]
 
 
-    _o = np.argsort(mst_w)
-    mst_w = mst_w[_o]
+    _o = np.argsort(mst_w)[::-1]
+    mst_w = mst_w[_o]  # weights sorted decreasingly TODO: they're already sorted increasingly...
     mst_e = mst_e[_o, :]
 
-    l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
 
-    return (
-        l["labels"],
-        mst_w,
-        mst_e,
-        l["n_clusters"],
-        l["links"],
-        l["is_noise"]
-    )
+    # TODO: store as two arrays: indices, indptr (compressed sparse row format)
+    mst_a = [ [] for i in range(n) ]
+    for i in range(n-1):
+        mst_a[mst_e[i, 0]].append(i)
+        mst_a[mst_e[i, 1]].append(i)
+    n_leaves = 0
+    for i in range(n):
+        mst_a[i] = np.array(mst_a[i])
+        if len(mst_a[i]) == 1:
+            n_leaves += 1
+    mst_a = np.array(mst_a, dtype="object")
+
+    if skip_leaves:
+        min_cluster_size = max(min_cluster_size, min_cluster_factor*(n-n_leaves)/n_clusters)
+    else:
+        min_cluster_size = max(min_cluster_size, min_cluster_factor*n/n_clusters)
+
+    def visit(v, e, c):  # v->w  where mst_e[e,:]={v,w}
+        if mst_labels[e] == SKIP or (c != NOISE and mst_labels[e] == NOISE):
+            return 0
+        iv = int(mst_e[e, 1] == v)
+        w = mst_e[e, 1-iv]
+        tot = 1
+        for e2 in mst_a[w]:
+            if mst_e[e2, 0] != v and mst_e[e2, 1] != v:
+                tot += visit(w, e2, c)
+        mst_s[e, iv] = tot if c != NOISE else -1
+        mst_s[e, 1-iv] = 0
+
+        labels[w] = c
+        mst_labels[e] = c
+
+        return tot
+
+
+    def mark_clusters():
+        c = 0
+        for v in range(n):
+            if labels[v] == UNSET:
+                c += 1
+                labels[v] = c
+                for e in mst_a[v]:
+                    visit(v, e, c)
+
+        # c is the number of clusters
+        counts = np.bincount(labels)  # cluster counts, counts[0] == number of noise points
+
+        # fix mst_s now that we know the cluster sizes
+        for i in range(n-1):
+            if mst_labels[i] > 0:
+                j = int(mst_s[i, 1] == 0)
+                mst_s[i, j] = counts[np.abs(mst_labels[i])]-mst_s[i, 1-j]
+        min_mst_s = np.min(mst_s, axis=1)
+
+        return c, counts, min_mst_s
+
+
+    mst_skiplist = []
+    c = len(mst_skiplist)
+    while True:
+        last_iteration = (len(mst_skiplist)+1 >= n_clusters)
+
+        mst_s = np.zeros((n-1, 2), dtype=int)  # sizes: mst_s[e, 0] is the size of the cluster that appears when we .... TODO
+        labels = np.repeat(UNSET, n)
+        mst_labels = np.repeat(UNSET, n-1)
+        for s in mst_skiplist:
+            mst_labels[s] = SKIP  # mst_skiplist
+
+        if skip_leaves and not last_iteration:
+            for i in range(n):
+                if len(mst_a[i]) == 1:  # a leaf
+                    labels[i] = NOISE
+                    mst_labels[mst_a[i][0]] = NOISE
+            # TODO: mark vertices incident to edges in mst_skiplist as noise
+            # TODO: is_noise
+
+        c, counts, min_mst_s = mark_clusters()
+        # TODO: no need to start from all clusters!
+        assert c == len(mst_skiplist)+1
+
+
+        # the longest node that yields not too small a cluster
+        is_limb = (mst_labels > 0)
+
+        is_limb &= (min_mst_s >= min(min_cluster_size, np.max(min_mst_s[is_limb])))
+
+        # alternatively - worse
+        # is_limb &= (min_mst_s >= 10)
+        # is_limb &= (np.min(mst_s, axis=1)/np.max(mst_s, axis=1)) >= 0.25
+
+        #_ee = min_mst_s[(mst_labels > 0)]/min_cluster_size
+        #print(np.round(_ee[_ee>0.49], 2))
+
+        which_limbs = np.flatnonzero(is_limb)  # TODO: we just need the first non-zero here....
+        cutting_e = which_limbs[0]
+        cutting_w = mst_w[cutting_e]
+
+        labels = labels - 1   # 1-based to 0-based !!!
+
+        if last_iteration:
+            assert c == n_clusters
+            return (
+                labels, mst_w, mst_e, mst_labels, mst_s,
+                mst_skiplist
+            )
+        else:
+            mst_skiplist.append(cutting_e)
 
 
 
@@ -91,8 +199,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         n_clusters,
         min_cluster_size=10,
         min_cluster_factor=0.25,  # try also 0.1 or less for clusters of imbalanced sizes
-        M=2,  # try also M=6 or M=4 or M=11  (mutual reachability distance)
-        skip_leaves=(M>1),  # better
+        M=1,  # try also M=6 or M=4 or M=11  (mutual reachability distance)
+        skip_leaves=True,  # better
         verbose=False
     ):
         self.n_clusters              = n_clusters
@@ -128,19 +236,23 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.X = np.ascontiguousarray(X)
         self.n_samples_ = self.X.shape[0]
 
+        self.M_ = self.M
+        if self.M_ is None:
+            self.M_ = max(5, int(np.sqrt(self.n_samples_/self.n_clusters*self.min_cluster_factor))) + 1
+
         (
             self.labels_,
             self._tree_w,
             self._tree_e,
-            self._n_clusters,
-            self._tree_cutlist,
-            self._is_noise
+            self._tree_labels,
+            self._tree_s,
+            self._tree_cutlist
         ) = _lumbermark(
             self.X,
             n_clusters=self.n_clusters,
             min_cluster_size=self.min_cluster_size,
             min_cluster_factor=self.min_cluster_factor,
-            M=self.M,
+            M=self.M_,
             skip_leaves=self.skip_leaves,
             verbose=self.verbose
         )
