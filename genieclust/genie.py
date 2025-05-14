@@ -578,8 +578,8 @@ class Genie(GenieBase):
         The Gini index is used to quantify the inequality of the cluster
         size distribution. Low thresholds highly penalise the formation
         of small clusters. Threshold of 1.0 disables the correction
-        and for `M` = 1 makes the method be equivalent to the single
-        linkage algorithm.
+        and makes the method be equivalent to the single
+        linkage algorithm if additionally `M` = 1 .
 
         The algorithm tends to be *stable* with respect to small changes
         to the threshold — they do not tend to affect the output clustering.
@@ -588,8 +588,8 @@ class Genie(GenieBase):
     M : int
         Smoothing factor for the mutual reachability distance [6]_.
 
-        `M` = 1 gives the original Genie algorithm  [1]_ (with no noise point
-        detection) with respect to the chosen affinity as-is. Note that
+        `M` = 1 gives the original Genie algorithm [1]_ (with no noise/boundary
+        points detection) with respect to the chosen affinity as-is. Note that
         for `M > 1` we need additionally :math:`O(M n)` working memory
         for storing of points' nearest neighbours.
 
@@ -659,7 +659,7 @@ class Genie(GenieBase):
         If ``True``, then the `labels_` attribute will be a matrix, see below.
 
     postprocess : {"boundary", "none", "all"}
-        Controls the treatment of noise points after the clusters are
+        Controls the treatment of noise/boundary points after the clusters are
         identified.
 
         In effect only if `M` > 1. Each leaf in the minimum spanning tree
@@ -670,8 +670,8 @@ class Genie(GenieBase):
 
         To force a classical `n_clusters`-partition
         of a data set (with no notion of noise), choose ``"all"``.
-        Furthermore, ``"none"`` leaves all leaves, i.e., noise points
-        (including the boundary ones) as-is.
+        Furthermore, ``"none"`` leaves all leaves, i.e., noise/boundary points
+        as-is.
 
 
     cast_float32 : bool
@@ -746,8 +746,8 @@ class Genie(GenieBase):
         If `compute_all_cuts` is ``False`` (the default),
         this is an integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the i-th object.
-        If `M` > 1, noise points are labelled -1 (unless taken care of in the
-        postprocessing stage).
+        If `M` > 1, noise/boundary points are labelled -1 (unless taken care
+        of in the postprocessing stage).
 
         Otherwise, i.e., if `compute_all_cuts` is ``True``,
         all partitions of cardinality down to `n_clusters`
@@ -768,7 +768,7 @@ class Genie(GenieBase):
 
         As we argued above, the approximate method might sometimes yield
         a more fine-grained partition than the requested one (with a warning).
-        Moreover, there might be too many noise points in the dataset.
+        Moreover, there might be too many noise/boundary points in the dataset.
 
     n_samples_ : int
         The number of points in the fitted dataset.

@@ -97,14 +97,14 @@ for ex in range(n_examples):
 
     algo = 0
     if algo == 0:
-        L = lumbermark.Lumbermark(n_clusters=n_clusters, skip_leaves=True)
+        L = lumbermark.Lumbermark(n_clusters=n_clusters, M=6, min_cluster_factor=0.25)
         #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
         #L = lumbermark.Lumbermark(n_clusters=n_clusters)
         # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
         y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
 
 
-        is_noise = np.repeat(False, X.shape[0])#L._is_noise
+        is_noise = L._is_noise  # np.repeat(False, X.shape[0])#
         tree_e = L._tree_e
         tree_w = L._tree_w
         tree_skiplist = L._tree_cutlist
@@ -167,11 +167,11 @@ for ex in range(n_examples):
 
     genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)
 
-    if tree_e is not None:
-        genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
+    # if tree_e is not None:
+        # genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
 
-    if tree_skiplist is not None:
-        genieclust.plots.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
+    # if tree_skiplist is not None:
+        # genieclust.plots.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
 
     plt.axis("equal")
 

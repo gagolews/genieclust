@@ -91,8 +91,8 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         n_clusters,
         min_cluster_size=10,
         min_cluster_factor=0.25,  # try also 0.1 or less for clusters of imbalanced sizes
-        M=2,  # try also M=6 or M=4 or M=11  (mutual reachability distance)
-        skip_leaves=(M>1),  # better
+        M=2,  # try also M=6 or M=4 or M=11  (mutual reachability distance); M=2 is M=1 but with skip_leaves
+        skip_leaves=None,  # by default, True if M>1
         verbose=False
     ):
         self.n_clusters              = n_clusters
@@ -128,6 +128,11 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.X = np.ascontiguousarray(X)
         self.n_samples_ = self.X.shape[0]
 
+        if self.skip_leaves is None:
+            self.skip_leaves_ = (self.M>1)
+        else:
+            self.skip_leaves_ = self.skip_leaves
+
         (
             self.labels_,
             self._tree_w,
@@ -141,7 +146,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             min_cluster_size=self.min_cluster_size,
             min_cluster_factor=self.min_cluster_factor,
             M=self.M,
-            skip_leaves=self.skip_leaves,
+            skip_leaves=self.skip_leaves_,
             verbose=self.verbose
         )
 
