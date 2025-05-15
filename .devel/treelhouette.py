@@ -27,12 +27,12 @@ import mst_examples
 
 def get_intercluster_distances(L):
     X = L.X
-    y_pred = L.labels_
+    y_pred = L.labels_+1
     n = X.shape[0]
-    mst_e = L._mst_e
-    mst_w = L._mst_w
+    mst_e = L._tree_e
+    mst_w = L._tree_w
     n_clusters = L.n_clusters
-    skiplist = L._mst_skiplist
+    skiplist = L._tree_cutlist
 
     mst_a = [ [] for i in range(n) ]
     for i in range(n-1):
@@ -74,14 +74,14 @@ def get_intercluster_distances(L):
 
 
 
-def treelhouette_score(L, skip_leaves=True):
+def treelhouette_score(L, skip_leaves=False):
     X = L.X
-    y_pred = L.labels_.copy()
-    mst_labels = L._mst_labels.copy()
+    y_pred = L.labels_.copy()+1
+    mst_labels = L._tree_labels.copy()
 
-    mst_e = L._mst_e
-    mst_w = L._mst_w
-    mst_s = L._mst_s
+    mst_e = L._tree_e
+    mst_w = L._tree_w
+    mst_s = L._tree_s
     min_mst_s = np.min(mst_s, axis=1)
     n = X.shape[0]
 
@@ -91,6 +91,8 @@ def treelhouette_score(L, skip_leaves=True):
         mst_labels[   (min_mst_s <= 1) & (mst_labels > 0)] = 0
 
     cluster_distances = get_intercluster_distances(L)
+    print(cluster_distances)
+
     # leave the diagonal to inf
     min_intercluster_distances = np.min(cluster_distances, axis=0)
     a = mst_w[mst_labels > 0]

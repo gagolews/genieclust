@@ -1,5 +1,6 @@
 """
 ...
+Treelhouettes 2025-05-15 presentation 1
 """
 
 # ############################################################################ #
@@ -29,12 +30,11 @@ import os.path
 import scipy.spatial
 import sys
 from importlib import reload
-import lumbermark
-lumbermark = reload(lumbermark)
-# import lumbermark2
-# lumbermark2 = reload(lumbermark2)
-# import robust_single_linkage
-# robust_single_linkage = reload(robust_single_linkage)
+import test_algo_202505_3
+test_algo_202505_3 = reload(test_algo_202505_3)
+import treelhouette
+treelhouette = reload(treelhouette)
+
 import mst_examples
 mst_examples = reload(mst_examples)
 sys.setrecursionlimit(100000)
@@ -47,15 +47,15 @@ data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
 
 plt.clf()
-X, y_true, n_clusters, skiplist, example = mst_examples.get_example(3, data_path)
+X, y_true, n_clusters, skiplist, example = mst_examples.get_example(4, data_path)
 
 n_clusters = max(y_true)
 
 # L = robust_single_linkage.RobustSingleLinkageClustering(n_clusters=n_clusters, M=1, min_cluster_factor=0.25, skip_leaves=False, min_cluster_size=10)
-L = lumbermark.Lumbermark(n_clusters=n_clusters, M=1)
+L = test_algo_202505_3.Lumbermark(n_clusters=n_clusters, M=1, min_cluster_size=15)
 # L = lumbermark2.Lumbermark2(n_clusters=n_clusters, verbose=False, n_neighbors=5, outlier_factor=1.5, noise_cluster=True)
 
-y_pred = L.fit_predict(X)  # TODO: 0-based -> 1-based!!!
+y_pred = L.fit_predict(X)+1
 
 
 # mst_examples.plot_mst_2d(L, mst_draw_edge_labels=True)
@@ -72,10 +72,10 @@ mst_draw_edge_labels = False
 mst_e = L._tree_e
 mst_w = L._tree_w
 # mst_s = L._mst_s
-min_mst_s = np.min(mst_s, axis=1)
-mst_labels = L._mst_labels
+# min_mst_s = np.min(mst_s, axis=1)
+mst_labels = L._tree_labels
 n = X.shape[0]
-skiplist = L._mst_skiplist
+skiplist = L._tree_cutlist
 cutting = None
 mst_internodes = L.__dict__.get("_mst_internodes", [])
 
@@ -94,11 +94,21 @@ mst_internodes = L.__dict__.get("_mst_internodes", [])
 # genieclust.plots.plot_segments(mst_e, X)
 # #genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1)
 
+
+plt.rcParams.update({  # further graphical parameters
+    "font.size":         15,
+    "font.family":       "sans-serif",
+    "font.sans-serif":   ["Alegreya Sans", "Alegreya"],
+    "figure.autolayout": True,
+    "figure.dpi":        120,
+    "figure.figsize":    (7, 4),
+})
+
 #
 plt.clf()
 #
 # MST
-plt.subplot(3, 2, (2, 6))
+plt.subplot(1, 2, 1)
 # nn_threshold = np.mean(nn_w[:, -1])
 # nn_w[:, -1] > nn_threshold
 # y_pred[nn_w[:, -1] > nn_threshold] = 0
@@ -120,45 +130,13 @@ genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linesty
 genieclust.plots.plot_segments(mst_e[mst_internodes,:], X, color="orange", linestyle="-", linewidth=3)
 if cutting is not None:
     genieclust.plots.plot_segments(mst_e[[cutting],:], X, color="blue", linestyle="--", alpha=1.0, linewidth=3)
-#
-#
-# Edge weights + cluster sizes
-ax1 = plt.subplot(3, 2, 1)
-op = np.flatnonzero(mst_labels>0)
-ax1.plot(mst_w[op], color='blue')
-ax2 = ax1.twinx()
-ax2.plot(np.arange(len(op)), min_mst_s[op], c='blue', alpha=0.2)
-if cutting is not None:
-    idx = np.sum(op < cutting)
-    plt.text(idx, min_mst_s[cutting], cutting, ha='center', va='bottom', color=genieclust.plots.col[mst_labels[cutting]-1])
-#
-# MST edges per cluster
-ax1 = plt.subplot(3, 2, 3)
-ax2 = ax1.twinx()
-last = 0
-for i in range(1, n_clusters+1):
-    op = np.flatnonzero(mst_labels == i)
-    len_op = len(op)
-    ax1.plot(np.arange(last, last+len_op), mst_w[op],
-        color=genieclust.plots.col[i-1])
-    ax2.plot(np.arange(last, last+len_op), min_mst_s[op], c=genieclust.plots.col[i-1], alpha=0.2)
-    if cutting is not None and mst_labels[cutting] == i:
-        idx = np.sum(op < cutting)
-        plt.text(last+idx, min_mst_s[cutting], cutting, ha='center', va='bottom', color=genieclust.plots.col[mst_labels[cutting]-1])
-    # ce = (np.arange(1, n)*internodes)[op]   # 1-shift
-    # for j in np.flatnonzero(ce):
-        # idx = ce[j]-1 # unshift
-        # plt.text(j, min_mst_s[idx], idx, ha='center', color=genieclust.plots.col[mst_labels[idx]-1])
 
-    last += len_op
-#
-#
 # treelhouette
-plt.subplot(3, 2, 5)
+plt.subplot(1, 2, 2)
 
 #
 cluster_distances = treelhouette.get_intercluster_distances(L)
-# print(np.round(cluster_distances, 2))
+print(np.round(cluster_distances, 2))
 # leave the diagonal to inf
 min_intercluster_distances = np.min(cluster_distances, axis=0)
 #
@@ -176,14 +154,16 @@ b = min_intercluster_distances[l - 1]
 s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
 o1 = np.argsort(s)[::-1]
 o2 = np.argsort(l[o1], kind='stable')
-plt.bar(np.arange(len(s)), s[o1][o2], width=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
-plt.ylim(-1, 1)
+plt.barh(np.arange(len(s))[::-1]+1, s[o1][o2], height=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
+# plt.xlim(-1, 1)
 treelhouette_score = np.mean(s)
 weighted_treelhouette_score = np.mean(mst_examples.aggregate(s, mst_labels[mst_labels>0], np.mean)[0])
 print("treelhouette_score=%.3f, weighted_treelhouette_score=%.3f" % (treelhouette_score, weighted_treelhouette_score))
-plt.axhline(treelhouette_score, color='gray')
-plt.axhline(weighted_treelhouette_score, color='lightgray')
-
+plt.axvline(treelhouette_score, color='gray')
+# plt.axhline(weighted_treelhouette_score, color='lightgray')
+plt.title("treelhouette_score=%.3f" % (treelhouette_score,))
+plt.tight_layout()
+plt.savefig(example.replace("/", "_")+".pdf")
 
 # DBSCAN is non-adaptive - cannot detect clusters of different densities well
 #plt.violinplot([ mst_w[mst_labels==i] for i in range(1, c+1) ])
