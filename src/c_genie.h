@@ -635,7 +635,7 @@ public:
  *
  *  [4] Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
  *  Clustering with Minimum Spanning Trees: How Good Can It Be?,
- *  in preparation, 2023.
+ *  Journal of Classification 42, 2025, 90-112. doi:10.1007/s00357-024-09483-1
  */
 template <class T>
 class CGIc : public CGenie<T> {

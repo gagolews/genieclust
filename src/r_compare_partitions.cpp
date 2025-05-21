@@ -179,7 +179,7 @@ std::vector<double> get_contingency_matrix(
 //' \url{https://clustering-benchmarks.gagolewski.com}.
 //'
 //' Gagolewski M., Normalised clustering accuracy: An asymmetric external
-//' cluster validity measure, \emph{Journal of Classification}, 2024, in press,
+//' cluster validity measure, \emph{Journal of Classification} 42, 2025, 2-30.
 //' \doi{10.1007/s00357-024-09482-2}.
 //'
 //' Hubert L., Arabie P., Comparing partitions,

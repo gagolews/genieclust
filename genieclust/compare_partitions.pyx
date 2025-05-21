@@ -532,7 +532,7 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     .. [2]
         Gagolewski M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, *Journal of Classification*, 2024, in press,
+        cluster validity measure, *Journal of Classification* 42, 2025, 2-30.
         https://doi.org/10.1007/s00357-024-09482-2.
 
     .. [3]
@@ -1033,7 +1033,7 @@ cpdef double normalized_clustering_accuracy(x, y=None):
 
     .. [1]
         Gagolewski M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, *Journal of Classification*, 2024, in press,
+        cluster validity measure, *Journal of Classification* 42, 2025, 2-30.
         https://doi.org/10.1007/s00357-024-09482-2.
 
     """

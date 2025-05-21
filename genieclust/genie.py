@@ -366,8 +366,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self._nn_e        = nn_e
         self._d_core      = d_core
 
-        self._is_noise           = None  # TODO
-        self._tree_cutlist      = None  # TODO
+        self._is_noise     = None  # TODO
+        self._tree_cutlist = None  # TODO
 
         return cur_state
 
@@ -905,7 +905,7 @@ class Genie(GenieBase):
     .. [7]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
-        *Journal of Classification*, 2024, in press,
+        *Journal of Classification* 42, 2025, 90-112,
         doi:10.1007/s00357-024-09483-1.
 
     """
@@ -1222,7 +1222,7 @@ class GIc(GenieBase):
     .. [4]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
-        *Journal of Classification*, 2024, in press,
+        *Journal of Classification* 42, 2025, 90-112,
         doi:10.1007/s00357-024-09483-1.
 
     """

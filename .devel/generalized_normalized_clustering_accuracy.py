@@ -7,7 +7,7 @@ Solves a 0-1 integer programming problem; hence, may be slow.
 Requires GLPK (GNU Linear Programming Kit)
 
 M. Gagolewski, Normalised Clustering Accuracy: An Asymmetric External Cluster
-Validity Measure. Journal of Classification (2024).
+Validity Measure. Journal of Classification 42, 2–30, 2025.
 https://doi.org/10.1007/s00357-024-09482-2
 """
 

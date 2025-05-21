@@ -56,14 +56,21 @@ def _lumbermark(
         # d_core = nn_dist.mean(axis=1).astype(X.dtype, order="C") NOTE: not better ;)
         d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M) # i.e., d_core = nn_dist[:, M-2].astype(X.dtype, order="C")
 
-        _o = np.argsort(d_core)[::-1]  # order wrt decreasing "core" size
+        # _o = np.argsort(d_core)[::-1]  # order wrt decreasing "core" size
+        # mst_w, mst_e = genieclust.internal.mst_from_distance(
+        #     np.ascontiguousarray(X[_o, :]),
+        #     metric="euclidean",
+        #     d_core=np.ascontiguousarray(d_core[_o]),
+        #     verbose=verbose
+        # )
+        # mst_e = np.c_[ _o[mst_e[:, 0]], _o[mst_e[:, 1]] ]
+
         mst_w, mst_e = genieclust.internal.mst_from_distance(
-            np.ascontiguousarray(X[_o, :]),
+            np.ascontiguousarray(X),
             metric="euclidean",
-            d_core=np.ascontiguousarray(d_core[_o]),
+            d_core=np.ascontiguousarray(d_core),
             verbose=verbose
         )
-        mst_e = np.c_[ _o[mst_e[:, 0]], _o[mst_e[:, 1]] ]
 
 
     _o = np.argsort(mst_w)

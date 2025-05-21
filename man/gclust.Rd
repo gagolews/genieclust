@@ -190,7 +190,7 @@ Density-based clustering based on hierarchical density estimates,
 
 Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
 Clustering with minimum spanning trees: How good can it be?,
-\emph{Journal of Classification}, 2024, in press,
+\emph{Journal of Classification} 42, 2025, 90-112,
 \doi{10.1007/s00357-024-09483-1}.
 }
 \seealso{

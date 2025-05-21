@@ -111,9 +111,9 @@ def mst_mutreach_check(X, metric='euclidean'):
             d_core=d_core)
         print("    mutreach2   %10.3fs" % (time.time()-t0,))
 
-        assert np.allclose(mst_d1.sum(), mst_d2.sum())
+        assert np.allclose(mst_d1.sum(), mst_d2.sum(), atol=1e-05, rtol=1e-03)
         #assert np.all(mst_i1 == mst_i2)   # mutreach dist - many duplicates
-        assert np.allclose(mst_d1, mst_d2)
+        assert np.allclose(mst_d1, mst_d2, atol=1e-05, rtol=1e-03)
 
     return True
 

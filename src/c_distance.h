@@ -391,13 +391,41 @@ struct CDistanceMutualReachability : public CDistance<T>
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t j=0; j<k; ++j)  { //
-            // buf[w] = max{d[w],d_core[i],d_core[w]}
             Py_ssize_t w = M[j];
             if (w == i) __buf[w] = 0.0;
             else {
-                __buf[w] = d[w];
-                if (d_core[i] > __buf[w]) __buf[w] = d_core[i];
-                if (d_core[w] > __buf[w]) __buf[w] = d_core[w];
+                // buf[w] = max{d[w],d_core[i],d_core[w]}
+                // __buf[w] = d[w];
+                // if (d_core[i] > __buf[w]) __buf[w] = d_core[i];
+                // if (d_core[w] > __buf[w]) __buf[w] = d_core[w];
+
+                T d_core_max, d_core_min;
+                if (d_core[i] >= d_core[w]) {
+                    d_core_max = d_core[i];
+                    d_core_min = d_core[w];
+                }
+                else {
+                    d_core_max = d_core[w];
+                    d_core_min = d_core[i];
+                }
+
+                if (d_core_max <= d[w]) {
+                    __buf[w] = d[w];
+                }
+                else {
+                    // make it unambiguous:
+#define MUTREACH_SHARPEN 1
+#if MUTREACH_SHARPEN == 1
+                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                    __buf[w] = d_core_max+(1e-7)*d[w]/d_core_max;        // 0.516      0.997      0.962          2         39
+#elif MUTREACH_SHARPEN == 2
+                    __buf[w] = d_core_max+(1e-7)*d_core_min/d_core_max;  // 0.517      0.997      0.962          3         39
+#elif MUTREACH_SHARPEN == 3
+                    __buf[w] = d_core_max-(1e-7)*d[w]/d_core_max;        // 0.511      0.998      0.953          4         39
+#else
+                    __buf[w] = d_core_max-(1e-7)*d_core_min/d_core_max;  // 0.518      1.000      0.947          5         38
+#endif
+                }
             }
         }
         return __buf;

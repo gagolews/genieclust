@@ -427,7 +427,7 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  methods, Machine Learning 42, 2001, pp. 9-29, DOI:10.1023/A:1007648401407.
  *
  *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
- *  cluster validity measure, Journal of Classification, 2024, in press,
+ *  cluster validity measure, Journal of Classification 42, 2025, 2-30.
  *  DOI:10.1007/s00357-024-09482-2.
  *
  *
@@ -490,7 +490,7 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  ==========
  *
  *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
- *  cluster validity measure, Journal of Classification, 2024, in press,
+ *  cluster validity measure, Journal of Classification 42, 2025, 2-30.
  *  DOI:10.1007/s00357-024-09482-2.
  *
  *

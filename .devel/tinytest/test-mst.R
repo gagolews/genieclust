@@ -55,14 +55,14 @@ for (M in c(1, 5, 10)) {
             expect_equal(t1[,2], t2[,2])
         }
 #         print(abs(sum(t1[,3])-sum(t2[,3])))
-        expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-12)
+        expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-6)
 
         if (distance == "euclidean" && M == 1) {
             t2 <- mst(X, algorithm="mlpack")
             expect_equal(t1[,1], t2[,1])
             expect_equal(t1[,2], t2[,2])
 #             print(abs(sum(t1[,3])-sum(t2[,3])))
-            expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-12)
+            expect_true(abs(sum(t1[,3])-sum(t2[,3]))<1e-9)
         }
     }
 }

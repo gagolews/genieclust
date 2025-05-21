@@ -83,24 +83,35 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 data_path = os.path.join("~", "Projects", "clustering-data-v1")
 
+plt.rcParams.update({  # further graphical parameters
+    "font.size":         5,
+    "font.family":       "sans-serif",
+    "font.sans-serif":   ["Alegreya Sans", "Alegreya"],
+    "figure.autolayout": True,
+    "figure.dpi":        150,
+    "figure.figsize":    (10,10),
+})
 
 plt.clf()
 _i = 0
-n_examples = 30
+n_examples = 47
 ncas = []
+_nrow, _ncol = int(np.floor(np.sqrt(n_examples))), int(np.ceil(np.sqrt(n_examples)))
+if _nrow*_ncol < n_examples:
+    _ncol += 1
+    assert _nrow*_ncol >= n_examples
 for ex in range(n_examples):
     _i += 1
-    plt.subplot(int(np.floor(np.sqrt(n_examples))), int(np.ceil(np.sqrt(n_examples))), _i)
-    X, y_true, n_clusters, skiplist, example = mst_examples.get_example(ex, data_path)
+    plt.subplot(_nrow, _ncol, _i)
+    X, y_true, n_clusters, example = mst_examples.get_example(ex, data_path)
 
-    n_clusters = max(y_true)
+    # if X.shape[1] != 2:
+        # continue
 
     algo = 0
     if algo == 0:
-        L = lumbermark.Lumbermark(n_clusters=n_clusters, M=6, min_cluster_factor=0.25)
-        #L = lumbermark.Lumbermark(n_clusters=n_clusters, noise_postprocess="tree", n_neighbors=10, min_cluster_size=10, min_cluster_factor=0.25, skip_leaves=True, noise_threshold="uhalf")
-        #L = lumbermark.Lumbermark(n_clusters=n_clusters)
-        # L = eugenio.Eugenio(n_clusters=n_clusters, gini_threshold=0.3, min_cluster_size=5, M=6)
+        #L = lumbermark.Lumbermark(n_clusters=n_clusters, M=6, min_cluster_factor=0.25)
+        L = genieclust.Genie(n_clusters=n_clusters, gini_threshold=0.4, M=6, postprocess="all")
         y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
 
 
@@ -163,9 +174,11 @@ for ex in range(n_examples):
 
 
     if is_noise is not None:
-        genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
+        genieclust.plots.plot_scatter(X[~is_noise,:2], labels=y_pred[~is_noise]-1)
+    else:
+        genieclust.plots.plot_scatter(X[:,:2], labels=y_pred[:]-1)
 
-    genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)
+    genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1, alpha=0.2)
 
     # if tree_e is not None:
         # genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
@@ -174,14 +187,20 @@ for ex in range(n_examples):
         # genieclust.plots.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
 
     plt.axis("equal")
+    plt.xticks([])
+    plt.yticks([])
 
     # npa = GNPA(y_true[y_true>0], y_pred[y_true>0])
     nca = genieclust.compare_partitions.normalized_clustering_accuracy(y_true[y_true>0], y_pred[y_true>0])
+    if nca < 0: stop()
 
     #s1, s2 = treelhouette.treelhouette_score(L)
-    plt.title("%s NCA=%.2f" % (example, nca))
+    plt.title("%s NCA=%.2f" % (example, nca), loc="left")
     ncas.append(nca)
 
 plt.tight_layout()
-print("Average NCA=%.2f" % np.mean(ncas))
 plt.show()
+
+ncas = np.array(ncas)
+print("NCA: %10s %10s %10s %10s %10s" % ("Min", "Median", "Mean", "#<.8", "#≥.95"))
+print("NCA: %10.3f %10.3f %10.3f %10d %10d" % (np.min(ncas), np.median(ncas), np.mean(ncas), np.sum(ncas<0.8), np.sum(ncas>0.95)))

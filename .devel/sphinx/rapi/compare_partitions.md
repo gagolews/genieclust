@@ -81,7 +81,7 @@ Each cluster validity measure is a single numeric value.
 
 Gagolewski M., A framework for benchmarking clustering algorithms, *SoftwareX* 20, 2022, 101270, [doi:10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270), <https://clustering-benchmarks.gagolewski.com>.
 
-Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, *Journal of Classification*, 2024, in press, [doi:10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
+Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, *Journal of Classification* 42, 2025, 2-30. [doi:10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
 
 Hubert L., Arabie P., Comparing partitions, *Journal of Classification* 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 
