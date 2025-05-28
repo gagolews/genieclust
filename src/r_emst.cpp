@@ -66,7 +66,7 @@ Rcpp::NumericMatrix dot_emst_mlpack(
     mlpack::Log::Info << "Building the K-d tree." << std::endl;
     std::vector<size_t> idx_map;
     mlpack::KDTree<mlpack::EuclideanDistance, mlpack::DTBStat, arma::mat> tree(aX, idx_map, leaf_size);
-    mlpack::LMetric<2, true> metric;
+    mlpack::LMetric<2, true> metric;  // <Power, TakeRoot> == EuclideanDistance
 
     mlpack::Log::Info << "Calculating the minimum spanning tree." << std::endl;
     arma::mat aret;

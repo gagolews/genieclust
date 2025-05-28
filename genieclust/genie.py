@@ -96,7 +96,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.counts_             = None
 
         self._is_noise           = None  # TODO
-        self._tree_cutlist      = None  # TODO
+        self._tree_cutlist       = None  # TODO
         self._tree_w             = None
         self._tree_e             = None
         self._nn_w               = None

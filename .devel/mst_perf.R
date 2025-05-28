@@ -1,8 +1,11 @@
-n <- 100000
+n <- 10000
 env <- "-O3 -march=native"
+#Sys.setenv("OMP_NUM_THREADS"=1)
 
-system2("R", c("CMD", "INSTALL", ".", "--preclean"),
-    env=sprintf("CXX_DEFS='%s'", env))
+if (FALSE) {
+    system2("R", c("CMD", "INSTALL", "~/Python/genieclust", "--preclean"),
+        env=sprintf("CXX_DEFS='%s'", env))
+}
 
 library("genieclust")
 
@@ -14,17 +17,13 @@ for (d in c(2, 7)) {
 
     cat(sprintf("env='%s' n=%d d=%d threads=%d\n", env, n, d, as.integer(Sys.getenv("OMP_NUM_THREADS"))))
 
-    t1 <- system.time(mst1 <- mst(X, algorithm="jarnik"))
+    t1 <- system.time(mst1 <- genieclust::mst(X, algorithm="jarnik"))
 
-    if (d > 7)
-        t2 <- system.time(mst2 <- NULL)
-    else
-        t2 <- system.time(mst2 <- mst(X, algorithm="mlpack"))
+    t2 <- system.time(mst2 <- genieclust::mst(X, algorithm="mlpack"))
 
-    if (!is.null(mst2))
-        stopifnot(abs(sum(mst1[,3])-sum(mst2[,3])) < 1e-16)
+    stopifnot(abs(sum(mst1[,3])-sum(mst2[,3])) < 1e-16)
 
-    .res <- rbind(genieclust=t1, mlpack=t2)[, 1:3]
+    .res <- rbind(genieclust=t1, mlpack=t2, geniePrim=t3, genieVp=t4)[, 1:3]
     .res <- as.data.frame(.res)
     .res$n <- n
     .res$d <- d
