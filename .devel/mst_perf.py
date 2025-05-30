@@ -17,8 +17,8 @@ import os
 import fast_hdbscan
 
 np.random.seed(123)
-X = np.random.randn(25000, 25)
-M = 10
+X = np.random.randn(1_000_000, 2)
+M = 1
 
 """
 n=100000, d=2, M=1, threads=6
@@ -27,6 +27,13 @@ Genie_brute:              6.92215      1013.16058
 fast_hdbscan:             0.42798      1013.15980
 hdbscan_kdtree:           0.77545      1013.15980
 hdbscan_balltree:         5.13781      1013.15980
+
+n=1000000, d=2, M=1, threads=6
+Genie_mlpack:             6.78291      3229.30835
+Genie_brute:           1039.48722      3229.30835
+fast_hdbscan:             7.60030      3229.43496
+hdbscan_kdtree:          26.11536      3229.43496
+
 
 n=10000, d=25, M=1, threads=6
 Genie_mlpack:            24.54190     38881.92188
@@ -48,17 +55,6 @@ hdbscan_kdtree:           3.45090    105238.13837
 
 print("n=%d, d=%d, M=%d, threads=%d" % (X.shape[0], X.shape[1], M, n_jobs))
 
-if M == 1 and X.shape[0] <= 10:
-    t0 = timeit.time.time()
-    g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=True, M=M).fit(X)
-    t1 = timeit.time.time()
-    print("Genie_mlpack:     %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
-
-
-t0 = timeit.time.time()
-g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=False, M=M).fit(X)
-t1 = timeit.time.time()
-print("Genie_brute:      %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 
 
 numba.set_num_threads(n_jobs)
@@ -107,4 +103,21 @@ print("hdbscan_kdtree:   %15.5f %15.5f" % (t1-t0, sum(min_spanning_tree.T[2])))
 # min_spanning_tree = alg.spanning_tree()
 # t1 = timeit.time.time()
 # print("hdbscan_balltree: %15.5f %15.5f" % (t1-t0, sum(alg.spanning_tree().T[2])))
+
+
+
+
+
+
+if M == 1 and X.shape[1] <= 10:
+    t0 = timeit.time.time()
+    g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=True, M=M).fit(X)
+    t1 = timeit.time.time()
+    print("Genie_mlpack:     %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
+
+
+t0 = timeit.time.time()
+g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=False, M=M).fit(X)
+t1 = timeit.time.time()
+print("Genie_brute:      %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 
