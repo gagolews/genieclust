@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "Please cite this software using these metadata."
+authors:
+  - given-names: Jonathan
+    family-names: Broere
+title: >-
+  "PicoTree: a C++ header only library for fast nearest neighbor and range
+  searches using a KdTree."
+abstract: >-
+  "PicoTree: a C++ header only library for fast nearest neighbor and range
+  searches using a KdTree. It supports interfacing with Eigen, OpenCV, and
+  custom data types and provides optional Python bindings."
+type: software
+repository: 'https://github.com/Jaybro/pico_tree'
+license: MIT

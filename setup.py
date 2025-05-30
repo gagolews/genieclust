@@ -145,7 +145,7 @@ with open("genieclust/__init__.py", "r") as fh:
 setuptools.setup(
     name="genieclust",
     version=__version__,
-    description="Genie: Fast and Robust Hierarchical Clustering with Noise Points Detection",
+    description="Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marek Gagolewski",

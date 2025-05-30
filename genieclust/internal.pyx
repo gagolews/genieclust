@@ -584,6 +584,56 @@ cpdef tuple mst_from_distance(
 
 
 
+cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, bint use_kdtree=False, bint verbose=False):
+    """Determines the first k nearest neighbours of each point in X
+    with respect to the squared Euclidean distance
+
+    It is assumed that each query point is not its own neighbour.
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n,d)
+    k : int < n
+        number of nearest neighbours
+    use_kdtree : bool
+        whether a KD-tree should be used (for d <= 20 only)
+    verbose: bool
+        whether to print diagnostic messages
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (dist, ind) representing the k-NN graph, where:
+            dist : a c_contiguous ndarray, shape (n,k)
+                dist[i,:] is sorted nondecreasingly for all i,
+                dist[i,j] gives the weight of the edge {i, ind[i,j]},
+                i.e., the distance between the i-th point and its j-th NN.
+            ind : a c_contiguous ndarray, shape (n,k)
+                edge definition, interpreted as {i, ind[i,j]};
+                ind[i,j] is the index of the j-th nearest neighbour of i.
+    """
+    cdef Py_ssize_t n = X.shape[0]
+    cdef Py_ssize_t d = X.shape[1]
+
+    if k >= n:
+        raise ValueError("too many nearest neighbours requested")
+
+    cdef Py_ssize_t i
+    cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
+    cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
+        dtype=np.float32 if floatT is float else np.float64)
+
+    _openmp_set_num_threads()
+    if use_kdtree and 2 <= d <= 20:
+        c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
+    else:
+        c_mst.Cknn_sqeuclid_brute(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
+
+    return dist, ind
+
 
 
 cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,

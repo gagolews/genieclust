@@ -379,7 +379,7 @@ public:
      */
     void get_links(Py_ssize_t* res)
     {
-        for (Py_ssize_t i=0; i<cut_edges.size(); ++i)
+        for (size_t i=0; i<cut_edges.size(); ++i)
             res[i] = cut_edges[i];
     }
 };

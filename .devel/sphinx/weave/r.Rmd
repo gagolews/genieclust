@@ -105,7 +105,7 @@ calling `genie()` directly will be slightly faster than referring to
 external cluster validity measures.
 
 For more details, refer to the package's {any}`documentation <../rapi>`.
-Also, see the Python examples regarding noise points detection,
+Also, see the Python examples regarding noise point detection,
 benchmarking, timing, etc.
 
 *To learn more about R, check out Marek's recent open-access (free!) textbook*

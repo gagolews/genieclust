@@ -31,6 +31,12 @@
 
 
 
+#include "pico_tree/array_traits.hpp"
+#include "pico_tree/kd_tree.hpp"
+#include "pico_tree/vector_traits.hpp"
+
+
+
 #ifdef _OPENMP
 void Comp_set_num_threads(Py_ssize_t n_threads) {
     if (n_threads <= 0)
@@ -42,6 +48,289 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
     ;
 }
 #endif
+
+
+
+
+
+
+template <class T, Py_ssize_t D>
+void Cknn_sqeuclid_kdtree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
+    T* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
+{
+    pico_tree::max_leaf_size_t max_leaf_size = 12;
+    std::vector<std::array<float, D>> points(n);    // float32 - faster
+    for (Py_ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t j=0; j<D; ++j) {
+            points[i][j] = (float)X[i*D+j];
+        }
+    }
+
+    pico_tree::kd_tree tree(std::ref(points), max_leaf_size);
+
+    std::vector< pico_tree::neighbor<int, float> > knn;
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(static) private(knn)
+    #endif
+    for (Py_ssize_t i=0; i<n; ++i) {
+        tree.search_knn(points[i], k+1, knn);
+
+        GENIECLUST_ASSERT(knn[0].index == i);
+        for (Py_ssize_t j=0; j<k; ++j) {
+            nn_ind[i*k+j]  = knn[j+1].index;
+            nn_dist[i*k+j] = (T)knn[j+1].distance;
+        }
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
+    }
+
+
+    // pico_tree::kd_tree tree(std::ref(points), max_leaf_size);
+    //
+    // float query[3] = {4.0f, 4.0f, 4.0f};
+    // pico_tree::neighbor<int, float> nn;
+    // tree.search_nn(query, nn);
+
+    // sqrt....
+}
+
+
+/*! Get the k nearest neighbours of each point w.r.t. the Euclidean distance
+ *
+ *
+ * @param X a C-contiguous data matrix
+ * @param n number of rows
+ * @param d number of columns
+ * @param k number of nearest neighbours to look for
+ * @param nn_dist [out] vector(matrix) of length n*k, distances to NNs
+ * @param nn_ind [out] vector(matrix) of length n*k, indexes of NNs
+ * @param verbose output diagnostic/progress messages?
+ */
+template <class T>
+void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+    T* nn_dist, Py_ssize_t* nn_ind, bool verbose=false)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
+
+    /* OMFG. Templates. */
+    /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<T,  2>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  3)  Cknn_sqeuclid_kdtree<T,  3>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  4)  Cknn_sqeuclid_kdtree<T,  4>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  5)  Cknn_sqeuclid_kdtree<T,  5>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  6)  Cknn_sqeuclid_kdtree<T,  6>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  7)  Cknn_sqeuclid_kdtree<T,  7>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  8)  Cknn_sqeuclid_kdtree<T,  8>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  9)  Cknn_sqeuclid_kdtree<T,  9>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 10)  Cknn_sqeuclid_kdtree<T, 10>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 11)  Cknn_sqeuclid_kdtree<T, 11>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 12)  Cknn_sqeuclid_kdtree<T, 12>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 13)  Cknn_sqeuclid_kdtree<T, 13>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 14)  Cknn_sqeuclid_kdtree<T, 14>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 15)  Cknn_sqeuclid_kdtree<T, 15>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 16)  Cknn_sqeuclid_kdtree<T, 16>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 17)  Cknn_sqeuclid_kdtree<T, 17>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 18)  Cknn_sqeuclid_kdtree<T, 18>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 19)  Cknn_sqeuclid_kdtree<T, 19>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 20)  Cknn_sqeuclid_kdtree<T, 20>(X, n, k, nn_dist, nn_ind, verbose);
+    else {
+        throw std::runtime_error("d should be between 2 and 20");
+    }
+}
+
+
+
+
+/*! Determine the first k nearest neighbours of each point.
+ *
+ *  Exactly n*(n-1)/2 distance computations are performed.
+ *
+ *  It is assumed that each query point is not its own neighbour.
+ *
+ *  Worst-case time complexity: O(n*(n-1)/2*d*k)
+ *
+ *
+ *  @param D a callable CDistance object such that a call to
+ *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
+ *         with the distances from the j-th point to l points whose indices
+ *         are given in array M
+ *  @param n number of points
+ *  @param k number of nearest neighbours,
+ *  @param nn_dist [out]  a c_contiguous array, shape (n,k),
+ *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
+ *  @param nn_ind [out]   a c_contiguous array, shape (n,k),
+ *         (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *  @param verbose output diagnostic/progress messages?
+ */
+template <class T>
+void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+    T* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
+
+    for (Py_ssize_t i=0; i<n*k; ++i) {
+        nn_dist[i] = INFTY;
+        nn_ind[i] = -1;
+    }
+
+    std::vector<T> dij(n);
+    for (Py_ssize_t i=0; i<n-1; ++i) {
+        const T* x_cur = X+i*d;
+
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+            T dd = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                dd += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+            dij[j] = dd;
+
+            if (dd < nn_dist[j*k+k-1]) {
+                // i might be amongst k-NNs of j
+                Py_ssize_t l = k-1;
+                while (l > 0 && dd < nn_dist[j*k+l-1]) {
+                    nn_dist[j*k+l] = nn_dist[j*k+l-1];
+                    nn_ind[j*k+l]  = nn_ind[j*k+l-1];
+                    l -= 1;
+                }
+                nn_dist[j*k+l] = dd;
+                nn_ind[j*k+l]  = i;
+            }
+        }
+
+
+        // This part can't be parallelised
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+
+            if (dij[j] < nn_dist[i*k+k-1]) {
+                // j might be amongst k-NNs of i
+                Py_ssize_t l = k-1;
+                while (l > 0 && dij[j] < nn_dist[i*k+l-1]) {
+                    nn_dist[i*k+l] = nn_dist[i*k+l-1];
+                    nn_ind[i*k+l]  = nn_ind[i*k+l-1];
+                    l -= 1;
+                }
+                nn_dist[i*k+l] = dij[j];
+                nn_ind[i*k+l]  = j;
+            }
+
+
+        }
+
+        // if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
+    }
+
+    // if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
+}
+
+
+
+
+
+/*! Determine the first k nearest neighbours of each point.
+ *
+ *  Exactly n*(n-1)/2 distance computations are performed.
+ *
+ *  It is assumed that each query point is not its own neighbour.
+ *
+ *  Worst-case time complexity: O(n*(n-1)/2*d*k)
+ *
+ *
+ *  @param D a callable CDistance object such that a call to
+ *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
+ *         with the distances from the j-th point to l points whose indices
+ *         are given in array M
+ *  @param n number of points
+ *  @param k number of nearest neighbours,
+ *  @param dist [out]  a c_contiguous array, shape (n,k),
+ *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
+ *  @param ind [out]   a c_contiguous array, shape (n,k),
+ *         (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *  @param verbose output diagnostic/progress messages?
+ */
+template <class T>
+void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
+    T* dist, Py_ssize_t* ind, bool verbose=false)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
+
+    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the K-nn graph... %3d%%", 0);
+
+
+    for (Py_ssize_t i=0; i<n*k; ++i) {
+        dist[i] = INFTY;
+        ind[i] = -1;
+    }
+
+    std::vector<Py_ssize_t> M(n);
+    for (Py_ssize_t i=0; i<n; ++i) M[i] = i;
+
+    for (Py_ssize_t i=0; i<n-1; ++i) {
+        // pragma omp parallel for inside:
+        const T* dij = (*D)(i, M.data()+i+1, n-i-1);
+        // let dij[j] == d(x_i, x_j)
+
+
+        // TODO: the 2nd `if` below can be OpenMP'd
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+            if (dij[j] < dist[i*k+k-1]) {
+                // j might be amongst k-NNs of i
+                Py_ssize_t l = k-1;
+                while (l > 0 && dij[j] < dist[i*k+l-1]) {
+                    dist[i*k+l] = dist[i*k+l-1];
+                    ind[i*k+l]  = ind[i*k+l-1];
+                    l -= 1;
+                }
+                dist[i*k+l] = dij[j];
+                ind[i*k+l]  = j;
+            }
+        }
+
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t j=i+1; j<n; ++j) {
+            if (dij[j] < dist[j*k+k-1]) {
+                // i might be amongst k-NNs of j
+                Py_ssize_t l = k-1;
+                while (l > 0 && dij[j] < dist[j*k+l-1]) {
+                    dist[j*k+l] = dist[j*k+l-1];
+                    ind[j*k+l]  = ind[j*k+l-1];
+                    l -= 1;
+                }
+                dist[j*k+l] = dij[j];
+                ind[j*k+l]  = i;
+            }
+        }
+
+        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+
+        #if GENIECLUST_R
+        Rcpp::checkUserInterrupt();
+        #elif GENIECLUST_PYTHON
+        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        #endif
+    }
+
+    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
+}
+
 
 
 
@@ -226,6 +515,9 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
 
 
 
+
+
+
 /*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
  *  a(*) minimum spanning tree (MST) of a complete undirected graph
  *  with weights given by, e.g., a symmetric n*n matrix.
@@ -358,93 +650,6 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
 }
 
-
-
-/*! Determine the first k nearest neighbours of each point.
- *
- *  Exactly n*(n-1)/2 distance computations are performed.
- *
- *  It is assumed that each query point is not its own neighbour.
- *
- *  Worst-case time complexity: O(n*(n-1)/2*d*k)
- *
- *
- *  @param D a callable CDistance object such that a call to
- *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
- *         with the distances from the j-th point to l points whose indices
- *         are given in array M
- *  @param n number of points
- *  @param k number of nearest neighbours,
- *  @param dist [out]  a c_contiguous array, shape (n,k),
- *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
- *  @param ind [out]   a c_contiguous array, shape (n,k),
- *         (undirected) edge definition, interpreted as {i, ind[i,j]}
- *  @param verbose output diagnostic/progress messages?
- */
-template <class T>
-void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
-    T* dist, Py_ssize_t* ind, bool verbose=false)
-{
-    if (n <= 0)   throw std::domain_error("n <= 0");
-    if (k <= 0)   throw std::domain_error("k <= 0");
-    if (k >= n)   throw std::domain_error("k >= n");
-
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the K-nn graph... %3d%%", 0);
-
-
-    for (Py_ssize_t i=0; i<n*k; ++i) {
-        dist[i] = INFTY;
-        ind[i] = -1;
-    }
-
-    std::vector<Py_ssize_t> M(n);
-    for (Py_ssize_t i=0; i<n; ++i) M[i] = i;
-
-    for (Py_ssize_t i=0; i<n-1; ++i) {
-        // pragma omp parallel for inside:
-        const T* dij = (*D)(i, M.data()+i+1, n-i-1);
-        // let dij[j] == d(x_i, x_j)
-
-
-        // TODO: the 2nd `if` below can be OpenMP'd
-        for (Py_ssize_t j=i+1; j<n; ++j) {
-
-            if (dij[j] < dist[i*k+k-1]) {
-                // j might be amongst k-NNs of i
-                Py_ssize_t l = k-1;
-                while (l > 0 && dij[j] < dist[i*k+l-1]) {
-                    dist[i*k+l] = dist[i*k+l-1];
-                    ind[i*k+l]  = ind[i*k+l-1];
-                    l -= 1;
-                }
-                dist[i*k+l] = dij[j];
-                ind[i*k+l]  = j;
-            }
-
-            if (dij[j] < dist[j*k+k-1]) {
-                // i might be amongst k-NNs of j
-                Py_ssize_t l = k-1;
-                while (l > 0 && dij[j] < dist[j*k+l-1]) {
-                    dist[j*k+l] = dist[j*k+l-1];
-                    ind[j*k+l]  = ind[j*k+l-1];
-                    l -= 1;
-                }
-                dist[j*k+l] = dij[j];
-                ind[j*k+l]  = i;
-            }
-        }
-
-        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
-
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
-    }
-
-    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
-}
 
 
 

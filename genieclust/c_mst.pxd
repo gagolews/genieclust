@@ -72,13 +72,21 @@ cdef extern from "../src/c_mst.h":
     #     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
 
 
-    Py_ssize_t Cmst_from_nn[T](
-        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
-        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
+    void Cknn_sqeuclid_kdtree[T](
+        T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+        T* nn_dist, Py_ssize_t* nn_ind, bint verbose) except +
+
+    void Cknn_sqeuclid_brute[T](
+        T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+        T* nn_dist, Py_ssize_t* nn_ind, bint verbose) except +
 
     void Cknn_from_complete[T](
         CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,
         T* dist, Py_ssize_t* ind, bint verbose) except +
+
+    Py_ssize_t Cmst_from_nn[T](
+        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
+        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
 
     void Cmst_from_complete[T](
         CDistance[T]* D, Py_ssize_t n,

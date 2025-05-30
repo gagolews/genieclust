@@ -1,4 +1,4 @@
-# Clustering with Noise Points Detection
+# Clustering with Noise Point Detection
 
 ```{python imports,results="hide"}
 import numpy as np

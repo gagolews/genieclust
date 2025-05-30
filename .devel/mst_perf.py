@@ -9,16 +9,24 @@ numba.config.THREADING_LAYER = 'omp'
 
 import numpy as np
 import hdbscan
-from sklearn.neighbors import KDTree, BallTree
-from hdbscan._hdbscan_boruvka import KDTreeBoruvkaAlgorithm, BallTreeBoruvkaAlgorithm
 import timeit
 import genieclust
 import os
-import fast_hdbscan
 
 np.random.seed(123)
-X = np.random.randn(1_000_000, 2)
-M = 1
+X = np.random.randn(10000, 2)
+M = 6
+
+nn_dist1, nn_ind1 = genieclust.internal.knn_kdtree(X[:100], 3)
+nn_dist1 = np.sqrt(nn_dist1)
+nn_dist2, nn_ind2 = genieclust.internal.knn_from_distance(X[:100], 3)
+
+assert(np.allclose(nn_dist1, nn_dist2))
+assert(np.all(nn_ind1 == nn_ind2))
+
+
+
+
 
 """
 n=100000, d=2, M=1, threads=6
@@ -56,6 +64,25 @@ hdbscan_kdtree:           3.45090    105238.13837
 print("n=%d, d=%d, M=%d, threads=%d" % (X.shape[0], X.shape[1], M, n_jobs))
 
 
+
+t0 = timeit.time.time()
+nn_dist, nn_ind = genieclust.internal.knn_kdtree(X, 10)
+nn_dist = np.sqrt(nn_dist)
+t1 = timeit.time.time()
+tot = np.sum(nn_dist)
+print("knn_kdtree:        %15.5f %15.5f" % (t1-t0, tot))
+
+
+t0 = timeit.time.time()
+nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, 10)
+t1 = timeit.time.time()
+tot = np.sum(nn_dist)
+print("knn_from_distance   %15.5f %15.5f" % (t1-t0, tot))
+
+
+from sklearn.neighbors import KDTree, BallTree
+from hdbscan._hdbscan_boruvka import KDTreeBoruvkaAlgorithm, BallTreeBoruvkaAlgorithm
+import fast_hdbscan
 
 numba.set_num_threads(n_jobs)
 fast_hdbscan.hdbscan.compute_minimum_spanning_tree(X[:100,:], min_samples=M-1)  # numba...
