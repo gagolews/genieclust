@@ -14,7 +14,7 @@ import genieclust
 import os
 
 np.random.seed(123)
-X = np.log(np.random.rand(100000, 10))
+X = np.random.randn(100000, 10)
 k = 10
 
 

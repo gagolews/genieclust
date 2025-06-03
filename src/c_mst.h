@@ -61,24 +61,33 @@ void Cknn_sqeuclid_kdtree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
     pico_tree::max_leaf_size_t max_leaf_size = 12;
     std::vector<std::array<float, D>> points(n);    // float32 - faster
     for (Py_ssize_t i=0; i<n; ++i) {
-        for (Py_ssize_t j=0; j<D; ++j) {
-            points[i][j] = (float)X[i*D+j];
+        for (Py_ssize_t u=0; u<D; ++u) {
+            points[i][u] = (float)X[i*D+u];
         }
     }
 
     pico_tree::kd_tree tree(std::ref(points), max_leaf_size);
 
-    std::vector< pico_tree::neighbor<int, float> > knn;
     #ifdef _OPENMP
-    #pragma omp parallel for schedule(static) private(knn)
+    #pragma omp parallel for schedule(static)
     #endif
     for (Py_ssize_t i=0; i<n; ++i) {
+        std::vector< pico_tree::neighbor<int, float> > knn;
         tree.search_knn(points[i], k+1, knn);
-
         GENIECLUST_ASSERT(knn[0].index == i);
+
+        const T* x_cur = X+i*D;
         for (Py_ssize_t j=0; j<k; ++j) {
             nn_ind[i*k+j]  = knn[j+1].index;
-            nn_dist[i*k+j] = (T)knn[j+1].distance;
+            //nn_dist[i*k+j] = (T)knn[j+1].distance;
+            // recompute the distance using T's precision
+            const T* x_other = X+nn_ind[i*k+j]*D;
+            T _d = 0.0;
+            for (Py_ssize_t u=0; u<D; ++u) {
+                T _df = x_cur[u]-x_other[u];
+                _d += _df*_df;
+            }
+            nn_dist[i*k+j] = _d;
         }
 
         #if GENIECLUST_R
@@ -189,8 +198,10 @@ void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
             T dd = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                dd += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+            for (Py_ssize_t u=0; u<d; ++u) {
+                T _df = x_cur[u]-X[j*d+u];
+                dd += _df*_df;
+            }
             dij[j] = dd;
 
             if (dd < nn_dist[j*k+k-1]) {
@@ -209,7 +220,6 @@ void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
 
         // This part can't be parallelised
         for (Py_ssize_t j=i+1; j<n; ++j) {
-
             if (dij[j] < nn_dist[i*k+k-1]) {
                 // j might be amongst k-NNs of i
                 Py_ssize_t l = k-1;
@@ -221,8 +231,6 @@ void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
                 nn_dist[i*k+l] = dij[j];
                 nn_ind[i*k+l]  = j;
             }
-
-
         }
 
         // if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
