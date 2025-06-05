@@ -37,6 +37,9 @@ struct kdtree_node
     kdtree_node* left;
     kdtree_node* right;
 
+    std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
+    std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
+
     union {
         struct {
             size_t idx_from;
@@ -44,13 +47,10 @@ struct kdtree_node
         } leaf_data;
         struct {
             size_t split_dim;
-            FLOAT split_left_max;
-            FLOAT split_right_min;
+            //FLOAT split_left_max;
+            //FLOAT split_right_min;
         } intnode_data;
     };
-
-    //std::array<FLOAT,D> bbox_min;
-    //std::array<FLOAT,D> bbox_max;
 
     kdtree_node()
         : left(nullptr), right(nullptr)
@@ -64,19 +64,89 @@ struct kdtree_node
 
 
 template <typename FLOAT, size_t D>
+class kdtree_kneighbours
+{
+private:
+    const FLOAT* data;
+
+    const size_t which;
+    FLOAT* knn_dist;
+    size_t* knn_ind;
+    const size_t k;
+
+    const FLOAT* x;
+
+
+    static constexpr FLOAT infty = std::numeric_limits<FLOAT>::infinity();
+
+    inline FLOAT square(FLOAT v) const { return v*v; }
+
+
+public:
+    kdtree_kneighbours(
+        const FLOAT* data,
+        const size_t which,
+        FLOAT* knn_dist,
+        size_t* knn_ind,
+        const size_t k
+    ) :
+        data(data), which(which), knn_dist(knn_dist), knn_ind(knn_ind), k(k),
+        x(data+D*which)
+    {
+        for (size_t i=0; i<k; ++i) knn_dist[i] = infty;
+        for (size_t i=0; i<k; ++i) knn_ind[i]  = which;
+    }
+
+
+    void find(const kdtree_node<FLOAT, D>* root)
+    {
+        if (root->is_leaf()) {
+            const FLOAT* y = data+D*root->leaf_data.idx_from;
+            for (size_t i=root->leaf_data.idx_from; i<root->leaf_data.idx_to; ++i) {
+                if (i == which) {
+                    y += D;
+                    continue;
+                }
+
+                FLOAT dist = 0.0;
+                for (size_t u=0; u<D; ++u)
+                    dist += square(x[u]-*(y++));
+
+                if (knn_dist[k-1] <= dist)
+                    continue;
+
+                // insertion-sort like scheme (fast for small k)
+
+                size_t j = k-1;
+                while (j > 0 && dist < knn_dist[j-1]) {
+                    knn_ind[j]  = knn_ind[j-1];
+                    knn_dist[j] = knn_dist[j-1];
+                    j--;
+                }
+                knn_ind[j] = i;
+                knn_dist[j] = dist;
+            }
+
+            return;
+        }
+
+        find(root->left);
+        find(root->right);
+    }
+};
+
+
+template <typename FLOAT, size_t D>
 class kdtree
 {
 protected:
     kdtree_node<FLOAT, D>* root;
 
-    FLOAT* data;  // destroyable; a row-major n*D matrix
-    const size_t n;
-    std::vector<size_t> perm;
+    FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm)
+    const size_t n;  //< number of points
+    std::vector<size_t> perm;  //< original point indexes
 
-    std::array<FLOAT, D> bbox_min;
-    std::array<FLOAT, D> bbox_max;
-
-    const size_t max_leaf_size = 12;
+    const size_t max_leaf_size;
     static constexpr FLOAT infty = std::numeric_limits<FLOAT>::infinity();
 
 
@@ -93,18 +163,30 @@ protected:
 
 
     void build_tree(
-        kdtree_node<FLOAT, D>*& root, size_t idx_from, size_t idx_to,
-        std::array<FLOAT, D>& curbox_min, std::array<FLOAT, D>& curbox_max
+        kdtree_node<FLOAT, D>*& root, size_t idx_from, size_t idx_to
     )
     {
+        GENIECLUST_ASSERT(idx_to - idx_from > 0);
         root = new kdtree_node<FLOAT, D>();
+
+        // get the node's bounding box
+        for (size_t u=0; u<D; ++u) root->bbox_min[u] = data[idx_from*D+u];
+        for (size_t u=0; u<D; ++u) root->bbox_max[u] = data[idx_from*D+u];
+
+        for (size_t i=idx_from+1; i<idx_to; ++i) {
+            for (size_t u=0; u<D; ++u) {
+                if      (data[i*D+u]<root->bbox_min[u]) root->bbox_min[u]=data[i*D+u];
+                else if (data[i*D+u]>root->bbox_max[u]) root->bbox_max[u]=data[i*D+u];
+            }
+        }
+
         if (idx_to - idx_from <= max_leaf_size) {
             // a leaf node; nothing more to do
             root->leaf_data.idx_from = idx_from;
             root->leaf_data.idx_to   = idx_to;
-            printf("%5d %5d %5d [%8f,%8f]-[%8f,%8f]\n",
-                    (int)(idx_to-idx_from), (int)idx_from, (int)idx_to,
-                    curbox_min[0], curbox_max[0], curbox_min[1], curbox_max[1]);
+            // printf("%5d %5d %5d [% 8f,% 8f]-[% 8f,% 8f]\n",
+            //         (int)(idx_to-idx_from), (int)idx_from, (int)idx_to,
+            //         curbox_min[0], curbox_max[0], curbox_min[1], curbox_max[1]);
             return;
         }
 
@@ -112,7 +194,7 @@ protected:
         size_t split_dim = 0;
         FLOAT dim_width = -infty;
         for (size_t u=0; u<D; ++u) {
-            FLOAT cur_width = curbox_max[u]-curbox_min[u];
+            FLOAT cur_width = root->bbox_max[u]-root->bbox_min[u];
             if (cur_width > dim_width) {
                 dim_width = cur_width;
                 split_dim = u;
@@ -126,11 +208,15 @@ protected:
             return;
         }
 
-        FLOAT split_val = 0.5*(curbox_min[split_dim] + curbox_max[split_dim]);
+        FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
 
-        // partition data[:, split_dim] <= split_val, data[:, split_dim] > split_val
-        FLOAT split_left_max = curbox_min[split_dim];
-        FLOAT split_right_min = curbox_max[split_dim];
+        GENIECLUST_ASSERT(root->bbox_min[split_dim] < split_val);
+        GENIECLUST_ASSERT(split_val < root->bbox_max[split_dim]);
+
+        FLOAT split_left_max  = root->bbox_min[split_dim];
+        FLOAT split_right_min = root->bbox_max[split_dim];
+
+        // partition data[idx_from:idx_left, split_dim] <= split_val, data[idx_left:idx_to, split_dim] > split_val
         size_t idx_left = idx_from;
         size_t idx_right = idx_to-1;
         while (true) {
@@ -154,57 +240,47 @@ protected:
                 std::swap(data[idx_left*D+u], data[idx_right*D+u]);
         }
 
-        GENIECLUST_ASSERT(data[idx_right*D+split_dim] <= split_val);
+        GENIECLUST_ASSERT(idx_left > idx_from);
+        GENIECLUST_ASSERT(idx_left < idx_to);
+
+        for (size_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
+            GENIECLUST_ASSERT(data[i*D+split_dim] <= split_val);
+            // if (data[i*D+split_dim] > split_left_max)
+                // split_left_max = data[i*D+split_dim];
+        }
+        for (size_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
+            GENIECLUST_ASSERT(data[i*D+split_dim] > split_val);
+            // if (data[i*D+split_dim] < split_right_min)
+                // split_right_min = data[i*D+split_dim];
+        }
+
         GENIECLUST_ASSERT(data[idx_left*D+split_dim] > split_val);
-        GENIECLUST_ASSERT(idx_left == idx_right+1);
+        GENIECLUST_ASSERT(data[(idx_left-1)*D+split_dim] <= split_val);
+
         GENIECLUST_ASSERT(split_left_max <= split_val);
         GENIECLUST_ASSERT(split_right_min > split_val);
 
         root->intnode_data.split_dim = split_dim;
-        root->intnode_data.split_left_max = split_left_max;
-        root->intnode_data.split_right_min = split_right_min;
+        // root->intnode_data.split_left_max = split_left_max;
+        // root->intnode_data.split_right_min = split_right_min;
 
-        FLOAT save;
-
-        save = curbox_max[split_dim];
-        curbox_max[split_dim] = split_left_max;
-        build_tree(root->left, idx_from, idx_left, curbox_min, curbox_max);
-        curbox_max[split_dim] = save;
-
-        save = curbox_min[split_dim];
-        curbox_min[split_dim] = split_right_min;
-        build_tree(root->right, idx_left, idx_to, curbox_min, curbox_max);
-        curbox_min[split_dim] = save;
+        build_tree(root->left, idx_from, idx_left);
+        build_tree(root->right, idx_left, idx_to);
     }
 
 
 public:
     kdtree()
-        : root(nullptr), data(nullptr), n(0), perm(0)
+        : root(nullptr), data(nullptr), n(0), perm(0), max_leaf_size(1)
     {
 
     }
 
-    kdtree(FLOAT* data, const size_t n)
-        : root(nullptr), data(data), n(n), perm(n)
+    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=12)
+        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         for (size_t i=0; i<n; ++i) perm[i] = i;
-
-        for (size_t u=0; u<D; ++u) bbox_min[u] =  infty;
-        for (size_t u=0; u<D; ++u) bbox_max[u] = -infty;
-
-        for (size_t i=0; i<n; ++i) {
-            for (size_t u=0; u<D; ++u) {
-                if (data[i*D+u] > bbox_max[u])
-                    bbox_max[u] = data[i*D+u];
-                else if  (data[i*D+u] < bbox_min[u])
-                    bbox_min[u] = data[i*D+u];
-            }
-        }
-
-        std::array<FLOAT,D> curbox_min(bbox_min);
-        std::array<FLOAT,D> curbox_max(bbox_max);
-        build_tree(root, 0, n, curbox_min, curbox_max);
+        build_tree(root, 0, n);
     }
 
 
@@ -219,11 +295,10 @@ public:
     inline FLOAT* get_data() { return data; }
 
 
-    void kneighbours(size_t which, size_t* knn_ind, FLOAT* knn_dist, size_t k)
+    void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
     {
-        for (size_t i=0; i<k; ++i) knn_ind[i]  = which;
-        for (size_t i=0; i<k; ++i) knn_dist[i] = infty;
-
+        kdtree_kneighbours<FLOAT, D> knn(data, which, knn_dist, knn_ind, k);
+        knn.find(root);
     }
 };
 
@@ -231,16 +306,19 @@ public:
 template <typename FLOAT, size_t D>
 void kneighbours(
     kdtree<FLOAT, D>& tree,
-    size_t* knn_ind,
     FLOAT* knn_dist,
+    size_t* knn_ind,
     size_t k
 ) {
     size_t n = tree.get_n();
     const size_t* perm = tree.get_perm().data();
 
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(static)
+    #endif
     for (size_t i=0; i<n; ++i) {
         size_t i_orig = perm[i];
-        tree.kneighbours(i, knn_ind+k*i_orig, knn_dist+k*i_orig, k);
+        tree.kneighbours(i, knn_dist+k*i_orig, knn_ind+k*i_orig, k);
     }
 
     for (size_t i=0; i<n*k; ++i) {
@@ -271,7 +349,7 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
 
     if (d == 2) {
         kdtree<float, 2> tree(XC.data(), n);
-        kneighbours<float, 2>(tree, knn_ind.data(), knn_dist.data(), k);
+        kneighbours<float, 2>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else
         return R_NilValue;  // TODO
@@ -282,13 +360,16 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
     size_t u = 0;
     for (size_t i=0; i<n; ++i) {
         for (int j=0; j<k; ++j) {
-            out_ind(i, j) = knn_ind[u];
+            out_ind(i, j)  = knn_ind[u]+1;  // R-based indexing
             out_dist(i, j) = knn_dist[u];
             u++;
         }
     }
 
-    return Rcpp::List::create(out_ind, out_dist);
+    return Rcpp::List::create(
+        Rcpp::Named("nn.index")=out_ind,
+        Rcpp::Named("nn.dist")=out_dist
+    );
 }
 
 
@@ -298,7 +379,40 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
 /*** R
 
 set.seed(1234)
-X <- matrix(rnorm(100*2), ncol=2)
-test_kdtree(X, 5)
+X <- matrix(rnorm(100000*2), ncol=2)
+
+k <- 3
+
+knn_rann <- function(X, k) {
+    res_rann <- RANN::nn2(X, k=k+1)
+    res_rann[[1]] <- res_rann[[1]][,-1]
+    res_rann[[2]] <- res_rann[[2]][,-1]**2
+    res_rann
+}
+
+funs <- list(
+    genieclust_brute=genieclust:::knn_sqeuclid,
+    new_kdtree=test_kdtree,
+    rann=knn_rann
+)
+
+
+res <- lapply(`names<-`(seq_along(funs), names(funs)), function(i) {
+    f <- funs[[i]]
+    t <- system.time(y <- f(X, k))
+    list(time=t, index=y[[1]], dist=y[[2]])
+})
+
+print(rbind(
+    sapply(res, `[[`, 1),
+    sum_dist=sapply(res, function(e) sum(e$dist))
+
+))
+
+for (i in 2:length(res)) {
+    stopifnot(all(res[[1]]$index == res[[i]]$index))
+}
+
+
 
 */

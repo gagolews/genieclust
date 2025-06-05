@@ -408,3 +408,57 @@ List dot_gclust(
     );
 }
 
+
+
+
+template<typename FLOAT>
+List internal_knn_sqeuclid(NumericMatrix X, Py_ssize_t k, bool verbose)
+{
+    Py_ssize_t n = (Py_ssize_t)X.nrow();
+    Py_ssize_t d = (Py_ssize_t)X.ncol();
+    if (k < 1 || k >= n)
+        stop("`k` must be an integer in [1, n-1]");
+
+    if (n < 1) stop("The matrix has no rows.");
+
+    std::vector<FLOAT> XC(n*d);
+    Py_ssize_t j = 0;
+    for (Py_ssize_t i=0; i<n; ++i)
+        for (Py_ssize_t u=0; u<d; ++u)
+            XC[j++] = X(i, u);  // row-major
+
+    std::vector<Py_ssize_t> nn_ind(n*k);
+    std::vector<FLOAT> nn_dist(n*k);
+
+    Cknn_sqeuclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), verbose);
+
+    Rcpp::IntegerMatrix out_ind(n, k);
+    Rcpp::NumericMatrix out_dist(n, k);
+    Py_ssize_t u = 0;
+    for (Py_ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t j=0; j<k; ++j) {
+            out_ind(i, j)  = nn_ind[u]+1;  // R-based indexing
+            out_dist(i, j) = nn_dist[u];
+            u++;
+        }
+    }
+
+    return Rcpp::List::create(
+        Rcpp::Named("nn.index")=out_ind,
+        Rcpp::Named("nn.dist")=out_dist
+    );
+}
+
+
+// [[Rcpp::export("knn_sqeuclid")]]
+List knn_sqeuclid(
+    NumericMatrix X,
+    int k,
+    bool cast_float32=true,
+    bool verbose=false)
+{
+    if (cast_float32)
+        return internal_knn_sqeuclid<float >(X, k, verbose);
+    else
+        return internal_knn_sqeuclid<double>(X, k, verbose);
+}

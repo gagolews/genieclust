@@ -398,6 +398,10 @@ wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_dot_gclust`, mst, gini_threshold, verbose)
 }
 
+knn_sqeuclid <- function(X, k, cast_float32 = TRUE, verbose = FALSE) {
+    .Call(`_genieclust_knn_sqeuclid`, X, k, cast_float32, verbose)
+}
+
 #' @title Inequality Measures
 #'
 #' @description

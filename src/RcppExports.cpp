@@ -345,6 +345,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// knn_sqeuclid
+List knn_sqeuclid(NumericMatrix X, int k, bool cast_float32, bool verbose);
+RcppExport SEXP _genieclust_knn_sqeuclid(SEXP XSEXP, SEXP kSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(knn_sqeuclid(X, k, cast_float32, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gini_index
 double gini_index(Rcpp::NumericVector x);
 RcppExport SEXP _genieclust_gini_index(SEXP xSEXP) {
@@ -406,6 +420,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_dot_mst_dist", (DL_FUNC) &_genieclust_dot_mst_dist, 3},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
     {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},
+    {"_genieclust_knn_sqeuclid", (DL_FUNC) &_genieclust_knn_sqeuclid, 4},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},
     {"_genieclust_bonferroni_index", (DL_FUNC) &_genieclust_bonferroni_index, 1},
     {"_genieclust_devergottini_index", (DL_FUNC) &_genieclust_devergottini_index, 1},
