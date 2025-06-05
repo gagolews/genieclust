@@ -31,12 +31,6 @@
 
 
 
-#include "pico_tree/array_traits.hpp"
-#include "pico_tree/kd_tree.hpp"
-#include "pico_tree/vector_traits.hpp"
-
-
-
 #ifdef _OPENMP
 void Comp_set_num_threads(Py_ssize_t n_threads) {
     if (n_threads <= 0)
@@ -54,8 +48,13 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 
 
 
+
+#include "pico_tree/array_traits.hpp"
+#include "pico_tree/kd_tree.hpp"
+#include "pico_tree/vector_traits.hpp"
+
 template <class T, Py_ssize_t D>
-void Cknn_sqeuclid_kdtree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
+void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
     T* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
 {
     pico_tree::max_leaf_size_t max_leaf_size = 12;
@@ -120,6 +119,89 @@ void Cknn_sqeuclid_kdtree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
  * @param verbose output diagnostic/progress messages?
  */
 template <class T>
+void Cknn_sqeuclid_picotree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+    T* nn_dist, Py_ssize_t* nn_ind, bool verbose=false)
+{
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >= n)   throw std::domain_error("k >= n");
+
+    /* OMFG. Templates. */
+    /**/ if (d ==  2)  Cknn_sqeuclid_picotree<T,  2>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  3)  Cknn_sqeuclid_picotree<T,  3>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  4)  Cknn_sqeuclid_picotree<T,  4>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  5)  Cknn_sqeuclid_picotree<T,  5>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  6)  Cknn_sqeuclid_picotree<T,  6>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  7)  Cknn_sqeuclid_picotree<T,  7>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  8)  Cknn_sqeuclid_picotree<T,  8>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d ==  9)  Cknn_sqeuclid_picotree<T,  9>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 10)  Cknn_sqeuclid_picotree<T, 10>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 11)  Cknn_sqeuclid_picotree<T, 11>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 12)  Cknn_sqeuclid_picotree<T, 12>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 13)  Cknn_sqeuclid_picotree<T, 13>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 14)  Cknn_sqeuclid_picotree<T, 14>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 15)  Cknn_sqeuclid_picotree<T, 15>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 16)  Cknn_sqeuclid_picotree<T, 16>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 17)  Cknn_sqeuclid_picotree<T, 17>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 18)  Cknn_sqeuclid_picotree<T, 18>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 19)  Cknn_sqeuclid_picotree<T, 19>(X, n, k, nn_dist, nn_ind, verbose);
+    else if (d == 20)  Cknn_sqeuclid_picotree<T, 20>(X, n, k, nn_dist, nn_ind, verbose);
+    else {
+        throw std::runtime_error("d should be between 2 and 20");
+    }
+}
+
+
+
+#include "c_kdtree.h"
+
+template <class FLOAT, Py_ssize_t D>
+void Cknn_sqeuclid_kdtree(const FLOAT* X, const Py_ssize_t n, const Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
+{
+    std::vector<float> XC(n*D);
+    for (Py_ssize_t i=0; i<n*D; ++i)
+        XC[i] = (float)X[i];
+
+    std::vector<float>  _nn_dist(n*k);
+    std::vector<size_t> _nn_ind(n*k);
+
+    kdtree<float, D> tree(XC.data(), n);
+    kneighbours<float, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
+
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(static)
+    #endif
+    for (Py_ssize_t i=0; i<n; ++i) {
+        const FLOAT* x_cur = X+i*D;
+        for (Py_ssize_t j=0; j<k; ++j) {
+            nn_ind[i*k+j]  = (Py_ssize_t)_nn_ind[i*k+j];
+
+            // recompute the distance using FLOAT's precision
+            const FLOAT* x_other = X+nn_ind[i*k+j]*D;
+            FLOAT _d = 0.0;
+            for (Py_ssize_t u=0; u<D; ++u) {
+                FLOAT _df = x_cur[u]-x_other[u];
+                _d += _df*_df;
+            }
+            nn_dist[i*k+j] = _d;
+        }
+    }
+}
+
+
+/*! Get the k nearest neighbours of each point w.r.t. the Euclidean distance
+ *
+ *
+ * @param X a C-contiguous data matrix
+ * @param n number of rows
+ * @param d number of columns
+ * @param k number of nearest neighbours to look for
+ * @param nn_dist [out] vector(matrix) of length n*k, distances to NNs
+ * @param nn_ind [out] vector(matrix) of length n*k, indexes of NNs
+ * @param verbose output diagnostic/progress messages?
+ */
+template <class T>
 void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     T* nn_dist, Py_ssize_t* nn_ind, bool verbose=false)
 {
@@ -151,7 +233,6 @@ void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
         throw std::runtime_error("d should be between 2 and 20");
     }
 }
-
 
 
 

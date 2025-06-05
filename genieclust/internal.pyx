@@ -584,7 +584,7 @@ cpdef tuple mst_from_distance(
 
 
 
-cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, bint use_kdtree=False, bint verbose=False):
+cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, int use_kdtree=0, bint verbose=False):
     """Determines the first k nearest neighbours of each point in X
     with respect to the squared Euclidean distance
 
@@ -597,7 +597,7 @@ cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, bint use_kdtree=False, b
     X : c_contiguous ndarray, shape (n,d)
     k : int < n
         number of nearest neighbours
-    use_kdtree : bool
+    use_kdtree : int
         whether a KD-tree should be used (for d <= 20 only)
     verbose: bool
         whether to print diagnostic messages
@@ -627,8 +627,11 @@ cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, bint use_kdtree=False, b
         dtype=np.float32 if floatT is float else np.float64)
 
     _openmp_set_num_threads()
-    if use_kdtree and 2 <= d <= 20:
-        c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
+    if use_kdtree > 0 and 2 <= d <= 20:
+        if use_kdtree == 1:
+            c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
+        else:
+            c_mst.Cknn_sqeuclid_picotree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
     else:
         c_mst.Cknn_sqeuclid_brute(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
 

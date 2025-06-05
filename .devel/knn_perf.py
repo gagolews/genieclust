@@ -1,21 +1,24 @@
 import os
 import numba
-n_jobs = 6
+import numpy as np
+
+np.random.seed(123)
+X = np.random.rand(100000, 5)
+k = 10
+
+n_jobs = 1
 os.environ["OMP_NUM_THREADS"] = str(n_jobs)
 os.environ["NUMBA_NUM_THREADS"] = str(n_jobs)
 numba.config.THREADING_LAYER = 'omp'
 
 
 
-import numpy as np
 import hdbscan
 import timeit
 import genieclust
 import os
 
-np.random.seed(123)
-X = np.random.randn(100000, 10)
-k = 10
+
 
 
 # sanity check
@@ -30,40 +33,39 @@ assert(np.all(nn_ind1 == nn_ind2))
 
 
 """
-n=100000, d=2, k=10, threads=6
-knn_sqeuclid_kdtree:          0.03269     19309.87145
-knn_sqeuclid_brute:           6.82671     19309.87146
-knn_from_distance:           12.21293     19309.87146
-sklearn kd_tree:              0.24980     19309.87146
-fast_hdbscan:                 0.08017     19309.87305
+n=1000000, d=2, k=10, threads=1
+knn_sqeuclid_kdtree:          0.88863     61526.08001
+knn_sqeuclid_picotree:        1.69198     61526.08001
+mlpack:                       1.65162     61526.08001
+sklearn kd_tree:              1.94353     61526.08001
+fast_hdbscan:                 1.82479     61526.12109
 
-n=1000000, d=2, k=10, threads=6
-knn_sqeuclid_kdtree:          0.42556     61526.07995
-sklearn kd_tree:              2.58029     61526.08001
-fast_hdbscan:                 1.28486     61526.06641
+n=100000, d=5, k=10, threads=1
+knn_sqeuclid_kdtree:          0.82372    413229.42665
+knn_sqeuclid_picotree:        0.53758    413229.42665
+mlpack:                       1.64399    413229.42665
+sklearn kd_tree:              1.52883    413229.42665
+fast_hdbscan:                 0.85333    413229.46875
+knn_sqeuclid_brute:          15.71682    413229.42665
+knn_from_distance:           23.35285    413229.42665
 
-n=100000, d=5, k=10, threads=6
-knn_sqeuclid_kdtree:          0.15799    413229.42664
-knn_sqeuclid_brute:          10.13204    413229.42665
-knn_from_distance:           13.57109    413229.42665
-sklearn kd_tree:              1.80433    413229.42665
-fast_hdbscan:                 0.36980    413229.37500
+n=100000, d=10, k=10, threads=1
+knn_sqeuclid_kdtree:         20.55747   1388110.84063
+knn_sqeuclid_picotree:       10.39866   1388110.84063
+mlpack:                      31.62153   1388110.84063
+sklearn kd_tree:             25.05803   1388110.84063
+fast_hdbscan:                14.29010   1388110.75000
+knn_sqeuclid_brute:          26.84659   1388110.84063
+knn_from_distance:           39.12568   1388110.84063
 
 n=100000, d=10, k=10, threads=6
-knn_sqeuclid_kdtree:          2.84914   1388110.84081
-knn_sqeuclid_brute:          12.43359   1388110.84063
-knn_from_distance:           24.79300   1388110.84063
-sklearn kd_tree:             33.87226   1388110.84063
-fast_hdbscan:                 7.24239   1388111.00000
-
-
-n=100000, d=15, k=10, threads=6
-knn_sqeuclid_kdtree:         18.31453   2285870.43865
-knn_sqeuclid_brute:          28.91768   2285870.43875
-knn_from_distance:           34.49114   2285870.43875
-sklearn kd_tree:            159.01136   2285870.43875
-fast_hdbscan:                55.34826   2285870.75000
-
+knn_sqeuclid_kdtree:          5.27976   1388110.84063
+knn_sqeuclid_picotree:        2.89341   1388110.84063
+mlpack:                      31.56054   1388110.84063
+sklearn kd_tree:             34.20438   1388110.84063
+fast_hdbscan:                 4.63993   1388110.75000
+knn_sqeuclid_brute:          17.45798   1388110.84063
+knn_from_distance:           24.46707   1388110.84063
 
 """
 
@@ -71,26 +73,29 @@ print("n=%d, d=%d, k=%d, threads=%d" % (X.shape[0], X.shape[1], k, n_jobs))
 
 
 t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=True)
+nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=1)
 nn_dist = np.sqrt(nn_dist)
 t1 = timeit.time.time()
 tot = np.sum(nn_dist)
 print("knn_sqeuclid_kdtree:  %15.5f %15.5f" % (t1-t0, tot))
 
-
 t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=False)
+nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=2)
 nn_dist = np.sqrt(nn_dist)
 t1 = timeit.time.time()
 tot = np.sum(nn_dist)
-print("knn_sqeuclid_brute:   %15.5f %15.5f" % (t1-t0, tot))
+print("knn_sqeuclid_picotree:%15.5f %15.5f" % (t1-t0, tot))
 
 
+import mlpack
 t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, k)
+output = mlpack.knn(reference=X, k=k)
+nn_dist, nn_ind = output['distances'], output['neighbors']
 t1 = timeit.time.time()
 tot = np.sum(nn_dist)
-print("knn_from_distance:    %15.5f %15.5f" % (t1-t0, tot))
+print("mlpack:               %15.5f %15.5f" % (t1-t0, tot))
+
+
 
 
 import sklearn.neighbors
@@ -119,6 +124,24 @@ nn_ind = nn_ind[:, 1:]
 tot = np.sum(nn_dist)
 t1 = timeit.time.time()
 print("fast_hdbscan:         %15.5f %15.5f" % (t1-t0, tot))
+
+if X.shape[0] > 100_000: stop()
+
+
+t0 = timeit.time.time()
+nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=0)
+nn_dist = np.sqrt(nn_dist)
+t1 = timeit.time.time()
+tot = np.sum(nn_dist)
+print("knn_sqeuclid_brute:   %15.5f %15.5f" % (t1-t0, tot))
+
+
+t0 = timeit.time.time()
+nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, k)
+t1 = timeit.time.time()
+tot = np.sum(nn_dist)
+print("knn_from_distance:    %15.5f %15.5f" % (t1-t0, tot))
+
 
 stop()
 
