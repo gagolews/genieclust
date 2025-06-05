@@ -14,6 +14,9 @@
  *  If this is not the case, refer to <https://www.gnu.org/licenses/>.
  */
 
+#include <cstddef>
+#include <stdexcept>
+#include <limits>
 #include <vector>
 #include <array>
 
@@ -99,7 +102,7 @@ protected:
             // a leaf node; nothing more to do
             root->leaf_data.idx_from = idx_from;
             root->leaf_data.idx_to   = idx_to;
-            Rprintf("%5d %5d %5d [%8f,%8f]-[%8f,%8f]\n",
+            printf("%5d %5d %5d [%8f,%8f]-[%8f,%8f]\n",
                     (int)(idx_to-idx_from), (int)idx_from, (int)idx_to,
                     curbox_min[0], curbox_max[0], curbox_min[1], curbox_max[1]);
             return;
