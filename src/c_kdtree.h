@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <stdexcept>
 #include <limits>
+#include <algorithm>
 #include <vector>
 #include <array>
 
@@ -197,6 +198,7 @@ protected:
 
     const size_t max_leaf_size;  //< unless in pathological cases
 
+    std::vector<FLOAT> dd;
 
     void delete_tree(kdtree_node<FLOAT, D>*& root)
     {
@@ -232,9 +234,6 @@ protected:
             // a leaf node; nothing more to do
             root->leaf_data.idx_from = idx_from;
             root->leaf_data.idx_to   = idx_to;
-            // printf("%5d %5d %5d [% 8f,% 8f]-[% 8f,% 8f]\n",
-            //         (int)(idx_to-idx_from), (int)idx_from, (int)idx_to,
-            //         curbox_min[0], curbox_max[0], curbox_min[1], curbox_max[1]);
             return;
         }
 
@@ -258,8 +257,18 @@ protected:
 
         // The sliding midpoint rule
         // "It’s okay to be skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
-
         FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
+
+        // this doesn't improve:
+        // size_t cnt = 0;
+        // for (size_t i=idx_from; i<idx_to; ++i) {
+        //     if (data[i*D+split_dim] <= split_val) cnt++;
+        // }
+        // if (cnt <= max_leaf_size/4)
+        //     split_val = root->bbox_min[split_dim]+0.75*(root->bbox_max[split_dim] - root->bbox_min[split_dim]);
+        // else if ((idx_to-idx_from)-cnt <= max_leaf_size/4)
+        //     split_val = root->bbox_min[split_dim]+0.25*(root->bbox_max[split_dim] - root->bbox_min[split_dim]);
+
 
         GENIECLUST_ASSERT(root->bbox_min[split_dim] < split_val);
         GENIECLUST_ASSERT(split_val < root->bbox_max[split_dim]);
@@ -294,16 +303,12 @@ protected:
         GENIECLUST_ASSERT(idx_left > idx_from);
         GENIECLUST_ASSERT(idx_left < idx_to);
 
-        for (size_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
-            GENIECLUST_ASSERT(data[i*D+split_dim] <= split_val);
-            // if (data[i*D+split_dim] > split_left_max)
-                // split_left_max = data[i*D+split_dim];
-        }
-        for (size_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
-            GENIECLUST_ASSERT(data[i*D+split_dim] > split_val);
-            // if (data[i*D+split_dim] < split_right_min)
-                // split_right_min = data[i*D+split_dim];
-        }
+        // for (size_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
+        //     GENIECLUST_ASSERT(data[i*D+split_dim] <= split_val);
+        // }
+        // for (size_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
+        //     GENIECLUST_ASSERT(data[i*D+split_dim] > split_val);
+        // }
 
         GENIECLUST_ASSERT(data[idx_left*D+split_dim] > split_val);
         GENIECLUST_ASSERT(data[(idx_left-1)*D+split_dim] <= split_val);
@@ -327,8 +332,8 @@ public:
 
     }
 
-    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=12)
-        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
+    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=16)
+        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size), dd(n)
     {
         for (size_t i=0; i<n; ++i) perm[i] = i;
         build_tree(root, 0, n);

@@ -152,7 +152,7 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
 
 /*** R
 
-for (d in c(2, 5)) {
+for (d in c(2, 5, 10)) {
     set.seed(123)
     n <- 100000
     X <- matrix(rnorm(n*d), ncol=d)
@@ -168,8 +168,8 @@ for (d in c(2, 5)) {
 
     funs <- list(
 #genieclust_brute=genieclust:::knn_sqeuclid,
-        new_kdtree=test_kdtree,
-        rann=knn_rann
+#        rann=knn_rann,
+        new_kdtree=test_kdtree
     )
 
 
