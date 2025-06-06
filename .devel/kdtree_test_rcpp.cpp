@@ -24,6 +24,7 @@
         __FILE__ ":" GENIECLUST_STR(__LINE__) ); }
 #endif
 
+#include <sys/types.h>
 typedef ssize_t         Py_ssize_t;
 
 #include "../src/c_kdtree.h"
@@ -151,37 +152,38 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
 
 /*** R
 
-set.seed(123)
-d <- 10
-n <- 100000
-X <- matrix(rnorm(n*d), ncol=d)
+for (d in c(2, 5)) {
+    set.seed(123)
+    n <- 100000
+    X <- matrix(rnorm(n*d), ncol=d)
 
-k <- 10
+    k <- 10
 
-knn_rann <- function(X, k) {
-    res_rann <- RANN::nn2(X, k=k+1)
-    res_rann[[1]] <- res_rann[[1]][,-1]
-    res_rann[[2]] <- res_rann[[2]][,-1]**2
-    res_rann
+    knn_rann <- function(X, k) {
+        res_rann <- RANN::nn2(X, k=k+1)
+        res_rann[[1]] <- res_rann[[1]][,-1]
+        res_rann[[2]] <- res_rann[[2]][,-1]**2
+        res_rann
+    }
+
+    funs <- list(
+#genieclust_brute=genieclust:::knn_sqeuclid,
+        new_kdtree=test_kdtree,
+        rann=knn_rann
+    )
+
+
+    res <- lapply(`names<-`(seq_along(funs), names(funs)), function(i) {
+        f <- funs[[i]]
+        t <- system.time(y <- f(X, k))
+        list(time=t, index=y[[1]], dist=y[[2]])
+    })
+
+    print(rbind(
+        sapply(res, `[[`, 1),
+        sum_dist=sapply(res, function(e) sum(e$dist)),
+        idx_different=sapply(res, function(e) sum(res[[1]]$index != e$index))
+    ))
 }
-
-funs <- list(
-    genieclust_brute=genieclust:::knn_sqeuclid,
-    new_kdtree=test_kdtree,
-    rann=knn_rann
-)
-
-
-res <- lapply(`names<-`(seq_along(funs), names(funs)), function(i) {
-    f <- funs[[i]]
-    t <- system.time(y <- f(X, k))
-    list(time=t, index=y[[1]], dist=y[[2]])
-})
-
-print(rbind(
-    sapply(res, `[[`, 1),
-    sum_dist=sapply(res, function(e) sum(e$dist)),
-    idx_different=sapply(res, function(e) sum(res[[1]]$index != e$index))
-))
 
 */

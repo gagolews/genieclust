@@ -19,6 +19,7 @@
 
 #include "c_common.h"
 
+#include <cmath>
 #include <cstddef>
 #include <stdexcept>
 #include <limits>
@@ -62,7 +63,7 @@ class kdtree_kneighbours
 {
 private:
     const FLOAT* data;
-
+    const size_t n;
     const size_t which;
     FLOAT* knn_dist;
     size_t* knn_ind;
@@ -70,13 +71,10 @@ private:
 
     const FLOAT* x;
 
-
-    static constexpr FLOAT infty = std::numeric_limits<FLOAT>::infinity();
-
     inline FLOAT square(FLOAT v) const { return v*v; }
 
 
-    FLOAT get_dist(const kdtree_node<FLOAT, D>* root)
+    FLOAT get_dist(const kdtree_node<FLOAT, D>* root) const
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -93,16 +91,45 @@ private:
 public:
     kdtree_kneighbours(
         const FLOAT* data,
+        const size_t n,
         const size_t which,
         FLOAT* knn_dist,
         size_t* knn_ind,
         const size_t k
     ) :
-        data(data), which(which), knn_dist(knn_dist), knn_ind(knn_ind), k(k),
+        data(data), n(n), which(which), knn_dist(knn_dist), knn_ind(knn_ind), k(k),
         x(data+D*which)
     {
-        for (size_t i=0; i<k; ++i) knn_dist[i] = infty;
+        for (size_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
         for (size_t i=0; i<k; ++i) knn_ind[i]  = which;
+
+        // // Pre-flight (no benefit)
+        // for (Py_ssize_t i=0; i<=2*k; ++i) {
+        //     Py_ssize_t j = (Py_ssize_t)which-i-(Py_ssize_t)k;
+        //     if (j == (Py_ssize_t)which) continue;
+        //     else if (j < 0) j = (Py_ssize_t)n+j;
+        //     else if (j >= (Py_ssize_t)n) j = j - (Py_ssize_t)n;
+        //
+        //     const FLOAT* y = data+j*D;
+        //     FLOAT dist = 0.0;
+        //     for (size_t u=0; u<D; ++u)
+        //         dist += square(x[u]-*(y++));
+        //
+        //     if (dist >= knn_dist[k-1])
+        //         continue;
+        //
+        //     // insertion-sort like scheme (fast for small k)
+        //
+        //     j = (Py_ssize_t)k-1;
+        //     while (j > 0 && dist < knn_dist[j-1]) {
+        //         knn_dist[j] = knn_dist[j-1];
+        //         j--;
+        //     }
+        //     knn_dist[j] = dist;
+        // }
+        //
+        // knn_dist[k-1] = std::nexttoward(knn_dist[k-1], INFINITY);
+        // for (size_t i=0; i<k-1; ++i) knn_dist[i] = knn_dist[k-1];
     }
 
 
@@ -134,25 +161,24 @@ public:
                 knn_ind[j] = i;
                 knn_dist[j] = dist;
             }
-
-            return;
-        }
-
-        FLOAT dist_left  = get_dist(root->left);
-        FLOAT dist_right = get_dist(root->right);
-
-        if (dist_left < dist_right) {
-            if (dist_left < knn_dist[k-1]) {
-                find(root->left);
-                if (dist_right < knn_dist[k-1])
-                    find(root->right);
-            }
         }
         else {
-            if (dist_right < knn_dist[k-1]) {
-                find(root->right);
-                if (dist_left < knn_dist[k-1])
+            FLOAT dist_left  = get_dist(root->left);
+            FLOAT dist_right = get_dist(root->right);
+
+            if (dist_left < dist_right) {
+                if (dist_left < knn_dist[k-1]) {
                     find(root->left);
+                    if (dist_right < knn_dist[k-1])
+                        find(root->right);
+                }
+            }
+            else {
+                if (dist_right < knn_dist[k-1]) {
+                    find(root->right);
+                    if (dist_left < knn_dist[k-1])
+                        find(root->left);
+                }
             }
         }
     }
@@ -169,8 +195,7 @@ protected:
     const size_t n;  //< number of points
     std::vector<size_t> perm;  //< original point indexes
 
-    const size_t max_leaf_size;
-    static constexpr FLOAT infty = std::numeric_limits<FLOAT>::infinity();
+    const size_t max_leaf_size;  //< unless in pathological cases
 
 
     void delete_tree(kdtree_node<FLOAT, D>*& root)
@@ -198,8 +223,8 @@ protected:
 
         for (size_t i=idx_from+1; i<idx_to; ++i) {
             for (size_t u=0; u<D; ++u) {
-                if      (data[i*D+u]<root->bbox_min[u]) root->bbox_min[u] = data[i*D+u];
-                else if (data[i*D+u]>root->bbox_max[u]) root->bbox_max[u] = data[i*D+u];
+                if      (data[i*D+u] < root->bbox_min[u]) root->bbox_min[u] = data[i*D+u];
+                else if (data[i*D+u] > root->bbox_max[u]) root->bbox_max[u] = data[i*D+u];
             }
         }
 
@@ -215,8 +240,8 @@ protected:
 
         // cut by the dim of the greatest range
         size_t split_dim = 0;
-        FLOAT dim_width = -infty;
-        for (size_t u=0; u<D; ++u) {
+        FLOAT dim_width = root->bbox_max[0]-root->bbox_min[0];
+        for (size_t u=1; u<D; ++u) {
             FLOAT cur_width = root->bbox_max[u]-root->bbox_min[u];
             if (cur_width > dim_width) {
                 dim_width = cur_width;
@@ -230,6 +255,9 @@ protected:
             root->leaf_data.idx_to   = idx_to;
             return;
         }
+
+        // The sliding midpoint rule
+        // "It’s okay to be skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
 
         FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
 
@@ -320,7 +348,7 @@ public:
 
     void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
     {
-        kdtree_kneighbours<FLOAT, D> knn(data, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours<FLOAT, D> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
     }
 };
