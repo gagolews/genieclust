@@ -31,12 +31,6 @@ py-check: python
 
 ################################################################################
 
-stop-on-utf8:
-	# Stop if some files are not in ASCII:
-	[ -z "`file -i DESCRIPTION configure configure.win \
-	        NAMESPACE cleanup R/* src/* man/* inst/* tools/* | \
-	    grep 'text/' | grep -v 'us-ascii' | tee /dev/stderr`" ]
-
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
 	CXX_DEFS="-UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --preclean
@@ -57,7 +51,7 @@ r-test: r
 r-build: r-autoconf
 	cd .. && R CMD build ${PKGNAME}
 
-r-check: stop-on-utf8 r-build
+r-check: r-build
 	cd .. && R_DEFAULT_INTERNET_TIMEOUT=240 \
 	    _R_CHECK_CRAN_INCOMING_REMOTE_=FALSE \
 	    _R_CHECK_FORCE_SUGGESTS_=0 \

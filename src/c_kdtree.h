@@ -136,6 +136,8 @@ public:
 
     void find(const kdtree_node<FLOAT, D>* root)
     {
+        find_start:  /* tail recursion elimination */
+
         if (root->is_leaf()) {
             const FLOAT* y = data+D*root->leaf_data.idx_from;
             for (size_t i=root->leaf_data.idx_from; i<root->leaf_data.idx_to; ++i) {
@@ -162,23 +164,30 @@ public:
                 knn_ind[j] = i;
                 knn_dist[j] = dist;
             }
-        }
-        else {
-            FLOAT dist_left  = get_dist(root->left);
-            FLOAT dist_right = get_dist(root->right);
 
-            if (dist_left < dist_right) {
-                if (dist_left < knn_dist[k-1]) {
-                    find(root->left);
-                    if (dist_right < knn_dist[k-1])
-                        find(root->right);
+            return;
+        }
+
+        FLOAT dist_left  = get_dist(root->left);
+        FLOAT dist_right = get_dist(root->right);
+
+        if (dist_left < dist_right) {
+            if (dist_left < knn_dist[k-1]) {
+                find(root->left);
+                if (dist_right < knn_dist[k-1]) {
+                    //find(root->right);
+                    root = root->right;
+                    goto find_start;  // tail recursion elimination
                 }
             }
-            else {
-                if (dist_right < knn_dist[k-1]) {
-                    find(root->right);
-                    if (dist_left < knn_dist[k-1])
-                        find(root->left);
+        }
+        else {
+            if (dist_right < knn_dist[k-1]) {
+                find(root->right);
+                if (dist_left < knn_dist[k-1]) {
+                    //find(root->left);
+                    root = root->left;
+                    goto find_start;  // tail recursion elimination
                 }
             }
         }
@@ -256,7 +265,7 @@ protected:
         }
 
         // The sliding midpoint rule
-        // "It’s okay to be skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
+        // "It's okay to be skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
         FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
 
         // this doesn't improve:
@@ -332,7 +341,7 @@ public:
 
     }
 
-    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=16)
+    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
         : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size), dd(n)
     {
         for (size_t i=0; i<n; ++i) perm[i] = i;

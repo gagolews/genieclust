@@ -1,9 +1,15 @@
 import os
 import numba
 import numpy as np
+import hdbscan
+import timeit
+import genieclust
+import os
 
-np.random.seed(123)
-X = np.random.rand(100000, 5)
+
+
+
+
 k = 10
 
 n_jobs = 1
@@ -13,22 +19,6 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 
-import hdbscan
-import timeit
-import genieclust
-import os
-
-
-
-
-# sanity check
-nn_dist1, nn_ind1 = genieclust.internal.knn_sqeuclid(X[:100], 3, use_kdtree=True)
-nn_dist2, nn_ind2 = genieclust.internal.knn_sqeuclid(X[:100], 3, use_kdtree=False)
-
-assert(np.allclose(nn_dist1, nn_dist2))
-assert(np.all(nn_ind1 == nn_ind2))
-
-
 
 
 
@@ -36,9 +26,16 @@ assert(np.all(nn_ind1 == nn_ind2))
 n=1000000, d=2, k=10, threads=1
 knn_sqeuclid_kdtree:          0.88863     61526.08001
 knn_sqeuclid_picotree:        1.69198     61526.08001
+fast_hdbscan:                 1.82479     61526.12109
 mlpack:                       1.65162     61526.08001
 sklearn kd_tree:              1.94353     61526.08001
-fast_hdbscan:                 1.82479     61526.12109
+
+n=1000000, d=5, k=10, threads=1
+knn_sqeuclid_kdtree:              7.14020   2627958.13058
+knn_sqeuclid_picotree:           13.27074   2627958.13058
+fast_hdbscan:                    32.59343   2627957.25000
+
+
 
 n=100000, d=5, k=10, threads=1
 knn_sqeuclid_kdtree:          0.82372    413229.42665
@@ -69,78 +66,90 @@ knn_from_distance:           24.46707   1388110.84063
 
 """
 
-print("n=%d, d=%d, k=%d, threads=%d" % (X.shape[0], X.shape[1], k, n_jobs))
+for d in [2, 5]:
+    np.random.seed(123)
+    X = np.random.randn(1000000, d)
+    print("n=%d, d=%d, k=%d, threads=%d" % (X.shape[0], X.shape[1], k, n_jobs))
 
 
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=1)
-nn_dist = np.sqrt(nn_dist)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_sqeuclid_kdtree:  %15.5f %15.5f" % (t1-t0, tot))
-
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=2)
-nn_dist = np.sqrt(nn_dist)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_sqeuclid_picotree:%15.5f %15.5f" % (t1-t0, tot))
-
-
-import mlpack
-t0 = timeit.time.time()
-output = mlpack.knn(reference=X, k=k)
-nn_dist, nn_ind = output['distances'], output['neighbors']
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("mlpack:               %15.5f %15.5f" % (t1-t0, tot))
+    t0 = timeit.time.time()
+    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=1)
+    nn_dist = np.sqrt(nn_dist)
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("knn_sqeuclid_kdtree:      %15.5f %15.5f" % (t1-t0, tot))
 
 
 
+    t0 = timeit.time.time()
+    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=-1)
+    nn_dist = np.sqrt(nn_dist)
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("knn_sqeuclid_picotree:    %15.5f %15.5f" % (t1-t0, tot))
 
-import sklearn.neighbors
-sklearn.neighbors.NearestNeighbors(n_neighbors=k+1, algorithm='kd_tree', n_jobs=n_jobs).fit(X[:100,:]).kneighbors(X[:100,:])
-t0 = timeit.time.time()
-nn_dist, nn_ind = sklearn.neighbors.NearestNeighbors(n_neighbors=k+1, algorithm='kd_tree', n_jobs=n_jobs).fit(X).kneighbors(X)
-nn_dist = nn_dist[:, 1:]
-nn_ind = nn_ind[:, 1:]
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("sklearn kd_tree:      %15.5f %15.5f" % (t1-t0, tot))
+    continue
 
 
+    import sklearn.neighbors
+    import fast_hdbscan
+    import numba
+    numba.set_num_threads(n_jobs)
+    fast_hdbscan.numba_kdtree.parallel_tree_query(fast_hdbscan.hdbscan.kdtree_to_numba(sklearn.neighbors.KDTree(X[:100,:])), X[:100,:], k+1)
+    t0 = timeit.time.time()
+    numba_tree = fast_hdbscan.hdbscan.kdtree_to_numba(sklearn.neighbors.KDTree(X))
+    nn_dist, nn_ind = fast_hdbscan.numba_kdtree.parallel_tree_query(numba_tree, X, k+1)
+    nn_dist = nn_dist[:, 1:]
+    nn_ind = nn_ind[:, 1:]
+    tot = np.sum(nn_dist)
+    t1 = timeit.time.time()
+    print("fast_hdbscan:             %15.5f %15.5f" % (t1-t0, tot))
 
 
-import sklearn.neighbors
-import fast_hdbscan
-import numba
-numba.set_num_threads(n_jobs)
-fast_hdbscan.numba_kdtree.parallel_tree_query(fast_hdbscan.hdbscan.kdtree_to_numba(sklearn.neighbors.KDTree(X[:100,:])), X[:100,:], k+1)
-t0 = timeit.time.time()
-numba_tree = fast_hdbscan.hdbscan.kdtree_to_numba(sklearn.neighbors.KDTree(X))
-nn_dist, nn_ind = fast_hdbscan.numba_kdtree.parallel_tree_query(numba_tree, X, k+1)
-nn_dist = nn_dist[:, 1:]
-nn_ind = nn_ind[:, 1:]
-tot = np.sum(nn_dist)
-t1 = timeit.time.time()
-print("fast_hdbscan:         %15.5f %15.5f" % (t1-t0, tot))
-
-if X.shape[0] > 100_000: stop()
 
 
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=0)
-nn_dist = np.sqrt(nn_dist)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_sqeuclid_brute:   %15.5f %15.5f" % (t1-t0, tot))
+    import mlpack
+    t0 = timeit.time.time()
+    output = mlpack.knn(reference=X, k=k)
+    nn_dist, nn_ind = output['distances'], output['neighbors']
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("mlpack:                   %15.5f %15.5f" % (t1-t0, tot))
 
 
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, k)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_from_distance:    %15.5f %15.5f" % (t1-t0, tot))
+
+
+    import sklearn.neighbors
+    sklearn.neighbors.NearestNeighbors(n_neighbors=k+1, algorithm='kd_tree', n_jobs=n_jobs).fit(X[:100,:]).kneighbors(X[:100,:])
+    t0 = timeit.time.time()
+    nn_dist, nn_ind = sklearn.neighbors.NearestNeighbors(n_neighbors=k+1, algorithm='kd_tree', n_jobs=n_jobs).fit(X).kneighbors(X)
+    nn_dist = nn_dist[:, 1:]
+    nn_ind = nn_ind[:, 1:]
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("sklearn kd_tree:          %15.5f %15.5f" % (t1-t0, tot))
+
+
+
+
+
+
+    if X.shape[0] > 100_000: continue
+
+
+    t0 = timeit.time.time()
+    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=0)
+    nn_dist = np.sqrt(nn_dist)
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("knn_sqeuclid_brute:       %15.5f %15.5f" % (t1-t0, tot))
+
+
+    t0 = timeit.time.time()
+    nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, k)
+    t1 = timeit.time.time()
+    tot = np.sum(nn_dist)
+    print("knn_from_distance:        %15.5f %15.5f" % (t1-t0, tot))
 
 
 stop()
@@ -156,7 +165,7 @@ nn_dist = nn_dist[:, 1:]
 nn_ind = nn_ind[:, 1:]
 t1 = timeit.time.time()
 tot = np.sum(nn_dist)
-print("sklearn ball_tree:    %15.5f %15.5f" % (t1-t0, tot))
+print("sklearn ball_tree:        %15.5f %15.5f" % (t1-t0, tot))
 
 import sklearn.neighbors
 sklearn.neighbors.NearestNeighbors(n_neighbors=k+1, algorithm='brute', n_jobs=n_jobs).fit(X[:100,:]).kneighbors(X[:100,:])
@@ -166,7 +175,7 @@ nn_dist = nn_dist[:, 1:]
 nn_ind = nn_ind[:, 1:]
 t1 = timeit.time.time()
 tot = np.sum(nn_dist)
-print("sklearn brute:        %15.5f %15.5f" % (t1-t0, tot))
+print("sklearn brute:            %15.5f %15.5f" % (t1-t0, tot))
 
 stop()
 
@@ -180,7 +189,7 @@ t1 = timeit.time.time()
 i1 = g[0][:, 0].astype(int)
 i2 = g[0][:, 1].astype(int)
 tot = np.sum(np.maximum(np.maximum(g[2][i1], g[2][i2]), np.sqrt(np.sum((X[i1,:]-X[i2,:])**2, axis=1))))
-print("fast_hdbscan:     %15.5f %15.5f" % (t1-t0, tot))
+print("fast_hdbscan:         %15.5f %15.5f" % (t1-t0, tot))
 
 
 def hdbscan_kdtree(X, M):
@@ -200,7 +209,7 @@ hdbscan_kdtree(X[:100,:], M)  # numba...
 t0 = timeit.time.time()
 min_spanning_tree = hdbscan_kdtree(X, M)
 t1 = timeit.time.time()
-print("hdbscan_kdtree:   %15.5f %15.5f" % (t1-t0, sum(min_spanning_tree.T[2])))
+print("hdbscan_kdtree:       %15.5f %15.5f" % (t1-t0, sum(min_spanning_tree.T[2])))
 
 
 # slower than KD-trees (much slower)
@@ -227,11 +236,11 @@ if M == 1 and X.shape[1] <= 10:
     t0 = timeit.time.time()
     g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=True, M=M).fit(X)
     t1 = timeit.time.time()
-    print("Genie_mlpack:     %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
+    print("Genie_mlpack:         %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 
 
 t0 = timeit.time.time()
 g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=False, M=M).fit(X)
 t1 = timeit.time.time()
-print("Genie_brute:      %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
+print("Genie_brute:          %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 

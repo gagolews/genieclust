@@ -627,11 +627,11 @@ cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, int use_kdtree=0, bint v
         dtype=np.float32 if floatT is float else np.float64)
 
     _openmp_set_num_threads()
-    if use_kdtree > 0 and 2 <= d <= 20:
-        if use_kdtree == 1:
-            c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
-        else:
+    if use_kdtree != 0 and 2 <= d <= 20:
+        if use_kdtree == -1:
             c_mst.Cknn_sqeuclid_picotree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
+        else:
+            c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], use_kdtree, verbose)
     else:
         c_mst.Cknn_sqeuclid_brute(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
 
