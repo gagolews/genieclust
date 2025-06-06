@@ -10,7 +10,7 @@ import os
 
 
 
-k = 10
+k = 1
 
 n_jobs = 1
 os.environ["OMP_NUM_THREADS"] = str(n_jobs)

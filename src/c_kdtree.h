@@ -75,7 +75,7 @@ private:
     inline FLOAT square(FLOAT v) const { return v*v; }
 
 
-    FLOAT get_dist(const kdtree_node<FLOAT, D>* root) const
+    FLOAT get_dist_to_node(const kdtree_node<FLOAT, D>* root) const
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -87,6 +87,7 @@ private:
         }
         return dist;
     }
+
 
 
 public:
@@ -133,7 +134,6 @@ public:
         // for (size_t i=0; i<k-1; ++i) knn_dist[i] = knn_dist[k-1];
     }
 
-
     void find(const kdtree_node<FLOAT, D>* root)
     {
         find_start:  /* tail recursion elimination */
@@ -168,8 +168,8 @@ public:
             return;
         }
 
-        FLOAT dist_left  = get_dist(root->left);
-        FLOAT dist_right = get_dist(root->right);
+        FLOAT dist_left  = get_dist_to_node(root->left);
+        FLOAT dist_right = get_dist_to_node(root->right);
 
         if (dist_left < dist_right) {
             if (dist_left < knn_dist[k-1]) {
@@ -192,6 +192,8 @@ public:
             }
         }
     }
+
+
 };
 
 
