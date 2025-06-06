@@ -18,6 +18,7 @@
 #define __c_kdtree_h
 
 #include "c_common.h"
+#include "c_disjoint_sets.h"
 
 #include <cmath>
 #include <cstddef>
@@ -26,6 +27,14 @@
 #include <algorithm>
 #include <vector>
 #include <array>
+
+
+namespace mgtree {
+
+template <typename FLOAT>
+inline FLOAT square(FLOAT v) { return v*v; }
+
+
 
 template <typename FLOAT, size_t D>
 struct kdtree_node
@@ -36,26 +45,56 @@ struct kdtree_node
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
 
-    union {
-        struct {
-            size_t idx_from;
-            size_t idx_to;
-        } leaf_data;
-        struct {
-            size_t split_dim;
-            //FLOAT split_left_max;
-            //FLOAT split_right_min;
-        } intnode_data;
-    };
+    Py_ssize_t same_cluster;  // for determining MSTs
+
+    size_t idx_from;
+    size_t idx_to;
+
+    // union {
+    //     struct {
+    //         size_t idx_from;
+    //         size_t idx_to;
+    //     } leaf_data;
+    //     struct {
+    //         //size_t split_dim;
+    //         //FLOAT split_left_max;
+    //         //FLOAT split_right_min;
+    //     } intnode_data;
+    // };
 
     kdtree_node()
         : left(nullptr), right(nullptr)
     {
-        leaf_data.idx_from = 0;
-        leaf_data.idx_to = 0;
+        idx_from = 0;
+        idx_to = 0;
+        same_cluster = -1;
     }
 
     bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
+};
+
+
+template <typename FLOAT, size_t D>
+class kdtree_boruvka
+{
+private:
+    const FLOAT* data;
+    const size_t n;
+    FLOAT* tree_dist;
+    size_t* tree_ind;
+    CDisjointSets ds;
+
+public:
+    kdtree_boruvka(const FLOAT* data, const size_t n, FLOAT* tree_dist, size_t* tree_ind)
+        : data(data), n(n), tree_dist(tree_dist), tree_ind(tree_ind), ds(n)
+    {
+
+    }
+
+    void find(const kdtree_node<FLOAT, D>* root)
+    {
+
+    }
 };
 
 
@@ -71,9 +110,6 @@ private:
     const size_t k;
 
     const FLOAT* x;
-
-    inline FLOAT square(FLOAT v) const { return v*v; }
-
 
     FLOAT get_dist_to_node(const kdtree_node<FLOAT, D>* root) const
     {
@@ -139,8 +175,8 @@ public:
         find_start:  /* tail recursion elimination */
 
         if (root->is_leaf()) {
-            const FLOAT* y = data+D*root->leaf_data.idx_from;
-            for (size_t i=root->leaf_data.idx_from; i<root->leaf_data.idx_to; ++i) {
+            const FLOAT* y = data+D*root->idx_from;
+            for (size_t i=root->idx_from; i<root->idx_to; ++i) {
                 if (i == which) {
                     y += D;
                     continue;
@@ -209,8 +245,6 @@ protected:
 
     const size_t max_leaf_size;  //< unless in pathological cases
 
-    std::vector<FLOAT> dd;
-
     void delete_tree(kdtree_node<FLOAT, D>*& root)
     {
         if (!root) return;
@@ -243,8 +277,8 @@ protected:
 
         if (idx_to - idx_from <= max_leaf_size) {
             // a leaf node; nothing more to do
-            root->leaf_data.idx_from = idx_from;
-            root->leaf_data.idx_to   = idx_to;
+            root->idx_from = idx_from;
+            root->idx_to   = idx_to;
             return;
         }
 
@@ -261,8 +295,8 @@ protected:
 
         if (dim_width == 0) {
             // a pathological case: this will be a "large" leaf (all points with the same coords)
-            root->leaf_data.idx_from = idx_from;
-            root->leaf_data.idx_to   = idx_to;
+            root->idx_from = idx_from;
+            root->idx_to   = idx_to;
             return;
         }
 
@@ -327,7 +361,7 @@ protected:
         GENIECLUST_ASSERT(split_left_max <= split_val);
         GENIECLUST_ASSERT(split_right_min > split_val);
 
-        root->intnode_data.split_dim = split_dim;
+        // root->intnode_data.split_dim = split_dim;
         // root->intnode_data.split_left_max = split_left_max;
         // root->intnode_data.split_right_min = split_right_min;
 
@@ -344,7 +378,7 @@ public:
     }
 
     kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
-        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size), dd(n)
+        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         for (size_t i=0; i<n; ++i) perm[i] = i;
         build_tree(root, 0, n);
@@ -367,7 +401,15 @@ public:
         kdtree_kneighbours<FLOAT, D> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
     }
+
+
+    void boruvka(FLOAT* tree_dist, size_t* tree_ind)
+    {
+        kdtree_boruvka<FLOAT, D> mst(data, n, tree_dist, tree_ind);
+        mst.find(root);
+    }
 };
+
 
 
 template <typename FLOAT, size_t D>
@@ -394,6 +436,23 @@ void kneighbours(
 }
 
 
+template <typename FLOAT, size_t D>
+void mst(
+    kdtree<FLOAT, D>& tree,
+    FLOAT* tree_dist,
+    size_t* tree_ind
+) {
+    size_t n = tree.get_n();
+    const size_t* perm = tree.get_perm().data();
 
+    tree.boruvka(tree_dist, tree_ind);
+
+    for (size_t i=0; i<n-1; ++i) {
+        tree_ind[i] = perm[tree_ind[i]];
+    }
+}
+
+
+};  // namespace
 
 #endif

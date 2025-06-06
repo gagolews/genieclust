@@ -50,80 +50,80 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k)
 
     // omfg; templates...
     if (d == 2) {
-        kdtree<float, 2> tree(XC.data(), n);
-        kneighbours<float, 2>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 2> tree(XC.data(), n);
+        mgtree::kneighbours<float, 2>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 3) {
-        kdtree<float, 3> tree(XC.data(), n);
-        kneighbours<float, 3>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 3> tree(XC.data(), n);
+        mgtree::kneighbours<float, 3>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 4) {
-        kdtree<float, 4> tree(XC.data(), n);
-        kneighbours<float, 4>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 4> tree(XC.data(), n);
+        mgtree::kneighbours<float, 4>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 5) {
-        kdtree<float, 5> tree(XC.data(), n);
-        kneighbours<float, 5>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 5> tree(XC.data(), n);
+        mgtree::kneighbours<float, 5>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 6) {
-        kdtree<float, 6> tree(XC.data(), n);
-        kneighbours<float, 6>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 6> tree(XC.data(), n);
+        mgtree::kneighbours<float, 6>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 7) {
-        kdtree<float, 7> tree(XC.data(), n);
-        kneighbours<float, 7>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 7> tree(XC.data(), n);
+        mgtree::kneighbours<float, 7>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 8) {
-        kdtree<float, 8> tree(XC.data(), n);
-        kneighbours<float, 8>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 8> tree(XC.data(), n);
+        mgtree::kneighbours<float, 8>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 9) {
-        kdtree<float, 9> tree(XC.data(), n);
-        kneighbours<float, 9>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 9> tree(XC.data(), n);
+        mgtree::kneighbours<float, 9>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 10) {
-        kdtree<float, 10> tree(XC.data(), n);
-        kneighbours<float, 10>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 10> tree(XC.data(), n);
+        mgtree::kneighbours<float, 10>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 11) {
-        kdtree<float, 11> tree(XC.data(), n);
-        kneighbours<float, 11>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 11> tree(XC.data(), n);
+        mgtree::kneighbours<float, 11>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 12) {
-        kdtree<float, 12> tree(XC.data(), n);
-        kneighbours<float, 12>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 12> tree(XC.data(), n);
+        mgtree::kneighbours<float, 12>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 13) {
-        kdtree<float, 13> tree(XC.data(), n);
-        kneighbours<float, 13>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 13> tree(XC.data(), n);
+        mgtree::kneighbours<float, 13>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 14) {
-        kdtree<float, 14> tree(XC.data(), n);
-        kneighbours<float, 14>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 14> tree(XC.data(), n);
+        mgtree::kneighbours<float, 14>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 15) {
-        kdtree<float, 15> tree(XC.data(), n);
-        kneighbours<float, 15>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 15> tree(XC.data(), n);
+        mgtree::kneighbours<float, 15>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 16) {
-        kdtree<float, 16> tree(XC.data(), n);
-        kneighbours<float, 16>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 16> tree(XC.data(), n);
+        mgtree::kneighbours<float, 16>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 17) {
-        kdtree<float, 17> tree(XC.data(), n);
-        kneighbours<float, 17>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 17> tree(XC.data(), n);
+        mgtree::kneighbours<float, 17>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 18) {
-        kdtree<float, 18> tree(XC.data(), n);
-        kneighbours<float, 18>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 18> tree(XC.data(), n);
+        mgtree::kneighbours<float, 18>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 19) {
-        kdtree<float, 19> tree(XC.data(), n);
-        kneighbours<float, 19>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 19> tree(XC.data(), n);
+        mgtree::kneighbours<float, 19>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 20) {
-        kdtree<float, 20> tree(XC.data(), n);
-        kneighbours<float, 20>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree<float, 20> tree(XC.data(), n);
+        mgtree::kneighbours<float, 20>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else
         return R_NilValue;  // TODO
