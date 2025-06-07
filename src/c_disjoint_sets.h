@@ -42,8 +42,7 @@ protected:
     Py_ssize_t n;                //!< number of distinct elements
     Py_ssize_t k;                //!< number of subsets
     std::vector<Py_ssize_t> par; /*!< par[i] is the id of the parent
-                               *   of the i-th element
-                               */
+                                  *   of the i-th element */
 
 public:
     /*!  Starts with a "weak" partition {  {0}, {1}, ..., {n-1}  },
@@ -106,9 +105,9 @@ public:
      *   @param x a value in {0,...,n-1}
      *   @param y a value in {0,...,n-1}
      */
-    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y) { // well, union is a reserved C++ keyword :)
-        x = this->find(x); // includes a range check for x
-        y = this->find(y); // includes a range check for y
+    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y) {  // well, union is a reserved C++ keyword :)
+        x = this->find(x);  // includes a range check for x
+        y = this->find(y);  // includes a range check for y
         if (x == y) throw std::invalid_argument("find(x) == find(y)");
         if (y < x) std::swap(x, y);
 
