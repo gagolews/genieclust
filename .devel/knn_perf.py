@@ -23,6 +23,16 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 """
+# apollo:
+n=1000000, d=2, k=10, threads=1
+knn_sqeuclid_kdtree(32):          0.88490     61526.08001
+knn_sqeuclid_picotree(16):        1.74694     61526.08001
+n=1000000, d=5, k=10, threads=1
+knn_sqeuclid_kdtree(32):          7.19778   2627958.13058
+knn_sqeuclid_picotree(16):       14.86513   2627958.13058
+
+
+# other:
 n=1000000, d=2, k=10, threads=1
 knn_sqeuclid_kdtree:          0.88863     61526.08001
 knn_sqeuclid_picotree:        1.69198     61526.08001
@@ -77,7 +87,7 @@ for d in [2, 5]:
     nn_dist = np.sqrt(nn_dist)
     t1 = timeit.time.time()
     tot = np.sum(nn_dist)
-    print("knn_sqeuclid_kdtree:      %15.5f %15.5f" % (t1-t0, tot))
+    print("knn_sqeuclid_kdtree(32):  %15.5f %15.5f" % (t1-t0, tot))
 
 
 
@@ -86,7 +96,7 @@ for d in [2, 5]:
     nn_dist = np.sqrt(nn_dist)
     t1 = timeit.time.time()
     tot = np.sum(nn_dist)
-    print("knn_sqeuclid_picotree:    %15.5f %15.5f" % (t1-t0, tot))
+    print("knn_sqeuclid_picotree(16):%15.5f %15.5f" % (t1-t0, tot))
 
     continue
 

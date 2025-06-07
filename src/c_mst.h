@@ -56,9 +56,8 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 
 template <class T, Py_ssize_t D>
 void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
-    T* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
+    T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bool /*verbose*/)
 {
-    pico_tree::max_leaf_size_t max_leaf_size = 12;
     std::vector<std::array<float, D>> points(n);    // float32 - faster
     for (Py_ssize_t i=0; i<n; ++i) {
         for (Py_ssize_t u=0; u<D; ++u) {
@@ -66,7 +65,7 @@ void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
         }
     }
 
-    pico_tree::kd_tree tree(std::ref(points), max_leaf_size);
+    pico_tree::kd_tree tree(std::ref(points), (pico_tree::max_leaf_size_t)max_leaf_size);
 
     #ifdef _OPENMP
     #pragma omp parallel for schedule(static)
@@ -96,15 +95,6 @@ void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
         if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
         #endif
     }
-
-
-    // pico_tree::kd_tree tree(std::ref(points), max_leaf_size);
-    //
-    // float query[3] = {4.0f, 4.0f, 4.0f};
-    // pico_tree::neighbor<int, float> nn;
-    // tree.search_nn(query, nn);
-
-    // sqrt....
 }
 
 
@@ -121,32 +111,35 @@ void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
  */
 template <class T>
 void Cknn_sqeuclid_picotree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    T* nn_dist, Py_ssize_t* nn_ind, bool verbose=false)
+    T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=12, bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
+    if (max_leaf_size < 0) throw std::domain_error("max_leaf_size < 0");
+    else if (max_leaf_size == 0) max_leaf_size = 12;  // default
+
     /* OMFG. Templates. */
-    /**/ if (d ==  2)  Cknn_sqeuclid_picotree<T,  2>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  3)  Cknn_sqeuclid_picotree<T,  3>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  4)  Cknn_sqeuclid_picotree<T,  4>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  5)  Cknn_sqeuclid_picotree<T,  5>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  6)  Cknn_sqeuclid_picotree<T,  6>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  7)  Cknn_sqeuclid_picotree<T,  7>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  8)  Cknn_sqeuclid_picotree<T,  8>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d ==  9)  Cknn_sqeuclid_picotree<T,  9>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 10)  Cknn_sqeuclid_picotree<T, 10>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 11)  Cknn_sqeuclid_picotree<T, 11>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 12)  Cknn_sqeuclid_picotree<T, 12>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 13)  Cknn_sqeuclid_picotree<T, 13>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 14)  Cknn_sqeuclid_picotree<T, 14>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 15)  Cknn_sqeuclid_picotree<T, 15>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 16)  Cknn_sqeuclid_picotree<T, 16>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 17)  Cknn_sqeuclid_picotree<T, 17>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 18)  Cknn_sqeuclid_picotree<T, 18>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 19)  Cknn_sqeuclid_picotree<T, 19>(X, n, k, nn_dist, nn_ind, verbose);
-    else if (d == 20)  Cknn_sqeuclid_picotree<T, 20>(X, n, k, nn_dist, nn_ind, verbose);
+    /**/ if (d ==  2)  Cknn_sqeuclid_picotree<T,  2>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  3)  Cknn_sqeuclid_picotree<T,  3>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  4)  Cknn_sqeuclid_picotree<T,  4>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  5)  Cknn_sqeuclid_picotree<T,  5>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  6)  Cknn_sqeuclid_picotree<T,  6>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  7)  Cknn_sqeuclid_picotree<T,  7>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  8)  Cknn_sqeuclid_picotree<T,  8>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d ==  9)  Cknn_sqeuclid_picotree<T,  9>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 10)  Cknn_sqeuclid_picotree<T, 10>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 11)  Cknn_sqeuclid_picotree<T, 11>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 12)  Cknn_sqeuclid_picotree<T, 12>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 13)  Cknn_sqeuclid_picotree<T, 13>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 14)  Cknn_sqeuclid_picotree<T, 14>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 15)  Cknn_sqeuclid_picotree<T, 15>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 16)  Cknn_sqeuclid_picotree<T, 16>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 17)  Cknn_sqeuclid_picotree<T, 17>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 18)  Cknn_sqeuclid_picotree<T, 18>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 19)  Cknn_sqeuclid_picotree<T, 19>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    else if (d == 20)  Cknn_sqeuclid_picotree<T, 20>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }

@@ -55,6 +55,12 @@ public:
     {
         // if (n < 0) throw std::domain_error("n < 0");
         this->n = n;
+        reset();
+    }
+
+
+    void reset()
+    {
         this->k = n;
         for (Py_ssize_t i=0; i<n; ++i)
             this->par[i] = i;

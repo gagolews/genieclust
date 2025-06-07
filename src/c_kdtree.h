@@ -1,6 +1,4 @@
-/*  Kd-trees wrt the squared Euclidean distance (optimised),
-/*  A dual-tree Boruvka algorithm for finding minimum spanning trees
- *      wrt the Euclidean dist
+/*  Kd-trees wrt the squared Euclidean distance (optimised)
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -29,6 +27,7 @@
 #include <limits>
 #include <algorithm>
 #include <vector>
+#include <deque>
 #include <array>
 
 
@@ -40,15 +39,11 @@ inline FLOAT square(FLOAT v) { return v*v; }
 
 
 template <typename FLOAT, size_t D>
-struct kdtree_node
+struct kdtree_node_base
 {
-    kdtree_node* left;
-    kdtree_node* right;
 
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
-
-    Py_ssize_t cluster_repr;  // for determining MSTs; representative point index if all descendants are in the same cluster
 
     size_t idx_from;
     size_t idx_to;
@@ -65,19 +60,39 @@ struct kdtree_node
     //     } intnode_data;
     // };
 
-    kdtree_node()
-        : left(nullptr), right(nullptr)
+    kdtree_node_base()
     {
         idx_from = 0;
         idx_to = 0;
-        cluster_repr = -1;
+    }
+
+};
+
+
+
+template <typename FLOAT, size_t D>
+struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
+{
+    kdtree_node_knn* left;
+    kdtree_node_knn* right;
+
+    kdtree_node_knn() {
+        left = nullptr;
+        right = nullptr;
     }
 
     bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
 };
 
 
-template <typename FLOAT, size_t D>
+
+
+
+/** A class enabling searching for k nearest neighbours of a given point
+ *  (excluding self) within the same dataset;
+ *  it is thread-safe
+ */
+template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT,D> >
 class kdtree_kneighbours
 {
 private:
@@ -90,7 +105,7 @@ private:
 
     const FLOAT* x;
 
-    FLOAT dist_to_node(const kdtree_node<FLOAT, D>* root) const
+    FLOAT dist_to_node(const NODE* root) const
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -150,7 +165,7 @@ public:
     }
 
 
-    void find(const kdtree_node<FLOAT, D>* root)
+    void find(const NODE* root)
     {
         find_start:  /* tail recursion elimination */
 
@@ -212,162 +227,14 @@ public:
 
 
 
-template <typename FLOAT, size_t D>
-class kdtree_boruvka
-{
-private:
-    const FLOAT* data;
-    const size_t n;
-    FLOAT* tree_dist;  //< size n-1
-    size_t* tree_ind;  //< size 2*(n-1)
-    CDisjointSets ds;
-    size_t k;  // current cluster count
 
-    std::vector<FLOAT> nn_dist;
-    std::vector<size_t> nn_ind;
-
-
-    FLOAT dist_between_nodes(const kdtree_node<FLOAT, D>* roota, const kdtree_node<FLOAT, D>* rootb) const
-    {
-        FLOAT dist = 0.0;
-        GENIECLUST_ASSERT(false);  // TODO .........................................................
-        // for (size_t u=0; u<D; ++u) {
-        //     if (x[u] < root->bbox_min[u])
-        //         dist += square(x[u] - root->bbox_min[u]);
-        //     else if (x[u] > root->bbox_max[u])
-        //         dist += square(x[u] - root->bbox_max[u]);
-        //     // else dist += 0.0;
-        // }
-        return dist;
-    }
-
-    void update_cluster_repr(kdtree_node<FLOAT, D>*& root, bool reset_all)
-    {
-        if (!reset_all && root->cluster_repr >= 0) {
-            root->cluster_repr = ds.find(root->cluster_repr);
-            return;
-        }
-
-        if (root->is_leaf()) {
-            root->cluster_repr = ds.find(root->idx_from);
-            for (size_t i=root->idx_from+1; i<root->idx_to; ++i) {
-                if (root->cluster_repr != ds.find(i)) {
-                    root->cluster_repr = -1;  // not all are members of the same cluster
-                    break;
-                }
-            }
-        }
-        else {
-            update_cluster_repr(root->left,  reset_all);
-            update_cluster_repr(root->right, reset_all);
-
-            // if both children only feature members of the same cluster, update the cluster repr for the current node
-            if (root->left->cluster_repr >= 0 && root->right->cluster_repr >= 0) {
-                if (ds.find(root->left->cluster_repr) == ds.find(root->left->cluster_repr))
-                    root->cluster_repr = ds.find(root->left->cluster_repr);
-            }
-        }
-    }
-
-
-    void find_first(const kdtree_node<FLOAT, D>* root)
-    {
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (size_t i=0; i<n; ++i) {
-            kdtree_kneighbours<FLOAT, D> nn(data, n, i, nn_dist.data()+i, nn_ind.data()+i, 1);
-            nn.find(root);
-        }
-
-        for (size_t i=0; i<n; ++i) {
-            if (ds.find(i) != ds.find(nn_ind[i])) {
-                tree_ind[k*2+0] = i;
-                tree_ind[k*2+1] = nn_ind[i];
-                tree_dist[k] = nn_dist[i];
-                ds.merge(i, nn_ind[i]);
-                k++;
-            }
-        }
-    }
-
-
-    void find_dtb(const kdtree_node<FLOAT, D>* roota, const kdtree_node<FLOAT, D>* rootb)
-    {
-        if (roota->cluster_repr >= 0 && rootb->cluster_repr >= 0) {
-            if (ds.find(roota->cluster_repr) == ds.find(rootb->cluster_repr)) {
-                // both consist of members of the same cluster - nothing to do
-                return;
-            }
-        }
-
-        FLOAT dist = dist_between_nodes(roota, rootb);  // ........ TODO.....
-
-          // ........ TODO.....
-    }
-
-public:
-    kdtree_boruvka(const FLOAT* data, const size_t n, FLOAT* tree_dist, size_t* tree_ind)
-        : data(data), n(n), tree_dist(tree_dist), tree_ind(tree_ind), ds(n), k(0), nn_dist(n), nn_ind(n)
-    {
-        for (size_t i=0; i<n-1; ++i)     tree_dist[i] = INFINITY;
-        for (size_t i=0; i<2*(n-1); ++i) tree_ind[i] = n;
-    }
-
-    void find(const kdtree_node<FLOAT, D>* root)
-    {
-        // 1st iteration: connect nearest neighbours with each other
-        find_first(root);
-
-
-        // TODO: start with max_leaf_size=~32, then switch to a smaller one?
-
-        // A dual-tree Boruvka algorithm
-        // based on "Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications"
-        // by W.B. March, P. Ram, A.G. Gray
-
-        bool first_iter = true;
-        while (k < n-1) {
-            update_cluster_repr(root, first_iter);
-            first_iter = false;
-
-            // NOTE: this could be a fancy data structure that holds only
-            // the representatives of the current clusters, but why bother
-            for (size_t i=0; i<n; ++i) nn_dist[i] = INFINITY;
-            for (size_t i=0; i<n; ++i) nn_ind[i] = n;
-
-            find_dtb(root, root);
-
-            for (size_t i=0; i<n; ++i) {
-                if (nn_ind[i] >= n) continue;
-                GENIECLUST_ASSERT(i == ds.find(i));
-
-                if (ds.find(i) != ds.find(nn_ind[i])) {
-                    tree_ind[k*2+0] = i;
-                    tree_ind[k*2+1] = nn_ind[i];
-                    tree_dist[k] = nn_dist[i];
-                    ds.merge(i, nn_ind[i]);
-                    k++;
-                }
-            }
-        }
-
-        // TODO: delme:
-        update_cluster_repr(root, false);// TODO: delme
-        GENIECLUST_ASSERT(root->cluster_repr == 0);// TODO: delme
-        update_cluster_repr(root, true);// TODO: delme
-        GENIECLUST_ASSERT(root->cluster_repr == 0);// TODO: delme
-    }
-};
-
-
-
-
-template <typename FLOAT, size_t D>
+template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT, D> >
 class kdtree
 {
 protected:
-    kdtree_node<FLOAT, D>* root;
+    std::deque< NODE > nodes;  // stores all nodes
+
+    NODE* root;  // nodes[0] or nullptr
 
     FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm)
     const size_t n;  //< number of points
@@ -375,24 +242,27 @@ protected:
 
     const size_t max_leaf_size;  //< unless in pathological cases
 
-    void delete_tree(kdtree_node<FLOAT, D>*& root)
-    {
-        if (!root) return;
 
-        delete_tree(root->left);
-        delete_tree(root->right);
-
-        delete root;
-        root = nullptr;
-    }
+    // void delete_tree(NODE*& root)
+    // {
+    //     if (!root) return;
+    //
+    //     delete_tree(root->left);
+    //     delete_tree(root->right);
+    //
+    //     delete root;
+    //     root = nullptr;
+    // }
 
 
     void build_tree(
-        kdtree_node<FLOAT, D>*& root, size_t idx_from, size_t idx_to
+        NODE*& root, size_t idx_from, size_t idx_to
     )
     {
         GENIECLUST_ASSERT(idx_to - idx_from > 0);
-        root = new kdtree_node<FLOAT, D>();
+        //root = new NODE();
+        nodes.push_back(NODE());
+        root = &nodes[nodes.size()-1];
 
         // get the node's bounding box
         for (size_t u=0; u<D; ++u) root->bbox_min[u] = data[idx_from*D+u];
@@ -518,7 +388,9 @@ public:
 
     ~kdtree()
     {
-        delete_tree(root);
+        //delete_tree(root);
+        root = nullptr;
+        nodes.clear();
     }
 
 
@@ -529,23 +401,16 @@ public:
 
     void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
     {
-        kdtree_kneighbours<FLOAT, D> knn(data, n, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours<FLOAT, D, NODE> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
-    }
-
-
-    void boruvka(FLOAT* tree_dist, size_t* tree_ind)
-    {
-        kdtree_boruvka<FLOAT, D> mst(data, n, tree_dist, tree_ind);
-        mst.find(root);
     }
 };
 
 
 
-template <typename FLOAT, size_t D>
+template <typename FLOAT, size_t D, typename TREE>
 void kneighbours(
-    kdtree<FLOAT, D>& tree,
+    TREE& tree,
     FLOAT* knn_dist,
     size_t* knn_ind,
     size_t k
@@ -566,36 +431,6 @@ void kneighbours(
     }
 }
 
-
-template <typename FLOAT, size_t D>
-void mst(
-    kdtree<FLOAT, D>& tree,
-    FLOAT* tree_dist,  // size n-1
-    size_t* tree_ind   // size 2*(n-1)
-) {
-    size_t n = tree.get_n();
-    const size_t* perm = tree.get_perm().data();
-
-    tree.boruvka(tree_dist, tree_ind);
-
-    std::vector< CMstTriple<FLOAT> > mst(n-1);
-
-    for (size_t i=0; i<n-1; ++i) {
-        GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
-        GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
-        GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
-
-        mst[i] = CMstTriple<FLOAT>(perm[tree_ind[2*i+0]], perm[tree_ind[2*i+1]], tree_dist[i]);
-    }
-
-    std::sort(mst.begin(), mst.end());
-
-    for (size_t i=0; i<n-1; ++i) {
-        tree_dist[i]    = sqrt(mst[i].d);
-        tree_ind[2*i+0] = mst[i].i1;  // i1 < i2
-        tree_ind[2*i+1] = mst[i].i2;
-    }
-}
 
 
 };  // namespace

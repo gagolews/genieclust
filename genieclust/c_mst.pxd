@@ -73,7 +73,7 @@ cdef extern from "../src/c_mst.h":
 
     void Cknn_sqeuclid_picotree[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-        T* nn_dist, Py_ssize_t* nn_ind, bint verbose) except +
+        T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bint verbose) except +
 
     void Cknn_sqeuclid_kdtree[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,

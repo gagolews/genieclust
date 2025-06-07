@@ -28,6 +28,8 @@
 typedef ssize_t         Py_ssize_t;
 
 #include "../src/c_kdtree.h"
+#include "../src/c_dtb.h"
+
 
 #include <Rcpp.h>
 
@@ -127,39 +129,39 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=2)
 
     // omfg; templates...
     if (d == 2) {
-        mgtree::kdtree<float, 2> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 2> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 2>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 3) {
-        mgtree::kdtree<float, 3> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 3> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 3>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 4) {
-        mgtree::kdtree<float, 4> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 4> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 4>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 5) {
-        mgtree::kdtree<float, 5> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 5> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 5>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 6) {
-        mgtree::kdtree<float, 6> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 6> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 6>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 7) {
-        mgtree::kdtree<float, 7> tree(XC.data(), n);
+        mgtree::dtb<float, 7> tree(XC.data(), n);
         mgtree::mst<float, 7>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 8) {
-        mgtree::kdtree<float, 8> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 8> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 8>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 9) {
-        mgtree::kdtree<float, 9> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 9> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 9>(tree, tree_dist.data(), tree_ind.data());
     }
     else if (d == 10) {
-        mgtree::kdtree<float, 10> tree(XC.data(), n, max_leaf_size);
+        mgtree::dtb<float, 10> tree(XC.data(), n, max_leaf_size);
         mgtree::mst<float, 10>(tree, tree_dist.data(), tree_ind.data());
     }
     else
