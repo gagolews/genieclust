@@ -1,7 +1,7 @@
 /*  A dual-tree Boruvka algorithm for finding minimum spanning trees
  *  wrt the Euclidean dist based on "Fast Euclidean Minimum Spanning Tree:
  *  Algorithm, Analysis, and Applications"
- *  by W.B. March, P. Ram, A.G. Gray
+ *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -139,7 +139,7 @@ protected:
             }
         }
 
-        FLOAT dist = dist_between_nodes(roota, rootb);
+        FLOAT dist = dist_between_nodes(roota, rootb);   // TOOO !!!!!!!!!!!!!!!!!!!!!!! TODO
 
         if (roota->cluster_max_dist < dist) {
             // we've a better candidate already - nothing to do
@@ -151,10 +151,12 @@ protected:
                 for (size_t i=roota->idx_from; i<roota->idx_to; ++i) {
                     Py_ssize_t ds_find_i = ds.find(i);
                     for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j) {
-                        if (ds_find_i != ds.find(j)) {
+                        Py_ssize_t ds_find_j = ds.find(j);
+                        if (ds_find_i != ds_find_j) {
                             FLOAT dij = 0.0;
                             for (size_t u=0; u<D; ++u)
                                 dij += square(this->data[i*D+u]-this->data[j*D+u]);
+
                             if (dij < nn_dist[ds_find_i]) {
                                 nn_dist[ds_find_i] = dij;
                                 nn_ind[ds_find_i]  = j;
@@ -177,6 +179,14 @@ protected:
                 }
             }
             else {
+                if (dist_between_nodes(roota, rootb->left) < dist_between_nodes(roota, rootb->right)) {
+                    find_mst_next(roota,  rootb->left);
+                    find_mst_next(roota,  rootb->right);
+                }
+                else {
+                    find_mst_next(roota,  rootb->right);
+                    find_mst_next(roota,  rootb->left);
+                }
                 find_mst_next(roota, rootb->left);
                 find_mst_next(roota, rootb->right);
             }
@@ -187,10 +197,22 @@ protected:
                 find_mst_next(roota->right, rootb);
             }
             else {
-                find_mst_next(roota->left,  rootb->left);
-                find_mst_next(roota->left,  rootb->right);
-                find_mst_next(roota->right, rootb->left);
-                find_mst_next(roota->right, rootb->right);
+                if (dist_between_nodes(roota->left, rootb->left) < dist_between_nodes(roota->left, rootb->right)) {
+                    find_mst_next(roota->left,  rootb->left);
+                    find_mst_next(roota->left,  rootb->right);
+                }
+                else {
+                    find_mst_next(roota->left,  rootb->right);
+                    find_mst_next(roota->left,  rootb->left);
+                }
+
+                if (dist_between_nodes(roota->right, rootb->left) < dist_between_nodes(roota->right, rootb->right)) {
+                    find_mst_next(roota->right, rootb->left);
+                    find_mst_next(roota->right, rootb->right);
+                } else {
+                    find_mst_next(roota->right, rootb->right);
+                    find_mst_next(roota->right, rootb->left);
+                }
             }
             roota->cluster_max_dist = std::max(
                 roota->left->cluster_max_dist,
