@@ -184,6 +184,8 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=2)
 
 /*** R
 
+options(width=160)
+
 knn_rann <- function(X, k) {
     res_rann <- RANN::nn2(X, k=k+1)
     res_rann[[1]] <- res_rann[[1]][,-1]
@@ -203,15 +205,16 @@ funs_mst <- list(
     mlpack_16=function(X) genieclust:::.emst_mlpack(X, 16L, FALSE),
     mlpack_32=function(X) genieclust:::.emst_mlpack(X, 32L, FALSE),
     new_mst_1=function(X) test_mst(X, 1L),
+    new_mst_2=function(X) test_mst(X, 2L),
     new_mst_16=function(X) test_mst(X, 16L),
     new_mst_32=function(X) test_mst(X, 32L)
 )
 
 
 
-for (d in c(2, 5, 10)) {
+for (d in c(2, 5)) {
     set.seed(123)
-    n <- 10000
+    n <- 50000
     X <- matrix(rnorm(n*d), ncol=d)
 
     k <- 10
