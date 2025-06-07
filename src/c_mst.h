@@ -20,6 +20,7 @@
 #define __c_mst_h
 
 #include "c_common.h"
+#include "c_mst_triple.h"
 #include <vector>
 #include <algorithm>
 #include <cmath>
@@ -209,8 +210,8 @@ void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
-    if (max_leaf_size <= 0) throw std::domain_error("max_leaf_size <= 0");
-    else if (max_leaf_size == 1) max_leaf_size = 32;
+    if (max_leaf_size < 0) throw std::domain_error("max_leaf_size < 0");
+    else if (max_leaf_size == 0) max_leaf_size = 32;  // default
 
     /* OMFG. Templates. */
     /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<T,  2>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
@@ -426,52 +427,9 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
 
 
 
-/*! Represents an undirected edge in a weighted graph.
- *  Features a comparer used to sort MST edges w.r.t. increasing weights.
- */
-template <class T>
-class CMstTriple
-{
-public:
-    Py_ssize_t i1;  //!< first  vertex defining an edge
-    Py_ssize_t i2;  //!< second vertex defining an edge
-    T d;            //!< edge weight
-
-    CMstTriple() {}
-
-    CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bool order=true)
-    {
-        GENIECLUST_ASSERT(i1 != i2);
-        GENIECLUST_ASSERT(i1 >= 0);
-        GENIECLUST_ASSERT(i2 >= 0);
-        this->d = d;
-        if (!order || (i1 < i2)) {
-            this->i1 = i1;
-            this->i2 = i2;
-        }
-        else {
-            this->i1 = i2;
-            this->i2 = i1;
-        }
-    }
-
-    bool operator<(const CMstTriple<T>& other) const
-    {
-        if (d == other.d) {
-            if (i1 == other.i1)
-                return i2 < other.i2;
-            else
-                return i1 < other.i1;
-        }
-        else
-            return d < other.d;
-    }
-};
 
 
-
-
-/*! Specialised version of 'Cmst_from_complete' for Euclidean distance
+/*! A specialised version of 'Cmst_from_complete' for Euclidean distance
  * (has better locality of reference)
  *
  *

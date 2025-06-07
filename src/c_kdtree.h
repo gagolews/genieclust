@@ -19,6 +19,7 @@
 
 #include "c_common.h"
 #include "c_disjoint_sets.h"
+#include "c_mst_triple.h"
 
 #include <cmath>
 #include <cstddef>
@@ -45,7 +46,7 @@ struct kdtree_node
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
 
-    Py_ssize_t same_cluster;  // for determining MSTs
+    Py_ssize_t cluster_id;  // for determining MSTs
 
     size_t idx_from;
     size_t idx_to;
@@ -67,7 +68,7 @@ struct kdtree_node
     {
         idx_from = 0;
         idx_to = 0;
-        same_cluster = -1;
+        cluster_id = -1;
     }
 
     bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
@@ -80,15 +81,17 @@ class kdtree_boruvka
 private:
     const FLOAT* data;
     const size_t n;
-    FLOAT* tree_dist;
-    size_t* tree_ind;
+    FLOAT* tree_dist;  //< size n-1
+    size_t* tree_ind;  //< size 2*(n-1)
     CDisjointSets ds;
+    size_t k;  // current cluster count
 
 public:
     kdtree_boruvka(const FLOAT* data, const size_t n, FLOAT* tree_dist, size_t* tree_ind)
-        : data(data), n(n), tree_dist(tree_dist), tree_ind(tree_ind), ds(n)
+        : data(data), n(n), tree_dist(tree_dist), tree_ind(tree_ind), ds(n), k(0)
     {
-
+        for (size_t i=0; i<n-1; ++i) tree_dist[i] = INFINITY;
+        for (size_t i=0; i<2*(n-1); ++i) tree_ind[i] = n;
     }
 
     void find(const kdtree_node<FLOAT, D>* root)
@@ -370,6 +373,15 @@ protected:
     }
 
 
+    void reset_cluster_id(kdtree_node<FLOAT, D>*& root, Py_ssize_t cluster_id)
+    {
+        if (!root) return;
+        root->cluster_id = cluster_id;
+        reset_cluster_id(root->left, cluster_id);
+        reset_cluster_id(root->right, cluster_id);
+    }
+
+
 public:
     kdtree()
         : root(nullptr), data(nullptr), n(0), perm(0), max_leaf_size(1)
@@ -380,6 +392,7 @@ public:
     kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
         : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
+        GENIECLUST_ASSERT(max_leaf_size > 0);
         for (size_t i=0; i<n; ++i) perm[i] = i;
         build_tree(root, 0, n);
     }
@@ -405,6 +418,7 @@ public:
 
     void boruvka(FLOAT* tree_dist, size_t* tree_ind)
     {
+        reset_cluster_id(root, -1);
         kdtree_boruvka<FLOAT, D> mst(data, n, tree_dist, tree_ind);
         mst.find(root);
     }
@@ -439,16 +453,35 @@ void kneighbours(
 template <typename FLOAT, size_t D>
 void mst(
     kdtree<FLOAT, D>& tree,
-    FLOAT* tree_dist,
-    size_t* tree_ind
+    FLOAT* tree_dist,  // size n-1
+    size_t* tree_ind   // size 2*(n-1)
 ) {
     size_t n = tree.get_n();
     const size_t* perm = tree.get_perm().data();
 
     tree.boruvka(tree_dist, tree_ind);
 
+    std::vector< CMstTriple<FLOAT> > mst(n-1);
+
     for (size_t i=0; i<n-1; ++i) {
-        tree_ind[i] = perm[tree_ind[i]];
+        GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
+        GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
+        GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
+
+        mst[i] = CMstTriple<FLOAT>(perm[tree_ind[2*i+0]], perm[tree_ind[2*i+1]], tree_dist[i]);
+    }
+
+    std::sort(mst.begin(), mst.end());
+
+    for (size_t i=0; i<n-1; ++i) {
+        tree_dist[i]    = sqrt(mst[i].d);
+        tree_ind[2*i+0] = mst[i].i1; // i1 < i2
+        tree_ind[2*i+1] = mst[i].i2;
+    }
+
+
+    for (size_t i=0; i<2*(n-1); ++i) {
+
     }
 }
 
