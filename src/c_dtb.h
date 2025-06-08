@@ -66,7 +66,31 @@ protected:
     std::vector<size_t> nn_from;
 
 
-    inline FLOAT dist_between_nodes(const NODE* roota, const NODE* rootb) const
+    struct kdtree_node_orderer {
+        NODE* closer_node;
+        NODE* farther_node;
+        FLOAT closer_dist;
+        FLOAT farther_dist;
+
+
+        kdtree_node_orderer(NODE* from, NODE* to1, NODE* to2)
+        {
+            closer_dist  = dist_between_nodes(from, to1);
+            farther_dist = dist_between_nodes(from, to2);
+            if (closer_dist <= farther_dist) {
+                closer_node  = to1;
+                farther_node = to2;
+            }
+            else {
+                std::swap(closer_dist, farther_dist);
+                closer_node  = to2;
+                farther_node = to1;
+            }
+        }
+    };
+
+
+    static inline FLOAT dist_between_nodes(const NODE* roota, const NODE* rootb)
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -162,27 +186,27 @@ protected:
 
     void find_mst_next(NODE* roota, NODE* rootb)
     {
-        GENIECLUST_ASSERT(roota);
-        GENIECLUST_ASSERT(rootb);
+        //GENIECLUST_ASSERT(roota);
+        //GENIECLUST_ASSERT(rootb);
 
         if (roota->cluster_repr >= 0 && roota->cluster_repr == rootb->cluster_repr) {
             // both consist of members of the same cluster - nothing to do
             return;
         }
 
-        FLOAT dist = dist_between_nodes(roota, rootb);   // TOOO !!!!!!!!!!!!!!!!!!!!!!! TODO
-
-        if (roota->cluster_max_dist < dist) {
-            // we've a better candidate already - nothing to do
-            return;
-        }
+        // pruning below!
+        //FLOAT dist = dist_between_nodes(roota, rootb);
+        //if (roota->cluster_max_dist < dist) {
+        //    // we've a better candidate already - nothing to do
+        //    return;
+        //}
 
         if (roota->is_leaf()) {
             if (rootb->is_leaf()) {
 
                 leaf_vs_leaf(roota, rootb);
 
-                if (roota->cluster_repr >= 0) {  // all from the same cluster
+                if (roota->cluster_repr >= 0) {  // all points are in the same cluster
                     roota->cluster_max_dist = nn_dist[roota->cluster_repr];
                 }
                 else {
@@ -195,41 +219,44 @@ protected:
                 }
             }
             else {
-                if (dist_between_nodes(roota, rootb->left) < dist_between_nodes(roota, rootb->right)) {
-                    find_mst_next(roota,  rootb->left);
-                    find_mst_next(roota,  rootb->right);
-                }
-                else {
-                    find_mst_next(roota,  rootb->right);
-                    find_mst_next(roota,  rootb->left);
-                }
-                find_mst_next(roota, rootb->left);
-                find_mst_next(roota, rootb->right);
-            }
-        }
-        else {
-            if (rootb->is_leaf()) {
-                find_mst_next(roota->left, rootb);
-                find_mst_next(roota->right, rootb);
-            }
-            else {
-                if (dist_between_nodes(roota->left, rootb->left) < dist_between_nodes(roota->left, rootb->right)) {
-                    find_mst_next(roota->left,  rootb->left);
-                    find_mst_next(roota->left,  rootb->right);
-                }
-                else {
-                    find_mst_next(roota->left,  rootb->right);
-                    find_mst_next(roota->left,  rootb->left);
+                // closer node first -> faster!
+                kdtree_node_orderer sel(roota, rootb->left, rootb->right);
+
+                // prune nodes too far away if we have better candidates
+                if (roota->cluster_max_dist >= sel.closer_dist) {
+                    find_mst_next(roota, sel.closer_node);
+                    if (roota->cluster_max_dist >= sel.farther_dist)
+                        find_mst_next(roota, sel.farther_node);
                 }
 
-                if (dist_between_nodes(roota->right, rootb->left) < dist_between_nodes(roota->right, rootb->right)) {
-                    find_mst_next(roota->right, rootb->left);
-                    find_mst_next(roota->right, rootb->right);
-                } else {
-                    find_mst_next(roota->right, rootb->right);
-                    find_mst_next(roota->right, rootb->left);
+                // roota->cluster_max_dist updated above
+            }
+        }
+        else {  // roota is not a leaf
+            if (rootb->is_leaf()) {
+                kdtree_node_orderer sel(rootb, roota->left, roota->right);
+                if (sel.closer_node->cluster_max_dist >= sel.closer_dist) {
+                    find_mst_next(sel.closer_node, rootb);
+                    if (sel.farther_node->cluster_max_dist >= sel.farther_dist)
+                        find_mst_next(sel.farther_node, rootb);
                 }
             }
+            else {
+                kdtree_node_orderer sel(roota->left, rootb->left, rootb->right);
+                if (roota->left->cluster_max_dist >= sel.closer_dist) {
+                    find_mst_next(roota->left, sel.closer_node);
+                    if (roota->left->cluster_max_dist >= sel.farther_dist)
+                        find_mst_next(roota->left, sel.farther_node);
+                }
+
+                sel = kdtree_node_orderer(roota->right, rootb->left, rootb->right);
+                if (roota->right->cluster_max_dist >= sel.closer_dist) {
+                    find_mst_next(roota->right, sel.closer_node);
+                    if (roota->right->cluster_max_dist >= sel.farther_dist)
+                        find_mst_next(roota->right, sel.farther_node);
+                }
+            }
+
             roota->cluster_max_dist = std::max(
                 roota->left->cluster_max_dist,
                 roota->right->cluster_max_dist
