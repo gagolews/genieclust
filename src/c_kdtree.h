@@ -83,7 +83,9 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
         right = nullptr;
     }
 
-    inline bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
+    inline bool is_leaf() const {
+        return left == nullptr /*&& right == nullptr*/; // either both null or none
+    }
 };
 
 
@@ -120,6 +122,29 @@ private:
         return dist;
     }
 
+
+    inline void point_vs_points(size_t idx_from, size_t idx_to)
+    {
+        const FLOAT* y = data+D*idx_from;
+        for (size_t i=idx_from; i<idx_to; ++i, y+=D) {
+            FLOAT dist = 0.0;
+            for (size_t u=0; u<D; ++u)
+                dist += square(x[u]-y[u]);
+
+            if (dist >= knn_dist[k-1])
+                continue;
+
+            // insertion-sort like scheme (fast for small k)
+            size_t j = k-1;
+            while (j > 0 && dist < knn_dist[j-1]) {
+                knn_ind[j]  = knn_ind[j-1];
+                knn_dist[j] = knn_dist[j-1];
+                j--;
+            }
+            knn_ind[j] = i;
+            knn_dist[j] = dist;
+        }
+    }
 
 
 public:
@@ -172,38 +197,19 @@ public:
         find_start:  /* tail recursion elimination */
 
         if (root->is_leaf()) {
-            const FLOAT* y = data+D*root->idx_from;
-            for (size_t i=root->idx_from; i<root->idx_to; ++i) {
-                if (i == which) {
-                    y += D;
-                    continue;
-                }
-
-                FLOAT dist = 0.0;
-                for (size_t u=0; u<D; ++u)
-                    dist += square(x[u]-*(y++));
-
-                if (dist >= knn_dist[k-1])
-                    continue;
-
-                // insertion-sort like scheme (fast for small k)
-                size_t j = k-1;
-                while (j > 0 && dist < knn_dist[j-1]) {
-                    knn_ind[j]  = knn_ind[j-1];
-                    knn_dist[j] = knn_dist[j-1];
-                    j--;
-                }
-                knn_ind[j] = i;
-                knn_dist[j] = dist;
+            if (which < root->idx_from || which >= root->idx_to)
+                point_vs_points(root->idx_from, root->idx_to);
+            else {
+                point_vs_points(root->idx_from, which);
+                point_vs_points(which+1, root->idx_to);
             }
-
             return;
         }
 
         FLOAT dist_left  = dist_to_node(root->left);
         FLOAT dist_right = dist_to_node(root->right);
 
-        // closer node first (significant speedup
+        // closer node first (significant speedup)
         if (dist_left < dist_right) {
             if (dist_left < knn_dist[k-1]) {
                 find(root->left);
@@ -259,17 +265,17 @@ protected:
 
     inline void compute_bounding_box(NODE*& root)
     {
-        const FLOAT* _x = data+root->idx_from*D;
+        const FLOAT* y = data+root->idx_from*D;
         for (size_t u=0; u<D; ++u) {
-            root->bbox_min[u] = *_x;
-            root->bbox_max[u] = *_x;
-            ++_x;
+            root->bbox_min[u] = *y;
+            root->bbox_max[u] = *y;
+            ++y;
         }
         for (size_t i=root->idx_from+1; i<root->idx_to; ++i) {
             for (size_t u=0; u<D; ++u) {
-                if      (*_x < root->bbox_min[u]) root->bbox_min[u] = *_x;
-                else if (*_x > root->bbox_max[u]) root->bbox_max[u] = *_x;
-                ++_x;
+                if      (*y < root->bbox_min[u]) root->bbox_min[u] = *y;
+                else if (*y > root->bbox_max[u]) root->bbox_max[u] = *y;
+                ++y;
             }
         }
     }
@@ -294,6 +300,7 @@ protected:
             return;
         }
 
+
         // cut by the dim of the greatest range
         size_t split_dim = 0;
         FLOAT dim_width = root->bbox_max[0]-root->bbox_min[0];
@@ -304,12 +311,6 @@ protected:
                 split_dim = u;
             }
         }
-
-        if (dim_width == 0) {
-            // a pathological case: this will be a "large" leaf (all points with the same coords)
-            return;
-        }
-
         // The sliding midpoint rule:
         FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
 
@@ -322,6 +323,12 @@ protected:
         //     split_val = root->bbox_min[split_dim]+0.75*(root->bbox_max[split_dim] - root->bbox_min[split_dim]);
         // else if ((idx_to-idx_from)-cnt <= max_leaf_size/4)
         //     split_val = root->bbox_min[split_dim]+0.25*(root->bbox_max[split_dim] - root->bbox_min[split_dim]);
+
+
+        if (dim_width == 0) {
+            // a pathological case: this will be a "large" leaf (all points with the same coords)
+            return;
+        }
 
 
         GENIECLUST_ASSERT(root->bbox_min[split_dim] < split_val);

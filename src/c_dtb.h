@@ -45,7 +45,9 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
         right = nullptr;
     }
 
-    inline bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
+    inline bool is_leaf() const {
+        return left == nullptr /*&& right == nullptr*/; // either both null or none
+    }
 };
 
 
@@ -75,6 +77,31 @@ protected:
             // else dist += 0.0;
         }
         return dist;
+    }
+
+
+    inline void leaf_vs_leaf(NODE* roota, NODE* rootb)
+    {
+        const FLOAT* _x = this->data + roota->idx_from*D;
+        for (size_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D) {
+            Py_ssize_t ds_find_i = ds.find(i);
+
+            const FLOAT* _y = this->data + rootb->idx_from*D;
+            for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j, _y += D) {
+                Py_ssize_t ds_find_j = ds.find(j);
+                if (ds_find_i != ds_find_j) {
+                    FLOAT dij = 0.0;
+                    for (size_t u=0; u<D; ++u)
+                        dij += square(_x[u]-_y[u]);
+
+                    if (dij < nn_dist[ds_find_i]) {
+                        nn_dist[ds_find_i] = dij;
+                        nn_ind[ds_find_i]  = j;
+                        nn_from[ds_find_i] = i;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -152,23 +179,8 @@ protected:
 
         if (roota->is_leaf()) {
             if (rootb->is_leaf()) {
-                for (size_t i=roota->idx_from; i<roota->idx_to; ++i) {
-                    Py_ssize_t ds_find_i = ds.find(i);
-                    for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j) {
-                        Py_ssize_t ds_find_j = ds.find(j);
-                        if (ds_find_i != ds_find_j) {
-                            FLOAT dij = 0.0;
-                            for (size_t u=0; u<D; ++u)
-                                dij += square(this->data[i*D+u]-this->data[j*D+u]);
 
-                            if (dij < nn_dist[ds_find_i]) {
-                                nn_dist[ds_find_i] = dij;
-                                nn_ind[ds_find_i]  = j;
-                                nn_from[ds_find_i] = i;
-                            }
-                        }
-                    }
-                }
+                leaf_vs_leaf(roota, rootb);
 
                 if (roota->cluster_repr >= 0) {  // all from the same cluster
                     roota->cluster_max_dist = nn_dist[roota->cluster_repr];
