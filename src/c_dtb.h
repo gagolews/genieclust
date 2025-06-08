@@ -1,7 +1,11 @@
 /*  A dual-tree Boruvka algorithm for finding minimum spanning trees
- *  wrt the Euclidean dist based on "Fast Euclidean Minimum Spanning Tree:
+ *  wrt the Euclidean distance.
+ *
+ *  It is based on "Fast Euclidean Minimum Spanning Tree:
  *  Algorithm, Analysis, and Applications"
- *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010
+ *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010 and some
+ *  further performance enhancements.
+ *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -21,6 +25,9 @@
 #define __c_dtb_h
 
 #include "c_kdtree.h"
+#include "c_disjoint_sets.h"
+#include "c_mst_triple.h"
+
 
 namespace mgtree {
 
@@ -31,14 +38,14 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
     kdtree_node_clusterable* right;
 
     Py_ssize_t cluster_repr;  //< representative point index if all descendants are in the same cluster
-    FLOAT cluster_max_dist;  //< minimal distance so far from the current node to another node
+    FLOAT cluster_max_dist;   //< minimal distance so far from the current node to another node
 
     kdtree_node_clusterable() {
         left = nullptr;
         right = nullptr;
     }
 
-    bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
+    inline bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
 };
 
 
@@ -57,7 +64,7 @@ protected:
     std::vector<size_t> nn_from;
 
 
-    FLOAT dist_between_nodes(const NODE* roota, const NODE* rootb) const
+    inline FLOAT dist_between_nodes(const NODE* roota, const NODE* rootb) const
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -79,7 +86,7 @@ protected:
             curnode->cluster_max_dist = INFINITY;
 
             if (curnode->cluster_repr >= 0) {
-                //curnode->cluster_repr = ds.find(curnode->cluster_repr);
+                curnode->cluster_repr = ds.find(curnode->cluster_repr);
                 continue;
             }
 
@@ -97,8 +104,10 @@ protected:
 
                 // if both children only feature members of the same cluster, update the cluster repr for the current node
                 if (curnode->left->cluster_repr >= 0 && curnode->right->cluster_repr >= 0) {
-                    if (ds.find(curnode->left->cluster_repr) == ds.find(curnode->right->cluster_repr))
-                        curnode->cluster_repr = ds.find(curnode->left->cluster_repr);
+                    Py_ssize_t left_cluster_id = ds.find(curnode->left->cluster_repr);
+                    Py_ssize_t right_cluster_id = ds.find(curnode->right->cluster_repr);
+                    if (left_cluster_id == right_cluster_id)
+                        curnode->cluster_repr = left_cluster_id;
                 }
             }
         }

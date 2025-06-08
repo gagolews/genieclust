@@ -1,4 +1,10 @@
-/*  Kd-trees wrt the squared Euclidean distance (optimised)
+/*  Kd-trees wrt the squared Euclidean distance
+ *
+ *  Featuring the sliding midpoint rule suggested in "It's okay to be skinny,
+ *  if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
+ *  and some further enhancements (minding locality of reference,
+ *  multithreading, etc.).
+ *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -18,13 +24,9 @@
 #define __c_kdtree_h
 
 #include "c_common.h"
-#include "c_disjoint_sets.h"
-#include "c_mst_triple.h"
 
 #include <cmath>
 #include <cstddef>
-#include <stdexcept>
-#include <limits>
 #include <algorithm>
 #include <vector>
 #include <deque>
@@ -60,12 +62,6 @@ struct kdtree_node_base
     //     } intnode_data;
     // };
 
-    kdtree_node_base()
-    {
-        idx_from = 0;
-        idx_to = 0;
-    }
-
 };
 
 
@@ -81,7 +77,7 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
         right = nullptr;
     }
 
-    bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
+    inline bool is_leaf() const { return left == nullptr /*&& right == nullptr*/; }  // either both null or none
 };
 
 
@@ -105,7 +101,7 @@ private:
 
     const FLOAT* x;
 
-    FLOAT dist_to_node(const NODE* root) const
+    inline FLOAT dist_to_node(const NODE* root) const
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
@@ -255,6 +251,24 @@ protected:
     // }
 
 
+    inline void compute_bounding_box(NODE*& root)
+    {
+        const FLOAT* _x = data+root->idx_from*D;
+        for (size_t u=0; u<D; ++u) {
+            root->bbox_min[u] = *_x;
+            root->bbox_max[u] = *_x;
+            ++_x;
+        }
+        for (size_t i=root->idx_from+1; i<root->idx_to; ++i) {
+            for (size_t u=0; u<D; ++u) {
+                if      (*_x < root->bbox_min[u]) root->bbox_min[u] = *_x;
+                else if (*_x > root->bbox_max[u]) root->bbox_max[u] = *_x;
+                ++_x;
+            }
+        }
+    }
+
+
     void build_tree(
         NODE*& root, size_t idx_from, size_t idx_to
     )
@@ -264,21 +278,13 @@ protected:
         nodes.push_back(NODE());
         root = &nodes[nodes.size()-1];
 
-        // get the node's bounding box
-        for (size_t u=0; u<D; ++u) root->bbox_min[u] = data[idx_from*D+u];
-        for (size_t u=0; u<D; ++u) root->bbox_max[u] = data[idx_from*D+u];
+        root->idx_from = idx_from;
+        root->idx_to   = idx_to;
 
-        for (size_t i=idx_from+1; i<idx_to; ++i) {
-            for (size_t u=0; u<D; ++u) {
-                if      (data[i*D+u] < root->bbox_min[u]) root->bbox_min[u] = data[i*D+u];
-                else if (data[i*D+u] > root->bbox_max[u]) root->bbox_max[u] = data[i*D+u];
-            }
-        }
+        compute_bounding_box(root);
 
         if (idx_to - idx_from <= max_leaf_size) {
             // a leaf node; nothing more to do
-            root->idx_from = idx_from;
-            root->idx_to   = idx_to;
             return;
         }
 
@@ -295,8 +301,6 @@ protected:
 
         if (dim_width == 0) {
             // a pathological case: this will be a "large" leaf (all points with the same coords)
-            root->idx_from = idx_from;
-            root->idx_to   = idx_to;
             return;
         }
 

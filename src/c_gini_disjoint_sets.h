@@ -32,7 +32,8 @@
  *
  *  Stores the size of every set in the partition.
  */
-class CCountDisjointSets : public CDisjointSets{
+class CCountDisjointSets : public CDisjointSets
+{
 
 protected:
     std::vector<Py_ssize_t> cnt;  //!< cnt[find(x)] is the size of the relevant subset
@@ -63,7 +64,7 @@ public:
      *
      * Run time: the cost of find(x)
      */
-    Py_ssize_t get_count(Py_ssize_t x) {
+    inline Py_ssize_t get_count(Py_ssize_t x) {
         x = this->find(x);
         return this->cnt[x];
     }
@@ -86,7 +87,7 @@ public:
      *  Update time: amortised O(1).
      */
     virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y)
-    {   // well, union is a reserved C++ keyword :)
+    {
         x = this->find(x); // includes a range check for x
         y = this->find(y); // includes a range check for y
         if (x == y) throw std::invalid_argument("find(x) == find(y)");
@@ -136,7 +137,8 @@ public:
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *  Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
  */
-class CGiniDisjointSets : public CCountDisjointSets{
+class CGiniDisjointSets : public CCountDisjointSets
+{
 
 protected:
 
@@ -250,14 +252,15 @@ public:
      *  Run time: O(1), as the Gini index is updated during a call
      *  to merge().
      */
-    double get_gini() const { return this->gini; }
+    inline double get_gini() const { return this->gini; }
 
 
     /*! Returns the size of the smallest subset.
      *
      *  Run time: O(1).
      */
-    Py_ssize_t get_smallest_count() const {
+    inline Py_ssize_t get_smallest_count() const
+    {
         return number_of_size.get_key_min(); /*this->tab_head;*/
     }
 
@@ -266,7 +269,8 @@ public:
      *
      *  Run time: O(1).
      */
-    Py_ssize_t get_largest_count() const {
+    inline Py_ssize_t get_largest_count() const
+    {
         return number_of_size.get_key_max(); /*this->tab_tail;*/
     }
 
@@ -275,7 +279,8 @@ public:
      *
      *  Run time: O(1).
      */
-    Py_ssize_t get_k_of_size(Py_ssize_t c) {
+    inline Py_ssize_t get_k_of_size(Py_ssize_t c)
+    {
         return number_of_size[c];
     }
 
@@ -376,7 +381,8 @@ public:
      *
      *  @param res [out] c_contiguous array of length k
      */
-    void get_counts(Py_ssize_t* res) {
+    void get_counts(Py_ssize_t* res)
+    {
         GENIECLUST_ASSERT(forgotten == 0)
         Py_ssize_t i = 0;
         for (CIntDict<Py_ssize_t>::iterator it = number_of_size.begin();

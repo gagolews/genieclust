@@ -36,7 +36,8 @@
  *   package rely on the assumption that the parent id of each
  *   element is always <= than itself.
  */
-class CDisjointSets {
+class CDisjointSets
+{
 
 protected:
     Py_ssize_t n;                //!< number of distinct elements
@@ -75,19 +76,20 @@ public:
 
     /*! Returns the current number of sets in the partition.
      */
-    Py_ssize_t get_k() const { return this->k; }
+    inline Py_ssize_t get_k() const { return this->k; }
 
 
     /*! Returns the total cardinality of the set being partitioned.
      */
-    Py_ssize_t get_n() const { return this->n; }
+    inline Py_ssize_t get_n() const { return this->n; }
 
 
     /*! Finds the subset id for a given x.
      *
      *  @param x a value in {0,...,n-1}
      */
-    Py_ssize_t find(Py_ssize_t x) {
+    Py_ssize_t find(Py_ssize_t x)
+    {
         if (x < 0 || x >= this->n) throw std::domain_error("x not in [0,n)");
 
         if (this->par[x] != x) {
@@ -111,7 +113,8 @@ public:
      *   @param x a value in {0,...,n-1}
      *   @param y a value in {0,...,n-1}
      */
-    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y) {  // well, union is a reserved C++ keyword :)
+    virtual Py_ssize_t merge(Py_ssize_t x, Py_ssize_t y)  // well, union is a reserved C++ keyword :)
+    {
         x = this->find(x);  // includes a range check for x
         y = this->find(y);  // includes a range check for y
         if (x == y) throw std::invalid_argument("find(x) == find(y)");
