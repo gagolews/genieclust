@@ -65,6 +65,8 @@ protected:
     std::vector<size_t> nn_ind;
     std::vector<size_t> nn_from;
 
+    const size_t first_pass_max_brute_size;
+
 
     struct kdtree_node_orderer {
         NODE* closer_node;
@@ -164,11 +166,16 @@ protected:
 
     void find_mst_first()
     {
+        // find 1-nns of each point using max_brute_size,
+        // preferably with max_brute_size>max_leaf_size
         #ifdef _OPENMP
         #pragma omp parallel for schedule(static)
         #endif
         for (size_t i=0; i<this->n; ++i) {
-            kdtree_kneighbours<FLOAT, D, NODE> nn(this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1);
+            kdtree_kneighbours<FLOAT, D, NODE> nn(
+                this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
+                first_pass_max_brute_size
+            );
             nn.find(this->root);
         }
 
@@ -235,11 +242,10 @@ protected:
         else {  // roota is not a leaf
             if (rootb->is_leaf()) {
                 kdtree_node_orderer sel(rootb, roota->left, roota->right);
-                if (sel.closer_node->cluster_max_dist >= sel.closer_dist) {
+                if (sel.closer_node->cluster_max_dist >= sel.closer_dist)
                     find_mst_next(sel.closer_node, rootb);
-                    if (sel.farther_node->cluster_max_dist >= sel.farther_dist)
+                if (sel.farther_node->cluster_max_dist >= sel.farther_dist)
                         find_mst_next(sel.farther_node, rootb);
-                }
             }
             else {
                 kdtree_node_orderer sel(roota->left, rootb->left, rootb->right);
@@ -269,9 +275,6 @@ protected:
     {
         // 1st iteration: connect nearest neighbours with each other
         find_mst_first();
-
-        // TODO: start with max_leaf_size=~32, then switch to a smaller one?
-
 
         while (k < this->n-1) {
             update_cluster_data();  // reset cluster_max_dist and set up cluster_repr
@@ -307,8 +310,13 @@ public:
     }
 
 
-    dtb(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
-        : kdtree<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0), nn_dist(n), nn_ind(n), nn_from(n)
+    dtb(
+        FLOAT* data, const size_t n, const size_t max_leaf_size=2,
+        const size_t first_pass_max_brute_size=32
+    ) :
+        kdtree<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0),
+        nn_dist(n), nn_ind(n), nn_from(n),
+        first_pass_max_brute_size(first_pass_max_brute_size)
     {
 
     }

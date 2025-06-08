@@ -100,14 +100,16 @@ template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT,D> >
 class kdtree_kneighbours
 {
 private:
+    const FLOAT* x;
+    const size_t which;
     const FLOAT* data;
     const size_t n;
-    const size_t which;
     FLOAT* knn_dist;
     size_t* knn_ind;
     const size_t k;
 
-    const FLOAT* x;
+    const size_t max_brute_size;  // when to switch to the brute-force mode? 0 to honour the tree's max_leaf_size
+
 
     inline FLOAT dist_to_node(const NODE* root) const
     {
@@ -154,10 +156,12 @@ public:
         const size_t which,
         FLOAT* knn_dist,
         size_t* knn_ind,
-        const size_t k
+        const size_t k,
+        const size_t max_brute_size=0
     ) :
-        data(data), n(n), which(which), knn_dist(knn_dist), knn_ind(knn_ind), k(k),
-        x(data+D*which)
+        x(data+D*which), which(which), data(data), n(n),
+        knn_dist(knn_dist), knn_ind(knn_ind),
+        k(k), max_brute_size(max_brute_size)
     {
         for (size_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
         for (size_t i=0; i<k; ++i) knn_ind[i]  = which;
@@ -196,7 +200,7 @@ public:
     {
         find_start:  /* tail recursion elimination */
 
-        if (root->is_leaf()) {
+        if (root->is_leaf() || root->idx_to-root->idx_from <= max_brute_size) {
             if (which < root->idx_from || which >= root->idx_to)
                 point_vs_points(root->idx_from, root->idx_to);
             else {
