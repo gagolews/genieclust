@@ -110,11 +110,11 @@ protected:
     {
         const FLOAT* _x = this->data + roota->idx_from*D;
         for (size_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D) {
-            Py_ssize_t ds_find_i = ds.find(i);
+            Py_ssize_t ds_find_i = ds.get_parent(i);
 
             const FLOAT* _y = this->data + rootb->idx_from*D;
             for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j, _y += D) {
-                Py_ssize_t ds_find_j = ds.find(j);
+                Py_ssize_t ds_find_j = ds.get_parent(j);
                 if (ds_find_i != ds_find_j) {
                     FLOAT dij = 0.0;
                     for (size_t u=0; u<D; ++u)
@@ -133,20 +133,23 @@ protected:
 
     void update_cluster_data()
     {
+        for (size_t i=0; i<this->n; ++i)
+            this->ds.find(i);
+
         for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
         {
             NODE* curnode = &(this->nodes[i]);
             curnode->cluster_max_dist = INFINITY;
 
             if (curnode->cluster_repr >= 0) {
-                curnode->cluster_repr = ds.find(curnode->cluster_repr);  // helpful
+                curnode->cluster_repr = ds.get_parent(curnode->cluster_repr);  // helpful
                 continue;
             }
 
             if (curnode->is_leaf()) {
-                curnode->cluster_repr = ds.find(curnode->idx_from);
+                curnode->cluster_repr = ds.get_parent(curnode->idx_from);
                 for (size_t j=curnode->idx_from+1; j<curnode->idx_to; ++j) {
-                    if (curnode->cluster_repr != ds.find(j)) {
+                    if (curnode->cluster_repr != ds.get_parent(j)) {
                         curnode->cluster_repr = -1;  // not all are members of the same cluster
                         break;
                     }
@@ -219,7 +222,7 @@ protected:
                 else {
                     roota->cluster_max_dist = -INFINITY;
                     for (size_t i=roota->idx_from; i<roota->idx_to; ++i) {
-                        FLOAT dist_cur = nn_dist[ds.find(i)];
+                        FLOAT dist_cur = nn_dist[ds.get_parent(i)];
                         if (dist_cur > roota->cluster_max_dist)
                             roota->cluster_max_dist = dist_cur;
                     }
@@ -311,8 +314,8 @@ public:
 
 
     dtb(
-        FLOAT* data, const size_t n, const size_t max_leaf_size=2,
-        const size_t first_pass_max_brute_size=32
+        FLOAT* data, const size_t n, const size_t max_leaf_size=4,
+        const size_t first_pass_max_brute_size=16
     ) :
         kdtree<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0),
         nn_dist(n), nn_ind(n), nn_from(n),

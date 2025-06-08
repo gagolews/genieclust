@@ -111,7 +111,7 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
 
 
 // [[Rcpp::export]]
-Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=2, int first_pass_max_brute_size=32)
+Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pass_max_brute_size=16)
 {
     size_t n = X.nrow();
     size_t d = X.ncol();
@@ -332,5 +332,24 @@ sys.child                0.000     0.000     0.000     0.000     0.000     0.000
 sum_dist             30703.016 30703.016 30703.016 30703.016 30703.016 30703.016 30703.016 30703.016
 idx_different            0.000  2176.000  2176.000   332.000   332.000   332.000   332.000   332.000
 
+13:09
+n=100000, d=2
+              genieclust_brute  mlpack_1  mlpack_4 new_2_16 new_2_32 new_4_00 new_4_16 new_4_64
+user.self                8.476     0.376     0.278    0.118    0.119    0.111    0.107    0.112
+sys.self                 0.010     0.007     0.000    0.000    0.000    0.000    0.000    0.000
+elapsed                  8.488     0.383     0.278    0.118    0.119    0.111    0.107    0.112
+user.child               0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
+sys.child                0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
+sum_dist              1013.976  1013.976  1013.976 1013.976 1013.976 1013.976 1013.976 1013.976
+idx_different            0.000 31929.000 31929.000   84.000   84.000   84.000   84.000   84.000
+n=100000, d=5
+              genieclust_brute  mlpack_1  mlpack_4  new_2_16  new_2_32  new_4_00  new_4_16  new_4_64
+user.self               12.957     3.403     3.832     1.907     1.879     1.763     1.674     1.637
+sys.self                 0.008     0.007     0.000     0.000     0.000     0.000     0.000     0.000
+elapsed                 12.967     3.410     3.831     1.907     1.878     1.764     1.675     1.636
+user.child               0.000     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+sys.child                0.000     0.000     0.000     0.000     0.000     0.000     0.000     0.000
+sum_dist             30703.016 30703.016 30703.016 30703.016 30703.016 30703.016 30703.016 30703.016
+idx_different            0.000  2176.000  2176.000   332.000   332.000   332.000   332.000   332.000
 
 */

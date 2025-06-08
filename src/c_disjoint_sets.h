@@ -84,6 +84,10 @@ public:
     inline Py_ssize_t get_n() const { return this->n; }
 
 
+    /*! Danger zone! Ensure find() was called upon each element */
+    inline Py_ssize_t get_parent(Py_ssize_t x) const { return this->par[x]; }
+
+
     /*! Finds the subset id for a given x.
      *
      *  @param x a value in {0,...,n-1}
