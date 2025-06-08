@@ -23,13 +23,16 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 """
-# apollo:
+# apollo @ 2025-06-08 14:00:
 n=1000000, d=2, k=10, threads=1
-knn_sqeuclid_kdtree(32):          0.88490     61526.08001
-knn_sqeuclid_picotree(16):        1.74694     61526.08001
+knn_sqeuclid_kdtree(32):          0.83525     61526.08001
+knn_sqeuclid_picotree(16):        1.77205     61526.08001
+fast_hdbscan:                     3.79096     61526.06641
 n=1000000, d=5, k=10, threads=1
-knn_sqeuclid_kdtree(32):          7.19778   2627958.13058
-knn_sqeuclid_picotree(16):       14.86513   2627958.13058
+knn_sqeuclid_kdtree(32):          7.11416   2627958.13058
+knn_sqeuclid_picotree(16):       14.97781   2627958.13058
+fast_hdbscan:                    39.01639   2627957.25000
+
 
 
 # other:
@@ -83,7 +86,7 @@ for d in [2, 5]:
 
 
     t0 = timeit.time.time()
-    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=1)
+    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=True)
     nn_dist = np.sqrt(nn_dist)
     t1 = timeit.time.time()
     tot = np.sum(nn_dist)
@@ -91,14 +94,13 @@ for d in [2, 5]:
 
 
 
-    t0 = timeit.time.time()
-    nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=-1)
-    nn_dist = np.sqrt(nn_dist)
-    t1 = timeit.time.time()
-    tot = np.sum(nn_dist)
-    print("knn_sqeuclid_picotree(16):%15.5f %15.5f" % (t1-t0, tot))
+    # t0 = timeit.time.time()
+    # nn_dist, nn_ind = genieclust.internal.knn_sqeuclid(X, k, use_kdtree=-1)
+    # nn_dist = np.sqrt(nn_dist)
+    # t1 = timeit.time.time()
+    # tot = np.sum(nn_dist)
+    # print("knn_sqeuclid_picotree(16):%15.5f %15.5f" % (t1-t0, tot))
 
-    continue
 
 
     import sklearn.neighbors
@@ -116,6 +118,7 @@ for d in [2, 5]:
     print("fast_hdbscan:             %15.5f %15.5f" % (t1-t0, tot))
 
 
+    continue
 
 
     import mlpack

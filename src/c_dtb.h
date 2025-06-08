@@ -3,8 +3,8 @@
  *
  *  It is based on "Fast Euclidean Minimum Spanning Tree:
  *  Algorithm, Analysis, and Applications"
- *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010 and some
- *  further performance enhancements.
+ *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010.
+ *  It features some further performance enhancements.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -108,6 +108,9 @@ protected:
 
     inline void leaf_vs_leaf(NODE* roota, NODE* rootb)
     {
+        // assumes ds.find(i) == ds.get_parent(i) for all i!
+
+        // NOTE: this could be parallelised if max_leaf_size is considerable...
         const FLOAT* _x = this->data + roota->idx_from*D;
         for (size_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D) {
             Py_ssize_t ds_find_i = ds.get_parent(i);
@@ -135,6 +138,7 @@ protected:
     {
         for (size_t i=0; i<this->n; ++i)
             this->ds.find(i);
+        // now ds.find(i) == ds.get_parent(i) for all i
 
         for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
         {
@@ -199,6 +203,8 @@ protected:
         //GENIECLUST_ASSERT(roota);
         //GENIECLUST_ASSERT(rootb);
 
+        // we have ds.find(i) == ds.get_parent(i) for all i!
+
         if (roota->cluster_repr >= 0 && roota->cluster_repr == rootb->cluster_repr) {
             // both consist of members of the same cluster - nothing to do
             return;
@@ -247,7 +253,7 @@ protected:
                 kdtree_node_orderer sel(rootb, roota->left, roota->right);
                 if (sel.closer_node->cluster_max_dist >= sel.closer_dist)
                     find_mst_next(sel.closer_node, rootb);
-                if (sel.farther_node->cluster_max_dist >= sel.farther_dist)
+                if (sel.farther_node->cluster_max_dist >= sel.farther_dist)  // separate if!
                         find_mst_next(sel.farther_node, rootb);
             }
             else {
@@ -280,17 +286,21 @@ protected:
         find_mst_first();
 
         while (k < this->n-1) {
-            update_cluster_data();  // reset cluster_max_dist and set up cluster_repr
+            // reset cluster_max_dist and set up cluster_repr,
+            // ensure ds.find(i) == ds.get_parent(i) for all i
+            update_cluster_data();
 
             // NOTE: this could be a fancy data structure that holds only
             // the representatives of the current clusters, but why bother,
-            // time'll be >= ~(n\log n) anyway
+            // time'll be >= ~(n\log n) anyway; this is unlikely to cause
+            // slowdowns
             for (size_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
             for (size_t i=0; i<this->n; ++i) nn_ind[i]  = this->n;
             for (size_t i=0; i<this->n; ++i) nn_from[i] = this->n;
 
             find_mst_next(this->root, this->root);
 
+            // Py_ssize_t c = ds.get_k();
             for (size_t i=0; i<this->n; ++i) {
                 if (nn_ind[i] < this->n && ds.find(i) != ds.find(nn_ind[i])) {
                     GENIECLUST_ASSERT(ds.find(i) == ds.find(nn_from[i]));
@@ -299,6 +309,7 @@ protected:
                     tree_dist[k] = nn_dist[i];
                     ds.merge(i, nn_ind[i]);
                     k++;
+                    // if ((--c) < 0) break;  // all done
                 }
             }
         }
