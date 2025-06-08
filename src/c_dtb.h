@@ -86,7 +86,7 @@ protected:
             curnode->cluster_max_dist = INFINITY;
 
             if (curnode->cluster_repr >= 0) {
-                curnode->cluster_repr = ds.find(curnode->cluster_repr);
+                curnode->cluster_repr = ds.find(curnode->cluster_repr);  // helpful
                 continue;
             }
 
@@ -99,16 +99,13 @@ protected:
                     }
                 }
             }
-            else {
+            else if (curnode->left->cluster_repr >= 0 && curnode->right->cluster_repr >= 0) {
+                // if both children only feature members of the same cluster, update the cluster repr for the current node;
                 // descendants were already processed because children in `nodes` occur after their parents
-
-                // if both children only feature members of the same cluster, update the cluster repr for the current node
-                if (curnode->left->cluster_repr >= 0 && curnode->right->cluster_repr >= 0) {
-                    Py_ssize_t left_cluster_id = ds.find(curnode->left->cluster_repr);
-                    Py_ssize_t right_cluster_id = ds.find(curnode->right->cluster_repr);
-                    if (left_cluster_id == right_cluster_id)
-                        curnode->cluster_repr = left_cluster_id;
-                }
+                Py_ssize_t left_cluster_id  = curnode->left->cluster_repr;  //ds.find(curnode->left->cluster_repr); <- done above
+                Py_ssize_t right_cluster_id = curnode->right->cluster_repr; //ds.find(curnode->right->cluster_repr);<- done above
+                if (left_cluster_id == right_cluster_id)
+                    curnode->cluster_repr = left_cluster_id;
             }
         }
     }
@@ -141,11 +138,9 @@ protected:
         GENIECLUST_ASSERT(roota);
         GENIECLUST_ASSERT(rootb);
 
-        if (roota->cluster_repr >= 0 && rootb->cluster_repr >= 0) {
-            if (ds.find(roota->cluster_repr) == ds.find(rootb->cluster_repr)) {
-                // both consist of members of the same cluster - nothing to do
-                return;
-            }
+        if (roota->cluster_repr >= 0 && roota->cluster_repr == rootb->cluster_repr) {
+            // both consist of members of the same cluster - nothing to do
+            return;
         }
 
         FLOAT dist = dist_between_nodes(roota, rootb);   // TOOO !!!!!!!!!!!!!!!!!!!!!!! TODO
@@ -175,8 +170,8 @@ protected:
                     }
                 }
 
-                if (roota->cluster_repr >= 0) {
-                    roota->cluster_max_dist = nn_dist[ds.find(roota->cluster_repr)];
+                if (roota->cluster_repr >= 0) {  // all from the same cluster
+                    roota->cluster_max_dist = nn_dist[roota->cluster_repr];
                 }
                 else {
                     roota->cluster_max_dist = -INFINITY;

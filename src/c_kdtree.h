@@ -1,6 +1,12 @@
-/*  Kd-trees wrt the squared Euclidean distance
+/*  An implementation of Kd-trees wrt the squared Euclidean distance
  *
- *  Featuring the sliding midpoint rule suggested in "It's okay to be skinny,
+ *  Supports finding k nearest neighbours of points within the same dataset;
+ *  fast for small k and dimensionality d.
+ *
+ *  TODO: support of querying points outside of a dataset can be added if needed.
+ *
+ *
+ *  Features the sliding midpoint rule suggested in "It's okay to be skinny,
  *  if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
  *  and some further enhancements (minding locality of reference,
  *  multithreading, etc.).
@@ -105,8 +111,8 @@ private:
     {
         FLOAT dist = 0.0;
         for (size_t u=0; u<D; ++u) {
-            if (x[u] < root->bbox_min[u])
-                dist += square(x[u] - root->bbox_min[u]);
+            if (root->bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
+                dist += square(root->bbox_min[u] - x[u]);
             else if (x[u] > root->bbox_max[u])
                 dist += square(x[u] - root->bbox_max[u]);
             // else dist += 0.0;
@@ -181,7 +187,6 @@ public:
                     continue;
 
                 // insertion-sort like scheme (fast for small k)
-
                 size_t j = k-1;
                 while (j > 0 && dist < knn_dist[j-1]) {
                     knn_ind[j]  = knn_ind[j-1];
@@ -198,6 +203,7 @@ public:
         FLOAT dist_left  = dist_to_node(root->left);
         FLOAT dist_right = dist_to_node(root->right);
 
+        // closer node first (significant speedup
         if (dist_left < dist_right) {
             if (dist_left < knn_dist[k-1]) {
                 find(root->left);
@@ -284,7 +290,7 @@ protected:
         compute_bounding_box(root);
 
         if (idx_to - idx_from <= max_leaf_size) {
-            // a leaf node; nothing more to do
+            // this will be a leaf node; nothing more to do
             return;
         }
 
@@ -304,8 +310,7 @@ protected:
             return;
         }
 
-        // The sliding midpoint rule
-        // "It's okay to be skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
+        // The sliding midpoint rule:
         FLOAT split_val = 0.5*(root->bbox_min[split_dim] + root->bbox_max[split_dim]);  // midrange
 
         // this doesn't improve:
