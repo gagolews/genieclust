@@ -53,7 +53,7 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 template <typename FLOAT, size_t D, typename NODE=kdtree_node_clusterable<FLOAT, D> >
-class dtb : public kdtree<FLOAT, D, NODE>
+class dtb_sqeuclid : public kdtree_sqeuclid<FLOAT, D, NODE>
 {
 protected:
     FLOAT* tree_dist;  //< size n-1
@@ -179,7 +179,7 @@ protected:
         #pragma omp parallel for schedule(static)
         #endif
         for (size_t i=0; i<this->n; ++i) {
-            kdtree_kneighbours<FLOAT, D, NODE> nn(
+            kdtree_kneighbours_sqeuclid<FLOAT, D, NODE> nn(
                 this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
                 first_pass_max_brute_size
             );
@@ -317,18 +317,18 @@ protected:
 
 
 public:
-    dtb()
-        : kdtree<FLOAT, D, NODE>()
+    dtb_sqeuclid()
+        : kdtree_sqeuclid<FLOAT, D, NODE>()
     {
 
     }
 
 
-    dtb(
+    dtb_sqeuclid(
         FLOAT* data, const size_t n, const size_t max_leaf_size=4,
         const size_t first_pass_max_brute_size=16
     ) :
-        kdtree<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0),
+        kdtree_sqeuclid<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0),
         nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size)
     {
@@ -359,32 +359,39 @@ public:
 
 
 template <typename FLOAT, size_t D, typename TREE>
-void mst(
+void mst_sqeuclid(
     TREE& tree,
-    FLOAT* tree_dist,  // size n-1
-    size_t* tree_ind   // size 2*(n-1)
+    FLOAT* tree_dist,   // size n-1
+    size_t* tree_ind,   // size 2*(n-1)
+    bool order=true
 ) {
     size_t n = tree.get_n();
     const size_t* perm = tree.get_perm().data();
 
     tree.boruvka(tree_dist, tree_ind);
 
-    std::vector< CMstTriple<FLOAT> > mst(n-1);
-
     for (size_t i=0; i<n-1; ++i) {
         GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
         GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
         GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
-
-        mst[i] = CMstTriple<FLOAT>(perm[tree_ind[2*i+0]], perm[tree_ind[2*i+1]], tree_dist[i]);
+        tree_ind[2*i+0] = perm[tree_ind[2*i+0]];
+        tree_ind[2*i+1] = perm[tree_ind[2*i+1]];
     }
 
-    std::sort(mst.begin(), mst.end());
+    if (order) {
+        std::vector< CMstTriple<FLOAT> > mst(n-1);
 
-    for (size_t i=0; i<n-1; ++i) {
-        tree_dist[i]    = sqrt(mst[i].d);
-        tree_ind[2*i+0] = mst[i].i1;  // i1 < i2
-        tree_ind[2*i+1] = mst[i].i2;
+        for (size_t i=0; i<n-1; ++i) {
+            mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
+        }
+
+        std::sort(mst.begin(), mst.end());
+
+        for (size_t i=0; i<n-1; ++i) {
+            tree_dist[i]    = mst[i].d;
+            tree_ind[2*i+0] = mst[i].i1;  // i1 < i2
+            tree_ind[2*i+1] = mst[i].i2;
+        }
     }
 }
 

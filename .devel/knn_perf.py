@@ -33,9 +33,16 @@ knn_sqeuclid_kdtree(32):          7.11416   2627958.13058
 knn_sqeuclid_picotree(16):       14.97781   2627958.13058
 fast_hdbscan:                    39.01639   2627957.25000
 
+# hades @ 2025-06-09 10:30
+n=1000000, d=2, k=10, threads=1
+knn_sqeuclid_kdtree(32):          0.80502     61526.08001
+fast_hdbscan:                     3.52201     61526.06641
+n=1000000, d=5, k=10, threads=1
+knn_sqeuclid_kdtree(32):          6.96646   2627958.13058
+fast_hdbscan:                    32.65678   2627957.25000
 
 
-# other:
+# hades < 2025-06-08:
 n=1000000, d=2, k=10, threads=1
 knn_sqeuclid_kdtree:          0.88863     61526.08001
 knn_sqeuclid_picotree:        1.69198     61526.08001

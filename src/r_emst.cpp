@@ -27,7 +27,7 @@ Rcpp::NumericMatrix dot_emst_mlpack(
     int leaf_size=1,
     bool verbose=false)
 {
-    // NOTE bool cast_float32=true, - can't pass arma::Mat<float> to DTB
+    // NOTE bool cast_float32=false, - can't pass arma::Mat<float> to DTB
     // TODO other Distances are available
 
     if (leaf_size < 1)
@@ -40,7 +40,7 @@ Rcpp::NumericMatrix dot_emst_mlpack(
 
 
     // Let aX = transpose(X)
-    arma::Mat<double> aX(d, n);
+    arma::Mat<double> aX(d, n);   // NOTE: float is not supported!
     const double* _X = REAL(X);
     for (Py_ssize_t j=0; j<d; ++j)
         for (Py_ssize_t i=0; i<n; ++i)

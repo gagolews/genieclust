@@ -36,61 +36,65 @@ typedef ssize_t         Py_ssize_t;
 // [[Rcpp::export]]
 Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
 {
+    using FLOAT = float;
+
     size_t n = X.nrow();
     size_t d = X.ncol();
     if (k < 1 || (size_t)k >= n) return R_NilValue;
     if (n < 1) return R_NilValue;
 
-    std::vector<float> XC(n*d);
+
+    std::vector<FLOAT> XC(n*d);
     size_t j = 0;
     for (size_t i=0; i<n; ++i)
         for (size_t u=0; u<d; ++u)
             XC[j++] = X(i, u);  // row-major
 
     std::vector<size_t> knn_ind(n*k);
-    std::vector<float> knn_dist(n*k);
+    std::vector<FLOAT> knn_dist(n*k);
 
     // omfg; templates...
     if (d == 2) {
-        mgtree::kdtree<float, 2> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 2>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 2> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 2>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 3) {
-        mgtree::kdtree<float, 3> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 3>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 3> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 3>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 4) {
-        mgtree::kdtree<float, 4> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 4>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 4> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 4>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 5) {
-        mgtree::kdtree<float, 5> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 5>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 5> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 5>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 6) {
-        mgtree::kdtree<float, 6> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 6>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 6> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 6>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 7) {
-        mgtree::kdtree<float, 7> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 7>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 7> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 7>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 8) {
-        mgtree::kdtree<float, 8> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 8>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 8> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 8>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 9) {
-        mgtree::kdtree<float, 9> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 9>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 9> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 9>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else if (d == 10) {
-        mgtree::kdtree<float, 10> tree(XC.data(), n, max_leaf_size);
-        mgtree::kneighbours<float, 10>(tree, knn_dist.data(), knn_ind.data(), k);
+        mgtree::kdtree_sqeuclid<FLOAT, 10> tree(XC.data(), n, max_leaf_size);
+        mgtree::kneighbours_sqeuclid<FLOAT, 10>(tree, knn_dist.data(), knn_ind.data(), k);
     }
     else
         return R_NilValue;  // TODO
 
 
+    // TODO: recompute distances with full precision
     Rcpp::IntegerMatrix out_ind(n, k);
     Rcpp::NumericMatrix out_dist(n, k);
     size_t u = 0;
@@ -113,72 +117,96 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
 // [[Rcpp::export]]
 Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pass_max_brute_size=16)
 {
+    using FLOAT = float;
+
     size_t n = X.nrow();
     size_t d = X.ncol();
     if (n < 1) return R_NilValue;
 
-
-    std::vector<float> XC(n*d);
+    std::vector<FLOAT> XC(n*d);
     size_t j = 0;
     for (size_t i=0; i<n; ++i)
         for (size_t u=0; u<d; ++u)
-            XC[j++] = X(i, u);  // row-major
+            XC[j++] = (FLOAT)X(i, u);  // row-major
 
     std::vector<size_t> tree_ind(2*(n-1));
-    std::vector<float> tree_dist(n-1);
+    std::vector<FLOAT>  tree_dist(n-1);
 
-    // omfg; templates...
+    // OMFG LMAO; templates...
     if (d == 2) {
-        mgtree::dtb<float, 2> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 2>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 2> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 2>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 3) {
-        mgtree::dtb<float, 3> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 3>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 3> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 3>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 4) {
-        mgtree::dtb<float, 4> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 4>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 4> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 4>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 5) {
-        mgtree::dtb<float, 5> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 5>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 5> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 5>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 6) {
-        mgtree::dtb<float, 6> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 6>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 6> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 6>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 7) {
-        mgtree::dtb<float, 7> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 7>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 7> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 7>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 8) {
-        mgtree::dtb<float, 8> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 8>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 8> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 8>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 9) {
-        mgtree::dtb<float, 9> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 9>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 9> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 9>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else if (d == 10) {
-        mgtree::dtb<float, 10> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst<float, 10>(tree, tree_dist.data(), tree_ind.data());
+        mgtree::dtb_sqeuclid<FLOAT, 10> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
+        mgtree::mst_sqeuclid<FLOAT, 10>(tree, tree_dist.data(), tree_ind.data(), false);
     }
     else
         return R_NilValue;  // TODO
 
 
+    // TODO: ----> a separate function, use it in the brute-force algo too
+    // TODO !!!!!!!!!!!!!!!!!!!!!
+    // recompute distances with full precision,
+    // use L2 distance,
+    // sort MST edges wrt dist
+    std::vector< CMstTriple<double> > mst(n-1);
+
+    for (size_t i=0; i<n-1; ++i) {
+        GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
+        GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
+        GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
+
+        double _dist = 0.0;
+        for (size_t j=0; j<d; ++j)
+            _dist += mgtree::square(X(tree_ind[2*i+0], j)-X(tree_ind[2*i+1], j));
+        _dist = sqrt(_dist);
+
+        mst[i] = CMstTriple<double>(tree_ind[2*i+0], tree_ind[2*i+1], _dist);
+    }
+
+    std::sort(mst.begin(), mst.end());
+
     Rcpp::NumericMatrix out(n-1, 3);
     for (size_t i=0; i<n-1; ++i) {
-        out(i, 0)  = tree_ind[i*2+0]+1;  // R-based indexing
-        out(i, 1)  = tree_ind[i*2+1]+1;  // R-based indexing
-        out(i, 2)  = tree_dist[i];
+        out(i, 0)  = mst[i].i1 + 1.0;  // R-based indexing // i1 < i2
+        out(i, 1)  = mst[i].i2 + 1.0;  // R-based indexing
+        out(i, 2)  = mst[i].d;
     }
 
     return out;
 }
 
 
+// CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
 // OMP_NUM_THREADS=1 CXX_DEFS="-O3 -march=native" Rscript -e 'Rcpp::sourceCpp("/home/gagolews/Python/genieclust/.devel/kdtree_test_rcpp.cpp")'
 
 
@@ -235,10 +263,10 @@ for (d in c(2, 5)) {
             list(time=t, index=y[[1]], dist=y[[2]])
         })
 
-        print(rbind(
-            sapply(res, `[[`, 1),
-            sum_dist=sapply(res, function(e) sum(e$dist)),
-            idx_different=sapply(res, function(e) sum(res[[1]]$index != e$index))
+        print(cbind(
+            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+            Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
+            Δidx=sapply(res, function(e) sum(res[[1]]$index != e$index))
         ))
     }
     else {
@@ -248,15 +276,41 @@ for (d in c(2, 5)) {
             list(time=t, y)
         })
 
-        print(rbind(
-            sapply(res, `[[`, 1),
-            sum_dist=sapply(res, function(e) sum(e[[2]][,3])),
-            idx_different=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
+        print(cbind(
+            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
+            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
         ))
     }
 }
 
 */
+
+
+
+
+/*
+hades @ 2025-06-09 10:30
+
+              =============== -O3 -march=native == =============== -O2 ===============
+n=100000, d=2
+              genieclust_brute  mlpack_1  mlpack_4 genieclust_brute  mlpack_1  mlpack_4 new_2_16 new_2_32 new_4_00 new_4_16 new_4_64
+user.self               11.055     0.392     0.290            8.699     0.314     0.250    0.117    0.119    0.109    0.107    0.110
+sys.self                 0.007     0.010     0.000            0.015     0.009     0.000    0.000    0.000    0.000    0.000    0.000
+elapsed                 11.063     0.402     0.290            8.715     0.323     0.250    0.118    0.119    0.110    0.107    0.111
+user.child               0.000     0.000     0.000            0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
+sys.child                0.000     0.000     0.000            0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
+sum_dist              1013.976  1013.976  1013.976         1013.976  1013.976  1013.976 1013.976 1013.976 1013.976 1013.976 1013.976
+idx_different            0.000 31947.000 31947.000            0.000 31929.000 31929.000   84.000   84.000   84.000   84.000   84.000
+n=100000, d=5
+              genieclust_brute  mlpack_1  mlpack_4 genieclust_brute  mlpack_1  mlpack_4  new_2_16  new_2_32 new_4_00  new_4_16  new_4_64
+user.self               12.450     3.515     3.934           13.111     2.972     3.460     1.909     1.876     1.76     1.676     1.634
+sys.self                 0.006     0.006     0.000            0.008     0.006     0.001     0.000     0.000     0.00     0.000     0.000
+elapsed                 12.457     3.520     3.934           13.120     2.979     3.460     1.908     1.876     1.76     1.676     1.635
+user.child               0.000     0.000     0.000            0.000     0.000     0.000     0.000     0.000     0.00     0.000     0.000
+sys.child                0.000     0.000     0.000            0.000     0.000     0.000     0.000     0.000     0.00     0.000     0.000
+sum_dist             30703.016 30703.016 30703.016        30703.016 30703.016 30703.016 30703.016 30703.016 30703.02 30703.016 30703.016
+idx_different            0.000  2188.000  2188.000            0.000  2176.000  2176.000   332.000   332.000   332.00   332.000   332.000
 
 
 

@@ -64,8 +64,8 @@ void Cknn_sqeuclid_kdtree(const FLOAT* X, const size_t n, const size_t k,
     std::vector<float>  _nn_dist(n*k);
     std::vector<size_t> _nn_ind(n*k);
 
-    mgtree::kdtree<float, D> tree(XC.data(), n, max_leaf_size);
-    mgtree::kneighbours<float, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
+    mgtree::kdtree_sqeuclid<float, D> tree(XC.data(), n, max_leaf_size);
+    mgtree::kneighbours_sqeuclid<float, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
 
     #ifdef _OPENMP
     #pragma omp parallel for schedule(static)

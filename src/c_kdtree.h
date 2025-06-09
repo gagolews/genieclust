@@ -97,7 +97,7 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
  *  it is thread-safe
  */
 template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT,D> >
-class kdtree_kneighbours
+class kdtree_kneighbours_sqeuclid
 {
 private:
     const FLOAT* x;
@@ -150,7 +150,7 @@ private:
 
 
 public:
-    kdtree_kneighbours(
+    kdtree_kneighbours_sqeuclid(
         const FLOAT* data,
         const size_t n,
         const size_t which,
@@ -241,7 +241,7 @@ public:
 
 
 template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT, D> >
-class kdtree
+class kdtree_sqeuclid
 {
 protected:
     std::deque< NODE > nodes;  // stores all nodes
@@ -391,13 +391,13 @@ protected:
 
 
 public:
-    kdtree()
+    kdtree_sqeuclid()
         : root(nullptr), data(nullptr), n(0), perm(0), max_leaf_size(1)
     {
 
     }
 
-    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
+    kdtree_sqeuclid(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
         : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         GENIECLUST_ASSERT(max_leaf_size > 0);
@@ -406,7 +406,7 @@ public:
     }
 
 
-    ~kdtree()
+    ~kdtree_sqeuclid()
     {
         //delete_tree(root);
         root = nullptr;
@@ -421,7 +421,7 @@ public:
 
     void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
     {
-        kdtree_kneighbours<FLOAT, D, NODE> knn(data, n, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours_sqeuclid<FLOAT, D, NODE> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
     }
 };
@@ -429,7 +429,7 @@ public:
 
 
 template <typename FLOAT, size_t D, typename TREE>
-void kneighbours(
+void kneighbours_sqeuclid(
     TREE& tree,
     FLOAT* knn_dist,
     size_t* knn_ind,
