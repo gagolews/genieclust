@@ -31,6 +31,8 @@
 #include <stdexcept>
 #include <string>
 #include <limits>
+#include <cmath>
+
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -85,14 +87,14 @@ typedef ssize_t         Py_ssize_t;
 
 typedef double FLOAT_T; ///< float type we are working internally with
 
-#ifndef INFTY
-#define INFTY (std::numeric_limits<FLOAT_T>::infinity())
-#endif
+// #ifndef INFTY
+// #define INFTY (std::numeric_limits<FLOAT_T>::infinity())
+// #endif
 
-#define IS_PLUS_INFTY(x)  ((x) > 0.0 && !std::isfinite(x))
-#define IS_MINUS_INFTY(x) ((x) < 0.0 && !std::isfinite(x))
+template<class T>
+inline T square(T x) { return x*x; }
 
-#define CVI_MAX_N_PRECOMPUTE_DISTANCE 10000
-
+#define IS_PLUS_INFINITY(x)  ((x) > 0.0 && !std::isfinite(x))
+#define IS_MINUS_INFINITY(x) ((x) < 0.0 && !std::isfinite(x))
 
 #endif

@@ -791,7 +791,7 @@ public:
                 cluster_sizes[i1]  += cluster_sizes[i2];
                 cluster_d_sums[i1] += cluster_d_sums[i2] + this->mst_d[i];
                 cluster_sizes[i2]   = 0;
-                cluster_d_sums[i2]  = INFTY;
+                cluster_d_sums[i2]  = INFINITY;
             }
         }
         GENIECLUST_ASSERT(cur_unused_edges == num_unused_edges); // sentinel
@@ -810,7 +810,7 @@ public:
 
         while (num_unused_edges > 0 && this->results.it<this->get_max_n_clusters() - n_clusters) {
             Py_ssize_t max_which = -1;
-            double  max_obj = -INFTY;
+            double  max_obj = -INFINITY;
             for (Py_ssize_t j=0; j<num_unused_edges; ++j) {
                 Py_ssize_t i = unused_edges[j];
                 Py_ssize_t i1 = this->mst_i[2*i+0];
@@ -866,7 +866,7 @@ public:
             cluster_sizes[i1]  += cluster_sizes[i2];
             cluster_d_sums[i1] += cluster_d_sums[i2]+this->mst_d[i];
             cluster_sizes[i2] = 0;
-            cluster_d_sums[i2] = INFTY;
+            cluster_d_sums[i2] = INFINITY;
 
             unused_edges[max_which] = unused_edges[num_unused_edges-1];
             num_unused_edges--;

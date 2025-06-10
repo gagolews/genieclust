@@ -99,11 +99,11 @@ protected:
                     }
                 }
             }
-            if (count == 0) return INFTY;
+            if (count == 0) return INFINITY;
             else return ret/(FLOAT_T)count;
         }
         else if (owa == OWA_MIN) {
-//             FLOAT_T ret = INFTY;
+//             FLOAT_T ret = INFINITY;
 //             for (size_t i=0; i<n; ++i) {
 //                 for (size_t j=0; j<M; ++j) {
 //                     if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
@@ -121,10 +121,10 @@ protected:
                     return dist(i, j);
                 }
             }
-            return INFTY;
+            return INFINITY;
         }
         else if (owa == OWA_MAX) {
-//             FLOAT_T ret = -INFTY;
+//             FLOAT_T ret = -INFINITY;
 //             for (size_t i=0; i<n; ++i) {
 //                 for (Py_ssize_t j=M-1; j>=0; --j) { /* yep, a signed type */
 //                     if ((bool)same_cluster == (bool)(L[i] == L[ind(i, j)])) {
@@ -142,7 +142,7 @@ protected:
                     return dist(i, j);
                 }
             }
-            return -INFTY;
+            return -INFINITY;
         }
         else if (owa == OWA_CONST) {
             return 1.0;
@@ -158,7 +158,7 @@ protected:
                     if (pq_cur == 3*delta) break;
                 }
             }
-            if (pq_cur == 0) return INFTY;
+            if (pq_cur == 0) return INFINITY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
             for (Py_ssize_t u=0; u<pq_cur; ++u) {
                 FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
@@ -178,7 +178,7 @@ protected:
                     if (pq_cur == 3*delta) break;
                 }
             }
-            if (pq_cur == 0) return INFTY;
+            if (pq_cur == 0) return INFINITY;
             FLOAT_T sum_wx = 0.0, sum_w = 0.0;
             for (Py_ssize_t u=0; u<pq_cur; ++u) {
                 FLOAT_T cur_w = dnorm((FLOAT_T)u+1, 1, delta);
@@ -236,13 +236,13 @@ public:
     {
         for (size_t i=0; i<K; ++i)
             if (count[i] <= M)
-                return -INFTY;
+                return -INFINITY;
 
         FLOAT_T numerator = aggregate(owa_numerator, /*same_cluster*/false);
-        if (!std::isfinite(numerator)) return INFTY;
+        if (!std::isfinite(numerator)) return INFINITY;
 
         FLOAT_T denominator = aggregate(owa_denominator, /*same_cluster*/true);
-        if (!std::isfinite(denominator)) return -INFTY;
+        if (!std::isfinite(denominator)) return -INFINITY;
 
         return numerator/denominator;
     }

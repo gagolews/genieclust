@@ -57,8 +57,8 @@ public:
           centroids(centroids)
     { }
 
-    virtual void before_modify(size_t i, Py_ssize_t j) = 0;
-    virtual void after_modify(size_t i, Py_ssize_t j) = 0;
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) = 0;
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) = 0;
     virtual void undo() = 0;
     virtual void recompute_all() = 0;
 

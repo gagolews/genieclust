@@ -85,7 +85,7 @@ public:
         // The centroids are up-to-date.
         for (size_t i=0; i<K; ++i) {
             if (count[i] <= 1)  // singletons not permitted
-                return -INFTY;  // negative!!
+                return -INFINITY;  // negative!!
             R[i] = 0.0;
         }
         for (size_t i=0; i<n; ++i) {

@@ -45,7 +45,7 @@ public:
     virtual void recompute_all() {
         for (size_t i=0; i<K; ++i) {
             for (size_t j=i+1; j<K; ++j) {
-                dist(i,j) = dist(j,i) = DistTriple(0, 0, 0); //the only reason for this method is initialization by 0, not INFTY
+                dist(i,j) = dist(j,i) = DistTriple(0, 0, 0); //the only reason for this method is initialization by 0, not INFINITY
             }
         }
 

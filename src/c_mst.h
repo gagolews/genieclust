@@ -169,7 +169,7 @@ void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     if (k >= n)   throw std::domain_error("k >= n");
 
     for (Py_ssize_t i=0; i<n*k; ++i) {
-        nn_dist[i] = INFTY;
+        nn_dist[i] = INFINITY;
         nn_ind[i] = -1;
     }
 
@@ -266,7 +266,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
 
 
     for (Py_ssize_t i=0; i<n*k; ++i) {
-        dist[i] = INFTY;
+        dist[i] = INFINITY;
         ind[i] = -1;
     }
 
@@ -351,7 +351,7 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
     // see Cmst_from_complete for comments
 
     std::vector<Py_ssize_t> ind_nn(n);
-    std::vector<T> dist_nn(n, INFTY);
+    std::vector<T> dist_nn(n, INFINITY);
 
     //std::vector<T> distances(n);
     //T* _distances = distances.data();
@@ -515,7 +515,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
     // ind_nn[j] is the vertex from the current tree closest to vertex j
     std::vector<Py_ssize_t> ind_nn(n);
-    std::vector<T> dist_nn(n, INFTY);  // dist_nn[j] = d(j, ind_nn[j])
+    std::vector<T> dist_nn(n, INFINITY);  // dist_nn[j] = d(j, ind_nn[j])
 
     std::vector<Py_ssize_t> ind_left(n);
     for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
@@ -625,7 +625,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
  * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order;
  *        refer to the function's return value for the actual number
- *        of edges generated (if this is < n-1, the object is padded with INFTY)
+ *        of edges generated (if this is < n-1, the object is padded with INFINITY)
  * @param mst_ind [out] c_contiguous matrix of size (n-1)*2, defining the edges
  *        corresponding to mst_d, with mst_i[j,0] <= mst_i[j,1] for all j;
  *        refer to the function's return value for the actual number
@@ -687,7 +687,7 @@ Py_ssize_t Cmst_from_nn(
             while (mst_edge_cur < n-1) {
                 mst_ind[2*mst_edge_cur+0] = -1;
                 mst_ind[2*mst_edge_cur+1] = -1;
-                mst_dist[mst_edge_cur]    = INFTY;
+                mst_dist[mst_edge_cur]    = INFINITY;
                 mst_edge_cur++;
             }
             if (verbose)
@@ -753,7 +753,7 @@ Py_ssize_t Cmst_from_nn(
 // * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
 // *        resulting MST edges in nondecreasing order;
 // *        refer to the function's return value for the actual number
-// *        of edges generated (if this is < n-1, the object is padded with INFTY)
+// *        of edges generated (if this is < n-1, the object is padded with INFINITY)
 // * @param mst_ind [out] c_contiguous matrix of size (n-1)*2, defining the edges
 // *        corresponding to mst_d, with mst_i[j,0] <= mst_i[j,1] for all j;
 // *        refer to the function's return value for the actual number
@@ -785,7 +785,7 @@ Py_ssize_t Cmst_from_nn(
 //             while (mst_edge_cur < n-1) {
 //                 mst_ind[2*mst_edge_cur+0] = -1;
 //                 mst_ind[2*mst_edge_cur+1] = -1;
-//                 mst_dist[mst_edge_cur]    = INFTY;
+//                 mst_dist[mst_edge_cur]    = INFINITY;
 //                 mst_edge_cur++;
 //             }
 //             if (verbose)

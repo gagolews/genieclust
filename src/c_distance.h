@@ -27,11 +27,6 @@
 
 
 
-template<class T>
-inline T square(T x) { return x*x; }
-
-
-
 /*! Abstract base class for all distances */
 template<class T>
 struct CDistance {

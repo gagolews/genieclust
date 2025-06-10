@@ -19,6 +19,10 @@
 #ifndef __CVI_H
 #define __CVI_H
 
+#define CVI_MAX_N_PRECOMPUTE_DISTANCE 10000
+
+
+
 #include <cmath>
 #include <algorithm>
 #include <functional>
@@ -26,10 +30,6 @@
 #include <string>
 #include "c_common.h"
 #include "c_matrix.h"
-
-
-template<class T>
-inline T square(T x) { return x*x; }
 
 
 /** Computes the squared Euclidean distance between two vectors.
@@ -413,7 +413,7 @@ public:
             const size_t _M)
         : ClusterValidityIndex(_X, _K, _allow_undo),
           M((_M<=n-1)?_M:(n-1)),
-          dist(n, M, INFTY),
+          dist(n, M, INFINITY),
           ind(n, M, n)
     {
         GENIECLUST_ASSERT(M>0 && M<n);

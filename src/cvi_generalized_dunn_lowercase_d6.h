@@ -53,7 +53,7 @@ public:
     last_dist(K, K),
     min_dists(K)
     { }
-    virtual void before_modify(size_t i, Py_ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
             for (size_t v=u+1; v<K; ++v) {
@@ -67,7 +67,7 @@ public:
 
         cluster1 = L[i];
     }
-    virtual void after_modify(size_t i, Py_ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -89,7 +89,7 @@ public:
                 if (L[i1] != cluster1 && L[i1] != cluster2)
                     continue;
                 // for every point i we find its minimum distance to every other cluster
-                std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFTY));
+                std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFINITY));
                 for (size_t j=0; j<n; ++j) {
                     if (L[i1] != L[j]) {
                         FLOAT_T d = D(i1, j);
@@ -109,7 +109,7 @@ public:
 
             for (size_t i1=0; i1<n; ++i1) {
                 // for every point i we find its minimum distance to every other cluster
-                std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFTY));
+                std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFINITY));
                 for (size_t j=0; j<n; ++j) {
                     if (L[j] != cluster1 && L[j] != cluster2)
                         continue;
@@ -153,7 +153,7 @@ public:
 
         for (size_t i=0; i<n; ++i) {
             // for every point i we find its minimum distance to every other cluster
-            std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFTY));
+            std::fill(min_dists.begin(), min_dists.end(), DistTriple(0, 0, INFINITY));
             for (size_t j=0; j<n; ++j) {
                 if (L[i] != L[j]) {
                     FLOAT_T d = D(i, j);

@@ -40,10 +40,10 @@ public:
     : LowercaseDelta(D, X, L, count,K,n,d,centroids)
     {
     }
-    virtual void before_modify(size_t i, Py_ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) {
         // all happens in CentroidsBasedIndex
     }
-    virtual void after_modify(size_t i, Py_ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) {
         // all happens in CentroidsBasedIndex
     }
     virtual void undo() {

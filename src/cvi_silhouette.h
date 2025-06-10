@@ -121,7 +121,7 @@ public:
     {
         for (size_t i=0; i<n; ++i) {
             // Let C(i,j) == sum of distances between X(i,) and all points in the j-th cluster
-            B[i] = INFTY;
+            B[i] = INFINITY;
             for (Py_ssize_t j=0; j<(Py_ssize_t)K; ++j) {
                 if (j == L[i]) {
                     A[i] = C(i,j)/(FLOAT_T)(count[j]-1);

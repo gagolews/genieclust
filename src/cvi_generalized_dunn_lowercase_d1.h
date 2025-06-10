@@ -53,7 +53,7 @@ public:
         comparator = std::less<FLOAT_T>();
 
     }
-    virtual void before_modify(size_t i, Py_ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) {
         needs_recompute = false;
         for (size_t u=0; u<K; ++u) {
 
@@ -66,7 +66,7 @@ public:
             }
         }
     }
-    virtual void after_modify(size_t i, Py_ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) {
         if (needs_recompute) {
             last_chg = true;
             recompute_all();
@@ -98,7 +98,7 @@ public:
     virtual void recompute_all() {
         for (size_t i=0; i<K; ++i) {
             for (size_t j=i+1; j<K; ++j) {
-                dist(i,j) = dist(j,i) = DistTriple(0, 0, INFTY);
+                dist(i,j) = dist(j,i) = DistTriple(0, 0, INFINITY);
             }
         }
 

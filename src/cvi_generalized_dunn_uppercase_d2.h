@@ -46,7 +46,7 @@ public:
     last_dist_sums(K),
     last_chg(false)
     { }
-    virtual void before_modify(size_t i, Py_ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) {
         for (size_t u=0; u<K; ++u) {
             last_dist_sums[u] = dist_sums[u];
         }
@@ -63,7 +63,7 @@ public:
         last_chg = true;
     }
 
-    virtual void after_modify(size_t i, Py_ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) {
         // add a contribution of the point i to the new cluster L[i]
         for (size_t u=0; u<n; ++u) {
             if(L[i] == L[u] && i != u)

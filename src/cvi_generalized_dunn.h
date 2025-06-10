@@ -100,7 +100,7 @@ public:
     virtual FLOAT_T compute()
     {
         FLOAT_T max_denominator = 0.0;
-        FLOAT_T min_numerator = INFTY;
+        FLOAT_T min_numerator = INFINITY;
         for (size_t i=0; i<K; ++i) {
             FLOAT_T denom_i = denominatorDelta->compute(i);
             if (denom_i > max_denominator)
@@ -179,7 +179,7 @@ public:
     virtual FLOAT_T compute()
     {
         FLOAT_T max_denominator = 0.0;
-        FLOAT_T min_numerator = INFTY;
+        FLOAT_T min_numerator = INFINITY;
         for (size_t i=0; i<K; ++i) {
             FLOAT_T denom_i = denominatorDelta->compute(i);
             if (denom_i > max_denominator)

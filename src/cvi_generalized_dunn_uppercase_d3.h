@@ -48,7 +48,7 @@ public:
     last_dist_sums(K),
     last_chg(false)
     { }
-    virtual void before_modify(size_t i, Py_ssize_t j) {
+    virtual void before_modify(size_t i, Py_ssize_t /*j*/) {
         last_chg = true;
         for (size_t u=0; u<K; ++u) {
                 last_dist_sums[u] = dist_sums[u];
@@ -65,7 +65,7 @@ public:
         // dist_sums[cluster_index] -= d;
     }
 
-    virtual void after_modify(size_t i, Py_ssize_t j) {
+    virtual void after_modify(size_t i, Py_ssize_t /*j*/) {
         // Py_ssize_t cluster_index = L[i];
         // FLOAT_T act = 0.0;
         // for (size_t u=0; u<d; ++u) {

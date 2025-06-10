@@ -41,11 +41,6 @@
 
 namespace mgtree {
 
-template <typename FLOAT>
-inline FLOAT square(FLOAT v) { return v*v; }
-
-
-
 template <typename FLOAT, size_t D>
 struct kdtree_node_base
 {
