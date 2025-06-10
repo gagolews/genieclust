@@ -187,7 +187,7 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
 
         double _dist = 0.0;
         for (size_t j=0; j<d; ++j)
-            _dist += mgtree::square(X(tree_ind[2*i+0], j)-X(tree_ind[2*i+1], j));
+            _dist += square(X(tree_ind[2*i+0], j)-X(tree_ind[2*i+1], j));
         _dist = sqrt(_dist);
 
         mst[i] = CMstTriple<double>(tree_ind[2*i+0], tree_ind[2*i+1], _dist);

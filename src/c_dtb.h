@@ -52,16 +52,17 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 
+
 template <typename FLOAT, size_t D, typename NODE=kdtree_node_clusterable<FLOAT, D> >
 class dtb_sqeuclid : public kdtree_sqeuclid<FLOAT, D, NODE>
 {
 protected:
-    FLOAT* tree_dist;  //< size n-1
+    FLOAT*  tree_dist;  //< size n-1
     size_t* tree_ind;  //< size 2*(n-1)
+    size_t  tree_num;  // current number of MST nodes determined
     CDisjointSets ds;
-    size_t k;  // current number of MST nodes determined
 
-    std::vector<FLOAT> nn_dist;
+    std::vector<FLOAT>  nn_dist;
     std::vector<size_t> nn_ind;
     std::vector<size_t> nn_from;
 
@@ -74,11 +75,15 @@ protected:
         FLOAT closer_dist;
         FLOAT farther_dist;
 
-
         kdtree_node_orderer(NODE* from, NODE* to1, NODE* to2)
         {
-            closer_dist  = dist_between_nodes(from, to1);
-            farther_dist = dist_between_nodes(from, to2);
+            closer_dist  = distance_node_node_sqeuclid<FLOAT, D>(
+                from->bbox_min.data(), from->bbox_max.data(),
+                 to1->bbox_min.data(),  to1->bbox_max.data()
+            );
+            farther_dist = distance_node_node_sqeuclid<FLOAT, D>(
+                from->bbox_min.data(), from->bbox_max.data(),
+                 to2->bbox_min.data(),  to2->bbox_max.data());
             if (closer_dist <= farther_dist) {
                 closer_node  = to1;
                 farther_node = to2;
@@ -92,37 +97,16 @@ protected:
     };
 
 
-    static inline FLOAT dist_between_nodes(const NODE* roota, const NODE* rootb)
-    {
-        FLOAT dist = 0.0;
-        for (size_t u=0; u<D; ++u) {
-            if (rootb->bbox_min[u] > roota->bbox_max[u])
-                dist += square(rootb->bbox_min[u] - roota->bbox_max[u]);
-            else if (roota->bbox_min[u] > rootb->bbox_max[u])
-                dist += square(roota->bbox_min[u] - rootb->bbox_max[u]);
-            // else dist += 0.0;
-        }
-        return dist;
-    }
-
-
     inline void leaf_vs_leaf(NODE* roota, NODE* rootb)
     {
         // assumes ds.find(i) == ds.get_parent(i) for all i!
-
-        // NOTE: this could be parallelised if max_leaf_size is considerable...
         const FLOAT* _x = this->data + roota->idx_from*D;
         for (size_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D) {
             Py_ssize_t ds_find_i = ds.get_parent(i);
-
-            const FLOAT* _y = this->data + rootb->idx_from*D;
-            for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j, _y += D) {
+            for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j) {
                 Py_ssize_t ds_find_j = ds.get_parent(j);
                 if (ds_find_i != ds_find_j) {
-                    FLOAT dij = 0.0;
-                    for (size_t u=0; u<D; ++u)
-                        dij += square(_x[u]-_y[u]);
-
+                    FLOAT dij = distance_point_point_sqeuclid<FLOAT, D>(_x, this->data+j*D);
                     if (dij < nn_dist[ds_find_i]) {
                         nn_dist[ds_find_i] = dij;
                         nn_ind[ds_find_i]  = j;
@@ -188,11 +172,11 @@ protected:
 
         for (size_t i=0; i<this->n; ++i) {
             if (ds.find(i) != ds.find(nn_ind[i])) {
-                tree_ind[k*2+0] = i;
-                tree_ind[k*2+1] = nn_ind[i];
-                tree_dist[k] = nn_dist[i];
+                tree_ind[tree_num*2+0] = i;
+                tree_ind[tree_num*2+1] = nn_ind[i];
+                tree_dist[tree_num] = nn_dist[i];
                 ds.merge(i, nn_ind[i]);
-                k++;
+                tree_num++;
             }
         }
     }
@@ -211,7 +195,7 @@ protected:
         }
 
         // pruning below!
-        //FLOAT dist = dist_between_nodes(roota, rootb);
+        //FLOAT dist = distance_node_node_sqeuclid<FLOAT, D, NODE>(roota, rootb);
         //if (roota->cluster_max_dist < dist) {
         //    // we've a better candidate already - nothing to do
         //    return;
@@ -285,7 +269,7 @@ protected:
         // 1st iteration: connect nearest neighbours with each other
         find_mst_first();
 
-        while (k < this->n-1) {
+        while (tree_num < this->n-1) {
             // reset cluster_max_dist and set up cluster_repr,
             // ensure ds.find(i) == ds.get_parent(i) for all i
             update_cluster_data();
@@ -304,11 +288,11 @@ protected:
             for (size_t i=0; i<this->n; ++i) {
                 if (nn_ind[i] < this->n && ds.find(i) != ds.find(nn_ind[i])) {
                     GENIECLUST_ASSERT(ds.find(i) == ds.find(nn_from[i]));
-                    tree_ind[k*2+0] = nn_from[i];
-                    tree_ind[k*2+1] = nn_ind[i];
-                    tree_dist[k] = nn_dist[i];
+                    tree_ind[tree_num*2+0] = nn_from[i];
+                    tree_ind[tree_num*2+1] = nn_ind[i];
+                    tree_dist[tree_num] = nn_dist[i];
                     ds.merge(i, nn_ind[i]);
-                    k++;
+                    tree_num++;
                     // if ((--c) < 0) break;  // all done
                 }
             }
@@ -328,8 +312,8 @@ public:
         FLOAT* data, const size_t n, const size_t max_leaf_size=4,
         const size_t first_pass_max_brute_size=16
     ) :
-        kdtree_sqeuclid<FLOAT, D, NODE>(data, n, max_leaf_size), ds(n), k(0),
-        nn_dist(n), nn_ind(n), nn_from(n),
+        kdtree_sqeuclid<FLOAT, D, NODE>(data, n, max_leaf_size), tree_num(0),
+        ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size)
     {
 
@@ -343,7 +327,7 @@ public:
         this->tree_ind = tree_ind;
 
         if (ds.get_k() != (Py_ssize_t)this->n) ds.reset();
-        k = 0;
+        tree_num = 0;
 
         for (size_t i=0; i<this->n-1; ++i)     tree_dist[i] = INFINITY;
         for (size_t i=0; i<2*(this->n-1); ++i) tree_ind[i]  = this->n;

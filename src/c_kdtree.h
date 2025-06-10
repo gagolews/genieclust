@@ -85,6 +85,48 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
 
 
 
+template <typename FLOAT, size_t D>
+inline FLOAT distance_point_point_sqeuclid(const FLOAT* x, const FLOAT* y)
+{
+    FLOAT dist = 0.0;
+    for (size_t u=0; u<D; ++u)
+        dist += square(x[u]-y[u]);
+    return dist;
+}
+
+
+template <typename FLOAT, size_t D>
+inline FLOAT distance_point_node_sqeuclid(
+    const FLOAT* x, const FLOAT* bbox_min, const FLOAT* bbox_max
+) {
+    FLOAT dist = 0.0;
+    for (size_t u=0; u<D; ++u) {
+        if (bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
+            dist += square(bbox_min[u] - x[u]);
+        else if (x[u] > bbox_max[u])
+            dist += square(x[u] - bbox_max[u]);
+        // else dist += 0.0;
+    }
+    return dist;
+}
+
+
+template <typename FLOAT, size_t D>
+inline FLOAT distance_node_node_sqeuclid(
+    const FLOAT* bbox_min_a, const FLOAT* bbox_max_a,
+    const FLOAT* bbox_min_b, const FLOAT* bbox_max_b
+) {
+    FLOAT dist = 0.0;
+    for (size_t u=0; u<D; ++u) {
+        if (bbox_min_b[u] > bbox_max_a[u])
+            dist += square(bbox_min_b[u] - bbox_max_a[u]);
+        else if (bbox_min_a[u] > bbox_max_b[u])
+            dist += square(bbox_min_a[u] - bbox_max_b[u]);
+        // else dist += 0.0;
+    }
+    return dist;
+}
+
 
 
 /** A class enabling searching for k nearest neighbours of a given point
@@ -106,27 +148,11 @@ private:
     const size_t max_brute_size;  // when to switch to the brute-force mode? 0 to honour the tree's max_leaf_size
 
 
-    inline FLOAT dist_to_node(const NODE* root) const
-    {
-        FLOAT dist = 0.0;
-        for (size_t u=0; u<D; ++u) {
-            if (root->bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
-                dist += square(root->bbox_min[u] - x[u]);
-            else if (x[u] > root->bbox_max[u])
-                dist += square(x[u] - root->bbox_max[u]);
-            // else dist += 0.0;
-        }
-        return dist;
-    }
-
-
     inline void point_vs_points(size_t idx_from, size_t idx_to)
     {
         const FLOAT* y = data+D*idx_from;
         for (size_t i=idx_from; i<idx_to; ++i, y+=D) {
-            FLOAT dist = 0.0;
-            for (size_t u=0; u<D; ++u)
-                dist += square(x[u]-y[u]);
+            FLOAT dist = distance_point_point_sqeuclid<FLOAT, D>(x, y);
 
             if (dist >= knn_dist[k-1])
                 continue;
@@ -205,8 +231,12 @@ public:
             return;
         }
 
-        FLOAT dist_left  = dist_to_node(root->left);
-        FLOAT dist_right = dist_to_node(root->right);
+        FLOAT dist_left  = distance_point_node_sqeuclid<FLOAT, D>(
+            x, root->left->bbox_min.data(),  root->left->bbox_max.data()
+        );
+        FLOAT dist_right = distance_point_node_sqeuclid<FLOAT, D>(
+            x, root->right->bbox_min.data(), root->right->bbox_max.data()
+        );
 
         // closer node first (significant speedup)
         if (dist_left < dist_right) {
@@ -302,9 +332,9 @@ protected:
 
         // cut by the dim of the greatest range
         size_t split_dim = 0;
-        FLOAT dim_width = root->bbox_max[0]-root->bbox_min[0];
+        FLOAT dim_width = root->bbox_max[0] - root->bbox_min[0];
         for (size_t u=1; u<D; ++u) {
-            FLOAT cur_width = root->bbox_max[u]-root->bbox_min[u];
+            FLOAT cur_width = root->bbox_max[u] - root->bbox_min[u];
             if (cur_width > dim_width) {
                 dim_width = cur_width;
                 split_dim = u;
