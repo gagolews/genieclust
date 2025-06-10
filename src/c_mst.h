@@ -105,8 +105,8 @@ void Cknn_sqeuclid_kdtree(const FLOAT* X, const size_t n, const size_t k,
  * @param verbose output diagnostic/progress messages?
  */
 template <class FLOAT, class FLOAT_INTERNAL=float>
-void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool verbose=false)
+void Cknn_sqeuclid_kdtree(const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
