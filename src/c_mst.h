@@ -104,7 +104,7 @@ void Cknn_sqeuclid_kdtree(const FLOAT* X, const size_t n, const size_t k,
  * @param max_leaf_size
  * @param verbose output diagnostic/progress messages?
  */
-template <class T>
+template <class FLOAT, class FLOAT_INTERNAL=float>
 void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool verbose=false)
 {
@@ -116,25 +116,25 @@ void Cknn_sqeuclid_kdtree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     else if (max_leaf_size == 0) max_leaf_size = 32;  // default
 
     /* OMFG. Templates. */
-    /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<T,  2>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  3)  Cknn_sqeuclid_kdtree<T,  3>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  4)  Cknn_sqeuclid_kdtree<T,  4>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  5)  Cknn_sqeuclid_kdtree<T,  5>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  6)  Cknn_sqeuclid_kdtree<T,  6>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  7)  Cknn_sqeuclid_kdtree<T,  7>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  8)  Cknn_sqeuclid_kdtree<T,  8>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  9)  Cknn_sqeuclid_kdtree<T,  9>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 10)  Cknn_sqeuclid_kdtree<T, 10>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 11)  Cknn_sqeuclid_kdtree<T, 11>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 12)  Cknn_sqeuclid_kdtree<T, 12>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 13)  Cknn_sqeuclid_kdtree<T, 13>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 14)  Cknn_sqeuclid_kdtree<T, 14>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 15)  Cknn_sqeuclid_kdtree<T, 15>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 16)  Cknn_sqeuclid_kdtree<T, 16>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 17)  Cknn_sqeuclid_kdtree<T, 17>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 18)  Cknn_sqeuclid_kdtree<T, 18>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 19)  Cknn_sqeuclid_kdtree<T, 19>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 20)  Cknn_sqeuclid_kdtree<T, 20>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<FLOAT,  2, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  3)  Cknn_sqeuclid_kdtree<FLOAT,  3, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  4)  Cknn_sqeuclid_kdtree<FLOAT,  4, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  5)  Cknn_sqeuclid_kdtree<FLOAT,  5, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  6)  Cknn_sqeuclid_kdtree<FLOAT,  6, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  7)  Cknn_sqeuclid_kdtree<FLOAT,  7, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  8)  Cknn_sqeuclid_kdtree<FLOAT,  8, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d ==  9)  Cknn_sqeuclid_kdtree<FLOAT,  9, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 10)  Cknn_sqeuclid_kdtree<FLOAT, 10, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 11)  Cknn_sqeuclid_kdtree<FLOAT, 11, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 12)  Cknn_sqeuclid_kdtree<FLOAT, 12, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 13)  Cknn_sqeuclid_kdtree<FLOAT, 13, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 14)  Cknn_sqeuclid_kdtree<FLOAT, 14, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 15)  Cknn_sqeuclid_kdtree<FLOAT, 15, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 16)  Cknn_sqeuclid_kdtree<FLOAT, 16, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 17)  Cknn_sqeuclid_kdtree<FLOAT, 17, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 18)  Cknn_sqeuclid_kdtree<FLOAT, 18, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 19)  Cknn_sqeuclid_kdtree<FLOAT, 19, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
+    else if (d == 20)  Cknn_sqeuclid_kdtree<FLOAT, 20, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }

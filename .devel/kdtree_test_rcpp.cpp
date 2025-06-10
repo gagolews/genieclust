@@ -141,7 +141,6 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
 {
     using FLOAT = float;
 
-
     size_t n = X.nrow();
     size_t d = X.ncol();
     if (n < 1) return R_NilValue;
