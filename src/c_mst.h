@@ -53,19 +53,22 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 /**
  * helper function called by Cknn_sqeuclid_kdtree below
  */
-template <class FLOAT, Py_ssize_t D>
+template <class FLOAT, Py_ssize_t D, class FLOAT_INTERNAL=float>
 void Cknn_sqeuclid_kdtree(const FLOAT* X, const size_t n, const size_t k,
     FLOAT* nn_dist, Py_ssize_t* nn_ind, size_t max_leaf_size, bool /*verbose=false*/)
 {
-    std::vector<float> XC(n*D);
-    for (size_t i=0; i<n*D; ++i)
-        XC[i] = (float)X[i];
+    using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT_INTERNAL,D>;
 
-    std::vector<float>  _nn_dist(n*k);
+    // must make a copy, kdtree modifies XC
+    std::vector<FLOAT_INTERNAL> XC(n*D);
+    for (size_t i=0; i<n*D; ++i)
+        XC[i] = (FLOAT_INTERNAL)X[i];
+
+    std::vector<FLOAT_INTERNAL>  _nn_dist(n*k);
     std::vector<size_t> _nn_ind(n*k);
 
-    mgtree::kdtree_sqeuclid<float, D> tree(XC.data(), n, max_leaf_size);
-    mgtree::kneighbours_sqeuclid<float, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
+    mgtree::kdtree<FLOAT_INTERNAL, D, DISTANCE> tree(XC.data(), n, max_leaf_size);
+    mgtree::kneighbours<FLOAT_INTERNAL, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
 
     #ifdef _OPENMP
     #pragma omp parallel for schedule(static)

@@ -54,7 +54,7 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_clusterable<FLOAT, D> >
-class dtb_sqeuclid : public kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>
+class dtb : public kdtree<FLOAT, D, DISTANCE, NODE>
 {
 protected:
     FLOAT*  tree_dist;  //< size n-1
@@ -163,7 +163,7 @@ protected:
         #pragma omp parallel for schedule(static)
         #endif
         for (size_t i=0; i<this->n; ++i) {
-            kdtree_kneighbours_sqeuclid<FLOAT, D, DISTANCE, NODE> nn(
+            kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
                 this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
                 first_pass_max_brute_size
             );
@@ -301,18 +301,18 @@ protected:
 
 
 public:
-    dtb_sqeuclid()
-        : kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>()
+    dtb()
+        : kdtree<FLOAT, D, DISTANCE, NODE>()
     {
 
     }
 
 
-    dtb_sqeuclid(
+    dtb(
         FLOAT* data, const size_t n, const size_t max_leaf_size=4,
         const size_t first_pass_max_brute_size=16
     ) :
-        kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
+        kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size)
     {
@@ -343,7 +343,7 @@ public:
 
 
 template <typename FLOAT, size_t D, typename TREE>
-void mst_sqeuclid(
+void mst(
     TREE& tree,
     FLOAT* tree_dist,   // size n-1
     size_t* tree_ind,   // size 2*(n-1)

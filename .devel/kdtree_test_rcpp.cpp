@@ -33,10 +33,12 @@ typedef ssize_t         Py_ssize_t;
 
 #include <Rcpp.h>
 
+/*
 // [[Rcpp::export]]
 Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
 {
     using FLOAT = float;
+    using DISTANCE=,......... TODO
 
     size_t n = X.nrow();
     size_t d = X.ncol();
@@ -111,13 +113,34 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
         Rcpp::Named("nn.dist")=out_dist
     );
 }
+*/
 
+
+template <class FLOAT, Py_ssize_t D, class DISTANCE>
+void _test_mst(
+    FLOAT* XC, size_t n, size_t max_leaf_size, size_t first_pass_max_brute_size,
+    FLOAT* tree_dist, size_t* tree_ind
+) {
+    mgtree::dtb<FLOAT, D, DISTANCE> tree(XC, n, max_leaf_size, first_pass_max_brute_size);
+    mgtree::mst<FLOAT, D>(tree, tree_dist, tree_ind, false);
+}
+
+
+template <class FLOAT, Py_ssize_t D>
+void _test_mst_sqeuclid(
+    FLOAT* XC, size_t n, size_t max_leaf_size, size_t first_pass_max_brute_size,
+    FLOAT* tree_dist, size_t* tree_ind
+) {
+    using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT, D>;
+    _test_mst<FLOAT, D, DISTANCE>(XC, n, max_leaf_size, first_pass_max_brute_size, tree_dist, tree_ind);
+}
 
 
 // [[Rcpp::export]]
 Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pass_max_brute_size=16)
 {
     using FLOAT = float;
+
 
     size_t n = X.nrow();
     size_t d = X.ncol();
@@ -129,45 +152,36 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
         for (size_t u=0; u<d; ++u)
             XC[j++] = (FLOAT)X(i, u);  // row-major
 
-    std::vector<size_t> tree_ind(2*(n-1));
     std::vector<FLOAT>  tree_dist(n-1);
+    std::vector<size_t> tree_ind(2*(n-1));
 
-    // OMFG LMAO; templates...
+    // LMAO! Templates...
     if (d == 2) {
-        mgtree::dtb_sqeuclid<FLOAT, 2> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 2>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 2>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 3) {
-        mgtree::dtb_sqeuclid<FLOAT, 3> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 3>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 3>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 4) {
-        mgtree::dtb_sqeuclid<FLOAT, 4> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 4>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 4>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 5) {
-        mgtree::dtb_sqeuclid<FLOAT, 5> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 5>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 5>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 6) {
-        mgtree::dtb_sqeuclid<FLOAT, 6> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 6>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 6>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 7) {
-        mgtree::dtb_sqeuclid<FLOAT, 7> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 7>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 7>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 8) {
-        mgtree::dtb_sqeuclid<FLOAT, 8> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 8>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 8>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 9) {
-        mgtree::dtb_sqeuclid<FLOAT, 9> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 9>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 9>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 10) {
-        mgtree::dtb_sqeuclid<FLOAT, 10> tree(XC.data(), n, max_leaf_size, first_pass_max_brute_size);
-        mgtree::mst_sqeuclid<FLOAT, 10>(tree, tree_dist.data(), tree_ind.data(), false);
+        _test_mst_sqeuclid<FLOAT, 10>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else
         return R_NilValue;  // TODO
@@ -221,11 +235,11 @@ knn_rann <- function(X, k) {
     res_rann
 }
 
-funs_knn <- list(
-    genieclust_brute=genieclust:::knn_sqeuclid,
+#funs_knn <- list(
+#    genieclust_brute=genieclust:::knn_sqeuclid,
 #        rann=knn_rann,
-    new_kdtree=test_kdtree
-)
+#    new_kdtree=test_kdtree
+#)
 
 funs_mst <- list(
     genieclust_brute=function(X) genieclust:::.mst.default(X, "l2", 1L, cast_float32=FALSE, verbose=FALSE),
