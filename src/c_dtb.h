@@ -53,8 +53,8 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 
-template <typename FLOAT, size_t D, typename NODE=kdtree_node_clusterable<FLOAT, D> >
-class dtb_sqeuclid : public kdtree_sqeuclid<FLOAT, D, NODE>
+template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_clusterable<FLOAT, D> >
+class dtb_sqeuclid : public kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>
 {
 protected:
     FLOAT*  tree_dist;  //< size n-1
@@ -77,11 +77,11 @@ protected:
 
         kdtree_node_orderer(NODE* from, NODE* to1, NODE* to2)
         {
-            closer_dist  = distance_node_node_sqeuclid<FLOAT, D>(
+            closer_dist  = DISTANCE::node_node(
                 from->bbox_min.data(), from->bbox_max.data(),
                  to1->bbox_min.data(),  to1->bbox_max.data()
             );
-            farther_dist = distance_node_node_sqeuclid<FLOAT, D>(
+            farther_dist = DISTANCE::node_node(
                 from->bbox_min.data(), from->bbox_max.data(),
                  to2->bbox_min.data(),  to2->bbox_max.data());
             if (closer_dist <= farther_dist) {
@@ -106,7 +106,7 @@ protected:
             for (size_t j=rootb->idx_from; j<rootb->idx_to; ++j) {
                 Py_ssize_t ds_find_j = ds.get_parent(j);
                 if (ds_find_i != ds_find_j) {
-                    FLOAT dij = distance_point_point_sqeuclid<FLOAT, D>(_x, this->data+j*D);
+                    FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
                     if (dij < nn_dist[ds_find_i]) {
                         nn_dist[ds_find_i] = dij;
                         nn_ind[ds_find_i]  = j;
@@ -163,7 +163,7 @@ protected:
         #pragma omp parallel for schedule(static)
         #endif
         for (size_t i=0; i<this->n; ++i) {
-            kdtree_kneighbours_sqeuclid<FLOAT, D, NODE> nn(
+            kdtree_kneighbours_sqeuclid<FLOAT, D, DISTANCE, NODE> nn(
                 this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
                 first_pass_max_brute_size
             );
@@ -195,7 +195,7 @@ protected:
         }
 
         // pruning below!
-        //FLOAT dist = distance_node_node_sqeuclid<FLOAT, D, NODE>(roota, rootb);
+        //FLOAT dist = distance_node_node_sqeuclid(roota, rootb);
         //if (roota->cluster_max_dist < dist) {
         //    // we've a better candidate already - nothing to do
         //    return;
@@ -302,7 +302,7 @@ protected:
 
 public:
     dtb_sqeuclid()
-        : kdtree_sqeuclid<FLOAT, D, NODE>()
+        : kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>()
     {
 
     }
@@ -312,7 +312,7 @@ public:
         FLOAT* data, const size_t n, const size_t max_leaf_size=4,
         const size_t first_pass_max_brute_size=16
     ) :
-        kdtree_sqeuclid<FLOAT, D, NODE>(data, n, max_leaf_size), tree_num(0),
+        kdtree_sqeuclid<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size)
     {

@@ -84,56 +84,54 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
 };
 
 
-
 template <typename FLOAT, size_t D>
-inline FLOAT distance_point_point_sqeuclid(const FLOAT* x, const FLOAT* y)
+class kdtree_distance_sqeuclid
 {
-    FLOAT dist = 0.0;
-    for (size_t u=0; u<D; ++u)
-        dist += square(x[u]-y[u]);
-    return dist;
-}
-
-
-template <typename FLOAT, size_t D>
-inline FLOAT distance_point_node_sqeuclid(
-    const FLOAT* x, const FLOAT* bbox_min, const FLOAT* bbox_max
-) {
-    FLOAT dist = 0.0;
-    for (size_t u=0; u<D; ++u) {
-        if (bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
-            dist += square(bbox_min[u] - x[u]);
-        else if (x[u] > bbox_max[u])
-            dist += square(x[u] - bbox_max[u]);
-        // else dist += 0.0;
+public:
+    static inline FLOAT point_point(const FLOAT* x, const FLOAT* y)
+    {
+        FLOAT dist = 0.0;
+        for (size_t u=0; u<D; ++u)
+            dist += square(x[u]-y[u]);
+        return dist;
     }
-    return dist;
-}
 
-
-template <typename FLOAT, size_t D>
-inline FLOAT distance_node_node_sqeuclid(
-    const FLOAT* bbox_min_a, const FLOAT* bbox_max_a,
-    const FLOAT* bbox_min_b, const FLOAT* bbox_max_b
-) {
-    FLOAT dist = 0.0;
-    for (size_t u=0; u<D; ++u) {
-        if (bbox_min_b[u] > bbox_max_a[u])
-            dist += square(bbox_min_b[u] - bbox_max_a[u]);
-        else if (bbox_min_a[u] > bbox_max_b[u])
-            dist += square(bbox_min_a[u] - bbox_max_b[u]);
-        // else dist += 0.0;
+    static inline FLOAT point_node(
+        const FLOAT* x, const FLOAT* bbox_min, const FLOAT* bbox_max
+    ) {
+        FLOAT dist = 0.0;
+        for (size_t u=0; u<D; ++u) {
+            if (bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
+                dist += square(bbox_min[u] - x[u]);
+            else if (x[u] > bbox_max[u])
+                dist += square(x[u] - bbox_max[u]);
+            // else dist += 0.0;
+        }
+        return dist;
     }
-    return dist;
-}
 
+    static inline FLOAT node_node(
+        const FLOAT* bbox_min_a, const FLOAT* bbox_max_a,
+        const FLOAT* bbox_min_b, const FLOAT* bbox_max_b
+    ) {
+        FLOAT dist = 0.0;
+        for (size_t u=0; u<D; ++u) {
+            if (bbox_min_b[u] > bbox_max_a[u])
+                dist += square(bbox_min_b[u] - bbox_max_a[u]);
+            else if (bbox_min_a[u] > bbox_max_b[u])
+                dist += square(bbox_min_a[u] - bbox_max_b[u]);
+            // else dist += 0.0;
+        }
+        return dist;
+    }
+};
 
 
 /** A class enabling searching for k nearest neighbours of a given point
  *  (excluding self) within the same dataset;
  *  it is thread-safe
  */
-template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT,D> >
+template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_knn<FLOAT,D> >
 class kdtree_kneighbours_sqeuclid
 {
 private:
@@ -152,7 +150,7 @@ private:
     {
         const FLOAT* y = data+D*idx_from;
         for (size_t i=idx_from; i<idx_to; ++i, y+=D) {
-            FLOAT dist = distance_point_point_sqeuclid<FLOAT, D>(x, y);
+            FLOAT dist = DISTANCE::point_point(x, y);
 
             if (dist >= knn_dist[k-1])
                 continue;
@@ -231,10 +229,10 @@ public:
             return;
         }
 
-        FLOAT dist_left  = distance_point_node_sqeuclid<FLOAT, D>(
+        FLOAT dist_left  = DISTANCE::point_node(
             x, root->left->bbox_min.data(),  root->left->bbox_max.data()
         );
-        FLOAT dist_right = distance_point_node_sqeuclid<FLOAT, D>(
+        FLOAT dist_right = DISTANCE::point_node(
             x, root->right->bbox_min.data(), root->right->bbox_max.data()
         );
 
@@ -265,7 +263,7 @@ public:
 
 
 
-template <typename FLOAT, size_t D, typename NODE=kdtree_node_knn<FLOAT, D> >
+template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_knn<FLOAT, D> >
 class kdtree_sqeuclid
 {
 protected:
@@ -446,7 +444,7 @@ public:
 
     void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
     {
-        kdtree_kneighbours_sqeuclid<FLOAT, D, NODE> knn(data, n, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours_sqeuclid<FLOAT, D, DISTANCE, NODE> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
     }
 };
