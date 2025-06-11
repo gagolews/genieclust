@@ -543,11 +543,14 @@ cpdef tuple mst_from_distance(
 
     # the most frequent special case:
     cdef np.ndarray[floatT,ndim=2] X2
-    if (d_core is None) and (metric == "euclidean" or metric == "l2"):
+    if metric == "euclidean" or metric == "l2":
         _openmp_set_num_threads()
 
         X2 = np.asarray(X, order="C", copy=True)
-        c_mst.Cmst_euclidean(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], verbose)
+        if d_core is None:
+            c_mst.Cmst_euclid(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], <floatT*>NULL, verbose)
+        else:
+            c_mst.Cmst_euclid(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], &d_core[0], verbose)
 
         return mst_dist, mst_ind
 

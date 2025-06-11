@@ -409,19 +409,13 @@ struct CDistanceMutualReachability : public CDistance<T>
                     __buf[w] = d[w];
                 }
                 else {
-                    // make it unambiguous:
 #define MUTREACH_SHARPEN 1
 #if MUTREACH_SHARPEN == 0
                     __buf[w] = d_core_max;
 #elif MUTREACH_SHARPEN == 1
+                    // make it unambiguous:
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    __buf[w] = d_core_max+(1e-12)*d[w]/d_core_max;        // 0.516      0.997      0.962          2         39
-#elif MUTREACH_SHARPEN == 2
-                    __buf[w] = d_core_max+(1e-12)*d_core_min/d_core_max;  // 0.517      0.997      0.962          3         39
-#elif MUTREACH_SHARPEN == 3
-                    __buf[w] = d_core_max-(1e-12)*d[w]/d_core_max;        // 0.511      0.998      0.953          4         39
-#else
-                    __buf[w] = d_core_max-(1e-12)*d_core_min/d_core_max;  // 0.518      1.000      0.947          5         38
+                    __buf[w] = d_core_max+(1e-12)*d[w];
 #endif
                 }
             }

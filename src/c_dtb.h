@@ -116,8 +116,10 @@ protected:
                 if (ds_find_i != ds_find_j) {
                     FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
                     if (M > 2) {
-                        if (dcore[i] > dij) dij = dcore[i];
-                        if (dcore[j] > dij) dij = dcore[j];
+                        // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                        FLOAT d_core_max = std::max(dcore[i], dcore[j]);
+                        if (dij <= d_core_max)
+                            dij = d_core_max+(1e-12)*dij;
                     }
                     if (dij < nn_dist[ds_find_i]) {
                         nn_dist[ds_find_i] = dij;
@@ -217,7 +219,7 @@ protected:
                         if (ds.find(i) != ds.find(j)) {
                             tree_ind[tree_num*2+0] = i;
                             tree_ind[tree_num*2+1] = j;
-                            tree_dist[tree_num] = dcore[i];
+                            tree_dist[tree_num] = dcore[i]+(1e-12)*knn_dist[i*(M-1)+v];//dcore[i];
                             ds.merge(i, j);
                             tree_num++;
                         }
@@ -420,7 +422,7 @@ void mst(
             mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
         }
 
-        std::sort(mst.begin(), mst.end());
+        std::stable_sort(mst.begin(), mst.end());
 
         for (size_t i=0; i<n-1; ++i) {
             tree_dist[i]    = mst[i].d;

@@ -185,10 +185,8 @@ void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
             T dd = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u) {
-                T _df = x_cur[u]-X[j*d+u];
-                dd += _df*_df;
-            }
+            for (Py_ssize_t u=0; u<d; ++u)
+                dd += square(x_cur[u]-X[j*d+u]);
             dij[j] = dd;
 
             if (dd < nn_dist[j*k+k-1]) {
@@ -343,11 +341,13 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
  * @param mst_i [out] vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
- * @param verbose output diagnostic/progress messages?
+ * @param dcore [destroyable] "the core" distance (as in the mutual reachability distance),
+ *        can be NULL; otherwise d*(i,j)=max(dcore(i), dcore(j), d(i,j))
+ * @param verbose should we output diagnostic/progress messages?
  */
 template <class T>
-void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
-    T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
+void Cmst_euclid(T* X, Py_ssize_t n, Py_ssize_t d,
+    T* mst_dist, Py_ssize_t* mst_ind, T* dcore=nullptr, bool verbose=false)
 {
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
@@ -392,6 +392,7 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
             _distances[j] = 0.0;
             for (Py_ssize_t u=0; u<d; ++u)
                 _distances[j] += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+            TODO: dcore
         }
 
         #ifdef _OPENMP
@@ -404,17 +405,41 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
             }
         }
 #else
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i; j<n; ++j) {
-            T dd = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                dd += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
+        if (!dcore) {
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(static)
+            #endif
+            for (Py_ssize_t j=i; j<n; ++j) {
+                T dd = 0.0;
+                for (Py_ssize_t u=0; u<d; ++u)
+                    dd += square(x_cur[u]-X[j*d+u]);
 
-            if (dd < dist_nn[ind_left[j]]) {
-                ind_nn[ind_left[j]] = ind_cur;
-                dist_nn[ind_left[j]] = dd;
+                if (dd < dist_nn[ind_left[j]]) {
+                    ind_nn[ind_left[j]] = ind_cur;
+                    dist_nn[ind_left[j]] = dd;
+                }
+            }
+        }
+        else
+        {
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(static)
+            #endif
+            for (Py_ssize_t j=i; j<n; ++j) {
+                T dd = 0.0;
+                for (Py_ssize_t u=0; u<d; ++u)
+                    dd += square(x_cur[u]-X[j*d+u]);
+                if (dd < dist_nn[ind_left[j]]) {
+                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                    T d_core_max = std::max(dcore[i-1], dcore[j]);
+                    if (dd <= d_core_max)
+                        dd = d_core_max+(1e-12)*dd;
+
+                    if (dd < dist_nn[ind_left[j]]) {
+                        ind_nn[ind_left[j]] = ind_cur;
+                        dist_nn[ind_left[j]] = dd;
+                    }
+                }
             }
         }
 #endif
@@ -437,6 +462,7 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
 
         // don't visit best_ind_left again
         std::swap(ind_left[best_ind_left_pos], ind_left[i]);
+        std::swap(dcore[best_ind_left_pos], dcore[i]);
         for (Py_ssize_t u=0; u<d; ++u) {
             std::swap(X[i*d+u], X[best_ind_left_pos*d+u]);
         }
@@ -454,7 +480,7 @@ void Cmst_euclidean(T* X, Py_ssize_t n, Py_ssize_t d,
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
-    std::sort(mst.begin(), mst.end());
+    std::stable_sort(mst.begin(), mst.end());
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_dist[i]    = sqrt(mst[i].d);
@@ -591,7 +617,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
-    std::sort(mst.begin(), mst.end());
+    std::stable_sort(mst.begin(), mst.end());
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_dist[i]    = mst[i].d;

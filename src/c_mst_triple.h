@@ -48,14 +48,17 @@ public:
 
     bool operator<(const CMstTriple<T>& other) const
     {
-        if (d == other.d) {
-            if (i1 == other.i1)
-                return i2 < other.i2;
-            else
-                return i1 < other.i1;
-        }
-        else
-            return d < other.d;
+        // we want stable sort, so only:
+        return d < other.d;
+
+        // if (d == other.d) {
+        //     if (i1 == other.i1)
+        //         return i2 < other.i2;
+        //     else
+        //         return i1 < other.i1;
+        // }
+        // else
+        //     return d < other.d;
     }
 };
 

@@ -95,8 +95,8 @@ cdef extern from "../src/c_mst.h":
         CDistance[T]* D, Py_ssize_t n,
         T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
 
-    void Cmst_euclidean[T](
+    void Cmst_euclid[T](
         T* X, Py_ssize_t n, Py_ssize_t d,
-        T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
+        T* mst_dist, Py_ssize_t* mst_ind, T* dcore, bint verbose) except +
 
     void Comp_set_num_threads(Py_ssize_t n_threads)

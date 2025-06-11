@@ -355,6 +355,28 @@ new_4_16             1.683    0.001   1.685 -2.519664e-08 86759
 
 
 /*
+apollo @ 2025-06-11 20:48
+n=100000, d=2, M=10
+                 user.self sys.self elapsed         Δdist  Δidx
+genieclust_brute    32.469    0.062  32.541  0.000000e+00     0
+new_4_16             0.123    0.002   0.126 -3.687555e-07 79861
+n=100000, d=5, M=10
+                 user.self sys.self elapsed         Δdist  Δidx
+genieclust_brute    47.807    0.058  47.869  0.000000e+00     0
+new_4_16             1.667    0.001   1.669 -2.519664e-08 85541
+
+21:20
+n=100000, d=2, M=10
+                 user.self sys.self elapsed Δdist   Δidx
+genieclust_brute    17.791    0.021  17.812     0      0
+new_4_16             0.124    0.002   0.127     0 112011
+n=100000, d=5, M=10
+                 user.self sys.self elapsed Δdist   Δidx
+genieclust_brute    27.162    0.022  27.184     0      0
+new_4_16             1.668    0.001   1.670     0 112810
+
+
+
 apollo @ 2025-06-08 9:33
 n=50000, d=2
               genieclust_brute  mlpack_1 mlpack_16 mlpack_32 new_mst_1 new_mst_2 new_mst_16 new_mst_32

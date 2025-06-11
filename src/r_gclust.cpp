@@ -109,9 +109,6 @@ void internal_generate_order(Py_ssize_t n, NumericMatrix merge, NumericVector or
 template<typename T>
 NumericMatrix internal_compute_mst(CDistance<T>* D, Py_ssize_t n, Py_ssize_t M, bool verbose)
 {
-    if (M < 1 || M >= n-1)
-        stop("`M` must be an integer in [1, n-1)");
-
     NumericMatrix ret(n-1, 3);
 
     CDistance<T>* D2 = NULL;
@@ -177,6 +174,9 @@ NumericMatrix internal_mst_default(
     Py_ssize_t d = X.ncol();
     NumericMatrix ret;
 
+    if (M < 1 || M >= n-1)
+        stop("`M` must be an integer in [1, n-1)");
+
     CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
     T* _X2 = X2.data();
@@ -188,14 +188,43 @@ NumericMatrix internal_mst_default(
 
 #if 1
     // Special case (most frequently used)
-    if (M == 1 && (distance == "euclidean" || distance == "l2"))
+    if (distance == "euclidean" || distance == "l2")
     {
         NumericMatrix ret(n-1, 3);
         CMatrix<Py_ssize_t> mst_i(n-1, 2);
         std::vector<T>  mst_d(n-1);
-        if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
-        Cmst_euclidean<T>(_X2, n, d, mst_d.data(), mst_i.data(), verbose);
-        if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+
+        if (M == 1) { // yes, M==2 needs 1-nns
+            if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
+            Cmst_euclid<T>(_X2, n, d, mst_d.data(), mst_i.data(), nullptr, verbose);
+            if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+        }
+        else {
+            if (verbose) GENIECLUST_PRINT("[genieclust] Computing the nearest neighbours.\n");
+            Py_ssize_t k = M-1;
+            CMatrix<Py_ssize_t> nn_i(n, k);
+            CMatrix<T> nn_d(n, k);
+            Cknn_sqeuclid_brute(_X2, n, d, k, nn_d.data(), nn_i.data(), verbose);
+
+            NumericMatrix nn_r(n, k);
+
+            std::vector<T> d_core(n);
+            for (Py_ssize_t i=0; i<n; ++i) {
+                d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
+                GENIECLUST_ASSERT(std::isfinite(d_core[i]));
+
+                for (Py_ssize_t j=0; j<k; ++j) {
+                    GENIECLUST_ASSERT(nn_i(i,j) != i);
+                    nn_r(i,j) = nn_i(i,j)+1; // 1-based indexing
+                }
+            }
+
+            ret.attr("nn") = nn_r;
+
+            if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
+            Cmst_euclid<T>(_X2, n, d, mst_d.data(), mst_i.data(), d_core.data(), verbose);
+            if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
+        }
 
         for (Py_ssize_t i=0; i<n-1; ++i) {
             GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
