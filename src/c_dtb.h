@@ -73,6 +73,9 @@ protected:
 
     const size_t first_pass_max_brute_size;
 
+    const size_t M;
+    std::vector<FLOAT> dcore;
+
 
     struct kdtree_node_orderer {
         NODE* closer_node;
@@ -112,6 +115,10 @@ protected:
                 Py_ssize_t ds_find_j = ds.get_parent(j);
                 if (ds_find_i != ds_find_j) {
                     FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
+                    if (M > 2) {
+                        if (dcore[i] > dij) dij = dcore[i];
+                        if (dcore[j] > dij) dij = dcore[j];
+                    }
                     if (dij < nn_dist[ds_find_i]) {
                         nn_dist[ds_find_i] = dij;
                         nn_ind[ds_find_i]  = j;
@@ -162,26 +169,61 @@ protected:
 
     void find_mst_first()
     {
-        // find 1-nns of each point using max_brute_size,
-        // preferably with max_brute_size>max_leaf_size
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (size_t i=0; i<this->n; ++i) {
-            kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
-                first_pass_max_brute_size
-            );
-            nn.find(this->root);
-        }
+        if (M <= 2) {
+            // find 1-nns of each point using max_brute_size,
+            // preferably with max_brute_size>max_leaf_size
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(static)
+            #endif
+            for (size_t i=0; i<this->n; ++i) {
+                kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
+                    this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
+                    first_pass_max_brute_size
+                );
+                nn.find(this->root);
+            }
 
-        for (size_t i=0; i<this->n; ++i) {
-            if (ds.find(i) != ds.find(nn_ind[i])) {
-                tree_ind[tree_num*2+0] = i;
-                tree_ind[tree_num*2+1] = nn_ind[i];
-                tree_dist[tree_num] = nn_dist[i];
-                ds.merge(i, nn_ind[i]);
-                tree_num++;
+            for (size_t i=0; i<this->n; ++i) {
+                if (ds.find(i) != ds.find(nn_ind[i])) {
+                    tree_ind[tree_num*2+0] = i;
+                    tree_ind[tree_num*2+1] = nn_ind[i];
+                    tree_dist[tree_num] = nn_dist[i];
+                    ds.merge(i, nn_ind[i]);
+                    tree_num++;
+                }
+            }
+        }
+        else {
+            // find (M-1)-nns of each point
+            std::vector<FLOAT> knn_dist(this->n*(M-1));
+            std::vector<size_t> knn_ind(this->n*(M-1));
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(static)
+            #endif
+            for (size_t i=0; i<this->n; ++i) {
+                kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
+                    this->data, this->n, i, knn_dist.data()+(M-1)*i, knn_ind.data()+(M-1)*i, M-1,
+                    first_pass_max_brute_size
+                );
+                nn.find(this->root);
+            }
+            for (size_t i=0; i<this->n; ++i) {
+                dcore[i]   = knn_dist[i*(M-1)+M-2];
+            }
+            for (size_t i=0; i<this->n; ++i) {
+                for (size_t v=0; v<M-1; ++v) {
+                    size_t j = knn_ind[i*(M-1)+v];
+                    if (dcore[i] >= dcore[j]) {
+                        if (ds.find(i) != ds.find(j)) {
+                            tree_ind[tree_num*2+0] = i;
+                            tree_ind[tree_num*2+1] = j;
+                            tree_dist[tree_num] = dcore[i];
+                            ds.merge(i, j);
+                            tree_num++;
+                        }
+                        break;
+                    }
+                }
             }
         }
     }
@@ -234,6 +276,7 @@ protected:
                         find_mst_next(roota, sel.farther_node);
                 }
 
+
                 // roota->cluster_max_dist updated above
             }
         }
@@ -253,12 +296,14 @@ protected:
                         find_mst_next(roota->left, sel.farther_node);
                 }
 
+
                 sel = kdtree_node_orderer(roota->right, rootb->left, rootb->right);
                 if (roota->right->cluster_max_dist >= sel.closer_dist) {
                     find_mst_next(roota->right, sel.closer_node);
                     if (roota->right->cluster_max_dist >= sel.farther_dist)
                         find_mst_next(roota->right, sel.farther_node);
                 }
+
             }
 
             roota->cluster_max_dist = std::max(
@@ -314,14 +359,15 @@ public:
 
 
     dtb(
-        FLOAT* data, const size_t n, const size_t max_leaf_size=4,
+        FLOAT* data, const size_t n, const size_t M=1,
+        const size_t max_leaf_size=4,
         const size_t first_pass_max_brute_size=16
     ) :
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
-        first_pass_max_brute_size(first_pass_max_brute_size)
+        first_pass_max_brute_size(first_pass_max_brute_size), M(M)
     {
-
+        if (M > 2) dcore.resize(n);
     }
 
 

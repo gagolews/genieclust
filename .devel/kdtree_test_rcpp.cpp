@@ -116,30 +116,32 @@ Rcpp::RObject test_kdtree(Rcpp::NumericMatrix X, int k, int max_leaf_size=32)
 */
 
 
+
 template <class FLOAT, Py_ssize_t D, class DISTANCE>
 void _test_mst(
-    FLOAT* XC, size_t n, size_t max_leaf_size, size_t first_pass_max_brute_size,
+    FLOAT* XC, size_t n, size_t M, size_t max_leaf_size, size_t first_pass_max_brute_size,
     FLOAT* tree_dist, size_t* tree_ind
 ) {
-    mgtree::dtb<FLOAT, D, DISTANCE> tree(XC, n, max_leaf_size, first_pass_max_brute_size);
+    mgtree::dtb<FLOAT, D, DISTANCE> tree(XC, n, M, max_leaf_size, first_pass_max_brute_size);
     mgtree::mst<FLOAT, D>(tree, tree_dist, tree_ind, false);
 }
 
 
 template <class FLOAT, Py_ssize_t D>
 void _test_mst_sqeuclid(
-    FLOAT* XC, size_t n, size_t max_leaf_size, size_t first_pass_max_brute_size,
+    FLOAT* XC, size_t n, size_t M, size_t max_leaf_size, size_t first_pass_max_brute_size,
     FLOAT* tree_dist, size_t* tree_ind
 ) {
     using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT, D>;
-    _test_mst<FLOAT, D, DISTANCE>(XC, n, max_leaf_size, first_pass_max_brute_size, tree_dist, tree_ind);
+    GENIECLUST_ASSERT(M>0 && M<n);
+    _test_mst<FLOAT, D, DISTANCE>(XC, n, M, max_leaf_size, first_pass_max_brute_size, tree_dist, tree_ind);
 }
 
 
 // [[Rcpp::export]]
-Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pass_max_brute_size=16)
+Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, int max_leaf_size=4, int first_pass_max_brute_size=16)
 {
-    using FLOAT = float;
+    using FLOAT = double;  // float is not faster..
 
     size_t n = X.nrow();
     size_t d = X.ncol();
@@ -156,31 +158,31 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
 
     // LMAO! Templates...
     if (d == 2) {
-        _test_mst_sqeuclid<FLOAT, 2>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 2>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 3) {
-        _test_mst_sqeuclid<FLOAT, 3>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 3>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 4) {
-        _test_mst_sqeuclid<FLOAT, 4>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 4>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 5) {
-        _test_mst_sqeuclid<FLOAT, 5>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 5>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 6) {
-        _test_mst_sqeuclid<FLOAT, 6>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 6>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 7) {
-        _test_mst_sqeuclid<FLOAT, 7>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 7>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 8) {
-        _test_mst_sqeuclid<FLOAT, 8>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 8>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 9) {
-        _test_mst_sqeuclid<FLOAT, 9>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 9>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else if (d == 10) {
-        _test_mst_sqeuclid<FLOAT, 10>(XC.data(), n, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
+        _test_mst_sqeuclid<FLOAT, 10>(XC.data(), n, M, max_leaf_size, first_pass_max_brute_size, tree_dist.data(), tree_ind.data());
     }
     else
         return R_NilValue;  // TODO
@@ -198,15 +200,16 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
         GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
         GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
 
-        double _dist = 0.0;
-        for (size_t j=0; j<d; ++j)
-            _dist += square(X(tree_ind[2*i+0], j)-X(tree_ind[2*i+1], j));
+        // double _dist = 0.0;
+        // for (size_t j=0; j<d; ++j)
+            // _dist += square(X(tree_ind[2*i+0], j)-X(tree_ind[2*i+1], j));
+        double _dist = tree_dist[i];
         _dist = sqrt(_dist);
 
         mst[i] = CMstTriple<double>(tree_ind[2*i+0], tree_ind[2*i+1], _dist);
     }
 
-    std::sort(mst.begin(), mst.end());
+    std::stable_sort(mst.begin(), mst.end());
 
     Rcpp::NumericMatrix out(n-1, 3);
     for (size_t i=0; i<n-1; ++i) {
@@ -220,20 +223,20 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int max_leaf_size=4, int first_pas
 
 
 // CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
-// OMP_NUM_THREADS=1 CXX_DEFS="-O3 -march=native" Rscript -e 'Rcpp::sourceCpp("/home/gagolews/Python/genieclust/.devel/kdtree_test_rcpp.cpp")'
+// OMP_NUM_THREADS=1 CXX_DEFS="-O3 -march=native" Rscript -e 'Rcpp::sourceCpp("/home/gagolews/Python/genieclust/.devel/kdtree_test_rcpp.cpp", echo=FALSE)'
 
 
 /*** R
 
-options(width=200)
+options(width=200, echo=FALSE)
 
-knn_rann <- function(X, k) {
-    res_rann <- RANN::nn2(X, k=k+1)
-    res_rann[[1]] <- res_rann[[1]][,-1]
-    res_rann[[2]] <- res_rann[[2]][,-1]**2
-    res_rann
-}
-
+#knn_rann <- function(X, k) {
+#    res_rann <- RANN::nn2(X, k=k+1)
+#    res_rann[[1]] <- res_rann[[1]][,-1]
+#    res_rann[[2]] <- res_rann[[2]][,-1]**2
+#    res_rann
+#}
+#
 #funs_knn <- list(
 #    genieclust_brute=genieclust:::knn_sqeuclid,
 #        rann=knn_rann,
@@ -246,55 +249,75 @@ funs_mst <- list(
     # mlpack_2=function(X) genieclust:::.emst_mlpack(X, 2L, FALSE),
     mlpack_4=function(X) genieclust:::.emst_mlpack(X, 4L, FALSE),
     # mlpack_8=function(X) genieclust:::.emst_mlpack(X, 8L, FALSE),
-    # new_1_00=function(X) test_mst(X, 1L, 0L),
-    # new_1_16=function(X) test_mst(X, 1L, 16L),
-    # new_1_32=function(X) test_mst(X, 1L, 32L),
-    # new_2_00=function(X) test_mst(X, 2L, 0L),
-#new_2_16=function(X) test_mst(X, 2L, 16L),
-#new_2_32=function(X) test_mst(X, 2L, 32L),
-    new_4_00=function(X) test_mst(X, 4L, 0L),
-    new_4_16=function(X) test_mst(X, 4L, 16L),
-    # new_4_32=function(X) test_mst(X, 4L, 32L),
-    new_4_64=function(X) test_mst(X, 4L, 64L)
+    # new_1_00=function(X) test_mst(X, 1L, 1L, 0L),
+    # new_1_16=function(X) test_mst(X, 1L, 1L, 16L),
+    # new_1_32=function(X) test_mst(X, 1L, 1L, 32L),
+    # new_2_00=function(X) test_mst(X, 1L, 2L, 0L),
+    #new_2_16=function(X) test_mst(X, 1L, 2L, 16L),
+    #new_2_32=function(X) test_mst(X, 1L, 2L, 32L),
+    new_4_00=function(X) test_mst(X, 1L, 4L, 0L),
+    new_4_16=function(X) test_mst(X, 1L, 4L, 16L),
+    # new_4_32=function(X) test_mst(X, 1L, 4L, 32L),
+    new_4_64=function(X) test_mst(X, 1L, 4L, 64L)
 )
 
+funs_mst_mutreach <- list(
+    genieclust_brute=function(X, M) genieclust:::.mst.default(X, "l2", M, cast_float32=FALSE, verbose=FALSE),
+    new_4_16=function(X, M) test_mst(X, M, 4L, 16L)
+)
 
+for (d in c()) {
+    #    k <- 10
+    #    method <- "mutreach"
+    #    if (method == "knn") {
+    #        res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
+    #            f <- funs_knn[[i]]
+    #            t <- system.time(y <- f(X, k))
+    #            list(time=t, index=y[[1]], dist=y[[2]])
+    #        })
+    #
+    #        print(cbind(
+    #            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+    #            Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
+    #            Δidx=sapply(res, function(e) sum(res[[1]]$index != e$index))
+    #        ))
+    #    }
 
-for (d in c(2, 5)) {
     set.seed(123)
     n <- 250000
     X <- matrix(rnorm(n*d), ncol=d)
-
     cat(sprintf("n=%d, d=%d\n", n, d))
+    res <- lapply(`names<-`(seq_along(funs_mst), names(funs_mst)), function(i) {
+        f <- funs_mst[[i]]
+        t <- system.time(y <- f(X))
+        list(time=t, y)
+    })
 
-    k <- 10
+    print(cbind(
+        as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+        Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
+        Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
+    ))
+}
 
-    if (FALSE) {
-        res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
-            f <- funs_knn[[i]]
-            t <- system.time(y <- f(X, k))
-            list(time=t, index=y[[1]], dist=y[[2]])
-        })
+for (d in c(2, 5)) {
+    set.seed(123)
+    n <- 100000
+    X <- matrix(rnorm(n*d), ncol=d)
+    M <- 10L
+    cat(sprintf("n=%d, d=%d, M=%d\n", n, d, M))
 
-        print(cbind(
-            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
-            Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
-            Δidx=sapply(res, function(e) sum(res[[1]]$index != e$index))
-        ))
-    }
-    else {
-        res <- lapply(`names<-`(seq_along(funs_mst), names(funs_mst)), function(i) {
-            f <- funs_mst[[i]]
-            t <- system.time(y <- f(X))
-            list(time=t, y)
-        })
+    res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach)), function(i) {
+        f <- funs_mst_mutreach[[i]]
+        t <- system.time(y <- f(X, M))
+        list(time=t, y)
+    })
 
-        print(cbind(
-            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
-            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
-            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
-        ))
-    }
+    print(cbind(
+        as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+        Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
+        Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
+    ))
 }
 
 */
@@ -303,43 +326,30 @@ for (d in c(2, 5)) {
 
 
 /*
-hades @ 2025-06-09 10:30
-
-              =============== -O3 -march=native == =============== -O2 ===============
-n=100000, d=2
-              genieclust_brute  mlpack_1  mlpack_4 genieclust_brute  mlpack_1  mlpack_4 new_2_16 new_2_32 new_4_00 new_4_16 new_4_64
-user.self               11.055     0.392     0.290            8.699     0.314     0.250    0.117    0.119    0.109    0.107    0.110
-sys.self                 0.007     0.010     0.000            0.015     0.009     0.000    0.000    0.000    0.000    0.000    0.000
-elapsed                 11.063     0.402     0.290            8.715     0.323     0.250    0.118    0.119    0.110    0.107    0.111
-user.child               0.000     0.000     0.000            0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
-sys.child                0.000     0.000     0.000            0.000     0.000     0.000    0.000    0.000    0.000    0.000    0.000
-sum_dist              1013.976  1013.976  1013.976         1013.976  1013.976  1013.976 1013.976 1013.976 1013.976 1013.976 1013.976
-idx_different            0.000 31947.000 31947.000            0.000 31929.000 31929.000   84.000   84.000   84.000   84.000   84.000
-n=100000, d=5
-              genieclust_brute  mlpack_1  mlpack_4 genieclust_brute  mlpack_1  mlpack_4  new_2_16  new_2_32 new_4_00  new_4_16  new_4_64
-user.self               12.450     3.515     3.934           13.111     2.972     3.460     1.909     1.876     1.76     1.676     1.634
-sys.self                 0.006     0.006     0.000            0.008     0.006     0.001     0.000     0.000     0.00     0.000     0.000
-elapsed                 12.457     3.520     3.934           13.120     2.979     3.460     1.908     1.876     1.76     1.676     1.635
-user.child               0.000     0.000     0.000            0.000     0.000     0.000     0.000     0.000     0.00     0.000     0.000
-sys.child                0.000     0.000     0.000            0.000     0.000     0.000     0.000     0.000     0.00     0.000     0.000
-sum_dist             30703.016 30703.016 30703.016        30703.016 30703.016 30703.016 30703.016 30703.016 30703.02 30703.016 30703.016
-idx_different            0.000  2188.000  2188.000            0.000  2176.000  2176.000   332.000   332.000   332.00   332.000   332.000
-
-2025-06-11 @ 11:08
+hades @ 2025-06-11 13:45
 n=250000, d=2
-         user.self sys.self elapsed        Δdist Δidx
-mlpack_1     0.964    0.027   0.992 0.000000e+00    0
-mlpack_4     0.720    0.000   0.720 0.000000e+00    0
-new_4_00     0.290    0.000   0.290 1.441344e-08    2
-new_4_16     0.281    0.000   0.281 1.441344e-08    2
-new_4_64     0.289    0.000   0.289 1.441344e-08    2
+         user.self sys.self elapsed Δdist Δidx
+mlpack_1     0.982    0.026   1.008     0    0
+mlpack_4     0.721    0.000   0.721     0    0
+new_4_00     0.290    0.000   0.291     0    0
+new_4_16     0.286    0.000   0.285     0    0
+new_4_64     0.291    0.000   0.291     0    0
 n=250000, d=5
          user.self sys.self elapsed Δdist Δidx
-mlpack_1     9.730    0.016   9.746     0    0
-mlpack_4    10.688    0.003  10.691     0    0
-new_4_00     4.678    0.000   4.678     0    0
-new_4_16     4.461    0.000   4.461     0    0
-new_4_64     4.357    0.000   4.357     0    0
+mlpack_1     9.818    0.019   9.842     0    0
+mlpack_4    10.819    0.000  10.823     0    0
+new_4_00     4.731    0.000   4.732     0    0
+new_4_16     4.517    0.000   4.518     0    0
+new_4_64     4.421    0.000   4.423     0    0
+
+n=100000, d=2, M=10
+                 user.self sys.self elapsed         Δdist  Δidx
+genieclust_brute    33.091    0.066  33.164  0.000000e+00     0
+new_4_16             0.125    0.002   0.127 -3.687555e-07 81824
+n=100000, d=5, M=10
+                 user.self sys.self elapsed         Δdist  Δidx
+genieclust_brute    49.109    0.067  49.183  0.000000e+00     0
+new_4_16             1.683    0.001   1.685 -2.519664e-08 86759
 
 
 
