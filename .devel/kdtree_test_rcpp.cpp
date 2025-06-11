@@ -241,7 +241,7 @@ knn_rann <- function(X, k) {
 #)
 
 funs_mst <- list(
-    genieclust_brute=function(X) genieclust:::.mst.default(X, "l2", 1L, cast_float32=FALSE, verbose=FALSE),
+    #genieclust_brute=function(X) genieclust:::.mst.default(X, "l2", 1L, cast_float32=FALSE, verbose=FALSE),
     mlpack_1=function(X) genieclust:::.emst_mlpack(X, 1L, FALSE),
     # mlpack_2=function(X) genieclust:::.emst_mlpack(X, 2L, FALSE),
     mlpack_4=function(X) genieclust:::.emst_mlpack(X, 4L, FALSE),
@@ -250,8 +250,8 @@ funs_mst <- list(
     # new_1_16=function(X) test_mst(X, 1L, 16L),
     # new_1_32=function(X) test_mst(X, 1L, 32L),
     # new_2_00=function(X) test_mst(X, 2L, 0L),
-    new_2_16=function(X) test_mst(X, 2L, 16L),
-    new_2_32=function(X) test_mst(X, 2L, 32L),
+#new_2_16=function(X) test_mst(X, 2L, 16L),
+#new_2_32=function(X) test_mst(X, 2L, 32L),
     new_4_00=function(X) test_mst(X, 4L, 0L),
     new_4_16=function(X) test_mst(X, 4L, 16L),
     # new_4_32=function(X) test_mst(X, 4L, 32L),
@@ -262,7 +262,7 @@ funs_mst <- list(
 
 for (d in c(2, 5)) {
     set.seed(123)
-    n <- 100000
+    n <- 250000
     X <- matrix(rnorm(n*d), ncol=d)
 
     cat(sprintf("n=%d, d=%d\n", n, d))
@@ -325,26 +325,22 @@ sys.child                0.000     0.000     0.000            0.000     0.000   
 sum_dist             30703.016 30703.016 30703.016        30703.016 30703.016 30703.016 30703.016 30703.016 30703.02 30703.016 30703.016
 idx_different            0.000  2188.000  2188.000            0.000  2176.000  2176.000   332.000   332.000   332.00   332.000   332.000
 
-n=100000, d=2
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute     8.443    0.011   8.455     0    0  float64
-mlpack_1             0.319    0.005   0.325     0    0
-mlpack_4             0.249    0.000   0.249     0    0
-new_2_16             0.119    0.000   0.119     0    0
-new_2_32             0.119    0.000   0.118     0    0
-new_4_00             0.110    0.000   0.110     0    0
-new_4_16             0.106    0.000   0.107     0    0
-new_4_64             0.109    0.000   0.110     0    0
-n=100000, d=5
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    13.255    0.009  13.266     0    0
-mlpack_1             2.984    0.007   2.991     0    0
-mlpack_4             3.462    0.000   3.462     0    0
-new_2_16             1.907    0.000   1.907     0    0
-new_2_32             1.882    0.000   1.881     0    0
-new_4_00             1.769    0.000   1.768     0    0
-new_4_16             1.678    0.000   1.679     0    0
-new_4_64             1.640    0.000   1.640     0    0
+2025-06-11 @ 11:08
+n=250000, d=2
+         user.self sys.self elapsed        Δdist Δidx
+mlpack_1     0.964    0.027   0.992 0.000000e+00    0
+mlpack_4     0.720    0.000   0.720 0.000000e+00    0
+new_4_00     0.290    0.000   0.290 1.441344e-08    2
+new_4_16     0.281    0.000   0.281 1.441344e-08    2
+new_4_64     0.289    0.000   0.289 1.441344e-08    2
+n=250000, d=5
+         user.self sys.self elapsed Δdist Δidx
+mlpack_1     9.730    0.016   9.746     0    0
+mlpack_4    10.688    0.003  10.691     0    0
+new_4_00     4.678    0.000   4.678     0    0
+new_4_16     4.461    0.000   4.461     0    0
+new_4_64     4.357    0.000   4.357     0    0
+
 
 
 

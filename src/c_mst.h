@@ -115,7 +115,7 @@ void Cknn_sqeuclid_kdtree(const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t
     if (max_leaf_size < 0) throw std::domain_error("max_leaf_size < 0");
     else if (max_leaf_size == 0) max_leaf_size = 32;  // default
 
-    /* OMFG. Templates. */
+    /* LMAO; templates... */
     /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<FLOAT,  2, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
     else if (d ==  3)  Cknn_sqeuclid_kdtree<FLOAT,  3, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
     else if (d ==  4)  Cknn_sqeuclid_kdtree<FLOAT,  4, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);

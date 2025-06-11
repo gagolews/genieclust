@@ -53,7 +53,12 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 
-template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_clusterable<FLOAT, D> >
+template <
+    typename FLOAT,
+    size_t D,
+    typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
+    typename NODE=kdtree_node_clusterable<FLOAT, D>
+>
 class dtb : public kdtree<FLOAT, D, DISTANCE, NODE>
 {
 protected:

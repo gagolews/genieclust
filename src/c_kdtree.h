@@ -131,7 +131,12 @@ public:
  *  (excluding self) within the same dataset;
  *  it is thread-safe
  */
-template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_knn<FLOAT,D> >
+template <
+    typename FLOAT,
+    size_t D,
+    typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
+    typename NODE=kdtree_node_knn<FLOAT,D>
+>
 class kdtree_kneighbours
 {
 private:
@@ -263,7 +268,12 @@ public:
 
 
 
-template <typename FLOAT, size_t D, typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>, typename NODE=kdtree_node_knn<FLOAT, D> >
+template <
+    typename FLOAT,
+    size_t D,
+    typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
+    typename NODE=kdtree_node_knn<FLOAT, D>
+>
 class kdtree
 {
 protected:
