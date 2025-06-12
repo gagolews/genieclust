@@ -1,29 +1,14 @@
 import os
 import numba
-n_jobs = 6
+import numpy as np
+import timeit
+import genieclust
+
+
+n_jobs = 1
 os.environ["OMP_NUM_THREADS"] = str(n_jobs)
 os.environ["NUMBA_NUM_THREADS"] = str(n_jobs)
 numba.config.THREADING_LAYER = 'omp'
-
-
-
-import numpy as np
-import hdbscan
-import timeit
-import genieclust
-import os
-
-np.random.seed(123)
-X = np.random.randn(10000, 2)
-M = 6
-
-nn_dist1, nn_ind1 = genieclust.internal.knn_kdtree(X[:100], 3)
-nn_dist1 = np.sqrt(nn_dist1)
-nn_dist2, nn_ind2 = genieclust.internal.knn_from_distance(X[:100], 3)
-
-assert(np.allclose(nn_dist1, nn_dist2))
-assert(np.all(nn_ind1 == nn_ind2))
-
 
 
 
@@ -61,90 +46,98 @@ hdbscan_kdtree:           3.45090    105238.13837
 
 """
 
-print("n=%d, d=%d, M=%d, threads=%d" % (X.shape[0], X.shape[1], M, n_jobs))
 
 
-
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_kdtree(X, 10)
-nn_dist = np.sqrt(nn_dist)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_kdtree:        %15.5f %15.5f" % (t1-t0, tot))
-
-
-t0 = timeit.time.time()
-nn_dist, nn_ind = genieclust.internal.knn_from_distance(X, 10)
-t1 = timeit.time.time()
-tot = np.sum(nn_dist)
-print("knn_from_distance   %15.5f %15.5f" % (t1-t0, tot))
-
-
+import hdbscan
 from sklearn.neighbors import KDTree, BallTree
-from hdbscan._hdbscan_boruvka import KDTreeBoruvkaAlgorithm, BallTreeBoruvkaAlgorithm
-import fast_hdbscan
-
-numba.set_num_threads(n_jobs)
-fast_hdbscan.hdbscan.compute_minimum_spanning_tree(X[:100,:], min_samples=M-1)  # numba...
-t0 = timeit.time.time()
-g = fast_hdbscan.hdbscan.compute_minimum_spanning_tree(X, min_samples=M-1)
-t1 = timeit.time.time()
-#tot = g[0][:, 2].sum()
-i1 = g[0][:, 0].astype(int)
-i2 = g[0][:, 1].astype(int)
-tot = np.sum(np.maximum(np.maximum(g[2][i1], g[2][i2]), np.sqrt(np.sum((X[i1,:]-X[i2,:])**2, axis=1))))
-print("fast_hdbscan:     %15.5f %15.5f" % (t1-t0, tot))
-
-
-def hdbscan_kdtree(X, M):
-    tree = KDTree(X, metric='euclidean', leaf_size=40)
+from hdbscan._hdbscan_boruvka import KDTreeBoruvkaAlgorithm # BallTreeBoruvkaAlgorithm - much slower
+def mst_hdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
+    tree = KDTree(X, metric='euclidean', leaf_size=leaf_size)
     alg = KDTreeBoruvkaAlgorithm(
         tree,
         min_samples=M-1,
         metric='euclidean',
-        leaf_size=40 // 3,
+        leaf_size=leaf_size // leaf_size_div,  # https://github.com/scikit-learn-contrib/hdbscan/blob/master/hdbscan/hdbscan_.py
         approx_min_span_tree=False,
         n_jobs=n_jobs
     )
-    return alg.spanning_tree()
-
-
-hdbscan_kdtree(X[:100,:], M)  # numba...
-t0 = timeit.time.time()
-min_spanning_tree = hdbscan_kdtree(X, M)
-t1 = timeit.time.time()
-print("hdbscan_kdtree:   %15.5f %15.5f" % (t1-t0, sum(min_spanning_tree.T[2])))
-
-
-# slower than KD-trees (much slower)
-# t0 = timeit.time.time()
-# tree = BallTree(X, metric='euclidean', leaf_size=40)
-# alg = BallTreeBoruvkaAlgorithm(
-#     tree,
-#     min_samples=M-1,
-#     metric='euclidean',
-#     leaf_size=40 // 3,
-#     approx_min_span_tree=False,
-#     n_jobs=n_jobs
-# )
-# min_spanning_tree = alg.spanning_tree()
-# t1 = timeit.time.time()
-# print("hdbscan_balltree: %15.5f %15.5f" % (t1-t0, sum(alg.spanning_tree().T[2])))
+    _res = alg.spanning_tree()
+    tree_w = _res[:,  2].astype(X.dtype, order="C")
+    tree_e = _res[:, :2].astype(np.intp, order="C")
+    return tree_w, tree_e
 
 
 
 
+import fast_hdbscan
+numba.set_num_threads(n_jobs)
+def mst_fasthdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
+    _res = fast_hdbscan.hdbscan.compute_minimum_spanning_tree(
+        X,
+        min_samples=M-1
+    )
+    #print(_res)
+    #stop()
+    i1 = _res[0][:, 0].astype(np.intp, order="C")
+    i2 = _res[0][:, 1].astype(np.intp, order="C")
+    dcore = _res[2]
+    tree_w = np.maximum(
+        np.maximum(dcore[i1], dcore[i2]),
+        np.sqrt(
+            np.sum((X[i1,:]-X[i2,:])**2, axis=1)
+        )
+    )
+    tree_e = np.c_[i1, i2]
+    return tree_w, tree_e
 
 
-if M == 1 and X.shape[1] <= 10:
-    t0 = timeit.time.time()
-    g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=True, M=M).fit(X)
-    t1 = timeit.time.time()
-    print("Genie_mlpack:     %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 
 
-t0 = timeit.time.time()
-g = genieclust.Genie(n_clusters=1, gini_threshold=1.0, compute_full_tree=False, mlpack_enabled=False, M=M).fit(X)
-t1 = timeit.time.time()
-print("Genie_brute:      %15.5f %15.5f" % (t1-t0, sum(g._tree_w)))
 
+import mlpack
+def mst_mlpack(X, M, leaf_size=1):
+    if M > 1:
+        return None
+    _res = mlpack.emst(
+        X,
+        leaf_size=leaf_size,  # "One-element leaves give the empirically best performance, but at the cost of greater memory requirements."
+        naive=False,
+        copy_all_inputs=False,
+        verbose=False
+    )["output"]
+    tree_w = _res[:,  2].astype(X.dtype, order="C")
+    tree_e = _res[:, :2].astype(np.intp, order="C")
+    return tree_w, tree_e
+
+
+cases = dict(
+    hdbscan_kdtree_40_3=lambda X, M: mst_hdbscan_kdtree(X, M, 40, 3),
+    fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    mlpack_1=lambda X, M: mst_mlpack(X, M, 1),
+    mlpack_4=lambda X, M: mst_mlpack(X, M, 4),
+)
+
+
+
+for n, d, M in [(100000, 2, 1), (10000, 5, 1), (10000, 2, 10), (10000, 5, 10)] :
+    np.random.seed(123)
+    X = np.random.randn(n, d)
+    print("n=%d, d=%d, M=%d, threads=%d" % (X.shape[0], X.shape[1], M, n_jobs))
+
+    # preflight (e.g., for fast_hdbscan)
+    for name, generator in cases.items():
+        generator(X[:100,:].copy(), M)
+
+    res = list()
+    for case, generator in cases.items():
+        t0 = timeit.time.time()
+        _res = generator(X, M)
+        t1 = timeit.time.time()
+        res.append(_res)
+        if _res is None: continue
+        print("%30s: t=%15.5f Δdist=%15.5f Δind=%10.0f" % (
+            case,
+            t1-t0,
+            np.sum(_res[0])-np.sum(res[0][0]),
+            np.sum(_res[1] != res[0][1]),
+        ))

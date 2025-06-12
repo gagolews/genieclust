@@ -4,8 +4,6 @@ import numpy as np
 import hdbscan
 import timeit
 import genieclust
-import os
-
 
 
 
