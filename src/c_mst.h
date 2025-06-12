@@ -1,4 +1,5 @@
-/*  Minimum Spanning Tree Algorithms:
+/*  Minimum Spanning Tree and k-nearest neighbour algorithms:
+ * (the "old"/generic interface)
  *  1. Prim-Jarnik's for complete undirected graphs,
  *  2. Kruskal's for k-NN graphs.
  *
@@ -19,18 +20,13 @@
 #ifndef __c_mst_h
 #define __c_mst_h
 
+#include <vector>
+#include <cmath>
+#include <algorithm>
 #include "c_common.h"
 #include "c_mst_triple.h"
-#include <vector>
-#include <algorithm>
-#include <cmath>
-// #include <queue>
-// #include <deque>
-//#include "c_argfuns.h"
 #include "c_disjoint_sets.h"
 #include "c_distance.h"
-#include "c_kdtree.h"
-#include "c_picotree.h"
 
 
 #ifdef _OPENMP
@@ -46,189 +42,6 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 #endif
 
 
-
-
-
-
-/**
- * helper function called by Cknn_sqeuclid_kdtree below
- */
-template <class FLOAT, Py_ssize_t D, class FLOAT_INTERNAL=float>
-void Cknn_sqeuclid_kdtree(const FLOAT* X, const size_t n, const size_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, size_t max_leaf_size, bool /*verbose=false*/)
-{
-    using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT_INTERNAL,D>;
-
-    // must make a copy, kdtree modifies XC
-    std::vector<FLOAT_INTERNAL> XC(n*D);
-    for (size_t i=0; i<n*D; ++i)
-        XC[i] = (FLOAT_INTERNAL)X[i];
-
-    std::vector<FLOAT_INTERNAL>  _nn_dist(n*k);
-    std::vector<size_t> _nn_ind(n*k);
-
-    mgtree::kdtree<FLOAT_INTERNAL, D, DISTANCE> tree(XC.data(), n, max_leaf_size);
-    mgtree::kneighbours<FLOAT_INTERNAL, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
-
-    #ifdef _OPENMP
-    #pragma omp parallel for schedule(static)
-    #endif
-    for (size_t i=0; i<n; ++i) {
-        const FLOAT* x_cur = X+i*D;
-        for (size_t j=0; j<k; ++j) {
-            nn_ind[i*k+j]  = (Py_ssize_t)_nn_ind[i*k+j];
-
-            // recompute the distance using FLOAT's precision
-            const FLOAT* x_other = X+nn_ind[i*k+j]*D;
-            FLOAT _d = 0.0;
-            for (size_t u=0; u<D; ++u) {
-                FLOAT _df = x_cur[u]-x_other[u];
-                _d += _df*_df;
-            }
-            nn_dist[i*k+j] = _d;
-        }
-    }
-}
-
-
-/*! Get the k nearest neighbours of each point w.r.t. the Euclidean distance
- *
- * Fast for small d, small k, but large n
- *
- * @param X a C-contiguous data matrix
- * @param n number of rows
- * @param d number of columns
- * @param k number of nearest neighbours to look for
- * @param nn_dist [out] vector(matrix) of length n*k, distances to NNs
- * @param nn_ind [out] vector(matrix) of length n*k, indexes of NNs
- * @param max_leaf_size
- * @param verbose output diagnostic/progress messages?
- */
-template <class FLOAT, class FLOAT_INTERNAL=float>
-void Cknn_sqeuclid_kdtree(const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool verbose=false)
-{
-    if (n <= 0)   throw std::domain_error("n <= 0");
-    if (k <= 0)   throw std::domain_error("k <= 0");
-    if (k >= n)   throw std::domain_error("k >= n");
-
-    if (max_leaf_size < 0) throw std::domain_error("max_leaf_size < 0");
-    else if (max_leaf_size == 0) max_leaf_size = 32;  // default
-
-    /* LMAO; templates... */
-    /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<FLOAT,  2, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  3)  Cknn_sqeuclid_kdtree<FLOAT,  3, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  4)  Cknn_sqeuclid_kdtree<FLOAT,  4, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  5)  Cknn_sqeuclid_kdtree<FLOAT,  5, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  6)  Cknn_sqeuclid_kdtree<FLOAT,  6, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  7)  Cknn_sqeuclid_kdtree<FLOAT,  7, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  8)  Cknn_sqeuclid_kdtree<FLOAT,  8, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d ==  9)  Cknn_sqeuclid_kdtree<FLOAT,  9, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 10)  Cknn_sqeuclid_kdtree<FLOAT, 10, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 11)  Cknn_sqeuclid_kdtree<FLOAT, 11, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 12)  Cknn_sqeuclid_kdtree<FLOAT, 12, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 13)  Cknn_sqeuclid_kdtree<FLOAT, 13, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 14)  Cknn_sqeuclid_kdtree<FLOAT, 14, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 15)  Cknn_sqeuclid_kdtree<FLOAT, 15, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 16)  Cknn_sqeuclid_kdtree<FLOAT, 16, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 17)  Cknn_sqeuclid_kdtree<FLOAT, 17, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 18)  Cknn_sqeuclid_kdtree<FLOAT, 18, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 19)  Cknn_sqeuclid_kdtree<FLOAT, 19, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else if (d == 20)  Cknn_sqeuclid_kdtree<FLOAT, 20, FLOAT_INTERNAL>(X, (size_t)n, (size_t)k, nn_dist, nn_ind, (size_t)max_leaf_size, verbose);
-    else {
-        throw std::runtime_error("d should be between 2 and 20");
-    }
-}
-
-
-
-/*! Determine the first k nearest neighbours of each point.
- *
- *  Exactly n*(n-1)/2 distance computations are performed.
- *
- *  It is assumed that each query point is not its own neighbour.
- *
- *  Worst-case time complexity: O(n*(n-1)/2*d*k)
- *
- *
- *  @param D a callable CDistance object such that a call to
- *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
- *         with the distances from the j-th point to l points whose indices
- *         are given in array M
- *  @param n number of points
- *  @param k number of nearest neighbours,
- *  @param nn_dist [out]  a c_contiguous array, shape (n,k),
- *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
- *  @param nn_ind [out]   a c_contiguous array, shape (n,k),
- *         (undirected) edge definition, interpreted as {i, ind[i,j]}
- *  @param verbose output diagnostic/progress messages?
- */
-template <class T>
-void Cknn_sqeuclid_brute(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    T* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/)
-{
-    if (n <= 0)   throw std::domain_error("n <= 0");
-    if (k <= 0)   throw std::domain_error("k <= 0");
-    if (k >= n)   throw std::domain_error("k >= n");
-
-    for (Py_ssize_t i=0; i<n*k; ++i) {
-        nn_dist[i] = INFINITY;
-        nn_ind[i] = -1;
-    }
-
-    std::vector<T> dij(n);
-    for (Py_ssize_t i=0; i<n-1; ++i) {
-        const T* x_cur = X+i*d;
-
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i+1; j<n; ++j) {
-            T dd = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                dd += square(x_cur[u]-X[j*d+u]);
-            dij[j] = dd;
-
-            if (dd < nn_dist[j*k+k-1]) {
-                // i might be amongst k-NNs of j
-                Py_ssize_t l = k-1;
-                while (l > 0 && dd < nn_dist[j*k+l-1]) {
-                    nn_dist[j*k+l] = nn_dist[j*k+l-1];
-                    nn_ind[j*k+l]  = nn_ind[j*k+l-1];
-                    l -= 1;
-                }
-                nn_dist[j*k+l] = dd;
-                nn_ind[j*k+l]  = i;
-            }
-        }
-
-
-        // This part can't be parallelised
-        for (Py_ssize_t j=i+1; j<n; ++j) {
-            if (dij[j] < nn_dist[i*k+k-1]) {
-                // j might be amongst k-NNs of i
-                Py_ssize_t l = k-1;
-                while (l > 0 && dij[j] < nn_dist[i*k+l-1]) {
-                    nn_dist[i*k+l] = nn_dist[i*k+l-1];
-                    nn_ind[i*k+l]  = nn_ind[i*k+l-1];
-                    l -= 1;
-                }
-                nn_dist[i*k+l] = dij[j];
-                nn_ind[i*k+l]  = j;
-            }
-        }
-
-        // if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
-
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
-    }
-
-    // if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
-}
 
 
 
@@ -329,171 +142,6 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
 
 
 
-/*! A specialised version of 'Cmst_from_complete' for Euclidean distance
- * (has better locality of reference)
- *
- *
- * @param X [destroyable] a C-contiguous data matrix
- * @param n number of rows
- * @param d number of columns
- * @param mst_d [out] vector of length n-1, gives weights of the
- *        resulting MST edges in nondecreasing order
- * @param mst_i [out] vector of length 2*(n-1), representing
- *        a c_contiguous array of shape (n-1,2), defining the edges
- *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
- * @param dcore [destroyable] "the core" distance (as in the mutual reachability distance),
- *        can be NULL; otherwise d*(i,j)=max(dcore(i), dcore(j), d(i,j))
- * @param verbose should we output diagnostic/progress messages?
- */
-template <class T>
-void Cmst_euclid(T* X, Py_ssize_t n, Py_ssize_t d,
-    T* mst_dist, Py_ssize_t* mst_ind, T* dcore=nullptr, bool verbose=false)
-{
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
-
-    // see Cmst_from_complete for comments
-
-    std::vector<Py_ssize_t> ind_nn(n);
-    std::vector<T> dist_nn(n, INFINITY);
-
-    //std::vector<T> distances(n);
-    //T* _distances = distances.data();
-
-    std::vector<Py_ssize_t> ind_left(n);
-    for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
-
-
-    // TODO: optimise distance computation for the Euclidean and EuclideanSquared distances
-    // cache sum(x_i^2) in a vector d
-    // note that sum((x_i-x_j)^2) = sum(x_i^2) - 2*sum(x_i*x_j) + sum(x_j^2)
-    //                            = -2 * t(x_j)*x_i + 1 * d[j] + d[i]
-    // d[i] = const in each iter
-    // BLAS GEMV can be used in the remaining part
-
-
-    std::vector< CMstTriple<T> > mst(n-1);
-
-    Py_ssize_t ind_cur = 0;
-    for (Py_ssize_t i=1; i<n; ++i) {
-        // i, i+1, ..., n-1 - vertices not yet in the tree
-
-        GENIECLUST_ASSERT(ind_left[i-1] == ind_cur);
-
-        T* x_cur = X+(i-1)*d;
-
-        // compute the distances
-        // between ind_cur=ind_left[i-1] and all j=i, i+1, ..., n-1:
-#if 0
-        // two-stage - slower
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i; j<n; ++j) {
-            _distances[j] = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                _distances[j] += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
-            TODO: dcore
-        }
-
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i; j<n; ++j) {
-            if (_distances[j] < dist_nn[ind_left[j]]) {
-                ind_nn[ind_left[j]] = ind_cur;
-                dist_nn[ind_left[j]] = _distances[j];
-            }
-        }
-#else
-        if (!dcore) {
-            #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
-            #endif
-            for (Py_ssize_t j=i; j<n; ++j) {
-                T dd = 0.0;
-                for (Py_ssize_t u=0; u<d; ++u)
-                    dd += square(x_cur[u]-X[j*d+u]);
-
-                if (dd < dist_nn[ind_left[j]]) {
-                    ind_nn[ind_left[j]] = ind_cur;
-                    dist_nn[ind_left[j]] = dd;
-                }
-            }
-        }
-        else
-        {
-            #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
-            #endif
-            for (Py_ssize_t j=i; j<n; ++j) {
-                T dd = 0.0;
-                for (Py_ssize_t u=0; u<d; ++u)
-                    dd += square(x_cur[u]-X[j*d+u]);
-                if (dd < dist_nn[ind_left[j]]) {
-                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    T d_core_max = std::max(dcore[i-1], dcore[j]);
-                    if (dd <= d_core_max)
-                        dd = d_core_max+(1e-12)*dd;
-
-                    if (dd < dist_nn[ind_left[j]]) {
-                        ind_nn[ind_left[j]] = ind_cur;
-                        dist_nn[ind_left[j]] = dd;
-                    }
-                }
-            }
-        }
-#endif
-
-        // let best_ind_left and best_ind_left_pos = min and argmin of dist_nn,
-        // for we want to include the vertex that is closest to the vertices
-        // of the tree constructed so far
-        Py_ssize_t best_ind_left_pos = i;
-        Py_ssize_t best_ind_left = ind_left[i];
-        for (Py_ssize_t j=i+1; j<n; ++j) {
-            if (dist_nn[ind_left[j]] < dist_nn[best_ind_left]) {
-                best_ind_left_pos = j;
-                best_ind_left = ind_left[j];
-            }
-        }
-
-        // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
-        mst[i-1] = CMstTriple<T>(best_ind_left, ind_nn[best_ind_left], dist_nn[best_ind_left], /*order=*/true);
-
-
-        // don't visit best_ind_left again
-        std::swap(ind_left[best_ind_left_pos], ind_left[i]);
-        std::swap(dcore[best_ind_left_pos], dcore[i]);
-        for (Py_ssize_t u=0; u<d; ++u) {
-            std::swap(X[i*d+u], X[best_ind_left_pos*d+u]);
-        }
-        // this has better locality of reference
-
-        ind_cur = best_ind_left;  // start from best_ind_left next time
-
-        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
-
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
-    }
-
-    // sort the resulting MST edges in increasing order w.r.t. d
-    std::stable_sort(mst.begin(), mst.end());
-
-    for (Py_ssize_t i=0; i<n-1; ++i) {
-        mst_dist[i]    = sqrt(mst[i].d);
-        mst_ind[2*i+0] = mst[i].i1; // i1 < i2
-        mst_ind[2*i+1] = mst[i].i2;
-    }
-
-    if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
-}
-
-
-
-
 
 
 /*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
@@ -540,7 +188,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 {
     if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
 
-    // NOTE: all changes should also be mirrored in Cmst_euclidean()
+    // NOTE: all changes should also be mirrored in Cmst_euclid_brute()
 
     // ind_nn[j] is the vertex from the current tree closest to vertex j
     std::vector<Py_ssize_t> ind_nn(n);

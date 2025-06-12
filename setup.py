@@ -36,6 +36,9 @@ cython_modules = {
     "genieclust.internal": [
         os.path.join("genieclust", "internal.pyx")
     ],
+    "genieclust.fastmst": [
+        os.path.join("genieclust", "fastmst.pyx")
+    ],
     "genieclust.compare_partitions": [
         os.path.join("genieclust", "compare_partitions.pyx")
     ],

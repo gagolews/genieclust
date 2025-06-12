@@ -8,7 +8,7 @@
 
 
 """
-Provides access to MST-related functions.
+Provides access to the "old" (generic) KNN- and MST-related functions.
 """
 
 # ############################################################################ #
@@ -30,6 +30,9 @@ Provides access to MST-related functions.
 
 
 cdef extern from "../src/c_mst.h":
+
+    void Comp_set_num_threads(Py_ssize_t n_threads)
+
 
     cdef cppclass CDistance[T]:
         pass
@@ -64,25 +67,6 @@ cdef extern from "../src/c_mst.h":
 
 
 
-    # cdef cppclass CMstTriple[T]:
-    #     CMstTriple(Py_ssize_t i1, Py_ssize_t i2, T d, bint order=False)
-
-    # Py_ssize_t Cmst_from_nn_list[T](
-    #     CMstTriple[T]* nns, Py_ssize_t c,
-    #     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
-
-    # void Cknn_sqeuclid_picotree[T](
-    #      T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    #     T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bint verbose) except +
-
-    void Cknn_sqeuclid_kdtree[T](
-        T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-        T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bint verbose) except +
-
-    void Cknn_sqeuclid_brute[T](
-        T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-        T* nn_dist, Py_ssize_t* nn_ind, bint verbose) except +
-
     void Cknn_from_complete[T](
         CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,
         T* dist, Py_ssize_t* ind, bint verbose) except +
@@ -94,9 +78,3 @@ cdef extern from "../src/c_mst.h":
     void Cmst_from_complete[T](
         CDistance[T]* D, Py_ssize_t n,
         T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
-
-    void Cmst_euclid[T](
-        T* X, Py_ssize_t n, Py_ssize_t d,
-        T* mst_dist, Py_ssize_t* mst_ind, T* dcore, bint verbose) except +
-
-    void Comp_set_num_threads(Py_ssize_t n_threads)

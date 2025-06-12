@@ -6,10 +6,9 @@
 # cython: language_level=3
 
 
-## We are only exposing some of these functions (at least, officially)
-## in the online manual.
-## Many of the "private" members' docstrings should be cleaned up
-## and formatted so as to conform to the numpydoc guidelines.
+## We only expose some of the following functions (at least, officially)
+## in the online manual. Many of the "private" members' docstrings should
+## be cleaned up and formatted so as to conform to the numpydoc guidelines.
 ## TODO: (volunteers needed) Cheers.
 
 
@@ -73,14 +72,19 @@ from . cimport c_lumbermark
 
 
 ################################################################################
+
+cdef void _openmp_set_num_threads():
+    c_mst.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
+
+
+
+################################################################################
 # Minimum Spanning Tree Algorithms:
 # (a) Prim-Jarník's for Complete Undirected Graphs,
 # (b) Kruskal's for k-NN graphs,
 # and auxiliary functions.
 ################################################################################
 
-cdef void _openmp_set_num_threads():
-    c_mst.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
 
 
 cpdef np.ndarray[floatT] get_d_core(
@@ -336,7 +340,6 @@ cpdef tuple mst_from_nn(
         where ``{mst_ind[i,0], mst_ind[i,1]}`` defines the ``i``-th edge of the tree.
 
         The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
         For each ``i``, it holds ``mst_ind[i,0] < mst_ind[i,1]``.
 
         If `stop_disconnected` is ``False``, then the weights of the
@@ -442,7 +445,6 @@ cpdef tuple mst_from_complete(
           where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
 
         The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
         For each i, it holds mst[i,0]<mst[i,1].
     """
     cdef Py_ssize_t d = X.shape[1]
@@ -528,7 +530,6 @@ cpdef tuple mst_from_distance(
           where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
 
         The results are ordered w.r.t. nondecreasing weights.
-        (and then the 1st, and the the 2nd index).
         For each i, it holds mst[i,0]<mst[i,1].
     """
     cdef Py_ssize_t n = X.shape[0]
@@ -540,20 +541,6 @@ cpdef tuple mst_from_distance(
     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
     cdef np.ndarray[floatT] mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
-
-    # the most frequent special case:
-    cdef np.ndarray[floatT,ndim=2] X2
-    if metric == "euclidean" or metric == "l2":
-        _openmp_set_num_threads()
-
-        X2 = np.asarray(X, order="C", copy=True)
-        if d_core is None:
-            c_mst.Cmst_euclid(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], <floatT*>NULL, verbose)
-        else:
-            c_mst.Cmst_euclid(&X2[0,0], n, d, &mst_dist[0], &mst_ind[0,0], &d_core[0], verbose)
-
-        return mst_dist, mst_ind
-
 
     cdef c_mst.CDistance[floatT]* D = NULL
     cdef c_mst.CDistance[floatT]* D2 = NULL
@@ -574,7 +561,7 @@ cpdef tuple mst_from_distance(
         raise NotImplementedError("given `metric` is not supported (yet)")
 
     if d_core is not None:
-        D2 = D # must be deleted separately
+        D2 = D  # must be deleted separately
         D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
     _openmp_set_num_threads()
@@ -584,68 +571,6 @@ cpdef tuple mst_from_distance(
     if D2: del D2
 
     return mst_dist, mst_ind
-
-
-
-
-cpdef tuple knn_sqeuclid(floatT[:,::1] X, Py_ssize_t k, bint use_kdtree=True, int max_leaf_size=0, bint verbose=False):
-    """Determines the first k nearest neighbours of each point in X
-    with respect to the squared Euclidean distance
-
-    It is assumed that each query point is not its own neighbour.
-
-    The implemented algorithms assume that k is rather small, say, k <= 20.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n,d)
-    k : int < n
-        number of nearest neighbours
-    use_kdtree : True
-        whether a KD-tree should be used (for d <= 20 only);
-        good for small k, small d, but large n.
-    max_leaf_size : int
-        number of points in leaves of the KD-tree; 0 for the default value
-    verbose: bool
-        whether to print diagnostic messages
-
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (dist, ind) representing the k-NN graph, where:
-            dist : a c_contiguous ndarray, shape (n,k)
-                dist[i,:] is sorted nondecreasingly for all i,
-                dist[i,j] gives the weight of the edge {i, ind[i,j]},
-                i.e., the distance between the i-th point and its j-th NN.
-            ind : a c_contiguous ndarray, shape (n,k)
-                edge definition, interpreted as {i, ind[i,j]};
-                ind[i,j] is the index of the j-th nearest neighbour of i.
-    """
-    cdef Py_ssize_t n = X.shape[0]
-    cdef Py_ssize_t d = X.shape[1]
-
-    if k >= n:
-        raise ValueError("too many nearest neighbours requested")
-
-    cdef Py_ssize_t i
-    cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-    cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-        dtype=np.float32 if floatT is float else np.float64)
-
-    _openmp_set_num_threads()
-    if use_kdtree and 2 <= d <= 20:
-        #if use_kdtree < 0:
-        #    c_mst.Cknn_sqeuclid_picotree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)
-        #else:
-        c_mst.Cknn_sqeuclid_kdtree(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)
-    else:
-        c_mst.Cknn_sqeuclid_brute(&X[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
-
-    return dist, ind
 
 
 

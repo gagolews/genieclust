@@ -41,23 +41,23 @@
 
 namespace mgtree {
 
-template <typename FLOAT, size_t D>
+template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_base
 {
 
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
 
-    size_t idx_from;
-    size_t idx_to;
+    Py_ssize_t idx_from;
+    Py_ssize_t idx_to;
 
     // union {
     //     struct {
-    //         size_t idx_from;
-    //         size_t idx_to;
+    //         Py_ssize_t idx_from;
+    //         Py_ssize_t idx_to;
     //     } leaf_data;
     //     struct {
-    //         //size_t split_dim;
+    //         //Py_ssize_t split_dim;
     //         //FLOAT split_left_max;
     //         //FLOAT split_right_min;
     //     } intnode_data;
@@ -67,7 +67,7 @@ struct kdtree_node_base
 
 
 
-template <typename FLOAT, size_t D>
+template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
 {
     kdtree_node_knn* left;
@@ -84,14 +84,14 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
 };
 
 
-template <typename FLOAT, size_t D>
+template <typename FLOAT, Py_ssize_t D>
 class kdtree_distance_sqeuclid
 {
 public:
     static inline FLOAT point_point(const FLOAT* x, const FLOAT* y)
     {
         FLOAT dist = 0.0;
-        for (size_t u=0; u<D; ++u)
+        for (Py_ssize_t u=0; u<D; ++u)
             dist += square(x[u]-y[u]);
         return dist;
     }
@@ -100,7 +100,7 @@ public:
         const FLOAT* x, const FLOAT* bbox_min, const FLOAT* bbox_max
     ) {
         FLOAT dist = 0.0;
-        for (size_t u=0; u<D; ++u) {
+        for (Py_ssize_t u=0; u<D; ++u) {
             if (bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
                 dist += square(bbox_min[u] - x[u]);
             else if (x[u] > bbox_max[u])
@@ -115,7 +115,7 @@ public:
         const FLOAT* bbox_min_b, const FLOAT* bbox_max_b
     ) {
         FLOAT dist = 0.0;
-        for (size_t u=0; u<D; ++u) {
+        for (Py_ssize_t u=0; u<D; ++u) {
             if (bbox_min_b[u] > bbox_max_a[u])
                 dist += square(bbox_min_b[u] - bbox_max_a[u]);
             else if (bbox_min_a[u] > bbox_max_b[u])
@@ -133,7 +133,7 @@ public:
  */
 template <
     typename FLOAT,
-    size_t D,
+    Py_ssize_t D,
     typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
     typename NODE=kdtree_node_knn<FLOAT,D>
 >
@@ -141,27 +141,27 @@ class kdtree_kneighbours
 {
 private:
     const FLOAT* x;
-    const size_t which;
+    Py_ssize_t which;
     const FLOAT* data;
-    const size_t n;
+    Py_ssize_t n;
     FLOAT* knn_dist;
-    size_t* knn_ind;
-    const size_t k;
+    Py_ssize_t* knn_ind;
+    Py_ssize_t k;
 
-    const size_t max_brute_size;  // when to switch to the brute-force mode? 0 to honour the tree's max_leaf_size
+    const Py_ssize_t max_brute_size;  // when to switch to the brute-force mode? 0 to honour the tree's max_leaf_size
 
 
-    inline void point_vs_points(size_t idx_from, size_t idx_to)
+    inline void point_vs_points(Py_ssize_t idx_from, Py_ssize_t idx_to)
     {
         const FLOAT* y = data+D*idx_from;
-        for (size_t i=idx_from; i<idx_to; ++i, y+=D) {
+        for (Py_ssize_t i=idx_from; i<idx_to; ++i, y+=D) {
             FLOAT dist = DISTANCE::point_point(x, y);
 
             if (dist >= knn_dist[k-1])
                 continue;
 
             // insertion-sort like scheme (fast for small k)
-            size_t j = k-1;
+            Py_ssize_t j = k-1;
             while (j > 0 && dist < knn_dist[j-1]) {
                 knn_ind[j]  = knn_ind[j-1];
                 knn_dist[j] = knn_dist[j-1];
@@ -176,19 +176,19 @@ private:
 public:
     kdtree_kneighbours(
         const FLOAT* data,
-        const size_t n,
-        const size_t which,
+        const Py_ssize_t n,
+        const Py_ssize_t which,
         FLOAT* knn_dist,
-        size_t* knn_ind,
-        const size_t k,
-        const size_t max_brute_size=0
+        Py_ssize_t* knn_ind,
+        const Py_ssize_t k,
+        const Py_ssize_t max_brute_size=0
     ) :
         x(data+D*which), which(which), data(data), n(n),
         knn_dist(knn_dist), knn_ind(knn_ind),
         k(k), max_brute_size(max_brute_size)
     {
-        for (size_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
-        for (size_t i=0; i<k; ++i) knn_ind[i]  = which;
+        for (Py_ssize_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
+        for (Py_ssize_t i=0; i<k; ++i) knn_ind[i]  = which;
 
         // // Pre-flight (no benefit)
         // for (Py_ssize_t i=0; i<=2*k; ++i) {
@@ -270,7 +270,7 @@ public:
 
 template <
     typename FLOAT,
-    size_t D,
+    Py_ssize_t D,
     typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
     typename NODE=kdtree_node_knn<FLOAT, D>
 >
@@ -282,10 +282,10 @@ protected:
     NODE* root;  // nodes[0] or nullptr
 
     FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm)
-    const size_t n;  //< number of points
-    std::vector<size_t> perm;  //< original point indexes
+    const Py_ssize_t n;  //< number of points
+    std::vector<Py_ssize_t> perm;  //< original point indexes
 
-    const size_t max_leaf_size;  //< unless in pathological cases
+    const Py_ssize_t max_leaf_size;  //< unless in pathological cases
 
 
     // void delete_tree(NODE*& root)
@@ -303,13 +303,13 @@ protected:
     inline void compute_bounding_box(NODE*& root)
     {
         const FLOAT* y = data+root->idx_from*D;
-        for (size_t u=0; u<D; ++u) {
+        for (Py_ssize_t u=0; u<D; ++u) {
             root->bbox_min[u] = *y;
             root->bbox_max[u] = *y;
             ++y;
         }
-        for (size_t i=root->idx_from+1; i<root->idx_to; ++i) {
-            for (size_t u=0; u<D; ++u) {
+        for (Py_ssize_t i=root->idx_from+1; i<root->idx_to; ++i) {
+            for (Py_ssize_t u=0; u<D; ++u) {
                 if      (*y < root->bbox_min[u]) root->bbox_min[u] = *y;
                 else if (*y > root->bbox_max[u]) root->bbox_max[u] = *y;
                 ++y;
@@ -319,7 +319,7 @@ protected:
 
 
     void build_tree(
-        NODE*& root, size_t idx_from, size_t idx_to
+        NODE*& root, Py_ssize_t idx_from, Py_ssize_t idx_to
     )
     {
         GENIECLUST_ASSERT(idx_to - idx_from > 0);
@@ -339,9 +339,9 @@ protected:
 
 
         // cut by the dim of the greatest range
-        size_t split_dim = 0;
+        Py_ssize_t split_dim = 0;
         FLOAT dim_width = root->bbox_max[0] - root->bbox_min[0];
-        for (size_t u=1; u<D; ++u) {
+        for (Py_ssize_t u=1; u<D; ++u) {
             FLOAT cur_width = root->bbox_max[u] - root->bbox_min[u];
             if (cur_width > dim_width) {
                 dim_width = cur_width;
@@ -375,8 +375,8 @@ protected:
         FLOAT split_right_min = root->bbox_max[split_dim];
 
         // partition data[idx_from:idx_left, split_dim] <= split_val, data[idx_left:idx_to, split_dim] > split_val
-        size_t idx_left = idx_from;
-        size_t idx_right = idx_to-1;
+        Py_ssize_t idx_left = idx_from;
+        Py_ssize_t idx_right = idx_to-1;
         while (true) {
             while (data[idx_left*D+split_dim] <= split_val) {  // split_val < curbox_max[split_dim]
                 if (data[idx_left*D+split_dim] > split_left_max)
@@ -394,17 +394,17 @@ protected:
                 break;
 
             std::swap(perm[idx_left], perm[idx_right]);
-            for (size_t u=0; u<D; ++u)
+            for (Py_ssize_t u=0; u<D; ++u)
                 std::swap(data[idx_left*D+u], data[idx_right*D+u]);
         }
 
         GENIECLUST_ASSERT(idx_left > idx_from);
         GENIECLUST_ASSERT(idx_left < idx_to);
 
-        // for (size_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
+        // for (Py_ssize_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
         //     GENIECLUST_ASSERT(data[i*D+split_dim] <= split_val);
         // }
-        // for (size_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
+        // for (Py_ssize_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
         //     GENIECLUST_ASSERT(data[i*D+split_dim] > split_val);
         // }
 
@@ -430,11 +430,11 @@ public:
 
     }
 
-    kdtree(FLOAT* data, const size_t n, const size_t max_leaf_size=32)
+    kdtree(FLOAT* data, const Py_ssize_t n, const Py_ssize_t max_leaf_size=32)
         : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         GENIECLUST_ASSERT(max_leaf_size > 0);
-        for (size_t i=0; i<n; ++i) perm[i] = i;
+        for (Py_ssize_t i=0; i<n; ++i) perm[i] = i;
         build_tree(root, 0, n);
     }
 
@@ -447,12 +447,12 @@ public:
     }
 
 
-    inline size_t get_n() const { return n; }
-    inline std::vector<size_t>& get_perm() { return perm; }
+    inline Py_ssize_t get_n() const { return n; }
+    inline std::vector<Py_ssize_t>& get_perm() { return perm; }
     inline FLOAT* get_data() { return data; }
 
 
-    void kneighbours(size_t which, FLOAT* knn_dist, size_t* knn_ind, size_t k)
+    void kneighbours(Py_ssize_t which, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
     {
         kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, n, which, knn_dist, knn_ind, k);
         knn.find(root);
@@ -461,25 +461,25 @@ public:
 
 
 
-template <typename FLOAT, size_t D, typename TREE>
+template <typename FLOAT, Py_ssize_t D, typename TREE>
 void kneighbours(
     TREE& tree,
     FLOAT* knn_dist,
-    size_t* knn_ind,
-    size_t k
+    Py_ssize_t* knn_ind,
+    Py_ssize_t k
 ) {
-    size_t n = tree.get_n();
-    const size_t* perm = tree.get_perm().data();
+    Py_ssize_t n = tree.get_n();
+    const Py_ssize_t* perm = tree.get_perm().data();
 
     #ifdef _OPENMP
     #pragma omp parallel for schedule(static)
     #endif
-    for (size_t i=0; i<n; ++i) {
-        size_t i_orig = perm[i];
+    for (Py_ssize_t i=0; i<n; ++i) {
+        Py_ssize_t i_orig = perm[i];
         tree.kneighbours(i, knn_dist+k*i_orig, knn_ind+k*i_orig, k);
     }
 
-    for (size_t i=0; i<n*k; ++i) {
+    for (Py_ssize_t i=0; i<n*k; ++i) {
         knn_ind[i] = perm[knn_ind[i]];
     }
 }
