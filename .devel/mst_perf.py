@@ -14,6 +14,7 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 """
+hades @ 2025-06-12
 n=100000, d=2, M=1, threads=1
               genieclust_brute: t=        8.81032 Δdist=        0.00000 Δind=         0
         genieclust_kdtree_4_16: t=        0.11707 Δdist=        0.00000 Δind=         0

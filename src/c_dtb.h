@@ -62,14 +62,15 @@ template <
 class dtb : public kdtree<FLOAT, D, DISTANCE, NODE>
 {
 protected:
-    FLOAT*  tree_dist;  //< size n-1
+    FLOAT*  tree_dist;     //< size n-1
     Py_ssize_t* tree_ind;  //< size 2*(n-1)
-    Py_ssize_t  tree_num;  // current number of MST nodes determined
+    Py_ssize_t  tree_num;  // number of MST edges already found
     CDisjointSets ds;
 
     std::vector<FLOAT>  nn_dist;
     std::vector<Py_ssize_t> nn_ind;
     std::vector<Py_ssize_t> nn_from;
+    // std::vector<Py_ssize_t> nn_next;
 
     const Py_ssize_t first_pass_max_brute_size;
 
@@ -117,9 +118,9 @@ protected:
                     FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
                     if (M > 2) {
                         // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                        FLOAT d_core_max = std::max(dcore[i], dcore[j]);
-                        if (dij <= d_core_max)
-                            dij = d_core_max+(1e-12)*dij;
+                        FLOAT dcore_max = std::max(dcore[i], dcore[j]);
+                        if (dij <= dcore_max)
+                            dij = dcore_max+(1e-12)*dij;
                     }
                     if (dij < nn_dist[ds_find_i]) {
                         nn_dist[ds_find_i] = dij;
@@ -169,65 +170,135 @@ protected:
     }
 
 
+    void find_mst_first_1()
+    {
+        GENIECLUST_ASSERT(M <= 2);
+        const Py_ssize_t k = 1;
+
+        // find 1-nns of each point using max_brute_size,
+        // preferably with max_brute_size>max_leaf_size
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t i=0; i<this->n; ++i) {
+            kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
+                this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, k,
+                first_pass_max_brute_size
+            );
+            nn.find(this->root);
+            if (M == 2) dcore[i]   = nn_dist[i];
+        }
+
+        // connect nearest neighbours with each other
+        for (Py_ssize_t i=0; i<this->n; ++i) {
+            if (ds.find(i) != ds.find(nn_ind[i])) {
+                tree_ind[tree_num*2+0] = i;
+                tree_ind[tree_num*2+1] = nn_ind[i];
+                tree_dist[tree_num] = nn_dist[i];
+                ds.merge(i, nn_ind[i]);
+                tree_num++;
+            }
+        }
+    }
+
+
+    void find_mst_first_M()
+    {
+        GENIECLUST_ASSERT(M>1);
+        const Py_ssize_t k = M-1;
+        // find (M-1)-nns of each point
+        std::vector<FLOAT> knn_dist(this->n*k);
+        std::vector<Py_ssize_t> knn_ind(this->n*k);
+
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t i=0; i<this->n; ++i) {
+            kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
+                this->data, this->n, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
+                first_pass_max_brute_size
+            );
+            nn.find(this->root);
+            dcore[i]   = knn_dist[i*k+(k-1)];
+        }
+
+        // k-nns wrt Euclidean distances are not necessarily k-nns wrt mutreach
+        for (Py_ssize_t i=0; i<this->n; ++i) {
+            for (Py_ssize_t v=0; v<k; ++v) {
+                Py_ssize_t j = knn_ind[i*k+v];
+                if (dcore[i] >= dcore[j]) {
+                    if (ds.find(i) != ds.find(j)) {
+                        tree_ind[tree_num*2+0] = i;
+                        tree_ind[tree_num*2+1] = j;
+                        tree_dist[tree_num] = dcore[i]+(1e-12)*knn_dist[i*k+v];//dcore[i];
+                        ds.merge(i, j);
+                        tree_num++;
+                    }
+                    break;
+                }
+            }
+        }
+
+
+        // // try to reuse the computed k-nns (no benefit)
+        // std::vector<Py_ssize_t> knn_next(this->n, 0);
+        // bool changed;
+        // do {
+        //     changed = false;
+        //     for (Py_ssize_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
+        //     for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i]  = this->n;
+        //     for (Py_ssize_t i=0; i<this->n; ++i) nn_from[i] = this->n;
+        //
+        //     for (Py_ssize_t i=0; i<this->n; ++i) {
+        //         bool found = false;
+        //         Py_ssize_t ds_find_i = ds.find(i);
+        //         if (nn_dist[ds_find_i] < 0) continue;
+        //
+        //         while (knn_next[i] < k) {
+        //             Py_ssize_t j = knn_ind[i*k+knn_next[i]];
+        //             if (dcore[i] >= dcore[j]) {
+        //                 if (ds_find_i != ds.find(j)) {
+        //                     FLOAT d = dcore[i]+(1e-12)*knn_dist[i*k+knn_next[i]];//dcore[i];
+        //                     if (d < nn_dist[ds_find_i]) {
+        //                         nn_dist[ds_find_i] = d;
+        //                         nn_ind[ds_find_i] = j;
+        //                         nn_from[ds_find_i] = i;
+        //                     }
+        //                     found = true;
+        //                     break;
+        //                 }
+        //             }
+        //             knn_next[i]++;
+        //         }
+        //         if (!found) {
+        //             nn_dist[ds_find_i] = -INFINITY;  // disable
+        //             nn_ind[ds_find_i] = this->n;
+        //             nn_from[ds_find_i] = this->n;
+        //         }
+        //     }
+        //
+        //     for (Py_ssize_t i=0; i<this->n; ++i) {
+        //         if (nn_ind[i] < this->n && ds.find(i) != ds.find(nn_ind[i])) {
+        //             GENIECLUST_ASSERT(ds.find(i) == ds.find(nn_from[i]));
+        //             tree_ind[tree_num*2+0] = nn_from[i];
+        //             tree_ind[tree_num*2+1] = nn_ind[i];
+        //             tree_dist[tree_num] = nn_dist[i];
+        //             ds.merge(i, nn_ind[i]);
+        //             tree_num++;
+        //
+        //             //knn_next[nn_from[i]]++;
+        //             changed = true;
+        //         }
+        //     }
+        // } while (changed && tree_num < this->n-1);
+    }
+
+
     void find_mst_first()
     {
-        if (M <= 2) {
-            // find 1-nns of each point using max_brute_size,
-            // preferably with max_brute_size>max_leaf_size
-            #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
-            #endif
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                    this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, 1,
-                    first_pass_max_brute_size
-                );
-                nn.find(this->root);
-            }
-
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                if (ds.find(i) != ds.find(nn_ind[i])) {
-                    tree_ind[tree_num*2+0] = i;
-                    tree_ind[tree_num*2+1] = nn_ind[i];
-                    tree_dist[tree_num] = nn_dist[i];
-                    ds.merge(i, nn_ind[i]);
-                    tree_num++;
-                }
-            }
-        }
-        else {
-            // find (M-1)-nns of each point
-            std::vector<FLOAT> knn_dist(this->n*(M-1));
-            std::vector<Py_ssize_t> knn_ind(this->n*(M-1));
-            #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
-            #endif
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                    this->data, this->n, i, knn_dist.data()+(M-1)*i, knn_ind.data()+(M-1)*i, M-1,
-                    first_pass_max_brute_size
-                );
-                nn.find(this->root);
-            }
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                dcore[i]   = knn_dist[i*(M-1)+M-2];
-            }
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                for (Py_ssize_t v=0; v<M-1; ++v) {
-                    Py_ssize_t j = knn_ind[i*(M-1)+v];
-                    if (dcore[i] >= dcore[j]) {
-                        if (ds.find(i) != ds.find(j)) {
-                            tree_ind[tree_num*2+0] = i;
-                            tree_ind[tree_num*2+1] = j;
-                            tree_dist[tree_num] = dcore[i]+(1e-12)*knn_dist[i*(M-1)+v];//dcore[i];
-                            ds.merge(i, j);
-                            tree_num++;
-                        }
-                        break;
-                    }
-                }
-            }
-        }
+        // the 1st iteration: connect nearest neighbours with each other
+        if (M <= 2) find_mst_first_1();
+        else        find_mst_first_M();
     }
 
 
@@ -318,7 +389,10 @@ protected:
 
     void find_mst()
     {
-        // 1st iteration: connect nearest neighbours with each other
+        //for (Py_ssize_t i=0; i<this->n; ++i) nn_next[i] = i+1;
+
+
+        // the 1st iteration: connect nearest neighbours with each other
         find_mst_first();
 
         while (tree_num < this->n-1) {
@@ -330,6 +404,7 @@ protected:
             // the representatives of the current clusters, but why bother,
             // time'll be >= ~(n\log n) anyway; this is unlikely to cause
             // slowdowns
+            // TODO: skiplist
             for (Py_ssize_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
             for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i]  = this->n;
             for (Py_ssize_t i=0; i<this->n; ++i) nn_from[i] = this->n;
@@ -366,7 +441,7 @@ public:
         const Py_ssize_t first_pass_max_brute_size=16
     ) :
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
-        ds(n), nn_dist(n), nn_ind(n), nn_from(n),
+        ds(n), nn_dist(n), nn_ind(n), nn_from(n), /*nn_next(n),*/
         first_pass_max_brute_size(first_pass_max_brute_size), M(M)
     {
         if (M > 2) dcore.resize(n);

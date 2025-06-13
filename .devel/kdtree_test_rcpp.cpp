@@ -148,7 +148,7 @@ knn_rann <- function(X, k) {
 }
 
 funs_knn <- list(
-    genieclust_brute=function(X, k) test_knn(X, k, use_kdtree=FALSE),
+#genieclust_brute=function(X, k) test_knn(X, k, use_kdtree=FALSE),
     rann=knn_rann,
     new_kdtree=function(X, k) test_knn(X, k, use_kdtree=TRUE)
 )
@@ -176,10 +176,10 @@ funs_mst_mutreach <- list(
     new_4_16=function(X, M) test_mst(X, M, TRUE, 4L, 16L)
 )
 
-for (d in c(2, 5)) {
+n <- 100000
+for (d in c()) {
     k <- 10L
     set.seed(123)
-    n <- 100000
     X <- matrix(rnorm(n*d), ncol=d)
     cat(sprintf("n=%d, d=%d, k=%d\n", n, d, k))
 
@@ -199,22 +199,23 @@ for (d in c(2, 5)) {
 
 for (d in c(2, 5)) {
     set.seed(123)
-    n <- 100000
     X <- matrix(rnorm(n*d), ncol=d)
-    M <- 10L
-    cat(sprintf("n=%d, d=%d, M=%d\n", n, d, M))
 
-    res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach)), function(i) {
-        f <- funs_mst_mutreach[[i]]
-        t <- system.time(y <- f(X, M))
-        list(time=t, y)
-    })
+    for (M in c(1, 10)) {
+        cat(sprintf("n=%d, d=%d, M=%d\n", n, d, M))
 
-    print(cbind(
-        as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
-        Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
-        Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
-    ))
+        res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach)), function(i) {
+            f <- funs_mst_mutreach[[i]]
+            t <- system.time(y <- f(X, M))
+            list(time=t, y)
+        })
+
+        print(cbind(
+            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
+            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
+        ))
+    }
 }
 
 */
@@ -263,6 +264,29 @@ n=100000, d=5, M=10
                  user.self sys.self elapsed Δdist Δidx
 genieclust_brute    27.824    0.033  27.857     0    0
 new_4_16             1.681    0.000   1.681     0   22
+
+
+n=100000, d=2, M=1
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute     9.605    0.011   9.618     0    0
+new_4_16             0.114    0.001   0.115     0    0
+n=100000, d=2, M=10
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    20.247    0.025  20.274     0    0
+new_4_16             0.134    0.003   0.137     0   40
+n=100000, d=5, M=1
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    13.648    0.007  13.658     0    0
+new_4_16             1.698    0.000   1.698     0    0
+n=100000, d=5, M=10
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    29.806    0.019  29.829     0    0
+new_4_16             1.699    0.001   1.701     0   22
+
+
+
+
+
 
 
 
