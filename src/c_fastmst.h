@@ -70,12 +70,14 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 template <class FLOAT>
 void Cknn_sqeuclid_brute(
     const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool /*verbose*/
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
+
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
 
     for (Py_ssize_t i=0; i<n*k; ++i) {
         nn_dist[i] = INFINITY;
@@ -134,7 +136,7 @@ void Cknn_sqeuclid_brute(
         #endif
     }
 
-    // if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
+    if (verbose) GENIECLUST_PRINT("done.\n");
 }
 
 
