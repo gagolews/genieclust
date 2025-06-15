@@ -221,17 +221,14 @@ void Cmst_euclid_brute(
     //std::vector<FLOAT> distances(n);
     //FLOAT* _distances = distances.data();
 
-    std::vector<Py_ssize_t> ind_left(n);
+    std::vector<Py_ssize_t> ind_left(n);  // aka perm
     for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
 
     std::vector< CMstTriple<FLOAT> > mst(n-1);
 
-    Py_ssize_t ind_cur = 0; // start with the first vertex (because we can start with any)
     for (Py_ssize_t i=1; i<n; ++i) {
-        // ind_cur is the vertex most recently added to the tree
+        // i-1 is the vertex most recently added to the tree
         // i, i+1, ..., n-1 - vertices not yet in the tree
-
-        GENIECLUST_ASSERT(ind_left[i-1] == ind_cur);
 
         FLOAT* x_cur = X+(i-1)*d;
 
@@ -239,25 +236,6 @@ void Cmst_euclid_brute(
         // between ind_cur=ind_left[i-1] and all j=i, i+1, ..., n-1:
 #if 0
         // two-stage - slower
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i; j<n; ++j) {
-            _distances[j] = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                _distances[j] += (x_cur[u]-X[j*d+u])*(x_cur[u]-X[j*d+u]);
-            TODO: d_core
-        }
-
-        #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
-        #endif
-        for (Py_ssize_t j=i; j<n; ++j) {
-            if (_distances[j] < dist_nn[ind_left[j]]) {
-                ind_nn[ind_left[j]] = ind_cur;
-                dist_nn[ind_left[j]] = _distances[j];
-            }
-        }
 #else
         if (M <= 2) {
             #ifdef _OPENMP
@@ -268,9 +246,9 @@ void Cmst_euclid_brute(
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
 
-                if (dd < dist_nn[ind_left[j]]) {
-                    ind_nn[ind_left[j]] = ind_cur;
-                    dist_nn[ind_left[j]] = dd;
+                if (dd < dist_nn[j]) {
+                    ind_nn[j] = i-1;
+                    dist_nn[j] = dd;
                 }
             }
         }
@@ -283,46 +261,52 @@ void Cmst_euclid_brute(
                 FLOAT dd = 0.0;
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
-                if (dd < dist_nn[ind_left[j]]) {
+                if (dd < dist_nn[j]) {
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                     FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
                     if (dd <= d_core_max)
                         dd = d_core_max+dd/DCORE_DIST_ADJ;
 
-                    if (dd < dist_nn[ind_left[j]]) {
-                        ind_nn[ind_left[j]] = ind_cur;
-                        dist_nn[ind_left[j]] = dd;
+                    if (dd < dist_nn[j]) {
+                        ind_nn[j] = i-1;
+                        dist_nn[j] = dd;
                     }
                 }
             }
         }
 #endif
 
-        // let best_ind_left and best_ind_left_pos = min and argmin of dist_nn,
-        // for we want to include the vertex that is closest to the vertices
+// for we want to include the vertex that is closest to the vertices
         // of the tree constructed so far
-        Py_ssize_t best_ind_left_pos = i;
-        Py_ssize_t best_ind_left = ind_left[i];
+        Py_ssize_t best_j = i;
         for (Py_ssize_t j=i+1; j<n; ++j) {
-            if (dist_nn[ind_left[j]] < dist_nn[best_ind_left]) {
-                best_ind_left_pos = j;
-                best_ind_left = ind_left[j];
+            if (dist_nn[j] < dist_nn[best_j]) {
+                best_j = j;
             }
         }
 
-        // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
-        mst[i-1] = CMstTriple<FLOAT>(best_ind_left, ind_nn[best_ind_left], dist_nn[best_ind_left], /*order=*/true);
-
-
-        // don't visit best_ind_left again
-        std::swap(ind_left[best_ind_left_pos], ind_left[i]);
-        if (M > 2) std::swap(d_core[best_ind_left_pos], d_core[i]);
+        // don't visit i again
+        // with swapping we get better locality of reference
+        std::swap(ind_left[best_j], ind_left[i]);
+        std::swap(dist_nn[best_j], dist_nn[i]);
+        std::swap(ind_nn[best_j], ind_nn[i]);
         for (Py_ssize_t u=0; u<d; ++u) {
-            std::swap(X[i*d+u], X[best_ind_left_pos*d+u]);
+            std::swap(X[best_j*d+u], X[i*d+u]);
         }
-        // this has better locality of reference
 
-        ind_cur = best_ind_left;  // start from best_ind_left next time
+        if (M > 2) {
+            std::swap(d_core[best_j], d_core[i]);
+            // recompute the distance without the ambiguity correction
+            dist_nn[i] = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
+            dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
+        }
+
+        // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
+        GENIECLUST_ASSERT(ind_nn[i] < i);
+        mst[i-1] = CMstTriple<FLOAT>(ind_left[ind_nn[i]], ind_left[i], dist_nn[i], /*order=*/true);
+
 
         if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
@@ -334,7 +318,7 @@ void Cmst_euclid_brute(
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
-    std::stable_sort(mst.begin(), mst.end());
+    std::sort(mst.begin(), mst.end());
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_dist[i]    = sqrt(mst[i].d);

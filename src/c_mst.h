@@ -265,7 +265,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
-    std::stable_sort(mst.begin(), mst.end());
+    std::sort(mst.begin(), mst.end());
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_dist[i]    = mst[i].d;
@@ -350,7 +350,7 @@ Py_ssize_t Cmst_from_nn(
         }
     }
 
-    std::stable_sort(nns.data(), nns.data()+c);
+    std::sort(nns.data(), nns.data()+c);
 
 
     Py_ssize_t triple_cur = 0;

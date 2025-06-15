@@ -14,77 +14,84 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 """
+# mlpack's source distribution is not available from PyPI
+CPPFLAGS="-O3 -march=native" pip3 install hdbscan --force --no-binary="hdbscan" --verbose
+CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
+CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
+pip3 install numpy==2.2.6  # for numba
+
+
 hades @ 2025-06-12
 n=100000, d=2, M=1, threads=1
-              genieclust_brute: t=        8.81032 Δdist=        0.00000 Δind=         0
-        genieclust_kdtree_4_16: t=        0.11707 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=        1.68920 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        1.30274 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=        0.56649 Δdist=        0.00000 Δind=         0
-                      mlpack_4: t=        0.39744 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=        8.81032
+        genieclust_kdtree_4_16: t=        0.11707
+           hdbscan_kdtree_40_3: t=        1.68920
+            fasthdbscan_kdtree: t=        1.30274
+                      mlpack_1: t=        0.56649
+                      mlpack_4: t=        0.39744
 n=100000, d=5, M=1, threads=1
-              genieclust_brute: t=       13.52134 Δdist=        0.00000 Δind=         0
-        genieclust_kdtree_4_16: t=        2.17226 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=       15.17135 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        4.26879 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=        5.38789 Δdist=        0.00000 Δind=         0
-                      mlpack_4: t=        5.69942 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       13.52134
+        genieclust_kdtree_4_16: t=        2.17226
+           hdbscan_kdtree_40_3: t=       15.17135
+            fasthdbscan_kdtree: t=        4.26879
+                      mlpack_1: t=        5.38789
+                      mlpack_4: t=        5.69942
 n=100000, d=2, M=10, threads=1
-              genieclust_brute: t=       19.19615 Δdist=        0.00000 Δind=         0
-        genieclust_kdtree_4_16: t=        0.13406 Δdist=        0.00000 Δind=        31
-           hdbscan_kdtree_40_3: t=        1.52790 Δdist=       -0.00000 Δind=     13086
-            fasthdbscan_kdtree: t=        0.65928 Δdist=       -0.00000 Δind=     13055
+              genieclust_brute: t=       19.19615
+        genieclust_kdtree_4_16: t=        0.13406
+           hdbscan_kdtree_40_3: t=        1.52790
+            fasthdbscan_kdtree: t=        0.65928
 n=100000, d=5, M=10, threads=1
-              genieclust_brute: t=       29.40015 Δdist=        0.00000 Δind=         0
-        genieclust_kdtree_4_16: t=        2.10061 Δdist=        0.00000 Δind=        19
-           hdbscan_kdtree_40_3: t=        6.80395 Δdist=       -0.00000 Δind=      7567
-            fasthdbscan_kdtree: t=        1.32822 Δdist=       -0.00000 Δind=      7558
+              genieclust_brute: t=       29.40015
+        genieclust_kdtree_4_16: t=        2.10061
+           hdbscan_kdtree_40_3: t=        6.80395
+            fasthdbscan_kdtree: t=        1.32822
 
 
 
-apollo < 2025-06-15                                                                       : vs 2025-06-15
-n=250000, d=2, M=1, threads=1                                                             n=250000, d=2, M=1, threads=1
-        genieclust_kdtree_4_32: t=        0.30752 Δdist=        0.00000 Δind=         0   : t=        0.29868 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=        1.48554 Δdist=        0.00000 Δind=         0   : t=        1.48109 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        4.08379 Δdist=        0.00000 Δind=         0   : t=        4.08067 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=        5.86782 Δdist=        0.00000 Δind=         0   : t=        5.86651 Δdist=        0.00000 Δind=         0
+apollo < 2025-06-15                                 : vs 2025-06-15 noon  : vs 2025-06-15 evening -03 -march=native
+n=250000, d=2, M=1, threads=1
+        genieclust_kdtree_4_32: t=        0.30752   : t=        0.29868  : t=        0.29576 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        1.48554   : t=        1.48109  : t=        1.47330 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        4.08379   : t=        4.08067  : t=        3.97738 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=        5.86782   : t=        5.86651  : t=        5.73835 Δdist=        0.00000 Δind=         0
 n=250000, d=5, M=1, threads=1
-        genieclust_kdtree_4_32: t=        5.78663 Δdist=        0.00000 Δind=         0   : t=        5.81715 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=       14.37002 Δdist=        0.00000 Δind=         0   : t=       14.60630 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=       20.62158 Δdist=        0.00000 Δind=         0   : t=       20.63816 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=       36.97692 Δdist=        0.00000 Δind=         0   : t=       37.25075 Δdist=        0.00000 Δind=         0
+        genieclust_kdtree_4_32: t=        5.78663   : t=        5.81715  : t=        4.59237 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=       14.37002   : t=       14.60630  : t=       14.04031 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=       20.62158   : t=       20.63816  : t=       20.47972 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=       36.97692   : t=       37.25075  : t=       37.40961 Δdist=        0.00000 Δind=         0
 n=250000, d=2, M=10, threads=1
-        genieclust_kdtree_4_32: t=        0.36002 Δdist=        0.00000 Δind=         0   : t=        0.49767 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        2.25570 Δdist=       -0.00000 Δind=     32434   : t=        2.28296 Δdist=        0.00000 Δind=     60388
-           hdbscan_kdtree_40_3: t=        6.06295 Δdist=       -0.00000 Δind=     32605   : t=        6.01803 Δdist=        0.00000 Δind=     60352
+        genieclust_kdtree_4_32: t=        0.36002   : t=        0.49767  : t=        0.48485 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        2.25570   : t=        2.28296  : t=        2.28520 Δdist=        0.00000 Δind=     33794
+           hdbscan_kdtree_40_3: t=        6.06295   : t=        6.01803  : t=        5.86769 Δdist=        0.00000 Δind=     33601
 n=250000, d=5, M=10, threads=1
-        genieclust_kdtree_4_32: t=        5.42228 Δdist=        0.00000 Δind=         0   : t=        3.77974 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        6.56826 Δdist=       -0.00000 Δind=     20553   : t=        6.41720 Δdist=        0.00001 Δind=     33813
-           hdbscan_kdtree_40_3: t=       28.73878 Δdist=       -0.00000 Δind=     20559   : t=       27.55924 Δdist=        0.00001 Δind=     33797
+        genieclust_kdtree_4_32: t=        5.42228   : t=        3.77974  : t=        3.07490 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        6.56826   : t=        6.41720  : t=        6.58253 Δdist=        0.00000 Δind=     17974
+           hdbscan_kdtree_40_3: t=       28.73878   : t=       27.55924  : t=       27.58585 Δdist=        0.00000 Δind=     17897
 
 
-n=100000, d=2, M=1, threads=1                                                                n=100000, d=2, M=1, threads=1
-        genieclust_kdtree_4_32: t=        0.11772 Δdist=        0.00000 Δind=         0  : t=        0.11488 Δdist=        0.00000 Δind=         0
-              genieclust_brute: t=        8.71274 Δdist=        0.00000 Δind=         0  : t=        8.70426 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=        0.56442 Δdist=        0.00000 Δind=         0  : t=        0.56202 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        1.30298 Δdist=        0.00000 Δind=         0  : t=        1.30041 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=        1.67903 Δdist=        0.00000 Δind=         0  : t=        1.67868 Δdist=        0.00000 Δind=         0
+n=100000, d=2, M=1, threads=1
+        genieclust_kdtree_4_32: t=        0.11772  : t=        0.11488    : t=        0.11232 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=        8.71274  : t=        8.70426    : t=        8.98587 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        0.56442  : t=        0.56202    : t=        0.53602 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        1.30298  : t=        1.30041    : t=        1.36775 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=        1.67903  : t=        1.67868    : t=        1.57425 Δdist=        0.00000 Δind=         0
 n=100000, d=5, M=1, threads=1
-        genieclust_kdtree_4_32: t=        2.14303 Δdist=        0.00000 Δind=         0  : t=        2.14580 Δdist=        0.00000 Δind=         0
-              genieclust_brute: t=       13.41931 Δdist=        0.00000 Δind=         0  : t=       13.64711 Δdist=        0.00000 Δind=         0
-                      mlpack_1: t=        5.29734 Δdist=        0.00000 Δind=         0  : t=        5.32112 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        4.30194 Δdist=        0.00000 Δind=         0  : t=        4.26212 Δdist=        0.00000 Δind=         0
-           hdbscan_kdtree_40_3: t=       15.14476 Δdist=        0.00000 Δind=         0  : t=       15.13626 Δdist=        0.00000 Δind=         0
+        genieclust_kdtree_4_32: t=        2.14303  : t=        2.14580    : t=        1.68788 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       13.41931  : t=       13.64711    : t=       11.73230 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        5.29734  : t=        5.32112    : t=        5.09739 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        4.30194  : t=        4.26212    : t=        4.38575 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=       15.14476  : t=       15.13626    : t=       13.41334 Δdist=        0.00000 Δind=         0
 n=100000, d=2, M=10, threads=1
-        genieclust_kdtree_4_32: t=        0.13555 Δdist=        0.00000 Δind=         0  : t=        0.16070 Δdist=        0.00000 Δind=         0
-              genieclust_brute: t=       18.80316 Δdist=        0.00000 Δind=        31  : t=       19.47750 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        0.65381 Δdist=       -0.00000 Δind=     13041  : t=        0.66013 Δdist=       -0.00002 Δind=     13126
-           hdbscan_kdtree_40_3: t=        1.53040 Δdist=       -0.00000 Δind=     13072  : t=        1.52787 Δdist=       -0.00002 Δind=     13157
+        genieclust_kdtree_4_32: t=        0.13555  : t=        0.16070    : t=        0.15744 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       18.80316  : t=       19.47750    : t=       20.12245 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        0.65381  : t=        0.66013    : t=        0.65411 Δdist=        0.00000 Δind=     13397
+           hdbscan_kdtree_40_3: t=        1.53040  : t=        1.52787    : t=        1.47518 Δdist=        0.00000 Δind=     13245
 n=100000, d=5, M=10, threads=1
-        genieclust_kdtree_4_32: t=        1.97062 Δdist=        0.00000 Δind=         0  : t=        1.49411 Δdist=        0.00000 Δind=         0
-              genieclust_brute: t=       28.00334 Δdist=        0.00000 Δind=        19  : t=       28.54355 Δdist=        0.00000 Δind=         0
-            fasthdbscan_kdtree: t=        1.31027 Δdist=       -0.00000 Δind=      7540  : t=        1.30258 Δdist=       -0.00067 Δind=      7675
-           hdbscan_kdtree_40_3: t=        6.76528 Δdist=       -0.00000 Δind=      7549  : t=        6.71068 Δdist=       -0.00067 Δind=      7684
+        genieclust_kdtree_4_32: t=        1.97062  : t=        1.49411    : t=        1.21564 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       28.00334  : t=       28.54355    : t=       27.26717 Δdist=        0.00000 Δind=        18
+            fasthdbscan_kdtree: t=        1.31027  : t=        1.30258    : t=        1.35008 Δdist=       -0.00000 Δind=      6625
+           hdbscan_kdtree_40_3: t=        6.76528  : t=        6.71068    : t=        6.67515 Δdist=        0.00000 Δind=      6624
 
 
 """
@@ -197,7 +204,7 @@ cases = dict(
 
 
 numba.set_num_threads(n_jobs)
-n = 100_000
+n = 250_000
 for n, d, M in [(n, 2, 1), (n, 5, 1), (n, 2, 10), (n, 5, 10)]:
     np.random.seed(123)
     X = np.random.randn(n, d)

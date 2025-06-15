@@ -538,6 +538,20 @@ void mst(
 
     tree.boruvka(tree_dist, tree_ind);
 
+    if (d_core) {
+        const FLOAT* _d_core = tree.get_dcore();
+        const FLOAT* _data = tree.get_data();
+        // we need to recompute the distances as we applied a correction for ambiguity
+        for (Py_ssize_t i=0; i<n-1; ++i) {
+            tree_dist[i] = 0.0;
+            for (Py_ssize_t j=0; j<D; ++j)
+                tree_dist[i] += square(_data[tree_ind[2*i+0]*D+j]-_data[tree_ind[2*i+1]*D+j]);
+            tree_dist[i] = max3(tree_dist[i], _d_core[tree_ind[2*i+0]], _d_core[tree_ind[2*i+1]]);
+        }
+        for (Py_ssize_t i=0; i<n; ++i)
+            d_core[i] = _d_core[perm[i]];
+    }
+
     for (Py_ssize_t i=0; i<n-1; ++i) {
         GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
         GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
@@ -546,11 +560,6 @@ void mst(
         tree_ind[2*i+1] = perm[tree_ind[2*i+1]];
     }
 
-    if (d_core) {
-        const FLOAT* _d_core = tree.get_dcore();
-        for (Py_ssize_t i=0; i<n; ++i)
-            d_core[i] = _d_core[perm[i]];
-    }
 
     if (order) {
         std::vector< CMstTriple<FLOAT> > mst(n-1);
@@ -559,7 +568,7 @@ void mst(
             mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
         }
 
-        std::stable_sort(mst.begin(), mst.end());
+        std::sort(mst.begin(), mst.end());
 
         for (Py_ssize_t i=0; i<n-1; ++i) {
             tree_dist[i]    = mst[i].d;
