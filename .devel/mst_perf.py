@@ -41,6 +41,52 @@ n=100000, d=5, M=10, threads=1
             fasthdbscan_kdtree: t=        1.32822 Δdist=       -0.00000 Δind=      7558
 
 
+
+apollo < 2025-06-15                                                                       : vs 2025-06-15
+n=250000, d=2, M=1, threads=1                                                             n=250000, d=2, M=1, threads=1
+        genieclust_kdtree_4_32: t=        0.30752 Δdist=        0.00000 Δind=         0   : t=        0.29868 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        1.48554 Δdist=        0.00000 Δind=         0   : t=        1.48109 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        4.08379 Δdist=        0.00000 Δind=         0   : t=        4.08067 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=        5.86782 Δdist=        0.00000 Δind=         0   : t=        5.86651 Δdist=        0.00000 Δind=         0
+n=250000, d=5, M=1, threads=1
+        genieclust_kdtree_4_32: t=        5.78663 Δdist=        0.00000 Δind=         0   : t=        5.81715 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=       14.37002 Δdist=        0.00000 Δind=         0   : t=       14.60630 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=       20.62158 Δdist=        0.00000 Δind=         0   : t=       20.63816 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=       36.97692 Δdist=        0.00000 Δind=         0   : t=       37.25075 Δdist=        0.00000 Δind=         0
+n=250000, d=2, M=10, threads=1
+        genieclust_kdtree_4_32: t=        0.36002 Δdist=        0.00000 Δind=         0   : t=        0.49767 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        2.25570 Δdist=       -0.00000 Δind=     32434   : t=        2.28296 Δdist=        0.00000 Δind=     60388
+           hdbscan_kdtree_40_3: t=        6.06295 Δdist=       -0.00000 Δind=     32605   : t=        6.01803 Δdist=        0.00000 Δind=     60352
+n=250000, d=5, M=10, threads=1
+        genieclust_kdtree_4_32: t=        5.42228 Δdist=        0.00000 Δind=         0   : t=        3.77974 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        6.56826 Δdist=       -0.00000 Δind=     20553   : t=        6.41720 Δdist=        0.00001 Δind=     33813
+           hdbscan_kdtree_40_3: t=       28.73878 Δdist=       -0.00000 Δind=     20559   : t=       27.55924 Δdist=        0.00001 Δind=     33797
+
+
+n=100000, d=2, M=1, threads=1                                                                n=100000, d=2, M=1, threads=1
+        genieclust_kdtree_4_32: t=        0.11772 Δdist=        0.00000 Δind=         0  : t=        0.11488 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=        8.71274 Δdist=        0.00000 Δind=         0  : t=        8.70426 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        0.56442 Δdist=        0.00000 Δind=         0  : t=        0.56202 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        1.30298 Δdist=        0.00000 Δind=         0  : t=        1.30041 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=        1.67903 Δdist=        0.00000 Δind=         0  : t=        1.67868 Δdist=        0.00000 Δind=         0
+n=100000, d=5, M=1, threads=1
+        genieclust_kdtree_4_32: t=        2.14303 Δdist=        0.00000 Δind=         0  : t=        2.14580 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       13.41931 Δdist=        0.00000 Δind=         0  : t=       13.64711 Δdist=        0.00000 Δind=         0
+                      mlpack_1: t=        5.29734 Δdist=        0.00000 Δind=         0  : t=        5.32112 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        4.30194 Δdist=        0.00000 Δind=         0  : t=        4.26212 Δdist=        0.00000 Δind=         0
+           hdbscan_kdtree_40_3: t=       15.14476 Δdist=        0.00000 Δind=         0  : t=       15.13626 Δdist=        0.00000 Δind=         0
+n=100000, d=2, M=10, threads=1
+        genieclust_kdtree_4_32: t=        0.13555 Δdist=        0.00000 Δind=         0  : t=        0.16070 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       18.80316 Δdist=        0.00000 Δind=        31  : t=       19.47750 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        0.65381 Δdist=       -0.00000 Δind=     13041  : t=        0.66013 Δdist=       -0.00002 Δind=     13126
+           hdbscan_kdtree_40_3: t=        1.53040 Δdist=       -0.00000 Δind=     13072  : t=        1.52787 Δdist=       -0.00002 Δind=     13157
+n=100000, d=5, M=10, threads=1
+        genieclust_kdtree_4_32: t=        1.97062 Δdist=        0.00000 Δind=         0  : t=        1.49411 Δdist=        0.00000 Δind=         0
+              genieclust_brute: t=       28.00334 Δdist=        0.00000 Δind=        19  : t=       28.54355 Δdist=        0.00000 Δind=         0
+            fasthdbscan_kdtree: t=        1.31027 Δdist=       -0.00000 Δind=      7540  : t=        1.30258 Δdist=       -0.00067 Δind=      7675
+           hdbscan_kdtree_40_3: t=        6.76528 Δdist=       -0.00000 Δind=      7549  : t=        6.71068 Δdist=       -0.00067 Δind=      7684
+
+
 """
 
 
@@ -151,7 +197,7 @@ cases = dict(
 
 
 numba.set_num_threads(n_jobs)
-n = 250_000
+n = 100_000
 for n, d, M in [(n, 2, 1), (n, 5, 1), (n, 2, 10), (n, 5, 10)]:
     np.random.seed(123)
     X = np.random.randn(n, d)

@@ -823,7 +823,7 @@ public:
 
                 // singletons should be merged first
                 // (we assume that they have cluster_d_sums==Inf
-                // (this was not addressed in Mueller's paper)
+                // (this was not addressed in A.Mueller's paper)
                 if (cluster_d_sums[i1] < 1e-12 || cluster_d_sums[i2] < 1e-12) {
                     max_which = j;
                     break;

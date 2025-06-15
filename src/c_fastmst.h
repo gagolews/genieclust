@@ -287,7 +287,7 @@ void Cmst_euclid_brute(
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                     FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
                     if (dd <= d_core_max)
-                        dd = d_core_max+(1e-12)*dd;
+                        dd = d_core_max+dd/DCORE_DIST_ADJ;
 
                     if (dd < dist_nn[ind_left[j]]) {
                         ind_nn[ind_left[j]] = ind_cur;

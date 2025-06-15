@@ -284,6 +284,23 @@ genieclust_brute    29.806    0.019  29.829     0    0
 new_4_16             1.699    0.001   1.701     0   22
 
 
+apollo @ 2025-06-15 12:12
+n=100000, d=2, M=1
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute     9.643    0.009   9.654     0    0
+new_4_16             0.110    0.001   0.111     0    0
+n=100000, d=2, M=10
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    19.702    0.021  19.726     0    0
+new_4_16             0.159    0.004   0.163     0    0
+n=100000, d=5, M=1
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    13.162    0.012  13.174     0    0
+new_4_16             1.723    0.000   1.724     0    0
+n=100000, d=5, M=10
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    28.905    0.023  28.935     0    0
+new_4_16             1.262    0.001   1.264     0    0
 
 
 

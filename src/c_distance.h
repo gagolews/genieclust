@@ -415,7 +415,7 @@ struct CDistanceMutualReachability : public CDistance<T>
 #elif MUTREACH_SHARPEN == 1
                     // make it unambiguous:
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    __buf[w] = d_core_max+(1e-12)*d[w];
+                    __buf[w] = d_core_max+d[w]/(1<<24);
 #endif
                 }
             }

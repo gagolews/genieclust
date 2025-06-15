@@ -39,11 +39,11 @@
  * @param d length of both x and y
  * @return sum((x-y)^2)
  */
-FLOAT_T distance_l2_squared(const FLOAT_T* x, const FLOAT_T* y, size_t d)
+inline FLOAT_T distance_l2_squared(const FLOAT_T* x, const FLOAT_T* y, size_t d)
 {
     FLOAT_T ret = 0.0;
     for (size_t i=0; i<d; i++) {
-        ret += (x[i]-y[i])*(x[i]-y[i]);
+        ret += square(x[i]-y[i]);
     }
     return ret;
 }
@@ -123,7 +123,7 @@ public:
     }
 
 
-    const FLOAT_T operator()(size_t i, size_t j) const
+    FLOAT_T operator()(size_t i, size_t j) const
     {
         if (i == j) return 0.0;
         if (precomputed) {
@@ -220,14 +220,14 @@ public:
      *
      * @return
      */
-    const size_t get_K() const { return K; }
+    size_t get_K() const { return K; }
 
 
     /** Returns the number of data points
      *
      * @return
      */
-    const size_t get_n() const { return n; }
+    size_t get_n() const { return n; }
 
 
     /** Assigns a new label vector

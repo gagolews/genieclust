@@ -94,6 +94,23 @@ typedef double FLOAT_T; ///< float type we are working internally with
 template<class T>
 inline T square(T x) { return x*x; }
 
+template <class T>
+inline T min3(const T a, const T b, const T c) {
+    T m = a;
+    if (b < m) m = b;
+    if (c < m) m = c;
+    return m;
+}
+
+template <class T>
+inline T max3(const T a, const T b, const T c) {
+    T m = a;
+    if (b > m) m = b;
+    if (c > m) m = c;
+    return m;
+}
+
+
 #define IS_PLUS_INFINITY(x)  ((x) > 0.0 && !std::isfinite(x))
 #define IS_MINUS_INFINITY(x) ((x) < 0.0 && !std::isfinite(x))
 
