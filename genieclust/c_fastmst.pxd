@@ -33,6 +33,7 @@ cdef extern from "../src/c_fastmst.h":
 
     void Comp_set_num_threads(Py_ssize_t n_threads)
 
+    void Ctree_order[T](Py_ssize_t n, T* tree_dist, Py_ssize_t* tree_ind)
 
     void Cknn_sqeuclid_kdtree[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,

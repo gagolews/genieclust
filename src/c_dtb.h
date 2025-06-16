@@ -231,7 +231,7 @@ protected:
                 first_pass_max_brute_size
             );
             nn.find(this->root);
-            if (M == 2) dcore[i]   = nn_dist[i];
+            if (M == 2) dcore[i] = nn_dist[i];
         }
 
         // connect nearest neighbours with each other
@@ -264,7 +264,7 @@ protected:
                 first_pass_max_brute_size
             );
             nn.find(this->root);
-            dcore[i]   = knn_dist[i*k+(k-1)];
+            dcore[i] = knn_dist[i*k+(k-1)];
         }
 
         // k-nns wrt Euclidean distances are not necessarily k-nns wrt mutreach
@@ -530,8 +530,7 @@ void mst(
     TREE& tree,
     FLOAT* tree_dist,   // size n-1
     Py_ssize_t* tree_ind,   // size 2*(n-1),
-    FLOAT* d_core=nullptr,  // size n
-    bool order=true
+    FLOAT* d_core=nullptr  // size n
 ) {
     Py_ssize_t n = tree.get_n();
     const Py_ssize_t* perm = tree.get_perm().data();
@@ -560,22 +559,7 @@ void mst(
         tree_ind[2*i+1] = perm[tree_ind[2*i+1]];
     }
 
-
-    if (order) {
-        std::vector< CMstTriple<FLOAT> > mst(n-1);
-
-        for (Py_ssize_t i=0; i<n-1; ++i) {
-            mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
-        }
-
-        std::sort(mst.begin(), mst.end());
-
-        for (Py_ssize_t i=0; i<n-1; ++i) {
-            tree_dist[i]    = mst[i].d;
-            tree_ind[2*i+0] = mst[i].i1;  // i1 < i2
-            tree_ind[2*i+1] = mst[i].i2;
-        }
-    }
+    // the edges are not ordered, use Cmst_order
 }
 
 

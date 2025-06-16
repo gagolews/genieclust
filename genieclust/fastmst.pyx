@@ -136,6 +136,43 @@ cpdef tuple knn_sqeuclid(
 
 
 
+cpdef tuple tree_order(floatT[::1] tree_dist, Py_ssize_t[:,::1] tree_ind):
+    """
+    Orders the edges of a graph (e.g., a spanning tree) wrt the weights
+    increasingly, resolving ties if needed based on the points' IDs.
+
+
+    Parameters
+    ----------
+
+    tree_dist : c_contiguous ndarray, shape (m,)
+        The m edges' weights
+
+    tree_ind : c_contiguous ndarray, shape (m,2)
+        The corresponding pairs of IDs of the incident nodes
+
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (tree_dist, tree_ind) after the ordering.
+
+    """
+    cdef Py_ssize_t m = tree_dist.shape[0]
+
+    if tree_ind.shape[0] != m or tree_ind.shape[1] != 2:
+        raise ValueError("incorrect shape of tree_ind")
+
+    cdef np.ndarray[floatT] tree_dist_ret = np.asarray(tree_dist, order="C", copy=True)
+    cdef np.ndarray[Py_ssize_t,ndim=2] tree_ind_ret = np.asarray(tree_ind, order="C", copy=True)
+
+    c_fastmst.Ctree_order(m, &tree_dist_ret[0], &tree_ind_ret[0,0])
+
+    return tree_dist_ret, tree_ind_ret
+
+
+
 cpdef tuple mst_euclid(
     floatT[:,::1] X,
     Py_ssize_t M,

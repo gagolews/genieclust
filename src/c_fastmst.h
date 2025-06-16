@@ -29,6 +29,8 @@
 // #include "c_picotree.h"
 
 
+#define MST_OMP_CHUNK_SIZE 1024
+
 #ifdef _OPENMP
 void Comp_set_num_threads(Py_ssize_t n_threads) {
     if (n_threads <= 0)
@@ -43,7 +45,31 @@ void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
 
 
 
+/*! Order the n-1 edges of a spanning tree of n points in place,
+ * wrt the weights increasingly, resolving ties if needed based on
+ * the points' IDs.
+ *
+ * @param n
+ * @param mst_dist [in/out] size m
+ * @param mst_ind [in/out] size m*2
+ */
+template <class FLOAT>
+void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
+{
+    std::vector< CMstTriple<FLOAT> > mst(m);
 
+    for (Py_ssize_t i=0; i<m; ++i) {
+        mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
+    }
+
+    std::sort(mst.begin(), mst.end());
+
+    for (Py_ssize_t i=0; i<m; ++i) {
+        tree_dist[i]    = mst[i].d;
+        tree_ind[2*i+0] = mst[i].i1;  // i1 < i2
+        tree_ind[2*i+1] = mst[i].i2;
+    }
+}
 
 
 /*! Determine the k nearest neighbours of each point
@@ -79,17 +105,15 @@ void Cknn_sqeuclid_brute(
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
 
-    for (Py_ssize_t i=0; i<n*k; ++i) {
-        nn_dist[i] = INFINITY;
-        nn_ind[i] = -1;
-    }
+    for (Py_ssize_t i=0; i<n*k; ++i) nn_dist[i] = INFINITY;
+    for (Py_ssize_t i=0; i<n*k; ++i) nn_ind[i] = -1;
 
     std::vector<FLOAT> dij(n);
     for (Py_ssize_t i=0; i<n-1; ++i) {
         const FLOAT* x_cur = X+i*d;
 
         #ifdef _OPENMP
-        #pragma omp parallel for schedule(static)
+        #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
             FLOAT dd = 0.0;
@@ -111,8 +135,7 @@ void Cknn_sqeuclid_brute(
             }
         }
 
-
-        // This part can't be parallelised
+        // This part can't be (naively) parallelised
         for (Py_ssize_t j=i+1; j<n; ++j) {
             if (dij[j] < nn_dist[i*k+k-1]) {
                 // j might be amongst k-NNs of i
@@ -129,11 +152,11 @@ void Cknn_sqeuclid_brute(
 
         // if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
+        // #if GENIECLUST_R
+        // Rcpp::checkUserInterrupt();  // this will cause a longjmp and mem will not be deallocated?
+        // #elif GENIECLUST_PYTHON
+        // if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        // #endif
     }
 
     if (verbose) GENIECLUST_PRINT("done.\n");
@@ -233,13 +256,13 @@ void Cmst_euclid_brute(
         FLOAT* x_cur = X+(i-1)*d;
 
         // compute the distances
-        // between ind_cur=ind_left[i-1] and all j=i, i+1, ..., n-1:
+        // between the (i-1)-th vertex and all j=i, i+1, ..., n-1:
 #if 0
-        // two-stage - slower
+        // NOTE two-stage Euclidean distance computation: slower -> removed
 #else
         if (M <= 2) {
             #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
+            #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
                 FLOAT dd = 0.0;
@@ -247,52 +270,49 @@ void Cmst_euclid_brute(
                     dd += square(x_cur[u]-X[j*d+u]);
 
                 if (dd < dist_nn[j]) {
-                    ind_nn[j] = i-1;
                     dist_nn[j] = dd;
+                    ind_nn[j] = i-1;
                 }
             }
         }
         else
         {
             #ifdef _OPENMP
-            #pragma omp parallel for schedule(static)
+            #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
                 FLOAT dd = 0.0;
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
-                if (dd < dist_nn[j]) {
+                if (dd < dist_nn[j]) {  // otherwise why bother
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                     FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
                     if (dd <= d_core_max)
                         dd = d_core_max+dd/DCORE_DIST_ADJ;
 
                     if (dd < dist_nn[j]) {
-                        ind_nn[j] = i-1;
                         dist_nn[j] = dd;
+                        ind_nn[j] = i-1;
                     }
                 }
             }
         }
 #endif
 
-// for we want to include the vertex that is closest to the vertices
+        // we want to include the vertex that is closest to the vertices
         // of the tree constructed so far
         Py_ssize_t best_j = i;
-        for (Py_ssize_t j=i+1; j<n; ++j) {
-            if (dist_nn[j] < dist_nn[best_j]) {
+        for (Py_ssize_t j=i+1; j<n; ++j)
+            if (dist_nn[j] < dist_nn[best_j])
                 best_j = j;
-            }
-        }
 
-        // don't visit i again
+
         // with swapping we get better locality of reference
         std::swap(ind_left[best_j], ind_left[i]);
         std::swap(dist_nn[best_j], dist_nn[i]);
         std::swap(ind_nn[best_j], ind_nn[i]);
-        for (Py_ssize_t u=0; u<d; ++u) {
-            std::swap(X[best_j*d+u], X[i*d+u]);
-        }
+        for (Py_ssize_t u=0; u<d; ++u) std::swap(X[best_j*d+u], X[i*d+u]);
+
 
         if (M > 2) {
             std::swap(d_core[best_j], d_core[i]);
@@ -303,6 +323,8 @@ void Cmst_euclid_brute(
             dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
         }
 
+        // don't visit i again - it's being added to the tree
+
         // connect best_ind_left with the tree: add a new edge {best_ind_left, ind_nn[best_ind_left]}
         GENIECLUST_ASSERT(ind_nn[i] < i);
         mst[i-1] = CMstTriple<FLOAT>(ind_left[ind_nn[i]], ind_left[i], dist_nn[i], /*order=*/true);
@@ -310,11 +332,11 @@ void Cmst_euclid_brute(
 
         if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
+        // #if GENIECLUST_R
+        // Rcpp::checkUserInterrupt();  // a longjmp?
+        // #elif GENIECLUST_PYTHON
+        // if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        // #endif
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
@@ -457,6 +479,8 @@ void Cmst_euclid_kdtree(
 
     for (Py_ssize_t i=0; i<n-1; ++i)
         mst_dist[i] = sqrt(mst_dist[i]);
+
+    Ctree_order(n-1, mst_dist, mst_ind);
 
     if (d_core) {
         for (Py_ssize_t i=0; i<n; ++i)
