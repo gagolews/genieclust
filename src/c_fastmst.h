@@ -30,18 +30,6 @@
 
 #define MST_OMP_CHUNK_SIZE 1024
 
-#ifdef _OPENMP
-void Comp_set_num_threads(Py_ssize_t n_threads) {
-    if (n_threads <= 0)
-        n_threads = omp_get_max_threads();
-    omp_set_num_threads(n_threads);
-}
-#else
-void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
-    ;
-}
-#endif
-
 
 
 /*! Order the n-1 edges of a spanning tree of n points in place,
@@ -111,7 +99,7 @@ void Cknn_sqeuclid_brute(
     for (Py_ssize_t i=0; i<n-1; ++i) {
         const FLOAT* x_cur = X+i*d;
 
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
@@ -149,7 +137,7 @@ void Cknn_sqeuclid_brute(
             }
         }
 
-        // if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        // if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
         // #if GENIECLUST_R
         // Rcpp::checkUserInterrupt();  // this will cause a longjmp and mem will not be deallocated?
@@ -233,7 +221,7 @@ void Cmst_euclid_brute(
     // TODO: actually, for M==2, we could compute d_core (1-nn) distance on the fly...
 
 
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+    if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
 
 
     // ind_nn[j] is the vertex from the current tree closest to vertex j
@@ -260,7 +248,7 @@ void Cmst_euclid_brute(
         // NOTE two-stage Euclidean distance computation: slower -> removed
 #else
         if (M <= 2) {
-            #ifdef _OPENMP
+            #if OPENMP_IS_ENABLED
             #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
@@ -276,7 +264,7 @@ void Cmst_euclid_brute(
         }
         else
         {
-            #ifdef _OPENMP
+            #if OPENMP_IS_ENABLED
             #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
@@ -329,7 +317,7 @@ void Cmst_euclid_brute(
         mst[i-1] = CMstTriple<FLOAT>(ind_left[ind_nn[i]], ind_left[i], dist_nn[i], /*order=*/true);
 
 
-        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)((n-1+n-i-1)*(i+1)*100/n/(n-1)));
 
         // #if GENIECLUST_R
         // Rcpp::checkUserInterrupt();  // a longjmp?
@@ -385,7 +373,7 @@ void Cknn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
     // mgtree::kdtree<FLOAT_INTERNAL, D, DISTANCE> tree(XC.data(), n, max_leaf_size);
     // mgtree::kneighbours<FLOAT_INTERNAL, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
     //
-    // #ifdef _OPENMP
+    // #if OPENMP_IS_ENABLED
     // #pragma omp parallel for schedule(static)
     // #endif
     // for (size_t i=0; i<n; ++i) {
@@ -433,26 +421,27 @@ void Cknn_sqeuclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
 
+    #define ARGS_Cknn_sqeuclid_kdtree X, n, k, nn_dist, nn_ind, max_leaf_size, verbose
     /* LMAO; templates... */
-    /**/ if (d ==  2)  Cknn_sqeuclid_kdtree<FLOAT,  2>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  3)  Cknn_sqeuclid_kdtree<FLOAT,  3>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  4)  Cknn_sqeuclid_kdtree<FLOAT,  4>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  5)  Cknn_sqeuclid_kdtree<FLOAT,  5>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  6)  Cknn_sqeuclid_kdtree<FLOAT,  6>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  7)  Cknn_sqeuclid_kdtree<FLOAT,  7>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  8)  Cknn_sqeuclid_kdtree<FLOAT,  8>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d ==  9)  Cknn_sqeuclid_kdtree<FLOAT,  9>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 10)  Cknn_sqeuclid_kdtree<FLOAT, 10>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 11)  Cknn_sqeuclid_kdtree<FLOAT, 11>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 12)  Cknn_sqeuclid_kdtree<FLOAT, 12>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 13)  Cknn_sqeuclid_kdtree<FLOAT, 13>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 14)  Cknn_sqeuclid_kdtree<FLOAT, 14>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 15)  Cknn_sqeuclid_kdtree<FLOAT, 15>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 16)  Cknn_sqeuclid_kdtree<FLOAT, 16>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 17)  Cknn_sqeuclid_kdtree<FLOAT, 17>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 18)  Cknn_sqeuclid_kdtree<FLOAT, 18>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 19)  Cknn_sqeuclid_kdtree<FLOAT, 19>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
-    else if (d == 20)  Cknn_sqeuclid_kdtree<FLOAT, 20>(X, n, k, nn_dist, nn_ind, max_leaf_size, verbose);
+    /**/ if (d ==  2) Cknn_sqeuclid_kdtree<FLOAT,  2>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  3) Cknn_sqeuclid_kdtree<FLOAT,  3>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  4) Cknn_sqeuclid_kdtree<FLOAT,  4>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  5) Cknn_sqeuclid_kdtree<FLOAT,  5>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  6) Cknn_sqeuclid_kdtree<FLOAT,  6>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  7) Cknn_sqeuclid_kdtree<FLOAT,  7>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  8) Cknn_sqeuclid_kdtree<FLOAT,  8>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d ==  9) Cknn_sqeuclid_kdtree<FLOAT,  9>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 10) Cknn_sqeuclid_kdtree<FLOAT, 10>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 11) Cknn_sqeuclid_kdtree<FLOAT, 11>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 12) Cknn_sqeuclid_kdtree<FLOAT, 12>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 13) Cknn_sqeuclid_kdtree<FLOAT, 13>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 14) Cknn_sqeuclid_kdtree<FLOAT, 14>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 15) Cknn_sqeuclid_kdtree<FLOAT, 15>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 16) Cknn_sqeuclid_kdtree<FLOAT, 16>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 17) Cknn_sqeuclid_kdtree<FLOAT, 17>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 18) Cknn_sqeuclid_kdtree<FLOAT, 18>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 19) Cknn_sqeuclid_kdtree<FLOAT, 19>(ARGS_Cknn_sqeuclid_kdtree);
+    else if (d == 20) Cknn_sqeuclid_kdtree<FLOAT, 20>(ARGS_Cknn_sqeuclid_kdtree);
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }
@@ -470,6 +459,7 @@ void Cmst_euclid_kdtree(
     FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core,
     Py_ssize_t max_leaf_size,
     Py_ssize_t first_pass_max_brute_size,
+    bool use_dtb,
     bool /*verbose*/
 ) {
     using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT, D>;
@@ -477,7 +467,8 @@ void Cmst_euclid_kdtree(
     GENIECLUST_PROFILER_USE
 
     GENIECLUST_PROFILER_START
-    mgtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M, max_leaf_size, first_pass_max_brute_size);
+    mgtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
+        max_leaf_size, first_pass_max_brute_size, use_dtb);
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
@@ -498,7 +489,7 @@ void Cmst_euclid_kdtree(
 }
 
 
-/*! A Dual-tree Boruvka-like algorithm based on K-d trees for determining
+/*! A Boruvka-like algorithm based on K-d trees for determining
  *  a(*) Euclidean minimum spanning tree (MST) or
  *  one that corresponds to an M-mutual reachability distance.
  *  Fast in low-dimensional spaces.
@@ -529,6 +520,7 @@ void Cmst_euclid_kdtree(
  *        (M-1)-th neighbours
  * @param max_leaf_size TODO ...
  * @param first_pass_max_brute_size TODO ...
+ * @param use_dtb TODO...
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -537,6 +529,7 @@ void Cmst_euclid_kdtree(
     FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core=nullptr,
     Py_ssize_t max_leaf_size=0,
     Py_ssize_t first_pass_max_brute_size=0,
+    bool use_dtb=false,
     bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
@@ -557,26 +550,28 @@ void Cmst_euclid_kdtree(
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... ");
 
+    #define ARGS_Cmst_euclid_kdtree X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+
     /* LMAO; templates... */
-    /**/ if (d ==  2)  Cmst_euclid_kdtree<FLOAT,  2>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  3)  Cmst_euclid_kdtree<FLOAT,  3>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  4)  Cmst_euclid_kdtree<FLOAT,  4>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  5)  Cmst_euclid_kdtree<FLOAT,  5>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  6)  Cmst_euclid_kdtree<FLOAT,  6>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  7)  Cmst_euclid_kdtree<FLOAT,  7>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  8)  Cmst_euclid_kdtree<FLOAT,  8>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d ==  9)  Cmst_euclid_kdtree<FLOAT,  9>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 10)  Cmst_euclid_kdtree<FLOAT, 10>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 11)  Cmst_euclid_kdtree<FLOAT, 11>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 12)  Cmst_euclid_kdtree<FLOAT, 12>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 13)  Cmst_euclid_kdtree<FLOAT, 13>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 14)  Cmst_euclid_kdtree<FLOAT, 14>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 15)  Cmst_euclid_kdtree<FLOAT, 15>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 16)  Cmst_euclid_kdtree<FLOAT, 16>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 17)  Cmst_euclid_kdtree<FLOAT, 17>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 18)  Cmst_euclid_kdtree<FLOAT, 18>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 19)  Cmst_euclid_kdtree<FLOAT, 19>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
-    else if (d == 20)  Cmst_euclid_kdtree<FLOAT, 20>(X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, verbose);
+    /**/ if (d ==  2) Cmst_euclid_kdtree<FLOAT,  2>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  3) Cmst_euclid_kdtree<FLOAT,  3>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  4) Cmst_euclid_kdtree<FLOAT,  4>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  5) Cmst_euclid_kdtree<FLOAT,  5>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  6) Cmst_euclid_kdtree<FLOAT,  6>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  7) Cmst_euclid_kdtree<FLOAT,  7>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  8) Cmst_euclid_kdtree<FLOAT,  8>(ARGS_Cmst_euclid_kdtree);
+    else if (d ==  9) Cmst_euclid_kdtree<FLOAT,  9>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 10) Cmst_euclid_kdtree<FLOAT, 10>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 11) Cmst_euclid_kdtree<FLOAT, 11>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 12) Cmst_euclid_kdtree<FLOAT, 12>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 13) Cmst_euclid_kdtree<FLOAT, 13>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 14) Cmst_euclid_kdtree<FLOAT, 14>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 15) Cmst_euclid_kdtree<FLOAT, 15>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 16) Cmst_euclid_kdtree<FLOAT, 16>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 17) Cmst_euclid_kdtree<FLOAT, 17>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 18) Cmst_euclid_kdtree<FLOAT, 18>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 19) Cmst_euclid_kdtree<FLOAT, 19>(ARGS_Cmst_euclid_kdtree);
+    else if (d == 20) Cmst_euclid_kdtree<FLOAT, 20>(ARGS_Cmst_euclid_kdtree);
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }

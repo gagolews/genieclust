@@ -38,36 +38,6 @@
 #include <deque>
 #include <array>
 
-#ifdef GENIECLUST_PROFILER
-#include <chrono>
-
-#define GENIECLUST_PROFILER_START \
-    _genieclust_profiler_t0 = std::chrono::high_resolution_clock::now();
-
-#define GENIECLUST_PROFILER_GETDIFF  \
-    _genieclust_profiler_td = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now()-_genieclust_profiler_t0);
-
-#define GENIECLUST_PROFILER_USE \
-    auto GENIECLUST_PROFILER_START \
-    auto GENIECLUST_PROFILER_GETDIFF \
-    char _genieclust_profiler_strbuf[256];
-
-#define GENIECLUST_PROFILER_STOP(...) \
-    GENIECLUST_PROFILER_GETDIFF; \
-    snprintf(_genieclust_profiler_strbuf, sizeof(_genieclust_profiler_strbuf), __VA_ARGS__); \
-    fprintf(stderr, "%-64s: time=%12.3lf s\n", _genieclust_profiler_strbuf, _genieclust_profiler_td.count()/1000.0);
-
-/* use like:
-GENIECLUST_PROFILER_USE
-GENIECLUST_PROFILER_START
-GENIECLUST_PROFILER_STOP("message %d", 7)
-*/
-#else
-#define GENIECLUST_PROFILER_START ; /* no-op */
-#define GENIECLUST_PROFILER_STOP(...) ; /* no-op */
-#define GENIECLUST_PROFILER_GETDIFF ; /* no-op */
-#define GENIECLUST_PROFILER_USE ; /* no-op */
-#endif
 
 namespace mgtree {
 
@@ -504,7 +474,7 @@ void kneighbours(
     Py_ssize_t n = tree.get_n();
     const Py_ssize_t* perm = tree.get_perm().data();
 
-    #ifdef _OPENMP
+    #if OPENMP_IS_ENABLED
     #pragma omp parallel for schedule(static)
     #endif
     for (Py_ssize_t i=0; i<n; ++i) {

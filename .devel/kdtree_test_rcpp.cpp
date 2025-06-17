@@ -15,22 +15,9 @@
  */
 
 
-#ifndef GENIECLUST_ASSERT
-#define __GENIECLUST_STR(x) #x
-#define GENIECLUST_STR(x) __GENIECLUST_STR(x)
-
-#define GENIECLUST_ASSERT(EXPR) { if (!(EXPR)) \
-    throw std::runtime_error( "genieclust: Assertion " #EXPR " failed in "\
-        __FILE__ ":" GENIECLUST_STR(__LINE__) ); }
-#endif
-
-#include <sys/types.h>
-typedef ssize_t         Py_ssize_t;
-
+#define GENIECLUST_R
 #include "../src/c_fastmst.h"
 
-
-#include <Rcpp.h>
 
 
 // [[Rcpp::export]]
@@ -79,7 +66,8 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
 
 
 // [[Rcpp::export]]
-Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true, int max_leaf_size=4, int first_pass_max_brute_size=16)
+Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true,
+    int max_leaf_size=16, int first_pass_max_brute_size=0, bool use_dtb=false)
 {
     using FLOAT = double;  // float is not faster..
 
@@ -107,7 +95,7 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true, int
         d_core_ptr = NULL;
 
     if (use_kdtree && d >= 2 && d <= 20) {
-        Cmst_euclid_kdtree<FLOAT>(XC.data(), n, d, M, tree_dist.data(), tree_ind.data(), d_core_ptr, max_leaf_size, first_pass_max_brute_size);
+        Cmst_euclid_kdtree<FLOAT>(XC.data(), n, d, M, tree_dist.data(), tree_ind.data(), d_core_ptr, max_leaf_size, first_pass_max_brute_size, use_dtb);
     }
     else {
         Cmst_euclid_brute<FLOAT>(XC.data(), n, d, M, tree_dist.data(), tree_ind.data(), d_core_ptr);
@@ -172,16 +160,24 @@ funs_mst <- list(
 )
 
 funs_mst_mutreach <- list(
-    genieclust_brute=function(X, M) test_mst(X, M, FALSE),
-    new_4_16=function(X, M) test_mst(X, M, TRUE, 4L, 16L)
+#   new_4_0=function(X, M) test_mst(X, M, TRUE, 4L, 0L),
+#   new_8_0=function(X, M) test_mst(X, M, TRUE, 8L, 0L),
+#   new_4_16=function(X, M) test_mst(X, M, TRUE, 4L, 16L),
+    new_16_0=function(X, M) test_mst(X, M, TRUE, 16L, 0L),
+    #new_32_0=function(X, M) test_mst(X, M, TRUE, 32L, 0L),
+    dtb_4_16=function(X, M) test_mst(X, M, TRUE, 4L, 16L, use_dtb=TRUE),
+    genieclust_brute=function(X, M) {
+        if (nrow(X) <= 100000) test_mst(X, M, FALSE)
+        else matrix(NA, nrow=1, ncol=3)
+    }
 )
 
-n <- 100000
+n <- 1000000
 for (d in c()) {
     k <- 1L
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
-    cat(sprintf("n=%d, d=%d, k=%d\n", n, d, k))
+    cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, Sys.getenv("OMP_NUM_THREADS")))
 
     res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
         f <- funs_knn[[i]]
@@ -190,19 +186,19 @@ for (d in c()) {
     })
 
     print(cbind(
-        as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
+        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
         Δdist=sapply(res, function(e) sum(e[[2]])-sum(res[[1]][[2]])),
         Δidx=sapply(res, function(e) sum(e[[1]] != res[[1]][[1]]))
     ))
 }
 
 
-for (d in c(2, 5)) {
+for (n in c(100000, 1000000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
 
     for (M in c(1, 10)) {
-        cat(sprintf("n=%d, d=%d, M=%d\n", n, d, M))
+        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%s\n", n, d, M, Sys.getenv("OMP_NUM_THREADS")))
 
         res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach)), function(i) {
             f <- funs_mst_mutreach[[i]]
@@ -211,9 +207,9 @@ for (d in c(2, 5)) {
         })
 
         print(cbind(
-            as.data.frame(t(sapply(res, `[[`, 1)))[,1:3],
-            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][,3])),
-            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][,-3]))
+            as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
+            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
         ))
     }
 }
@@ -251,40 +247,91 @@ genieclust_brute    28.122    0.022  28.147     0    0
 new_4_16             1.267    0.001   1.268     0   19
 
 
-hades @ 2025-06-17 11:00 1 thread
+
+
+
+hades @ 2025-06-17 16:12 1 thread
 n=100000, d=2, M=1
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute     8.899    0.009   8.909     0    0
-new_4_16             0.110    0.002   0.111     0    0
+new_16_0             0.137    0.003   0.140     0    0
+dtb_4_16             0.113    0.001   0.114     0    0
+genieclust_brute     8.892    0.009   8.903     0    0
 n=100000, d=2, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    19.230    0.026  19.258     0    0
-new_4_16             0.159    0.003   0.162     0    0
+new_16_0             0.126    0.004   0.130     0    0
+dtb_4_16             0.161    0.001   0.162     0    0
+genieclust_brute    19.906    0.024  19.934     0    0
 n=100000, d=5, M=1
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    11.734    0.008  11.743     0    0
-new_4_16             1.727    0.000   1.726     0    0
+new_16_0             1.171    0.000   1.170     0    0
+dtb_4_16             1.731    0.000   1.731     0    0
+genieclust_brute    13.049    0.004  13.054     0    0
 n=100000, d=5, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    28.829    0.025  28.857     0    0
-new_4_16             1.265    0.001   1.266     0   19
+new_16_0             0.688    0.000   0.688     0    0
+dtb_4_16             1.256    0.000   1.256     0    0
+genieclust_brute    28.448    0.019  28.470     0   19
+n=1000000, d=2, M=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.608    0.009   1.618     0    0
+dtb_4_16             1.183    0.024   1.207     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=2, M=10
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.438    0.014   1.453     0    0
+dtb_4_16             1.959    0.034   1.993     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=5, M=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0            13.813    0.009  13.823     0    0
+dtb_4_16            20.854    0.034  20.889     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=5, M=10
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             7.875    0.011   7.887     0    0
+dtb_4_16            16.639    0.023  16.663     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
 
-6 threads
-n=100000, d=2, M=1
-                                     elapsed Δdist Δidx
-genieclust_brute                      6.211     0    0
-new_4_16                              0.102     0    0
-n=100000, d=2, M=10
-                                    elapsed Δdist Δidx
-genieclust_brute                     13.214     0    0
-new_4_16                              0.129     0    0
-n=100000, d=5, M=1
-                                    elapsed Δdist Δidx
-genieclust_brute                      7.341     0    0
-new_4_16                              1.591     0    0
-n=100000, d=5, M=10
-                                    elapsed Δdist Δidx
-genieclust_brute                     17.736     0    0
-new_4_16                              0.879     0   19
 
+2025-06-17 17:23
+n=100000, d=2, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             0.209    0.012   0.071     0    0
+dtb_4_16             0.120    0.003   0.102     0    0
+genieclust_brute    15.798    1.314   5.857     0    0
+n=100000, d=2, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             0.175    0.004   0.066     0    0
+dtb_4_16             0.180    0.002   0.128     0    0
+genieclust_brute    38.848    2.773  13.450     0    0
+n=100000, d=5, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.609    0.000   0.351     0    0
+dtb_4_16             1.801    0.000   1.592     0    0
+genieclust_brute    26.121    1.295   8.272     0    0
+n=100000, d=5, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             0.900    0.000   0.201     0    0
+dtb_4_16             1.438    0.000   0.842     0    0
+genieclust_brute    59.741    3.053  18.451     0   19
+n=1000000, d=2, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             2.422    0.061   0.786     0    0
+dtb_4_16             1.271    0.020   1.097     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=2, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.917    0.017   0.680     0    0
+dtb_4_16             2.136    0.036   1.651     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=5, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0            21.357    0.000   4.539     0    0
+dtb_4_16            22.087    0.011  19.464     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=5, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0            10.206    0.010   2.299     0    0
+dtb_4_16            18.608    0.019  12.105     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
 */

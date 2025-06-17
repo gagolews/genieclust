@@ -209,7 +209,7 @@ public:
         owa_denominator(_owa_denominator),
         order(n*M)
     {
-//         Rprintf("%d_%d_%d\n", M, owa_numerator, owa_denominator);
+//         GENIECLUST_PRINT("%d_%d_%d\n", M, owa_numerator, owa_denominator);
 
         int delta = 0;
         if (owa_numerator > OWA_SMIN_START && owa_numerator <= OWA_SMIN_LIMIT) {

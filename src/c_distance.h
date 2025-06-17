@@ -21,10 +21,6 @@
 #include <vector>
 #include <cmath>
 
-#ifdef _OPENMP
-#include <omp.h>
-#endif
-
 
 
 /*! Abstract base class for all distances */
@@ -146,7 +142,7 @@ struct CDistanceEuclidean : public CDistance<T>  {
         T* __buf = buf.data();
         const T* x = X+d*i;
 
-#ifdef _OPENMP
+#if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
 #endif
         for (Py_ssize_t j=0; j<k; ++j) {
@@ -192,7 +188,7 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
         this->X = X;
 
 //         T* _x2 = x2.data();
-// #ifdef _OPENMP
+// #if OPENMP_IS_ENABLED
 //         #pragma omp parallel for schedule(static)
 // #endif
 //         for (Py_ssize_t i=0; i<n; ++i) {
@@ -211,7 +207,7 @@ struct CDistanceEuclideanSquared : public CDistance<T>  {
         T* __buf = buf.data();
         const T* x = X+d*i;
 
-#ifdef _OPENMP
+#if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
 #endif
         for (Py_ssize_t j=0; j<k; ++j) {
@@ -266,7 +262,7 @@ struct CDistanceManhattan : public CDistance<T>  {
 
     virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T* __buf = buf.data();
-#ifdef _OPENMP
+#if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
 #endif
         for (Py_ssize_t j=0; j<k; ++j) {
@@ -308,7 +304,7 @@ struct CDistanceCosine : public CDistance<T>  {
         this->X = X;
 
         T* __norm = norm.data();
-#ifdef _OPENMP
+#if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
 #endif
         for (Py_ssize_t i=0; i<n; ++i) {
@@ -326,7 +322,7 @@ struct CDistanceCosine : public CDistance<T>  {
     virtual const T* operator()(Py_ssize_t i, const Py_ssize_t* M, Py_ssize_t k) {
         T*  __buf = buf.data();
         T* __norm = norm.data();
-#ifdef _OPENMP
+#if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
 #endif
         for (Py_ssize_t j=0; j<k; ++j) {
@@ -382,7 +378,7 @@ struct CDistanceMutualReachability : public CDistance<T>
         const T* d = (*d_pairwise)(i, M, k);
         T*  __buf = buf.data();
 
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t j=0; j<k; ++j)  { //

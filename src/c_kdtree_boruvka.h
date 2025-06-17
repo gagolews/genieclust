@@ -26,6 +26,7 @@
 #ifndef __c_kdtree_boruvka_h
 #define __c_kdtree_boruvka_h
 
+#include "c_common.h"
 #include "c_kdtree.h"
 #include "c_disjoint_sets.h"
 #include "c_mst_triple.h"
@@ -42,7 +43,7 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
     kdtree_node_clusterable* right;
 
     Py_ssize_t cluster_repr;  //< representative point index if all descendants are in the same cluster, -1 otherwise
-    FLOAT cluster_max_dist;
+    FLOAT cluster_max_dist;  // for DTB
 
     FLOAT min_dcore;
 
@@ -602,30 +603,56 @@ protected:
     {
         // find the point from another cluster that is closest to the i-th point
         #ifdef _OPENMP
+        omp_lock_t nn_dist_lock;
+        int omp_nthreads = Comp_get_max_threads();
+        if (omp_nthreads > 1) omp_init_lock(&nn_dist_lock);
+
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             Py_ssize_t ds_find_i = ds.get_parent(i);
 
-            // TODO MUTEXES!!!
-            if (M > 2 && nn_dist[ds_find_i] < dcore[i]) continue;
+            FLOAT nn_dist_best;
+
+            //#ifdef _OPENMP
+            //if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
+            //#endif
+            // NOTE: assumption: no race condition/atomic read...
+            nn_dist_best = nn_dist[ds_find_i];
+            //#ifdef _OPENMP
+            //if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
+            //#endif
+
+            if (M > 2 && nn_dist_best < dcore[i]) continue;
 
             kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
                 this->data, (M>2)?this->dcore.data():nullptr,
                 i, ds.get_parents()
             );
-            nn.find(this->root, nn_dist[ds_find_i]);
+            nn.find(this->root, nn_dist_best);
 
-            // TODO MUTEXES!!!
             FLOAT nn_dist_cur = nn.get_nn_dist();
-            if (nn_dist_cur < nn_dist[ds_find_i]) {
-                Py_ssize_t nn_ind_cur = nn.get_nn_ind();
-                GENIECLUST_ASSERT(nn_ind_cur != i);
-                nn_dist[ds_find_i] = nn_dist_cur;
-                nn_ind[ds_find_i]  = nn_ind_cur;
-                nn_from[ds_find_i] = i;
+
+            if (nn_dist_cur < nn_dist_best) {
+                #ifdef _OPENMP
+                if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
+                #endif
+                if (nn_dist_cur < nn_dist[ds_find_i]) {
+                    Py_ssize_t nn_ind_cur = nn.get_nn_ind();
+                    GENIECLUST_ASSERT(nn_ind_cur != i);
+                    nn_dist[ds_find_i] = nn_dist_cur;
+                    nn_ind[ds_find_i]  = nn_ind_cur;
+                    nn_from[ds_find_i] = i;
+                }
+                #ifdef _OPENMP
+                if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
+                #endif
             }
         }
+
+        #ifdef _OPENMP
+        if (omp_nthreads > 1) omp_destroy_lock(&nn_dist_lock);
+        #endif
     }
 
 

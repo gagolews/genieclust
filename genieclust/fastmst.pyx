@@ -177,8 +177,9 @@ cpdef tuple mst_euclid(
     floatT[:,::1] X,
     Py_ssize_t M,
     bint use_kdtree=True,
-    int max_leaf_size=4,
-    int first_pass_max_brute_size=16,
+    int max_leaf_size=16,
+    int first_pass_max_brute_size=0,
+    bint use_dtb=False,
     bint verbose=False
 ):
     """
@@ -260,7 +261,7 @@ cpdef tuple mst_euclid(
         c_fastmst.Cmst_euclid_kdtree(
             &X2[0,0], n, d, M,
             &mst_dist[0], &mst_ind[0,0], <floatT*>(0) if M==1 else &d_core[0],
-            max_leaf_size, first_pass_max_brute_size, verbose
+            max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
         )
     else:
         c_fastmst.Cmst_euclid_brute(

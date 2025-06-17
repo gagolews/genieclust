@@ -29,23 +29,6 @@
 #include "c_distance.h"
 
 
-#ifdef _OPENMP
-void Comp_set_num_threads(Py_ssize_t n_threads) {
-    if (n_threads <= 0)
-        n_threads = omp_get_max_threads();
-    omp_set_num_threads(n_threads);
-}
-#else
-void Comp_set_num_threads(Py_ssize_t /*n_threads*/) {
-    ;
-}
-#endif
-
-
-
-
-
-
 
 /*! Determine the first k nearest neighbours of each point.
  *
@@ -76,7 +59,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the K-nn graph... %3d%%", 0);
+    if (verbose) GENIECLUST_PRINT("[genieclust] Computing the K-nn graph... %3d%%", 0);
 
 
     for (Py_ssize_t i=0; i<n*k; ++i) {
@@ -108,7 +91,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
             }
         }
 
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
@@ -125,7 +108,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
             }
         }
 
-        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)((n-1+n-i-1)*(i+1)*100/n/(n-1)));
 
         #if GENIECLUST_R
         Rcpp::checkUserInterrupt();
@@ -186,7 +169,7 @@ template <class T>
 void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
     T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
 {
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+    if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
 
     // NOTE: all changes should also be mirrored in Cmst_euclid_brute()
 
@@ -213,7 +196,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
         // update ind_nn and dist_nn as maybe now ind_cur (recently added to the tree)
         // is closer to some of the remaining vertices?
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t j=i; j<n; ++j) {
@@ -255,7 +238,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
         ind_cur = best_ind_left;  // start from best_ind_left next time
 
-        if (verbose) GENIECLUST_PRINT_int("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
+        if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)((n-1+n-i-1)*(i+1)*100/n/(n-1)));
 
         #if GENIECLUST_R
         Rcpp::checkUserInterrupt();
@@ -331,7 +314,7 @@ Py_ssize_t Cmst_from_nn(
     if (k >= n)   throw std::domain_error("k >= n");
     Py_ssize_t nk = n*k;
 
-    if (verbose) GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+    if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
 
     std::vector< CMstTriple<T> > nns(nk);
     Py_ssize_t c = 0;
@@ -368,7 +351,7 @@ Py_ssize_t Cmst_from_nn(
                 mst_edge_cur++;
             }
             if (verbose)
-                GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+                GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)(mst_edge_cur*100/(n-1)));
             return ret;
         }
 
@@ -391,7 +374,7 @@ Py_ssize_t Cmst_from_nn(
 
 
         if (verbose)
-            GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+            GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)(mst_edge_cur*100/(n-1)));
 
         #if GENIECLUST_R
         Rcpp::checkUserInterrupt();
@@ -447,7 +430,7 @@ Py_ssize_t Cmst_from_nn(
 //     if (c <= 0)   throw std::domain_error("c <= 0");
 //
 //     if (verbose)
-//         GENIECLUST_PRINT_int("[genieclust] Computing the MST... %3d%%", 0);
+//         GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
 //
 //     std::sort(nns, nns+c); // unstable sort (do we need stable here?)
 //
@@ -466,7 +449,7 @@ Py_ssize_t Cmst_from_nn(
 //                 mst_edge_cur++;
 //             }
 //             if (verbose)
-//                 GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+//                 GENIECLUST_PRINT("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
 //             return ret;
 //         }
 //
@@ -490,7 +473,7 @@ Py_ssize_t Cmst_from_nn(
 //
 //
 //         if (verbose)
-//             GENIECLUST_PRINT_int("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
+//             GENIECLUST_PRINT("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
 //
 //         #if GENIECLUST_R
 //         Rcpp::checkUserInterrupt();

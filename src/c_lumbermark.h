@@ -262,14 +262,14 @@ public:
             (Py_ssize_t)(min_cluster_factor*(n-n_skip)/n_clusters)
         );
 
-        // printf("%d %d\n", n, n_clusters);
+        // GENIECLUST_PRINT("%d %d\n", n, n_clusters);
 
         cut_edges.resize(n_clusters-1);
         cluster_sizes.resize(n_clusters+1);  // 1-based
 
-        // printf("!!!\n");
+        // GENIECLUST_PRINT("!!!\n");
         init_labels();
-        // printf("???\n");
+        // GENIECLUST_PRINT("???\n");
 
 
         Py_ssize_t n_clusters_ = 1;
@@ -285,13 +285,13 @@ public:
                 }
 
                 // if (mst_labels[e_last] > 0)
-                //     printf("%3d: label=%3d cutsize=%3d clustsize=%3d\n",
+                //     GENIECLUST_PRINT("%3d: label=%3d cutsize=%3d clustsize=%3d\n",
                 //        e_last,
                 //        mst_labels[e_last],
                 //        mst_cutsizes[e_last],
                 //        cluster_sizes[mst_labels[e_last]]);
                 // else
-                //     printf("%3d\n", e_last);
+                //     GENIECLUST_PRINT("%3d\n", e_last);
 
                 // NOTE: we could be taking the fact that a node incident to a cut edge might become a leaf into account (size adjustment), but it's too much of a hassle; the benefits are questionable
             } while (!(
@@ -303,7 +303,7 @@ public:
             mst_labels[e_last] = LUMBERMARK_CUTEDGE;
             mst_cutsizes[e_last] = LUMBERMARK_UNSET;
             n_clusters_++;
-            // printf("***%d***\n", n_clusters_);
+            // GENIECLUST_PRINT("***%d***\n", n_clusters_);
 
             for (int iv=0; iv<=1; ++iv) {  // iv in {0,1}
                 Py_ssize_t v = mst_i[2*e_last+iv];

@@ -9,7 +9,7 @@ import pandas as pd
 n_jobs = 6
 n_trials = 3
 seed = 123
-n = 100_000
+n = 100_000_000
 scenarios = [
     # (n, 2, 1,  "pareto(2)"),
     # (n, 5, 1,  "pareto(2)"),
@@ -120,6 +120,51 @@ n      d M  s    method                 n_jobs
                  genieclust_kdtree_4_32 6        0.913481   0.937083   0.941864  0.000000e+00  0.000000e+00     0     0
 
 
+hades @ 2025-06-17
+                                                  t                               Δdist                Δind
+                                                   min     median        max           min           max   min   max
+n      d M  s    method              n_jobs
+100000 2 1  norm fasthdbscan_kdtree  6        0.423056   0.432512   0.432553  0.000000e+00  0.000000e+00     0     0
+                 genieclust_brute    6        5.844150   5.874152   6.677148  0.000000e+00  0.000000e+00     0     0
+                 genieclust_dtb_4_16 6        0.098773   0.099919   0.100085  0.000000e+00  0.000000e+00     0     0
+                 genieclust_new_16_0 6        0.067571   0.068066   0.069122  0.000000e+00  0.000000e+00     0     0
+         10 norm fasthdbscan_kdtree  6        0.240176   0.245025   0.247805  0.000000e+00  0.000000e+00  1462  1479
+                 genieclust_brute    6       14.356732  14.623614  14.942840  0.000000e+00  0.000000e+00     0     0
+                 genieclust_dtb_4_16 6        0.133242   0.136080   0.146260  0.000000e+00  0.000000e+00     0     0
+                 genieclust_new_16_0 6        0.067903   0.074909   0.090038  0.000000e+00  0.000000e+00     0     0
+       5 1  norm fasthdbscan_kdtree  6        1.315754   1.697203   1.852000  0.000000e+00  0.000000e+00     0     0
+                 genieclust_brute    6        7.758818   7.809995   8.714390  0.000000e+00  0.000000e+00     0     0
+                 genieclust_dtb_4_16 6        1.591638   1.616516   1.661277  0.000000e+00  0.000000e+00     0     0
+                 genieclust_new_16_0 6        0.342232   0.349543   0.440361  0.000000e+00  0.000000e+00     0     0
+         10 norm fasthdbscan_kdtree  6        0.550175   0.553250   0.569109 -6.111804e-10 -6.111804e-10   462   475
+                 genieclust_brute    6       19.926224  20.520450  21.977777  0.000000e+00  0.000000e+00     8     8
+                 genieclust_dtb_4_16 6        0.948218   0.955735   0.958686  0.000000e+00  0.000000e+00     0     0
+                 genieclust_new_16_0 6        0.231069   0.250125   0.262033  0.000000e+00  0.000000e+00     0     0
+
+                                                      t                               Δdist                 Δind
+                                                    min     median        max           min           max    min    max
+n       d M  s    method              n_jobs
+1000000 2 1  norm fasthdbscan_kdtree  6        7.594345   7.607568   8.454574  4.774483e-08  4.774483e-08     18     18
+                  genieclust_dtb_4_16 6        1.077154   1.080688   1.081424  0.000000e+00  0.000000e+00      0      0
+                  genieclust_new_16_0 6        0.735134   0.743400   0.747645  0.000000e+00  0.000000e+00      0      0
+          10 norm fasthdbscan_kdtree  6        4.747803   4.761513   4.798693  0.000000e+00  0.000000e+00  14377  14573
+                  genieclust_dtb_4_16 6        1.701375   1.702385   1.719659  0.000000e+00  0.000000e+00      0      0
+                  genieclust_new_16_0 6        0.695452   0.701133   0.716284  0.000000e+00  0.000000e+00      0      0
+        5 1  norm fasthdbscan_kdtree  6       37.999915  38.224282  39.140539  0.000000e+00  0.000000e+00      0      0
+                  genieclust_dtb_4_16 6       18.660039  18.686340  18.830250  0.000000e+00  0.000000e+00      0      0
+                  genieclust_new_16_0 6        4.623168   4.640718   4.784225  0.000000e+00  0.000000e+00      0      0
+          10 norm fasthdbscan_kdtree  6       13.299459  13.322314  13.473572  0.000000e+00  0.000000e+00   5589   5615
+                  genieclust_dtb_4_16 6       12.251820  12.254181  12.291582  0.000000e+00  0.000000e+00      0      0
+                  genieclust_new_16_0 6        2.819777   2.840473   2.899803  0.000000e+00  0.000000e+00      0      0
+
+
+n=100000000, d=2, M=1, s=norm, threads=6
+           genieclust_new_16_0: t=      106.12049 Δdist=        0.00000 Δind=         0
+           genieclust_new_16_0: t=      108.23585 Δdist=        0.00000 Δind=         0
+           genieclust_new_16_0: t=      109.62686 Δdist=        0.00000 Δind=         0
+n=100000000, d=5, M=1, s=norm, threads=6
+           genieclust_new_16_0: t=      672.08563 Δdist=        0.00000 Δind=         0
+.../truncated
 
 
 apollo < 2025-06-15                                 : vs 2025-06-15 noon  : vs 2025-06-15 evening -03 -march=native
@@ -251,8 +296,12 @@ def mst_genieclust_brute(X, M):
 
 
 import genieclust
-def mst_genieclust_kdtree(X, M, max_leaf_size=4, first_pass_max_brute_size=16):
-    res = genieclust.fastmst.mst_euclid(X, M, use_kdtree=True, max_leaf_size=max_leaf_size, first_pass_max_brute_size=first_pass_max_brute_size)
+def mst_genieclust_kdtree(X, M, max_leaf_size=16, first_pass_max_brute_size=0, use_dtb=False):
+    res = genieclust.fastmst.mst_euclid(
+        X, M, use_kdtree=True, max_leaf_size=max_leaf_size,
+        first_pass_max_brute_size=first_pass_max_brute_size,
+        use_dtb=use_dtb
+    )
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
 
@@ -260,12 +309,13 @@ def mst_genieclust_kdtree(X, M, max_leaf_size=4, first_pass_max_brute_size=16):
 cases = dict(
     #genieclust_kdtree_2_16=lambda X, M: mst_genieclust_kdtree(X, M, 2, 16),
     #genieclust_kdtree_4_16=lambda X, M: mst_genieclust_kdtree(X, M, 4, 16),
-    genieclust_kdtree_4_32=lambda X, M: mst_genieclust_kdtree(X, M, 4, 32),
+    genieclust_new_16_0=lambda X, M: mst_genieclust_kdtree(X, M, 16, 0),
+    #genieclust_dtb_4_16=lambda X, M: mst_genieclust_kdtree(X, M, 4, 16, use_dtb=True),
     #genieclust_kdtree_4_64=lambda X, M: mst_genieclust_kdtree(X, M, 4, 64),
     #genieclust_kdtree_8_32=lambda X, M: mst_genieclust_kdtree(X, M, 8, 32),
-    genieclust_brute=lambda X, M: mst_genieclust_brute(X, M),
+    #genieclust_brute=lambda X, M: mst_genieclust_brute(X, M),
     # mlpack_1=lambda X, M: mst_mlpack(X, M, 1),
-    fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    #fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
     #hdbscan_kdtree_40_3=lambda X, M: mst_hdbscan_kdtree(X, M, 40, 3),
     #mlpack_4=lambda X, M: mst_mlpack(X, M, 4),
 )

@@ -34,13 +34,6 @@
 #include <cmath>
 
 
-#ifdef _OPENMP
-#include <omp.h>
-#define OPENMP_ENABLED 1
-#else
-#define OPENMP_ENABLED 0
-#endif
-
 #ifndef GENIECLUST_ASSERT
 #define __GENIECLUST_STR(x) #x
 #define GENIECLUST_STR(x) __GENIECLUST_STR(x)
@@ -61,21 +54,42 @@
 
 
 #if GENIECLUST_R
-#define GENIECLUST_PRINT(fmt) REprintf((fmt));
+#define GENIECLUST_PRINT(...) REprintf(__VA_ARGS__);
 #else
-#define GENIECLUST_PRINT(fmt) fprintf(stderr, (fmt));
+#define GENIECLUST_PRINT(...) fprintf(stderr, __VA_ARGS__);
 #endif
 
-#if GENIECLUST_R
-#define GENIECLUST_PRINT_int(fmt, val) REprintf((fmt), (int)(val));
-#else
-#define GENIECLUST_PRINT_int(fmt, val) fprintf(stderr, (fmt), (int)(val));
-#endif
 
-#if GENIECLUST_R
-#define GENIECLUST_PRINT_float(fmt, val) REprintf((fmt), (double)(val));
+
+#ifdef GENIECLUST_PROFILER
+#include <chrono>
+
+#define GENIECLUST_PROFILER_START \
+    _genieclust_profiler_t0 = std::chrono::high_resolution_clock::now();
+
+#define GENIECLUST_PROFILER_GETDIFF  \
+    _genieclust_profiler_td = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now()-_genieclust_profiler_t0);
+
+#define GENIECLUST_PROFILER_USE \
+    auto GENIECLUST_PROFILER_START \
+    auto GENIECLUST_PROFILER_GETDIFF \
+    char _genieclust_profiler_strbuf[256];
+
+#define GENIECLUST_PROFILER_STOP(...) \
+    GENIECLUST_PROFILER_GETDIFF; \
+    snprintf(_genieclust_profiler_strbuf, sizeof(_genieclust_profiler_strbuf), __VA_ARGS__); \
+    GENIECLUST_PRINT("%-64s: time=%12.3lf s\n", _genieclust_profiler_strbuf, _genieclust_profiler_td.count()/1000.0);
+
+/* use like:
+GENIECLUST_PROFILER_USE
+GENIECLUST_PROFILER_START
+GENIECLUST_PROFILER_STOP("message %d", 7)
+*/
 #else
-#define GENIECLUST_PRINT_float(fmt, val) fprintf(stderr, (fmt), (double)(val));
+#define GENIECLUST_PROFILER_START ; /* no-op */
+#define GENIECLUST_PROFILER_STOP(...) ; /* no-op */
+#define GENIECLUST_PROFILER_GETDIFF ; /* no-op */
+#define GENIECLUST_PROFILER_USE ; /* no-op */
 #endif
 
 
@@ -123,5 +137,41 @@ inline T max3(const T a, const T b, const T c)
 
 #define IS_PLUS_INFINITY(x)  ((x) > 0.0 && !std::isfinite(x))
 #define IS_MINUS_INFINITY(x) ((x) < 0.0 && !std::isfinite(x))
+
+
+
+#ifdef OPENMP_DISABLED
+    #define OPENMP_IS_ENABLED 0
+    #ifdef _OPENMP
+        #undef _OPENMP
+    #endif
+#else
+    #ifdef _OPENMP
+        #include <omp.h>
+        #define OPENMP_IS_ENABLED 1
+    #else
+        #define OPENMP_IS_ENABLED 0
+    #endif
+#endif
+
+
+inline void Comp_set_num_threads(Py_ssize_t n_threads)
+{
+#if OPENMP_IS_ENABLED
+    if (n_threads <= 0)
+        n_threads = omp_get_max_threads();
+    omp_set_num_threads(n_threads);
+#endif
+}
+
+inline int Comp_get_max_threads()
+{
+#if OPENMP_IS_ENABLED
+    return omp_get_max_threads();
+#else
+    return 1;
+#endif
+}
+
 
 #endif

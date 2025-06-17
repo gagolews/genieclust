@@ -31,7 +31,7 @@ void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
 
     pico_tree::kd_tree tree(std::ref(points), (pico_tree::max_leaf_size_t)max_leaf_size);
 
-    #ifdef _OPENMP
+    #if OPENMP_IS_ENABLED
     #pragma omp parallel for schedule(static)
     #endif
     for (Py_ssize_t i=0; i<n; ++i) {

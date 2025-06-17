@@ -531,7 +531,7 @@ protected:
                     best_idx = last_idx;
                 }
 
-//                 printf("    %ld-%ld %.3lf %.3lf\n", i1r, i2r, test_gini, gini_threshold);
+//                 GENIECLUST_PRINT("    %ld-%ld %.3lf %.3lf\n", i1r, i2r, test_gini, gini_threshold);
 
                 if (best_gini <= gini_threshold)
                     break;
@@ -558,7 +558,7 @@ protected:
             else
                 ds->merge(i1r, i2r);
 
-//             printf("%ld-%ld %.3lf\n", i1r, i2r, ds->get_gini());
+//             GENIECLUST_PRINT("%ld-%ld %.3lf\n", i1r, i2r, ds->get_gini());
 
             it++;
         }

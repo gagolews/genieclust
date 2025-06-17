@@ -52,7 +52,7 @@ cdef extern from "../src/c_fastmst.h":
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
         T* mst_dist, Py_ssize_t* mst_ind, T* d_core,
         Py_ssize_t max_leaf_size, Py_ssize_t first_pass_max_brute_size,
-        bint verbose
+        bint use_dtb, bint verbose
     ) except +
 
     void Cmst_euclid_brute[T](
