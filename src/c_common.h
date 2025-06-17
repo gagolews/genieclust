@@ -95,7 +95,8 @@ template<class T>
 inline T square(T x) { return x*x; }
 
 template <class T>
-inline T min3(const T a, const T b, const T c) {
+inline T min3(const T a, const T b, const T c)
+{
     T m = a;
     if (b < m) m = b;
     if (c < m) m = c;
@@ -103,7 +104,16 @@ inline T min3(const T a, const T b, const T c) {
 }
 
 template <class T>
-inline T max3(const T a, const T b, const T c) {
+inline T med3(const T a, const T b, const T c)
+{
+    if ((b < a)^(c < a)) return a;      // b < a  && a <= c= || c < a && a <= b
+    else if ((b < c)^(b < a)) return b; // c <= b && b < a   || c > b && b >= a
+    else return c;
+}
+
+template <class T>
+inline T max3(const T a, const T b, const T c)
+{
     T m = a;
     if (b > m) m = b;
     if (c > m) m = c;

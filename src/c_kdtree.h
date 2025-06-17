@@ -38,6 +38,36 @@
 #include <deque>
 #include <array>
 
+#ifdef GENIECLUST_PROFILER
+#include <chrono>
+
+#define GENIECLUST_PROFILER_START \
+    _genieclust_profiler_t0 = std::chrono::high_resolution_clock::now();
+
+#define GENIECLUST_PROFILER_GETDIFF  \
+    _genieclust_profiler_td = std::chrono::duration<double, std::milli>(std::chrono::high_resolution_clock::now()-_genieclust_profiler_t0);
+
+#define GENIECLUST_PROFILER_USE \
+    auto GENIECLUST_PROFILER_START \
+    auto GENIECLUST_PROFILER_GETDIFF \
+    char _genieclust_profiler_strbuf[256];
+
+#define GENIECLUST_PROFILER_STOP(...) \
+    GENIECLUST_PROFILER_GETDIFF; \
+    snprintf(_genieclust_profiler_strbuf, sizeof(_genieclust_profiler_strbuf), __VA_ARGS__); \
+    fprintf(stderr, "%-64s: time=%12.3lf s\n", _genieclust_profiler_strbuf, _genieclust_profiler_td.count()/1000.0);
+
+/* use like:
+GENIECLUST_PROFILER_USE
+GENIECLUST_PROFILER_START
+GENIECLUST_PROFILER_STOP("message %d", 7)
+*/
+#else
+#define GENIECLUST_PROFILER_START ; /* no-op */
+#define GENIECLUST_PROFILER_STOP(...) ; /* no-op */
+#define GENIECLUST_PROFILER_GETDIFF ; /* no-op */
+#define GENIECLUST_PROFILER_USE ; /* no-op */
+#endif
 
 namespace mgtree {
 
@@ -140,13 +170,12 @@ template <
 class kdtree_kneighbours
 {
 private:
-    const FLOAT* x;
-    Py_ssize_t which;
-    const FLOAT* data;
-    Py_ssize_t n;
+    Py_ssize_t which;    ///< for which point are we getting the k-nns?
+    Py_ssize_t k;        ///< how many nns?
+    const FLOAT* x;      ///< the point itself (shortcut)
+    const FLOAT* data;   ///< the dataset
     FLOAT* knn_dist;
     Py_ssize_t* knn_ind;
-    Py_ssize_t k;
 
     const Py_ssize_t max_brute_size;  // when to switch to the brute-force mode? 0 to honour the tree's max_leaf_size
 
@@ -173,23 +202,63 @@ private:
     }
 
 
+    void find_knn(const NODE* root)
+    {
+        kdtree_kneighbours_find_start:  /* tail recursion elimination */
+
+        if (root->is_leaf() || root->idx_to-root->idx_from <= max_brute_size) {
+            if (which < root->idx_from || which >= root->idx_to)
+                point_vs_points(root->idx_from, root->idx_to);
+            else {
+                point_vs_points(root->idx_from, which);
+                point_vs_points(which+1, root->idx_to);
+            }
+            return;
+        }
+
+        FLOAT dist_left  = DISTANCE::point_node(
+            x, root->left->bbox_min.data(),  root->left->bbox_max.data()
+        );
+        FLOAT dist_right = DISTANCE::point_node(
+            x, root->right->bbox_min.data(), root->right->bbox_max.data()
+        );
+
+        // closer node first (significant speedup)
+        if (dist_left < dist_right) {
+            if (dist_left < knn_dist[k-1]) {
+                find_knn(root->left);
+                if (dist_right < knn_dist[k-1]) {
+                    //find_knn(root->right);
+                    root = root->right;
+                    goto kdtree_kneighbours_find_start;  // tail recursion elimination
+                }
+            }
+        }
+        else {
+            if (dist_right < knn_dist[k-1]) {
+                find_knn(root->right);
+                if (dist_left < knn_dist[k-1]) {
+                    //find_knn(root->left);
+                    root = root->left;
+                    goto kdtree_kneighbours_find_start;  // tail recursion elimination
+                }
+            }
+        }
+    }
+
 public:
     kdtree_kneighbours(
         const FLOAT* data,
-        const Py_ssize_t n,
         const Py_ssize_t which,
         FLOAT* knn_dist,
         Py_ssize_t* knn_ind,
         const Py_ssize_t k,
         const Py_ssize_t max_brute_size=0
     ) :
-        x(data+D*which), which(which), data(data), n(n),
+        which(which), k(k), x(data+D*which), data(data),
         knn_dist(knn_dist), knn_ind(knn_ind),
-        k(k), max_brute_size(max_brute_size)
+        max_brute_size(max_brute_size)
     {
-        for (Py_ssize_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
-        for (Py_ssize_t i=0; i<k; ++i) knn_ind[i]  = which;
-
         // // Pre-flight (no benefit)
         // for (Py_ssize_t i=0; i<=2*k; ++i) {
         //     Py_ssize_t j = (Py_ssize_t)which-i-(Py_ssize_t)k;
@@ -222,46 +291,10 @@ public:
 
     void find(const NODE* root)
     {
-        find_start:  /* tail recursion elimination */
+        for (Py_ssize_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
+        for (Py_ssize_t i=0; i<k; ++i) knn_ind[i]  = which;
 
-        if (root->is_leaf() || root->idx_to-root->idx_from <= max_brute_size) {
-            if (which < root->idx_from || which >= root->idx_to)
-                point_vs_points(root->idx_from, root->idx_to);
-            else {
-                point_vs_points(root->idx_from, which);
-                point_vs_points(which+1, root->idx_to);
-            }
-            return;
-        }
-
-        FLOAT dist_left  = DISTANCE::point_node(
-            x, root->left->bbox_min.data(),  root->left->bbox_max.data()
-        );
-        FLOAT dist_right = DISTANCE::point_node(
-            x, root->right->bbox_min.data(), root->right->bbox_max.data()
-        );
-
-        // closer node first (significant speedup)
-        if (dist_left < dist_right) {
-            if (dist_left < knn_dist[k-1]) {
-                find(root->left);
-                if (dist_right < knn_dist[k-1]) {
-                    //find(root->right);
-                    root = root->right;
-                    goto find_start;  // tail recursion elimination
-                }
-            }
-        }
-        else {
-            if (dist_right < knn_dist[k-1]) {
-                find(root->right);
-                if (dist_left < knn_dist[k-1]) {
-                    //find(root->left);
-                    root = root->left;
-                    goto find_start;  // tail recursion elimination
-                }
-            }
-        }
+        find_knn(root);
     }
 };
 
@@ -454,7 +487,7 @@ public:
 
     void kneighbours(Py_ssize_t which, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
     {
-        kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, n, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, which, knn_dist, knn_ind, k);
         knn.find(root);
     }
 };

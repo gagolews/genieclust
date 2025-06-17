@@ -24,8 +24,7 @@
 #include <algorithm>
 #include <cmath>
 #include "c_disjoint_sets.h"
-#include "c_kdtree.h"
-#include "c_dtb.h"
+#include "c_kdtree_boruvka.h"
 // #include "c_picotree.h"
 
 
@@ -474,18 +473,28 @@ void Cmst_euclid_kdtree(
     bool /*verbose*/
 ) {
     using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT, D>;
-    mgtree::dtb<FLOAT, D, DISTANCE> tree(X, n, M, max_leaf_size, first_pass_max_brute_size);
-    mgtree::mst<FLOAT, D>(tree, mst_dist, mst_ind, d_core);
 
+    GENIECLUST_PROFILER_USE
+
+    GENIECLUST_PROFILER_START
+    mgtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M, max_leaf_size, first_pass_max_brute_size);
+    GENIECLUST_PROFILER_STOP("tree init")
+
+    GENIECLUST_PROFILER_START
+    mgtree::mst<FLOAT, D>(tree, mst_dist, mst_ind, d_core);
+    GENIECLUST_PROFILER_STOP("mst call")
+
+    GENIECLUST_PROFILER_START
     for (Py_ssize_t i=0; i<n-1; ++i)
         mst_dist[i] = sqrt(mst_dist[i]);
 
     Ctree_order(n-1, mst_dist, mst_ind);
-
     if (d_core) {
         for (Py_ssize_t i=0; i<n; ++i)
             d_core[i] = sqrt(d_core[i]);
     }
+    GENIECLUST_PROFILER_STOP("Cmst_euclid_kdtree finalise")
+
 }
 
 

@@ -178,7 +178,7 @@ funs_mst_mutreach <- list(
 
 n <- 100000
 for (d in c()) {
-    k <- 10L
+    k <- 1L
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
     cat(sprintf("n=%d, d=%d, k=%d\n", n, d, k))
@@ -226,115 +226,65 @@ for (d in c(2, 5)) {
 /*
 
 
-apollo @ 2025-06-13 9:11
-n=100000, d=2, k=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute     9.626    0.012   9.637     0    0
-rann                 0.102    0.004   0.106     0    3
-new_kdtree           0.026    0.000   0.026     0    3
-n=100000, d=5, k=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    13.328    0.006  13.335     0    0
-rann                 0.654    0.007   0.661     0    3
-new_kdtree           0.175    0.000   0.174     0    3
+apollo @ 2025-06-16 20:30
+
+tree construction 2=0.018   5=0.026
+1-nn seek         2=0.025   5=0.175  (1 thread)   2=0.016  5=0.063  (6 threads)
+10-nn seek        2=0.073   5=0.500  (1 thread)   2=0.034  5=0.150  (6 threads)
+
+1 thread:
 n=100000, d=2, M=1
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute     9.618    0.008   9.627     0    0
-new_4_16             0.110    0.000   0.110     0    0
-n=100000, d=5, M=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    13.175    0.008  13.183     0    0
-new_4_16             1.692    0.000   1.692     0    0
-
-n=100000, d=2, k=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    11.781    0.015  11.800     0    0
-rann                 0.219    0.005   0.224     0    3
-new_kdtree           0.074    0.004   0.078     0    3
-n=100000, d=5, k=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    15.854    0.023  15.878     0    0
-rann                 1.979    0.007   1.986     0    3
-new_kdtree           0.500    0.000   0.500     0    3
+genieclust_brute     8.867    0.008   8.875     0    0
+new_4_16             0.109    0.003   0.111     0    0
 n=100000, d=2, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    19.940    0.025  19.966     0    0
-new_4_16             0.135    0.000   0.136     0   40
+genieclust_brute    19.343    0.024  19.368     0    0
+new_4_16             0.158    0.006   0.164     0    0
+n=100000, d=5, M=1
+                 user.self sys.self elapsed Δdist Δidx
+genieclust_brute    11.749    0.013  11.764     0    0
+new_4_16             1.731    0.000   1.730     0    0
 n=100000, d=5, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    27.824    0.033  27.857     0    0
-new_4_16             1.681    0.000   1.681     0   22
+genieclust_brute    28.122    0.022  28.147     0    0
+new_4_16             1.267    0.001   1.268     0   19
 
 
+hades @ 2025-06-17 11:00 1 thread
 n=100000, d=2, M=1
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute     9.605    0.011   9.618     0    0
-new_4_16             0.114    0.001   0.115     0    0
+genieclust_brute     8.899    0.009   8.909     0    0
+new_4_16             0.110    0.002   0.111     0    0
 n=100000, d=2, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    20.247    0.025  20.274     0    0
-new_4_16             0.134    0.003   0.137     0   40
+genieclust_brute    19.230    0.026  19.258     0    0
+new_4_16             0.159    0.003   0.162     0    0
 n=100000, d=5, M=1
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    13.648    0.007  13.658     0    0
-new_4_16             1.698    0.000   1.698     0    0
+genieclust_brute    11.734    0.008  11.743     0    0
+new_4_16             1.727    0.000   1.726     0    0
 n=100000, d=5, M=10
                  user.self sys.self elapsed Δdist Δidx
-genieclust_brute    29.806    0.019  29.829     0    0
-new_4_16             1.699    0.001   1.701     0   22
+genieclust_brute    28.829    0.025  28.857     0    0
+new_4_16             1.265    0.001   1.266     0   19
 
-
-apollo @ 2025-06-15 12:12
+6 threads
 n=100000, d=2, M=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute     9.643    0.009   9.654     0    0
-new_4_16             0.110    0.001   0.111     0    0
+                                     elapsed Δdist Δidx
+genieclust_brute                      6.211     0    0
+new_4_16                              0.102     0    0
 n=100000, d=2, M=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    19.702    0.021  19.726     0    0
-new_4_16             0.159    0.004   0.163     0    0
+                                    elapsed Δdist Δidx
+genieclust_brute                     13.214     0    0
+new_4_16                              0.129     0    0
 n=100000, d=5, M=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    13.162    0.012  13.174     0    0
-new_4_16             1.723    0.000   1.724     0    0
+                                    elapsed Δdist Δidx
+genieclust_brute                      7.341     0    0
+new_4_16                              1.591     0    0
 n=100000, d=5, M=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    28.905    0.023  28.935     0    0
-new_4_16             1.262    0.001   1.264     0    0
-
-
-
-
-
-
-
-
-hades @ 2025-06-11 13:45
-n=250000, d=2
-         user.self sys.self elapsed Δdist Δidx
-mlpack_1     0.982    0.026   1.008     0    0
-mlpack_4     0.721    0.000   0.721     0    0
-new_4_00     0.290    0.000   0.291     0    0
-new_4_16     0.286    0.000   0.285     0    0
-new_4_64     0.291    0.000   0.291     0    0
-n=250000, d=5
-         user.self sys.self elapsed Δdist Δidx
-mlpack_1     9.818    0.019   9.842     0    0
-mlpack_4    10.819    0.000  10.823     0    0
-new_4_00     4.731    0.000   4.732     0    0
-new_4_16     4.517    0.000   4.518     0    0
-new_4_64     4.421    0.000   4.423     0    0
-
-n=100000, d=2, M=10
-                 user.self sys.self elapsed         Δdist  Δidx
-genieclust_brute    33.091    0.066  33.164  0.000000e+00     0
-new_4_16             0.125    0.002   0.127 -3.687555e-07 81824
-n=100000, d=5, M=10
-                 user.self sys.self elapsed         Δdist  Δidx
-genieclust_brute    49.109    0.067  49.183  0.000000e+00     0
-new_4_16             1.683    0.001   1.685 -2.519664e-08 86759
-
-
-
+                                    elapsed Δdist Δidx
+genieclust_brute                     17.736     0    0
+new_4_16                              0.879     0   19
 
 */

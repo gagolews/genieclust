@@ -86,6 +86,7 @@ public:
 
     /*! Danger zone! Ensure find() was called upon each element */
     inline Py_ssize_t get_parent(Py_ssize_t x) const { return this->par[x]; }
+    inline const Py_ssize_t* get_parents() const { return  this->par.data(); }
 
 
     /*! Finds the subset id for a given x.

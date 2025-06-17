@@ -21,9 +21,8 @@
  *  Features a comparer used to sort MST edges w.r.t. increasing weights.
  */
 template <class T>
-class CMstTriple
+struct CMstTriple
 {
-public:
     Py_ssize_t i1;  //!< first  vertex defining an edge
     Py_ssize_t i2;  //!< second vertex defining an edge
     T d;            //!< edge weight

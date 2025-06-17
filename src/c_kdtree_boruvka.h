@@ -1,10 +1,12 @@
-/*  A dual-tree Boruvka algorithm for finding minimum spanning trees
- *  wrt the Euclidean distance.
+/*  A Boruvka-like algorithm for finding minimum spanning trees
+ *  wrt the Euclidean metric or the thereon-based mutual reachability distance.
  *
- *  It is based on "Fast Euclidean Minimum Spanning Tree:
- *  Algorithm, Analysis, and Applications"
- *  by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010.
- *  It features some further performance enhancements.
+ *  It features many performance enhancements, has good locality of reference,
+ *  supports multicore processing via OpenMP, etc.
+ *
+ *  The dual-tree Boruvka version (not used by default)
+ *  is based on "Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis,
+ *  and Applications" by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -21,8 +23,8 @@
  */
 
 
-#ifndef __c_dtb_h
-#define __c_dtb_h
+#ifndef __c_kdtree_boruvka_h
+#define __c_kdtree_boruvka_h
 
 #include "c_kdtree.h"
 #include "c_disjoint_sets.h"
@@ -60,39 +62,187 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
 
 
 
+/** A class enabling searching for the nearest neighbour
+ *  outside of the current point's cluster;
+ *  it is thread-safe
+ */
 template <
     typename FLOAT,
     Py_ssize_t D,
     typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
     typename NODE=kdtree_node_clusterable<FLOAT, D>
 >
-class dtb : public kdtree<FLOAT, D, DISTANCE, NODE>
+class kdtree_nearest_outsider
+{
+private:
+    Py_ssize_t which;   ///< for which point are we getting the nns
+    Py_ssize_t cluster; ///< the point's cluster
+    const FLOAT* x;     ///< the point itself (shortcut)
+    const FLOAT* data;  ///< the dataset
+    const FLOAT* dcore; ///< the "core" distances
+    FLOAT nn_dist;      ///< shortest distance
+    Py_ssize_t nn_ind;  ///< index of the nn
+
+    const Py_ssize_t* ds_par;  ///< points' cluster IDs (par[i]==ds.find(i)!)
+
+    template <bool USE_DCORE>
+    inline void point_vs_points(Py_ssize_t idx_from, Py_ssize_t idx_to)
+    {
+        const FLOAT* y = data+D*idx_from;
+        for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D)
+        {
+            if (cluster == ds_par[j]) continue;
+            if (USE_DCORE && dcore[j] >= nn_dist) continue;
+
+            FLOAT dij = DISTANCE::point_point(x, y);
+
+            if (USE_DCORE) {
+                // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                FLOAT dcore_max = std::max(dcore[which], dcore[j]);
+                if (dij <= dcore_max)
+                    dij = dcore_max+dij/DCORE_DIST_ADJ;
+            }
+
+            if (dij < nn_dist) {
+                nn_dist = dij;
+                nn_ind = j;
+            }
+        }
+    }
+
+
+    template <bool USE_DCORE>
+    void find_nn(const NODE* root)
+    {
+        kdtree_nearest_outsider_find_nn_start:  /* tail recursion elimination */
+
+        if (root->cluster_repr == cluster) {
+            // nothing to do - all are members of the x's cluster
+            return;
+        }
+
+        if (USE_DCORE && nn_dist <= root->min_dcore) {
+            // works for M<=2 as then min_dcore==0.0;
+            // we have a better candidate already
+            return;
+        }
+
+        if (root->is_leaf()/* || root->idx_to-root->idx_from <= max_brute_size*/) {
+            if (which < root->idx_from || which >= root->idx_to)
+                point_vs_points<USE_DCORE>(root->idx_from, root->idx_to);
+            else {
+                point_vs_points<USE_DCORE>(root->idx_from, which);
+                point_vs_points<USE_DCORE>(which+1, root->idx_to);
+            }
+            return;
+        }
+
+        FLOAT dist_left  = DISTANCE::point_node(
+            x, root->left->bbox_min.data(),  root->left->bbox_max.data()
+        );
+        FLOAT dist_right = DISTANCE::point_node(
+            x, root->right->bbox_min.data(), root->right->bbox_max.data()
+        );
+
+        if (USE_DCORE) {
+            if (dist_left < root->left->min_dcore)
+                dist_left = root->left->min_dcore;
+            if (dist_right < root->right->min_dcore)
+                dist_right = root->right->min_dcore;
+        }
+
+        // nearer node first (significant speedup)
+        if (dist_left < dist_right) {
+            if (dist_left < nn_dist) {
+                find_nn<USE_DCORE>(root->left);
+                if (dist_right < nn_dist) {
+                    //find_nn<USE_DCORE>(root->right);
+                    root = root->right;
+                    goto kdtree_nearest_outsider_find_nn_start;  // tail recursion elimination
+                }
+            }
+        }
+        else {
+            if (dist_right < nn_dist) {
+                find_nn<USE_DCORE>(root->right);
+                if (dist_left < nn_dist) {
+                    //find_nn<USE_DCORE>(root->left);
+                    root = root->left;
+                    goto kdtree_nearest_outsider_find_nn_start;  // tail recursion elimination
+                }
+            }
+        }
+    }
+
+
+public:
+    kdtree_nearest_outsider(
+        const FLOAT* data,
+        FLOAT* dcore,
+        const Py_ssize_t which,
+        const Py_ssize_t* ds_par
+    ) :
+        which(which), cluster(ds_par[which]), x(data+D*which), data(data), dcore(dcore), ds_par(ds_par)
+    {
+
+    }
+
+
+    /**
+     *  @param root
+     *  @param nn_dist best nn_dist found so far for the current cluster
+     */
+    void find(const NODE* root, FLOAT nn_dist=INFINITY)
+    {
+        this->nn_dist = nn_dist;
+        this->nn_ind  = which;
+
+        if (dcore) find_nn<true>(root);
+        else find_nn<false>(root);
+    }
+
+
+    inline FLOAT get_nn_dist() { return nn_dist; }
+    inline Py_ssize_t get_nn_ind() { return nn_ind; }
+};
+
+
+
+template <
+    typename FLOAT,
+    Py_ssize_t D,
+    typename DISTANCE=kdtree_distance_sqeuclid<FLOAT,D>,
+    typename NODE=kdtree_node_clusterable<FLOAT, D>
+>
+class kdtree_boruvka : public kdtree<FLOAT, D, DISTANCE, NODE>
 {
 protected:
-    FLOAT*  tree_dist;     //< size n-1
-    Py_ssize_t* tree_ind;  //< size 2*(n-1)
-    Py_ssize_t  tree_num;  // number of MST edges already found
+    FLOAT*  tree_dist;     ///< size n-1
+    Py_ssize_t* tree_ind;  ///< size 2*(n-1)
+    Py_ssize_t  tree_num;  /// number of MST edges already found
     CDisjointSets ds;
 
-    std::vector<FLOAT>  nn_dist;
+    std::vector<FLOAT>      nn_dist;
     std::vector<Py_ssize_t> nn_ind;
     std::vector<Py_ssize_t> nn_from;
 
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
+
+    const bool use_dtb;
 
     const Py_ssize_t M;  // mutual reachability distance - "smoothing factor"
     std::vector<FLOAT> dcore;  // distances to the (M-1)-th nns of each point if M>1
 
 
     struct kdtree_node_orderer {
-        NODE* closer_node;
+        NODE* nearer_node;
         NODE* farther_node;
-        FLOAT closer_dist;
+        FLOAT nearer_dist;
         FLOAT farther_dist;
 
         kdtree_node_orderer(NODE* from, NODE* to1, NODE* to2, bool use_min_dcore=false)
         {
-            closer_dist  = DISTANCE::node_node(
+            nearer_dist  = DISTANCE::node_node(
                 from->bbox_min.data(), from->bbox_max.data(),
                  to1->bbox_min.data(),  to1->bbox_max.data()
             );
@@ -103,17 +253,17 @@ protected:
             );
 
             if (use_min_dcore) {
-                closer_dist = max3(closer_dist, from->min_dcore, to1->min_dcore);
+                nearer_dist  = max3(nearer_dist, from->min_dcore, to1->min_dcore);
                 farther_dist = max3(farther_dist, from->min_dcore, to2->min_dcore);
             }
 
-            if (closer_dist <= farther_dist) {
-                closer_node  = to1;
+            if (nearer_dist <= farther_dist) {
+                nearer_node  = to1;
                 farther_node = to2;
             }
             else {
-                std::swap(closer_dist, farther_dist);
-                closer_node  = to2;
+                std::swap(nearer_dist, farther_dist);
+                nearer_node  = to2;
                 farther_node = to1;
             }
         }
@@ -125,23 +275,31 @@ protected:
     {
         // assumes ds.find(i) == ds.get_parent(i) for all i!
         const FLOAT* _x = this->data + roota->idx_from*D;
-        for (Py_ssize_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D) {
+        for (Py_ssize_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D)
+        {
             Py_ssize_t ds_find_i = ds.get_parent(i);
-            for (Py_ssize_t j=rootb->idx_from; j<rootb->idx_to; ++j) {
+            if (USE_DCORE && dcore[i] >= nn_dist[ds_find_i]) continue;
+
+            for (Py_ssize_t j=rootb->idx_from; j<rootb->idx_to; ++j)
+            {
                 Py_ssize_t ds_find_j = ds.get_parent(j);
-                if (ds_find_i != ds_find_j) {
-                    FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
-                    if (USE_DCORE) {
-                        // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                        FLOAT dcore_max = std::max(dcore[i], dcore[j]);
-                        if (dij <= dcore_max)
-                            dij = dcore_max+dij/DCORE_DIST_ADJ;
-                    }
-                    if (dij < nn_dist[ds_find_i]) {
-                        nn_dist[ds_find_i] = dij;
-                        nn_ind[ds_find_i]  = j;
-                        nn_from[ds_find_i] = i;
-                    }
+                if (ds_find_i == ds_find_j) continue;
+                if (USE_DCORE && dcore[j] >= nn_dist[ds_find_i]) continue;
+
+                FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
+
+                if (USE_DCORE) {
+                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                    FLOAT dcore_max = std::max(dcore[i], dcore[j]);
+
+                    if (dij <= dcore_max)
+                        dij = dcore_max+dij/DCORE_DIST_ADJ;
+                }
+
+                if (dij < nn_dist[ds_find_i]) {
+                    nn_dist[ds_find_i] = dij;
+                    nn_ind[ds_find_i]  = j;
+                    nn_from[ds_find_i] = i;
                 }
             }
         }
@@ -150,12 +308,19 @@ protected:
 
     void update_min_dcore()
     {
-        for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
-        {
-            NODE* curnode = &(this->nodes[i]);
-            if (M <= 2)
-                curnode->min_dcore = 0.0;
-            else {
+        GENIECLUST_ASSERT(M>2);
+
+        // if (M <= 2) {
+        //     for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
+        //     {
+        //         NODE* curnode = &(this->nodes[i]);
+        //         curnode->min_dcore = 0.0;
+        //     }
+        // }
+        // else {
+            for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
+            {
+                NODE* curnode = &(this->nodes[i]);
                 if (curnode->is_leaf()) {
                     curnode->min_dcore = dcore[curnode->idx_from];
                     for (Py_ssize_t j=curnode->idx_from+1; j<curnode->idx_to; ++j) {
@@ -171,7 +336,7 @@ protected:
                     );
                 }
             }
-        }
+        // }
     }
 
 
@@ -187,7 +352,7 @@ protected:
             curnode->cluster_max_dist = INFINITY;
 
             if (curnode->cluster_repr >= 0) {
-                curnode->cluster_repr = ds.get_parent(curnode->cluster_repr);  // helpful
+                curnode->cluster_repr = ds.get_parent(curnode->cluster_repr);
                 continue;
             }
 
@@ -227,7 +392,7 @@ protected:
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, this->n, i, nn_dist.data()+i, nn_ind.data()+i, k,
+                this->data, i, nn_dist.data()+i, nn_ind.data()+i, k,
                 first_pass_max_brute_size
             );
             nn.find(this->root);
@@ -260,7 +425,7 @@ protected:
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, this->n, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
+                this->data, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
             nn.find(this->root);
@@ -348,7 +513,7 @@ protected:
     }
 
 
-    void find_mst_next(NODE* roota, NODE* rootb)
+    void find_mst_next_dtb(NODE* roota, NODE* rootb)
     {
         //GENIECLUST_ASSERT(roota);
         //GENIECLUST_ASSERT(rootb);
@@ -386,14 +551,14 @@ protected:
                 }
             }
             else {
-                // closer node first -> faster!
+                // nearer node first -> faster!
                 kdtree_node_orderer sel(roota, rootb->left, rootb->right, (M>2));
 
                 // prune nodes too far away if we have better candidates
-                if (roota->cluster_max_dist >= sel.closer_dist) {
-                    find_mst_next(roota, sel.closer_node);
+                if (roota->cluster_max_dist >= sel.nearer_dist) {
+                    find_mst_next_dtb(roota, sel.nearer_node);
                     if (roota->cluster_max_dist >= sel.farther_dist)
-                        find_mst_next(roota, sel.farther_node);
+                        find_mst_next_dtb(roota, sel.farther_node);
                 }
 
 
@@ -403,24 +568,24 @@ protected:
         else {  // roota is not a leaf
             if (rootb->is_leaf()) {
                 kdtree_node_orderer sel(rootb, roota->left, roota->right, (M>2));
-                if (sel.closer_node->cluster_max_dist >= sel.closer_dist)
-                    find_mst_next(sel.closer_node, rootb);
+                if (sel.nearer_node->cluster_max_dist >= sel.nearer_dist)
+                    find_mst_next_dtb(sel.nearer_node, rootb);
                 if (sel.farther_node->cluster_max_dist >= sel.farther_dist)  // separate if!
-                    find_mst_next(sel.farther_node, rootb);
+                    find_mst_next_dtb(sel.farther_node, rootb);
             }
             else {
                 kdtree_node_orderer sel(roota->left, rootb->left, rootb->right, (M>2));
-                if (roota->left->cluster_max_dist >= sel.closer_dist) {
-                    find_mst_next(roota->left, sel.closer_node);
+                if (roota->left->cluster_max_dist >= sel.nearer_dist) {
+                    find_mst_next_dtb(roota->left, sel.nearer_node);
                     if (roota->left->cluster_max_dist >= sel.farther_dist)
-                        find_mst_next(roota->left, sel.farther_node);
+                        find_mst_next_dtb(roota->left, sel.farther_node);
                 }
 
                 sel = kdtree_node_orderer(roota->right, rootb->left, rootb->right, (M>2));
-                if (roota->right->cluster_max_dist >= sel.closer_dist) {
-                    find_mst_next(roota->right, sel.closer_node);
+                if (roota->right->cluster_max_dist >= sel.nearer_dist) {
+                    find_mst_next_dtb(roota->right, sel.nearer_node);
                     if (roota->right->cluster_max_dist >= sel.farther_dist)
-                        find_mst_next(roota->right, sel.farther_node);
+                        find_mst_next_dtb(roota->right, sel.farther_node);
                 }
             }
 
@@ -432,18 +597,58 @@ protected:
     }
 
 
+
+    void find_mst_next_nn()
+    {
+        // find the point from another cluster that is closest to the i-th point
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(static)
+        #endif
+        for (Py_ssize_t i=0; i<this->n; ++i) {
+            Py_ssize_t ds_find_i = ds.get_parent(i);
+
+            // TODO MUTEXES!!!
+            if (M > 2 && nn_dist[ds_find_i] < dcore[i]) continue;
+
+            kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
+                this->data, (M>2)?this->dcore.data():nullptr,
+                i, ds.get_parents()
+            );
+            nn.find(this->root, nn_dist[ds_find_i]);
+
+            // TODO MUTEXES!!!
+            FLOAT nn_dist_cur = nn.get_nn_dist();
+            if (nn_dist_cur < nn_dist[ds_find_i]) {
+                Py_ssize_t nn_ind_cur = nn.get_nn_ind();
+                GENIECLUST_ASSERT(nn_ind_cur != i);
+                nn_dist[ds_find_i] = nn_dist_cur;
+                nn_ind[ds_find_i]  = nn_ind_cur;
+                nn_from[ds_find_i] = i;
+            }
+        }
+    }
+
+
     void find_mst()
     {
+        GENIECLUST_PROFILER_USE
+
+        GENIECLUST_PROFILER_START
         // the 1st iteration: connect nearest neighbours with each other
         find_mst_first();
+        GENIECLUST_PROFILER_STOP("find_mst_first")
 
+        GENIECLUST_PROFILER_START
         if (M>2) update_min_dcore();
-
+        GENIECLUST_PROFILER_STOP("update_min_dcore")
 
         std::vector<Py_ssize_t> ds_parents(this->n);
         Py_ssize_t ds_k;
 
+        Py_ssize_t __iter = 0;
         while (tree_num < this->n-1) {
+            GENIECLUST_PROFILER_START
+
             // reset cluster_max_dist and set up cluster_repr,
             // ensure ds.find(i) == ds.get_parent(i) for all i
             update_cluster_data();
@@ -461,7 +666,10 @@ protected:
             // for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i]  = this->n;
             // for (Py_ssize_t i=0; i<this->n; ++i) nn_from[i] = this->n;
 
-            find_mst_next(this->root, this->root);
+            if (this->use_dtb)
+                find_mst_next_dtb(this->root, this->root);
+            else
+                find_mst_next_nn();
 
             for (Py_ssize_t j=0; j<ds_k; ++j) {
                 Py_ssize_t i = ds_parents[j];
@@ -475,33 +683,37 @@ protected:
                     tree_num++;
                 }
             }
+
+            __iter++;
+            GENIECLUST_PROFILER_STOP("find_mst iter #%d", (int)__iter)
         }
     }
 
 
 public:
-    dtb()
+    kdtree_boruvka()
         : kdtree<FLOAT, D, DISTANCE, NODE>()
     {
 
     }
 
 
-    dtb(
+    kdtree_boruvka(
         FLOAT* data, const Py_ssize_t n, const Py_ssize_t M=1,
         const Py_ssize_t max_leaf_size=4,
-        const Py_ssize_t first_pass_max_brute_size=16
+        const Py_ssize_t first_pass_max_brute_size=16,
+        const bool use_dtb=false
     ) :
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
-        first_pass_max_brute_size(first_pass_max_brute_size), M(M)
+        first_pass_max_brute_size(first_pass_max_brute_size), use_dtb(use_dtb), M(M)
     {
         if (M > 2) dcore.resize(n);
     }
 
 
 
-    void boruvka(FLOAT* tree_dist, Py_ssize_t* tree_ind)
+    void mst(FLOAT* tree_dist, Py_ssize_t* tree_ind)
     {
         this->tree_dist = tree_dist;
         this->tree_ind = tree_ind;
@@ -535,7 +747,7 @@ void mst(
     Py_ssize_t n = tree.get_n();
     const Py_ssize_t* perm = tree.get_perm().data();
 
-    tree.boruvka(tree_dist, tree_ind);
+    tree.mst(tree_dist, tree_ind);
 
     if (d_core) {
         const FLOAT* _d_core = tree.get_dcore();
