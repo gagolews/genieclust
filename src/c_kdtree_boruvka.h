@@ -43,13 +43,13 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
     kdtree_node_clusterable* right;
 
     Py_ssize_t cluster_repr;  //< representative point index if all descendants are in the same cluster, -1 otherwise
-    FLOAT cluster_max_dist;  // for DTB
+    FLOAT cluster_max_dist;   // for DTB only
 
-    FLOAT min_dcore;
+    FLOAT min_dcore;          // M>2 only
 
     kdtree_node_clusterable() {
         left = nullptr;
-        right = nullptr;
+        // right = nullptr;
         //cluster_repr = -1;
         //cluster_max_dist = INFINITY;
         //min_dcore = 0.0;
@@ -319,24 +319,24 @@ protected:
         //     }
         // }
         // else {
-            for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
-            {
-                NODE* curnode = &(this->nodes[i]);
-                if (curnode->is_leaf()) {
-                    curnode->min_dcore = dcore[curnode->idx_from];
-                    for (Py_ssize_t j=curnode->idx_from+1; j<curnode->idx_to; ++j) {
-                        if (dcore[j] < curnode->min_dcore)
-                            curnode->min_dcore = dcore[j];
-                    }
-                }
-                else {
-                    // all descendants have already been processed as children in `nodes` occur after their parents
-                    curnode->min_dcore = std::min(
-                        curnode->left->min_dcore,
-                        curnode->right->min_dcore
-                    );
+        // nodes is a deque...
+        for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
+        {
+            if (curnode->is_leaf()) {
+                curnode->min_dcore = dcore[curnode->idx_from];
+                for (Py_ssize_t j=curnode->idx_from+1; j<curnode->idx_to; ++j) {
+                    if (dcore[j] < curnode->min_dcore)
+                        curnode->min_dcore = dcore[j];
                 }
             }
+            else {
+                // all descendants have already been processed as children in `nodes` occur after their parents
+                curnode->min_dcore = std::min(
+                    curnode->left->min_dcore,
+                    curnode->right->min_dcore
+                );
+            }
+        }
         // }
     }
 
@@ -347,9 +347,9 @@ protected:
             this->ds.find(i);
         // now ds.find(i) == ds.get_parent(i) for all i
 
-        for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
+        // nodes is a deque...
+        for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
         {
-            NODE* curnode = &(this->nodes[i]);
             curnode->cluster_max_dist = INFINITY;
 
             if (curnode->cluster_repr >= 0) {
@@ -368,12 +368,10 @@ protected:
             }
             else {
                 // all descendants have already been processed as children in `nodes` occur after their parents
-                if (curnode->left->cluster_repr >= 0 && curnode->right->cluster_repr >= 0) {
+                if (curnode->left->cluster_repr >= 0) {
                     // if both children only feature members of the same cluster, update the cluster repr for the current node;
-                    Py_ssize_t left_cluster_id  = curnode->left->cluster_repr;  //ds.find(curnode->left->cluster_repr); <- done above
-                    Py_ssize_t right_cluster_id = curnode->right->cluster_repr; //ds.find(curnode->right->cluster_repr);<- done above
-                    if (left_cluster_id == right_cluster_id)
-                        curnode->cluster_repr = left_cluster_id;
+                    if (curnode->left->cluster_repr == curnode->right->cluster_repr)
+                        curnode->cluster_repr = curnode->left->cluster_repr;
                 }
                 // else curnode->cluster_repr = -1;  // it already is
             }
@@ -735,7 +733,7 @@ public:
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size), use_dtb(use_dtb), M(M)
     {
-        if (M > 2) dcore.resize(n);
+        if (M >= 2) dcore.resize(n);  // M==2 too!
     }
 
 
@@ -751,8 +749,9 @@ public:
         for (Py_ssize_t i=0; i<this->n-1; ++i)     tree_dist[i] = INFINITY;
         for (Py_ssize_t i=0; i<2*(this->n-1); ++i) tree_ind[i]  = this->n;
 
-        for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; i--)
-            this->nodes[i].cluster_repr = -1;
+        // nodes is a deque...
+        for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
+            curnode->cluster_repr = -1;
 
         find_mst();
     }
@@ -781,6 +780,7 @@ void mst(
         const FLOAT* _data = tree.get_data();
         // we need to recompute the distances as we applied a correction for ambiguity
         for (Py_ssize_t i=0; i<n-1; ++i) {
+            // TODO: DISTANCE::point_point....
             tree_dist[i] = 0.0;
             for (Py_ssize_t j=0; j<D; ++j)
                 tree_dist[i] += square(_data[tree_ind[2*i+0]*D+j]-_data[tree_ind[2*i+1]*D+j]);

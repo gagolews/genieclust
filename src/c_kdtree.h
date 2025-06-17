@@ -75,7 +75,7 @@ struct kdtree_node_knn : public kdtree_node_base<FLOAT, D>
 
     kdtree_node_knn() {
         left = nullptr;
-        right = nullptr;
+        // right = nullptr;
     }
 
     inline bool is_leaf() const {

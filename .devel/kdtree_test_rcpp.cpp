@@ -193,7 +193,7 @@ for (d in c()) {
 }
 
 
-for (n in c(100000, 1000000)) for (d in c(2, 5)) {
+for (n in c(100000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
 
@@ -246,6 +246,28 @@ n=100000, d=5, M=10
 genieclust_brute    28.122    0.022  28.147     0    0
 new_4_16             1.267    0.001   1.268     0   19
 
+
+apollo @ 2025-06-17 21:14
+n=1000000, d=2, M=1, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.625    0.013   1.637     0    0
+dtb_4_16             1.262    0.023   1.286     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=2, M=10, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             1.455    0.022   1.479     0    0
+dtb_4_16             2.024    0.035   2.064     0    0
+genieclust_brute     0.002    0.000   0.002    NA   NA
+n=1000000, d=5, M=1, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0            13.628    0.026  13.676     0    0
+dtb_4_16            20.835    0.113  20.958     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
+n=1000000, d=5, M=10, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist Δidx
+new_16_0             7.889    0.018   7.914     0    0
+dtb_4_16            16.699    0.025  16.724     0    0
+genieclust_brute     0.000    0.000   0.000    NA   NA
 
 
 
