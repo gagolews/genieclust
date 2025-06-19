@@ -22,14 +22,14 @@
 
 
 
-/*! Merge all "boundary" noise points with their nearest "core" points
+/*! Merge all "boundary" points with their nearest "core" points
  *
  *
- *  For all the boundary points i, set c[i] = c[j],
- *  where {i,j} is an edge in a spanning forest given by adjacency matrix ind.
+ *  For all the boundary points i, set c[i] = c[j], where {i,j} is an edge
+ *  in a spanning forest given by an adjacency matrix ind.
  *
  *  The i-th point is a boundary point if it is a noise point, i.e., c[i] < 0,
- *  and it's amongst j's M-1 nearest neighbours.
+ *  and it is amongst j's M-1 nearest neighbours.
  *
  *
  *  @param ind c_contiguous matrix of size num_edges*2,
@@ -49,15 +49,14 @@
  *  @param n length of c and the number of vertices in the spanning forest
  */
 void Cmerge_boundary_points(
-        const Py_ssize_t* ind,
-        Py_ssize_t num_edges,
-        const Py_ssize_t* nn,
-        Py_ssize_t num_neighbours,
-        Py_ssize_t M,
-        Py_ssize_t* c,
-        Py_ssize_t n)
-{
-
+    const Py_ssize_t* ind,
+    Py_ssize_t num_edges,
+    const Py_ssize_t* nn,
+    Py_ssize_t num_neighbours,
+    Py_ssize_t M,
+    Py_ssize_t* c,
+    Py_ssize_t n
+) {
     if (M < 2 || M-2 >= num_neighbours)
         throw std::domain_error("Incorrect smoothing factor M");
 
@@ -67,9 +66,9 @@ void Cmerge_boundary_points(
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
-            throw std::domain_error("All elements must be <= n");
+            throw std::domain_error("all elements must be <= n");
         if (c[u] < 0 && c[v] < 0)
-            throw std::domain_error("Edge between two unallocated points detected");
+            throw std::domain_error("there is an edge between two noise points");
 
         if (c[u] >= 0 && c[v] >= 0)
             continue;
@@ -95,6 +94,7 @@ void Cmerge_boundary_points(
     }
 }
 
+
 /*! Merge all noise points with their nearest clusters
  *
  *  For all the points i with some cluster identifier c[i] < 0, i.e., for
@@ -117,17 +117,17 @@ void Cmerge_noise_points(
         const Py_ssize_t* ind,
         Py_ssize_t num_edges,
         Py_ssize_t* c,
-        Py_ssize_t n)
-{
+        Py_ssize_t n
+) {
     for (Py_ssize_t i=0; i<num_edges; ++i) {
         Py_ssize_t u = ind[2*i+0];
         Py_ssize_t v = ind[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
-            throw std::domain_error("All elements must be <= n");
+            throw std::domain_error("all elements must be <= n");
         if (c[u] < 0 && c[v] < 0)
-            throw std::domain_error("An edge between two unallocated points detected");
+            throw std::domain_error("there is an edge between two noise points");
 
         if (c[u] < 0)
             c[u] = c[v];

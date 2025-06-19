@@ -7,7 +7,7 @@
 
 
 """
-The "new" (2025) functions to compute k nearest neighbours
+The "new" (2025), highly optimised functions to compute k-nearest neighbours
 and minimum spanning trees with respect to the Euclidean metric
 and thereon-based mutual reachability distance.
 Provides access to our fast implementation of K-d trees.
@@ -56,13 +56,14 @@ ctypedef fused floatT:
     double
 
 
+from . cimport c_omp
 from . cimport c_fastmst
 
 
 ################################################################################
 
-cdef void _openmp_set_num_threads():
-    c_fastmst.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
+# cdef void _openmp_set_num_threads():
+#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
 
 
 
@@ -125,7 +126,7 @@ cpdef tuple knn_sqeuclid(
     cdef np.ndarray[floatT,ndim=2] X2
     X2 = np.asarray(X, order="C", copy=True)  # destroyable
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
     if use_kdtree and 2 <= d <= 20:
         #    c_fastmst.Cknn_sqeuclid_picotree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)  # ours is faster
         c_fastmst.Cknn_sqeuclid_kdtree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)
@@ -256,7 +257,7 @@ cpdef tuple mst_euclid(
     if M > 1:
         d_core = np.empty(n, dtype=np.float32 if floatT is float else np.float64)
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
     if use_kdtree and 2 <= d <= 20:
         c_fastmst.Cmst_euclid_kdtree(
             &X2[0,0], n, d, M,

@@ -8,7 +8,8 @@
 
 
 """
-Provides access to the "new" KNN- and MST-related functions.
+Minimum spanning tree and k-nearest neighbour algorithms
+(the "new">=2025 interface, heavily optimised, the Euclidean distance only)
 """
 
 # ############################################################################ #
@@ -30,8 +31,6 @@ Provides access to the "new" KNN- and MST-related functions.
 
 
 cdef extern from "../src/c_fastmst.h":
-
-    void Comp_set_num_threads(Py_ssize_t n_threads)
 
     void Ctree_order[T](Py_ssize_t n, T* tree_dist, Py_ssize_t* tree_ind)
 

@@ -1,13 +1,10 @@
 import os
 import numba
-import numpy as np
-import timeit
-import genieclust
-import pandas as pd
+#numba.config.THREADING_LAYER = 'omp'
 
 
 n_jobs = 1
-n_trials = 3
+n_trials = 1
 seed = 123
 n = 250000
 scenarios = [
@@ -25,19 +22,9 @@ scenarios = [
     (n, 5, 10, "norm"),
 ]
 
-
-
-import os
-os.environ["COLUMNS"] = "200"  # output width, in characters
-np.set_printoptions(
-    linewidth=200,   # output width
-    legacy="1.25",   # print scalars without type information
-)
-pd.set_option("display.width", 200)
-
-os.environ["OMP_NUM_THREADS"] = str(n_jobs)
-os.environ["NUMBA_NUM_THREADS"] = str(n_jobs)
-numba.config.THREADING_LAYER = 'omp'
+if n_jobs > 0:
+    os.environ["OMP_NUM_THREADS"] = str(n_jobs)
+    os.environ["NUMBA_NUM_THREADS"] = str(n_jobs)
 
 
 
@@ -215,6 +202,23 @@ n=100000, d=5, M=10, threads=1
 """
 
 
+import numpy as np
+import pandas as pd
+
+
+os.environ["COLUMNS"] = "200"  # output width, in characters
+np.set_printoptions(
+    linewidth=200,   # output width
+    legacy="1.25",   # print scalars without type information
+)
+pd.set_option("display.width", 200)
+
+
+import genieclust
+# print(genieclust.omp_max_treads_original)
+# print(genieclust.omp_num_threads_envvar)
+
+
 def tree_order(tree_w, tree_e):
     tree_w = tree_w.astype("float", order="C")
     tree_e = tree_e.astype(np.intp, order="C")
@@ -323,10 +327,16 @@ cases = dict(
 import statsmodels
 import scipy.stats
 from statsmodels.distributions.copula.api import GumbelCopula, CopulaDistribution
+import timeit
 
+if n_jobs > 0:
+    numba.set_num_threads(n_jobs)
+    genieclust.internal.omp_set_num_threads(n_jobs)
+else:
+    numba.set_num_threads(genieclust.omp_max_treads_original)
+    genieclust.internal.omp_set_num_threads(genieclust.omp_max_treads_original)
 
 results = []
-numba.set_num_threads(n_jobs)
 for n, d, M, s in scenarios:
     np.random.seed(seed)
     if s == "norm":

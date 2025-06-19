@@ -6,13 +6,6 @@
 # cython: language_level=3
 
 
-## We only expose some of the following functions (at least, officially)
-## in the online manual. Many of the "private" members' docstrings should
-## be cleaned up and formatted so as to conform to the numpydoc guidelines.
-## TODO: (volunteers needed) Cheers.
-
-
-
 """
 Internal functions and classes
 """
@@ -60,32 +53,28 @@ ctypedef fused floatT:
     double
 
 
-
-
-from . cimport c_mst
+from . cimport c_omp
 from . cimport c_preprocess
 from . cimport c_postprocess
 from . cimport c_disjoint_sets
 from . cimport c_gini_disjoint_sets
 from . cimport c_genie
 from . cimport c_lumbermark
+from . cimport c_argfuns
 
 
 ################################################################################
 
-cdef void _openmp_set_num_threads():
-    c_mst.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
+# cdef void _openmp_set_num_threads():
+#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
 
+cpdef int omp_set_num_threads(int n_threads):
+    return c_omp.Comp_set_num_threads(n_threads)
 
+cpdef int omp_get_max_threads():
+    return c_omp.Comp_get_max_threads()
 
 ################################################################################
-# Minimum Spanning Tree Algorithms:
-# (a) Prim-Jarník's for Complete Undirected Graphs,
-# (b) Kruskal's for k-NN graphs,
-# and auxiliary functions.
-################################################################################
-
-
 
 cpdef np.ndarray[floatT] get_d_core(
     floatT[:,::1] dist,
@@ -141,6 +130,120 @@ cpdef np.ndarray[floatT] get_d_core(
         d_core[i] = dist[i, j]
 
     return d_core
+
+
+
+cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
+    """
+    (provided for testing only)
+
+    Given a pairwise distance matrix, computes the "core distance", i.e.,
+    the distance of each point to its M-th nearest neighbour.
+    Note that M==1 always yields all the distances equal to 0.0.
+    The core distances are needed when computing the mutual reachability
+    distance in the HDBSCAN* algorithm.
+
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
+
+    The input distance matrix for a given point cloud X may be computed,
+    e.g., via a call to
+    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
+
+
+    Parameters
+    ----------
+
+    dist : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+    M : int
+        A smoothing factor >= 1.
+
+
+    Returns
+    -------
+
+    d_core : ndarray, shape (n_samples,)
+        d_core[i] gives the distance between the i-th point and its M-th nearest
+        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
+    """
+    cdef Py_ssize_t n = dist.shape[0], i, j
+    cdef floatT v
+    cdef np.ndarray[floatT] d_core = np.zeros(n,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef floatT[::1] row
+
+    if M < 1: raise ValueError("M < 1")
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
+    if M >= n: raise ValueError("M >= matrix size")
+
+    if M == 1: return d_core # zeros
+
+    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
+    for i in range(n):
+        row = dist[i,:]
+        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
+        d_core[i] = dist[i, j]
+
+    return d_core
+
+
+
+cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
+        np.ndarray[floatT,ndim=2] dist,
+        np.ndarray[floatT] d_core):
+    """
+    (provided for testing only)
+
+
+    Given a pairwise distance matrix,
+    computes the mutual reachability distance w.r.t. the given
+    core distance vector; see `internal.core_distance`.
+
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
+
+    The input distance matrix for a given point cloud X
+    may be computed, e.g., via a call to
+    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
+
+
+    Parameters
+    ----------
+
+    dist : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+    d_core : ndarray, shape (n_samples,)
+        See genieclust.internal.core_distance().
+
+
+    Returns
+    -------
+
+    R : ndarray, shape (n_samples,n_samples)
+        A new distance matrix, giving the mutual reachability distance.
+    """
+    cdef Py_ssize_t n = dist.shape[0], i, j
+    cdef floatT v
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
+
+    cdef np.ndarray[floatT,ndim=2] R = np.array(dist,
+        dtype=np.float32 if floatT is float else np.float64)
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            v = dist[i, j]
+            if v < d_core[i]: v = d_core[i]
+            if v < d_core[j]: v = d_core[j]
+            R[i, j] = R[j, i] = v
+
+    return R
+
+
+
 
 
 
@@ -221,450 +324,6 @@ cpdef tuple nn_list_to_matrix(
 
 
 
-# cpdef tuple mst_from_nn_list(list nns,
-#         Py_ssize_t k_max=0,
-#         bint stop_disconnected=True,
-#         bint verbose=False):
-#     """
-#     Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
-#     using Kruskal's algorithm, and orders its edges w.r.t. increasing weights.
-#
-#     See `mst_from_nn` for more details.
-#
-#
-#     Parameters
-#     ----------
-#
-#     nns : list of length n
-#         Each nns[i] should be a pair of c_contiguous ndarrays.
-#         An edge {i, nns[i][0][j]} has weight nns[i][1][j].
-#         Each nns[i][0] is of type int32 and nns[i][1] of type float32
-#         (for compatibility with nmslib).
-#     k_max : int
-#         If k_max > 0, O(n*k_max) space will be reserved for auxiliary data.
-#     stop_disconnected : bool
-#         raise an exception if the input graph is not connected
-#     verbose: bool
-#         whether to print diagnostic messages
-#
-#     Returns
-#     -------
-#
-#     pair : tuple
-#         See `mst_from_nn`.
-#     """
-#     cdef Py_ssize_t n = len(nns)
-#     cdef np.ndarray[int]   nn_i
-#     cdef np.ndarray[float] nn_d
-#     cdef Py_ssize_t k
-#     cdef Py_ssize_t i, j
-#     cdef Py_ssize_t i1, i2
-#     cdef float d
-#
-#     cdef vector[ c_mst.CMstTriple[float] ] nns2
-#     if k_max > 0:
-#         nns2.reserve(n*k_max)
-#
-#
-#     for i in range(n):
-#         nn_i = nns[i][0]
-#         nn_d = nns[i][1]
-#         k = nn_i.shape[0]
-#         if nn_d.shape[0] != k:
-#             raise ValueError("nns has arrays of different lengths as elements")
-#
-#         for j in range(k):
-#             i1 = i
-#             i2 = nn_i[j]
-#             d = nn_d[j]
-#             if i2 >= 0 and i1 != i2:
-#                 nns2.push_back( c_mst.CMstTriple[float](i1, i2, d) )
-#
-#     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-#     cdef np.ndarray[float]          mst_dist = np.empty(n-1, dtype=np.float32)
-#
-#     cdef Py_ssize_t n_edges = c_mst.Cmst_from_nn_list(nns2.data(), nns2.size(), n,
-#             &mst_dist[0], &mst_ind[0,0], verbose)
-#
-#     if stop_disconnected and n_edges < n-1:
-#         raise ValueError("graph is disconnected")
-#
-#     return mst_dist, mst_ind
-#
-
-
-
-cpdef tuple mst_from_nn(
-    floatT[:,::1] dist,
-    Py_ssize_t[:,::1] ind,
-    floatT[::1] d_core=None,
-    bint stop_disconnected=True,
-    bint stop_inexact=False,
-    bint verbose=False):
-    """
-    genieclust.internal.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
-
-    Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
-
-
-
-    Parameters
-    ----------
-
-    dist : ndarray
-        A ``c_contiguous`` `ndarray` of shape (n, k).
-        ``dist[i,:]`` is sorted nondecreasingly for all ``i``,
-        ``dist[i,j]`` gives the weight of the edge ``{i, ind[i,j]}``
-    ind : a ``c_contiguous`` ndarray, shape (n,k)
-        Defines edges of the input graph, interpreted as ``{i, ind[i,j]}``.
-    d_core : a ``c_contiguous`` ndarray, shape (n,), or ``None``
-        Core distances for computing the mutual reachability distance,
-        can be ``None``.
-    stop_disconnected : bool
-        Whether to raise an exception if the input graph is not connected.
-    stop_inexact : bool
-        Whether to raise an exception if the return MST is definitely
-        subobtimal.
-    verbose : bool
-        Whether to print diagnostic messages.
-
-
-    Returns
-    -------
-
-    tuple like ``(mst_dist, mst_ind)``
-        Defines the `n-1` edges of the resulting MST.
-        The `(n-1)`-ary array ``mst_dist`` is such that
-        ``mst_dist[i]`` gives the weight of the ``i``-th edge.
-        Moreover, ``mst_ind`` is a matrix with `n-1` rows and 2 columns,
-        where ``{mst_ind[i,0], mst_ind[i,1]}`` defines the ``i``-th edge of the tree.
-
-        The results are ordered w.r.t. nondecreasing weights.
-        For each ``i``, it holds ``mst_ind[i,0] < mst_ind[i,1]``.
-
-        If `stop_disconnected` is ``False``, then the weights of the
-        last `c-1` edges are set to infinity and the corresponding indices
-        are set to -1, where `c` is the number of connected components
-        in the resulting minimum spanning forest.
-
-
-
-    See also
-    --------
-
-    Kruskal's algorithm is used.
-
-    Note that in general, the sum of weights in an MST of the (<= k)-nearest
-    neighbour graph might be greater than the sum of weights in a minimum
-    spanning tree of the complete pairwise distances graph.
-
-    If the input graph is unconnected, the result is a forest.
-
-    """
-    cdef Py_ssize_t n = dist.shape[0]
-    cdef Py_ssize_t k = dist.shape[1]
-
-    if not (ind.shape[0] == n and ind.shape[1] == k):
-        raise ValueError("shapes of dist and ind must match")
-
-    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-
-    cdef int maybe_inexact
-
-    cdef floatT* d_core_ptr = NULL
-    if d_core is not None:
-        if not (d_core.shape[0] == n):
-            raise ValueError("shapes of dist and d_core must match")
-        d_core_ptr = &d_core[0]
-
-    _openmp_set_num_threads()
-    cdef Py_ssize_t n_edges = c_mst.Cmst_from_nn(
-        &dist[0,0], &ind[0,0],
-        d_core_ptr,
-        n, k,
-        &mst_dist[0], &mst_ind[0,0], &maybe_inexact, verbose)
-
-    if stop_disconnected and n_edges < n-1:
-        raise ValueError("graph is disconnected")
-
-    if stop_inexact and maybe_inexact:
-        raise ValueError("MST maybe inexact")
-
-    return mst_dist, mst_ind
-
-
-
-
-cpdef tuple mst_from_complete(
-    floatT[:,::1] X,
-    bint verbose=False): # [:,::1]==c_contiguous
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a(*) minimum spanning tree (MST) of a complete undirected graph
-    with weights given by a symmetric n*n matrix
-    or a distance vector of length n*(n-1)/2.
-
-    (*) Note that there might be multiple minimum trees spanning a given graph.
-
-
-    References
-    ----------
-
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
-
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
-
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
-
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n*(n-1)/2, 1) or (n,n)
-        distance vector or matrix
-    verbose: bool
-        whether to print diagnostic messages
-
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
-          a) the (n-1)-ary array mst_dist is such that
-          mst_dist[i] gives the weight of the i-th edge;
-          b) mst_ind is a matrix with n-1 rows and 2 columns,
-          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
-
-        The results are ordered w.r.t. nondecreasing weights.
-        For each i, it holds mst[i,0]<mst[i,1].
-    """
-    cdef Py_ssize_t d = X.shape[1]
-    cdef Py_ssize_t n = X.shape[0]
-    if d == 1:
-        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
-        assert n*(n-1)//2 == X.shape[0]
-
-    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-
-    cdef c_mst.CDistance[floatT]* D = NULL
-    if d == 1:
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
-    else:
-        assert d == n
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
-
-    _openmp_set_num_threads()
-    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
-
-    if D:  del D
-
-    return mst_dist, mst_ind
-
-
-
-
-cpdef tuple mst_from_distance(
-    floatT[:,::1] X,
-    str metric="euclidean",
-    floatT[::1] d_core=None,
-    bint verbose=False):
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a(*) minimum spanning tree (MST) of X with respect to a given metric
-    (distance). Distances are computed on the fly.
-    Memory use: O(n*d).
-
-
-    References
-    ----------
-
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
-
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
-
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
-
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n,d) or,
-            if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
-        n data points in a feature space of dimensionality d
-        or pairwise distances between n points
-    metric : string
-        one of ``"euclidean"`` (a.k.a. ``"l2"``),
-        ``"manhattan"`` (synonyms: ``"cityblock"``, ``"l1"``),
-        ``"cosine"`` (a.k.a. ``"cosinesimil"``), or ``"precomputed"``.
-        More metrics/distances might be supported in future versions.
-    d_core : c_contiguous ndarray of length n; optional (default=None)
-        core distances for computing the mutual reachability distance
-    verbose: bool
-        whether to print diagnostic messages
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (mst_dist, mst_ind) defining the n-1 edges of the MST:
-          a) the (n-1)-ary array mst_dist is such that
-          mst_dist[i] gives the weight of the i-th edge;
-          b) mst_ind is a matrix with n-1 rows and 2 columns,
-          where {mst[i,0], mst[i,1]} defines the i-th edge of the tree.
-
-        The results are ordered w.r.t. nondecreasing weights.
-        For each i, it holds mst[i,0]<mst[i,1].
-    """
-    cdef Py_ssize_t n = X.shape[0]
-    cdef Py_ssize_t d = X.shape[1]
-    if d == 1 and metric == "precomputed":
-        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
-        assert n*(n-1)//2 == X.shape[0]
-    #cdef Py_ssize_t i
-    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT] mst_dist = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-
-    cdef c_mst.CDistance[floatT]* D = NULL
-    cdef c_mst.CDistance[floatT]* D2 = NULL
-
-    if metric == "euclidean" or metric == "l2":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
-    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
-    elif metric == "cosine" or metric == "cosinesimil":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
-    elif metric == "precomputed":
-        if d == 1:
-            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
-        else:
-            assert d == n
-            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
-    else:
-        raise NotImplementedError("given `metric` is not supported (yet)")
-
-    if d_core is not None:
-        D2 = D  # must be deleted separately
-        D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
-
-    _openmp_set_num_threads()
-    c_mst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
-
-    if D:  del D
-    if D2: del D2
-
-    return mst_dist, mst_ind
-
-
-
-cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
-       str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
-    """Determines the first k nearest neighbours of each point in X,
-    with respect to a given metric (distance).
-    Distances are computed on the fly.
-    Memory use: O(n*k).
-
-    It is assumed that each query point is not its own neighbour.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n,d) or,
-            if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
-        n data points in a feature space of dimensionality d
-        or pairwise distances between n points
-    k : int < n
-        number of nearest neighbours
-    metric : string
-        one of ``"euclidean"`` (a.k.a. ``"l2"``),
-        ``"manhattan"`` (synonyms: ``"cityblock"``, ``"l1"``),
-        ``"cosine"`` (a.k.a. ``"cosinesimil"``), or ``"precomputed"``.
-        More metrics/distances might be supported in future versions.
-    d_core : c_contiguous ndarray of length n; optional (default=None)
-        core distances for computing the mutual reachability distance
-    verbose: bool
-        whether to print diagnostic messages
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (dist, ind) representing the k-NN graph, where:
-            dist : a c_contiguous ndarray, shape (n,k)
-                dist[i,:] is sorted nondecreasingly for all i,
-                dist[i,j] gives the weight of the edge {i, ind[i,j]},
-                i.e., the distance between the i-th point and its j-th NN.
-            ind : a c_contiguous ndarray, shape (n,k)
-                edge definition, interpreted as {i, ind[i,j]};
-                ind[i,j] is the index of the j-th nearest neighbour of i.
-    """
-    cdef Py_ssize_t n = X.shape[0]
-    cdef Py_ssize_t d = X.shape[1]
-    if d == 1 and metric == "precomputed":
-        n = <Py_ssize_t>libc.math.round((libc.math.sqrt(1.0+8.0*n)+1.0)/2.0)
-        assert n*(n-1)//2 == X.shape[0]
-
-    if k >= n:
-        raise ValueError("too many nearest neighbours requested")
-
-    cdef Py_ssize_t i
-    cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-    cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-        dtype=np.float32 if floatT is float else np.float64)
-    cdef c_mst.CDistance[floatT]* D = NULL
-    cdef c_mst.CDistance[floatT]* D2 = NULL
-
-    if metric == "euclidean" or metric == "l2":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceEuclidean[floatT](&X[0,0], n, d)
-    elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceManhattan[floatT](&X[0,0], n, d)
-    elif metric == "cosine" or metric == "cosinesimil":
-        D = <c_mst.CDistance[floatT]*>new c_mst.CDistanceCosine[floatT](&X[0,0], n, d)
-    elif metric == "precomputed":
-        if d == 1:
-            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedVector[floatT](&X[0,0], n)
-        else:
-            assert d == n
-            D = <c_mst.CDistance[floatT]*>new c_mst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
-    else:
-        raise NotImplementedError("given `metric` is not supported (yet)")
-
-    if d_core is not None:
-        D2 = D # must be deleted separately
-        D  = <c_mst.CDistance[floatT]*>new c_mst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
-
-    _openmp_set_num_threads()
-    c_mst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0], verbose)
-
-    if D:  del D
-    if D2: del D2
-
-    return dist, ind
-
-
-################################################################################
-# Graph pre-processing routines
-################################################################################
-
-
 cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
     """Given an adjacency list representing an undirected simple graph over
     a vertex set {0,...,n-1}, return an array deg with deg[i] denoting
@@ -691,13 +350,13 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
     assert ind.shape[1] == 2
     cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
     c_preprocess.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
 
     return deg
 
 
-# Cget_graph_node_adjlists - ignore
+# TODO: add Cget_graph_node_inclists
 
 
 ################################################################################
@@ -741,7 +400,7 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
     c_postprocess.Cmerge_boundary_points(
         &mst_i[0,0], mst_i.shape[0],
         &nn_i[0,0], nn_i.shape[1], M,
@@ -779,7 +438,7 @@ cpdef np.ndarray[Py_ssize_t] merge_noise_points(
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
     c_postprocess.Cmerge_noise_points(
         &mst_i[0,0], mst_i.shape[0],
         &cl2[0], cl2.shape[0])
@@ -1497,7 +1156,7 @@ cpdef dict genie_from_mst(
     cdef Py_ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
 
     cdef c_genie.CGenie[floatT] g
     g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves, experimental_forced_merge)
@@ -1652,7 +1311,7 @@ cpdef dict gic_from_mst(
     cdef Py_ssize_t n_clusters_ = 0, iters_
     labels_ = None # on request, see below
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
 
     cdef c_genie.CGIc[floatT] g
     g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
@@ -1762,7 +1421,7 @@ cpdef dict lumbermark_from_mst(
     cdef np.ndarray[bool] is_noise_
     cdef Py_ssize_t n_clusters_
 
-    _openmp_set_num_threads()
+    # _openmp_set_num_threads()
 
     cdef c_lumbermark.CLumbermark[floatT] l
     l = c_lumbermark.CLumbermark[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)

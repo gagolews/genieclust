@@ -155,12 +155,18 @@ inline T max3(const T a, const T b, const T c)
 #endif
 
 
-inline void Comp_set_num_threads(Py_ssize_t n_threads)
+inline int Comp_set_num_threads(int n_threads)
 {
+    //GENIECLUST_PRINT("Comp_set_num_threads(%d), omp_get_max_threads()==%d\n",
+    //   n_threads, omp_get_max_threads());
+    if (n_threads <= 0) return n_threads;
+
 #if OPENMP_IS_ENABLED
-    if (n_threads <= 0)
-        n_threads = omp_get_max_threads();
+    int oldval = omp_get_max_threads();   // confusing name...
     omp_set_num_threads(n_threads);
+    return oldval;
+#else
+    return 1;
 #endif
 }
 

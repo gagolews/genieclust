@@ -8,7 +8,8 @@
 
 
 """
-Provides access to the "old" (generic) KNN- and MST-related functions.
+Minimum spanning tree and k-nearest neighbour algorithms (the "old" (<= 2025),
+slow implementation, but works with some non-Euclidean distances).
 """
 
 # ############################################################################ #
@@ -29,10 +30,7 @@ Provides access to the "old" (generic) KNN- and MST-related functions.
 # ############################################################################ #
 
 
-cdef extern from "../src/c_mst.h":
-
-    void Comp_set_num_threads(Py_ssize_t n_threads)
-
+cdef extern from "../src/c_oldmst.h":
 
     cdef cppclass CDistance[T]:
         pass
@@ -71,10 +69,10 @@ cdef extern from "../src/c_mst.h":
         CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,
         T* dist, Py_ssize_t* ind, bint verbose) except +
 
-    Py_ssize_t Cmst_from_nn[T](
-        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
-        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
-
     void Cmst_from_complete[T](
         CDistance[T]* D, Py_ssize_t n,
         T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
+
+    Py_ssize_t Cmst_from_nn[T](
+        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
+        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +

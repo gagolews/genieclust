@@ -16,8 +16,7 @@
 
 #include "c_common.h"
 #include "c_matrix.h"
-#include "c_distance.h"
-#include "c_mst.h"
+#include "c_oldmst.h"
 #include "c_genie.h"
 #include "c_postprocess.h"
 #include <cmath>

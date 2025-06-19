@@ -1,4 +1,5 @@
-/*  Various distances (Euclidean, mutual reachability distance, ...)
+/*  Various distances (Euclidean, mutual reachability distance, ...).
+/*  Used by c_oldmst.h
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -14,8 +15,8 @@
  */
 
 
-#ifndef __c_distance_h
-#define __c_distance_h
+#ifndef __c_oldmst_distance_h
+#define __c_oldmst_distance_h
 
 #include "c_common.h"
 #include <vector>
@@ -29,7 +30,7 @@ struct CDistance {
     virtual ~CDistance() {}
 
     /*!
-     * @param i point index, 0<=i<n
+     * @param i point index, 0 <= i < n
      * @param M indices
      * @param k length of M
      * @return distances from the i-th point to M[0], .., M[k-1],

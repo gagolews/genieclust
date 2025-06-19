@@ -233,162 +233,44 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
 
 
 
-cpdef np.ndarray[Py_ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
-    """
-    genieclust.tools.argsort(x, stable=True)
-
-    Finds the/an ordering permutation (provided for testing only)
-
-
-    Parameters
-    ----------
-
-    x : ndarray
-        A vector with *n* elements of type ``int``, ``float``,
-        or ``double``.
-
-    stable : bool
-        Should a stable (a bit slower) sorting algorithm be used?
-
-
-    Returns
-    -------
-
-    ndarray
-        An ordering permutation of `x`, an integer vector `o` of length *n*
-        with elements between 0 and *n* - 1
-        such that ``x[o[0]] <= x[o[1]] <= ... <= x[o[n-1]]``.
-
-
-    Notes
-    -----
-
-    Finds the/an ordering permutation of a ``c_contiguous`` array `x`
-    The ordering permutation is uniquely defined provided that
-    `stable` is ``True``. Otherwise *an* ordering permutation
-    will be generated.
-
-    """
-    x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
-    cdef Py_ssize_t n = x.shape[0]
-    cdef np.ndarray[Py_ssize_t] ret = np.empty(n, dtype=np.intp)
-    c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
-    return ret
-
-
-
-
-
-
-
-cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
-    """
-    (provided for testing only)
-
-
-    Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its M-th nearest neighbour.
-    Note that M==1 always yields all the distances equal to 0.0.
-    The core distances are needed when computing the mutual reachability
-    distance in the HDBSCAN* algorithm.
-
-    See Campello R.J.G.B., Moulavi D., Sander J.,
-    Density-based clustering based on hierarchical density estimates,
-    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-    doi:10.1007/978-3-642-37456-2_14.
-
-    The input distance matrix for a given point cloud X may be computed,
-    e.g., via a call to
-    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
-
-
-    Parameters
-    ----------
-
-    dist : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-    M : int
-        A smoothing factor >= 1.
-
-
-    Returns
-    -------
-
-    d_core : ndarray, shape (n_samples,)
-        d_core[i] gives the distance between the i-th point and its M-th nearest
-        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
-    """
-    cdef Py_ssize_t n = dist.shape[0], i, j
-    cdef floatT v
-    cdef np.ndarray[floatT] d_core = np.zeros(n,
-        dtype=np.float32 if floatT is float else np.float64)
-    cdef floatT[::1] row
-
-    if M < 1: raise ValueError("M < 1")
-    if dist.shape[1] != n: raise ValueError("not a square matrix")
-    if M >= n: raise ValueError("M >= matrix size")
-
-    if M == 1: return d_core # zeros
-
-    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
-    for i in range(n):
-        row = dist[i,:]
-        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
-        d_core[i] = dist[i, j]
-
-    return d_core
-
-
-cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
-        np.ndarray[floatT,ndim=2] dist,
-        np.ndarray[floatT] d_core):
-    """
-    (provided for testing only)
-
-
-    Given a pairwise distance matrix,
-    computes the mutual reachability distance w.r.t. the given
-    core distance vector; see `internal.core_distance`.
-
-    See Campello R.J.G.B., Moulavi D., Sander J.,
-    Density-based clustering based on hierarchical density estimates,
-    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-    doi:10.1007/978-3-642-37456-2_14.
-
-    The input distance matrix for a given point cloud X
-    may be computed, e.g., via a call to
-    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
-
-
-    Parameters
-    ----------
-
-    dist : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-    d_core : ndarray, shape (n_samples,)
-        See genieclust.internal.core_distance().
-
-
-    Returns
-    -------
-
-    R : ndarray, shape (n_samples,n_samples)
-        A new distance matrix, giving the mutual reachability distance.
-    """
-    cdef Py_ssize_t n = dist.shape[0], i, j
-    cdef floatT v
-    if dist.shape[1] != n: raise ValueError("not a square matrix")
-
-    cdef np.ndarray[floatT,ndim=2] R = np.array(dist,
-        dtype=np.float32 if floatT is float else np.float64)
-    for i in range(0, n-1):
-        for j in range(i+1, n):
-            v = dist[i, j]
-            if v < d_core[i]: v = d_core[i]
-            if v < d_core[j]: v = d_core[j]
-            R[i, j] = R[j, i] = v
-
-    return R
-
-
-
+# cpdef np.ndarray[Py_ssize_t] _argsort(np.ndarray[T] x, bint stable=True):
+#     """
+#     (provided for testing only)
+#
+#     Finds the/an ordering permutation
+#
+#
+#     Parameters
+#     ----------
+#
+#     x : ndarray
+#         A vector with *n* elements of type ``int``, ``float``,
+#         or ``double``.
+#
+#     stable : bool
+#         Should a stable (a bit slower) sorting algorithm be used?
+#
+#
+#     Returns
+#     -------
+#
+#     ndarray
+#         An ordering permutation of `x`, an integer vector `o` of length *n*
+#         with elements between 0 and *n* - 1
+#         such that ``x[o[0]] <= x[o[1]] <= ... <= x[o[n-1]]``.
+#
+#
+#     Notes
+#     -----
+#
+#     Finds the/an ordering permutation of a ``c_contiguous`` array `x`
+#     The ordering permutation is uniquely defined provided that
+#     `stable` is ``True``. Otherwise *an* ordering permutation
+#     will be generated.
+#
+#     """
+#     x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+#     cdef Py_ssize_t n = x.shape[0]
+#     cdef np.ndarray[Py_ssize_t] ret = np.empty(n, dtype=np.intp)
+#     c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
+#     return ret

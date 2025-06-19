@@ -864,7 +864,7 @@ class Genie(GenieBase):
     :Environment variables:
         OMP_NUM_THREADS
             Controls the number of threads used for computing the minimum
-            spanning tree (not supported by `mlpack`).
+            spanning tree.
 
 
     References

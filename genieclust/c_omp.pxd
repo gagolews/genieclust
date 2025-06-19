@@ -8,13 +8,13 @@
 
 
 """
-Noisy k-partition post-processing
+Provides access to some OpenMP functions (if available).
 """
 
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -30,10 +30,6 @@ Noisy k-partition post-processing
 # ############################################################################ #
 
 
-cdef extern from "../src/c_postprocess.h":
-    void Cmerge_boundary_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
-        const Py_ssize_t* nn, Py_ssize_t num_neighbours, Py_ssize_t M,
-        Py_ssize_t* c, Py_ssize_t n)
-
-    void Cmerge_noise_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
-        Py_ssize_t* c, Py_ssize_t n)
+cdef extern from "../src/c_common.h":
+    int Comp_set_num_threads(int n_threads)
+    int Comp_get_max_threads()

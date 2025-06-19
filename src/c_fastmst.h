@@ -1,5 +1,5 @@
-/*  Minimum Spanning Tree and k-nearest neighbour algorithms
- *  (the "new" (2025) interface)
+/*  Minimum spanning tree and k-nearest neighbour algorithms
+ *  (the "new">=2025 interface, heavily optimised, Euclidean distance only)
  *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
  *

@@ -1,7 +1,8 @@
-/*  Minimum Spanning Tree and k-nearest neighbour algorithms:
- * (the "old"/generic interface)
+/* Minimum spanning tree and k-nearest neighbour algorithms
+ * (the "old"/generic<2025 interface)
+ *
  *  1. Prim-Jarnik's for complete undirected graphs,
- *  2. Kruskal's for k-NN graphs.
+ *  2. Kruskal's for k-NN graphs (for approximate MSTs).
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -17,16 +18,16 @@
  */
 
 
-#ifndef __c_mst_h
-#define __c_mst_h
+#ifndef __c_oldmst_h
+#define __c_oldmst_h
 
 #include <vector>
 #include <cmath>
 #include <algorithm>
 #include "c_common.h"
+#include "c_oldmst_distance.h"
 #include "c_mst_triple.h"
 #include "c_disjoint_sets.h"
-#include "c_distance.h"
 
 
 
@@ -264,7 +265,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
 
 /*! Computes a minimum spanning forest of a (<=k)-nearest neighbour graph
  *  (i.e., one that connects no more than the first k nearest neighbours
- *  (of each point)  using Kruskal's algorithm, and orders
+ *  (of each point) using Kruskal's algorithm, and orders
  *  its edges w.r.t. increasing weights.
  *
  *  Note that, in general, an MST of the (<=k)-nearest neighbour graph
@@ -389,104 +390,6 @@ Py_ssize_t Cmst_from_nn(
 
     return mst_edge_cur;
 }
-
-
-
-
-
-// *! Computes a minimum spanning forest of a near-neighbour
-// *  graph using Kruskal's algorithm, and orders
-// *  its edges w.r.t. increasing weights.
-// *
-// *  Points can have different numbers of nearest neighbours determined.
-// *  Hence, the input graph is given in a "list"-like form.
-// *
-// *  In general, the MST of the (<=k)-nearest neighbour graph
-// *  might not be equal to the MST of the complete pairwise distance graph.
-// *
-// *
-// * @param nns [in/out]  a c_contiguous array, shape (c,), of CMstTriple elements
-// *        defining the near-neighbour graphs. Loops are ignored.
-// *        The array is sorted in-place.
-// * @param c number of elements in `nns`.
-// * @param n number of nodes in the graph
-// * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
-// *        resulting MST edges in nondecreasing order;
-// *        refer to the function's return value for the actual number
-// *        of edges generated (if this is < n-1, the object is padded with INFINITY)
-// * @param mst_ind [out] c_contiguous matrix of size (n-1)*2, defining the edges
-// *        corresponding to mst_d, with mst_i[j,0] <= mst_i[j,1] for all j;
-// *        refer to the function's return value for the actual number
-// *        of edges generated (if this is < n-1, the object is padded with -1)
-// * @param verbose output diagnostic/progress messages?
-// *
-// * @return number of edges in the minimal spanning forest
-// *
-// template <class T>
-// Py_ssize_t Cmst_from_nn_list(CMstTriple<T>* nns, Py_ssize_t c,
-//     Py_ssize_t n, T* mst_dist, Py_ssize_t* mst_ind, bool verbose=false)
-// {
-//     if (n <= 0)   throw std::domain_error("n <= 0");
-//     if (c <= 0)   throw std::domain_error("c <= 0");
-//
-//     if (verbose)
-//         GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
-//
-//     std::sort(nns, nns+c); // unstable sort (do we need stable here?)
-//
-//     Py_ssize_t triple_cur = 0;
-//     Py_ssize_t mst_edge_cur = 0;
-//
-//     CDisjointSets ds(n);
-//     while (mst_edge_cur < n-1) {
-//         if (triple_cur == c) {
-//             // The input graph is not connected (we have a forest)
-//             Py_ssize_t ret = mst_edge_cur;
-//             while (mst_edge_cur < n-1) {
-//                 mst_ind[2*mst_edge_cur+0] = -1;
-//                 mst_ind[2*mst_edge_cur+1] = -1;
-//                 mst_dist[mst_edge_cur]    = INFINITY;
-//                 mst_edge_cur++;
-//             }
-//             if (verbose)
-//                 GENIECLUST_PRINT("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
-//             return ret;
-//         }
-//
-//         Py_ssize_t u = nns[triple_cur].i1;
-//         Py_ssize_t v = nns[triple_cur].i2;
-//         T d = nns[triple_cur].d;
-//         triple_cur++;
-//
-//         if (u > v) std::swap(u, v); // assure u < v
-//         if (u < 0 || ds.find(u) == ds.find(v))
-//             continue;
-//
-//         mst_ind[2*mst_edge_cur+0] = u;
-//         mst_ind[2*mst_edge_cur+1] = v;
-//         mst_dist[mst_edge_cur]    = d;
-//
-//         GENIECLUST_ASSERT(mst_edge_cur == 0 || mst_dist[mst_edge_cur] >= mst_dist[mst_edge_cur-1]);
-//
-//         ds.merge(u, v);
-//         mst_edge_cur++;
-//
-//
-//         if (verbose)
-//             GENIECLUST_PRINT("\b\b\b\b%3d%%", mst_edge_cur*100/(n-1));
-//
-//         #if GENIECLUST_R
-//         Rcpp::checkUserInterrupt();
-//         #elif GENIECLUST_PYTHON
-//         if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-//         #endif
-//     }
-//
-//     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
-//
-//     return mst_edge_cur;
-// }
-
 
 
 #endif

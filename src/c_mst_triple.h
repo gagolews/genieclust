@@ -17,8 +17,9 @@
 #define __c_mst_triple_h
 
 
-/*! Represents an undirected edge in a weighted graph.
- *  Features a comparer used to sort MST edges w.r.t. increasing weights.
+/*! Represents an edge in a weighted graph.
+ *  Features a comparer used to sort the edges w.r.t. increasing weights;
+ *  more precisely, lexicographically w.r.t. (d, i1, d2).
  */
 template <class T>
 struct CMstTriple
@@ -47,9 +48,6 @@ struct CMstTriple
 
     bool operator<(const CMstTriple<T>& other) const
     {
-        // if we want stable sort, then only:
-        // return d < other.d;
-
         if (d == other.d) {
             if (i1 == other.i1)
                 return i2 < other.i2;

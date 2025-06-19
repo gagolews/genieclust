@@ -1,5 +1,6 @@
-/*  Some sort/search/vector indexing-related functions
- *  missing in the Standard Library, including the ones to:
+/*  Some simple sort/search/vector indexing-related functions
+ *  missing in the standard library, including the ones to:
+ *
  *  a. find the (stable) ordering permutation of a vector
  *  b. find the k-th smallest value in a vector
  *
@@ -30,10 +31,13 @@
  *  Ensures the resulting permutation is stable.
  */
 template<class T>
-struct __argsort_comparer {
+struct __argsort_comparer
+{
     const T* x;
+
     __argsort_comparer(const T* x) { this->x = x; }
-    bool operator()(Py_ssize_t i, Py_ssize_t j) const {
+
+    inline bool operator()(const Py_ssize_t i, const Py_ssize_t j) const {
         return this->x[i] <  this->x[j] ||
               (this->x[i] == this->x[j] && i < j);
     }
@@ -47,8 +51,8 @@ struct __argsort_comparer {
  *
  *  (*) or THE stable one, if stable=true, which is the default.
  *
- *  We call permutation o stable, whenever i<j and x[i]==x[j]
- *  implies that o[i]<o[j].
+ *  We call permutation o stable, whenever i < j and x[i]==x[j]
+ *  implies that o[i] < o[j].
  *
  *  @param ret return array
  *  @param x array to order
@@ -80,7 +84,7 @@ void Cargsort(Py_ssize_t* ret, const T* x, Py_ssize_t n, bool stable=true)
  *  Run time: O(nk), where n == len(x). Working mem: O(k).
  *  Does not modify x.
  *
- *  In practice, very fast for small k and randomly ordered
+ *  Very fast for small k and randomly ordered
  *  or almost sorted (increasingly) data.
  *
  *
@@ -96,8 +100,8 @@ Py_ssize_t Cargkmin(const T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf=NULL
 {
     Py_ssize_t* idx;
 
-    if (n <= 0)   throw std::domain_error("n <= 0");
-    if (k >= n)   throw std::domain_error("k >= n");
+    if (n <= 0) throw std::domain_error("n <= 0");
+    if (k >= n) throw std::domain_error("k >= n");
 
     k += 1;
     if (!buf) idx = new Py_ssize_t[k];
