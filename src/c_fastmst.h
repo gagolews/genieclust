@@ -43,13 +43,18 @@
 template <class FLOAT>
 void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
 {
+    GENIECLUST_PROFILER_USE
+
     std::vector< CMstTriple<FLOAT> > mst(m);
 
     for (Py_ssize_t i=0; i<m; ++i) {
         mst[i] = CMstTriple<FLOAT>(tree_ind[2*i+0], tree_ind[2*i+1], tree_dist[i]);
     }
 
+
+    GENIECLUST_PROFILER_START
     std::sort(mst.begin(), mst.end());
+    GENIECLUST_PROFILER_STOP("mst sort");
 
     for (Py_ssize_t i=0; i<m; ++i) {
         tree_dist[i]    = mst[i].d;
@@ -100,7 +105,7 @@ void Cknn_sqeuclid_brute(
         const FLOAT* x_cur = X+i*d;
 
         #if OPENMP_IS_ENABLED
-        #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
+        #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)  /* chunks get smaller and smaller... */
         #endif
         for (Py_ssize_t j=i+1; j<n; ++j) {
             FLOAT dd = 0.0;
@@ -139,11 +144,13 @@ void Cknn_sqeuclid_brute(
 
         // if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (n-1+n-i-1)*(i+1)*100/n/(n-1));
 
-        // #if GENIECLUST_R
-        // Rcpp::checkUserInterrupt();  // this will cause a longjmp and mem will not be deallocated?
-        // #elif GENIECLUST_PYTHON
-        // if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        // #endif
+        if (i % MST_OMP_CHUNK_SIZE == MST_OMP_CHUNK_SIZE-1) {
+            #if GENIECLUST_R
+            Rcpp::checkUserInterrupt();  // throws an exception, not a longjmp
+            #elif GENIECLUST_PYTHON
+            if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+            #endif
+        }
     }
 
     if (verbose) GENIECLUST_PRINT("done.\n");
@@ -249,7 +256,7 @@ void Cmst_euclid_brute(
 #else
         if (M <= 2) {
             #if OPENMP_IS_ENABLED
-            #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
+            #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)  /* chunks get smaller and smaller... */
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
                 FLOAT dd = 0.0;
@@ -319,11 +326,13 @@ void Cmst_euclid_brute(
 
         if (verbose) GENIECLUST_PRINT("\b\b\b\b%3d%%", (int)((n-1+n-i-1)*(i+1)*100/n/(n-1)));
 
-        // #if GENIECLUST_R
-        // Rcpp::checkUserInterrupt();  // a longjmp?
-        // #elif GENIECLUST_PYTHON
-        // if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        // #endif
+        if (i % MST_OMP_CHUNK_SIZE == MST_OMP_CHUNK_SIZE-1) {
+            #if GENIECLUST_R
+            Rcpp::checkUserInterrupt();  // throws an exception, not a longjmp
+            #elif GENIECLUST_PYTHON
+            if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+            #endif
+        }
     }
 
     // sort the resulting MST edges in increasing order w.r.t. d
@@ -532,6 +541,8 @@ void Cmst_euclid_kdtree(
     bool use_dtb=false,
     bool verbose=false
 ) {
+    GENIECLUST_PROFILER_USE
+
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
     if (M <= 0)   throw std::domain_error("M <= 0");
@@ -539,13 +550,19 @@ void Cmst_euclid_kdtree(
 
     if (max_leaf_size < 0)
         throw std::domain_error("max_leaf_size < 0");
-    else if (max_leaf_size == 0)
-        max_leaf_size = 4;  // default
 
     if (first_pass_max_brute_size < 0)
         throw std::domain_error("first_pass_max_brute_size < 0");
-    else if (first_pass_max_brute_size == 0)
-        first_pass_max_brute_size = 16;  // default
+
+    // set up defaults:
+    if (use_dtb) {
+        if (max_leaf_size == 0) max_leaf_size = 4;
+        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = 16;
+    }
+    else {
+        if (max_leaf_size == 0) max_leaf_size = 16;
+        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = 16;
+    }
 
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... ");
@@ -553,6 +570,7 @@ void Cmst_euclid_kdtree(
     #define ARGS_Cmst_euclid_kdtree X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
 
     /* LMAO; templates... */
+    GENIECLUST_PROFILER_START
     /**/ if (d ==  2) Cmst_euclid_kdtree<FLOAT,  2>(ARGS_Cmst_euclid_kdtree);
     else if (d ==  3) Cmst_euclid_kdtree<FLOAT,  3>(ARGS_Cmst_euclid_kdtree);
     else if (d ==  4) Cmst_euclid_kdtree<FLOAT,  4>(ARGS_Cmst_euclid_kdtree);
@@ -575,6 +593,7 @@ void Cmst_euclid_kdtree(
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }
+    GENIECLUST_PROFILER_STOP("Cmst_euclid_kdtree");
 
     if (verbose) GENIECLUST_PRINT("done.\n");
 }

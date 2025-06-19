@@ -3,13 +3,13 @@
  *  Supports finding k nearest neighbours of points within the same dataset;
  *  fast for small k and dimensionality d.
  *
- *  TODO: support of querying points outside of a dataset can be added if needed.
- *
- *
- *  Features the sliding midpoint rule suggested in "It's okay to be skinny,
- *  if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
+ *  Features the sliding midpoint (midrange) rule suggested in "It's okay to be
+ *  skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
  *  and some further enhancements (minding locality of reference,
- *  multithreading, etc.).
+ *  readiness for multicore queries, etc.).  This split criterion was
+ *  the most efficient amongst those tested (different quantiles,
+ *  adjusted midrange, etc.), at least for the purpose of building minimum
+ *  spanning trees.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -219,16 +219,21 @@ private:
 public:
     kdtree_kneighbours(
         const FLOAT* data,
+        const FLOAT* x,
         const Py_ssize_t which,
         FLOAT* knn_dist,
         Py_ssize_t* knn_ind,
         const Py_ssize_t k,
         const Py_ssize_t max_brute_size=0
     ) :
-        which(which), k(k), x(data+D*which), data(data),
+        which(which), k(k), x(x), data(data),
         knn_dist(knn_dist), knn_ind(knn_ind),
         max_brute_size(max_brute_size)
     {
+        if (x == nullptr) {
+            GENIECLUST_ASSERT(which >= 0);
+            this->x = data+D*which;
+        }
         // // Pre-flight (no benefit)
         // for (Py_ssize_t i=0; i<=2*k; ++i) {
         //     Py_ssize_t j = (Py_ssize_t)which-i-(Py_ssize_t)k;
@@ -427,9 +432,13 @@ public:
         GENIECLUST_ASSERT(max_leaf_size > 0);
         for (Py_ssize_t i=0; i<n; ++i) perm[i] = i;
 
+        GENIECLUST_PROFILER_USE
+
+        GENIECLUST_PROFILER_START
         GENIECLUST_ASSERT(nodes.size()==0);
         nodes.push_back(NODE());
         build_tree(&nodes[0], 0, n);
+        GENIECLUST_PROFILER_STOP("build_tree")
     }
 
 
@@ -446,7 +455,13 @@ public:
 
     void kneighbours(Py_ssize_t which, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
     {
-        kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, which, knn_dist, knn_ind, k);
+        kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, nullptr, which, knn_dist, knn_ind, k);
+        knn.find(&nodes[0]);
+    }
+
+    void kneighbours(const FLOAT* x, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
+    {
+        kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, x, -1, knn_dist, knn_ind, k);
         knn.find(&nodes[0]);
     }
 };
@@ -456,8 +471,8 @@ public:
 template <typename FLOAT, Py_ssize_t D, typename TREE>
 void kneighbours(
     TREE& tree,
-    FLOAT* knn_dist,
-    Py_ssize_t* knn_ind,
+    FLOAT* knn_dist,     // size n*k
+    Py_ssize_t* knn_ind, // size n*k
     Py_ssize_t k
 ) {
     Py_ssize_t n = tree.get_n();
@@ -472,6 +487,30 @@ void kneighbours(
     }
 
     for (Py_ssize_t i=0; i<n*k; ++i) {
+        knn_ind[i] = perm[knn_ind[i]];
+    }
+}
+
+
+template <typename FLOAT, Py_ssize_t D, typename TREE>
+void kneighbours(
+    TREE& tree,
+    const FLOAT* Y,
+    Py_ssize_t m,
+    FLOAT* knn_dist,      // size m*k
+    Py_ssize_t* knn_ind,  // size m*k
+    Py_ssize_t k
+) {
+
+    #if OPENMP_IS_ENABLED
+    #pragma omp parallel for schedule(static)
+    #endif
+    for (Py_ssize_t i=0; i<m; ++i) {
+        tree.kneighbours(Y+i*D, knn_dist+k*i, knn_ind+k*i, k);
+    }
+
+    const Py_ssize_t* perm = tree.get_perm().data();
+    for (Py_ssize_t i=0; i<m*k; ++i) {
         knn_ind[i] = perm[knn_ind[i]];
     }
 }

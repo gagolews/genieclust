@@ -172,6 +172,104 @@ funs_mst_mutreach <- list(
     }
 )
 
+
+
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# OMP_NUM_THREADS=6 CXX_DEFS="-O3 -march=native -DGENIECLUST_PROFILER" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/kdtree_test_rcpp.cpp", echo=FALSE)'
+
+n <- 10000000
+d <- 5
+
+set.seed(123)
+X <- matrix(rnorm(n*d), ncol=d)
+for (M in c(1, 10)) {
+    cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%s\n", n, d, M, Sys.getenv("OMP_NUM_THREADS")))
+
+    res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
+        f <- funs_mst_mutreach[[i]]
+        t <- system.time(y <- f(X, M))
+        list(time=t, y)
+    })
+
+    print(cbind(
+        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+        Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
+        Σdist=sapply(res, function(e) sum(e[[2]][,3])),
+        Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
+    ))
+}
+
+stop()
+
+# n=10000000, d=5, M=1, OMP_NUM_THREADS=6
+# build_tree                                                      : time=       2.276 s
+# tree init                                                       : time=       2.342 s
+# find_mst_first                                                  : time=       5.806 s
+# update_min_dcore                                                : time=       0.000 s
+# find_mst iter #1                                                : time=       7.085 s
+# find_mst iter #2                                                : time=       8.408 s
+# find_mst iter #3                                                : time=       8.200 s
+# find_mst iter #4                                                : time=       6.499 s
+# find_mst iter #5                                                : time=       5.229 s
+# find_mst iter #6                                                : time=       4.550 s
+# mst call                                                        : time=      45.888 s
+# mst sort                                                        : time=       1.141 s
+# Cmst_euclid_kdtree finalise                                     : time=       1.268 s
+#          user.self sys.self elapsed Δdist   Σdist Δidx
+# new_16_0   239.573    0.284  49.705     0 1238081    0
+# n=10000000, d=5, M=10, OMP_NUM_THREADS=6
+# build_tree                                                      : time=       2.283 s
+# tree init                                                       : time=       2.358 s
+# find_mst_first                                                  : time=      19.778 s
+# update_min_dcore                                                : time=       0.045 s
+# find_mst iter #1                                                : time=       3.777 s
+# find_mst iter #2                                                : time=       1.579 s
+# find_mst iter #3                                                : time=       0.355 s
+# find_mst iter #4                                                : time=       0.128 s
+# find_mst iter #5                                                : time=       0.113 s
+# mst call                                                        : time=      26.088 s
+# mst sort                                                        : time=       1.129 s
+# Cmst_euclid_kdtree finalise                                     : time=       1.274 s
+
+# n=100000000, d=5, M=1, OMP_NUM_THREADS=6
+# build_tree                                                      : time=      26.973 s
+# tree init                                                       : time=      27.588 s
+# find_mst_first                                                  : time=      70.429 s
+# update_min_dcore                                                : time=       0.000 s
+# find_mst iter #1                                                : time=      92.692 s
+# find_mst iter #2                                                : time=      94.121 s
+# find_mst iter #3                                                : time=      88.599 s
+# find_mst iter #4                                                : time=      73.766 s
+# find_mst iter #5                                                : time=      58.392 s
+# find_mst iter #6                                                : time=      49.972 s
+# find_mst iter #7                                                : time=      47.349 s
+# mst call                                                        : time=     576.402 s
+# mst sort                                                        : time=      12.989 s
+# Cmst_euclid_kdtree finalise                                     : time=      14.391 s
+#          user.self sys.self elapsed Δdist   Σdist Δidx
+# new_16_0  3138.294    2.833 620.394     0 7833186    0
+# n=100000000, d=5, M=10, OMP_NUM_THREADS=6
+# build_tree                                                      : time=      27.000 s
+# tree init                                                       : time=      28.066 s
+# find_mst_first                                                  : time=     215.217 s
+# update_min_dcore                                                : time=       0.448 s
+# find_mst iter #1                                                : time=      42.560 s
+# find_mst iter #2                                                : time=      21.648 s
+# find_mst iter #3                                                : time=       7.198 s
+# find_mst iter #4                                                : time=       1.623 s
+# find_mst iter #5                                                : time=       0.936 s
+# mst call                                                        : time=     293.107 s
+# mst sort                                                        : time=      12.733 s
+# Cmst_euclid_kdtree finalise                                     : time=      14.132 s
+#          user.self sys.self elapsed Δdist    Σdist Δidx
+# new_16_0  1543.238   11.914 337.967     0 12125760
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 # n <- 1000000
 # for (d in c()) {
 #     k <- 1L
@@ -193,7 +291,7 @@ funs_mst_mutreach <- list(
 # }
 
 
-for (n in c(1000000)) for (d in c(2, 5)) {
+for (n in c(10000000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
 
@@ -223,26 +321,46 @@ for (n in c(1000000)) for (d in c(2, 5)) {
 /*
 
 apollo @ 2025-06-19 10:00
-n=1000000, d=2, M=1, OMP_NUM_THREADS=1                          n=1000000, d=2, M=1, OMP_NUM_THREADS=6
+n=1000000, d=2, M=1, OMP_NUM_THREADS=1                                   n=1000000, d=2, M=1, OMP_NUM_THREADS=6
                  user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
 new_16_0             1.591    0.020   1.613     0 3227.846    0          new_16_0             0.792     0 3227.846    0
 dtb_4_16             1.199    0.028   1.229     0 3227.846    0          dtb_4_16             1.101     0 3227.846    0
-genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
-n=1000000, d=2, M=10, OMP_NUM_THREADS=1                         n=1000000, d=2, M=10, OMP_NUM_THREADS=6
+
+n=1000000, d=2, M=10, OMP_NUM_THREADS=1                                  n=1000000, d=2, M=10, OMP_NUM_THREADS=6
                  user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
 new_16_0             1.472    0.020   1.493     0 8381.135    0          new_16_0             0.703     0 8381.135    0
 dtb_4_16             1.987    0.035   2.022     0 8381.135    0          dtb_4_16             1.665     0 8381.135    0
-genieclust_brute     0.002    0.000   0.001    NA       NA   NA          genieclust_brute     0.002    NA       NA   NA
-n=1000000, d=5, M=1, OMP_NUM_THREADS=1                          n=1000000, d=5, M=1, OMP_NUM_THREADS=6
+
+n=1000000, d=5, M=1, OMP_NUM_THREADS=1                                   n=1000000, d=5, M=1, OMP_NUM_THREADS=6
                  user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
 new_16_0            13.556    0.001  13.559     0 195160.6    0          new_16_0             3.889     0 195160.6    0
 dtb_4_16            20.947    0.052  21.007     0 195160.6    0          dtb_4_16            19.424     0 195160.6    0
-genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
-n=1000000, d=5, M=10, OMP_NUM_THREADS=1                         n=1000000, d=5, M=10, OMP_NUM_THREADS=6
+
+n=1000000, d=5, M=10, OMP_NUM_THREADS=1                                  n=1000000, d=5, M=10, OMP_NUM_THREADS=6
                  user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
 new_16_0             7.833    0.054   7.891     0 302141.8    0          new_16_0             2.315     0 302141.8    0
 dtb_4_16            16.725    0.025  16.755     0 302141.8    0          dtb_4_16            12.205     0 302141.8    0
-genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
+
+
+n=10000000, d=2, M=1, OMP_NUM_THREADS=1                                  n=10000000, d=2, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                            elapsed Δdist    Σdist Δidx
+new_16_0            18.309    0.190  18.506     0 10240.63    0          new_16_0            8.511     0 10240.63    0
+dtb_4_16            12.956    0.264  13.226     0 10240.63    0          dtb_4_16           11.882     0 10240.63    0
+
+n=10000000, d=2, M=10, OMP_NUM_THREADS=1                                 n=10000000, d=2, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                            elapsed Δdist    Σdist Δidx
+new_16_0            16.977    0.263  17.245     0 26618.46    0          new_16_0            7.788     0 26618.46    0
+dtb_4_16            26.528    0.368  26.915     0 26618.46    0          dtb_4_16           23.109     0 26618.46    0
+
+n=10000000, d=5, M=1, OMP_NUM_THREADS=1                                  n=10000000, d=5, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist   Σdist Δidx                             elapsed Δdist   Σdist Δidx
+new_16_0           156.041    0.241 156.369     0 1238081    0           new_16_0           50.679     0 1238081    0
+dtb_4_16           244.618    0.511 245.301     0 1238081    0           dtb_4_16          229.648     0 1238081    0
+
+n=10000000, d=5, M=10, OMP_NUM_THREADS=1                                 n=10000000, d=5, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist   Σdist Δidx                             elapsed Δdist   Σdist Δidx
+new_16_0            86.213    0.304  86.571     0 1916435    0           new_16_0           27.088     0 1916435    0
+dtb_4_16           304.133    0.441 304.848     0 1916435    0           dtb_4_16          260.267     0 1916435    0
 
 
 

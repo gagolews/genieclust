@@ -1,12 +1,13 @@
-/*  A Boruvka-like algorithm for finding minimum spanning trees
+/*  A Boruvka-type algorithm for finding minimum spanning trees
  *  wrt the Euclidean metric or the thereon-based mutual reachability distance.
  *
  *  It features many performance enhancements, has good locality of reference,
  *  supports multicore processing via OpenMP, etc.
  *
- *  The dual-tree Boruvka version (not used by default)
- *  is based on "Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis,
- *  and Applications" by W.B. March, P. Ram, A.G. Gray, ACM SIGKDD 2010.
+ *  The dual-tree Boruvka version (not used by default for it turned out slower
+ *  than a more straightforward version) is based on "Fast Euclidean Minimum
+ *  Spanning Tree: Algorithm, Analysis, and Applications"
+ *  by W.B. March, P. Ram, A.G. Gray in ACM SIGKDD 2010.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -43,9 +44,8 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
     kdtree_node_clusterable* right;
 
     Py_ssize_t cluster_repr;  //< representative point index if all descendants are in the same cluster, -1 otherwise
-    FLOAT cluster_max_dist;   // for DTB only
-
-    FLOAT min_dcore;          // M>2 only
+    FLOAT cluster_max_dist;   // for DTB, redundant otherwise (TODO: template them out)
+    FLOAT min_dcore;          // for M>2, redundant otherwise (TODO: template them out)
 
     kdtree_node_clusterable() {
         left = nullptr;
@@ -391,7 +391,7 @@ protected:
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, i, nn_dist.data()+i, nn_ind.data()+i, k,
+                this->data, nullptr, i, nn_dist.data()+i, nn_ind.data()+i, k,
                 first_pass_max_brute_size
             );
             nn.find(&this->nodes[0]);
@@ -424,7 +424,7 @@ protected:
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
+                this->data, nullptr, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
             nn.find(&this->nodes[0]);
@@ -670,8 +670,15 @@ protected:
         std::vector<Py_ssize_t> ds_parents(this->n);
         Py_ssize_t ds_k;
 
-        Py_ssize_t __iter = 0;
+        Py_ssize_t _iter = 0;
         while (tree_num < this->n-1) {
+            #if GENIECLUST_R
+            Rcpp::checkUserInterrupt();  // throws an exception, not a longjmp
+            #elif GENIECLUST_PYTHON
+            if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+            #endif
+
+            _iter++;
             GENIECLUST_PROFILER_START
 
             // reset cluster_max_dist and set up cluster_repr,
@@ -709,8 +716,7 @@ protected:
                 }
             }
 
-            __iter++;
-            GENIECLUST_PROFILER_STOP("find_mst iter #%d", (int)__iter)
+            GENIECLUST_PROFILER_STOP("find_mst iter #%d", (int)_iter)
         }
     }
 
@@ -766,9 +772,9 @@ public:
 template <typename FLOAT, Py_ssize_t D, typename TREE>
 void mst(
     TREE& tree,
-    FLOAT* tree_dist,   // size n-1
+    FLOAT* tree_dist,       // size n-1
     Py_ssize_t* tree_ind,   // size 2*(n-1),
-    FLOAT* d_core=nullptr  // size n
+    FLOAT* d_core=nullptr   // size n
 ) {
     Py_ssize_t n = tree.get_n();
     const Py_ssize_t* perm = tree.get_perm().data();
