@@ -282,26 +282,11 @@ class kdtree
 protected:
     std::deque< NODE > nodes;  // stores all nodes
 
-    NODE* root;  // nodes[0] or nullptr
-
     FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm)
     const Py_ssize_t n;  //< number of points
     std::vector<Py_ssize_t> perm;  //< original point indexes
 
     const Py_ssize_t max_leaf_size;  //< unless in pathological cases
-
-
-    // void delete_tree(NODE*& root)
-    // {
-    //     if (!root) return;
-    //
-    //     delete_tree(root->left);
-    //     delete_tree(root->right);
-    //
-    //     delete root;
-    //     root = nullptr;
-    // }
-
 
     inline void compute_bounding_box(NODE*& root)
     {
@@ -322,13 +307,10 @@ protected:
 
 
     void build_tree(
-        NODE*& root, Py_ssize_t idx_from, Py_ssize_t idx_to
+        NODE* root, Py_ssize_t idx_from, Py_ssize_t idx_to
     )
     {
         GENIECLUST_ASSERT(idx_to - idx_from > 0);
-        //root = new NODE();
-        nodes.push_back(NODE());
-        root = &nodes[nodes.size()-1];
 
         root->idx_from = idx_from;
         root->idx_to   = idx_to;
@@ -421,6 +403,12 @@ protected:
         // root->intnode_data.split_left_max = split_left_max;
         // root->intnode_data.split_right_min = split_right_min;
 
+        nodes.push_back(NODE());
+        root->left = &nodes[nodes.size()-1];
+
+        nodes.push_back(NODE());
+        root->right = &nodes[nodes.size()-1];
+
         build_tree(root->left, idx_from, idx_left);
         build_tree(root->right, idx_left, idx_to);
     }
@@ -428,24 +416,25 @@ protected:
 
 public:
     kdtree()
-        : root(nullptr), data(nullptr), n(0), perm(0), max_leaf_size(1)
+        : data(nullptr), n(0), perm(0), max_leaf_size(1)
     {
 
     }
 
     kdtree(FLOAT* data, const Py_ssize_t n, const Py_ssize_t max_leaf_size=32)
-        : root(nullptr), data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
+        : data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         GENIECLUST_ASSERT(max_leaf_size > 0);
         for (Py_ssize_t i=0; i<n; ++i) perm[i] = i;
-        build_tree(root, 0, n);
+
+        GENIECLUST_ASSERT(nodes.size()==0);
+        nodes.push_back(NODE());
+        build_tree(&nodes[0], 0, n);
     }
 
 
     ~kdtree()
     {
-        //delete_tree(root);
-        root = nullptr;
         nodes.clear();
     }
 
@@ -458,7 +447,7 @@ public:
     void kneighbours(Py_ssize_t which, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
     {
         kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> knn(data, which, knn_dist, knn_ind, k);
-        knn.find(root);
+        knn.find(&nodes[0]);
     }
 };
 

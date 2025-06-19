@@ -394,7 +394,7 @@ protected:
                 this->data, i, nn_dist.data()+i, nn_ind.data()+i, k,
                 first_pass_max_brute_size
             );
-            nn.find(this->root);
+            nn.find(&this->nodes[0]);
             if (M == 2) dcore[i] = nn_dist[i];
         }
 
@@ -427,7 +427,7 @@ protected:
                 this->data, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
-            nn.find(this->root);
+            nn.find(&this->nodes[0]);
             dcore[i] = knn_dist[i*k+(k-1)];
         }
 
@@ -627,7 +627,7 @@ protected:
                 this->data, (M>2)?this->dcore.data():nullptr,
                 i, ds.get_parents()
             );
-            nn.find(this->root, nn_dist_best);
+            nn.find(&this->nodes[0], nn_dist_best);
 
             FLOAT nn_dist_cur = nn.get_nn_dist();
 
@@ -692,7 +692,7 @@ protected:
             // for (Py_ssize_t i=0; i<this->n; ++i) nn_from[i] = this->n;
 
             if (this->use_dtb)
-                find_mst_next_dtb(this->root, this->root);
+                find_mst_next_dtb(&this->nodes[0], &this->nodes[0]);
             else
                 find_mst_next_nn();
 

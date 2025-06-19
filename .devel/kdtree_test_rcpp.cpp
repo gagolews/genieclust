@@ -172,28 +172,28 @@ funs_mst_mutreach <- list(
     }
 )
 
-n <- 1000000
-for (d in c()) {
-    k <- 1L
-    set.seed(123)
-    X <- matrix(rnorm(n*d), ncol=d)
-    cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, Sys.getenv("OMP_NUM_THREADS")))
+# n <- 1000000
+# for (d in c()) {
+#     k <- 1L
+#     set.seed(123)
+#     X <- matrix(rnorm(n*d), ncol=d)
+#     cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, Sys.getenv("OMP_NUM_THREADS")))
+#
+#     res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
+#         f <- funs_knn[[i]]
+#         t <- system.time(y <- f(X, k))
+#         list(time=t, index=y[[1]], dist=y[[2]])
+#     })
+#
+#     print(cbind(
+#         as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+#         Δdist=sapply(res, function(e) sum(e[[2]])-sum(res[[1]][[2]])),
+#         Δidx=sapply(res, function(e) sum(e[[1]] != res[[1]][[1]]))
+#     ))
+# }
 
-    res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
-        f <- funs_knn[[i]]
-        t <- system.time(y <- f(X, k))
-        list(time=t, index=y[[1]], dist=y[[2]])
-    })
 
-    print(cbind(
-        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
-        Δdist=sapply(res, function(e) sum(e[[2]])-sum(res[[1]][[2]])),
-        Δidx=sapply(res, function(e) sum(e[[1]] != res[[1]][[1]]))
-    ))
-}
-
-
-for (n in c(100000)) for (d in c(2, 5)) {
+for (n in c(1000000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
 
@@ -209,6 +209,7 @@ for (n in c(100000)) for (d in c(2, 5)) {
         print(cbind(
             as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
             Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
+            Σdist=sapply(res, function(e) sum(e[[2]][,3])),
             Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
         ))
     }
@@ -221,53 +222,27 @@ for (n in c(100000)) for (d in c(2, 5)) {
 
 /*
 
-
-apollo @ 2025-06-16 20:30
-
-tree construction 2=0.018   5=0.026
-1-nn seek         2=0.025   5=0.175  (1 thread)   2=0.016  5=0.063  (6 threads)
-10-nn seek        2=0.073   5=0.500  (1 thread)   2=0.034  5=0.150  (6 threads)
-
-1 thread:
-n=100000, d=2, M=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute     8.867    0.008   8.875     0    0
-new_4_16             0.109    0.003   0.111     0    0
-n=100000, d=2, M=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    19.343    0.024  19.368     0    0
-new_4_16             0.158    0.006   0.164     0    0
-n=100000, d=5, M=1
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    11.749    0.013  11.764     0    0
-new_4_16             1.731    0.000   1.730     0    0
-n=100000, d=5, M=10
-                 user.self sys.self elapsed Δdist Δidx
-genieclust_brute    28.122    0.022  28.147     0    0
-new_4_16             1.267    0.001   1.268     0   19
-
-
-apollo @ 2025-06-17 21:14
-n=1000000, d=2, M=1, OMP_NUM_THREADS=1
-                 user.self sys.self elapsed Δdist Δidx
-new_16_0             1.625    0.013   1.637     0    0
-dtb_4_16             1.262    0.023   1.286     0    0
-genieclust_brute     0.000    0.000   0.000    NA   NA
-n=1000000, d=2, M=10, OMP_NUM_THREADS=1
-                 user.self sys.self elapsed Δdist Δidx
-new_16_0             1.455    0.022   1.479     0    0
-dtb_4_16             2.024    0.035   2.064     0    0
-genieclust_brute     0.002    0.000   0.002    NA   NA
-n=1000000, d=5, M=1, OMP_NUM_THREADS=1
-                 user.self sys.self elapsed Δdist Δidx
-new_16_0            13.628    0.026  13.676     0    0
-dtb_4_16            20.835    0.113  20.958     0    0
-genieclust_brute     0.000    0.000   0.000    NA   NA
-n=1000000, d=5, M=10, OMP_NUM_THREADS=1
-                 user.self sys.self elapsed Δdist Δidx
-new_16_0             7.889    0.018   7.914     0    0
-dtb_4_16            16.699    0.025  16.724     0    0
-genieclust_brute     0.000    0.000   0.000    NA   NA
+apollo @ 2025-06-19 10:00
+n=1000000, d=2, M=1, OMP_NUM_THREADS=1                          n=1000000, d=2, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
+new_16_0             1.591    0.020   1.613     0 3227.846    0          new_16_0             0.792     0 3227.846    0
+dtb_4_16             1.199    0.028   1.229     0 3227.846    0          dtb_4_16             1.101     0 3227.846    0
+genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
+n=1000000, d=2, M=10, OMP_NUM_THREADS=1                         n=1000000, d=2, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
+new_16_0             1.472    0.020   1.493     0 8381.135    0          new_16_0             0.703     0 8381.135    0
+dtb_4_16             1.987    0.035   2.022     0 8381.135    0          dtb_4_16             1.665     0 8381.135    0
+genieclust_brute     0.002    0.000   0.001    NA       NA   NA          genieclust_brute     0.002    NA       NA   NA
+n=1000000, d=5, M=1, OMP_NUM_THREADS=1                          n=1000000, d=5, M=1, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
+new_16_0            13.556    0.001  13.559     0 195160.6    0          new_16_0             3.889     0 195160.6    0
+dtb_4_16            20.947    0.052  21.007     0 195160.6    0          dtb_4_16            19.424     0 195160.6    0
+genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
+n=1000000, d=5, M=10, OMP_NUM_THREADS=1                         n=1000000, d=5, M=10, OMP_NUM_THREADS=6
+                 user.self sys.self elapsed Δdist    Σdist Δidx                             elapsed Δdist    Σdist Δidx
+new_16_0             7.833    0.054   7.891     0 302141.8    0          new_16_0             2.315     0 302141.8    0
+dtb_4_16            16.725    0.025  16.755     0 302141.8    0          dtb_4_16            12.205     0 302141.8    0
+genieclust_brute     0.000    0.000   0.000    NA       NA   NA          genieclust_brute     0.000    NA       NA   NA
 
 
 

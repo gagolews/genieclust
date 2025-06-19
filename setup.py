@@ -99,12 +99,12 @@ class genieclust_build_ext(build_ext):
             # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
             #                          -L/usr/local/opt/libomp/lib -lomp"
             for e in self.extensions:
-                e.extra_compile_args += ['-std=c++17']
+                e.extra_compile_args += ['-std=c++17', '-O3']
             pass
         elif sys.platform == "linux":
             # Default flag for GCC and clang:
             for e in self.extensions:
-                e.extra_compile_args += ['-fopenmp', '-std=c++17']
+                e.extra_compile_args += ['-fopenmp', '-std=c++17', '-O3']
                 e.extra_link_args += ['-fopenmp']
         else:
             pass
