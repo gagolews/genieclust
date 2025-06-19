@@ -179,29 +179,31 @@ funs_mst_mutreach <- list(
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # OMP_NUM_THREADS=6 CXX_DEFS="-O3 -march=native -DGENIECLUST_PROFILER" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/kdtree_test_rcpp.cpp", echo=FALSE)'
 
-n <- 10000000
-d <- 5
+if (FALSE) {
+    n <- 100000
+    d <- 5
 
-set.seed(123)
-X <- matrix(rnorm(n*d), ncol=d)
-for (M in c(1, 10)) {
-    cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%s\n", n, d, M, Sys.getenv("OMP_NUM_THREADS")))
+    set.seed(123)
+    X <- matrix(rnorm(n*d), ncol=d)
+    for (M in c(1, 10)) {
+        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%s\n", n, d, M, Sys.getenv("OMP_NUM_THREADS")))
 
-    res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
-        f <- funs_mst_mutreach[[i]]
-        t <- system.time(y <- f(X, M))
-        list(time=t, y)
-    })
+        res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
+            f <- funs_mst_mutreach[[i]]
+            t <- system.time(y <- f(X, M))
+            list(time=t, y)
+        })
 
-    print(cbind(
-        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
-        Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
-        Σdist=sapply(res, function(e) sum(e[[2]][,3])),
-        Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
-    ))
+        print(cbind(
+            as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
+            Σdist=sapply(res, function(e) sum(e[[2]][,3])),
+            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
+        ))
+    }
+
+    stop()
 }
-
-stop()
 
 # n=10000000, d=5, M=1, OMP_NUM_THREADS=6
 # build_tree                                                      : time=       2.276 s
@@ -291,7 +293,7 @@ stop()
 # }
 
 
-for (n in c(10000000)) for (d in c(2, 5)) {
+for (n in c(100000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
 

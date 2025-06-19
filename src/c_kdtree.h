@@ -140,8 +140,8 @@ template <
 class kdtree_kneighbours
 {
 private:
-    Py_ssize_t which;    ///< for which point are we getting the k-nns?
-    Py_ssize_t k;        ///< how many nns?
+    const Py_ssize_t which;    ///< for which point are we getting the k-nns?
+    const Py_ssize_t k;        ///< how many nns?
     const FLOAT* x;      ///< the point itself (shortcut)
     const FLOAT* data;   ///< the dataset
     FLOAT* knn_dist;
@@ -264,10 +264,12 @@ public:
     }
 
 
-    void find(const NODE* root)
+    void find(const NODE* root, bool reset=true)
     {
-        for (Py_ssize_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
-        for (Py_ssize_t i=0; i<k; ++i) knn_ind[i]  = which;
+        if (reset) {
+            for (Py_ssize_t i=0; i<k; ++i) knn_dist[i] = INFINITY;
+            for (Py_ssize_t i=0; i<k; ++i) knn_ind[i]  = which;
+        }
 
         find_knn(root);
     }

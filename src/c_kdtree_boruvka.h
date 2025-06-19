@@ -384,17 +384,33 @@ protected:
         GENIECLUST_ASSERT(M <= 2);
         const Py_ssize_t k = 1;
 
+
+        #if OPENMP_IS_ENABLED
+        int omp_nthreads = Comp_get_max_threads();
+        #else
+        int omp_nthreads = 1;
+        #endif
+
+        for (Py_ssize_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
+        for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i] = -1;
+
         // find 1-nns of each point using max_brute_size,
         // preferably with max_brute_size>max_leaf_size
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, nullptr, i, nn_dist.data()+i, nn_ind.data()+i, k,
+                this->data, nullptr, i, &nn_dist[i], &nn_ind[i], k,
                 first_pass_max_brute_size
             );
-            nn.find(&this->nodes[0]);
+            nn.find(&this->nodes[0], false);
+
+            if (omp_nthreads == 1 && nn_dist[i] < nn_dist[nn_ind[i]]) {
+                nn_dist[nn_ind[i]] = nn_dist[i];
+                nn_ind[nn_ind[i]] = i;
+            }
+
             if (M == 2) dcore[i] = nn_dist[i];
         }
 
@@ -416,10 +432,10 @@ protected:
         GENIECLUST_ASSERT(M>1);
         const Py_ssize_t k = M-1;
         // find (M-1)-nns of each point
-        std::vector<FLOAT> knn_dist(this->n*k);
-        std::vector<Py_ssize_t> knn_ind(this->n*k);
+        std::vector<FLOAT> knn_dist(this->n*k, INFINITY);
+        std::vector<Py_ssize_t> knn_ind(this->n*k, -1);
 
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
@@ -427,7 +443,7 @@ protected:
                 this->data, nullptr, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
-            nn.find(&this->nodes[0]);
+            nn.find(&this->nodes[0], false);
             dcore[i] = knn_dist[i*k+(k-1)];
         }
 
@@ -600,26 +616,22 @@ protected:
     void find_mst_next_nn()
     {
         // find the point from another cluster that is closest to the i-th point
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         omp_lock_t nn_dist_lock;
         int omp_nthreads = Comp_get_max_threads();
         if (omp_nthreads > 1) omp_init_lock(&nn_dist_lock);
+        #else
+        int omp_nthreads = 1;
+        #endif
 
+        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             Py_ssize_t ds_find_i = ds.get_parent(i);
 
-            FLOAT nn_dist_best;
-
-            //#ifdef _OPENMP
-            //if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
-            //#endif
             // NOTE: assumption: no race condition/atomic read...
-            nn_dist_best = nn_dist[ds_find_i];
-            //#ifdef _OPENMP
-            //if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
-            //#endif
+            FLOAT nn_dist_best = nn_dist[ds_find_i];
 
             if (M > 2 && nn_dist_best < dcore[i]) continue;
 
@@ -631,10 +643,13 @@ protected:
 
             FLOAT nn_dist_cur = nn.get_nn_dist();
 
-            if (nn_dist_cur < nn_dist_best) {
-                #ifdef _OPENMP
+            #if OPENMP_IS_ENABLED
+            if (nn_dist_cur < nn_dist_best)
+            #endif
+            {
+            #if OPENMP_IS_ENABLED
                 if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
-                #endif
+            #endif
                 if (nn_dist_cur < nn_dist[ds_find_i]) {
                     Py_ssize_t nn_ind_cur = nn.get_nn_ind();
                     GENIECLUST_ASSERT(nn_ind_cur != i);
@@ -642,13 +657,23 @@ protected:
                     nn_ind[ds_find_i]  = nn_ind_cur;
                     nn_from[ds_find_i] = i;
                 }
-                #ifdef _OPENMP
+                #if OPENMP_IS_ENABLED
                 if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
                 #endif
             }
+
+            if (omp_nthreads == 1) {
+                Py_ssize_t nn_ind_cur = nn.get_nn_ind();
+                Py_ssize_t ds_find_j = ds.get_parent(nn_ind_cur);
+                if (nn_dist_cur < nn_dist[ds_find_j]) {
+                    nn_dist[ds_find_j] = nn_dist_cur;
+                    nn_ind[ds_find_j]  = i;
+                    nn_from[ds_find_j] = nn_ind_cur;
+                }
+            }
         }
 
-        #ifdef _OPENMP
+        #if OPENMP_IS_ENABLED
         if (omp_nthreads > 1) omp_destroy_lock(&nn_dist_lock);
         #endif
     }

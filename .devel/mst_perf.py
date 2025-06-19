@@ -6,10 +6,10 @@ import genieclust
 import pandas as pd
 
 
-n_jobs = 6
+n_jobs = 1
 n_trials = 3
 seed = 123
-n = 100_000_000
+n = 250000
 scenarios = [
     # (n, 2, 1,  "pareto(2)"),
     # (n, 5, 1,  "pareto(2)"),
@@ -307,15 +307,13 @@ def mst_genieclust_kdtree(X, M, max_leaf_size=16, first_pass_max_brute_size=0, u
 
 
 cases = dict(
-    #genieclust_kdtree_2_16=lambda X, M: mst_genieclust_kdtree(X, M, 2, 16),
-    #genieclust_kdtree_4_16=lambda X, M: mst_genieclust_kdtree(X, M, 4, 16),
     genieclust_new_16_0=lambda X, M: mst_genieclust_kdtree(X, M, 16, 0),
-    #genieclust_dtb_4_16=lambda X, M: mst_genieclust_kdtree(X, M, 4, 16, use_dtb=True),
+    genieclust_dtb_4_16=lambda X, M: mst_genieclust_kdtree(X, M, 4, 16, use_dtb=True),
     #genieclust_kdtree_4_64=lambda X, M: mst_genieclust_kdtree(X, M, 4, 64),
     #genieclust_kdtree_8_32=lambda X, M: mst_genieclust_kdtree(X, M, 8, 32),
     #genieclust_brute=lambda X, M: mst_genieclust_brute(X, M),
-    # mlpack_1=lambda X, M: mst_mlpack(X, M, 1),
-    #fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    mlpack_1=lambda X, M: mst_mlpack(X, M, 1),
+    fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
     #hdbscan_kdtree_40_3=lambda X, M: mst_hdbscan_kdtree(X, M, 40, 3),
     #mlpack_4=lambda X, M: mst_mlpack(X, M, 4),
 )

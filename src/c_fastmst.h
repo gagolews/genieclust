@@ -561,7 +561,7 @@ void Cmst_euclid_kdtree(
     }
     else {
         if (max_leaf_size == 0) max_leaf_size = 16;
-        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = 16;
+        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = max_leaf_size;
     }
 
 
