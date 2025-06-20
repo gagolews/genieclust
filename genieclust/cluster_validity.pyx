@@ -11,7 +11,7 @@ Internal cluster validity indices
 
 The greater the index value, the more *valid* (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
-Davies-Bouldin indexes take negative values.
+Davies-Bouldin indices return negative values.
 
 These measures were critically reviewed in (Gagolewski, Bartoszuk, Cena, 2022;
 https://doi.org/10.1016/j.ins.2021.10.004;

@@ -69,9 +69,20 @@ from . cimport c_argfuns
 #     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
 
 cpdef int omp_set_num_threads(int n_threads):
+    """
+    genieclust.internal.omp_set_num_threads(n_threads)
+    """
     return c_omp.Comp_set_num_threads(n_threads)
 
+
 cpdef int omp_get_max_threads():
+    """
+    genieclust.internal.omp_get_max_threads()
+
+    The function's name is confusing: it returns the maximal number
+    of threads that will be used during the next call to a parallelised
+    function, not the maximal number of threads possibly available.
+    """
     return c_omp.Comp_get_max_threads()
 
 ################################################################################
@@ -325,8 +336,11 @@ cpdef tuple nn_list_to_matrix(
 
 
 cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
-    """Given an adjacency list representing an undirected simple graph over
-    a vertex set {0,...,n-1}, return an array deg with deg[i] denoting
+    """
+    genieclust.internal.get_graph_node_degrees(ind, n)
+
+    Given an adjacency list representing an undirected simple graph over
+    a vertex set {0,...,n-1}, returns an array deg with deg[i] denoting
     the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
 
 
@@ -369,9 +383,11 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
         Py_ssize_t[::1] c,
         Py_ssize_t[:,::1] nn_i,
         Py_ssize_t M):
-    """A noisy k-partition post-processing:
-    given a k-partition (with noise points included),
-    merges all "boundary" noise points with their nearest
+    """
+    genieclust.internal.merge_boundary_points(mst_i, c, nn_i, M)
+
+    A noisy k-partition post-processing: given a k-partition (with noise
+    points included), merges all "boundary" noise points with their nearest
     "core" points.
 
 
@@ -412,10 +428,11 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
 cpdef np.ndarray[Py_ssize_t] merge_noise_points(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t[::1] c):
-    """A noisy k-partition post-processing:
-    given a k-partition (with noise points included),
-    merges all noise points with their nearest
-    clusters.
+    """
+    genieclust.internal.merge_noise_points(mst_i, c)
+
+    A noisy k-partition post-processing: given a k-partition (with noise
+    points included), merges all noise points with their nearest clusters.
 
 
     Parameters
@@ -450,6 +467,8 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
                               floatT[::1] mst_d,
                               Py_ssize_t[:,::1] mst_i):
     """
+    genieclust.internal.get_linkage_matrix(links, mst_d, mst_i)
+
 
     Parameters
     ----------
@@ -540,7 +559,7 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
 
 
 ################################################################################
-# Augmented DisjointSets
+# DisjointSets (Union-Find)
 ################################################################################
 
 
@@ -757,13 +776,6 @@ cdef class DisjointSets:
 
 
 
-################################################################################
-# Disjoint Sets (Union-Find)
-# A Python class to represent partitions of the set {0,1,...,n-1} for any n
-################################################################################
-
-
-
 
 cdef class GiniDisjointSets():
     """
@@ -776,6 +788,7 @@ cdef class GiniDisjointSets():
 
     n : Py_ssize_t
         The cardinality of the set whose partitions are generated.
+
 
     Notes
     -----

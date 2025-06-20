@@ -1,15 +1,14 @@
-/*  An implementation of Kd-trees wrt the squared Euclidean distance
+/*  An implementation of K-d trees wrt the squared Euclidean distance
  *
  *  Supports finding k nearest neighbours of points within the same dataset;
  *  fast for small k and dimensionality d.
  *
  *  Features the sliding midpoint (midrange) rule suggested in "It's okay to be
  *  skinny, if your friends are fat" by S. Maneewongvatana and D.M. Mount, 1999
- *  and some further enhancements (minding locality of reference,
- *  readiness for multicore queries, etc.).  This split criterion was
- *  the most efficient amongst those tested (different quantiles,
- *  adjusted midrange, etc.), at least for the purpose of building minimum
- *  spanning trees.
+ *  and some further enhancements (minding locality of reference, etc.).
+ *  This split criterion was the most efficient amongst those tested
+ *  (different quantiles, adjusted midrange, etc.), at least for the purpose
+ *  of building minimum spanning trees.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -174,8 +173,6 @@ private:
 
     void find_knn(const NODE* root)
     {
-        kdtree_kneighbours_find_start:  /* tail recursion elimination */
-
         if (root->is_leaf() || root->idx_to-root->idx_from <= max_brute_size) {
             if (which < root->idx_from || which >= root->idx_to)
                 point_vs_points(root->idx_from, root->idx_to);
@@ -186,33 +183,28 @@ private:
             return;
         }
 
-        FLOAT dist_left  = DISTANCE::point_node(
+
+        // closer node first (significant speedup)
+        FLOAT left_dist  = DISTANCE::point_node(
             x, root->left->bbox_min.data(),  root->left->bbox_max.data()
         );
-        FLOAT dist_right = DISTANCE::point_node(
+        FLOAT right_dist = DISTANCE::point_node(
             x, root->right->bbox_min.data(), root->right->bbox_max.data()
         );
 
-        // closer node first (significant speedup)
-        if (dist_left < dist_right) {
-            if (dist_left < knn_dist[k-1]) {
-                find_knn(root->left);
-                if (dist_right < knn_dist[k-1]) {
-                    //find_knn(root->right);
-                    root = root->right;
-                    goto kdtree_kneighbours_find_start;  // tail recursion elimination
-                }
-            }
+
+        #define FIND_KNN_PROCESS(nearer_dist, farther_dist, nearer_node, farther_node) \
+        if (nearer_dist < knn_dist[k-1]) {    \
+            find_knn(nearer_node);            \
+            if (farther_dist < knn_dist[k-1]) \
+                find_knn(farther_node);       \
+        }                                     \
+
+        if (left_dist <= right_dist) {
+            FIND_KNN_PROCESS(left_dist, right_dist, root->left, root->right);
         }
         else {
-            if (dist_right < knn_dist[k-1]) {
-                find_knn(root->right);
-                if (dist_left < knn_dist[k-1]) {
-                    //find_knn(root->left);
-                    root = root->left;
-                    goto kdtree_kneighbours_find_start;  // tail recursion elimination
-                }
-            }
+            FIND_KNN_PROCESS(right_dist, left_dist, root->right, root->left);
         }
     }
 
@@ -428,10 +420,11 @@ public:
 
     }
 
-    kdtree(FLOAT* data, const Py_ssize_t n, const Py_ssize_t max_leaf_size=32)
+    kdtree(FLOAT* data, const Py_ssize_t n, const Py_ssize_t max_leaf_size=16)
         : data(data), n(n), perm(n), max_leaf_size(max_leaf_size)
     {
         GENIECLUST_ASSERT(max_leaf_size > 0);
+
         for (Py_ssize_t i=0; i<n; ++i) perm[i] = i;
 
         GENIECLUST_PROFILER_USE

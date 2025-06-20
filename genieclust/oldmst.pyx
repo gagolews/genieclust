@@ -64,12 +64,6 @@ from . cimport c_oldmst
 
 ################################################################################
 
-# cdef void _openmp_set_num_threads():
-#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
-
-
-################################################################################
-
 cpdef tuple mst_from_nn(
     floatT[:,::1] dist,
     Py_ssize_t[:,::1] ind,
@@ -78,7 +72,7 @@ cpdef tuple mst_from_nn(
     bint stop_inexact=False,
     bint verbose=False):
     """
-    genieclust.internal.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
+    genieclust.oldmst.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
 
     Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
 
@@ -134,7 +128,7 @@ cpdef tuple mst_from_nn(
     neighbour graph might be greater than the sum of weights in a minimum
     spanning tree of the complete pairwise distances graph.
 
-    If the input graph is unconnected, the result is a forest.
+    If the input graph is not connected, the result is a forest.
 
     """
     cdef Py_ssize_t n = dist.shape[0]
@@ -176,10 +170,17 @@ cpdef tuple mst_from_nn(
 cpdef tuple mst_from_complete(
     floatT[:,::1] X,
     bint verbose=False): # [:,::1]==c_contiguous
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
+    """
+    genieclust.oldmst.mst_from_complete(X, verbose=False)
+
+    A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of a complete undirected graph
     with weights given by a symmetric n*n matrix
     or a distance vector of length n*(n-1)/2.
+
+    The number of threads used is controlled via the
+    OMP_NUM_THREADS environment variable or via
+    `genieclust.internal.omp_set_num_threads` at runtime.
 
     (*) Note that there might be multiple minimum trees spanning a given graph.
 
@@ -255,10 +256,17 @@ cpdef tuple mst_from_distance(
     str metric="euclidean",
     floatT[::1] d_core=None,
     bint verbose=False):
-    """A Jarník (Prim/Dijkstra)-like algorithm for determining
+    """
+    genieclust.oldmst.mst_from_distance(X, metric="euclidean", d_core=None, verbose=False)
+
+    A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
     Memory use: O(n*d).
+
+    The number of threads used is controlled via the
+    OMP_NUM_THREADS environment variable or via
+    `genieclust.internal.omp_set_num_threads` at runtime.
 
 
     References
@@ -352,12 +360,19 @@ cpdef tuple mst_from_distance(
 
 cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
        str metric="euclidean", floatT[::1] d_core=None, bint verbose=False):
-    """Determines the first k nearest neighbours of each point in X,
+    """
+    genieclust.oldmst.knn_from_distance(X, k, metric="euclidean", d_core=None, verbose=False)
+
+    Determines the first k nearest neighbours of each point in X,
     with respect to a given metric (distance).
     Distances are computed on the fly.
     Memory use: O(n*k).
 
     It is assumed that each query point is not its own neighbour.
+
+    The number of threads used is controlled via the
+    OMP_NUM_THREADS environment variable or via
+    `genieclust.internal.omp_set_num_threads` at runtime.
 
 
     Parameters

@@ -1,10 +1,10 @@
 /*
 Testing Jonathan Broere's PicoTree: a C++ header only library for fast nearest
-neighbor and range searches using a KD-trees.
+neighbor and range searches using K-d trees.
 <https://github.com/Jaybro/pico_tree>
 
 The code below worked with Version 1.0.0 (c5f719837df9707ee12d94cb0108aa0c34bfe96f) thereof.
-We'd rather stick with our own implementation of KD-trees.
+We'd rather stick with our own implementation of K-d trees.
 */
 
 

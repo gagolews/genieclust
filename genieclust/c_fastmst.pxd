@@ -34,16 +34,16 @@ cdef extern from "../src/c_fastmst.h":
 
     void Ctree_order[T](Py_ssize_t n, T* tree_dist, Py_ssize_t* tree_ind)
 
-    void Cknn_sqeuclid_kdtree[T](
+    void Cknn_euclid_kdtree[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
         T* nn_dist, Py_ssize_t* nn_ind,
-        Py_ssize_t max_leaf_size,
+        Py_ssize_t max_leaf_size, bint squared,
         bint verbose
     ) except +
 
-    void Cknn_sqeuclid_brute[T](
+    void Cknn_euclid_brute[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-        T* nn_dist, Py_ssize_t* nn_ind,
+        T* nn_dist, Py_ssize_t* nn_ind, bint squared,
         bint verbose
     ) except +
 
@@ -61,6 +61,6 @@ cdef extern from "../src/c_fastmst.h":
     ) except +
 
 
-    # void Cknn_sqeuclid_picotree[T](
+    # void Cknn_euclid_picotree[T](
     #      T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     #     T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bint verbose) except +

@@ -40,10 +40,10 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
     std::vector<Py_ssize_t> nn_ind(n*k);
 
     if (use_kdtree && d >= 2 && d <= 20) {
-        Cknn_sqeuclid_kdtree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
+        Cknn_euclid_kdtree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
     }
     else {
-        Cknn_sqeuclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data());
+        Cknn_euclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data());
     }
 
     Rcpp::IntegerMatrix out_ind(n, k);
@@ -52,7 +52,7 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
     for (Py_ssize_t i=0; i<n; ++i) {
         for (Py_ssize_t j=0; j<k; ++j) {
             out_ind(i, j)  = nn_ind[u]+1.0;  // R-based indexing
-            out_dist(i, j) = sqrt(nn_dist[u]);
+            out_dist(i, j) = nn_dist[u];
             u++;
         }
     }
@@ -127,6 +127,23 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true,
 /*** R
 
 options(width=200, echo=FALSE)
+
+(data, query, k)
+FNN::get.knn algorithm="kd_tree" uses ANN
+list nn.index, nn.dist
+
+
+RANN::nn2 treetype = "kd" ANN
+RANN::nn2 treetype = "bd" box-decomposition tree
+
+dbscan::kNN(x, k, query = NULL) ANN
+
+nabor::(data, query, k)  # libnabo
+# nn.idx, nn.dists
+
+Rnanoflann::nn(data, points, k, cores=0L)
+
+RcppHNSW::hnsw_knn - approximate
 
 knn_rann <- function(X, k) {
     res_rann <- RANN::nn2(X, k=k+1)

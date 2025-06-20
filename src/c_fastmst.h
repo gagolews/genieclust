@@ -65,7 +65,7 @@ void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
 
 
 /*! Determine the k nearest neighbours of each point
- *  wrt the squared Euclidean distance
+ *  wrt the Euclidean distance
  *
  *  Exactly n*(n-1)/2 distance computations are performed.
  *
@@ -83,12 +83,13 @@ void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
  *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
  *  @param nn_ind [out]   a c_contiguous array, shape (n,k),
  *         (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *  @param squared return the squared Euclidean distance?
  *  @param verbose output diagnostic/progress messages?
  */
 template <class FLOAT>
-void Cknn_sqeuclid_brute(
+void Cknn_euclid_brute(
     const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool verbose=false
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool squared=false, bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
@@ -151,6 +152,11 @@ void Cknn_sqeuclid_brute(
             if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
             #endif
         }
+    }
+
+    if (!squared) {
+        for (Py_ssize_t i=0; i<k*n; ++i)
+            nn_dist[i] = sqrt(nn_dist[i]);
     }
 
     if (verbose) GENIECLUST_PRINT("done.\n");
@@ -220,7 +226,8 @@ void Cmst_euclid_brute(
         GENIECLUST_ASSERT(d_core);
         nn_dist.resize(n*(M-1));
         nn_ind.resize(n*(M-1));
-        Cknn_sqeuclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(), verbose);
+        Cknn_euclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(),
+                           /*squared=*/true, verbose);
         for (Py_ssize_t i=0; i<n; ++i) d_core[i] = nn_dist[i*(M-1)+(M-2)];
     }
     else
@@ -356,50 +363,17 @@ void Cmst_euclid_brute(
 
 
 
-
-
-
-
 /**
- * helper function called by Cknn_sqeuclid_kdtree below
+ * helper function called by Cknn_euclid_kdtree below
  */
 template <class FLOAT, Py_ssize_t D>
-void Cknn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
+void _knn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
     FLOAT* nn_dist, Py_ssize_t* nn_ind, size_t max_leaf_size, bool /*verbose=false*/)
 {
     using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT,D>;
 
     mgtree::kdtree<FLOAT, D, DISTANCE> tree(X, n, max_leaf_size);
     mgtree::kneighbours<FLOAT, D>(tree, nn_dist, nn_ind, k);
-
-    // std::vector<FLOAT_INTERNAL> XC(n*D);
-    // for (size_t i=0; i<n*D; ++i)
-    //     XC[i] = (FLOAT_INTERNAL)X[i];
-
-    // std::vector<FLOAT_INTERNAL>  _nn_dist(n*k);
-    // std::vector<size_t> _nn_ind(n*k);
-    //
-    // mgtree::kdtree<FLOAT_INTERNAL, D, DISTANCE> tree(XC.data(), n, max_leaf_size);
-    // mgtree::kneighbours<FLOAT_INTERNAL, D>(tree, _nn_dist.data(), _nn_ind.data(), k);
-    //
-    // #if OPENMP_IS_ENABLED
-    // #pragma omp parallel for schedule(static)
-    // #endif
-    // for (size_t i=0; i<n; ++i) {
-    //     const FLOAT* x_cur = X+i*D;
-    //     for (size_t j=0; j<k; ++j) {
-    //         nn_ind[i*k+j]  = (Py_ssize_t)_nn_ind[i*k+j];
-    //
-    //         // recompute the distance using FLOAT's precision
-    //         const FLOAT* x_other = X+nn_ind[i*k+j]*D;
-    //         FLOAT _d = 0.0;
-    //         for (size_t u=0; u<D; ++u) {
-    //             FLOAT _df = x_cur[u]-x_other[u];
-    //             _d += _df*_df;
-    //         }
-    //         nn_dist[i*k+j] = _d;
-    //     }
-    // }
 }
 
 
@@ -414,45 +388,50 @@ void Cknn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
  * @param k number of nearest neighbours to look for
  * @param nn_dist [out] vector(matrix) of length n*k, distances to NNs
  * @param nn_ind [out] vector(matrix) of length n*k, indexes of NNs
- * @param max_leaf_size ......TODO
+ * @param max_leaf_size maximal number of points in the K-d tree's leaves
+ * @param squared return the squared Euclidean distance?
  * @param verbose output diagnostic/progress messages?
  */
 template <class FLOAT>
-void Cknn_sqeuclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool verbose=false)
+void Cknn_euclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool squared=false, bool verbose=false)
 {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (k <= 0)   throw std::domain_error("k <= 0");
     if (k >= n)   throw std::domain_error("k >= n");
 
-    if (max_leaf_size < 0) throw std::domain_error("max_leaf_size < 0");
-    else if (max_leaf_size == 0) max_leaf_size = 32;  // default
+    if (max_leaf_size <= 0) throw std::domain_error("max_leaf_size <= 0");
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
 
-    #define ARGS_Cknn_sqeuclid_kdtree X, n, k, nn_dist, nn_ind, max_leaf_size, verbose
+    #define ARGS_knn_sqeuclid_kdtree X, n, k, nn_dist, nn_ind, max_leaf_size, verbose
     /* LMAO; templates... */
-    /**/ if (d ==  2) Cknn_sqeuclid_kdtree<FLOAT,  2>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  3) Cknn_sqeuclid_kdtree<FLOAT,  3>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  4) Cknn_sqeuclid_kdtree<FLOAT,  4>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  5) Cknn_sqeuclid_kdtree<FLOAT,  5>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  6) Cknn_sqeuclid_kdtree<FLOAT,  6>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  7) Cknn_sqeuclid_kdtree<FLOAT,  7>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  8) Cknn_sqeuclid_kdtree<FLOAT,  8>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d ==  9) Cknn_sqeuclid_kdtree<FLOAT,  9>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 10) Cknn_sqeuclid_kdtree<FLOAT, 10>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 11) Cknn_sqeuclid_kdtree<FLOAT, 11>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 12) Cknn_sqeuclid_kdtree<FLOAT, 12>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 13) Cknn_sqeuclid_kdtree<FLOAT, 13>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 14) Cknn_sqeuclid_kdtree<FLOAT, 14>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 15) Cknn_sqeuclid_kdtree<FLOAT, 15>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 16) Cknn_sqeuclid_kdtree<FLOAT, 16>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 17) Cknn_sqeuclid_kdtree<FLOAT, 17>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 18) Cknn_sqeuclid_kdtree<FLOAT, 18>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 19) Cknn_sqeuclid_kdtree<FLOAT, 19>(ARGS_Cknn_sqeuclid_kdtree);
-    else if (d == 20) Cknn_sqeuclid_kdtree<FLOAT, 20>(ARGS_Cknn_sqeuclid_kdtree);
+    /**/ if (d ==  2) _knn_sqeuclid_kdtree<FLOAT,  2>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  3) _knn_sqeuclid_kdtree<FLOAT,  3>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  4) _knn_sqeuclid_kdtree<FLOAT,  4>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  5) _knn_sqeuclid_kdtree<FLOAT,  5>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  6) _knn_sqeuclid_kdtree<FLOAT,  6>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  7) _knn_sqeuclid_kdtree<FLOAT,  7>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  8) _knn_sqeuclid_kdtree<FLOAT,  8>(ARGS_knn_sqeuclid_kdtree);
+    else if (d ==  9) _knn_sqeuclid_kdtree<FLOAT,  9>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 10) _knn_sqeuclid_kdtree<FLOAT, 10>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 11) _knn_sqeuclid_kdtree<FLOAT, 11>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 12) _knn_sqeuclid_kdtree<FLOAT, 12>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 13) _knn_sqeuclid_kdtree<FLOAT, 13>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 14) _knn_sqeuclid_kdtree<FLOAT, 14>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 15) _knn_sqeuclid_kdtree<FLOAT, 15>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 16) _knn_sqeuclid_kdtree<FLOAT, 16>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 17) _knn_sqeuclid_kdtree<FLOAT, 17>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 18) _knn_sqeuclid_kdtree<FLOAT, 18>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 19) _knn_sqeuclid_kdtree<FLOAT, 19>(ARGS_knn_sqeuclid_kdtree);
+    else if (d == 20) _knn_sqeuclid_kdtree<FLOAT, 20>(ARGS_knn_sqeuclid_kdtree);
     else {
         throw std::runtime_error("d should be between 2 and 20");
+    }
+
+    if (!squared) {
+        for (Py_ssize_t i=0; i<k*n; ++i)
+            nn_dist[i] = sqrt(nn_dist[i]);
     }
 
     if (verbose) GENIECLUST_PRINT("done.\n");
@@ -463,7 +442,7 @@ void Cknn_sqeuclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
  * helper function called by Cmst_euclid_kdtree below
  */
 template <class FLOAT, Py_ssize_t D>
-void Cmst_euclid_kdtree(
+void _mst_euclid_kdtree(
     FLOAT* X, Py_ssize_t n, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core,
     Py_ssize_t max_leaf_size,
@@ -536,8 +515,8 @@ template <class FLOAT>
 void Cmst_euclid_kdtree(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core=nullptr,
-    Py_ssize_t max_leaf_size=0,
-    Py_ssize_t first_pass_max_brute_size=0,
+    Py_ssize_t max_leaf_size=16,
+    Py_ssize_t first_pass_max_brute_size=16,
     bool use_dtb=false,
     bool verbose=false
 ) {
@@ -548,48 +527,37 @@ void Cmst_euclid_kdtree(
     if (M <= 0)   throw std::domain_error("M <= 0");
     if (M-1 >= n) throw std::domain_error("M >= n-1");
 
-    if (max_leaf_size < 0)
-        throw std::domain_error("max_leaf_size < 0");
+    if (max_leaf_size <= 0)
+        throw std::domain_error("max_leaf_size <= 0");
 
-    if (first_pass_max_brute_size < 0)
-        throw std::domain_error("first_pass_max_brute_size < 0");
-
-    // set up defaults:
-    if (use_dtb) {
-        if (max_leaf_size == 0) max_leaf_size = 4;
-        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = 16;
-    }
-    else {
-        if (max_leaf_size == 0) max_leaf_size = 16;
-        if (first_pass_max_brute_size == 0) first_pass_max_brute_size = max_leaf_size;
-    }
-
+    //if (first_pass_max_brute_size <= 0)
+    // does no harm - will have no effect
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... ");
 
-    #define ARGS_Cmst_euclid_kdtree X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+    #define ARGS_mst_euclid_kdtree X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
 
     /* LMAO; templates... */
     GENIECLUST_PROFILER_START
-    /**/ if (d ==  2) Cmst_euclid_kdtree<FLOAT,  2>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  3) Cmst_euclid_kdtree<FLOAT,  3>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  4) Cmst_euclid_kdtree<FLOAT,  4>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  5) Cmst_euclid_kdtree<FLOAT,  5>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  6) Cmst_euclid_kdtree<FLOAT,  6>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  7) Cmst_euclid_kdtree<FLOAT,  7>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  8) Cmst_euclid_kdtree<FLOAT,  8>(ARGS_Cmst_euclid_kdtree);
-    else if (d ==  9) Cmst_euclid_kdtree<FLOAT,  9>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 10) Cmst_euclid_kdtree<FLOAT, 10>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 11) Cmst_euclid_kdtree<FLOAT, 11>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 12) Cmst_euclid_kdtree<FLOAT, 12>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 13) Cmst_euclid_kdtree<FLOAT, 13>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 14) Cmst_euclid_kdtree<FLOAT, 14>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 15) Cmst_euclid_kdtree<FLOAT, 15>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 16) Cmst_euclid_kdtree<FLOAT, 16>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 17) Cmst_euclid_kdtree<FLOAT, 17>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 18) Cmst_euclid_kdtree<FLOAT, 18>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 19) Cmst_euclid_kdtree<FLOAT, 19>(ARGS_Cmst_euclid_kdtree);
-    else if (d == 20) Cmst_euclid_kdtree<FLOAT, 20>(ARGS_Cmst_euclid_kdtree);
+    /**/ if (d ==  2) _mst_euclid_kdtree<FLOAT,  2>(ARGS_mst_euclid_kdtree);
+    else if (d ==  3) _mst_euclid_kdtree<FLOAT,  3>(ARGS_mst_euclid_kdtree);
+    else if (d ==  4) _mst_euclid_kdtree<FLOAT,  4>(ARGS_mst_euclid_kdtree);
+    else if (d ==  5) _mst_euclid_kdtree<FLOAT,  5>(ARGS_mst_euclid_kdtree);
+    else if (d ==  6) _mst_euclid_kdtree<FLOAT,  6>(ARGS_mst_euclid_kdtree);
+    else if (d ==  7) _mst_euclid_kdtree<FLOAT,  7>(ARGS_mst_euclid_kdtree);
+    else if (d ==  8) _mst_euclid_kdtree<FLOAT,  8>(ARGS_mst_euclid_kdtree);
+    else if (d ==  9) _mst_euclid_kdtree<FLOAT,  9>(ARGS_mst_euclid_kdtree);
+    else if (d == 10) _mst_euclid_kdtree<FLOAT, 10>(ARGS_mst_euclid_kdtree);
+    else if (d == 11) _mst_euclid_kdtree<FLOAT, 11>(ARGS_mst_euclid_kdtree);
+    else if (d == 12) _mst_euclid_kdtree<FLOAT, 12>(ARGS_mst_euclid_kdtree);
+    else if (d == 13) _mst_euclid_kdtree<FLOAT, 13>(ARGS_mst_euclid_kdtree);
+    else if (d == 14) _mst_euclid_kdtree<FLOAT, 14>(ARGS_mst_euclid_kdtree);
+    else if (d == 15) _mst_euclid_kdtree<FLOAT, 15>(ARGS_mst_euclid_kdtree);
+    else if (d == 16) _mst_euclid_kdtree<FLOAT, 16>(ARGS_mst_euclid_kdtree);
+    else if (d == 17) _mst_euclid_kdtree<FLOAT, 17>(ARGS_mst_euclid_kdtree);
+    else if (d == 18) _mst_euclid_kdtree<FLOAT, 18>(ARGS_mst_euclid_kdtree);
+    else if (d == 19) _mst_euclid_kdtree<FLOAT, 19>(ARGS_mst_euclid_kdtree);
+    else if (d == 20) _mst_euclid_kdtree<FLOAT, 20>(ARGS_mst_euclid_kdtree);
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }

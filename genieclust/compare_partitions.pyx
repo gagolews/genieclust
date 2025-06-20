@@ -242,7 +242,7 @@ cpdef np.ndarray normalize_confusion_matrix(C):
 
 cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
     """
-    genieclust.compare_partitions.confusion_matrix(x, y)
+    genieclust.compare_partitions.confusion_matrix(x, y, force_double=False)
 
     Computes the confusion matrix for two label vectors
 
@@ -252,6 +252,9 @@ cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
 
     x, y : array_like
         Two vectors of "small" integers of identical lengths.
+
+    force_double : bool
+        If the return dtype should be 'double'.
 
 
     Returns
@@ -317,7 +320,7 @@ cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
 
 cpdef np.ndarray normalized_confusion_matrix(x, y, bint force_double=False):
     """
-    genieclust.compare_partitions.normalized_confusion_matrix(x, y)
+    genieclust.compare_partitions.normalized_confusion_matrix(x, y, force_double=False)
 
     Computes the confusion matrix for two label vectors and
     permutes its rows and columns so that the sum of the elements
@@ -372,7 +375,7 @@ cpdef np.ndarray normalized_confusion_matrix(x, y, bint force_double=False):
 
 cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     """
-    genieclust.compare_partitions.compare_partitions(C)
+    genieclust.compare_partitions.compare_partitions(x, y=None, psi_clipped=True)
 
     Computes a series of external cluster validity measures
 
@@ -609,7 +612,7 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
 cpdef double adjusted_rand_score(x, y=None):
     """
-    genieclust.compare_partitions.adjusted_rand_score(x, y)
+    genieclust.compare_partitions.adjusted_rand_score(x, y=None)
 
     The Rand index adjusted for chance
 
@@ -654,7 +657,7 @@ cpdef double adjusted_rand_score(x, y=None):
 
 cpdef double rand_score(x, y=None):
     """
-    genieclust.compare_partitions.rand_score(x, y)
+    genieclust.compare_partitions.rand_score(x, y=None)
 
     The original Rand index not adjusted for chance
 
@@ -700,7 +703,7 @@ cpdef double rand_score(x, y=None):
 
 cpdef double adjusted_fm_score(x, y=None):
     """
-    genieclust.compare_partitions.adjusted_fm_index(x, y)
+    genieclust.compare_partitions.adjusted_fm_index(x, y=None)
 
     The Fowlkes-Mallows index adjusted for chance
 
@@ -747,7 +750,7 @@ cpdef double adjusted_fm_score(x, y=None):
 
 cpdef double fm_score(x, y=None):
     """
-    genieclust.compare_partitions.fm_score(x, y)
+    genieclust.compare_partitions.fm_score(x, y=None)
 
     The original Fowlkes-Mallows index (not adjusted for chance)
 
@@ -793,7 +796,7 @@ cpdef double fm_score(x, y=None):
 
 cpdef double mi_score(x, y=None):
     """
-    genieclust.compare_partitions.mi_score(x, y)
+    genieclust.compare_partitions.mi_score(x, y=None)
 
     Mutual information score
 
@@ -840,7 +843,7 @@ cpdef double mi_score(x, y=None):
 
 cpdef double normalized_mi_score(x, y=None):
     """
-    genieclust.compare_partitions.normalised_mi_score(x, y)
+    genieclust.compare_partitions.normalised_mi_score(x, y=None)
 
     Normalised mutual information score :math:`(\\mathrm{NMI}_\\mathrm{sum})`
 
@@ -886,7 +889,7 @@ cpdef double normalized_mi_score(x, y=None):
 
 cpdef double adjusted_mi_score(x, y=None):
     """
-    genieclust.compare_partitions.adjusted_mi_score(x, y)
+    genieclust.compare_partitions.adjusted_mi_score(x, y=None)
 
     Adjusted mutual information score :math:`(\\mathrm{AMI}_\\mathrm{sum})`
 
@@ -933,7 +936,7 @@ cpdef double adjusted_mi_score(x, y=None):
 
 cpdef double normalized_pivoted_accuracy(x, y=None):
     """
-    genieclust.compare_partitions.normalized_pivoted_accuracy(x, y)
+    genieclust.compare_partitions.normalized_pivoted_accuracy(x, y=None)
 
     Normalised pivoted accuracy (NPA)
 
@@ -984,7 +987,7 @@ cpdef double normalized_pivoted_accuracy(x, y=None):
 
 cpdef double normalized_clustering_accuracy(x, y=None):
     """
-    genieclust.compare_partitions.normalized_clustering_accuracy(x, y)
+    genieclust.compare_partitions.normalized_clustering_accuracy(x, y=None)
 
     Normalised clustering accuracy (NCA) [1]_.
 
@@ -1046,7 +1049,7 @@ cpdef double normalized_clustering_accuracy(x, y=None):
 
 cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True):
     """
-    genieclust.compare_partitions.pair_sets_index(x, y)
+    genieclust.compare_partitions.pair_sets_index(x, y=None, simplified=False, clipped=True)
 
     Pair sets index (PSI) [1]_
 

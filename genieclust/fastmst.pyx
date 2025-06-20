@@ -62,85 +62,18 @@ from . cimport c_fastmst
 
 ################################################################################
 
-# cdef void _openmp_set_num_threads():
-#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
-
-
-
-
-cpdef tuple knn_sqeuclid(
-    floatT[:,::1] X,
-    Py_ssize_t k,
-    bint use_kdtree=True,
-    int max_leaf_size=32,
-    bint verbose=False
-):
-    """TODO: describe
-    Determines the first k nearest neighbours of each point in X
-    with respect to the squared Euclidean distance
-
-    It is assumed that each query point is not its own neighbour.
-
-    The implemented algorithms assume that k is rather small, say, k <= 20.
-
-
-    Parameters
-    ----------
-
-    X : c_contiguous ndarray, shape (n,d)
-    k : int < n
-        number of nearest neighbours
-    use_kdtree : True
-        whether a KD-tree should be used (for d <= 20 only);
-        good for small k, small d, but large n.
-    max_leaf_size : int
-        number of points in leaves of the KD-tree; 0 for the default value
-    verbose: bool
-        whether to print diagnostic messages
-
-
-    Returns
-    -------
-
-    pair : tuple
-        A pair (dist, ind) representing the k-NN graph, where:
-            dist : a c_contiguous ndarray, shape (n,k)
-                dist[i,:] is sorted nondecreasingly for all i,
-                dist[i,j] gives the weight of the edge {i, ind[i,j]},
-                i.e., the distance between the i-th point and its j-th NN.
-            ind : a c_contiguous ndarray, shape (n,k)
-                edge definition, interpreted as {i, ind[i,j]};
-                ind[i,j] is the index of the j-th nearest neighbour of i.
-    """
-    cdef Py_ssize_t n = X.shape[0]
-    cdef Py_ssize_t d = X.shape[1]
-
-    if k >= n:
-        raise ValueError("too many nearest neighbours requested")
-
-    cdef Py_ssize_t i
-    cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
-    cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
-        dtype=np.float32 if floatT is float else np.float64)
-
-    cdef np.ndarray[floatT,ndim=2] X2
-    X2 = np.asarray(X, order="C", copy=True)  # destroyable
-
-    # _openmp_set_num_threads()
-    if use_kdtree and 2 <= d <= 20:
-        #    c_fastmst.Cknn_sqeuclid_picotree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)  # ours is faster
-        c_fastmst.Cknn_sqeuclid_kdtree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, verbose)
-    else:
-        c_fastmst.Cknn_sqeuclid_brute(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], verbose)
-
-    return dist, ind
-
 
 
 cpdef tuple tree_order(floatT[::1] tree_dist, Py_ssize_t[:,::1] tree_ind):
     """
+    genieclust.fastmst.tree_order(tree_dist, tree_ind)
+
+
     Orders the edges of a graph (e.g., a spanning tree) wrt the weights
-    increasingly, resolving ties if needed based on the points' IDs.
+    increasingly, resolving ties if needed based on the points' IDs,
+    i.e., the triples (dist, ind1, ind2) are sorted lexicographically.
+
+
 
 
     Parameters
@@ -174,6 +107,146 @@ cpdef tuple tree_order(floatT[::1] tree_dist, Py_ssize_t[:,::1] tree_ind):
 
 
 
+
+cpdef tuple knn_euclid(
+    floatT[:,::1] X,
+    Py_ssize_t k=1,
+    Y=None,
+    str algorithm="auto",
+    int max_leaf_size=32,
+    bint squared=False,
+    bint verbose=False
+):
+    """
+    genieclust.fastmst.knn_euclid(X, k=1, Y=None, algorithm="auto", max_leaf_size=32, squared=False, verbose=False)
+
+    If Y is None, then the function determines the first k amongst the nearest
+    neighbours of each point in X with respect to the Euclidean distance.
+    It is assumed that each query point is not its own neighbour.
+
+    Otherwise, for each point in Y, determines the k nearest points thereto
+    from X.
+
+    The implemented algorithms assume that k is rather small, say, k <= 20.
+
+    Note that K-d trees perform well only in low-dimensional Euclidean spaces
+    (due to the so-called curse of dimensionality). Our implementation has been
+    highly optimised (pretty good locality of reference, parallelism, ...).
+    It features the sliding midpoint (midrange) rule suggested in
+    "It's okay to be skinny, if your friends are fat" by S. Maneewongvatana
+    and D.M. Mount, 1999.
+
+    The number of threads used is controlled via the
+    OMP_NUM_THREADS environment variable or via
+    `genieclust.internal.omp_set_num_threads` at runtime.
+
+
+
+    Parameters
+    ----------
+
+    X : c_contiguous ndarray, shape (n,d)
+        the "database"
+    k : int < n
+        number of nearest neighbours (should be rather small, say, <= 20)
+    Y : None or an ndarray, shape (m,d)
+        the "query points"; note that setting Y=X, contrary to Y=None,
+        will include the query points themselves amongst their own
+        neighbours
+    algorithm : {"auto", "kd_tree", "brute"}, default="auto"
+        K-d trees can only be used for d between 2 and 20 only.
+        "auto" selects "kd_tree" for low-dimensional spaces only.
+    max_leaf_size : int, default 32
+        maximal number of points in the K-d tree leaves,
+        smaller leaves use more memory yet are not necessarily faster
+    squared : False
+        whether to return the squared Euclidean distance
+    verbose: bool
+        whether to print diagnostic messages
+
+
+    Returns
+    -------
+
+    pair : tuple
+        A pair (dist, ind) representing the k-NN graph, where:
+            dist : a c_contiguous ndarray, shape (n,k) or (m,k)
+                dist[i,:] is sorted nondecreasingly for all i,
+                dist[i,j] gives the weight of the edge {i, ind[i,j]},
+                i.e., the distance between the i-th point and its j-th NN.
+            ind : a c_contiguous ndarray, shape (n,k) or (m,k)
+                edge definition, interpreted as {i, ind[i,j]};
+                ind[i,j] is the index (between 0 and n-1)
+                of the j-th nearest neighbour of i.
+    """
+    cdef Py_ssize_t n = X.shape[0]
+    cdef Py_ssize_t d = X.shape[1]
+    cdef Py_ssize_t m
+
+    if algorithm == "auto":
+        if 2 <= d <= 10:
+            algorithm = "kd_tree"
+        else:
+            algorithm = "brute"
+
+    if algorithm == "kd_tree":
+        if not 2 <= d <= 20:
+            raise ValueError("kd_tree can only be used for 2 <= d <= 20")
+        use_kdtree = True
+    elif algorithm == "brute":
+        use_kdtree = False
+    else:
+        raise ValueError("invalid 'algorithm'")
+
+    cdef np.ndarray[Py_ssize_t,ndim=2] ind
+    cdef np.ndarray[floatT,ndim=2]     dist
+
+    cdef np.ndarray[floatT,ndim=2] X2
+    X2 = np.asarray(X, order="C", copy=True)  # destroyable
+
+    cdef np.ndarray[floatT,ndim=2] Y2
+
+    if Y is not None:
+        if k >= n:
+            raise ValueError("too many neighbours requested")
+
+        ind  = np.empty((n, k), dtype=np.intp)
+        dist = np.empty((n, k), dtype=np.float32 if floatT is float else np.float64)
+
+        if use_kdtree:
+            c_fastmst.Cknn_euclid_kdtree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, squared, verbose)
+        else:
+            c_fastmst.Cknn_euclid_brute(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], squared, verbose)
+    else:
+        if k > n:
+            raise ValueError("too many neighbours requested")
+
+        Y2 = np.asarray(X, order="C", copy=True, dtype=np.float32 if floatT is float else np.float64)
+
+        if Y2.ndim == 1: Y2 = Y2.reshape(1, -1)
+
+        if Y2.ndim != 2 or Y2.shape[1] != d:
+            raise ValueError("Y's dimensionality does not match that of X")
+
+        m = Y2.shape[0]
+
+        ind  = np.empty((m, k), dtype=np.intp)
+        dist = np.empty((m, k), dtype=np.float32 if floatT is float else np.float64)
+
+        if use_kdtree:
+            pass
+            #c_fastmst.Cknn_euclid_kdtree(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], max_leaf_size, squared, verbose)
+        else:
+            pass
+            #c_fastmst.Cknn_euclid_brute(&X2[0,0], n, d, k, &dist[0,0], &ind[0,0], squared, verbose)
+
+        raise NotImplementedError("to do")
+
+
+    return dist, ind
+
+
+
 cpdef tuple mst_euclid(
     floatT[:,::1] X,
     Py_ssize_t M,
@@ -184,6 +257,9 @@ cpdef tuple mst_euclid(
     bint verbose=False
 ):
     """
+    genieclust.fastmst.mst_euclid(X, M, use_kdtree=True, max_leaf_size=16, first_pass_max_brute_size=0, use_dtb=False, verbose=False)
+
+
     TODO: describe.....A Jarník (Prim/Dijkstra)-like algorithm for determining
     a(*) minimum spanning tree (MST) of X with respect to a given metric
     (distance). Distances are computed on the fly.
@@ -192,6 +268,19 @@ cpdef tuple mst_euclid(
     It is assumed that M is rather small, say, M<=20.
 
     or Dual-tree Boruvka
+
+
+    The number of threads used is controlled via the
+    OMP_NUM_THREADS environment variable or via
+    `genieclust.internal.omp_set_num_threads` at runtime.
+
+
+    Note that K-d trees perform well only in low-dimensional Euclidean spaces
+    (due to the so-called curse of dimensionality). Our implementation has been
+    highly optimised (pretty good locality of reference, parallelism, ...).
+    It features the sliding midpoint (midrange) rule suggested in
+    "It's okay to be skinny, if your friends are fat" by S. Maneewongvatana
+    and D.M. Mount, 1999.
 
     References
     ----------
@@ -210,9 +299,11 @@ cpdef tuple mst_euclid(
     (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
 
 
-    TODO: .... papers on kd-trees and dual-tree Boruvka,
+    TODO: .... papers on K-d trees and dual-tree Boruvka,
     + Boruvka algo
 
+    "It's okay to be skinny, if your friends are fat" by S. Maneewongvatana
+    and D.M. Mount, 1999.
 
     Parameters TODO
     ----------
