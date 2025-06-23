@@ -164,6 +164,7 @@ py_sklearn <- import("sklearn")
 
 
 TODO: which support nthreads???
+TODO: cleanup R interface, use the one from the R package...
 
 knn_py_pykdtree <- function(X, k) {
     res <- py_pykdtree$kdtree$KDTree(X)$query(X, as.integer(k+1))[c(2, 1)]
