@@ -34,6 +34,7 @@ if n_jobs > 0:
 CPPFLAGS="-O3 -march=native" pip3 install hdbscan --force --no-binary="hdbscan" --verbose
 CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
 CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
+CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 pip3 install numpy==2.2.6  # for numba
 
 

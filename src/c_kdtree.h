@@ -43,25 +43,15 @@ namespace mgtree {
 template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_base
 {
-
+    // some implementations store split_dim and split_val, but bounding
+    // boxes have better pruning capabilities
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
 
+    // std::array<FLOAT,D> centroid;
+
     Py_ssize_t idx_from;
     Py_ssize_t idx_to;
-
-    // union {
-    //     struct {
-    //         Py_ssize_t idx_from;
-    //         Py_ssize_t idx_to;
-    //     } leaf_data;
-    //     struct {
-    //         //Py_ssize_t split_dim;
-    //         //FLOAT split_left_max;
-    //         //FLOAT split_right_min;
-    //     } intnode_data;
-    // };
-
 };
 
 
@@ -100,7 +90,7 @@ public:
     ) {
         FLOAT dist = 0.0;
         for (Py_ssize_t u=0; u<D; ++u) {
-            if (bbox_min[u] > x[u])  // it's better to compare first, as FP subtract is slower
+            if (bbox_min[u] > x[u])  // compare first, as FP subtract is slower
                 dist += square(bbox_min[u] - x[u]);
             else if (x[u] > bbox_max[u])
                 dist += square(x[u] - bbox_max[u]);
@@ -192,7 +182,6 @@ private:
             x, root->right->bbox_min.data(), root->right->bbox_max.data()
         );
 
-
         #define FIND_KNN_PROCESS(nearer_dist, farther_dist, nearer_node, farther_node) \
         if (nearer_dist < knn_dist[k-1]) {    \
             find_knn(nearer_node);            \
@@ -206,6 +195,23 @@ private:
         else {
             FIND_KNN_PROCESS(right_dist, left_dist, root->right, root->left);
         }
+
+        // slower:
+        // if (DISTANCE::point_point(x, root->left->centroid.data()) <= DISTANCE::point_point(x, root->right->centroid.data()))
+        // {
+        //     if (left_dist < knn_dist[k-1])
+        //         find_knn(root->left);
+        //     if (right_dist < knn_dist[k-1])
+        //         find_knn(root->right);
+        // }
+        // else {
+        //     if (right_dist < knn_dist[k-1])
+        //         find_knn(root->right);
+        //     if (left_dist < knn_dist[k-1])
+        //         find_knn(root->left);
+        // }
+
+
     }
 
 public:
@@ -293,15 +299,20 @@ protected:
         for (Py_ssize_t u=0; u<D; ++u) {
             root->bbox_min[u] = *y;
             root->bbox_max[u] = *y;
+            // root->centroid[u] = *y;
             ++y;
         }
         for (Py_ssize_t i=root->idx_from+1; i<root->idx_to; ++i) {
             for (Py_ssize_t u=0; u<D; ++u) {
                 if      (*y < root->bbox_min[u]) root->bbox_min[u] = *y;
                 else if (*y > root->bbox_max[u]) root->bbox_max[u] = *y;
+                // root->centroid[u] += *y;
                 ++y;
             }
         }
+        // for (Py_ssize_t u=0; u<D; ++u) {
+        //     root->centroid[u] /= (root->idx_to-root->idx_from);
+        // }
     }
 
 
@@ -355,22 +366,22 @@ protected:
         GENIECLUST_ASSERT(root->bbox_min[split_dim] < split_val);
         GENIECLUST_ASSERT(split_val < root->bbox_max[split_dim]);
 
-        FLOAT split_left_max  = root->bbox_min[split_dim];
-        FLOAT split_right_min = root->bbox_max[split_dim];
+        // FLOAT split_left_max  = root->bbox_min[split_dim];
+        // FLOAT split_right_min = root->bbox_max[split_dim];
 
         // partition data[idx_from:idx_left, split_dim] <= split_val, data[idx_left:idx_to, split_dim] > split_val
         Py_ssize_t idx_left = idx_from;
         Py_ssize_t idx_right = idx_to-1;
         while (true) {
             while (data[idx_left*D+split_dim] <= split_val) {  // split_val < curbox_max[split_dim]
-                if (data[idx_left*D+split_dim] > split_left_max)
-                    split_left_max = data[idx_left*D+split_dim];
+                // if (data[idx_left*D+split_dim] > split_left_max)
+                    // split_left_max = data[idx_left*D+split_dim];
                 idx_left++;
             }
 
             while (data[idx_right*D+split_dim] > split_val) {  // split_val > curbox_min[split_dim]
-                if (data[idx_right*D+split_dim] < split_right_min)
-                    split_right_min = data[idx_right*D+split_dim];
+                // if (data[idx_right*D+split_dim] < split_right_min)
+                    // split_right_min = data[idx_right*D+split_dim];
                 idx_right--;
             }
 
@@ -395,8 +406,8 @@ protected:
         GENIECLUST_ASSERT(data[idx_left*D+split_dim] > split_val);
         GENIECLUST_ASSERT(data[(idx_left-1)*D+split_dim] <= split_val);
 
-        GENIECLUST_ASSERT(split_left_max <= split_val);
-        GENIECLUST_ASSERT(split_right_min > split_val);
+        // GENIECLUST_ASSERT(split_left_max <= split_val);
+        // GENIECLUST_ASSERT(split_right_min > split_val);
 
         // root->intnode_data.split_dim = split_dim;
         // root->intnode_data.split_left_max = split_left_max;

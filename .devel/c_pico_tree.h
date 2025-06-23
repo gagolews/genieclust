@@ -8,8 +8,7 @@ We'd rather stick with our own implementation of K-d trees.
 */
 
 
-#if FALSE
-//#ifndef __c_picotree_h
+#ifndef __c_picotree_h
 #define __c_picotree_h
 
 
@@ -18,14 +17,14 @@ We'd rather stick with our own implementation of K-d trees.
 #include "pico_tree/vector_traits.hpp"
 
 
-template <class T, Py_ssize_t D>
-void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
-    T* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bool /*verbose*/)
+template <class FLOAT, Py_ssize_t D>
+void Cknn_sqeuclid_picotree(const FLOAT* X, const Py_ssize_t n, const Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size, bool /*verbose*/)
 {
-    std::vector<std::array<float, D>> points(n);    // float32 - faster
+    std::vector<std::array<FLOAT, D>> points(n);    // float32 - faster
     for (Py_ssize_t i=0; i<n; ++i) {
         for (Py_ssize_t u=0; u<D; ++u) {
-            points[i][u] = (float)X[i*D+u];
+            points[i][u] = (FLOAT)X[i*D+u];
         }
     }
 
@@ -35,29 +34,29 @@ void Cknn_sqeuclid_picotree(const T* X, const Py_ssize_t n, const Py_ssize_t k,
     #pragma omp parallel for schedule(static)
     #endif
     for (Py_ssize_t i=0; i<n; ++i) {
-        std::vector< pico_tree::neighbor<int, float> > knn;
+        std::vector< pico_tree::neighbor<int, FLOAT> > knn;
         tree.search_knn(points[i], k+1, knn);
         GENIECLUST_ASSERT(knn[0].index == i);
 
-        const T* x_cur = X+i*D;
+        const FLOAT* x_cur = X+i*D;
         for (Py_ssize_t j=0; j<k; ++j) {
             nn_ind[i*k+j]  = knn[j+1].index;
-            //nn_dist[i*k+j] = (T)knn[j+1].distance;
-            // recompute the distance using T's precision
-            const T* x_other = X+nn_ind[i*k+j]*D;
-            T _d = 0.0;
-            for (Py_ssize_t u=0; u<D; ++u) {
-                T _df = x_cur[u]-x_other[u];
-                _d += _df*_df;
-            }
-            nn_dist[i*k+j] = _d;
+            nn_dist[i*k+j] = (FLOAT)knn[j+1].distance;
+            // // recompute the distance using FLOAT's precision
+            // const FLOAT* x_other = X+nn_ind[i*k+j]*D;
+            // FLOAT _d = 0.0;
+            // for (Py_ssize_t u=0; u<D; ++u) {
+            //     FLOAT _df = x_cur[u]-x_other[u];
+            //     _d += _df*_df;
+            // }
+            // nn_dist[i*k+j] = _d;
         }
 
-        #if GENIECLUST_R
-        Rcpp::checkUserInterrupt();
-        #elif GENIECLUST_PYTHON
-        if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
-        #endif
+        // #if GENIECLUST_R
+        // Rcpp::checkUserInterrupt();
+        // #elif GENIECLUST_PYTHON
+        // if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
+        // #endif
     }
 }
 
@@ -107,6 +106,51 @@ void Cknn_sqeuclid_picotree(const T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k
     else {
         throw std::runtime_error("d should be between 2 and 20");
     }
+}
+
+
+
+// [[Rcpp::export]]
+Rcpp::RObject knn_pico_tree(Rcpp::NumericMatrix X, int k=1, int max_leaf_size=12)
+{
+    using FLOAT = double;  // float is not faster..
+
+    Py_ssize_t n = (Py_ssize_t)X.nrow();
+    Py_ssize_t d = (Py_ssize_t)X.ncol();
+    if (n < 1 || d < 1) return R_NilValue;
+    if (k < 1) return R_NilValue;
+
+    std::vector<FLOAT> XC(n*d);
+    Py_ssize_t j = 0;
+    for (Py_ssize_t i=0; i<n; ++i)
+        for (Py_ssize_t u=0; u<d; ++u)
+            XC[j++] = (FLOAT)X(i, u);  // row-major
+
+    std::vector<FLOAT>  nn_dist(n*k);
+    std::vector<Py_ssize_t> nn_ind(n*k);
+
+    if (d >= 2 && d <= 20) {
+        Cknn_sqeuclid_picotree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
+    }
+    else {
+        throw std::runtime_error("d not between 2 and 20");
+    }
+
+    Rcpp::IntegerMatrix out_ind(n, k);
+    Rcpp::NumericMatrix out_dist(n, k);
+    Py_ssize_t u = 0;
+    for (Py_ssize_t i=0; i<n; ++i) {
+        for (Py_ssize_t j=0; j<k; ++j) {
+            out_ind(i, j)  = nn_ind[u]+1.0;  // R-based indexing
+            out_dist(i, j) = sqrt(nn_dist[u]);
+            u++;
+        }
+    }
+
+    return Rcpp::List::create(
+        Rcpp::Named("nn.index")=out_ind,
+        Rcpp::Named("nn.dist")=out_dist
+    );
 }
 
 

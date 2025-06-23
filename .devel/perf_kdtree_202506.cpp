@@ -17,7 +17,7 @@
 
 #define GENIECLUST_R
 #include "../src/c_fastmst.h"
-
+#include "c_pico_tree.h"
 
 
 // [[Rcpp::export]]
@@ -121,7 +121,8 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true,
 
 
 // CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
-// OMP_NUM_THREADS=1 CXX_DEFS="-O3 -march=native" Rscript -e 'Rcpp::sourceCpp("/home/gagolews/Python/genieclust/.devel/kdtree_test_rcpp.cpp", echo=FALSE)'
+// OMP_NUM_THREADS=6 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("/home/gagolews/Python/genieclust/.devel/perf_kdtree_202506.cpp", echo=FALSE)'
+
 
 
 /*** R
@@ -130,6 +131,7 @@ options(width=200, echo=FALSE)
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
 # CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor"))'
+# CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 
 # (data, query, k)
 # FNN::get.knn algorithm="kd_tree" uses ANN
@@ -152,6 +154,24 @@ suppressPackageStartupMessages(library("RANN"))
 suppressPackageStartupMessages(library("nabor"))
 suppressPackageStartupMessages(library("dbscan"))
 suppressPackageStartupMessages(library("Rnanoflann"))
+suppressPackageStartupMessages(library("reticulate"))
+use_virtualenv("/home/gagolews/.virtualenvs/python3-default/")
+py_numpy <- import("numpy")
+py_genieclust <- import("genieclust")
+py_pykdtree <- import("pykdtree")
+py_sklearn <- import("sklearn")
+
+
+
+TODO: which support nthreads???
+
+knn_py_pykdtree <- function(X, k) {
+    res <- py_pykdtree$kdtree$KDTree(X)$query(X, as.integer(k+1))[c(2, 1)]
+    res[[1]] <- as.matrix(res[[1]])[,-1]
+    res[[2]] <- as.matrix(res[[2]])[,-1]
+    res[[1]] <- res[[1]]+1
+    res
+}
 
 knn_rann_kd <- function(X, k) {
     res <- RANN::nn2(X, k=k+1, treetype = "kd")
@@ -186,24 +206,88 @@ knn_Rnanoflann <- function(X, k) {
     res
 }
 
+knn_py_genieclust_fastmst <- function(X, k) {
+    res <- py_genieclust$fastmst$knn_euclid(X, as.integer(k))[c(2, 1)]
+    res[[1]] <- res[[1]]+1
+    res
+}
 
-TODO: picotree compare
-https://github.com/Jaybro/pico_tree
-
-
-pykdtree
-reticulate genieclust
+knn_py_sklearn_neighbours <- function(X, k) {
+    res <- py_sklearn$neighbors$NearestNeighbors(n_neighbors=as.integer(k), n_jobs=nthreads)$fit(X)$kneighbors()[c(2,1)]
+    res[[1]] <- res[[1]]+1
+    res
+}
 
 
 funs_knn <- list(
-#genieclust_brute=function(X, k) test_knn(X, k, use_kdtree=FALSE),
-    new_kdtree=function(X, k) test_knn(X, k, use_kdtree=TRUE),
-    # dbscan=knn_dbscan,  # ANN library, but supports self-queries
-    # rann_kd=knn_rann_kd,  # ANN library
-    # rann_bd=knn_rann_bd,  # slower than knn_rann_kd
-    # Rnanoflann=knn_Rnanoflann, # very slow...
-    nabor=knn_nabor
+    #genieclust_brute=function(X, k) test_knn(X, k, use_kdtree=FALSE),
+    r_genieclust_fastmst_1=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=1),
+    r_genieclust_fastmst_2=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=2),
+    r_genieclust_fastmst_4=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=4),
+    r_genieclust_fastmst_8=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=8),
+    r_genieclust_fastmst_16=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=16),
+    r_genieclust_fastmst_32=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=32),
+    r_genieclust_fastmst_64=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=64),
+    r_genieclust_fastmst_128=function(X, k) test_knn(X, k, use_kdtree=TRUE, max_leaf_size=128),
+    pico_tree=function(X, k) knn_pico_tree(X, k),
+    py_genieclust_fastmst_32=knn_py_genieclust_fastmst,
+    py_pykdtree=knn_py_pykdtree,
+    py_sklearn_neighbours=knn_py_sklearn_neighbours,
+    # r_dbscan=knn_dbscan,  # ANN library, but supports self-queries
+    # r_rann_kd=knn_rann_kd,  # ANN library
+    # r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd
+    # r_Rnanoflann=knn_Rnanoflann, # very slow...
+    r_nabor=knn_nabor
 )
+
+
+
+data <- list()
+ntries <- 3
+n <- 1000000
+for (d in c(2, 5)) for (k in c(1, 10)) {
+    set.seed(123)
+    X <- matrix(rnorm(n*d), ncol=d)
+    cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%d\n", n, d, k, nthreads))
+
+    res <- lapply(rep(`names<-`(seq_along(funs_knn), names(funs_knn)), ntries), function(i) {
+        f <- funs_knn[[i]]
+        t <- system.time(y <- f(X, k))
+        list(time=t, index=y[[1]], dist=y[[2]])
+    })
+
+    this_data <- `row.names<-`(cbind(
+        method=names(res),
+        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+        Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
+        Σdist=sapply(res, function(e) sum(e$dist)),
+        Δidx=sapply(res, function(e) sum(e$index != res[[1]]$index)),
+        n=n,
+        d=d,
+        k=k,
+        nthreads=nthreads,
+        time=as.integer(Sys.time())
+    ), NULL)
+
+    data[[length(data)+1]] <- this_data
+    print(this_data)
+}
+data <- do.call(rbind.data.frame, data)
+write.csv(data, "perf_mst_202506.csv", row.names=FALSE, append=TRUE)
+print(aggregate(data[c("elapsed")], data[c("method", "n", "d", "k", "nthreads")], min))
+stop()
+
+
+
+
+
+
+
+
+
+
+
+
 
 funs_mst <- list(
     #genieclust_brute=function(X) genieclust:::.mst.default(X, "l2", 1L, cast_float32=FALSE, verbose=FALSE),
@@ -238,125 +322,6 @@ funs_mst_mutreach <- list(
 
 
 
-
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# OMP_NUM_THREADS=6 CXX_DEFS="-O3 -march=native -DGENIECLUST_PROFILER" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/kdtree_test_rcpp.cpp", echo=FALSE)'
-
-if (FALSE) {
-    n <- 100000
-    d <- 5
-
-    set.seed(123)
-    X <- matrix(rnorm(n*d), ncol=d)
-    for (M in c(1, 10)) {
-        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%d\n", n, d, M, nthreads))
-
-        res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
-            f <- funs_mst_mutreach[[i]]
-            t <- system.time(y <- f(X, M))
-            list(time=t, y)
-        })
-
-        print(cbind(
-            as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
-            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
-            Σdist=sapply(res, function(e) sum(e[[2]][,3])),
-            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
-        ))
-    }
-
-    stop()
-}
-
-# n=10000000, d=5, M=1, OMP_NUM_THREADS=6
-# build_tree                                                      : time=       2.276 s
-# tree init                                                       : time=       2.342 s
-# find_mst_first                                                  : time=       5.806 s
-# update_min_dcore                                                : time=       0.000 s
-# find_mst iter #1                                                : time=       7.085 s
-# find_mst iter #2                                                : time=       8.408 s
-# find_mst iter #3                                                : time=       8.200 s
-# find_mst iter #4                                                : time=       6.499 s
-# find_mst iter #5                                                : time=       5.229 s
-# find_mst iter #6                                                : time=       4.550 s
-# mst call                                                        : time=      45.888 s
-# mst sort                                                        : time=       1.141 s
-# Cmst_euclid_kdtree finalise                                     : time=       1.268 s
-#          user.self sys.self elapsed Δdist   Σdist Δidx
-# new_16_0   239.573    0.284  49.705     0 1238081    0
-# n=10000000, d=5, M=10, OMP_NUM_THREADS=6
-# build_tree                                                      : time=       2.283 s
-# tree init                                                       : time=       2.358 s
-# find_mst_first                                                  : time=      19.778 s
-# update_min_dcore                                                : time=       0.045 s
-# find_mst iter #1                                                : time=       3.777 s
-# find_mst iter #2                                                : time=       1.579 s
-# find_mst iter #3                                                : time=       0.355 s
-# find_mst iter #4                                                : time=       0.128 s
-# find_mst iter #5                                                : time=       0.113 s
-# mst call                                                        : time=      26.088 s
-# mst sort                                                        : time=       1.129 s
-# Cmst_euclid_kdtree finalise                                     : time=       1.274 s
-
-# n=100000000, d=5, M=1, OMP_NUM_THREADS=6
-# build_tree                                                      : time=      26.973 s
-# tree init                                                       : time=      27.588 s
-# find_mst_first                                                  : time=      70.429 s
-# update_min_dcore                                                : time=       0.000 s
-# find_mst iter #1                                                : time=      92.692 s
-# find_mst iter #2                                                : time=      94.121 s
-# find_mst iter #3                                                : time=      88.599 s
-# find_mst iter #4                                                : time=      73.766 s
-# find_mst iter #5                                                : time=      58.392 s
-# find_mst iter #6                                                : time=      49.972 s
-# find_mst iter #7                                                : time=      47.349 s
-# mst call                                                        : time=     576.402 s
-# mst sort                                                        : time=      12.989 s
-# Cmst_euclid_kdtree finalise                                     : time=      14.391 s
-#          user.self sys.self elapsed Δdist   Σdist Δidx
-# new_16_0  3138.294    2.833 620.394     0 7833186    0
-# n=100000000, d=5, M=10, OMP_NUM_THREADS=6
-# build_tree                                                      : time=      27.000 s
-# tree init                                                       : time=      28.066 s
-# find_mst_first                                                  : time=     215.217 s
-# update_min_dcore                                                : time=       0.448 s
-# find_mst iter #1                                                : time=      42.560 s
-# find_mst iter #2                                                : time=      21.648 s
-# find_mst iter #3                                                : time=       7.198 s
-# find_mst iter #4                                                : time=       1.623 s
-# find_mst iter #5                                                : time=       0.936 s
-# mst call                                                        : time=     293.107 s
-# mst sort                                                        : time=      12.733 s
-# Cmst_euclid_kdtree finalise                                     : time=      14.132 s
-#          user.self sys.self elapsed Δdist    Σdist Δidx
-# new_16_0  1543.238   11.914 337.967     0 12125760
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-n <- 1000000
-for (d in c(2, 5)) for (k in c(1, 10)) {
-    set.seed(123)
-    X <- matrix(rnorm(n*d), ncol=d)
-    cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, k, Sys.getenv("OMP_NUM_THREADS")))
-
-    res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
-        f <- funs_knn[[i]]
-        t <- system.time(y <- f(X, k))
-        list(time=t, index=y[[1]], dist=y[[2]])
-    })
-
-    print(cbind(
-        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
-        Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
-        Δidx=sapply(res, function(e) sum(e$index != res[[1]]$index))
-    ))
-}
-
-stop()
-
 for (n in c(100000)) for (d in c(2, 5)) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
@@ -379,12 +344,54 @@ for (n in c(100000)) for (d in c(2, 5)) {
     }
 }
 
+
+
+
 */
 
 
 
 
 /*
+
+apollo @ 2025-06-23 19:44
+
+n=1000000, d=2, k=1, OMP_NUM_THREADS=1
+           user.self sys.self elapsed Δdist Δidx
+new_kdtree     0.320    0.002   0.321     0    0
+nabor          1.045    0.010   1.055     0    0
+n=1000000, d=2, k=10, OMP_NUM_THREADS=1
+           user.self sys.self elapsed Δdist Δidx
+new_kdtree     0.849    0.023   0.871     0    0
+nabor          2.282    0.043   2.326     0    0
+n=1000000, d=5, k=1, OMP_NUM_THREADS=1
+           user.self sys.self elapsed Δdist Δidx
+new_kdtree     1.941    0.007   1.950     0    0
+nabor          6.061    0.040   6.107     0    0
+n=1000000, d=5, k=10, OMP_NUM_THREADS=1
+           user.self sys.self elapsed Δdist Δidx
+new_kdtree     5.580    0.038   5.621     0    0
+nabor         17.292    0.053  17.347     0    0
+n=100000, d=2, M=1, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist    Σdist Δidx
+new_16_0             0.147    0.000   0.148     0 1013.976    0
+dtb_4_16             0.113    0.000   0.114     0 1013.976    0
+genieclust_brute     8.886    0.009   8.897     0 1013.976    0
+n=100000, d=2, M=10, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist    Σdist Δidx
+new_16_0             0.126    0.000   0.126     0 2625.667    0
+dtb_4_16             0.163    0.001   0.164     0 2625.667    0
+genieclust_brute    20.241    0.017  20.263     0 2625.667    0
+n=100000, d=5, M=1, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist    Σdist Δidx
+new_16_0             1.111    0.000   1.111     0 30703.02    0
+dtb_4_16             1.730    0.000   1.730     0 30703.02    0
+genieclust_brute    11.744    0.021  11.767     0 30703.02    0
+n=100000, d=5, M=10, OMP_NUM_THREADS=1
+                 user.self sys.self elapsed Δdist    Σdist Δidx
+new_16_0             0.672    0.000   0.673     0 47511.27    0
+dtb_4_16             1.258    0.000   1.258     0 47511.27    0
+genieclust_brute    29.424    0.035  29.473     0 47511.27   19
 
 apollo @ 2025-06-19 10:00
 n=1000000, d=2, M=1, OMP_NUM_THREADS=1                                   n=1000000, d=2, M=1, OMP_NUM_THREADS=6
@@ -515,4 +522,107 @@ n=1000000, d=5, M=10, OMP_NUM_THREADS=6
 new_16_0            10.206    0.010   2.299     0    0
 dtb_4_16            18.608    0.019  12.105     0    0
 genieclust_brute     0.000    0.000   0.000    NA   NA
+
+
+
+
+
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+if (FALSE) {
+    n <- 100
+    d <- 5
+
+    set.seed(123)
+    X <- matrix(rnorm(n*d), ncol=d)
+    for (M in c(1, 10)) {
+        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%d\n", n, d, M, nthreads))
+
+        res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
+            f <- funs_mst_mutreach[[i]]
+            t <- system.time(y <- f(X, M))
+            list(time=t, y)
+        })
+
+        print(cbind(
+            as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+            Δdist=sapply(res, function(e) sum(e[[2]][,3])-sum(res[[1]][[2]][, 3])),
+            Σdist=sapply(res, function(e) sum(e[[2]][,3])),
+            Δidx=sapply(res, function(e) sum(res[[1]][[2]][,-3] != e[[2]][, -3]))
+        ))
+    }
+
+    stop()
+}
+
+# n=10000000, d=5, M=1, OMP_NUM_THREADS=6
+# build_tree                                                      : time=       2.276 s
+# tree init                                                       : time=       2.342 s
+# find_mst_first                                                  : time=       5.806 s
+# update_min_dcore                                                : time=       0.000 s
+# find_mst iter #1                                                : time=       7.085 s
+# find_mst iter #2                                                : time=       8.408 s
+# find_mst iter #3                                                : time=       8.200 s
+# find_mst iter #4                                                : time=       6.499 s
+# find_mst iter #5                                                : time=       5.229 s
+# find_mst iter #6                                                : time=       4.550 s
+# mst call                                                        : time=      45.888 s
+# mst sort                                                        : time=       1.141 s
+# Cmst_euclid_kdtree finalise                                     : time=       1.268 s
+#          user.self sys.self elapsed Δdist   Σdist Δidx
+# new_16_0   239.573    0.284  49.705     0 1238081    0
+# n=10000000, d=5, M=10, OMP_NUM_THREADS=6
+# build_tree                                                      : time=       2.283 s
+# tree init                                                       : time=       2.358 s
+# find_mst_first                                                  : time=      19.778 s
+# update_min_dcore                                                : time=       0.045 s
+# find_mst iter #1                                                : time=       3.777 s
+# find_mst iter #2                                                : time=       1.579 s
+# find_mst iter #3                                                : time=       0.355 s
+# find_mst iter #4                                                : time=       0.128 s
+# find_mst iter #5                                                : time=       0.113 s
+# mst call                                                        : time=      26.088 s
+# mst sort                                                        : time=       1.129 s
+# Cmst_euclid_kdtree finalise                                     : time=       1.274 s
+
+# n=100000000, d=5, M=1, OMP_NUM_THREADS=6
+# build_tree                                                      : time=      26.973 s
+# tree init                                                       : time=      27.588 s
+# find_mst_first                                                  : time=      70.429 s
+# update_min_dcore                                                : time=       0.000 s
+# find_mst iter #1                                                : time=      92.692 s
+# find_mst iter #2                                                : time=      94.121 s
+# find_mst iter #3                                                : time=      88.599 s
+# find_mst iter #4                                                : time=      73.766 s
+# find_mst iter #5                                                : time=      58.392 s
+# find_mst iter #6                                                : time=      49.972 s
+# find_mst iter #7                                                : time=      47.349 s
+# mst call                                                        : time=     576.402 s
+# mst sort                                                        : time=      12.989 s
+# Cmst_euclid_kdtree finalise                                     : time=      14.391 s
+#          user.self sys.self elapsed Δdist   Σdist Δidx
+# new_16_0  3138.294    2.833 620.394     0 7833186    0
+# n=100000000, d=5, M=10, OMP_NUM_THREADS=6
+# build_tree                                                      : time=      27.000 s
+# tree init                                                       : time=      28.066 s
+# find_mst_first                                                  : time=     215.217 s
+# update_min_dcore                                                : time=       0.448 s
+# find_mst iter #1                                                : time=      42.560 s
+# find_mst iter #2                                                : time=      21.648 s
+# find_mst iter #3                                                : time=       7.198 s
+# find_mst iter #4                                                : time=       1.623 s
+# find_mst iter #5                                                : time=       0.936 s
+# mst call                                                        : time=     293.107 s
+# mst sort                                                        : time=      12.733 s
+# Cmst_euclid_kdtree finalise                                     : time=      14.132 s
+#          user.self sys.self elapsed Δdist    Σdist Δidx
+# new_16_0  1543.238   11.914 337.967     0 12125760
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! NOTE TMP !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 */
+
+
+

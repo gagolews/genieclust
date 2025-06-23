@@ -67,7 +67,7 @@ from . cimport c_fastmst
 
 
 
-cpdef tuple tree_order(floatT[::1] tree_dist, Py_ssize_t[:,::1] tree_ind):
+cpdef tuple tree_order(const floatT[:] tree_dist, const Py_ssize_t[:,:] tree_ind):
     """
     genieclust.fastmst.tree_order(tree_dist, tree_ind)
 
@@ -110,9 +110,9 @@ cpdef tuple tree_order(floatT[::1] tree_dist, Py_ssize_t[:,::1] tree_ind):
 
 
 cpdef tuple knn_euclid(
-    floatT[:,::1] X,
+    const floatT[:,:] X,
     Py_ssize_t k=1,
-    Y=None,
+    const floatT[:,:] Y=None,
     str algorithm="auto",
     int max_leaf_size=32,
     bint squared=False,
@@ -264,7 +264,7 @@ cpdef tuple knn_euclid(
 
 
 cpdef tuple mst_euclid(
-    floatT[:,::1] X,
+    const floatT[:,:] X,
     Py_ssize_t M=1,
     bint use_kdtree=True,
     int max_leaf_size=16,
