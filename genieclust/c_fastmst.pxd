@@ -9,7 +9,7 @@
 
 """
 Minimum spanning tree and k-nearest neighbour algorithms
-(the "new">=2025 interface, heavily optimised, the Euclidean distance only)
+(the "new">=2025 interface, quite optimised, the Euclidean distance only)
 """
 
 # ############################################################################ #
@@ -34,15 +34,28 @@ cdef extern from "../src/c_fastmst.h":
 
     void Ctree_order[T](Py_ssize_t n, T* tree_dist, Py_ssize_t* tree_ind)
 
-    void Cknn_euclid_kdtree[T](
+    void Cknn1_euclid_kdtree[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
         T* nn_dist, Py_ssize_t* nn_ind,
         Py_ssize_t max_leaf_size, bint squared,
         bint verbose
     ) except +
 
-    void Cknn_euclid_brute[T](
+    void Cknn1_euclid_brute[T](
         T* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
+        T* nn_dist, Py_ssize_t* nn_ind, bint squared,
+        bint verbose
+    ) except +
+
+    void Cknn2_euclid_kdtree[T](
+        T* X, Py_ssize_t n, T* Y, Py_ssize_t m, Py_ssize_t d, Py_ssize_t k,
+        T* nn_dist, Py_ssize_t* nn_ind,
+        Py_ssize_t max_leaf_size, bint squared,
+        bint verbose
+    ) except +
+
+    void Cknn2_euclid_brute[T](
+        T* X, Py_ssize_t n, T* Y, Py_ssize_t m, Py_ssize_t d, Py_ssize_t k,
         T* nn_dist, Py_ssize_t* nn_ind, bint squared,
         bint verbose
     ) except +

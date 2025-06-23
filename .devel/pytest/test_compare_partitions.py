@@ -8,8 +8,7 @@ with warnings.catch_warnings():
 
 from genieclust.compare_partitions import *
 
-# compare our C++ implementation (that we can make available in R, Julia etc.!)
-# with the sklearn one (written in Python)
+# compare our C++ implementation with the sklearn one
 
 def compare_with_sklearn(x, y):
     ari1 = adjusted_rand_score(x, y)

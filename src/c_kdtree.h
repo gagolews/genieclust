@@ -496,7 +496,6 @@ void kneighbours(
     Py_ssize_t* knn_ind,  // size m*k
     Py_ssize_t k
 ) {
-
     #if OPENMP_IS_ENABLED
     #pragma omp parallel for schedule(static)
     #endif

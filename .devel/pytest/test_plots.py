@@ -18,7 +18,7 @@ def test_plot():
     genieclust.plots.plot_scatter(X)
     genieclust.plots.plot_scatter(X[:,0], X[:,1])
     genieclust.plots.plot_scatter(X, labels=np.random.choice(np.arange(10), n))
-    mst_d, mst_i = genieclust.internal.mst_from_distance(X, "euclidean")
+    mst_d, mst_i = genieclust.fastmst.mst_euclid(X)
     genieclust.plots.plot_segments(mst_i, X)
     genieclust.plots.plot_segments(mst_i, X[:,0], X[:,1])
 
@@ -47,11 +47,5 @@ def test_plot():
         genieclust.plots.plot_segments(mst_d, X)
 
 
-def test_plot_segments():
-    np.random.seed(123)
-
-
 if __name__ == "__main__":
-
     test_plot()
-

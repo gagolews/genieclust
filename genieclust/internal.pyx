@@ -149,8 +149,8 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
     (provided for testing only)
 
     Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its M-th nearest neighbour.
-    Note that M==1 always yields all the distances equal to 0.0.
+    the distance of each point to its `(M-1)`-th nearest neighbour.
+    Note that `M==1` always yields all distances equal to zero.
     The core distances are needed when computing the mutual reachability
     distance in the HDBSCAN* algorithm.
 
@@ -161,7 +161,7 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
 
     The input distance matrix for a given point cloud X may be computed,
     e.g., via a call to
-    `scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))`.
+    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
 
 
     Parameters
@@ -208,10 +208,9 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
     """
     (provided for testing only)
 
-
-    Given a pairwise distance matrix,
-    computes the mutual reachability distance w.r.t. the given
-    core distance vector; see `internal.core_distance`.
+    Given a pairwise distance matrix, computes the mutual reachability
+    distance w.r.t. the given core distance vector; see ``genieclust.internal.core_distance``,
+    ``new_dist[i,j] = max(dist[i,j], d_core[i], d_core[j])``.
 
     See Campello R.J.G.B., Moulavi D., Sander J.,
     Density-based clustering based on hierarchical density estimates,

@@ -27,6 +27,8 @@ import numpy as np
 import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
+from . import oldmst  # TODO: deprecate
+from . import fastmst
 import warnings
 import mlpack
 
@@ -342,7 +344,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                     raise ValueError("`M` is too large")
 
                 if nn_w is None or nn_e is None:
-                    nn_w, nn_e = internal.knn_from_distance(
+                    nn_w, nn_e = oldmst.knn_from_distance(
                         X,  # if not c_contiguous, raises an error
                         k=cur_state["M"]-1,
                         metric=cur_state["affinity"],  # supports "precomputed"
@@ -353,7 +355,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # Use Prim's algorithm to determine the MST
             # w.r.t. the distances computed on the fly
             if tree_w is None or tree_e is None:
-                tree_w, tree_e = internal.mst_from_distance(
+                tree_w, tree_e = oldmst.mst_from_distance(
                     X,  # if not c_contiguous, raises an error
                     metric=cur_state["affinity"],
                     d_core=d_core,
@@ -478,7 +480,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
         if tree_w is None or tree_e is None:
-            tree_w, tree_e = internal.mst_from_nn(
+            tree_w, tree_e = oldmst.mst_from_nn(
                 nn_w,
                 nn_e,
                 d_core,

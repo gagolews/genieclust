@@ -1,3 +1,4 @@
+"""
 import numpy as np
 import genieclust
 import time
@@ -192,3 +193,4 @@ if __name__ == "__main__":
     test_genie_approx()
     test_string()
     test_sparse()
+"""

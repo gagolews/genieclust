@@ -1,5 +1,5 @@
 /*  Minimum spanning tree and k-nearest neighbour algorithms
- *  (the "new">=2025 interface, heavily optimised, Euclidean distance only)
+ *  (the "new">=2025 interface, quite optimised, Euclidean distance only)
  *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -72,7 +72,7 @@ void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
  *  It is assumed that each query point is not its own neighbour.
  *
  *  Worst-case time complexity: O(n*(n-1)/2*d*k).
- *  So, use for small ks like k<=20.
+ *  So, use for small k, say, k<=20.
  *
  *
  *  @param X the n input points in R^d; a c_contiguous array, shape (n,d)
@@ -87,7 +87,7 @@ void Ctree_order(Py_ssize_t m, FLOAT* tree_dist, Py_ssize_t* tree_ind)
  *  @param verbose output diagnostic/progress messages?
  */
 template <class FLOAT>
-void Cknn_euclid_brute(
+void Cknn1_euclid_brute(
     const FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     FLOAT* nn_dist, Py_ssize_t* nn_ind, bool squared=false, bool verbose=false
 ) {
@@ -163,7 +163,75 @@ void Cknn_euclid_brute(
 }
 
 
+/*! Determine the k nearest neighbours of each point
+ *  wrt the Euclidean distance
+ *
+ *  Use for small k, say, k<=20.
+ *
+ *
+ *  @param X the n input points in R^d; a c_contiguous array, shape (n,d)
+ *  @param n number of points
+ *  @param Y the m query points in R^d; a c_contiguous array, shape (m,d)
+ *  @param m number of points
+ *  @param d number of features
+ *  @param k number of nearest neighbours requested
+ *  @param nn_dist [out]  a c_contiguous array, shape (m,k),
+ *         dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
+ *  @param nn_ind [out]   a c_contiguous array, shape (m,k),
+ *         (undirected) edge definition, interpreted as {i, ind[i,j]}
+ *  @param squared return the squared Euclidean distance?
+ *  @param verbose output diagnostic/progress messages?
+ */
+template <class FLOAT>
+void Cknn2_euclid_brute(
+    const FLOAT* X, Py_ssize_t n, const FLOAT* Y, Py_ssize_t m,
+    Py_ssize_t d, Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind, bool squared=false, bool verbose=false
+) {
+    if (n <= 0)   throw std::domain_error("n <= 0");
+    if (m <= 0)   throw std::domain_error("m <= 0");
+    if (d <= 0)   throw std::domain_error("d <= 0");
+    if (k <= 0)   throw std::domain_error("k <= 0");
+    if (k >  n)   throw std::domain_error("k > n");
 
+    if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
+
+    for (Py_ssize_t i=0; i<m*k; ++i) nn_dist[i] = INFINITY;
+    for (Py_ssize_t i=0; i<m*k; ++i) nn_ind[i] = -1;
+
+    #if OPENMP_IS_ENABLED
+    #pragma omp parallel for schedule(static)
+    #endif
+    for (Py_ssize_t i=0; i<m; ++i) {
+        const FLOAT* y_cur = Y+i*d;
+
+        const FLOAT* x_cur = X;
+        for (Py_ssize_t j=0; j<n; ++j) {
+            FLOAT dd = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                dd += square(y_cur[u]-x_cur[u]);
+            x_cur += d;
+
+            if (dd < nn_dist[i*k+k-1]) {
+                Py_ssize_t l = k-1;
+                while (l > 0 && dd < nn_dist[i*k+l-1]) {
+                    nn_dist[i*k+l] = nn_dist[i*k+l-1];
+                    nn_ind[i*k+l]  = nn_ind[i*k+l-1];
+                    l -= 1;
+                }
+                nn_dist[i*k+l] = dd;
+                nn_ind[i*k+l]  = j;
+            }
+        }
+    }
+
+    if (!squared) {
+        for (Py_ssize_t i=0; i<m*k; ++i)
+            nn_dist[i] = sqrt(nn_dist[i]);
+    }
+
+    if (verbose) GENIECLUST_PRINT("done.\n");
+}
 
 
 /*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
@@ -226,7 +294,7 @@ void Cmst_euclid_brute(
         GENIECLUST_ASSERT(d_core);
         nn_dist.resize(n*(M-1));
         nn_ind.resize(n*(M-1));
-        Cknn_euclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(),
+        Cknn1_euclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(),
                            /*squared=*/true, verbose);
         for (Py_ssize_t i=0; i<n; ++i) d_core[i] = nn_dist[i*(M-1)+(M-2)];
     }
@@ -364,16 +432,22 @@ void Cmst_euclid_brute(
 
 
 /**
- * helper function called by Cknn_euclid_kdtree below
+ * helper function called by Cknn2_euclid_kdtree below
  */
 template <class FLOAT, Py_ssize_t D>
-void _knn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
+void _knn_sqeuclid_kdtree(
+    FLOAT* X, const size_t n,
+    const FLOAT* Y, const Py_ssize_t m,
+    const size_t k,
     FLOAT* nn_dist, Py_ssize_t* nn_ind, size_t max_leaf_size, bool /*verbose=false*/)
 {
     using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT,D>;
 
     mgtree::kdtree<FLOAT, D, DISTANCE> tree(X, n, max_leaf_size);
-    mgtree::kneighbours<FLOAT, D>(tree, nn_dist, nn_ind, k);
+    if (!Y)
+        mgtree::kneighbours<FLOAT, D>(tree, nn_dist, nn_ind, k);
+    else
+        mgtree::kneighbours<FLOAT, D>(tree, Y, m, nn_dist, nn_ind, k);
 }
 
 
@@ -382,29 +456,44 @@ void _knn_sqeuclid_kdtree(FLOAT* X, const size_t n, const size_t k,
  *
  * Fast for small d, small k, but large n
  *
- * @param X [destroyable] a C-contiguous data matrix [destroyable]
- * @param n number of rows
- * @param d number of columns
+ * @param X [destroyable] data: a C-contiguous data matrix [destroyable]
+ * @param n number of rows in X
+ * @param Y query points: a C-contiguous data matrix [destroyable]
+ * @param m number of rows in Y
+ * @param d number of columns in X and in Y
  * @param k number of nearest neighbours to look for
- * @param nn_dist [out] vector(matrix) of length n*k, distances to NNs
- * @param nn_ind [out] vector(matrix) of length n*k, indexes of NNs
+ * @param nn_dist [out] vector(matrix) of length n*k in Y is NULL or m*k otherwise; distances to NNs
+ * @param nn_ind [out] vector(matrix) of the same length as nn_ind; indexes of NNs
  * @param max_leaf_size maximal number of points in the K-d tree's leaves
  * @param squared return the squared Euclidean distance?
  * @param verbose output diagnostic/progress messages?
  */
 template <class FLOAT>
-void Cknn_euclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
-    FLOAT* nn_dist, Py_ssize_t* nn_ind, Py_ssize_t max_leaf_size=32, bool squared=false, bool verbose=false)
-{
-    if (n <= 0)   throw std::domain_error("n <= 0");
-    if (k <= 0)   throw std::domain_error("k <= 0");
-    if (k >= n)   throw std::domain_error("k >= n");
+void Cknn2_euclid_kdtree(
+    FLOAT* X, const Py_ssize_t n,
+    const FLOAT* Y, const Py_ssize_t m,
+    const Py_ssize_t d, const Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind,
+    Py_ssize_t max_leaf_size=32, bool squared=false, bool verbose=false
+) {
+    Py_ssize_t nknn;
+    if (n <= 0)     throw std::domain_error("n <= 0");
+    if (k <= 0)     throw std::domain_error("k <= 0");
+    if (!Y) {
+        if (k >= n) throw std::domain_error("k >= n");
+        nknn = n;
+    }
+    else {
+        if (m <= 0) throw std::domain_error("m <= 0");
+        if (k > n)  throw std::domain_error("k > n");
+        nknn = m;
+    }
 
     if (max_leaf_size <= 0) throw std::domain_error("max_leaf_size <= 0");
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining the nearest neighbours... ");
 
-    #define ARGS_knn_sqeuclid_kdtree X, n, k, nn_dist, nn_ind, max_leaf_size, verbose
+    #define ARGS_knn_sqeuclid_kdtree X, n, Y, m, k, nn_dist, nn_ind, max_leaf_size, verbose
     /* LMAO; templates... */
     /**/ if (d ==  2) _knn_sqeuclid_kdtree<FLOAT,  2>(ARGS_knn_sqeuclid_kdtree);
     else if (d ==  3) _knn_sqeuclid_kdtree<FLOAT,  3>(ARGS_knn_sqeuclid_kdtree);
@@ -430,11 +519,43 @@ void Cknn_euclid_kdtree(FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t k,
     }
 
     if (!squared) {
-        for (Py_ssize_t i=0; i<k*n; ++i)
+        for (Py_ssize_t i=0; i<nknn*k; ++i)
             nn_dist[i] = sqrt(nn_dist[i]);
     }
 
     if (verbose) GENIECLUST_PRINT("done.\n");
+}
+
+
+
+/*! Get the k nearest neighbours of each point w.r.t. the Euclidean distance,
+ * using a K-d tree to speed up the computations.
+ *
+ * Fast for small d, small k, but large n
+ *
+ * It is assumed that each point is not its own nearest neighbour.
+ *
+ * @param X [destroyable] a C-contiguous data matrix [destroyable]
+ * @param n number of rows in X
+ * @param d number of columns in X
+ * @param k number of nearest neighbours to look for
+ * @param nn_dist [out] vector(matrix) of length n*k; distances to NNs
+ * @param nn_ind [out] vector(matrix) of the same length as nn_ind; indexes of NNs
+ * @param max_leaf_size maximal number of points in the K-d tree's leaves
+ * @param squared return the squared Euclidean distance?
+ * @param verbose output diagnostic/progress messages?
+ */
+template <class FLOAT>
+void Cknn1_euclid_kdtree(
+    FLOAT* X, const Py_ssize_t n,
+    const Py_ssize_t d, const Py_ssize_t k,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind,
+    Py_ssize_t max_leaf_size=32, bool squared=false, bool verbose=false
+) {
+    Cknn2_euclid_kdtree(
+        X, n, (const FLOAT*)nullptr, -1, d, k, nn_dist, nn_ind,
+        max_leaf_size, squared, verbose
+    );
 }
 
 

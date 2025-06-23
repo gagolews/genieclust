@@ -9,9 +9,11 @@
 
 ## TODO: (good first issue) Implement argkmax
 
+## TODO: (good first issue) Implement ksmallest, klargest
+
 
 """
-Functions one might find useful, but not necessarily
+Functions one might find useful, but not necessarily.
 """
 
 
@@ -61,9 +63,6 @@ ctypedef fused floatT:
 from . cimport c_argfuns
 
 
-################################################################################
-# cummin and cummax
-################################################################################
 
 
 cpdef np.ndarray[Py_ssize_t] cummin(T[:] x):
@@ -171,7 +170,14 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
     """
     genieclust.tools.argkmin(x, k)
 
-    Finds the position of an order statistic
+    Finds the position of an order statistic.
+    It holds ``argkmin(x, 0) == argmin(x)``, or, more generally,
+    ``argkmin(x, k) == np.argsort(x)[k]``.
+
+
+    Run time is :math:`O(nk)` and working memory is :math:`O(k)`.
+    An insertion sort-like scheme is used to locate the order statistic.
+    In practice, the function is very fast for small `k` and randomly ordered or almost sorted (increasingly) data.
 
 
     Parameters
@@ -190,32 +196,6 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
 
     int
         The index where the (`k`-1)-th smallest value in `x` is located.
-
-
-    Notes
-    -----
-
-    It holds ``argkmin(x, 0) == argmin(x)``, or, more generally,
-    ``argkmin(x, k) == np.argsort(x)[k]``.
-
-    Run time is :math:`O(nk)` and working memory is :math:`O(k)`.
-    An insertion sort-like scheme is used to locate the order statistic.
-    In practice, the function is very fast for small `k` and randomly ordered
-    or almost sorted (increasingly) data.
-
-    ================================== =============== ==================
-    Example timings                    `argkmin(x, k)` `np.argsort(x)[k]`
-    ================================== =============== ==================
-    (ascending)  n= 100000000, k=   1:      0.060s       4.388s
-    (descending)                            0.168s       7.329s
-    (random)                                0.073s      26.673s
-    (ascending)  n= 100000000, k=   5:      0.060s       4.403s
-    (descending)                            0.505s       7.414s
-    (random)                                0.072s      26.447s
-    (ascending)  n= 100000000, k= 100:      0.061s       4.390s
-    (descending)                            8.007s       7.639s
-    (random)                                0.075s      27.299s
-    ================================== =============== ==================
 
 
     Examples

@@ -234,15 +234,16 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
         >>> hull = scipy.spatial.ConvexHull(X)
         >>> genieclust.plots.plot_scatter(X)
         >>> genieclust.plots.plot_segments(hull.simplices, X, style="r--")
+        >>> plt.axis("equal")                          # doctest: +SKIP
         >>> plt.show()                                 # doctest: +SKIP
 
 
     .. plot::
 
-        Plotting the minimum spanning tree:
+        Plotting the Euclidean minimum spanning tree:
 
         >>> X = np.random.randn(100, 2)
-        >>> mst = genieclust.internal.mst_from_distance(X, "euclidean")
+        >>> mst = genieclust.fastmst.mst_euclid(X)
         >>> genieclust.plots.plot_scatter(X)
         >>> genieclust.plots.plot_segments(mst[1], X, style="m-.")
         >>> plt.axis("equal")                          # doctest: +SKIP

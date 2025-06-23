@@ -4,38 +4,6 @@ import genieclust
 
 
 
-# np.random.seed(123)
-def test_argsort():
-    for n in [1, 10, 1000]:
-
-        x = np.arange(n)
-        t0 = time.time()
-        y1a = genieclust.tools._argsort(x, False)
-        print("(ascending)  n=%18d: %10.3fs" % (n, time.time()-t0), end="\t")
-        t0 = time.time()
-        y2a = np.argsort(x)
-        print("%10.3fs" % (time.time()-t0,))
-        assert np.all(y1a == y2a)
-
-        x = np.arange(n)[::-1]
-        t0 = time.time()
-        y1b = genieclust.tools._argsort(x, False)
-        print("(descending)                       %10.3fs" % (time.time()-t0,), end="\t")
-        t0 = time.time()
-        y2b = np.argsort(x)
-        print("%10.3fs" % (time.time()-t0,))
-        assert np.all(y1b == y2b)
-
-        x = np.round(np.random.rand(n), 5)
-        t0 = time.time()
-        y1c = genieclust.tools._argsort(x, True)
-        print("(random-stable)                    %10.3fs" % (time.time()-t0,), end="\t")
-        t0 = time.time()
-        y2c = np.argsort(x, kind="mergesort")
-        print("%10.3fs" % (time.time()-t0,))
-        assert np.all(y1c == y2c)
-
-
 def test_argkmin():
     for n in [1, 5, 1000]:
         for k in [k for k in [0, 1, 2, 4, 10, 25, 50, 100] if k < n]:

@@ -40,10 +40,10 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
     std::vector<Py_ssize_t> nn_ind(n*k);
 
     if (use_kdtree && d >= 2 && d <= 20) {
-        Cknn_euclid_kdtree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
+        Cknn1_euclid_kdtree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
     }
     else {
-        Cknn_euclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data());
+        Cknn1_euclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data());
     }
 
     Rcpp::IntegerMatrix out_ind(n, k);
@@ -127,35 +127,82 @@ Rcpp::RObject test_mst(Rcpp::NumericMatrix X, int M=1, bool use_kdtree=true,
 /*** R
 
 options(width=200, echo=FALSE)
+nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
-(data, query, k)
-FNN::get.knn algorithm="kd_tree" uses ANN
-list nn.index, nn.dist
+# CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor"))'
 
+# (data, query, k)
+# FNN::get.knn algorithm="kd_tree" uses ANN
+# list nn.index, nn.dist
+#
+#
+# RANN::nn2 treetype = "kd" ANN
+# RANN::nn2 treetype = "bd" box-decomposition tree
+#
+# dbscan::kNN(x, k, query = NULL, approx=0) ANN library
+#
+# nabor::(data, query, k)  # libnabo
+# # nn.idx, nn.dists
+#
+# Rnanoflann::nn(data, points, k, parallel=(nthreads>1), cores=nthreads)
+#
+# RcppHNSW::hnsw_knn - approximate
 
-RANN::nn2 treetype = "kd" ANN
-RANN::nn2 treetype = "bd" box-decomposition tree
+suppressPackageStartupMessages(library("RANN"))
+suppressPackageStartupMessages(library("nabor"))
+suppressPackageStartupMessages(library("dbscan"))
+suppressPackageStartupMessages(library("Rnanoflann"))
 
-dbscan::kNN(x, k, query = NULL) ANN
-
-nabor::(data, query, k)  # libnabo
-# nn.idx, nn.dists
-
-Rnanoflann::nn(data, points, k, cores=0L)
-
-RcppHNSW::hnsw_knn - approximate
-
-knn_rann <- function(X, k) {
-    res_rann <- RANN::nn2(X, k=k+1)
-    res_rann[[1]] <- res_rann[[1]][,-1]
-    res_rann[[2]] <- res_rann[[2]][,-1]
-    res_rann
+knn_rann_kd <- function(X, k) {
+    res <- RANN::nn2(X, k=k+1, treetype = "kd")
+    res[[1]] <- res[[1]][,-1]
+    res[[2]] <- res[[2]][,-1]
+    res
 }
+
+knn_rann_bd <- function(X, k) {
+    res <- RANN::nn2(X, k=k+1, treetype = "bd")
+    res[[1]] <- res[[1]][,-1]
+    res[[2]] <- res[[2]][,-1]
+    res
+}
+
+knn_dbscan <- function(X, k) {
+    res <- dbscan::kNN(X, k, query = NULL, approx=0)
+    res[c("id", "dist")]
+}
+
+knn_nabor <- function(X, k) {
+    res <- nabor::knn(X, k=k+1, eps=0)
+    res[[1]] <- res[[1]][,-1]
+    res[[2]] <- res[[2]][,-1]
+    res
+}
+
+knn_Rnanoflann <- function(X, k) {
+    res <- Rnanoflann::nn(X, X, k=k+1, eps=0)#, parallel=1, cores=nthreads)
+    res[[1]] <- res[[1]][,-1]
+    res[[2]] <- res[[2]][,-1]
+    res
+}
+
+
+TODO: picotree compare
+https://github.com/Jaybro/pico_tree
+
+
+pykdtree
+reticulate genieclust
+
 
 funs_knn <- list(
 #genieclust_brute=function(X, k) test_knn(X, k, use_kdtree=FALSE),
-    rann=knn_rann,
-    new_kdtree=function(X, k) test_knn(X, k, use_kdtree=TRUE)
+    new_kdtree=function(X, k) test_knn(X, k, use_kdtree=TRUE),
+    # dbscan=knn_dbscan,  # ANN library, but supports self-queries
+    # rann_kd=knn_rann_kd,  # ANN library
+    # rann_bd=knn_rann_bd,  # slower than knn_rann_kd
+    # Rnanoflann=knn_Rnanoflann, # very slow...
+    nabor=knn_nabor
 )
 
 funs_mst <- list(
@@ -203,7 +250,7 @@ if (FALSE) {
     set.seed(123)
     X <- matrix(rnorm(n*d), ncol=d)
     for (M in c(1, 10)) {
-        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%s\n", n, d, M, Sys.getenv("OMP_NUM_THREADS")))
+        cat(sprintf("n=%d, d=%d, M=%d, OMP_NUM_THREADS=%d\n", n, d, M, nthreads))
 
         res <- lapply(`names<-`(seq_along(funs_mst_mutreach), names(funs_mst_mutreach))[1], function(i) {
             f <- funs_mst_mutreach[[i]]
@@ -289,26 +336,26 @@ if (FALSE) {
 
 
 
-# n <- 1000000
-# for (d in c()) {
-#     k <- 1L
-#     set.seed(123)
-#     X <- matrix(rnorm(n*d), ncol=d)
-#     cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, Sys.getenv("OMP_NUM_THREADS")))
-#
-#     res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
-#         f <- funs_knn[[i]]
-#         t <- system.time(y <- f(X, k))
-#         list(time=t, index=y[[1]], dist=y[[2]])
-#     })
-#
-#     print(cbind(
-#         as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
-#         Δdist=sapply(res, function(e) sum(e[[2]])-sum(res[[1]][[2]])),
-#         Δidx=sapply(res, function(e) sum(e[[1]] != res[[1]][[1]]))
-#     ))
-# }
+n <- 1000000
+for (d in c(2, 5)) for (k in c(1, 10)) {
+    set.seed(123)
+    X <- matrix(rnorm(n*d), ncol=d)
+    cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%s\n", n, d, k, Sys.getenv("OMP_NUM_THREADS")))
 
+    res <- lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), function(i) {
+        f <- funs_knn[[i]]
+        t <- system.time(y <- f(X, k))
+        list(time=t, index=y[[1]], dist=y[[2]])
+    })
+
+    print(cbind(
+        as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
+        Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
+        Δidx=sapply(res, function(e) sum(e$index != res[[1]]$index))
+    ))
+}
+
+stop()
 
 for (n in c(100000)) for (d in c(2, 5)) {
     set.seed(123)
