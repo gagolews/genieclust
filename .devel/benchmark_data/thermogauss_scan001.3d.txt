@@ -1,0 +1,11 @@
+Source:
+
+<https://kos.informatik.uni-osnabrueck.de/3Dscans/>
+
+21. by Dorit Borrmann from Universität Würzburg and Andreas Nüchter from Jacobs University Bremen gGmbH, Germany.
+
+
+
+This data set was recorded using a Riegl VZ-400 and a Optris PI IR camera. It contains several 3D scans taken in downtown Bremen around the Gaussian Point, the central point of the first cartography of Bremen and its surroundings. The data set consists of data collected at 3 different poses. The points from the laser scans are attributed with the thermal information from the camera. Pose files are calculated using 3DTK based on odometry information.
+
+scan001 - 1208592 points in the 3D space
