@@ -18,8 +18,10 @@
 
 
 // CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
-// OMP_NUM_THREADS=6 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/perf_knn_202506.cpp", echo=FALSE)'
+// OMP_NUM_THREADS=10 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/perf_knn_202506.cpp", echo=FALSE)'
 
+// CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
+// CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 
 
 #define GENIECLUST_R
@@ -78,47 +80,45 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
 options(width=200, echo=FALSE)
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
-ntries <- 1L
-n <- 1208592
-ds <- c(7)
-ks <- c(10L)
+ntries <- 3L
+ns <- as.integer(c(2**(17:18)))  # from 2**13
+ds <- as.integer(c(2:10))   # 2:10
+ks <- as.integer(c(1, 10))
 
-# CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
-# CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 
-# (data, query, k)
-# FNN::get.knn algorithm="kd_tree" uses ANN
-# list nn.index, nn.dist
-#
-#
-# RANN::nn2 treetype = "kd" ANN
-# RANN::nn2 treetype = "bd" box-decomposition tree
-#
-# dbscan::kNN(x, k, query = NULL, approx=0) ANN library
-#
-# nabor::(data, query, k)  # libnabo
-# # nn.idx, nn.dists
-#
-# Rnanoflann::nn(data, points, k, parallel=(nthreads>1), cores=nthreads)
-#
-# RcppHNSW::hnsw_knn - approximate
-
-pkgs <- c("genieclust", "RANN", "nabor", "dbscan", "Rnanoflann",
-    "mlpack")
+pkgs <- c("genieclust", "RANN", "nabor", "dbscan", "mlpack", "reticulate")
 for (pkg in pkgs)
     suppressPackageStartupMessages(library(pkg, character.only=TRUE))
 
-library("reticulate")
 use_virtualenv("/home/gagolews/.virtualenvs/python3-default/")
-py_numpy <- import("numpy", convert=FALSE)
+py_numpy      <- import("numpy", convert=FALSE)
 py_genieclust <- import("genieclust", convert=FALSE)
-py_pykdtree <- import("pykdtree", convert=FALSE)
-py_sklearn <- import("sklearn", convert=FALSE)
+py_pykdtree   <- import("pykdtree", convert=FALSE)
+py_sklearn    <- import("sklearn", convert=FALSE)
+
+
+# print(as.data.frame(installed.packages()[pkgs, c("Version"), drop=FALSE]))
+#
+# import importlib
+# modules = ['numba', 'cython', 'numpy', 'scipy', 'sklearn', 'pykdtree', 'genieclust']
+# for m in modules:
+#     try:
+#         print("%20s %s" % (m, importlib.import_module(m).__version__))
+#     except:
+#         print("%20s ?" %  (m, ))
 
 
 
-# TODO: which support nthreads???
-# TODO: cleanup R interface, use the one from the R package...
+knn_genieclust_brute <- function(X, k) {
+    if (nrow(X) > 300000) return(NULL)
+    res <- genieclust::knn_euclid(X, k, algorithm="brute")
+    `names<-`(res, c("index", "dist"))
+}
+
+knn_genieclust_kdtree <- function(X, k) {
+    res <- genieclust::knn_euclid(X, k, algorithm="kd_tree")
+    `names<-`(res, c("index", "dist"))
+}
 
 knn_py_pykdtree <- function(X, k) {
     k <- as.integer(k+1)
@@ -202,18 +202,8 @@ knn_Rnanoflann <- function(X, k) {
     `names<-`(res, c("index", "dist"))
 }
 
-knn_genieclust_kdtree <- function(X, k) {
-    res <- genieclust::knn_euclid(X, k, algorithm="kd_tree")
-    `names<-`(res, c("index", "dist"))
-}
-
-knn_genieclust_brute <- function(X, k) {
-    res <- genieclust::knn_euclid(X, k, algorithm="brute")
-    `names<-`(res, c("index", "dist"))
-}
-
 funs_knn <- list(
-#r_genieclust_brute=knn_genieclust_brute,
+    r_genieclust_brute=knn_genieclust_brute,
     r_genieclust_kdtree=knn_genieclust_kdtree,
     # r_Rnanoflann=knn_Rnanoflann, # something's wrong: extremely slow...
     pico_tree=knn_pico_tree
@@ -223,8 +213,8 @@ funs_knn_single <- list(
     r_dbscan=knn_dbscan,    # ANN library, but supports self-queries
     r_mlpack_kdtree_single=knn_mlpack_kd_singletree,
     r_mlpack_kdtree_dual=knn_mlpack_kd_dualtree,
-    r_nabor=knn_nabor,
-    #r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd
+    r_nabor=knn_nabor,       # libnabo
+    #r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd; box-decomposition tree
     r_rann_kdtree=knn_rann_kd  # ANN library
 )
 
@@ -234,8 +224,7 @@ funs_knn_py <- list(
     py_sklearn_kdtree=knn_py_sklearn_neighbours
 )
 
-data <- list()
-for (d in ds) {
+for (d in ds) for (n in ns) {
     if (n == 1208592 && d == 0) {
         X <- as.matrix(read.table("~/Python/genieclust/.devel/benchmark_data/thermogauss_scan001.3d.gz"))
     } else {
@@ -248,6 +237,7 @@ for (d in ds) {
     benchmark <- function(i, X, k, funs) {
         f <- funs[[i]]
         t <- system.time(y <- f(X, k))
+        if (is.null(y)) return(NULL)
         stopifnot(dim(y[[1]])==dim(y[[2]]), dim(y[[1]])==c(n, k))
         list(time=t, index=y[[1]], dist=y[[2]])
     }
@@ -260,10 +250,11 @@ for (d in ds) {
             res <- c(res, lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), benchmark, X, k, funs_knn))
             res <- c(res, lapply(`names<-`(seq_along(funs_knn_py), names(funs_knn_py)), benchmark, Xpy, k, funs_knn_py))
             if (nthreads == 1)
-                res <- c(res, lapply(`names<-`(seq_along(funs_knn_single), names(funs_knn_single)), benchmark, Xpy, k, funs_knn_single))
+                res <- c(res, lapply(`names<-`(seq_along(funs_knn_single), names(funs_knn_single)), benchmark, X, k, funs_knn_single))
 
+            res <- res[!sapply(res, is.null)]
 
-            this_data <- `row.names<-`(cbind(
+            data <- as.data.frame(`row.names<-`(cbind(
                 method=names(res),
                 as.data.frame(t(sapply(res, `[[`, 1)))[, 1:3],
                 Δdist=sapply(res, function(e) sum(e$dist)-sum(res[[1]]$dist)),
@@ -273,18 +264,18 @@ for (d in ds) {
                 d=d,
                 k=k,
                 nthreads=nthreads,
-                time=as.integer(Sys.time())
-            ), NULL)
+                time=as.integer(Sys.time()),
+                host=Sys.info()[["nodename"]]
+            ), NULL))
 
-            data[[length(data)+1]] <- this_data
-
-            print(this_data)
+            write.table(data, "perf_knn_202506.csv", row.names=FALSE, col.names=FALSE, append=TRUE, sep=",", dec=".")
+            print(data)
         }
     }
 }
-data <- do.call(rbind.data.frame, data)
-write.table(data, "perf_knn_202506.csv", row.names=FALSE, col.names=FALSE, append=TRUE, sep=",", dec=".")
-print(aggregate(data[c("elapsed")], data[c("method", "n", "d", "k", "nthreads")], min))
+
+
+
 
 
 */
