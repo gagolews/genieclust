@@ -15,11 +15,18 @@
  */
 
 
+
+
+// CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
+// OMP_NUM_THREADS=6 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/perf_knn_202506.cpp", echo=FALSE)'
+
+
+
 #define GENIECLUST_R
 #include "../src/c_fastmst.h"
 #include "perf_knn_202506-pico_tree.h"
 
-
+/*
 // [[Rcpp::export]]
 Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int max_leaf_size=32)
 {
@@ -62,11 +69,7 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
         Rcpp::Named("nn.dist")=out_dist
     );
 }
-
-
-
-// CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
-// OMP_NUM_THREADS=6 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/perf_knn_202506.cpp", echo=FALSE)'
+*/
 
 
 
@@ -75,7 +78,12 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
 options(width=200, echo=FALSE)
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
-# CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate"))'
+ntries <- 1L
+n <- 1208592
+ds <- c(7)
+ks <- c(10L)
+
+# CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
 # CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 
 # (data, query, k)
@@ -95,12 +103,12 @@ nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 #
 # RcppHNSW::hnsw_knn - approximate
 
-suppressPackageStartupMessages(library("RANN"))
-suppressPackageStartupMessages(library("nabor"))
-suppressPackageStartupMessages(library("dbscan"))
-suppressPackageStartupMessages(library("Rnanoflann"))
+pkgs <- c("genieclust", "RANN", "nabor", "dbscan", "Rnanoflann",
+    "mlpack")
+for (pkg in pkgs)
+    suppressPackageStartupMessages(library(pkg, character.only=TRUE))
 
-suppressPackageStartupMessages(library("reticulate"))
+library("reticulate")
 use_virtualenv("/home/gagolews/.virtualenvs/python3-default/")
 py_numpy <- import("numpy", convert=FALSE)
 py_genieclust <- import("genieclust", convert=FALSE)
@@ -132,12 +140,28 @@ knn_py_genieclust_fastmst <- function(X, k) {
 
 knn_py_sklearn_neighbours <- function(X, k) {
     k <- as.integer(k)
-    res <- py_sklearn$neighbors$NearestNeighbors(n_neighbors=k, n_jobs=nthreads)$fit(X)$kneighbors()
+    res <- py_sklearn$neighbors$NearestNeighbors(n_neighbors=k, n_jobs=nthreads, algorithm="kd_tree")$fit(X)$kneighbors()
     res <- py_to_r(res)[c(2, 1)]
     res[[1]] <- res[[1]]+1
     `names<-`(res, c("index", "dist"))
 }
 
+
+knn_mlpack_kd_singletree <- function(X, k) {
+    k <- as.integer(k)
+    res <- mlpack::knn(k=k, epsilon=0, reference=X, algorithm='single_tree')[c(2,1)]
+    res[[1]] <- 1+res[[1]]#[,-1,drop=FALSE]
+    res[[2]] <- res[[2]]#[,-1,drop=FALSE]
+    `names<-`(res, c("index", "dist"))
+}
+
+knn_mlpack_kd_dualtree <- function(X, k) {
+    k <- as.integer(k)
+    res <- mlpack::knn(k=k, epsilon=0, reference=X, algorithm='dual_tree')[c(2,1)]
+    res[[1]] <- 1+res[[1]]#[,-1,drop=FALSE]
+    res[[2]] <- res[[2]]#[,-1,drop=FALSE]
+    `names<-`(res, c("index", "dist"))
+}
 
 
 knn_rann_kd <- function(X, k) {
@@ -179,35 +203,40 @@ knn_Rnanoflann <- function(X, k) {
 }
 
 knn_genieclust_kdtree <- function(X, k) {
-    test_knn(X, k, use_kdtree=TRUE, max_leaf_size=32)
+    res <- genieclust::knn_euclid(X, k, algorithm="kd_tree")
+    `names<-`(res, c("index", "dist"))
 }
 
 knn_genieclust_brute <- function(X, k) {
-    test_knn(X, k, use_kdtree=FALSE)
+    res <- genieclust::knn_euclid(X, k, algorithm="brute")
+    `names<-`(res, c("index", "dist"))
 }
 
 funs_knn <- list(
-    r_genieclust_brute=knn_genieclust_brute,
-    r_genieclust_fastmst=knn_genieclust_kdtree,
-    pico_tree=knn_pico_tree,
-    r_dbscan=knn_dbscan,    # ANN library, but supports self-queries
-    r_rann_kd=knn_rann_kd,  # ANN library
-    r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd
+#r_genieclust_brute=knn_genieclust_brute,
+    r_genieclust_kdtree=knn_genieclust_kdtree,
     # r_Rnanoflann=knn_Rnanoflann, # something's wrong: extremely slow...
-    r_nabor=knn_nabor
+    pico_tree=knn_pico_tree
+)
+
+funs_knn_single <- list(
+    r_dbscan=knn_dbscan,    # ANN library, but supports self-queries
+    r_mlpack_kdtree_single=knn_mlpack_kd_singletree,
+    r_mlpack_kdtree_dual=knn_mlpack_kd_dualtree,
+    r_nabor=knn_nabor,
+    #r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd
+    r_rann_kdtree=knn_rann_kd  # ANN library
 )
 
 funs_knn_py <- list(
-    py_genieclust_fastmst=knn_py_genieclust_fastmst,
+    py_genieclust_kdtree=knn_py_genieclust_fastmst,
     py_pykdtree=knn_py_pykdtree,
-    py_sklearn_neighbours=knn_py_sklearn_neighbours
+    py_sklearn_kdtree=knn_py_sklearn_neighbours
 )
 
 data <- list()
-ntries <- 3L
-n <- 100000L
-for (d in c(5L)) {
-    if (n == 1208592 && is.na(d)) {
+for (d in ds) {
+    if (n == 1208592 && d == 0) {
         X <- as.matrix(read.table("~/Python/genieclust/.devel/benchmark_data/thermogauss_scan001.3d.gz"))
     } else {
         set.seed(123)
@@ -223,13 +252,16 @@ for (d in c(5L)) {
         list(time=t, index=y[[1]], dist=y[[2]])
     }
 
-    for (k in c(1L, 10L)) {
+    for (k in ks) {
         cat(sprintf("n=%d, d=%d, k=%d, OMP_NUM_THREADS=%d\n", n, d, k, nthreads))
 
         for (i in 1:ntries) {
             res <- list()
             res <- c(res, lapply(`names<-`(seq_along(funs_knn), names(funs_knn)), benchmark, X, k, funs_knn))
             res <- c(res, lapply(`names<-`(seq_along(funs_knn_py), names(funs_knn_py)), benchmark, Xpy, k, funs_knn_py))
+            if (nthreads == 1)
+                res <- c(res, lapply(`names<-`(seq_along(funs_knn_single), names(funs_knn_single)), benchmark, Xpy, k, funs_knn_single))
+
 
             this_data <- `row.names<-`(cbind(
                 method=names(res),
@@ -258,31 +290,28 @@ print(aggregate(data[c("elapsed")], data[c("method", "n", "d", "k", "nthreads")]
 */
 
 /*
-                     method       n d  k nthreads elapsed  nthreads elapsed
-1                 pico_tree 1208592 3  1        6   0.232         1   0.510
-2  py_genieclust_fastmst_32 1208592 3  1        6   0.224         1   0.478
-3               py_pykdtree 1208592 3  1        6   0.264         1   0.627
-4     py_sklearn_neighbours 1208592 3  1        6   2.238         1   1.982
-5    r_genieclust_fastmst_1 1208592 3  1        6   0.423         1   0.819
-6  r_genieclust_fastmst_128 1208592 3  1        6   0.214         1   0.516
-7   r_genieclust_fastmst_16 1208592 3  1        6   0.247         1   0.498
-8    r_genieclust_fastmst_2 1208592 3  1        6   0.370         1   0.729
-9   r_genieclust_fastmst_32 1208592 3  1        6   0.228         1   0.466
-10   r_genieclust_fastmst_4 1208592 3  1        6   0.322         1   0.640
-11  r_genieclust_fastmst_64 1208592 3  1        6   0.213         1   0.467
-12   r_genieclust_fastmst_8 1208592 3  1        6   0.281         1   0.559
-13                  r_nabor 1208592 3  1        6   0.654         1   0.651
-14                pico_tree 1208592 3 10        6   0.438         1   1.151
-15 py_genieclust_fastmst_32 1208592 3 10        6   0.535         1   1.204
-16              py_pykdtree 1208592 3 10        6   0.641         1   1.535
-17    py_sklearn_neighbours 1208592 3 10        6   3.693         1   3.370
-18   r_genieclust_fastmst_1 1208592 3 10        6   0.768         1   1.947
-19 r_genieclust_fastmst_128 1208592 3 10        6   0.504         1   1.387
-20  r_genieclust_fastmst_16 1208592 3 10        6   0.488         1   1.153
-21   r_genieclust_fastmst_2 1208592 3 10        6   0.723         1   1.757
-22  r_genieclust_fastmst_32 1208592 3 10        6   0.473         1   1.107
-23   r_genieclust_fastmst_4 1208592 3 10        6   0.641         1   1.527
-24  r_genieclust_fastmst_64 1208592 3 10        6   0.475         1   1.207
-25   r_genieclust_fastmst_8 1208592 3 10        6   0.581         1   1.311
-26                  r_nabor 1208592 3 10        6   1.476         1   1.477
+                   method       n d  k nthreads elapsed
+1               pico_tree 1208592 0 10        1   1.187
+2    py_genieclust_kdtree 1208592 0 10        1   1.189
+3             py_pykdtree 1208592 0 10        1   1.481
+4       py_sklearn_kdtree 1208592 0 10        1   3.413
+5                r_dbscan 1208592 0 10        1   2.571
+6     r_genieclust_kdtree 1208592 0 10        1   1.171
+7    r_mlpack_kdtree_dual 1208592 0 10        1   2.437
+8  r_mlpack_kdtree_single 1208592 0 10        1   2.877
+9                 r_nabor 1208592 0 10        1   1.443
+10          r_rann_kdtree 1208592 0 10        1   2.403
+
+                   method       n d  k nthreads elapsed  nthreads elapsed
+1               pico_tree 1208592 3 10        1   3.877         6   1.238
+2    py_genieclust_kdtree 1208592 3 10        1   1.666         6   0.691
+3             py_pykdtree 1208592 3 10        1   5.179         6   1.621
+4       py_sklearn_kdtree 1208592 3 10        1   9.741         6   7.311
+5                r_dbscan 1208592 3 10        1   8.496         6   8.505
+6     r_genieclust_kdtree 1208592 3 10        1   1.668         6   0.655
+7    r_mlpack_kdtree_dual 1208592 3 10        1   3.652         6   3.645
+8  r_mlpack_kdtree_single 1208592 3 10        1   3.920         6   3.924
+9                 r_nabor 1208592 3 10        1   4.793         6   4.830
+10          r_rann_kdtree 1208592 3 10        1  10.190         6  10.187
+
 */

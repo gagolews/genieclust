@@ -129,7 +129,7 @@ cpdef tuple knn_euclid(
     points thereto from `X`.
 
     The implemented algorithms, see the `algorithm` parameter, assume that
-    k is rather small; say, `k <= 20`.
+    `k` is rather small; say, `k <= 20`.
 
     Our implementation of K-d trees [1]_ has been quite optimised; amongst
     others, it has good locality of reference, features the sliding midpoint
@@ -171,10 +171,10 @@ cpdef tuple knn_euclid(
         neighbours
     algorithm : ``{"auto", "kd_tree", "brute"}``, default="auto"
         K-d trees can only be used for d between 2 and 20 only.
-        ``"auto"`` selects ``"kd_tree"`` for low-dimensional spaces only.
+        ``"auto"`` selects ``"kd_tree"`` for low-dimensional spaces only
     max_leaf_size : int, default 32
-        maximal number of points in the K-d tree leaves,
-        smaller leaves use more memory yet are not necessarily faster
+        maximal number of points in the K-d tree leaves;
+        smaller leaves use more memory, yet are not necessarily faster
     squared : False
         whether to return the squared Euclidean distance
     verbose: bool
@@ -186,12 +186,11 @@ cpdef tuple knn_euclid(
 
     pair : tuple
         A pair ``(dist, ind)`` representing the k-NN graph, where:
-            dist : a c_contiguous ndarray, shape `(n,k)` or `(m,k)`
+            dist : a c_contiguous ndarray, shape `(n,k)` or `(m,k)`;
                 ``dist[i,:]`` is sorted nondecreasingly for all `i`,
                 ``dist[i,j]`` gives the weight of the edge ``{i, ind[i,j]}``,
-                i.e., the distance between the `i`-th point and its j-th NN.
-            ind : a c_contiguous ndarray, shape `(n,k)` or `(m,k)`
-                edge definition, interpreted as ``{i, ind[i,j]}``;
+                i.e., the distance between the `i`-th point and its ``j``-th NN.
+            ind : a c_contiguous ndarray of the same shape;
                 ``ind[i,j]`` is the index (between `0` and `n-1`)
                 of the `j`-th nearest neighbour of `i`.
     """
@@ -199,6 +198,7 @@ cpdef tuple knn_euclid(
     cdef Py_ssize_t d = X.shape[1]
     cdef Py_ssize_t m
 
+    if n < 1 or d <= 1: raise ValueError("X is ill-shaped");
     if k < 1: raise ValueError("k must be >= 1")
 
     if algorithm == "auto":
@@ -370,6 +370,7 @@ cpdef tuple mst_euclid(
     cdef Py_ssize_t n = X.shape[0]
     cdef Py_ssize_t d = X.shape[1]
 
+    if n < 1 or d <= 1: raise ValueError("X is ill-shaped");
     if M < 1 or M > n-1: raise ValueError("incorrect M")
 
     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)

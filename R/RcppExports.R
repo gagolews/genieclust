@@ -378,16 +378,91 @@ wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 
-.emst_mlpack <- function(X, leaf_size = 1L, verbose = FALSE) {
-    .Call(`_genieclust_dot_emst_mlpack`, X, leaf_size, verbose)
-}
-
-.mst.default <- function(X, distance = "euclidean", M = 1L, cast_float32 = TRUE, verbose = FALSE) {
-    .Call(`_genieclust_dot_mst_default`, X, distance, M, cast_float32, verbose)
-}
-
-.mst.dist <- function(d, M = 1L, verbose = FALSE) {
-    .Call(`_genieclust_dot_mst_dist`, d, M, verbose)
+#' @title Quite Fast Euclidean Nearest Neighbours
+#'
+#' @description
+#' If \code{Y} is \code{NULL}, then the function determines the first \code{k}
+#' amongst the nearest neighbours of each point in \code{X} with respect
+#' to the Euclidean distance. It is assumed that each query point is
+#' not its own neighbour.
+#'
+#' Otherwise, for each point in \code{Y}, this function determines the \code{k}
+#' nearest points thereto from \code{X}.
+#'
+#' @details
+#' The implemented algorithms, see the \code{algorithm} parameter, assume
+#' that \code{k} is rather small; say, \code{k <= 20}.
+#'
+#' Our implementation of K-d trees (Bentley, 1975) has been quite optimised;
+#' amongst others, it has good locality of reference, features the sliding
+#' midpoint (midrange) rule suggested by Maneewongvatana and Mound (1999),
+#' and a node pruning strategy inspired by the discussion
+#' by Sample et al. (2001).  However, it is well-known that K-d trees
+#' perform well only in spaces of low intrinsic dimensionality.  Thus,
+#' due to the so-called curse of dimensionality, for high \code{d},
+#' the brute-force algorithm is recommended.
+#'
+#' The number of threads used is controlled via the \code{OMP_NUM_THREADS}
+#' environment variable. For best speed, consider building the package
+#' from sources using, e.g., \code{-O3 -march=native} compiler flags.
+#'
+#' @references
+#' J.L. Bentley, Multidimensional binary search trees used for associative
+#' searching, \emph{Communications of the ACM} 18(9), 509–517, 1975,
+#' \doi{10.1145/361002.361007}.
+#'
+#' S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+#' are fat, \emph{4th CGC Workshop on Computational Geometry}, 1999.
+#'
+#' N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+#' strategies in K-d Trees, \emph{5th WSES/IEEE Conf. on Circuits, Systems,
+#' Communications & Computers} (CSCC 2001), 2001.
+#'
+#'
+#' @param X the "database"; a matrix of shape (n,d)
+#' @param k number of nearest neighbours (should be rather small, say, <= 20)
+#' @param Y the "query points"; \code{NULL} or a matrix of shape (m,d);
+#'     note that setting \code{Y=X}, contrary to \code{NULL},
+#'     will include the query points themselves amongst their own neighbours
+#' @param algorithm
+#'     K-d trees can only be used for d between 2 and 20 only;
+#'     \code{"auto"} selects \code{"kd_tree"} for low-dimensional spaces only
+#' @param max_leaf_size maximal number of points in the K-d tree leaves;
+#'        smaller leaves use more memory, yet are not necessarily faster
+#' @param squared whether to return the squared Euclidean distance
+#' @param verbose whether to print diagnostic messages
+#'
+#'
+#' @return
+#' A list with two elements, \code{nn.index} and \code{nn.dist}.
+#'
+#' \code{nn.dist} has shape (n,k) or (m,k);
+#' \code{nn.dist[i,]} is sorted nondecreasingly for all \code{i}.
+#' \code{nn.dist[i,j]} gives the weight of the edge \code{{i, ind[i,j]}},
+#' i.e., the distance between the \code{i}-th point and its \code{j}-th NN.
+#'
+#' \code{nn.index} is of the same shape.
+#' \code{nn.index[i,j]} is the index (between \code{1} and \code{n})
+#' of the \code{j}-th nearest neighbour of \code{i}.
+#'
+#'
+#' @examples
+#' library("datasets")
+#' data("iris")
+#' X <- jitter(as.matrix(iris[1:2]))  # some data
+#' neighbours <- knn_euclid(X, 1)  # 1-NNs of each point
+#' plot(X, asp=1, las=1)
+#' segments(X[,1], X[,2], X[neighbours$nn.index,1], X[neighbours$nn.index,2])
+#'
+#' knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
+#'
+#'
+#' @seealso mst_euclid
+#'
+#' @rdname fastknn
+#' @export
+knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 32L, squared = FALSE, verbose = FALSE) {
+    .Call(`_genieclust_knn_euclid`, X, k, Y, algorithm, max_leaf_size, squared, verbose)
 }
 
 .genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {
@@ -396,10 +471,6 @@ wcnn_index <- function(X, y, M = 25L) {
 
 .gclust <- function(mst, gini_threshold, verbose) {
     .Call(`_genieclust_dot_gclust`, mst, gini_threshold, verbose)
-}
-
-knn_sqeuclid <- function(X, k, cast_float32 = TRUE, verbose = FALSE) {
-    .Call(`_genieclust_knn_sqeuclid`, X, k, cast_float32, verbose)
 }
 
 #' @title Inequality Measures

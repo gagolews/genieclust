@@ -275,44 +275,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// dot_emst_mlpack
-Rcpp::NumericMatrix dot_emst_mlpack(Rcpp::NumericMatrix X, int leaf_size, bool verbose);
-RcppExport SEXP _genieclust_dot_emst_mlpack(SEXP XSEXP, SEXP leaf_sizeSEXP, SEXP verboseSEXP) {
+// knn_euclid
+List knn_euclid(SEXP X, int k, SEXP Y, Rcpp::String algorithm, int max_leaf_size, bool squared, bool verbose);
+RcppExport SEXP _genieclust_knn_euclid(SEXP XSEXP, SEXP kSEXP, SEXP YSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP squaredSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type leaf_size(leaf_sizeSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type Y(YSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type algorithm(algorithmSEXP);
+    Rcpp::traits::input_parameter< int >::type max_leaf_size(max_leaf_sizeSEXP);
+    Rcpp::traits::input_parameter< bool >::type squared(squaredSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(dot_emst_mlpack(X, leaf_size, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dot_mst_default
-NumericMatrix dot_mst_default(NumericMatrix X, String distance, int M, bool cast_float32, bool verbose);
-RcppExport SEXP _genieclust_dot_mst_default(SEXP XSEXP, SEXP distanceSEXP, SEXP MSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< String >::type distance(distanceSEXP);
-    Rcpp::traits::input_parameter< int >::type M(MSEXP);
-    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(dot_mst_default(X, distance, M, cast_float32, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// dot_mst_dist
-NumericMatrix dot_mst_dist(NumericVector d, int M, bool verbose);
-RcppExport SEXP _genieclust_dot_mst_dist(SEXP dSEXP, SEXP MSEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericVector >::type d(dSEXP);
-    Rcpp::traits::input_parameter< int >::type M(MSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(dot_mst_dist(d, M, verbose));
+    rcpp_result_gen = Rcpp::wrap(knn_euclid(X, k, Y, algorithm, max_leaf_size, squared, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -342,20 +318,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(dot_gclust(mst, gini_threshold, verbose));
-    return rcpp_result_gen;
-END_RCPP
-}
-// knn_sqeuclid
-List knn_sqeuclid(NumericMatrix X, int k, bool cast_float32, bool verbose);
-RcppExport SEXP _genieclust_knn_sqeuclid(SEXP XSEXP, SEXP kSEXP, SEXP cast_float32SEXP, SEXP verboseSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type X(XSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    Rcpp::traits::input_parameter< bool >::type cast_float32(cast_float32SEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(knn_sqeuclid(X, k, cast_float32, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -415,12 +377,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_silhouette_index", (DL_FUNC) &_genieclust_silhouette_index, 2},
     {"_genieclust_silhouette_w_index", (DL_FUNC) &_genieclust_silhouette_w_index, 2},
     {"_genieclust_wcnn_index", (DL_FUNC) &_genieclust_wcnn_index, 3},
-    {"_genieclust_dot_emst_mlpack", (DL_FUNC) &_genieclust_dot_emst_mlpack, 3},
-    {"_genieclust_dot_mst_default", (DL_FUNC) &_genieclust_dot_mst_default, 5},
-    {"_genieclust_dot_mst_dist", (DL_FUNC) &_genieclust_dot_mst_dist, 3},
+    {"_genieclust_knn_euclid", (DL_FUNC) &_genieclust_knn_euclid, 7},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
     {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},
-    {"_genieclust_knn_sqeuclid", (DL_FUNC) &_genieclust_knn_sqeuclid, 4},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},
     {"_genieclust_bonferroni_index", (DL_FUNC) &_genieclust_bonferroni_index, 1},
     {"_genieclust_devergottini_index", (DL_FUNC) &_genieclust_devergottini_index, 1},
