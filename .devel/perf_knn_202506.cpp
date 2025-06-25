@@ -207,22 +207,22 @@ funs_knn <- list(
     r_genieclust_brute=knn_genieclust_brute,
     r_genieclust_kdtree=knn_genieclust_kdtree,
     # r_Rnanoflann=knn_Rnanoflann, # something's wrong: extremely slow...
-    pico_tree=knn_pico_tree
+    pico_tree=knn_pico_tree  # K-d tree, max_leaf_size=12
 )
 
 funs_knn_single <- list(
-    r_dbscan=knn_dbscan,    # ANN library, but supports self-queries
-    r_mlpack_kdtree_single=knn_mlpack_kd_singletree,
-    r_mlpack_kdtree_dual=knn_mlpack_kd_dualtree,
-    r_nabor=knn_nabor,       # libnabo
+    r_dbscan=knn_dbscan,     # ANN library, but supports self-queries; K-d tree with bucketSize=10 and the sliding midpoint rule as the splitting criterion
+    r_mlpack_kdtree_single=knn_mlpack_kd_singletree,  # K-d trees, leaf_size=20
+    r_mlpack_kdtree_dual=knn_mlpack_kd_dualtree,  # K-d trees, leaf_size=20, dual tree algorithm
+    r_nabor=knn_nabor,       # libnabo, K-d tree, sliding midpoint bucket size=8(?)
     #r_rann_bd=knn_rann_bd,  # slower than knn_rann_kd; box-decomposition tree
-    r_rann_kdtree=knn_rann_kd  # ANN library
+    r_rann_kdtree=knn_rann_kd  # ANN library, bucket size=1(?), sliding midpoint rule
 )
 
 funs_knn_py <- list(
     py_genieclust_kdtree=knn_py_genieclust_fastmst,
-    py_pykdtree=knn_py_pykdtree,
-    py_sklearn_kdtree=knn_py_sklearn_neighbours
+    py_pykdtree=knn_py_pykdtree,  # leafsize=16
+    py_sklearn_kdtree=knn_py_sklearn_neighbours  # sklearn.neighbors.NearestNeighbors algorithm="kd_tree", leaf_size=30
 )
 
 for (d in ds) for (n in ns) {
