@@ -1,0 +1,30 @@
+# hades 2025-06-25 **testing only**
+#
+# GNU/Linux 6.13.6-1-default #1 SMP PREEMPT_DYNAMIC Mon Mar 10 08:49:24 UTC 2025 (495d82a) x86_64 openSUSE Tumbleweed
+# Intel Core i5-1335U (AVX2-VNNI) (12 threads, 2 performance cores, 8 efficient cores), 12MB cache
+# 32 GB RAM
+# gcc 14.2.1
+# Python 3.11.11 [gcc] OpenBLAS 0.3.29
+# R version 4.4.3 (2025-02-28) Rblas
+#
+# Python modules:
+# numba           0.61.2
+# cython          3.1.2
+# numpy           2.2.6
+# scipy           1.15.3
+# sklearn         1.7.0
+# pykdtree        1.4.1*
+#
+# R packages:
+# RANN            2.6.2*
+# nabor           0.5.0*
+# dbscan          1.2.2*
+# mlpack          4.6.2*
+# reticulate     1.42.0*
+#
+# Other:
+# pico_tree       1.0.0*
+#
+# * - compiled with -O3 -march=native
+#
+"method","user.self","sys.self","elapsed","Δdist","Σdist","Δidx","n","d","k","nthreads","time","host"

@@ -78,6 +78,7 @@ Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int
 /*** R
 
 options(width=200, echo=FALSE)
+host <- Sys.info()[["nodename"]]
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
 ntries <- 3L
@@ -265,10 +266,11 @@ for (d in ds) for (n in ns) {
                 k=k,
                 nthreads=nthreads,
                 time=as.integer(Sys.time()),
-                host=Sys.info()[["nodename"]]
+                host=host
             ), NULL))
 
-            write.table(data, "perf_knn_202506.csv", row.names=FALSE, col.names=FALSE, append=TRUE, sep=",", dec=".")
+            write.table(data, sprintf("perf_knn_202506-%s.csv", host),
+                row.names=FALSE, col.names=FALSE, append=TRUE, sep=",", dec=".")
             print(data)
         }
     }
