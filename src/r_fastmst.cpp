@@ -271,7 +271,7 @@ using namespace Rcpp;
 //'     will include the query points themselves amongst their own neighbours
 //' @param algorithm
 //'     K-d trees can only be used for d between 2 and 20 only;
-//'     \code{"auto"} selects \code{"kd_tree"} for low-dimensional spaces only
+//'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 //' @param max_leaf_size maximal number of points in the K-d tree leaves;
 //'        smaller leaves use more memory, yet are not necessarily faster
 //' @param squared whether to return the squared Euclidean distance
@@ -331,7 +331,7 @@ List knn_euclid(
     if (k < 1) stop("`k` must be >= 1");
 
     if (algorithm == "auto") {
-        if (2 <= d && d <= 10)
+        if (2 <= d && d <= 20)
             algorithm = "kd_tree";
         else
             algorithm = "brute";

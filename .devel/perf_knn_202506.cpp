@@ -84,8 +84,9 @@ nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 ntries <- 3L
 ns <- as.integer(c(2**(17:18)))  # from 2**13
 ds <- as.integer(c(2:10))   # 2:10
-ks <- as.integer(c(1, 10))
+ks <- as.integer(c(1,10))
 
+slow_methods_max_n <- 300000
 
 pkgs <- c("genieclust", "RANN", "nabor", "dbscan", "mlpack", "reticulate")
 for (pkg in pkgs)
@@ -111,7 +112,7 @@ py_sklearn    <- import("sklearn", convert=FALSE)
 
 
 knn_genieclust_brute <- function(X, k) {
-    if (nrow(X) > 300000) return(NULL)
+    if (nrow(X) > slow_methods_max_n) return(NULL)
     res <- genieclust::knn_euclid(X, k, algorithm="brute")
     `names<-`(res, c("index", "dist"))
 }
@@ -140,6 +141,7 @@ knn_py_genieclust_fastmst <- function(X, k) {
 }
 
 knn_py_sklearn_neighbours <- function(X, k) {
+    if (py_to_r(py_numpy$shape(Xpy)[0]) > slow_methods_max_n) return(NULL)
     k <- as.integer(k)
     res <- py_sklearn$neighbors$NearestNeighbors(n_neighbors=k, n_jobs=nthreads, algorithm="kd_tree")$fit(X)$kneighbors()
     res <- py_to_r(res)[c(2, 1)]
@@ -157,6 +159,7 @@ knn_mlpack_kd_singletree <- function(X, k) {
 }
 
 knn_mlpack_kd_dualtree <- function(X, k) {
+    if (nrow(X) > slow_methods_max_n) return(NULL)
     k <- as.integer(k)
     res <- mlpack::knn(k=k, epsilon=0, reference=X, algorithm='dual_tree')[c(2,1)]
     res[[1]] <- 1+res[[1]]#[,-1,drop=FALSE]
@@ -166,6 +169,7 @@ knn_mlpack_kd_dualtree <- function(X, k) {
 
 
 knn_rann_kd <- function(X, k) {
+    if (nrow(X) > slow_methods_max_n) return(NULL)
     k <- as.integer(k+1)
     res <- RANN::nn2(X, k=k, treetype = "kd")
     res[[1]] <- res[[1]][,-1,drop=FALSE]
@@ -174,6 +178,7 @@ knn_rann_kd <- function(X, k) {
 }
 
 knn_rann_bd <- function(X, k) {
+    if (nrow(X) > slow_methods_max_n) return(NULL)
     k <- as.integer(k+1)
     res <- RANN::nn2(X, k=k, treetype = "bd")
     res[[1]] <- res[[1]][,-1,drop=FALSE]
@@ -182,6 +187,7 @@ knn_rann_bd <- function(X, k) {
 }
 
 knn_dbscan <- function(X, k) {
+    if (nrow(X) > slow_methods_max_n) return(NULL)
     k <- as.integer(k)
     res <- dbscan::kNN(X, k, query = NULL, approx=0)
     `names<-`(res[c("id", "dist")], c("index", "dist"))
@@ -205,7 +211,7 @@ knn_Rnanoflann <- function(X, k) {
 
 funs_knn <- list(
     r_genieclust_brute=knn_genieclust_brute,
-    r_genieclust_kdtree=knn_genieclust_kdtree,
+    r_genieclust_kdtree=function(X, k) knn_genieclust_kdtree(X, k),
     # r_Rnanoflann=knn_Rnanoflann, # something's wrong: extremely slow...
     pico_tree=knn_pico_tree  # K-d tree, max_leaf_size=12
 )

@@ -171,7 +171,7 @@ cpdef tuple knn_euclid(
         neighbours
     algorithm : ``{"auto", "kd_tree", "brute"}``, default="auto"
         K-d trees can only be used for d between 2 and 20 only.
-        ``"auto"`` selects ``"kd_tree"`` for low-dimensional spaces only
+        ``"auto"`` selects ``"kd_tree"`` in low-dimensional spaces
     max_leaf_size : int, default 32
         maximal number of points in the K-d tree leaves;
         smaller leaves use more memory, yet are not necessarily faster
@@ -202,7 +202,7 @@ cpdef tuple knn_euclid(
     if k < 1: raise ValueError("k must be >= 1")
 
     if algorithm == "auto":
-        if 2 <= d <= 10:
+        if 2 <= d <= 20:
             algorithm = "kd_tree"
         else:
             algorithm = "brute"
@@ -266,10 +266,10 @@ cpdef tuple knn_euclid(
 cpdef tuple mst_euclid(
     const floatT[:,:] X,
     Py_ssize_t M=1,
-    bint use_kdtree=True,
+    bint use_kdtree=True,  # TODO: algorithm  auto brute, kd_tree_single kd_tree_dual
     int max_leaf_size=16,
-    int first_pass_max_brute_size=0,
-    bint use_dtb=False,
+    int first_pass_max_brute_size=0,  # TODO: drop?
+    bint use_dtb=False,  # TODO: drop
     bint verbose=False
 ):
     """
@@ -343,6 +343,10 @@ cpdef tuple mst_euclid(
             if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
         n data points in a feature space of dimensionality d
         or pairwise distances between n points
+    ...
+    algorithm : ``{"auto", "kd_tree", "brute"}``, default="auto"
+        K-d trees can only be used for d between 2 and 20 only.
+        ``"auto"`` selects ``"kd_tree"`` in low-dimensional spaces
     ...
     verbose: bool
         whether to print diagnostic messages

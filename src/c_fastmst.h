@@ -1,6 +1,38 @@
 /*  Minimum spanning tree and k-nearest neighbour algorithms
  *  (the "new">=2025 interface, quite optimised, Euclidean distance only)
  *
+ *
+ *  [1] V. Jarník, O jistém problému minimálním,
+ *  Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+ *
+ *  [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
+ *  Parallel Comput. 21 (1995) 1313–1325.
+ *
+ *  [3] R. Prim, Shortest connection networks and some generalizations,
+ *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
+ *
+ *  [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
+ *  V Brně III 3, 1926, 37–58.
+ *
+ *  [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
+ *  tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
+ *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603--612.
+ *
+ *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
+ *  searching, Communications of the ACM 18(9), 509–517, 1975,
+ *  DOI:10.1145/361002.361007.
+ *
+ *  [7] S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+ *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
+ *
+ *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *
+ *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
+ *  on hierarchical density estimates, Lecture Notes in Computer Science 7819
+ *  (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *
+ *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -238,10 +270,9 @@ void Cknn2_euclid_brute(
  *  a(*) Euclidean minimum spanning tree (MST) or
  *  one that corresponds to an M-mutual reachability distance.
  *
- *  Time complexity: O(n^2).
- *  It is assumed that M is rather small (say, M<=20).
- *  If M>1, all pairwise the distances are computed twice (first for
- *  the neighbours, then to determine the tree).
+ *  Time complexity: O(n^2). It is assumed that M is rather small
+ *  (say, M<=20). If M>1, all pairwise the distances are computed twice
+ *  (first for the neighbours/core distance, then to determine the tree).
  *
  *  (*) Note that there might be multiple minimum trees spanning a given graph.
  *
@@ -456,6 +487,19 @@ void _knn_sqeuclid_kdtree(
  *
  * Fast for small d, small k, but large n
  *
+ *
+ *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
+ *  searching, Communications of the ACM 18(9), 509–517, 1975,
+ *  DOI:10.1145/361002.361007.
+ *
+ *  [7] S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+ *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
+ *
+ *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *
+ *
+ *
  * @param X [destroyable] data: a C-contiguous data matrix [destroyable]
  * @param n number of rows in X
  * @param Y query points: a C-contiguous data matrix [destroyable]
@@ -535,6 +579,8 @@ void Cknn2_euclid_kdtree(
  *
  * It is assumed that each point is not its own nearest neighbour.
  *
+ * For more details, see the man page of Cknn2_euclid_kdtree.
+ *
  * @param X [destroyable] a C-contiguous data matrix [destroyable]
  * @param n number of rows in X
  * @param d number of columns in X
@@ -605,13 +651,29 @@ void _mst_euclid_kdtree(
  *
  *  (*) Note that there might be multiple minimum trees spanning a given graph.
  *
+ *  TODO ....
  *
  *  References:
  *  ----------
  *
- *  TODO ......................
+ *  [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
+ *  V Brně III 3, 1926, 37–58.
  *
- *  R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
+ *  [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
+ *  tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
+ *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603--612.
+ *
+ *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
+ *  searching, Communications of the ACM 18(9), 509–517, 1975,
+ *  DOI:10.1145/361002.361007.
+ *
+ *  [7] S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+ *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
+ *
+ *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *
+ *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
  *  on hierarchical density estimates, Lecture Notes in Computer Science 7819
  *  (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
  *
