@@ -373,9 +373,9 @@ cpdef tuple mst_euclid(
         n data points in a feature space of dimensionality d
         or pairwise distances between n points
     ...
-    algorithm : ``{"auto", "kd_tree", "brute"}``, default="auto"
+    algorithm : ``{"auto", "kd_tree_single", "kd_tree_dual", "brute"}``, default="auto"
         K-d trees can only be used for d between 2 and 20 only.
-        ``"auto"`` selects ``"kd_tree"`` in low-dimensional spaces
+        ``"auto"`` selects ``"kd_tree_s.."`` in low-dimensional spaces
     ...
     verbose: bool
         whether to print diagnostic messages

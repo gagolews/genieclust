@@ -28,6 +28,9 @@
 #include "../src/c_fastmst.h"
 #include "perf_knn_202506-pico_tree.h"
 
+//' [[Rcpp::export]]
+void test() { }
+
 
 /*** R
 
