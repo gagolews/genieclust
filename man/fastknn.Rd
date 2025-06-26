@@ -24,7 +24,7 @@ note that setting \code{Y=X}, contrary to \code{NULL},
 will include the query points themselves amongst their own neighbours}
 
 \item{algorithm}{K-d trees can only be used for d between 2 and 20 only;
-\code{"auto"} selects \code{"kd_tree"} for low-dimensional spaces only}
+\code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces}
 
 \item{max_leaf_size}{maximal number of points in the K-d tree leaves;
 smaller leaves use more memory, yet are not necessarily faster}
@@ -62,13 +62,14 @@ Our implementation of K-d trees (Bentley, 1975) has been quite optimised;
 amongst others, it has good locality of reference, features the sliding
 midpoint (midrange) rule suggested by Maneewongvatana and Mound (1999),
 and a node pruning strategy inspired by the discussion
-by Sample et al. (2001).  However, it is well-known that K-d trees
+by Sample et al. (2001).  Still, it is well-known that K-d trees
 perform well only in spaces of low intrinsic dimensionality.  Thus,
 due to the so-called curse of dimensionality, for high \code{d},
 the brute-force algorithm is recommended.
 
 The number of threads used is controlled via the \code{OMP_NUM_THREADS}
-environment variable. For best speed, consider building the package
+environment variable or via the \code{\link{omp_set_num_threads}} function.
+For best speed, consider building the package
 from sources using, e.g., \code{-O3 -march=native} compiler flags.
 }
 \examples{

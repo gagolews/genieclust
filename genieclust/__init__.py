@@ -34,10 +34,11 @@ from . import fastmst
 from . import oldmst  # TODO: deprecate
 from .genie import Genie, GIc
 
-import os
+
 # TODO: Why the OMP_NUM_THREADS envvar is not honoured automatically?
-omp_max_treads_original = internal.omp_get_max_threads()
-omp_num_threads_envvar = int(os.getenv("OMP_NUM_THREADS", -1))
-if omp_num_threads_envvar > 0:
-    internal.omp_set_num_threads(omp_num_threads_envvar)
+import os
+_omp_max_threads_original = fastmst.omp_get_max_threads()
+_omp_num_threads_envvar = int(os.getenv("OMP_NUM_THREADS", -1))
+if _omp_num_threads_envvar > 0:
+    fastmst.omp_set_num_threads(_omp_num_threads_envvar)
 

@@ -378,6 +378,38 @@ wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 
+#' @title
+#' Get or Set the Number of Threads
+#'
+#' @description
+#' These functions get or set the maximal number of OpenMP threads that
+#' can be used by \code{\link{knn_euclid}} and \code{\link{mst_euclid}},
+#' amongst others.
+#'
+#' @param n_threads maximum number of threads to use;
+#'
+#' @return
+#' \code{omp_get_max_threads} returns the maximal number
+#' of threads that will be used during the next call to a parallelised
+#' function, not the maximal number of threads possibly available.
+#' It there is no built-in support for OpenMP, 1 is always returned.
+#'
+#' For \code{omp_set_num_threads}, the previous value of \code{max_threads}
+#' is output.
+#'
+#'
+#' @rdname omp
+#' @export
+omp_set_num_threads <- function(n_threads) {
+    .Call(`_genieclust_Romp_set_num_threads`, n_threads)
+}
+
+#' @rdname omp
+#' @export
+omp_get_max_threads <- function() {
+    .Call(`_genieclust_Romp_get_max_threads`)
+}
+
 #' @title Quite Fast Euclidean Nearest Neighbours
 #'
 #' @description
@@ -397,13 +429,14 @@ wcnn_index <- function(X, y, M = 25L) {
 #' amongst others, it has good locality of reference, features the sliding
 #' midpoint (midrange) rule suggested by Maneewongvatana and Mound (1999),
 #' and a node pruning strategy inspired by the discussion
-#' by Sample et al. (2001).  However, it is well-known that K-d trees
+#' by Sample et al. (2001).  Still, it is well-known that K-d trees
 #' perform well only in spaces of low intrinsic dimensionality.  Thus,
 #' due to the so-called curse of dimensionality, for high \code{d},
 #' the brute-force algorithm is recommended.
 #'
 #' The number of threads used is controlled via the \code{OMP_NUM_THREADS}
-#' environment variable. For best speed, consider building the package
+#' environment variable or via the \code{\link{omp_set_num_threads}} function.
+#' For best speed, consider building the package
 #' from sources using, e.g., \code{-O3 -march=native} compiler flags.
 #'
 #' @references
@@ -426,7 +459,7 @@ wcnn_index <- function(X, y, M = 25L) {
 #'     will include the query points themselves amongst their own neighbours
 #' @param algorithm
 #'     K-d trees can only be used for d between 2 and 20 only;
-#'     \code{"auto"} selects \code{"kd_tree"} for low-dimensional spaces only
+#'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
 #'        smaller leaves use more memory, yet are not necessarily faster
 #' @param squared whether to return the squared Euclidean distance

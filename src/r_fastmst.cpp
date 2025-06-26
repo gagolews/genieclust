@@ -29,6 +29,45 @@
 using namespace Rcpp;
 
 
+//' @title
+//' Get or Set the Number of Threads
+//'
+//' @description
+//' These functions get or set the maximal number of OpenMP threads that
+//' can be used by \code{\link{knn_euclid}} and \code{\link{mst_euclid}},
+//' amongst others.
+//'
+//' @param n_threads maximum number of threads to use;
+//'
+//' @return
+//' \code{omp_get_max_threads} returns the maximal number
+//' of threads that will be used during the next call to a parallelised
+//' function, not the maximal number of threads possibly available.
+//' It there is no built-in support for OpenMP, 1 is always returned.
+//'
+//' For \code{omp_set_num_threads}, the previous value of \code{max_threads}
+//' is output.
+//'
+//'
+//' @rdname omp
+//' @export
+// [[Rcpp::export("omp_set_num_threads")]]
+int Romp_set_num_threads(int n_threads)
+{
+    return Comp_set_num_threads(n_threads);
+}
+
+
+
+//' @rdname omp
+//' @export
+// [[Rcpp::export("omp_get_max_threads")]]
+int Romp_get_max_threads()
+{
+    return Comp_get_max_threads();
+}
+
+
 
 // template<typename T>
 // NumericMatrix internal_compute_mst(CDistance<T>* D, Py_ssize_t n, Py_ssize_t M, bool verbose)
@@ -242,13 +281,14 @@ using namespace Rcpp;
 //' amongst others, it has good locality of reference, features the sliding
 //' midpoint (midrange) rule suggested by Maneewongvatana and Mound (1999),
 //' and a node pruning strategy inspired by the discussion
-//' by Sample et al. (2001).  However, it is well-known that K-d trees
+//' by Sample et al. (2001).  Still, it is well-known that K-d trees
 //' perform well only in spaces of low intrinsic dimensionality.  Thus,
 //' due to the so-called curse of dimensionality, for high \code{d},
 //' the brute-force algorithm is recommended.
 //'
 //' The number of threads used is controlled via the \code{OMP_NUM_THREADS}
-//' environment variable. For best speed, consider building the package
+//' environment variable or via the \code{\link{omp_set_num_threads}} function.
+//' For best speed, consider building the package
 //' from sources using, e.g., \code{-O3 -march=native} compiler flags.
 //'
 //' @references
@@ -261,7 +301,7 @@ using namespace Rcpp;
 //'
 //' N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
 //' strategies in K-d Trees, \emph{5th WSES/IEEE Conf. on Circuits, Systems,
-//' Communications & Computers} (CSCC 2001), 2001.
+//' Communications & Computers} (CSCC'01), 2001.
 //'
 //'
 //' @param X the "database"; a matrix of shape (n,d)
@@ -365,9 +405,15 @@ List knn_euclid(
         nn_ind.resize(n*k);
 
         if (use_kdtree)
-            Cknn1_euclid_kdtree(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size, squared, verbose);
+            Cknn1_euclid_kdtree(
+                XC.data(), n, d, k, nn_dist.data(),
+                nn_ind.data(), max_leaf_size, squared, verbose
+            );
         else
-            Cknn1_euclid_brute(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), squared, verbose);
+            Cknn1_euclid_brute(
+                XC.data(), n, d, k, nn_dist.data(),
+                nn_ind.data(), squared, verbose
+            );
     }
     else {
         if (k >  n) stop("too many neighbours requested");
@@ -389,9 +435,15 @@ List knn_euclid(
                 YC[j++] = (FLOAT)_Y(i, u);  // row-major
 
         if (use_kdtree)
-            Cknn2_euclid_kdtree(XC.data(), n, YC.data(), m, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size, squared, verbose);
+            Cknn2_euclid_kdtree(
+                XC.data(), n, YC.data(), m, d, k, nn_dist.data(), nn_ind.data(),
+                max_leaf_size, squared, verbose
+            );
         else
-            Cknn2_euclid_brute(XC.data(), n, YC.data(), m, d, k, nn_dist.data(), nn_ind.data(), squared, verbose);
+            Cknn2_euclid_brute(
+                XC.data(), n, YC.data(), m, d, k, nn_dist.data(), nn_ind.data(),
+                squared, verbose
+            );
     }
 
     Rcpp::IntegerMatrix out_ind(m, k);

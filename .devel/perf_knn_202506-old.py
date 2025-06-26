@@ -17,7 +17,9 @@ numba.config.THREADING_LAYER = 'omp'
 
 
 
+# NOTE: see perf_knn_202506.cpp (!)
 
+# TODO: add pykdtree
 
 
 """

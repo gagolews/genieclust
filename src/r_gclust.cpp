@@ -23,8 +23,6 @@
 using namespace Rcpp;
 
 
-
-
 /* This function was originally part of our `genie` package for R */
 void internal_generate_merge(Py_ssize_t n, NumericMatrix links, NumericMatrix merge)
 {

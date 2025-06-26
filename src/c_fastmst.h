@@ -1,22 +1,23 @@
 /*  Minimum spanning tree and k-nearest neighbour algorithms
- *  (the "new">=2025 interface, quite optimised, Euclidean distance only)
+ *  (the "new">=2025 interface, quite fast, currently Euclidean distance
+ *  only)
  *
  *
  *  [1] V. Jarník, O jistém problému minimálním,
- *  Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+ *  Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
  *
  *  [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21 (1995) 1313–1325.
+ *  Parallel Comput. 21, 1995, 1313–1325.
  *
  *  [3] R. Prim, Shortest connection networks and some generalizations,
- *  Bell Syst. Tech. J. 36 (1957) 1389–1401.
+ *  Bell Syst. Tech. J. 36, 1957, 1389–1401.
  *
  *  [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
  *  V Brně III 3, 1926, 37–58.
  *
  *  [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
  *  tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
- *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603--612.
+ *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603–612.
  *
  *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
  *  searching, Communications of the ACM 18(9), 509–517, 1975,
@@ -26,11 +27,12 @@
  *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
  *
  *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
- *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
+ *  Communications & Computers (CSCC'01), 2001.
  *
  *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
- *  on hierarchical density estimates, Lecture Notes in Computer Science 7819
- *  (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
+ *  2013, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
  *
  *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -280,18 +282,18 @@ void Cknn2_euclid_brute(
  *  References:
  *  ----------
  *
- *  V. Jarnik, O jistem problemu minimalnim,
- *  Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
+ *  [1] V. Jarník, O jistém problému minimálním,
+ *  Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
  *
- *  C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21 (1995) 1313-1325.
+ *  [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
+ *  Parallel Comput. 21, 1995, 1313–1325.
  *
- *  R. Prim, Shortest connection networks and some generalisations,
- *  Bell Syst. Tech. J. 36 (1957) 1389-1401.
+ *  [3] R. Prim, Shortest connection networks and some generalizations,
+ *  Bell Syst. Tech. J. 36, 1957, 1389–1401.
  *
- *  R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
- *  on hierarchical density estimates, Lecture Notes in Computer Science 7819
- *  (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
+ *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
+ *  2013, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
  *
  *
  * @param X [destroyable] a C-contiguous data matrix, shape n*d
@@ -496,7 +498,8 @@ void _knn_sqeuclid_kdtree(
  *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
  *
  *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
- *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
+ *  Communications & Computers (CSCC'01), 2001.
  *
  *
  *
@@ -661,7 +664,7 @@ void _mst_euclid_kdtree(
  *
  *  [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
  *  tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
- *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603--612.
+ *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603–612.
  *
  *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
  *  searching, Communications of the ACM 18(9), 509–517, 1975,
@@ -671,11 +674,12 @@ void _mst_euclid_kdtree(
  *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
  *
  *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
- *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+ *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
+ *  Communications & Computers (CSCC'01), 2001.
  *
  *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
- *  on hierarchical density estimates, Lecture Notes in Computer Science 7819
- *  (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
+ *  2021, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
  *
  *
  * @param X [destroyable] a C-contiguous data matrix, shape n*d

@@ -65,6 +65,31 @@ from . cimport c_fastmst
 
 ################################################################################
 
+from . cimport c_omp
+
+# cdef void _openmp_set_num_threads():
+#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
+
+cpdef int omp_set_num_threads(int n_threads):
+    """
+    genieclust.fastmst.omp_set_num_threads(n_threads)
+    """
+    return c_omp.Comp_set_num_threads(n_threads)
+
+
+cpdef int omp_get_max_threads():
+    """
+    genieclust.fastmst.omp_get_max_threads()
+
+    The function's name is confusing: it returns the maximal number
+    of threads that will be used during the next call to a parallelised
+    function, not the maximal number of threads possibly available.
+    """
+    return c_omp.Comp_get_max_threads()
+
+
+################################################################################
+
 
 
 cpdef tuple tree_order(const floatT[:] tree_dist, const Py_ssize_t[:,:] tree_ind):
@@ -133,13 +158,14 @@ cpdef tuple knn_euclid(
 
     Our implementation of K-d trees [1]_ has been quite optimised; amongst
     others, it has good locality of reference, features the sliding midpoint
-    (midrange) rule suggested in [2]_, and a node pruning strategy inspired by the discussion in [3]_.  However, it is well-known that K-d trees
+    (midrange) rule suggested in [2]_, and a node pruning strategy inspired
+    by the discussion in [3]_.  Still, it is well-known that K-d trees
     perform well only in spaces of low intrinsic dimensionality.  Thus,
     due to the so-called curse of dimensionality, for high `d`, the brute-force
     algorithm is recommended.
 
     The number of threads used is controlled via the `OMP_NUM_THREADS``
-    environment variable or via ``genieclust.internal.omp_set_num_threads``
+    environment variable or via ``genieclust.fastmst.omp_set_num_threads``
     at runtime. For best speed, consider building the package from sources
     using, e.g., ``-O3 -march=native`` compiler flags.
 
@@ -155,7 +181,8 @@ cpdef tuple knn_euclid(
     are fat, 4th CGC Workshop on Computational Geometry, 1999.
 
     [3] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
-    strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+    strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
+    Communications & Computers (CSCC'01), 2001.
 
 
     Parameters
@@ -288,13 +315,14 @@ cpdef tuple mst_euclid(
 
     Our implementation of K-d trees [6]_ has been quite optimised; amongst
     others, it has good locality of reference, features the sliding midpoint
-    (midrange) rule suggested in [7]_, and a node pruning strategy inspired by the discussion in [8]_.  However, it is well-known that K-d trees
+    (midrange) rule suggested in [7]_, and a node pruning strategy inspired
+    by the discussion in [8]_.  Still, it is well-known that K-d trees
     perform well only in spaces of low intrinsic dimensionality.  Thus,
     due to the so-called curse of dimensionality, for high `d`, the brute-force
     algorithm is recommended.
 
     The number of threads used is controlled via the ``OMP_NUM_THREADS``
-    environment variable or via ``genieclust.internal.omp_set_num_threads``
+    environment variable or via ``genieclust.fastmst.omp_set_num_threads``
     at runtime. For best speed, consider building the package from sources
     using, e.g., ``-O3 -march=native`` compiler flags.
 
@@ -305,20 +333,20 @@ cpdef tuple mst_euclid(
     ----------
 
     [1] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+    Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
 
     [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21 (1995) 1313–1325.
+    Parallel Comput. 21, 1995, 1313–1325.
 
     [3] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36 (1957) 1389–1401.
+    Bell Syst. Tech. J. 36, 1957, 1389–1401.
 
     [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
     V Brně III 3, 1926, 37–58.
 
     [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
     tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
-    Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603--612.
+    Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603–612.
 
     [6] J.L. Bentley, Multidimensional binary search trees used for associative
     searching, Communications of the ACM 18(9), 509–517, 1975,
@@ -328,11 +356,12 @@ cpdef tuple mst_euclid(
     are fat, The 4th CGC Workshop on Computational Geometry, 1999.
 
     [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
-    strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems, Communications & Computers (CSCC 2001), 2001.
+    strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
+    Communications & Computers (CSCC'01), 2001.
 
     [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
-    on hierarchical density estimates, Lecture Notes in Computer Science 7819
-    (2013) 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+    on hierarchical density estimates, Lecture Notes in Computer Science 7819,
+    2013, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
 
 
 

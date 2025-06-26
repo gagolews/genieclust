@@ -53,7 +53,6 @@ ctypedef fused floatT:
     double
 
 
-from . cimport c_omp
 from . cimport c_preprocess
 from . cimport c_postprocess
 from . cimport c_disjoint_sets
@@ -63,27 +62,6 @@ from . cimport c_lumbermark
 from . cimport c_argfuns
 
 
-################################################################################
-
-# cdef void _openmp_set_num_threads():
-#     c_omp.Comp_set_num_threads(int(os.getenv("OMP_NUM_THREADS", -1)))
-
-cpdef int omp_set_num_threads(int n_threads):
-    """
-    genieclust.internal.omp_set_num_threads(n_threads)
-    """
-    return c_omp.Comp_set_num_threads(n_threads)
-
-
-cpdef int omp_get_max_threads():
-    """
-    genieclust.internal.omp_get_max_threads()
-
-    The function's name is confusing: it returns the maximal number
-    of threads that will be used during the next call to a parallelised
-    function, not the maximal number of threads possibly available.
-    """
-    return c_omp.Comp_get_max_threads()
 
 ################################################################################
 

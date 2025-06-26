@@ -37,6 +37,9 @@ res["method"] = res_method.astype("str")
 times = res.groupby(["method", "n", "d", "k", "nthreads"])["elapsed"].min().rename("time").reset_index()
 times.head()
 
+print(res.query("nthreads==1").groupby(["n", "d", "k"]).count().to_markdown())
+
+
 # r_vs_py = times.set_index(["method"]).loc[["genieclust_kdtree", "py_genieclust_kdtree"], :].reset_index().set_index(["n", "d", "k", "nthreads", "method"]).unstack()
 # print(((r_vs_py.iloc[:, 0] - r_vs_py.iloc[:, 1])/r_vs_py.iloc[:, 0]).describe())
 
@@ -56,7 +59,7 @@ times.query("n == 1208592 and nthreads == 1 and k == 1").set_index(["method", "d
 plt.clf()
 q, x = [
     ("d == 2 and nthreads == 1 and k == 10 and method != 'r_genieclust_brute'", "n"),
-    ("n == 1208592 and nthreads == 1 and k == 10", "d")
+    ("n == 2**18 and nthreads == 1 and k == 10", "d")
 ][1]
 sns.lineplot(x=x, y="time", hue="method", style="method", data=times.query(q), palette=_colours)
 plt.title(q)

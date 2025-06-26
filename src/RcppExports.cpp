@@ -275,6 +275,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Romp_set_num_threads
+int Romp_set_num_threads(int n_threads);
+RcppExport SEXP _genieclust_Romp_set_num_threads(SEXP n_threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< int >::type n_threads(n_threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(Romp_set_num_threads(n_threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Romp_get_max_threads
+int Romp_get_max_threads();
+RcppExport SEXP _genieclust_Romp_get_max_threads() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(Romp_get_max_threads());
+    return rcpp_result_gen;
+END_RCPP
+}
 // knn_euclid
 List knn_euclid(SEXP X, int k, SEXP Y, Rcpp::String algorithm, int max_leaf_size, bool squared, bool verbose);
 RcppExport SEXP _genieclust_knn_euclid(SEXP XSEXP, SEXP kSEXP, SEXP YSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP squaredSEXP, SEXP verboseSEXP) {
@@ -377,6 +398,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_silhouette_index", (DL_FUNC) &_genieclust_silhouette_index, 2},
     {"_genieclust_silhouette_w_index", (DL_FUNC) &_genieclust_silhouette_w_index, 2},
     {"_genieclust_wcnn_index", (DL_FUNC) &_genieclust_wcnn_index, 3},
+    {"_genieclust_Romp_set_num_threads", (DL_FUNC) &_genieclust_Romp_set_num_threads, 1},
+    {"_genieclust_Romp_get_max_threads", (DL_FUNC) &_genieclust_Romp_get_max_threads, 0},
     {"_genieclust_knn_euclid", (DL_FUNC) &_genieclust_knn_euclid, 7},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
     {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},

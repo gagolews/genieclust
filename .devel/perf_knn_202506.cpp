@@ -17,9 +17,9 @@
 
 
 
-// CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
 // OMP_NUM_THREADS=10 CXX_DEFS="-std=c++17 -O3 -march=native" Rscript -e 'Rcpp::sourceCpp("~/Python/genieclust/.devel/perf_knn_202506.cpp", echo=FALSE)'
 
+// CXX_DEFS="-O3 -march=native" R CMD INSTALL ~/Python/genieclust --preclean
 // CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
 // CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 
@@ -27,52 +27,6 @@
 #define GENIECLUST_R
 #include "../src/c_fastmst.h"
 #include "perf_knn_202506-pico_tree.h"
-
-/*
-// [[Rcpp::export]]
-Rcpp::RObject test_knn(Rcpp::NumericMatrix X, int k=1, bool use_kdtree=true, int max_leaf_size=32)
-{
-    using FLOAT = double;  // float is not faster..
-
-    Py_ssize_t n = (Py_ssize_t)X.nrow();
-    Py_ssize_t d = (Py_ssize_t)X.ncol();
-    if (n < 1 || d < 1) return R_NilValue;
-    if (k < 1) return R_NilValue;
-
-    std::vector<FLOAT> XC(n*d);
-    Py_ssize_t j = 0;
-    for (Py_ssize_t i=0; i<n; ++i)
-        for (Py_ssize_t u=0; u<d; ++u)
-            XC[j++] = (FLOAT)X(i, u);  // row-major
-
-    std::vector<FLOAT>  nn_dist(n*k);
-    std::vector<Py_ssize_t> nn_ind(n*k);
-
-    if (use_kdtree && d >= 2 && d <= 20) {
-        Cknn1_euclid_kdtree<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data(), max_leaf_size);
-    }
-    else {
-        Cknn1_euclid_brute<FLOAT>(XC.data(), n, d, k, nn_dist.data(), nn_ind.data());
-    }
-
-    Rcpp::IntegerMatrix out_ind(n, k);
-    Rcpp::NumericMatrix out_dist(n, k);
-    Py_ssize_t u = 0;
-    for (Py_ssize_t i=0; i<n; ++i) {
-        for (Py_ssize_t j=0; j<k; ++j) {
-            out_ind(i, j)  = nn_ind[u]+1.0;  // R-based indexing
-            out_dist(i, j) = nn_dist[u];
-            u++;
-        }
-    }
-
-    return Rcpp::List::create(
-        Rcpp::Named("nn.index")=out_ind,
-        Rcpp::Named("nn.dist")=out_dist
-    );
-}
-*/
-
 
 
 /*** R
@@ -82,11 +36,13 @@ host <- Sys.info()[["nodename"]]
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
 ntries <- 3L
-ns <- as.integer(c(2**(17:18)))  # from 2**13
-ds <- as.integer(c(2:10))   # 2:10
-ks <- as.integer(c(1,10))
+ns <- as.integer(c(2**(18)))  # from 2**13
+ds <- as.integer(c(10))   # 2:10
+ks <- as.integer(c(10))
 
-slow_methods_max_n <- 300000
+brute_max_n <- 300000
+slow_methods_max_n <- 1300000
+
 
 pkgs <- c("genieclust", "RANN", "nabor", "dbscan", "mlpack", "reticulate")
 for (pkg in pkgs)
@@ -112,7 +68,7 @@ py_sklearn    <- import("sklearn", convert=FALSE)
 
 
 knn_genieclust_brute <- function(X, k) {
-    if (nrow(X) > slow_methods_max_n) return(NULL)
+    if (nrow(X) > brute_max_n) return(NULL)
     res <- genieclust::knn_euclid(X, k, algorithm="brute")
     `names<-`(res, c("index", "dist"))
 }
@@ -232,7 +188,7 @@ funs_knn_py <- list(
 )
 
 for (d in ds) for (n in ns) {
-    if (n == 1208592 && d == 0) {
+    if (n == 1208592 && d == -3) {
         X <- as.matrix(read.table("~/Python/genieclust/.devel/benchmark_data/thermogauss_scan001.3d.gz"))
     } else {
         set.seed(123)

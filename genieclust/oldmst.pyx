@@ -180,7 +180,7 @@ cpdef tuple mst_from_complete(
 
     The number of threads used is controlled via the
     OMP_NUM_THREADS environment variable or via
-    `genieclust.internal.omp_set_num_threads` at runtime.
+    `genieclust.fastmst.omp_set_num_threads` at runtime.
 
     (*) Note that there might be multiple minimum trees spanning a given graph.
 
@@ -266,7 +266,7 @@ cpdef tuple mst_from_distance(
 
     The number of threads used is controlled via the
     OMP_NUM_THREADS environment variable or via
-    `genieclust.internal.omp_set_num_threads` at runtime.
+    `genieclust.fastmst.omp_set_num_threads` at runtime.
 
 
     References
@@ -372,7 +372,7 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
 
     The number of threads used is controlled via the
     OMP_NUM_THREADS environment variable or via
-    `genieclust.internal.omp_set_num_threads` at runtime.
+    `genieclust.fastmst.omp_set_num_threads` at runtime.
 
 
     Parameters
