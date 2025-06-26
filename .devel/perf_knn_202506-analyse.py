@@ -37,7 +37,7 @@ res["method"] = res_method.astype("str")
 times = res.groupby(["method", "n", "d", "k", "nthreads"])["elapsed"].min().rename("time").reset_index()
 times.head()
 
-print(res.query("nthreads==1").groupby(["n", "d", "k"]).count().to_markdown())
+print(res.groupby(["n", "d", "k", "nthreads"]).count().to_markdown())
 
 
 # r_vs_py = times.set_index(["method"]).loc[["genieclust_kdtree", "py_genieclust_kdtree"], :].reset_index().set_index(["n", "d", "k", "nthreads", "method"]).unstack()

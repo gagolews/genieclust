@@ -39,9 +39,9 @@ host <- Sys.info()[["nodename"]]
 nthreads <- as.integer(Sys.getenv("OMP_NUM_THREADS", 1))
 
 ntries <- 3L
-ns <- as.integer(c(2**(18)))  # from 2**13
-ds <- as.integer(c(10))   # 2:10
-ks <- as.integer(c(10))
+ns <- as.integer(c(1208592))  # from 2**13
+ds <- as.integer(c(-3, 2, 3, 5, 10))   # 2:10
+ks <- as.integer(c(1,10))
 
 brute_max_n <- 300000
 slow_methods_max_n <- 1300000
