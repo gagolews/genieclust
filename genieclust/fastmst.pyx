@@ -376,6 +376,8 @@ cpdef tuple mst_euclid(
     algorithm : ``{"auto", "kd_tree_single", "kd_tree_dual", "brute"}``, default="auto"
         K-d trees can only be used for d between 2 and 20 only.
         ``"auto"`` selects ``"kd_tree_s.."`` in low-dimensional spaces
+    dual: d <=3 nthreads=1 M<=2 8_32
+    otherwise 32_32
     ...
     verbose: bool
         whether to print diagnostic messages
