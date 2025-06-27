@@ -44,7 +44,7 @@ print(res.groupby(["n", "d", "k", "nthreads"]).count().to_markdown())
 # print(((r_vs_py.iloc[:, 0] - r_vs_py.iloc[:, 1])/r_vs_py.iloc[:, 0]).describe())
 
 
-times.query("n == 1208592 and nthreads == 1 and k == 1").set_index(["method", "d"]).time.unstack().sort_values(0)
+times.query("n == 1208592 and nthreads == 1 and k == 10").set_index(["method", "d"]).time.unstack()
 
 
 # plt.clf()

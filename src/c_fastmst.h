@@ -322,19 +322,17 @@ void Cmst_euclid_brute(
 
     std::vector<FLOAT> nn_dist;
     std::vector<Py_ssize_t> nn_ind;
-    if (M > 1) {
-        // M == 2 needs d_core too
+    if (M > 2) {
         GENIECLUST_ASSERT(d_core);
         nn_dist.resize(n*(M-1));
         nn_ind.resize(n*(M-1));
         Cknn1_euclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(),
                            /*squared=*/true, verbose);
         for (Py_ssize_t i=0; i<n; ++i) d_core[i] = nn_dist[i*(M-1)+(M-2)];
-    }
-    else
-        GENIECLUST_ASSERT(!d_core);
-    // TODO: actually, for M==2, we could compute d_core (1-nn) distance on the fly...
 
+        // for M==2, we can fetch d_core from MST, as nearest neighbours
+        // are connected by an edge (see below)
+    }
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... %3d%%", 0);
 
@@ -390,7 +388,9 @@ void Cmst_euclid_brute(
                     // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                     FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
                     if (dd <= d_core_max)
-                        dd = d_core_max+dd/DCORE_DIST_ADJ;
+                        dd = d_core_max + dd/DCORE_DIST_ADJ;
+                    else
+                        dd = dd + dd/DCORE_DIST_ADJ;
 
                     if (dd < dist_nn[j]) {
                         dist_nn[j] = dd;
@@ -455,6 +455,20 @@ void Cmst_euclid_brute(
     if (M > 2) {
         for (Py_ssize_t i=0; i<n; ++i)
             d_core[i] = sqrt(nn_dist[i*(M-1)+(M-2)]);
+    }
+    else if (M == 2) {
+        // for M==2 we just need the nearest neighbours, and the MST connects
+        // them with each other
+        for (Py_ssize_t i=0; i<n; ++i)
+            d_core[i] = INFINITY;
+
+        for (Py_ssize_t i=0; i<n-1; ++i) {
+            if (d_core[mst_ind[2*i+0]] > mst_dist[i])
+                d_core[mst_ind[2*i+0]] = mst_dist[i];
+            if (d_core[mst_ind[2*i+1]] > mst_dist[i])
+                d_core[mst_ind[2*i+1]] = mst_dist[i];
+        }
+
     }
 
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
@@ -650,7 +664,7 @@ void _mst_euclid_kdtree(
 /*! A Boruvka-like algorithm based on K-d trees for determining
  *  a(*) Euclidean minimum spanning tree (MST) or
  *  one that corresponds to an M-mutual reachability distance.
- *  Fast in low-dimensional spaces.
+ *  Quite fast in low-dimensional spaces.
  *
  *  (*) Note that there might be multiple minimum trees spanning a given graph.
  *
@@ -684,26 +698,26 @@ void _mst_euclid_kdtree(
  *
  * @param X [destroyable] a C-contiguous data matrix, shape n*d
  * @param n number of rows
- * @param d number of columns
+ * @param d number of columns, 2<=d<=20
  * @param M the level of the "core" distance if M > 1
- * @param mst_dist [out] vector of length n-1, gives weights of the
+ * @param mst_dist [out] a vector of length n-1, gives weights of the
  *        resulting MST edges in nondecreasing order
- * @param mst_ind [out] vector of length 2*(n-1), representing
+ * @param mst_ind [out] a vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
  * @param d_core [out] NULL for M==1; distances to the points'
  *        (M-1)-th neighbours
- * @param max_leaf_size TODO ...
- * @param first_pass_max_brute_size TODO ...
- * @param use_dtb TODO...
+ * @param max_leaf_size maximal number of points in the K-d tree's leaves
+ * @param first_pass_max_brute_size minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm
+ * @param use_dtb whether a dual or a single-tree Boruvka algorithm should be used
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
 void Cmst_euclid_kdtree(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core=nullptr,
-    Py_ssize_t max_leaf_size=16,
-    Py_ssize_t first_pass_max_brute_size=16,
+    Py_ssize_t max_leaf_size=32,
+    Py_ssize_t first_pass_max_brute_size=32,
     bool use_dtb=false,
     bool verbose=false
 ) {
@@ -746,6 +760,8 @@ void Cmst_euclid_kdtree(
     else if (d == 19) _mst_euclid_kdtree<FLOAT, 19>(ARGS_mst_euclid_kdtree);
     else if (d == 20) _mst_euclid_kdtree<FLOAT, 20>(ARGS_mst_euclid_kdtree);
     else {
+        // TODO: does it work for d==1?
+        // although then a trivial, faster algorithm exists...
         throw std::runtime_error("d should be between 2 and 20");
     }
     GENIECLUST_PROFILER_STOP("Cmst_euclid_kdtree");

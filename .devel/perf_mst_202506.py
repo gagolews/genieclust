@@ -3,17 +3,20 @@ import numba
 #numba.config.THREADING_LAYER = 'omp'
 
 
-n_jobs = 10
+n_jobs = 1
 n_trials = 1
 seed = 123
-n = 2**17
+n = 2**14
 scenarios = [
-    # (n, 2, 1,  "pareto(2)"),
-    # (n, 5, 1,  "pareto(2)"),
-    # (n, 2, 10, "pareto(2)"),
-    # (n, 5, 10, "pareto(2)"),
+    (n, 2, 1,  "pareto(2)"),
+    (n, 2, 2,  "pareto(2)"),
+    (n, 5, 1,  "pareto(2)"),
+    (n, 2, 10, "pareto(2)"),
+    (n, 5, 10, "pareto(2)"),
     # (n, 2, 1,  "gumbel(2)+pareto(2)"),
     # (n, 5, 1,  "gumbel(2)+pareto(2)"),
+    # (n, 2, 2,  "gumbel(2)+pareto(2)"),
+    # (n, 5, 2,  "gumbel(2)+pareto(2)"),
     # (n, 2, 10, "gumbel(2)+pareto(2)"),
     # (n, 5, 10, "gumbel(2)+pareto(2)"),
     # (n, 2, 1, "norm"),
@@ -41,9 +44,9 @@ if n_jobs > 0:
 # mlpack's source distribution is not available from PyPI
 CPPFLAGS="-O3 -march=native" pip3 install hdbscan --force --no-binary="hdbscan" --verbose
 CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
-CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
 CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
-pip3 install numpy==2.2.6  # for numba
+CPPFLAGS="-O3 -march=native" pip3 install numpy==2.2.6  # for numba
+CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
 
 
 hades @ 2025-06-16
@@ -303,30 +306,41 @@ def mst_mlpack(X, M, leaf_size=1):
 import genieclust
 def mst_genieclust_brute(X, M):
     if X.shape[0] > 100_000: return None
-    res = genieclust.fastmst.mst_euclid(X, M, use_kdtree=False)
+    res = genieclust.fastmst.mst_euclid(X, M, algorithm="brute")
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
 
 
 import genieclust
-def mst_genieclust_kdtree(X, M, max_leaf_size=16, first_pass_max_brute_size=0, use_dtb=False):
+def mst_genieclust_kdtree_single(X, M, max_leaf_size=32, first_pass_max_brute_size=32, use_dtb=False):
     res = genieclust.fastmst.mst_euclid(
-        X, M, use_kdtree=True, max_leaf_size=max_leaf_size,
-        first_pass_max_brute_size=first_pass_max_brute_size,
-        use_dtb=use_dtb
+        X, M,
+        algorithm="kd_tree_single",
+        max_leaf_size=max_leaf_size,
+        first_pass_max_brute_size=first_pass_max_brute_size
+    )
+    tree_w, tree_e = res[:2]
+    return tree_w, tree_e
+
+
+import genieclust
+def mst_genieclust_kdtree_dual(X, M, max_leaf_size=8, first_pass_max_brute_size=32, use_dtb=False):
+    res = genieclust.fastmst.mst_euclid(
+        X, M,
+        algorithm="kd_tree_dual",
+        max_leaf_size=max_leaf_size,
+        first_pass_max_brute_size=first_pass_max_brute_size
     )
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
 
 
 cases = dict(
-    genieclust_single_8_32 = lambda X, M: mst_genieclust_kdtree(X, M, 32, 32),
-    genieclust_single_32_32 = lambda X, M: mst_genieclust_kdtree(X, M, 32, 32),
+    # genieclust_single_8_32  = lambda X, M: mst_genieclust_kdtree_single(X, M, 8, 32),
+    genieclust_single = lambda X, M: mst_genieclust_kdtree_single(X, M),
+    genieclust_dual  = lambda X, M: mst_genieclust_kdtree_dual(X, M),
 
-    genieclust_dual_32_32 = lambda X, M: mst_genieclust_kdtree(X, M, 32, 32, use_dtb=True),
-    genieclust_dual_8_32  = lambda X, M: mst_genieclust_kdtree(X, M,  8, 32, use_dtb=True),
-
-    #genieclust_brute=lambda X, M: mst_genieclust_brute(X, M),
+    genieclust_brute=lambda X, M: mst_genieclust_brute(X, M),
     mlpack_1=lambda X, M: mst_mlpack(X, M, 1),
     fasthdbscan_kdtree=lambda X, M: mst_fasthdbscan_kdtree(X, M),
     #hdbscan_kdtree_40_3=lambda X, M: mst_hdbscan_kdtree(X, M, 40, 3),
@@ -335,17 +349,14 @@ cases = dict(
 
 
 
-import statsmodels
-import scipy.stats
-from statsmodels.distributions.copula.api import GumbelCopula, CopulaDistribution
 import timeit
 
 if n_jobs > 0:
     numba.set_num_threads(n_jobs)
-    genieclust.internal.omp_set_num_threads(n_jobs)
+    genieclust.fastmst.omp_set_num_threads(n_jobs)
 else:
     numba.set_num_threads(genieclust.omp_max_treads_original)
-    genieclust.internal.omp_set_num_threads(genieclust.omp_max_treads_original)
+    genieclust.fastmst.omp_set_num_threads(genieclust.omp_max_treads_original)
 
 results = []
 for n, d, M, s in scenarios:
@@ -355,8 +366,10 @@ for n, d, M, s in scenarios:
     elif s == "unif":
         X = np.random.rand(n, d)
     elif s == "pareto(2)":
+        import scipy.stats
         X = scipy.stats.pareto.rvs(2, size=(n, d), random_state=np.random.mtrand._rand)
     elif s == "gumbel(2)+pareto(2)":
+        from statsmodels.distributions.copula.api import GumbelCopula, CopulaDistribution
         dist = CopulaDistribution(copula=GumbelCopula(theta=2, k_dim=d), marginals=[scipy.stats.pareto(2) for i in range(d)])
         X = dist.rvs(n, random_state=np.random.mtrand._rand)
     elif s == "thermogauss_scan001":

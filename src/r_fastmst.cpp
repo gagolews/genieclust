@@ -313,7 +313,8 @@ int Romp_get_max_threads()
 //'     K-d trees can only be used for d between 2 and 20 only;
 //'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 //' @param max_leaf_size maximal number of points in the K-d tree leaves;
-//'        smaller leaves use more memory, yet are not necessarily faster
+//'        smaller leaves use more memory, yet are not necessarily faster;
+//'        use ``0`` to select the default value, currently set to 32
 //' @param squared whether to return the squared Euclidean distance
 //' @param verbose whether to print diagnostic messages
 //'
@@ -352,7 +353,7 @@ List knn_euclid(
     int k=1,
     SEXP Y=R_NilValue,
     Rcpp::String algorithm="auto",
-    int max_leaf_size=32,
+    int max_leaf_size=0,
     bool squared=false,
     bool verbose=false
 ) {
@@ -379,6 +380,8 @@ List knn_euclid(
 
     if (algorithm == "kd_tree") {
         if (d < 2 || d > 20) stop("kd_tree can only be used for 2 <= d <= 20");
+        if (max_leaf_size == 0) max_leaf_size = 32;  // the current default
+
         if (max_leaf_size <= 0) stop("max_leaf_size must be positive");
         use_kdtree = true;
     }

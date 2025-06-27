@@ -43,8 +43,8 @@ namespace mgtree {
 template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_base
 {
-    // some implementations store split_dim and split_val, but bounding
-    // boxes have better pruning capabilities
+    // some implementations store split_dim and split_val, but exact bounding
+    // boxes (smallest) have better pruning capabilities
     std::array<FLOAT,D> bbox_min;  //< points' bounding box (min dims)
     std::array<FLOAT,D> bbox_max;  //< points' bounding box (max dims)
 
@@ -287,7 +287,7 @@ class kdtree
 protected:
     std::deque< NODE > nodes;  // stores all nodes
 
-    FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm)
+    FLOAT* data;  //< destroyable; a row-major n*D matrix (points are permuted, see perm[] - that's for better locality of reference)
     const Py_ssize_t n;  //< number of points
     std::vector<Py_ssize_t> perm;  //< original point indexes
 

@@ -1,13 +1,17 @@
-/*  A Boruvka-type algorithm for finding minimum spanning trees
+/*  Boruvka-type algorithms for finding minimum spanning trees
  *  wrt the Euclidean metric or the thereon-based mutual reachability distance.
  *
- *  It features many performance enhancements, has good locality of reference,
- *  supports multicore processing via OpenMP, etc.
+ *  The dual-tree Boruvka version is, in principle, based on
+ *  "Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis,
+ *  and Applications" by W.B. March, P. Ram, A.G. Gray published
+ *  in ACM SIGKDD 2010.  As far as our implementation
+ *  is concerned, the dual-tree approach is only faster in 2- and
+ *  3-dimensional spaces, for M <= 2, and in a single-threaded setting.
  *
- *  The dual-tree Boruvka version (not used by default for it turned out slower
- *  than a more straightforward version) is based on "Fast Euclidean Minimum
- *  Spanning Tree: Algorithm, Analysis, and Applications"
- *  by W.B. March, P. Ram, A.G. Gray in ACM SIGKDD 2010.
+ *  The single-tree version is naively parallelisable.
+ *
+ *  For more details on our implementation of K-d trees, see
+ *  the source file defining the base class.
  *
  *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -171,7 +175,9 @@ private:
                 // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                 FLOAT dcore_max = std::max(dcore[which], dcore[j]);
                 if (dij <= dcore_max)
-                    dij = dcore_max+dij/DCORE_DIST_ADJ;
+                    dij = dcore_max + dij/DCORE_DIST_ADJ;
+                else
+                    dij = dij + dij/DCORE_DIST_ADJ;
             }
 
             if (dij < nn_dist) {
@@ -302,7 +308,9 @@ protected:
                     FLOAT dcore_max = std::max(dcore[i], dcore[j]);
 
                     if (dij <= dcore_max)
-                        dij = dcore_max+dij/DCORE_DIST_ADJ;
+                        dij = dcore_max + dij/DCORE_DIST_ADJ;
+                    else
+                        dij = dij + dij/DCORE_DIST_ADJ;
                 }
 
                 if (dij < nn_dist[ds_find_i]) {

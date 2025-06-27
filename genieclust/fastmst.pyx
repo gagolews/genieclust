@@ -7,10 +7,10 @@
 
 
 """
-The "new" (2025) functions to compute k-nearest neighbours
-and minimum spanning trees with respect to the Euclidean metric
-and thereon-based mutual reachability distance.
-The module provides access to a quite fast implementation of K-d trees.
+Functions to compute k-nearest neighbours and minimum spanning trees
+with respect to the Euclidean metric and the thereon-based mutual
+reachability distances. The module provides access to a quite fast
+implementation of K-d trees.
 
 For best speed, consider building the package from sources
 using, e.g., `-O3 -march=native` compiler flags.
@@ -139,12 +139,12 @@ cpdef tuple knn_euclid(
     Py_ssize_t k=1,
     const floatT[:,:] Y=None,
     str algorithm="auto",
-    int max_leaf_size=32,
+    int max_leaf_size=0,
     bint squared=False,
     bint verbose=False
 ):
     """
-    genieclust.fastmst.knn_euclid(X, k=1, Y=None, algorithm="auto", max_leaf_size=32, squared=False, verbose=False)
+    genieclust.fastmst.knn_euclid(X, k=1, Y=None, algorithm="auto", max_leaf_size=0, squared=False, verbose=False)
 
     If `Y` is None, then the function determines the first `k` amongst the nearest
     neighbours of each point in `X` with respect to the Euclidean distance.
@@ -166,7 +166,7 @@ cpdef tuple knn_euclid(
 
     The number of threads used is controlled via the `OMP_NUM_THREADS``
     environment variable or via ``genieclust.fastmst.omp_set_num_threads``
-    at runtime. For best speed, consider building the package from sources
+    at runtime.  For best speed, consider building the package from sources
     using, e.g., ``-O3 -march=native`` compiler flags.
 
 
@@ -188,20 +188,20 @@ cpdef tuple knn_euclid(
     Parameters
     ----------
 
-    X : c_contiguous ndarray, shape `(n,d)`
-        the "database"
+    X : matrix, shape `(n,d)`
+        the `n` input points in :math:`\\mathbb{R}^d` (the "database")
     k : int `< n`
-        number of nearest neighbours (should be rather small, say, <= 20)
+        number of nearest neighbours (should be rather small, say, `<= 20`)
     Y : None or an ndarray, shape `(m,d)`
         the "query points"; note that setting `Y=X`, contrary to `Y=None`,
-        will include the query points themselves amongst their own
-        neighbours
+        will include the query points themselves amongst their own neighbours
     algorithm : ``{"auto", "kd_tree", "brute"}``, default="auto"
-        K-d trees can only be used for d between 2 and 20 only.
+        K-d trees can only be used for `d` between 2 and 20 only.
         ``"auto"`` selects ``"kd_tree"`` in low-dimensional spaces
-    max_leaf_size : int, default 32
+    max_leaf_size : int
         maximal number of points in the K-d tree leaves;
-        smaller leaves use more memory, yet are not necessarily faster
+        smaller leaves use more memory, yet are not necessarily faster;
+        use ``0`` to select the default value, currently set to 32.
     squared : False
         whether to return the squared Euclidean distance
     verbose: bool
@@ -229,18 +229,19 @@ cpdef tuple knn_euclid(
     if k < 1: raise ValueError("k must be >= 1")
 
     if algorithm == "auto":
-        if 2 <= d <= 20:
-            algorithm = "kd_tree"
-        else:
-            algorithm = "brute"
+        algorithm = "kd_tree" if 2 <= d <= 20 else "brute"
 
     if algorithm == "kd_tree":
         if not 2 <= d <= 20:
-            raise ValueError("kd_tree can only be used for 2 <= d <= 20")
+            raise ValueError("K-d trees can only be used for 2 <= d <= 20")
+
+        if max_leaf_size == 0: max_leaf_size = 32  # the current default
+
         if max_leaf_size <= 0:
             raise ValueError("max_leaf_size must be positive")
 
         use_kdtree = True
+
     elif algorithm == "brute":
         use_kdtree = False
     else:
@@ -293,40 +294,63 @@ cpdef tuple knn_euclid(
 cpdef tuple mst_euclid(
     const floatT[:,:] X,
     Py_ssize_t M=1,
-    bint use_kdtree=True,  # TODO: algorithm  auto brute, kd_tree_single kd_tree_dual
-    int max_leaf_size=16,
-    int first_pass_max_brute_size=0,  # TODO: drop?
-    bint use_dtb=False,  # TODO: drop
+    str algorithm="auto",
+    int max_leaf_size=0,
+    int first_pass_max_brute_size=0,
     bint verbose=False
 ):
     """
-    genieclust.fastmst.mst_euclid(X, M=1, use_kdtree=True, max_leaf_size=16, first_pass_max_brute_size=0, use_dtb=False, verbose=False)
+    genieclust.fastmst.mst_euclid(X, M=1, algorithm="auto", max_leaf_size=0, first_pass_max_brute_size=0, verbose=False)
+
+    The function determines the/a minimum spanning tree of a given point set.
+    For `M<=2`, we get a minimum spanning tree wrt the Euclidean distance
+    (for `M==1` we additionally get the distance to each point's nearest
+    neighbour).  Otherwise, the tree is the smallest wrt the degree-M
+    mutual reachability distance [9]_ given by
+    :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}`, where :math:`d(i,j)`
+    is the Euclidean distance between the `i`-th and the `j`-th point,
+    and :math:`c_M(i)` is the `i`-th `M`-core distance defined as the distance
+    between the `i`-th point and its `(M-1)`-th nearest neighbour
+    (wrt the Euclidean distance; not including the query points themselves).
+    In clustering and density estimation, `M` plays the role of a smoothing
+    factor; see [10]_ and the references therein for discussion. This parameter
+    corresponds to the ``hdbscan`` Python package's ``min_samples=M-1``.
+
+    We note that there might be many point pairs with the same mutual
+    reachability distances, which might make the minimum spanning tree not
+    unique (even if all the original pairwise distances are unambiguous). Thus, internally, the adjusted distance :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j) `, where :math:`\\varepsilon` is a small, is used.
 
 
-    TODO: describe.....A Jarník (Prim/Dijkstra)-like algorithm for determining
-    a(*) minimum spanning tree (MST) of `X` with respect to a given metric
-    (distance). Distances are computed on the fly.
-    Memory use: O(n*d).
-
-    Mutual reachability distance... [8]_
-    It is assumed that M is rather small, say, `M<=20`.
-
-    or Dual-tree Boruvka....
+    The implemented algorithms, see the `algorithm` parameter, assume that
+    `M` is rather small; say, `M <= 20`.
 
     Our implementation of K-d trees [6]_ has been quite optimised; amongst
     others, it has good locality of reference, features the sliding midpoint
     (midrange) rule suggested in [7]_, and a node pruning strategy inspired
-    by the discussion in [8]_.  Still, it is well-known that K-d trees
-    perform well only in spaces of low intrinsic dimensionality.  Thus,
-    due to the so-called curse of dimensionality, for high `d`, the brute-force
-    algorithm is recommended.
+    by the discussion in [8]_.
+
+    The "single-tree" version of the Boruvka algorithm is naively
+    parallelisable: in every iteration, it seeks each point's nearest "alien",
+    i.e., the nearest point thereto from another cluster.
+    The dual-tree Boruvka version of the algorithm is, in principle, based
+    on [5]_. As far as our implementation is concerned, the dual-tree approach
+    is only faster in 2- and 3-dimensional spaces, for M <= 2, and in
+    a single-threaded setting.  For another (approximate) adaptation
+    of the dual-tree algorithm to the mutual reachability distance, see [11]_.
+
+
+    Still, it is well-known that K-d trees perform well only in spaces of low
+    intrinsic dimensionality.  Thus, due to the so-called curse of
+    dimensionality, for high `d`, the brute-force algorithm is recommended.
+    Here we implemented a parallelised [2]_ version of the Jarník [1]_ (a.k.a.
+    Prim [3_] or Dijkstra) algorithm, where the distances are computed
+    on the fly (only once for `M==1`).
 
     The number of threads used is controlled via the ``OMP_NUM_THREADS``
     environment variable or via ``genieclust.fastmst.omp_set_num_threads``
     at runtime. For best speed, consider building the package from sources
     using, e.g., ``-O3 -march=native`` compiler flags.
 
-    TODO: return M nearest neighbours
 
 
     References
@@ -345,7 +369,7 @@ cpdef tuple mst_euclid(
     V Brně III 3, 1926, 37–58.
 
     [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
-    tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
+    tree: Algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
     Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603–612.
 
     [6] J.L. Bentley, Multidimensional binary search trees used for associative
@@ -361,40 +385,56 @@ cpdef tuple mst_euclid(
 
     [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
     on hierarchical density estimates, Lecture Notes in Computer Science 7819,
-    2013, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+    2013, 160–172. DOI:10.1007/978-3-642-37456-2_14.
 
+    [10] R.J.G.B. Campello, D. Moulavi, A. Zimek. J. Sander, Hierarchical
+    density estimates for data clustering, visualization, and outlier detection,
+    ACM Transactions on Knowledge Discovery from Data (TKDD) 10(1),
+    2015, 1–51, DOI:10.1145/2733381.
+
+    [11] L. McInnes, J. Healy, Accelerated hierarchical density-based
+    clustering, IEEE Intl. Conf. Data Mining Workshops (ICMDW), 2017, 33–42,
+    DOI:10.1109/ICDMW.2017.12.
 
 
     Parameters TODO
     ----------
 
-    X : c_contiguous ndarray, shape (n,d) or,
-            if metric == "precomputed", (n*(n-1)/2,1) or (n,n)
-        n data points in a feature space of dimensionality d
-        or pairwise distances between n points
-    ...
+    X : matrix, shape `(n,d)`
+        the `n` input points in :math:`\\mathbb{R}^d`
+    M : int `< n`
+        the degree of the mutual reachability distance (should be rather small,
+        say, `<= 20`). `M<=2` denotes the ordinary Euclidean distance
     algorithm : ``{"auto", "kd_tree_single", "kd_tree_dual", "brute"}``, default="auto"
         K-d trees can only be used for d between 2 and 20 only.
-        ``"auto"`` selects ``"kd_tree_s.."`` in low-dimensional spaces
-    dual: d <=3 nthreads=1 M<=2 8_32
-    otherwise 32_32
-    ...
+        ``"auto"`` selects ``"kd_tree_dual"`` for `d<=3`, `M<=2`,
+        and in a single-threaded setting only. ``"kd_tree_single"`` is used
+        otherwise, unless `d>20`.
+    max_leaf_size : int
+        maximal number of points in the K-d tree leaves;
+        smaller leaves use more memory, yet are not necessarily faster;
+        use ``0`` to select the default value, currently set to 32 for the
+        single-tree and 8 for the dual-tree Boruvka algorithm
+    first_pass_max_brute_size : int
+        minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm;
+        use ``0`` to select the default value, currently set to 32
     verbose: bool
         whether to print diagnostic messages
 
-    Returns TODO
+    Returns
     -------
 
     tuple
-        If `M==1`, a pair ``(mst_dist, mst_ind)`` defining the `n-1` edges of the MST
-        is returned:
-          a) the (n-1)-ary array ``mst_dist`` is such that
+        If `M==1`, a pair ``(mst_dist, mst_ind)`` defining the `n-1` edges
+        of the spanning tree is returned:
+          a) the `(n-1)`-ary array ``mst_dist`` is such that
           ``mst_dist[i]`` gives the weight of the `i`-th edge;
-          b) ``mst_ind`` is a matrix with `n-1` rows and 2 columns,
+          b) ``mst_ind`` is a matrix with `n-1` rows and `2` columns,
           where ``{mst[i,0], mst[i,1]}`` defines the `i`-th edge of the tree.
 
         For `M>1`, we additionally get:
-          c) the `n` core distances.
+          c) the `n` core distances, being the distances
+            to each point's `(M-1)`-th nearest neighbour.
 
         The results are ordered w.r.t. weights nondecreasingly,
         and then by indexes (lexicographic ordering of
@@ -408,19 +448,58 @@ cpdef tuple mst_euclid(
     if n < 1 or d <= 1: raise ValueError("X is ill-shaped");
     if M < 1 or M > n-1: raise ValueError("incorrect M")
 
-    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
+    if algorithm == "auto":
+        if 2 <= d <= 20:
+            if c_omp.Comp_get_max_threads() == 1 and d <= 3 and M <= 2:
+                algorithm = "kd_tree_dual"
+            else:
+                algorithm = "kd_tree_single"
+        else:
+            algorithm = "brute"
+
+    if algorithm == "kd_tree_single" or algorithm == "kd_tree_dual":
+        if not 2 <= d <= 20:
+            raise ValueError("K-d trees can only be used for 2 <= d <= 20")
+
+        use_kdtree = True
+
+        if algorithm == "kd_tree_single":
+            if max_leaf_size == 0:
+                max_leaf_size = 32  # the current default
+            if first_pass_max_brute_size == 0:
+                first_pass_max_brute_size = 32  # the current default
+            use_dtb = False
+        elif algorithm == "kd_tree_dual":
+            if max_leaf_size == 0:
+                max_leaf_size = 8  # the current default
+            if first_pass_max_brute_size == 0:
+                first_pass_max_brute_size = 32  # the current default
+            use_dtb = True
+
+        if max_leaf_size <= 0:
+            raise ValueError("max_leaf_size must be positive")
+        if first_pass_max_brute_size <= 0:
+            raise ValueError("first_pass_max_brute_size must be positive")
+
+    elif algorithm == "brute":
+        use_kdtree = False
+    else:
+        raise ValueError("invalid 'algorithm'")
+
+    cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2),
+        dtype=np.intp)
     cdef np.ndarray[floatT] mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
-    cdef np.ndarray[floatT] d_core
 
     cdef np.ndarray[floatT,ndim=2] X2
     X2 = np.asarray(X, order="C", copy=True)  # destroyable
 
-    if M > 1:
-        d_core = np.empty(n, dtype=np.float32 if floatT is float else np.float64)
+    cdef np.ndarray[floatT] d_core
+    if M > 1: d_core = np.empty(n,
+        dtype=np.float32 if floatT is float else np.float64)
 
-    # _openmp_set_num_threads()
-    if use_kdtree and 2 <= d <= 20:
+
+    if use_kdtree:
         c_fastmst.Cmst_euclid_kdtree(
             &X2[0,0], n, d, M,
             &mst_dist[0], &mst_ind[0,0], <floatT*>(0) if M==1 else &d_core[0],
