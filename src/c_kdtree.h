@@ -38,7 +38,7 @@
 #include <array>
 
 
-namespace mgtree {
+namespace quitefastkdtree {
 
 template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_base
@@ -473,7 +473,17 @@ public:
 };
 
 
-
+/*!
+ * k nearest neighbours of each point in X (in the tree);
+ * each point is not its own neighbour
+ *
+ * see _knn_sqeuclid_kdtree
+ *
+ * @param tree a pre-built K-d tree containing n points
+ * @param knn_dist [out] size n*k
+ * @param knn_ind [out] size n*k
+ * @param k number of neighbours
+ */
 template <typename FLOAT, Py_ssize_t D, typename TREE>
 void kneighbours(
     TREE& tree,
@@ -498,6 +508,18 @@ void kneighbours(
 }
 
 
+/*!
+ * k nearest neighbours of each point in Y from X (in the tree)
+ *
+ * see _knn_sqeuclid_kdtree
+ *
+ * @param tree a pre-built K-d tree containing n points
+ * @param Y size m*D
+ * @param m number of points in Y
+ * @param knn_dist [out] size n*k
+ * @param knn_ind [out] size n*k
+ * @param k number of neighbours
+ */
 template <typename FLOAT, Py_ssize_t D, typename TREE>
 void kneighbours(
     TREE& tree,

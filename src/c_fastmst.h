@@ -488,13 +488,13 @@ void _knn_sqeuclid_kdtree(
     const size_t k,
     FLOAT* nn_dist, Py_ssize_t* nn_ind, size_t max_leaf_size, bool /*verbose=false*/)
 {
-    using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT,D>;
+    using DISTANCE=quitefastkdtree::kdtree_distance_sqeuclid<FLOAT,D>;
 
-    mgtree::kdtree<FLOAT, D, DISTANCE> tree(X, n, max_leaf_size);
+    quitefastkdtree::kdtree<FLOAT, D, DISTANCE> tree(X, n, max_leaf_size);
     if (!Y)
-        mgtree::kneighbours<FLOAT, D>(tree, nn_dist, nn_ind, k);
+        quitefastkdtree::kneighbours<FLOAT, D>(tree, nn_dist, nn_ind, k);
     else
-        mgtree::kneighbours<FLOAT, D>(tree, Y, m, nn_dist, nn_ind, k);
+        quitefastkdtree::kneighbours<FLOAT, D>(tree, Y, m, nn_dist, nn_ind, k);
 }
 
 
@@ -634,17 +634,17 @@ void _mst_euclid_kdtree(
     bool use_dtb,
     bool /*verbose*/
 ) {
-    using DISTANCE=mgtree::kdtree_distance_sqeuclid<FLOAT, D>;
+    using DISTANCE=quitefastkdtree::kdtree_distance_sqeuclid<FLOAT, D>;
 
     GENIECLUST_PROFILER_USE
 
     GENIECLUST_PROFILER_START
-    mgtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
+    quitefastkdtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
         max_leaf_size, first_pass_max_brute_size, use_dtb);
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
-    mgtree::mst<FLOAT, D>(tree, mst_dist, mst_ind, d_core);
+    quitefastkdtree::mst<FLOAT, D, DISTANCE>(tree, mst_dist, mst_ind, d_core);
     GENIECLUST_PROFILER_STOP("mst call")
 
     GENIECLUST_PROFILER_START

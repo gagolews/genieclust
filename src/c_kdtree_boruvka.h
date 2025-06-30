@@ -39,7 +39,7 @@
 #define DCORE_DIST_ADJ (1<<26)
 
 
-namespace mgtree {
+namespace quitefastkdtree {
 
 template <typename FLOAT, Py_ssize_t D>
 struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
@@ -629,7 +629,6 @@ protected:
     }
 
 
-
     void find_mst_next_nn()
     {
         // find the point from another cluster that is closest to the i-th point
@@ -811,8 +810,17 @@ public:
 
 
 
-
-template <typename FLOAT, Py_ssize_t D, typename TREE>
+/*!
+ * Find a minimum spanning tree of X (in the tree)
+ *
+ * see _mst_euclid_kdtree
+ *
+ * @param tree a pre-built K-d tree containing n points
+ * @param tree_dist [out] size n*k
+ * @param tree_ind [out] size n*k
+ * @param d_core [out] core distances
+ */
+template <typename FLOAT, Py_ssize_t D, typename DISTANCE, typename TREE>
 void mst(
     TREE& tree,
     FLOAT* tree_dist,       // size n-1
@@ -826,25 +834,30 @@ void mst(
 
     if (d_core) {
         const FLOAT* _d_core = tree.get_dcore();
-        const FLOAT* _data = tree.get_data();
-        // we need to recompute the distances as we applied a correction for ambiguity
-        for (Py_ssize_t i=0; i<n-1; ++i) {
-            // TODO: DISTANCE::point_point....
-            tree_dist[i] = 0.0;
-            for (Py_ssize_t j=0; j<D; ++j)
-                tree_dist[i] += square(_data[tree_ind[2*i+0]*D+j]-_data[tree_ind[2*i+1]*D+j]);
-            tree_dist[i] = max3(tree_dist[i], _d_core[tree_ind[2*i+0]], _d_core[tree_ind[2*i+1]]);
-        }
         for (Py_ssize_t i=0; i<n; ++i)
-            d_core[i] = _d_core[perm[i]];
+            d_core[perm[i]] = _d_core[i];
+
+        // we need to recompute the distances as we applied a correction for ambiguity
+        const FLOAT* _data   = tree.get_data();
+        for (Py_ssize_t i=0; i<n-1; ++i) {
+            Py_ssize_t i1 = tree_ind[2*i+0];
+            Py_ssize_t i2 = tree_ind[2*i+1];
+            tree_dist[i] = max3(
+                DISTANCE::point_point(_data+i1*D, _data+i2*D),
+                _d_core[i1],
+                _d_core[i2]
+            );
+        }
     }
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        GENIECLUST_ASSERT(tree_ind[2*i+0] != tree_ind[2*i+1]);
-        GENIECLUST_ASSERT(tree_ind[2*i+0] < n);
-        GENIECLUST_ASSERT(tree_ind[2*i+1] < n);
-        tree_ind[2*i+0] = perm[tree_ind[2*i+0]];
-        tree_ind[2*i+1] = perm[tree_ind[2*i+1]];
+        Py_ssize_t i1 = tree_ind[2*i+0];
+        Py_ssize_t i2 = tree_ind[2*i+1];
+        GENIECLUST_ASSERT(i1 != i2);
+        GENIECLUST_ASSERT(i1 >= 0 && i1 < n);
+        GENIECLUST_ASSERT(i2 >= 0 && i2 < n);
+        tree_ind[2*i+0] = perm[i1];
+        tree_ind[2*i+1] = perm[i2];
     }
 
     // the edges are not ordered, use Cmst_order

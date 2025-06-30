@@ -9,7 +9,7 @@ knn_euclid(
   k = 1L,
   Y = NULL,
   algorithm = "auto",
-  max_leaf_size = 32L,
+  max_leaf_size = 0L,
   squared = FALSE,
   verbose = FALSE
 )
@@ -27,7 +27,8 @@ will include the query points themselves amongst their own neighbours}
 \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces}
 
 \item{max_leaf_size}{maximal number of points in the K-d tree leaves;
-smaller leaves use more memory, yet are not necessarily faster}
+smaller leaves use more memory, yet are not necessarily faster;
+use ``0`` to select the default value, currently set to 32}
 
 \item{squared}{whether to return the squared Euclidean distance}
 
@@ -94,7 +95,7 @@ are fat, \emph{4th CGC Workshop on Computational Geometry}, 1999.
 
 N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
 strategies in K-d Trees, \emph{5th WSES/IEEE Conf. on Circuits, Systems,
-Communications & Computers} (CSCC 2001), 2001.
+Communications & Computers} (CSCC'01), 2001.
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

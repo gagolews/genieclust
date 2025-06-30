@@ -449,7 +449,7 @@ omp_get_max_threads <- function() {
 #'
 #' N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
 #' strategies in K-d Trees, \emph{5th WSES/IEEE Conf. on Circuits, Systems,
-#' Communications & Computers} (CSCC 2001), 2001.
+#' Communications & Computers} (CSCC'01), 2001.
 #'
 #'
 #' @param X the "database"; a matrix of shape (n,d)
@@ -461,7 +461,8 @@ omp_get_max_threads <- function() {
 #'     K-d trees can only be used for d between 2 and 20 only;
 #'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
-#'        smaller leaves use more memory, yet are not necessarily faster
+#'        smaller leaves use more memory, yet are not necessarily faster;
+#'        use ``0`` to select the default value, currently set to 32
 #' @param squared whether to return the squared Euclidean distance
 #' @param verbose whether to print diagnostic messages
 #'
@@ -494,7 +495,7 @@ omp_get_max_threads <- function() {
 #'
 #' @rdname fastknn
 #' @export
-knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 32L, squared = FALSE, verbose = FALSE) {
+knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 0L, squared = FALSE, verbose = FALSE) {
     .Call(`_genieclust_knn_euclid`, X, k, Y, algorithm, max_leaf_size, squared, verbose)
 }
 
