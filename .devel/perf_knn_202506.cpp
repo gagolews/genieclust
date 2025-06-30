@@ -57,17 +57,7 @@ py_genieclust <- import("genieclust", convert=FALSE)
 py_pykdtree   <- import("pykdtree", convert=FALSE)
 py_sklearn    <- import("sklearn", convert=FALSE)
 
-
-# print(as.data.frame(installed.packages()[pkgs, c("Version"), drop=FALSE]))
-#
-# import importlib
-# modules = ['numba', 'cython', 'numpy', 'scipy', 'sklearn', 'pykdtree', 'genieclust']
-# for m in modules:
-#     try:
-#         print("%20s %s" % (m, importlib.import_module(m).__version__))
-#     except:
-#         print("%20s ?" %  (m, ))
-
+print(as.data.frame(installed.packages()[pkgs, c("Version"), drop=FALSE]))
 
 
 knn_genieclust_brute <- function(X, k) {
@@ -240,36 +230,5 @@ for (d in ds) for (n in ns) {
         }
     }
 }
-
-
-
-
-
-*/
-
-/*
-                   method       n d  k nthreads elapsed
-1               pico_tree 1208592 0 10        1   1.187
-2    py_genieclust_kdtree 1208592 0 10        1   1.189
-3             py_pykdtree 1208592 0 10        1   1.481
-4       py_sklearn_kdtree 1208592 0 10        1   3.413
-5                r_dbscan 1208592 0 10        1   2.571
-6     r_genieclust_kdtree 1208592 0 10        1   1.171
-7    r_mlpack_kdtree_dual 1208592 0 10        1   2.437
-8  r_mlpack_kdtree_single 1208592 0 10        1   2.877
-9                 r_nabor 1208592 0 10        1   1.443
-10          r_rann_kdtree 1208592 0 10        1   2.403
-
-                   method       n d  k nthreads elapsed  nthreads elapsed
-1               pico_tree 1208592 3 10        1   3.877         6   1.238
-2    py_genieclust_kdtree 1208592 3 10        1   1.666         6   0.691
-3             py_pykdtree 1208592 3 10        1   5.179         6   1.621
-4       py_sklearn_kdtree 1208592 3 10        1   9.741         6   7.311
-5                r_dbscan 1208592 3 10        1   8.496         6   8.505
-6     r_genieclust_kdtree 1208592 3 10        1   1.668         6   0.655
-7    r_mlpack_kdtree_dual 1208592 3 10        1   3.652         6   3.645
-8  r_mlpack_kdtree_single 1208592 3 10        1   3.920         6   3.924
-9                 r_nabor 1208592 3 10        1   4.793         6   4.830
-10          r_rann_kdtree 1208592 3 10        1  10.190         6  10.187
 
 */

@@ -302,51 +302,65 @@ cpdef tuple mst_euclid(
     """
     genieclust.fastmst.mst_euclid(X, M=1, algorithm="auto", max_leaf_size=0, first_pass_max_brute_size=0, verbose=False)
 
-    The function determines the/a minimum spanning tree of a given point set.
-    For `M<=2`, we get a minimum spanning tree wrt the Euclidean distance
-    (for `M==1` we additionally get the distance to each point's nearest
-    neighbour).  Otherwise, the tree is the smallest wrt the degree-M
+    The function determines the/a(\*) minimum spanning tree (MST) of a set
+    of `n` points, i.e., an acyclic undirected graph whose vertices represent
+    the points, and `n-1` edges with the minimal sum of weights, given by
+    the pairwise distances.  MSTs have many uses in, amongst others,
+    topological data analysis (clustering, dimensionality reduction, etc.).
+
+    For `M<=2`, we get a spanning tree that minimises the sum of Euclidean
+    distances between the points. If `M==2`, the function additionally returns
+    the distance to each point's nearest neighbour.
+
+    If `M>2`, the spanning tree is the smallest wrt the degree-`M`
     mutual reachability distance [9]_ given by
     :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}`, where :math:`d(i,j)`
     is the Euclidean distance between the `i`-th and the `j`-th point,
     and :math:`c_M(i)` is the `i`-th `M`-core distance defined as the distance
     between the `i`-th point and its `(M-1)`-th nearest neighbour
-    (wrt the Euclidean distance; not including the query points themselves).
+    (not including the query points themselves).
     In clustering and density estimation, `M` plays the role of a smoothing
     factor; see [10]_ and the references therein for discussion. This parameter
     corresponds to the ``hdbscan`` Python package's ``min_samples=M-1``.
 
-    We note that there might be many point pairs with the same mutual
-    reachability distances, which might make the minimum spanning tree not
-    unique (even if all the original pairwise distances are unambiguous). Thus, internally, the adjusted distance :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j) `, where :math:`\\varepsilon` is a small, is used.
 
+    Implementation
+    --------------
+
+    (\*) We note that if there are many pairs of equidistant points,
+    there can be many minimum spanning trees. In particular, it is likely
+    that there are point pairs with the same mutual reachability distances.
+    To make the definition less ambiguous (albeit with no guarantees),
+    internally, we rely on the adjusted distance
+    :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
+    where :math:`\\varepsilon` is a small positive constant.
 
     The implemented algorithms, see the `algorithm` parameter, assume that
     `M` is rather small; say, `M <= 20`.
 
     Our implementation of K-d trees [6]_ has been quite optimised; amongst
-    others, it has good locality of reference, features the sliding midpoint
-    (midrange) rule suggested in [7]_, and a node pruning strategy inspired
-    by the discussion in [8]_.
+    others, it has good locality of reference (at the cost of making a
+    copy of the input dataset), features the sliding midpoint (midrange) rule
+    suggested in [7]_, and a node pruning strategy inspired by the discussion
+    in [8]_.
 
     The "single-tree" version of the Boruvka algorithm is naively
     parallelisable: in every iteration, it seeks each point's nearest "alien",
     i.e., the nearest point thereto from another cluster.
-    The dual-tree Boruvka version of the algorithm is, in principle, based
+    The "dual-tree" Boruvka version of the algorithm is, in principle, based
     on [5]_. As far as our implementation is concerned, the dual-tree approach
-    is only faster in 2- and 3-dimensional spaces, for M <= 2, and in
+    is only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
     a single-threaded setting.  For another (approximate) adaptation
     of the dual-tree algorithm to the mutual reachability distance, see [11]_.
 
-
-    Still, it is well-known that K-d trees perform well only in spaces of low
-    intrinsic dimensionality.  Thus, due to the so-called curse of
-    dimensionality, for high `d`, the brute-force algorithm is recommended.
-    Here we implemented a parallelised [2]_ version of the Jarník [1]_ (a.k.a.
+    Nevertheless, it is well-known that K-d trees perform well only in spaces
+    of low intrinsic dimensionality (a.k.a. the "curse"). For high `d`,
+    the "brute-force" algorithm is recommended. Here we implemented a
+    parallelised [2]_ version of the Jarník [1]_ (a.k.a.
     Prim [3_] or Dijkstra) algorithm, where the distances are computed
-    on the fly (only once for `M==1`).
+    on the fly (only once for `M<=2`).
 
-    The number of threads used is controlled via the ``OMP_NUM_THREADS``
+    The number of threads is controlled via the ``OMP_NUM_THREADS``
     environment variable or via ``genieclust.fastmst.omp_set_num_threads``
     at runtime. For best speed, consider building the package from sources
     using, e.g., ``-O3 -march=native`` compiler flags.
@@ -421,25 +435,28 @@ cpdef tuple mst_euclid(
     verbose: bool
         whether to print diagnostic messages
 
+
     Returns
     -------
 
     tuple
         If `M==1`, a pair ``(mst_dist, mst_ind)`` defining the `n-1` edges
-        of the spanning tree is returned:
-          a) the `(n-1)`-ary array ``mst_dist`` is such that
+        of an identified spanning tree is returned:
+
+          1. the `(n-1)`-ary array ``mst_dist`` is such that
           ``mst_dist[i]`` gives the weight of the `i`-th edge;
-          b) ``mst_ind`` is a matrix with `n-1` rows and `2` columns,
-          where ``{mst[i,0], mst[i,1]}`` defines the `i`-th edge of the tree.
+
+          2. ``mst_ind`` is a matrix with `n-1` rows and `2` columns, where
+          ``{mst_ind[i,0], mst_ind[i,1]}`` defines the `i`-th edge of the tree.
 
         For `M>1`, we additionally get:
-          c) the `n` core distances, being the distances
+
+          3. the `n` core distances, i.e., the distances
             to each point's `(M-1)`-th nearest neighbour.
 
-        The results are ordered w.r.t. weights nondecreasingly,
-        and then by indexes (lexicographic ordering of
-        ``(weight, index1, index2)`` triples).
-        For each `i`, it holds ``mst[i,0]<mst[i,1]``.
+        The results are ordered w.r.t. weights nondecreasingly, and then by
+        the indexes (lexicographic ordering of ``(weight, index1, index2)``
+        triples).  For each `i`, it holds ``mst_ind[i,0]<mst_ind[i,1]``.
     """
 
     cdef Py_ssize_t n = X.shape[0]
