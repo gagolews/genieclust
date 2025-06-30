@@ -313,6 +313,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mst_euclid
+List mst_euclid(SEXP X, int M, Rcpp::String algorithm, int max_leaf_size, int first_pass_max_brute_size, bool verbose);
+RcppExport SEXP _genieclust_mst_euclid(SEXP XSEXP, SEXP MSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP first_pass_max_brute_sizeSEXP, SEXP verboseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< SEXP >::type X(XSEXP);
+    Rcpp::traits::input_parameter< int >::type M(MSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type algorithm(algorithmSEXP);
+    Rcpp::traits::input_parameter< int >::type max_leaf_size(max_leaf_sizeSEXP);
+    Rcpp::traits::input_parameter< int >::type first_pass_max_brute_size(first_pass_max_brute_sizeSEXP);
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(mst_euclid(X, M, algorithm, max_leaf_size, first_pass_max_brute_size, verbose));
+    return rcpp_result_gen;
+END_RCPP
+}
 // dot_genie
 IntegerVector dot_genie(NumericMatrix mst, int k, double gini_threshold, String postprocess, bool detect_noise, bool verbose);
 RcppExport SEXP _genieclust_dot_genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP postprocessSEXP, SEXP detect_noiseSEXP, SEXP verboseSEXP) {
@@ -401,6 +417,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_Romp_set_num_threads", (DL_FUNC) &_genieclust_Romp_set_num_threads, 1},
     {"_genieclust_Romp_get_max_threads", (DL_FUNC) &_genieclust_Romp_get_max_threads, 0},
     {"_genieclust_knn_euclid", (DL_FUNC) &_genieclust_knn_euclid, 7},
+    {"_genieclust_mst_euclid", (DL_FUNC) &_genieclust_mst_euclid, 6},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
     {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},

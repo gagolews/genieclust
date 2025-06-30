@@ -60,5 +60,3 @@ for (M in c(1, 2, 5)) {
 
 #print(genieclust::gclust(iris[1:4], M=5))
 #print(genieclust::gclust(dist(iris[1:4]), M=5))
-
-

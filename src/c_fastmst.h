@@ -1,22 +1,21 @@
 /*  Minimum spanning tree and k-nearest neighbour algorithms
- *  (the "new">=2025 interface, quite fast, currently Euclidean distance
- *  only)
+ *  (quite fast in low-dimensional spaces, currently Euclidean distance only)
  *
  *
  *  [1] V. Jarník, O jistém problému minimálním,
  *  Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
  *
  *  [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21, 1995, 1313–1325.
+ *  Parallel Computing 21(8), 1995, 1313–1325.
  *
  *  [3] R. Prim, Shortest connection networks and some generalizations,
- *  Bell Syst. Tech. J. 36, 1957, 1389–1401.
+ *  The Bell System Technical Journal 36(6), 1957, 1389–1401.
  *
- *  [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
- *  V Brně III 3, 1926, 37–58.
+ *  [4] O. Borůvka, O jistém problému minimálním,
+ *  Práce Moravské Přírodovědecké Společnosti 3, 1926, 37–58.
  *
  *  [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
- *  tree: algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
+ *  tree: Algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
  *  Conf. Knowledge Discovery and Data Mining (KDD '10), 2010, 603–612.
  *
  *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
@@ -32,7 +31,16 @@
  *
  *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
  *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
- *  2013, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *  2013, 160–172. DOI:10.1007/978-3-642-37456-2_14.
+ *
+ *  [10] R.J.G.B. Campello, D. Moulavi, A. Zimek. J. Sander, Hierarchical
+ *  density estimates for data clustering, visualization, and outlier detection,
+ *  ACM Transactions on Knowledge Discovery from Data (TKDD) 10(1),
+ *  2015, 1–51, DOI:10.1145/2733381.
+ *
+ *  [11] L. McInnes, J. Healy, Accelerated hierarchical density-based
+ *  clustering, IEEE Intl. Conf. Data Mining Workshops (ICMDW), 2017, 33–42,
+ *  DOI:10.1109/ICDMW.2017.12.
  *
  *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -270,10 +278,26 @@ void Cknn2_euclid_brute(
 
 /*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
  *  a(*) Euclidean minimum spanning tree (MST) or
- *  one that corresponds to an M-mutual reachability distance.
+ *  one wrt an M-mutual reachability distance.
+ *
+ *  If `M>2`, the spanning tree is the smallest wrt the degree-`M`
+ *  mutual reachability distance [9]_ given by
+ *  :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}`, where :math:`d(i,j)`
+ *  is the Euclidean distance between the `i`-th and the `j`-th point,
+ *  and :math:`c_M(i)` is the `i`-th `M`-core distance defined as the distance
+ *  between the `i`-th point and its `(M-1)`-th nearest neighbour
+ *  (not including the query points themselves).
+ *
+ *  (\*) We note that if there are many pairs of equidistant points,
+ *  there can be many minimum spanning trees. In particular, it is likely
+ *  that there are point pairs with the same mutual reachability distances.
+ *  To make the definition less ambiguous (albeit with no guarantees),
+ *  internally, we rely on the adjusted distance
+ *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
+ *  where :math:`\\varepsilon` is a small positive constant.
  *
  *  Time complexity: O(n^2). It is assumed that M is rather small
- *  (say, M<=20). If M>1, all pairwise the distances are computed twice
+ *  (say, M<=20). If M>2, all pairwise the distances are computed twice
  *  (first for the neighbours/core distance, then to determine the tree).
  *
  *  (*) Note that there might be multiple minimum trees spanning a given graph.
@@ -286,10 +310,10 @@ void Cknn2_euclid_brute(
  *  Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
  *
  *  [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21, 1995, 1313–1325.
+ *  Parallel Computing 21(8), 1995, 1313–1325.
  *
  *  [3] R. Prim, Shortest connection networks and some generalizations,
- *  Bell Syst. Tech. J. 36, 1957, 1389–1401.
+ *  The Bell System Technical Journal 36(6), 1957, 1389–1401.
  *
  *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
  *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
@@ -499,19 +523,26 @@ void _knn_sqeuclid_kdtree(
 
 
 /*! Get the k nearest neighbours of each point w.r.t. the Euclidean distance,
- * using a K-d tree to speed up the computations.
+ *  using a K-d tree to speed up the computations.
  *
- * Fast for small d, small k, but large n
+ *  The implemented algorithm assumes that `k` is rather small; say, `k <= 20`.
  *
+ *  Our implementation of K-d trees [1]_ has been quite optimised; amongst
+ *  others, it has good locality of reference, features the sliding midpoint
+ *  (midrange) rule suggested in [2]_, and a node pruning strategy inspired
+ *  by the discussion in [3]_.  Still, it is well-known that K-d trees
+ *  perform well only in spaces of low intrinsic dimensionality.  Thus,
+ *  due to the so-called curse of dimensionality, for high `d`, a brute-force
+ *  algorithm is recommended.
  *
- *  [6] J.L. Bentley, Multidimensional binary search trees used for associative
+ *  [1] J.L. Bentley, Multidimensional binary search trees used for associative
  *  searching, Communications of the ACM 18(9), 509–517, 1975,
  *  DOI:10.1145/361002.361007.
  *
- *  [7] S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
- *  are fat, The 4th CGC Workshop on Computational Geometry, 1999.
+ *  [2] S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+ *  are fat, 4th CGC Workshop on Computational Geometry, 1999.
  *
- *  [8] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+ *  [3] N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
  *  strategies in K-d Trees, 5th WSES/IEEE Conf. on Circuits, Systems,
  *  Communications & Computers (CSCC'01), 2001.
  *
@@ -661,14 +692,55 @@ void _mst_euclid_kdtree(
 }
 
 
-/*! A Boruvka-like algorithm based on K-d trees for determining
- *  a(*) Euclidean minimum spanning tree (MST) or
- *  one that corresponds to an M-mutual reachability distance.
- *  Quite fast in low-dimensional spaces.
+/*! The function determines the/a(\*) minimum spanning tree (MST) of a set
+ *  of `n` points, i.e., an acyclic undirected graph whose vertices represent
+ *  the points, and `n-1` edges with the minimal sum of weights, given by
+ *  the pairwise distances.  MSTs have many uses in, amongst others,
+ *  topological data analysis (clustering, dimensionality reduction, etc.).
  *
- *  (*) Note that there might be multiple minimum trees spanning a given graph.
+ *  For `M<=2`, we get a spanning tree that minimises the sum of Euclidean
+ *  distances between the points. If `M==2`, the function additionally returns
+ *  the distance to each point's nearest neighbour.
  *
- *  TODO ....
+ *  If `M>2`, the spanning tree is the smallest wrt the degree-`M`
+ *  mutual reachability distance [9]_ given by
+ *  :math:`d_M(i, j)=\\max\\{ c_M(i), c_M(j), d(i, j)\\}`, where :math:`d(i,j)`
+ *  is the Euclidean distance between the `i`-th and the `j`-th point,
+ *  and :math:`c_M(i)` is the `i`-th `M`-core distance defined as the distance
+ *  between the `i`-th point and its `(M-1)`-th nearest neighbour
+ *  (not including the query points themselves).
+ *  In clustering and density estimation, `M` plays the role of a smoothing
+ *  factor; see [10]_ and the references therein for discussion. This parameter
+ *  corresponds to the ``hdbscan`` Python package's ``min_samples=M-1``.
+ *
+ *  (\*) We note that if there are many pairs of equidistant points,
+ *  there can be many minimum spanning trees. In particular, it is likely
+ *  that there are point pairs with the same mutual reachability distances.
+ *  To make the definition less ambiguous (albeit with no guarantees),
+ *  internally, we rely on the adjusted distance
+ *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
+ *  where :math:`\\varepsilon` is a small positive constant.
+ *
+ *  The implemented algorithm assumes that `M` is rather small; say, `M <= 20`.
+ *
+ *  Our implementation of K-d trees [6]_ has been quite optimised; amongst
+ *  others, it has good locality of reference (at the cost of making a
+ *  copy of the input dataset), features the sliding midpoint (midrange) rule
+ *  suggested in [7]_, and a node pruning strategy inspired by the discussion
+ *  in [8]_.
+ *
+ *  The "single-tree" version of the Boruvka algorithm is naively
+ *  parallelisable: in every iteration, it seeks each point's nearest "alien",
+ *  i.e., the nearest point thereto from another cluster.
+ *  The "dual-tree" Boruvka version of the algorithm is, in principle, based
+ *  on [5]_. As far as our implementation is concerned, the dual-tree approach
+ *  is only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
+ *  a single-threaded setting.  For another (approximate) adaptation
+ *  of the dual-tree algorithm to the mutual reachability distance, see [11]_.
+ *
+ *  Nevertheless, it is well-known that K-d trees perform well only in spaces
+ *  of low intrinsic dimensionality (a.k.a. the "curse").
+ *
  *
  *  References:
  *  ----------
@@ -694,6 +766,15 @@ void _mst_euclid_kdtree(
  *  [9] R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
  *  on hierarchical density estimates, Lecture Notes in Computer Science 7819,
  *  2021, 160–172. DOI: 10.1007/978-3-642-37456-2_14.
+ *
+ *  [10] R.J.G.B. Campello, D. Moulavi, A. Zimek. J. Sander, Hierarchical
+ *  density estimates for data clustering, visualization, and outlier detection,
+ *  ACM Transactions on Knowledge Discovery from Data (TKDD) 10(1),
+ *  2015, 1–51, DOI:10.1145/2733381.
+ *
+ *  [11] L. McInnes, J. Healy, Accelerated hierarchical density-based
+ *  clustering, IEEE Intl. Conf. Data Mining Workshops (ICMDW), 2017, 33–42,
+ *  DOI:10.1109/ICDMW.2017.12.
  *
  *
  * @param X [destroyable] a C-contiguous data matrix, shape n*d

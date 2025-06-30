@@ -344,18 +344,18 @@ cpdef tuple mst_euclid(
     suggested in [7]_, and a node pruning strategy inspired by the discussion
     in [8]_.
 
-    The "single-tree" version of the Boruvka algorithm is naively
+    The "single-tree" version of the Borůvka algorithm is naively
     parallelisable: in every iteration, it seeks each point's nearest "alien",
     i.e., the nearest point thereto from another cluster.
-    The "dual-tree" Boruvka version of the algorithm is, in principle, based
-    on [5]_. As far as our implementation is concerned, the dual-tree approach
-    is only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
+    The "dual-tree" Borůvka version of the algorithm is, in principle, based
+    on [5]_.  As far as our implementation is concerned, the dual-tree approach
+    is often only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
     a single-threaded setting.  For another (approximate) adaptation
-    of the dual-tree algorithm to the mutual reachability distance, see [11]_.
+    of the dual-tree algorithm to the mutual reachability distance; see [11]_.
 
     Nevertheless, it is well-known that K-d trees perform well only in spaces
-    of low intrinsic dimensionality (a.k.a. the "curse"). For high `d`,
-    the "brute-force" algorithm is recommended. Here we implemented a
+    of low intrinsic dimensionality (a.k.a. the "curse").  For high `d`,
+    the "brute-force" algorithm is recommended.  Here, we provided a
     parallelised [2]_ version of the Jarník [1]_ (a.k.a.
     Prim [3_] or Dijkstra) algorithm, where the distances are computed
     on the fly (only once for `M<=2`).
@@ -374,13 +374,13 @@ cpdef tuple mst_euclid(
     Práce Moravské Přírodovědecké Společnosti 6, 1930, 57–63.
 
     [2] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Comput. 21, 1995, 1313–1325.
+    Parallel Computing 21(8), 1995, 1313–1325.
 
     [3] R. Prim, Shortest connection networks and some generalizations,
-    Bell Syst. Tech. J. 36, 1957, 1389–1401.
+    The Bell System Technical Journal 36(6), 1957, 1389–1401.
 
-    [4] O. Borůvka, O jistém problému minimálním. Práce Mor. Přírodověd. Spol.
-    V Brně III 3, 1926, 37–58.
+    [4] O. Borůvka, O jistém problému minimálním,
+    Práce Moravské Přírodovědecké Společnosti 3, 1926, 37–58.
 
     [5] W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
     tree: Algorithm, analysis, and applications, Proc. 16th ACM SIGKDD Intl.
@@ -411,7 +411,7 @@ cpdef tuple mst_euclid(
     DOI:10.1109/ICDMW.2017.12.
 
 
-    Parameters TODO
+    Parameters
     ----------
 
     X : matrix, shape `(n,d)`
@@ -428,7 +428,7 @@ cpdef tuple mst_euclid(
         maximal number of points in the K-d tree leaves;
         smaller leaves use more memory, yet are not necessarily faster;
         use ``0`` to select the default value, currently set to 32 for the
-        single-tree and 8 for the dual-tree Boruvka algorithm
+        single-tree and 8 for the dual-tree Borůvka algorithm
     first_pass_max_brute_size : int
         minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm;
         use ``0`` to select the default value, currently set to 32
@@ -454,8 +454,8 @@ cpdef tuple mst_euclid(
           3. the `n` core distances, i.e., the distances
             to each point's `(M-1)`-th nearest neighbour.
 
-        The results are ordered w.r.t. weights nondecreasingly, and then by
-        the indexes (lexicographic ordering of ``(weight, index1, index2)``
+        The tree edges are ordered w.r.t. weights nondecreasingly, and then by
+        the indexes (lexicographic ordering of the ``(weight, index1, index2)``
         triples).  For each `i`, it holds ``mst_ind[i,0]<mst_ind[i,1]``.
     """
 

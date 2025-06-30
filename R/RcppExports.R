@@ -435,8 +435,8 @@ omp_get_max_threads <- function() {
 #' the brute-force algorithm is recommended.
 #'
 #' The number of threads used is controlled via the \code{OMP_NUM_THREADS}
-#' environment variable or via the \code{\link{omp_set_num_threads}} function.
-#' For best speed, consider building the package
+#' environment variable or via the \code{\link{omp_set_num_threads}} function
+#' at runtime. For best speed, consider building the package
 #' from sources using, e.g., \code{-O3 -march=native} compiler flags.
 #'
 #' @references
@@ -457,12 +457,12 @@ omp_get_max_threads <- function() {
 #' @param Y the "query points"; \code{NULL} or a matrix of shape (m,d);
 #'     note that setting \code{Y=X}, contrary to \code{NULL},
 #'     will include the query points themselves amongst their own neighbours
-#' @param algorithm
+#' @param algorithm \code{"auto"}, \code{"kd_tree"} or \code{"brute"};
 #'     K-d trees can only be used for d between 2 and 20 only;
 #'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
 #'        smaller leaves use more memory, yet are not necessarily faster;
-#'        use ``0`` to select the default value, currently set to 32
+#'        use \code{0] to select the default value, currently set to 32
 #' @param squared whether to return the squared Euclidean distance
 #' @param verbose whether to print diagnostic messages
 #'
@@ -491,12 +491,179 @@ omp_get_max_threads <- function() {
 #' knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
 #'
 #'
-#' @seealso mst_euclid
+#' @seealso \code{\link{mst_euclid}}
 #'
 #' @rdname fastknn
 #' @export
 knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 0L, squared = FALSE, verbose = FALSE) {
     .Call(`_genieclust_knn_euclid`, X, k, Y, algorithm, max_leaf_size, squared, verbose)
+}
+
+#' @title Quite Fast Euclidean Minimum Spanning Trees (Also WRT Mutual Reachability Distances)
+#'
+#' @description
+#' The function determines the/a(*) minimum spanning tree (MST) of a set
+#' of \eqn{n} points, i.e., an acyclic undirected graph whose vertices represent
+#' the points, and \eqn{n-1} edges with the minimal sum of weights, given by
+#' the pairwise distances.  MSTs have many uses in, amongst others,
+#' topological data analysis (clustering, dimensionality reduction, etc.).
+#'
+#' For \eqn{M\leq 2}, we get a spanning tree that minimises the sum of Euclidean
+#' distances between the points. If \eqn{M=2}, the function additionally returns
+#' the distance to each point's nearest neighbour.
+#'
+#' If \eqn{M>2}, the spanning tree is the smallest wrt the degree-M
+#' mutual reachability distance (Campello et al., 2013) given by
+#' \eqn{d_M(i, j)=\max\{ c_M(i), c_M(j), d(i, j)\}}, where \eqn{d(i,j)}
+#' is the Euclidean distance between the \eqn{i}-th and the \eqn{j}-th point,
+#' and \eqn{c_M(i)} is the \eqn{i}-th \eqn{M}-core distance defined as the distance
+#' between the \eqn{i}-th point and its \eqn{(M-1)}-th nearest neighbour
+#' (not including the query points themselves).
+#' In clustering and density estimation, M plays the role of a smoothing
+#' factor; see (Campello et al. 2015) and the references therein for discussion.
+#'
+#'
+#' @details
+#' (*) We note that if there are many pairs of equidistant points,
+#' there can be many minimum spanning trees. In particular, it is likely
+#' that there are point pairs with the same mutual reachability distances.
+#' To make the definition less ambiguous (albeit with no guarantees),
+#' internally, we rely on the adjusted distance
+#' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
+#' where \eqn{\varepsilon} is a small positive constant.
+#'
+#' The implemented algorithms, see the \code{algorithm} parameter, assume
+#' that \code{M} is rather small; say, \eqn{M \leq 20}.
+#'
+#' Our implementation of K-d trees (Bentley, 1975) has been quite optimised;
+#' amongst others, it has good locality of reference (at the cost of making
+#' a copy of the input dataset), features the sliding
+#' midpoint (midrange) rule suggested by Maneewongvatana and Mound (1999),
+#' and a node pruning strategy inspired by the discussion
+#' by Sample et al. (2001).
+#'
+#' The "single-tree" version of the Borůvka algorithm is naively
+#' parallelisable: in every iteration, it seeks each point's nearest "alien",
+#' i.e., the nearest point thereto from another cluster.
+#' The "dual-tree" Borůvka version of the algorithm is, in principle, based
+#' on (March et al., 2010). As far as our implementation is concerned,
+#' the dual-tree approach is often only faster in 2- and 3-dimensional spaces,
+#' for \eqn{M\leq 2}, and in a single-threaded setting.  For another (approximate)
+#' adaptation of the dual-tree algorithm to the mutual reachability distance;
+#' see (McInnes and Healy, 2017).
+#'
+#' Nevertheless, it is well-known that K-d trees perform well only in spaces
+#' of low intrinsic dimensionality (a.k.a. the "curse").  For high \code{d},
+#' the "brute-force" algorithm is recommended.  Here, we provided a
+#' parallelised (see Olson, 1995) version of the Jarník (1930) (a.k.a.
+#' Prim (1957) or Dijkstra) algorithm, where the distances are computed
+#' on the fly (only once for \code{M<=2}).
+#'
+#' The number of threads used is controlled via the \code{OMP_NUM_THREADS}
+#' environment variable or via the \code{\link{omp_set_num_threads}} function
+#' at runtime. For best speed, consider building the package
+#' from sources using, e.g., \code{-O3 -march=native} compiler flags.
+#'
+#'
+#' @references
+#' V. Jarník, O jistém problému minimálním,
+#' \emph{Práce Moravské Přírodovědecké Společnosti} 6, 1930, 57–63.
+#'
+#' C.F. Olson, Parallel algorithms for hierarchical clustering,
+#' Parallel Computing 21(8), 1995, 1313–1325.
+#'
+#' R. Prim, Shortest connection networks and some generalizations,
+#' \emph{The Bell System Technical Journal} 36(6), 1957, 1389–1401.
+#'
+#' O. Borůvka, O jistém problému minimálním, \emph{Práce Moravské
+#' Přírodovědecké Společnosti} 3, 1926, 37–58.
+#'
+#' W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
+#' tree: Algorithm, analysis, and applications, \emph{Proc. 16th ACM SIGKDD
+#' Intl. Conf. Knowledge Discovery and Data Mining (KDD '10)}, 2010, 603–612.
+#'
+#' J.L. Bentley, Multidimensional binary search trees used for associative
+#' searching, \emph{Communications of the ACM} 18(9), 509–517, 1975,
+#' \doi{10.1145/361002.361007}.
+#'
+#' S. Maneewongvatana, D.M. Mount, It's okay to be skinny, if your friends
+#' are fat, \emph{4th CGC Workshop on Computational Geometry}, 1999.
+#'
+#' N. Sample, M. Haines, M. Arnold, T. Purcell, Optimizing search
+#' strategies in K-d Trees, \emph{5th WSES/IEEE Conf. on Circuits, Systems,
+#' Communications & Computers} (CSCC'01), 2001.
+#'
+#' R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based
+#' on hierarchical density estimates, \emph{Lecture Notes in Computer Science}
+#' 7819, 2013, 160–172. \doi{10.1007/978-3-642-37456-2_14}.
+#'
+#' R.J.G.B. Campello, D. Moulavi, A. Zimek. J. Sander, Hierarchical
+#' density estimates for data clustering, visualization, and outlier detection,
+#' \emph{ACM Transactions on Knowledge Discovery from Data (TKDD)} 10(1),
+#' 2015, 1–51, \doi{10.1145/2733381}.
+#'
+#' L. McInnes, J. Healy, Accelerated hierarchical density-based
+#' clustering, \emph{IEEE Intl. Conf. Data Mining Workshops (ICMDW)}, 2017,
+#' 33–42, \doi{10.1109/ICDMW.2017.12}.
+#'
+#'
+#'
+#' @param X the "database"; a matrix of shape (n,d)
+#' @param M the degree of the mutual reachability distance
+#'          (should be rather small, say, \eqn{\leq 20}).
+#'          \eqn{M\leq 2} denotes the ordinary Euclidean distance
+#' @param algorithm \code{"auto"}, \code{"kd_tree_single"}
+#'          \code{"kd_tree_dual"} or \code{"brute"};
+#'     K-d trees can only be used for d between 2 and 20 only;
+#'     \code{"auto"} selects \code{"kd_tree_dual"} for \eqn{d\leq 3},
+#'     \eqn{M\leq 2}, and in a single-threaded setting only.
+#'     \code{"kd_tree_single"} is used otherwise, unless \eqn{d>20}.
+#' @param max_leaf_size maximal number of points in the K-d tree leaves;
+#'        smaller leaves use more memory, yet are not necessarily faster;
+#'        use \code{0} to select the default value, currently set to 32 for the
+#'        single-tree and 8 for the dual-tree Boruvka algorithm
+#' @param first_pass_max_brute_size minimal number of points in a node to
+#'        treat it as a leaf (unless it's actually a leaf) in the first
+#'        iteration of the algorithm; use \code{0} to select the default value,
+#'        currently set to 32
+#' @param verbose whether to print diagnostic messages
+#'
+#'
+#' @return
+#' A list with two (M=1) or three (M>1) elements,
+#' \code{mst.index}, \code{mst.dist}, and optionally \code{core.dist}.
+#'
+#' \code{mst.index} is a matrix with \eqn{n-1} rows and \code{2} columns,
+#' whose rows define the tree edges.
+#'
+#' \code{mst.dist} is a vector of length
+#' \code{n-1} giving the weights of the corresponding edges.
+#'
+#' The tree edges are ordered w.r.t. weights nondecreasingly, and then by
+#' the indexes (lexicographic ordering of the \code{(weight, index1, index2)}
+#' triples).  For each \code{i}, it holds \code{mst_ind[i,1]<mst_ind[i,2]}.
+#'
+#' \code{core.dist} gives the \code{n} distances to each point's
+#' (\code{M-1})-th nearest neighbour.
+#'
+#'
+#' @examples
+#' library("datasets")
+#' data("iris")
+#' X <- jitter(as.matrix(iris[1:2]))  # some data
+#' neighbours <- knn_euclid(X, 1)  # 1-NNs of each point
+#' plot(X, asp=1, las=1)
+#' segments(X[,1], X[,2], X[neighbours$nn.index,1], X[neighbours$nn.index,2])
+#'
+#' knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
+#'
+#'
+#' @seealso \code{\link{knn_euclid}}
+#'
+#' @rdname fastmst
+#' @export
+mst_euclid <- function(X, M = 1L, algorithm = "auto", max_leaf_size = 0L, first_pass_max_brute_size = 0L, verbose = FALSE) {
+    .Call(`_genieclust_mst_euclid`, X, M, algorithm, max_leaf_size, first_pass_max_brute_size, verbose)
 }
 
 .genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {

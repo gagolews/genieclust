@@ -5,9 +5,9 @@ n = 2**15
 scenarios = [
     (n, 2, 1,  "pareto(2)"),
     (n, 2, 2,  "pareto(2)"),
-    (n, 5, 1,  "pareto(2)"),
-    (n, 2, 10, "pareto(2)"),
-    (n, 5, 10, "pareto(2)"),
+    # (n, 5, 1,  "pareto(2)"),
+    # (n, 2, 10, "pareto(2)"),
+    # (n, 5, 10, "pareto(2)"),
     # (n, 2, 1,  "gumbel(2)+pareto(2)"),
     # (n, 5, 1,  "gumbel(2)+pareto(2)"),
     # (n, 2, 2,  "gumbel(2)+pareto(2)"),
@@ -23,12 +23,19 @@ scenarios = [
     # (n, 2, 10, "norm"),
     # (n, 3, 10, "norm"),
     # (n, 5, 10, "norm"),
-    (1208592, -3, 1, "thermogauss_scan001"),
-    (1208592, -3, 3, "thermogauss_scan001"),
-    (1208592, -3, 10, "thermogauss_scan001"),
+    # (1208592, -3, 1,  "thermogauss_scan001"),
+    # (1208592, -3, 10, "thermogauss_scan001"),
+    # (1208592, 2, 1,   "norm"),
+    # (1208592, 2, 10,  "norm"),
+    # (1208592, 3, 1,   "norm"),
+    # (1208592, 3, 10,  "norm"),
+    # (1208592, 5, 1,   "norm"),
+    # (1208592, 5, 10,  "norm"),
+    # (1208592, 10, 1,  "norm"),
+    # (1208592, 10, 10, "norm"),
 ]
 
-
+ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506.csv"
 
 # ------------------------------------------------------------------------------
 
@@ -38,6 +45,8 @@ import numpy as np
 import pandas as pd
 import timeit
 
+import os.path
+if os.path.isfile(ofname): raise Exception("file exists")
 
 
 if n_jobs > 0:
@@ -137,10 +146,6 @@ def mst_fasthdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
     return (tree_w, tree_e)
 
 
-
-
-
-
 def mst_mlpack(X, M, leaf_size=1):
     if M > 1 or n_jobs > 1:
         return None
@@ -156,14 +161,14 @@ def mst_mlpack(X, M, leaf_size=1):
     return tree_w, tree_e
 
 
-def mst_genieclust_brute(X, M):
+def mst_quitefast_brute(X, M):
     if X.shape[0] > 100_000: return None
     res = genieclust.fastmst.mst_euclid(X, M, algorithm="brute")
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
 
 
-def mst_genieclust_kdtree_single(X, M, max_leaf_size=32, first_pass_max_brute_size=32, use_dtb=False):
+def mst_quitefast_kdtree_single(X, M, max_leaf_size=32, first_pass_max_brute_size=32, use_dtb=False):
     res = genieclust.fastmst.mst_euclid(
         X, M,
         algorithm="kd_tree_single",
@@ -174,7 +179,7 @@ def mst_genieclust_kdtree_single(X, M, max_leaf_size=32, first_pass_max_brute_si
     return tree_w, tree_e
 
 
-def mst_genieclust_kdtree_dual(X, M, max_leaf_size=8, first_pass_max_brute_size=32, use_dtb=False):
+def mst_quitefast_kdtree_dual(X, M, max_leaf_size=8, first_pass_max_brute_size=32, use_dtb=False):
     res = genieclust.fastmst.mst_euclid(
         X, M,
         algorithm="kd_tree_dual",
@@ -186,12 +191,12 @@ def mst_genieclust_kdtree_dual(X, M, max_leaf_size=8, first_pass_max_brute_size=
 
 
 cases = dict(
-    genieclust_single  = lambda X, M: mst_genieclust_kdtree_single(X, M),
-    genieclust_dual    = lambda X, M: mst_genieclust_kdtree_dual(X, M),
-    genieclust_brute   = lambda X, M: mst_genieclust_brute(X, M),
-    mlpack             = lambda X, M: mst_mlpack(X, M),
-    fasthdbscan_kdtree = lambda X, M: mst_fasthdbscan_kdtree(X, M),
-    hdbscan_kdtree     = lambda X, M: mst_hdbscan_kdtree(X, M),
+    quitefast_kdtree_single   = lambda X, M: mst_quitefast_kdtree_single(X, M),
+    quitefast_kdtree_dual     = lambda X, M: mst_quitefast_kdtree_dual(X, M),
+    quitefast_brute           = lambda X, M: mst_quitefast_brute(X, M),
+    mlpack                    = lambda X, M: mst_mlpack(X, M),
+    fasthdbscan_kdtree        = lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    hdbscan_kdtree            = lambda X, M: mst_hdbscan_kdtree(X, M),
 )
 
 
@@ -253,8 +258,12 @@ for n, d, M, s in scenarios:
                 Δind=np.sum(_res[1] != _res_ref[1])
             ))
 
+
+
 import pandas as pd
 results = pd.DataFrame(results)
+
+results.to_csv(ofname)
 
 aggregates = results.groupby(["n", "d", "M", "s", "method", "n_jobs"]).agg(
     dict(

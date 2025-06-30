@@ -76,10 +76,10 @@
 #' \emph{Prace Moravske Prirodovedecke Spolecnosti} 6, 1930, 57-63.
 #'
 #' Olson C.F., Parallel algorithms for hierarchical clustering,
-#' \emph{Parallel Comput.} 21, 1995, 1313-1325.
+#' \emph{Parallel Computing} 21, 1995, 1313-1325.
 #'
 #' Prim R., Shortest connection networks and some generalisations,
-#' \emph{Bell Syst. Tech. J.} 36, 1957, 1389-1401.
+#' \emph{The Bell System Technical Journal} 36(6), 1957, 1389-1401.
 #'
 #' March W.B., Ram P., Gray A.G.,
 #' Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,

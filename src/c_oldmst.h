@@ -148,10 +148,10 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
  *  Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
  *
  *  C.F. Olson, Parallel algorithms for hierarchical clustering,
- *  Parallel Comput. 21 (1995) 1313-1325.
+ *  Parallel Computing 21(8) (1995) 1313-1325.
  *
  *  R. Prim, Shortest connection networks and some generalisations,
- *  Bell Syst. Tech. J. 36 (1957) 1389-1401.
+ *  The Bell System Technical Journal 36(6) (1957) 1389-1401.
  *
  *
  * @param D a CDistance object such that a call to

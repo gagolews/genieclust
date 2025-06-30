@@ -23,12 +23,9 @@ knn_euclid(
 note that setting \code{Y=X}, contrary to \code{NULL},
 will include the query points themselves amongst their own neighbours}
 
-\item{algorithm}{K-d trees can only be used for d between 2 and 20 only;
+\item{algorithm}{\code{"auto"}, \code{"kd_tree"} or \code{"brute"};
+K-d trees can only be used for d between 2 and 20 only;
 \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces}
-
-\item{max_leaf_size}{maximal number of points in the K-d tree leaves;
-smaller leaves use more memory, yet are not necessarily faster;
-use ``0`` to select the default value, currently set to 32}
 
 \item{squared}{whether to return the squared Euclidean distance}
 
@@ -69,8 +66,8 @@ due to the so-called curse of dimensionality, for high \code{d},
 the brute-force algorithm is recommended.
 
 The number of threads used is controlled via the \code{OMP_NUM_THREADS}
-environment variable or via the \code{\link{omp_set_num_threads}} function.
-For best speed, consider building the package
+environment variable or via the \code{\link{omp_set_num_threads}} function
+at runtime. For best speed, consider building the package
 from sources using, e.g., \code{-O3 -march=native} compiler flags.
 }
 \examples{
@@ -102,7 +99,7 @@ The official online manual of \pkg{genieclust} at \url{https://genieclust.gagole
 
 Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
 
-mst_euclid
+\code{\link{mst_euclid}}
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
