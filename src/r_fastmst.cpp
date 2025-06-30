@@ -621,12 +621,10 @@ List knn_euclid(
 //' library("datasets")
 //' data("iris")
 //' X <- jitter(as.matrix(iris[1:2]))  # some data
-//' neighbours <- knn_euclid(X, 1)  # 1-NNs of each point
+//' T <- mst_euclid(X)                 # Euclidean MST of X
 //' plot(X, asp=1, las=1)
-//' segments(X[,1], X[,2], X[neighbours$nn.index,1], X[neighbours$nn.index,2])
-//'
-//' knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
-//'
+//' segments(X[T$mst.index[, 1], 1], X[T$mst.index[, 1], 2],
+//'          X[T$mst.index[, 2], 1], X[T$mst.index[, 2], 2])
 //'
 //' @seealso \code{\link{knn_euclid}}
 //'

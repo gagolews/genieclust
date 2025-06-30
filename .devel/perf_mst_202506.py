@@ -1,10 +1,11 @@
 n_jobs = 1
-n_trials = 1
+n_trials = 3
 seed = 123
 n = 2**15
 scenarios = [
     (n, 2, 1,  "pareto(2)"),
     (n, 2, 2,  "pareto(2)"),
+    (n, 2, 10, "pareto(2)"),
     # (n, 5, 1,  "pareto(2)"),
     # (n, 2, 10, "pareto(2)"),
     # (n, 5, 10, "pareto(2)"),
@@ -44,9 +45,10 @@ import numba
 import numpy as np
 import pandas as pd
 import timeit
+import time
 
-import os.path
-if os.path.isfile(ofname): raise Exception("file exists")
+# import os.path
+# if os.path.isfile(ofname): raise Exception("file exists")
 
 
 if n_jobs > 0:
@@ -79,6 +81,14 @@ CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
 """
 
 
+import rpy2
+from rpy2.robjects.packages import importr
+from rpy2.robjects import numpy2ri
+from rpy2.robjects import default_converter
+r_mlpack = importr("mlpack")
+r_genieclust = importr("genieclust")
+
+
 
 import importlib
 modules = [
@@ -101,6 +111,26 @@ def tree_order(tree_w, tree_e):
     return genieclust.fastmst.tree_order(tree_w, tree_e)
 
 
+def mst_r_mlpack(X, M, leaf_size=1):
+    if M > 1 or n_jobs > 1:
+        return None
+
+    np_cv_rules = default_converter + numpy2ri.converter
+    with np_cv_rules.context():
+        _res = r_mlpack.emst(X)
+
+    tree_w = _res[0][:,  2].astype(X.dtype, order="C")
+    tree_e = _res[0][:, :2].astype(np.intp, order="C")
+    return tree_w, tree_e
+
+
+def mst_r_quitefast_default(X, M):
+    np_cv_rules = default_converter + numpy2ri.converter
+    with np_cv_rules.context():
+        _res = r_genieclust.mst_euclid(X, M)
+    tree_w, tree_e = _res[1], _res[0]-1
+    return tree_w, tree_e
+
 
 
 # BallTreeBoruvkaAlgorithm - much slower
@@ -117,7 +147,6 @@ def mst_hdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
     _res = alg.spanning_tree()
 
     return (_res[:, 2], _res[:, :2])
-
 
 
 
@@ -197,6 +226,8 @@ cases = dict(
     mlpack                    = lambda X, M: mst_mlpack(X, M),
     fasthdbscan_kdtree        = lambda X, M: mst_fasthdbscan_kdtree(X, M),
     hdbscan_kdtree            = lambda X, M: mst_hdbscan_kdtree(X, M),
+    r_mlpack                  = lambda X, M: mst_r_mlpack(X, M),
+    r_quitefast_default       = lambda X, M: mst_r_quitefast_default(X, M),
 )
 
 
@@ -235,7 +266,8 @@ for n, d, M, s in scenarios:
     for name, generator in cases.items():
         generator(X[:100, :].copy(), M)
 
-    for _trial in range(n_trials):
+    for _trial in range(1, n_trials+1):
+        np.random.seed(_trial)
         _res_ref = None
         for case, generator in cases.items():
             t0 = timeit.time.time()
@@ -251,11 +283,20 @@ for n, d, M, s in scenarios:
                 np.sum(_res[1] != _res_ref[1]),
             ))
             results.append(dict(
-                method=case, n=n, d=d, M=M, s=s, n_jobs=n_jobs, trial=_trial,
-                seed=seed,
-                t=t1-t0,
+                method=case,
+                elapsed=t1-t0,
                 Δdist=np.sum(_res[0])-np.sum(_res_ref[0]),
-                Δind=np.sum(_res[1] != _res_ref[1])
+                Σdist=np.sum(_res[0]),
+                Δidx=np.sum(_res[1] != _res_ref[1]),
+                n=n,
+                d=d,
+                M=M,
+                s=s,
+                nthreads=n_jobs,
+                trial=_trial,
+                seed=seed,
+                time=int(time.time()),
+                host=os.uname()[1],
             ))
 
 
@@ -263,13 +304,13 @@ for n, d, M, s in scenarios:
 import pandas as pd
 results = pd.DataFrame(results)
 
-results.to_csv(ofname)
+results.to_csv(ofname, index=False, mode="a", header=False)
 
-aggregates = results.groupby(["n", "d", "M", "s", "method", "n_jobs"]).agg(
+aggregates = results.groupby(["n", "d", "M", "s", "method", "nthreads"]).agg(
     dict(
-        t=["min", "median", "max"],
+        elapsed=["min", "median", "max"],
         Δdist=["min", "max"],
-        Δind=["min", "max"],
+        Δidx=["min", "max"],
     )
 )
 print(aggregates)
