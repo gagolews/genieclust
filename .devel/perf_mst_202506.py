@@ -1,11 +1,11 @@
-n_jobs = 1
+n_jobs = 10
 n_trials = 3
 seed = 123
 n = 2**15
 scenarios = [
-    (n, 2, 1,  "pareto(2)"),
-    (n, 2, 2,  "pareto(2)"),
-    (n, 2, 10, "pareto(2)"),
+    # (n, 2, 1,  "pareto(2)"),
+    # (n, 2, 2,  "pareto(2)"),
+    # (n, 2, 10, "pareto(2)"),
     # (n, 5, 1,  "pareto(2)"),
     # (n, 2, 10, "pareto(2)"),
     # (n, 5, 10, "pareto(2)"),
@@ -24,16 +24,16 @@ scenarios = [
     # (n, 2, 10, "norm"),
     # (n, 3, 10, "norm"),
     # (n, 5, 10, "norm"),
-    # (1208592, -3, 1,  "thermogauss_scan001"),
-    # (1208592, -3, 10, "thermogauss_scan001"),
-    # (1208592, 2, 1,   "norm"),
-    # (1208592, 2, 10,  "norm"),
-    # (1208592, 3, 1,   "norm"),
-    # (1208592, 3, 10,  "norm"),
-    # (1208592, 5, 1,   "norm"),
-    # (1208592, 5, 10,  "norm"),
-    # (1208592, 10, 1,  "norm"),
-    # (1208592, 10, 10, "norm"),
+    (1208592, -3, 1,  "thermogauss_scan001"),
+    (1208592, -3, 10, "thermogauss_scan001"),
+    (1208592, 2, 1,   "norm"),
+    (1208592, 2, 10,  "norm"),
+    (1208592, 3, 1,   "norm"),
+    (1208592, 3, 10,  "norm"),
+    (1208592, 5, 1,   "norm"),
+    (1208592, 5, 10,  "norm"),
+    (1208592, 10, 1,  "norm"),
+    (1208592, 10, 10, "norm"),
 ]
 
 ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506.csv"
@@ -72,7 +72,6 @@ import mlpack
 
 
 """
-CPPFLAGS="-O3 -march=native" pip3 install hdbscan --force --no-binary="hdbscan" --verbose
 CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
 CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
 CPPFLAGS="-O3 -march=native" pip3 install numpy==2.2.6  # for numba
@@ -93,7 +92,7 @@ r_genieclust = importr("genieclust")
 import importlib
 modules = [
     'numba', 'cython', 'numpy', 'scipy', 'sklearn', 'pykdtree',
-    'genieclust', 'mlpack', 'hdbscan', 'fast_hdbscan'
+    'genieclust', 'mlpack', 'hdbscan', 'fast_hdbscan', 'rpy2'
 ]
 for m in modules:
     try:
