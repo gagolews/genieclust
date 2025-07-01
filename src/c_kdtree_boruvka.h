@@ -274,9 +274,9 @@ protected:
     Py_ssize_t  tree_num;  /// number of MST edges already found
     CDisjointSets ds;
 
-    std::vector<FLOAT>      nn_dist;
-    std::vector<Py_ssize_t> nn_ind;
-    std::vector<Py_ssize_t> nn_from;
+    std::vector<FLOAT>      nn_dist;  // nn_dist[find(i)] - distance to i's nn
+    std::vector<Py_ssize_t> nn_ind;   // nn_ind[find(i)] - index of i's nn
+    std::vector<Py_ssize_t> nn_from;  // nn_from[find(i)] - the relevant member of i
 
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
 
@@ -284,6 +284,8 @@ protected:
 
     const Py_ssize_t M;  // mutual reachability distance - "smoothing factor"
     std::vector<FLOAT> dcore;  // distances to the (M-1)-th nns of each point if M>1
+    std::vector<FLOAT> Mnn_dist;  // M-1 nearest neighbours of each point
+    std::vector<Py_ssize_t> Mnn_ind;
 
     template <bool USE_DCORE>
     inline void leaf_vs_leaf(NODE* roota, NODE* rootb)
@@ -428,7 +430,11 @@ protected:
                 nn_ind[nn_ind[i]] = i;
             }
 
-            if (M == 2) dcore[i] = nn_dist[i];
+            if (M == 2) {
+                dcore[i] = nn_dist[i];  // actually redundant...
+                Mnn_dist[i] = nn_dist[i];
+                Mnn_ind[i]  = nn_ind[i];
+            }
         }
 
         // connect nearest neighbours with each other
@@ -449,31 +455,32 @@ protected:
         GENIECLUST_ASSERT(M>1);
         const Py_ssize_t k = M-1;
         // find (M-1)-nns of each point
-        std::vector<FLOAT> knn_dist(this->n*k, INFINITY);
-        std::vector<Py_ssize_t> knn_ind(this->n*k, -1);
+
+        for (size_t i=0; i<Mnn_dist.size(); ++i) Mnn_dist[i] = INFINITY;
+        for (size_t i=0; i<Mnn_ind.size(); ++i)  Mnn_ind[i] = -1;
 
         #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (Py_ssize_t i=0; i<this->n; ++i) {
             kdtree_kneighbours<FLOAT, D, DISTANCE, NODE> nn(
-                this->data, nullptr, i, knn_dist.data()+k*i, knn_ind.data()+k*i, k,
+                this->data, nullptr, i, Mnn_dist.data()+k*i, Mnn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
             nn.find(&this->nodes[0], false);
-            dcore[i] = knn_dist[i*k+(k-1)];
+            dcore[i] = Mnn_dist[i*k+(k-1)];
         }
 
         // k-nns wrt Euclidean distances are not necessarily k-nns wrt mutreach
         for (Py_ssize_t i=0; i<this->n; ++i) {
             for (Py_ssize_t v=0; v<k; ++v) {
-                Py_ssize_t j = knn_ind[i*k+v];
+                Py_ssize_t j = Mnn_ind[i*k+v];
                 if (dcore[i] >= dcore[j]) {
                     // j is the nearest neighbour of i wrt mutreach dist.
                     if (ds.find(i) != ds.find(j)) {
                         tree_ind[tree_num*2+0] = i;
                         tree_ind[tree_num*2+1] = j;
-                        tree_dist[tree_num] = dcore[i]+knn_dist[i*k+v]/DCORE_DIST_ADJ;//dcore[i];
+                        tree_dist[tree_num] = dcore[i]+Mnn_dist[i*k+v]/DCORE_DIST_ADJ;//dcore[i];
                         ds.merge(i, j);
                         tree_num++;
                     }
@@ -781,7 +788,10 @@ public:
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size), use_dtb(use_dtb), M(M)
     {
-        if (M >= 2) dcore.resize(n);  // M==2 too!
+        GENIECLUST_ASSERT(M>0);
+        if (M >= 2) dcore.resize(n);
+        if (M >= 2) Mnn_dist.resize(n*(M-1));
+        if (M >= 2) Mnn_ind.resize(n*(M-1));
     }
 
 
@@ -805,7 +815,11 @@ public:
     }
 
 
+    inline const FLOAT* get_Mnn_dist() const { return this->Mnn_dist.data(); }
+    inline const Py_ssize_t* get_Mnn_ind() const { return this->Mnn_ind.data(); }
     inline const FLOAT* get_dcore() const { return this->dcore.data(); }
+
+    inline Py_ssize_t get_M() const { return this->M; }
 };
 
 
@@ -818,35 +832,49 @@ public:
  * @param tree a pre-built K-d tree containing n points
  * @param tree_dist [out] size n*k
  * @param tree_ind [out] size n*k
- * @param d_core [out] core distances
+ * @param nn_dist [out] distances to M-1 nns of each point
+ * @param nn_ind  [out] indexes of M-1 nns of each point
  */
 template <typename FLOAT, Py_ssize_t D, typename DISTANCE, typename TREE>
 void mst(
     TREE& tree,
-    FLOAT* tree_dist,       // size n-1
-    Py_ssize_t* tree_ind,   // size 2*(n-1),
-    FLOAT* d_core=nullptr   // size n
+    FLOAT* tree_dist,           // size n-1
+    Py_ssize_t* tree_ind,       // size 2*(n-1),
+    FLOAT* nn_dist=nullptr,     // size n*(M-1)
+    Py_ssize_t* nn_ind=nullptr  // size n*(M-1)
 ) {
-    Py_ssize_t n = tree.get_n();
-    const Py_ssize_t* perm = tree.get_perm().data();
-
     tree.mst(tree_dist, tree_ind);
 
-    if (d_core) {
-        const FLOAT* _d_core = tree.get_dcore();
-        for (Py_ssize_t i=0; i<n; ++i)
-            d_core[perm[i]] = _d_core[i];
+    Py_ssize_t n = tree.get_n();
+    Py_ssize_t M = tree.get_M();
+    const Py_ssize_t* perm = tree.get_perm();
 
-        // we need to recompute the distances as we applied a correction for ambiguity
-        const FLOAT* _data   = tree.get_data();
-        for (Py_ssize_t i=0; i<n-1; ++i) {
-            Py_ssize_t i1 = tree_ind[2*i+0];
-            Py_ssize_t i2 = tree_ind[2*i+1];
-            tree_dist[i] = max3(
-                DISTANCE::point_point(_data+i1*D, _data+i2*D),
-                _d_core[i1],
-                _d_core[i2]
-            );
+    if (M > 1) {
+        GENIECLUST_ASSERT(nn_dist);
+        GENIECLUST_ASSERT(nn_ind);
+        const FLOAT*      _nn_dist = tree.get_Mnn_dist();
+        const Py_ssize_t* _nn_ind  = tree.get_Mnn_ind();
+
+        for (Py_ssize_t i=0; i<n; ++i) {
+            for (Py_ssize_t j=0; j<M-1; ++j) {
+                nn_dist[perm[i]*(M-1)+j] = _nn_dist[i*(M-1)+j];
+                nn_ind[perm[i]*(M-1)+j]  = perm[_nn_ind[i*(M-1)+j]];
+            }
+        }
+
+        if (M > 2) {
+            // we need to recompute the distances as we applied a correction for ambiguity
+            const FLOAT* _data     = tree.get_data();
+            const FLOAT* _d_core   = tree.get_dcore();
+            for (Py_ssize_t i=0; i<n-1; ++i) {
+                Py_ssize_t i1 = tree_ind[2*i+0];
+                Py_ssize_t i2 = tree_ind[2*i+1];
+                tree_dist[i] = max3(
+                    DISTANCE::point_point(_data+i1*D, _data+i2*D),
+                    _d_core[i1],
+                    _d_core[i2]
+                );
+            }
         }
     }
 

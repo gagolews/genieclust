@@ -12,9 +12,6 @@ mst(d, ...)
   d,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 1L,
-  algorithm = c("auto", "jarnik", "mlpack"),
-  leaf_size = 1L,
-  cast_float32 = FALSE,
   verbose = FALSE,
   ...
 )
@@ -26,44 +23,39 @@ mst(d, ...)
 e.g., a data frame with numeric-like columns) or an
 object of class \code{dist}; see \code{\link[stats]{dist}}}
 
-\item{...}{further arguments passed to or from other methods}
+\item{...}{further arguments passed to or from other methods,
+in particular, to \code{\link{mst_euclid}}}
 
 \item{distance}{metric used in the case where \code{d} is a matrix; one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 \code{"cosine"}}
 
-\item{M}{smoothing factor; \code{M} = 1 gives the selected \code{distance};
-otherwise, the mutual reachability distance is used}
-
-\item{algorithm}{MST algorithm to use: \code{"auto"} (default),
-\code{"jarnik"}, or \code{"mlpack"};
-if \code{"auto"}, select \code{"mlpack"} for low-dimensional Euclidean
-spaces and \code{"jarnik"} otherwise}
-
-\item{leaf_size}{size of leaves in the K-d tree (\code{"mlpack"});
-controls the trade-off between speed and memory consumption}
-
-\item{cast_float32}{logical; whether to compute the distances using 32-bit
-instead of 64-bit precision floating-point arithmetic (up to 2x faster)}
+\item{M}{smoothing factor; \code{M} = 1 selects the requested
+\code{distance}; otherwise, the corresponding degree-\code{M} mutual
+reachability distance is used; \code{M} should be rather small,
+say, \eqn{\leq 20}}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
 }
 \value{
-Returns a numeric matrix of class \code{mst} with n-1 rows and 3 columns:
-\code{from}, \code{to}, and \code{dist} sorted nondecreasingly.
-Its i-th row specifies the i-th edge of the MST which is incident to the
-vertices \code{from[i]} and \code{to[i]} \code{from[i] < to[i]}  (in 1,...,n)
+Returns a numeric matrix of class \code{mst} with \eqn{n-1} rows and
+three columns: \code{from}, \code{to}, and \code{dist} sorted
+nondecreasingly. Its i-th row specifies the i-th edge of the MST
+which is incident to the vertices \code{from[i]} and \code{to[i]} with
+\code{from[i] < to[i]}  (in 1,...,n)
 and \code{dist[i]} gives the corresponding weight, i.e., the
 distance between the point pair.
 
 The \code{Size} attribute specifies the number of points, \eqn{n}.
 The \code{Labels} attribute gives the labels of the input points (optionally).
-The \code{method} attribute gives the name of the distance used.
+The \code{method} attribute provides the name of the distance used.
 
-If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
-nearest neighbours of each point.
+If \code{M} > 1, the \code{nn.index} attribute gives the indices
+of the \code{M}-1 nearest neighbours of each point
+and \code{nn.dist} provides the corresponding distances
+(if returned by the underlying function).
 }
 \description{
 Determine a(*) minimum spanning tree (MST) of the complete
@@ -74,44 +66,35 @@ whose weights correspond to the pairwise distances between the points.
 (*) Note that if the distances are non unique,
 there might be multiple minimum trees spanning a given graph.
 
+If \code{d} is a matrix and the use of Euclidean distance is requested
+(the default), then \code{\link{mst_euclid}} is called
+to determine the MST.  As it is based on K-d trees, it is quite fast
+in low dimensional spaces, even for 10M points.
 
-Two MST algorithms are available.
-First, our implementation of the Jarnik (Prim/Dijkstra)-like method
-requires \eqn{O(n^2)} time. The algorithm is parallelised; the number of
-threads is determined by the \code{OMP_NUM_THREADS} environment variable;
-see \code{\link[base]{Sys.setenv}}. This method is recommended for
-high-dimensional spaces. As a rule of thumb, datasets up to 100000 points
-should be processed quite quickly. For 1M points, give it an hour or so.
+Otherwise, a much slower implementation of the Jarnik (Prim/Dijkstra)-like
+method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
+the number of threads is determined by the \code{OMP_NUM_THREADS} environment
+variable. As a rule of thumb, datasets up to 100k points
+should be processed quite quickly (within a few minutes).
 
-Second, we give access to the implementation of the Dual-Tree Boruvka
-algorithm from the \code{mlpack} library. The algorithm is based on K-d trees
-and is very fast but only for low-dimensional Euclidean spaces
-(due to the curse of dimensionality). The Jarnik algorithm should be
-used if there are more than 5-10 features.
-
-
-If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
-\eqn{n} points in a \eqn{p}-dimensional space,
-the \eqn{n (n-1)/2} distances are computed on the fly: the algorithms
-requires \eqn{O(n)} memory.
-
-If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
-with the smoothing factor \code{M} (see Campello et al. 2013)
+If \eqn{M>1}, then the mutual reachability distance \eqn{m(i,j)}
+with the smoothing factor \eqn{M} (see Campello et al. 2013)
 is used instead of the chosen "raw" distance \eqn{d(i,j)}.
-It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
-\eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
+It holds \eqn{m(i, j)=\max\{d(i,j), c(i), c(j)\}}, where \eqn{c(i)} is
+the core distance, i.e., the distance between the \eqn{i}-th point and
+its (\code{M}-1)-th nearest neighbour.
 This makes "noise" and "boundary" points being "pulled away" from each other.
 The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
-the mutual reachability distance can mark some observations are noise points.
-
-Note that the case \code{M} = 2 corresponds to the original distance, but we
-return the (1-)nearest neighbours as well.
+the mutual reachability distance can mark some observations as noise points.
 }
 \examples{
 library("datasets")
 data("iris")
-X <- iris[1:4]
-tree <- mst(X)
+X <- jitter(as.matrix(iris[1:2]))  # some data
+T <- mst(X)
+plot(X, asp=1, las=1)
+segments(X[T[, 1], 1], X[T[, 1], 2],
+         X[T[, 2], 1], X[T[, 2], 2])
 
 }
 \references{
@@ -143,8 +126,7 @@ The official online manual of \pkg{genieclust} at \url{https://genieclust.gagole
 
 Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
 
-\code{\link{emst_mlpack}()} for a very fast alternative
-in the case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
+\code{\link{mst_euclid}}
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors

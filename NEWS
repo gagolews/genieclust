@@ -6,11 +6,8 @@
     trees and nearest neighbours based on K-d trees (quite fast in low
     dimensional spaces): `fastmst.mst_euclid`, `fastmst.knn_euclid`.
 
-* [Python and R] Fast minimum spanning spanning trees wrt mutual reachability
+* [Python and R] Faster minimum spanning spanning trees wrt mutual reachability
     distances corresponding to the Euclidean metric.
-
-* [Python and R] [BACKWARD INCOMPATIBILITY] Distances other than the
-    Euclidean one are no longer directly supported at this time.
 
 * [Python and R] [BACKWARD INCOMPATIBILITY] `mlpack` is not used anymore.
 

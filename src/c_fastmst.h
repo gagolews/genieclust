@@ -329,14 +329,17 @@ void Cknn2_euclid_brute(
  * @param mst_ind [out] vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
- * @param d_core [out] NULL for M==1; distances to the points'
- *        (M-1)-th neighbours
+ * @param nn_dist [out] NULL for M==1 or the n*(M-1) distances to the n points'
+ *        (M-1) nearest neighbours
+ * @param nn_ind [out] NULL for M==1 or the n*(M-1) indexes of the n points'
+ *        (M-1) nearest neighbours
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
 void Cmst_euclid_brute(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
-    FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core=nullptr,
+    FLOAT* mst_dist, Py_ssize_t* mst_ind,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind,
     bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
@@ -344,13 +347,12 @@ void Cmst_euclid_brute(
     if (M <= 0)   throw std::domain_error("M <= 0");
     if (M-1 >= n) throw std::domain_error("M >= n-1");
 
-    std::vector<FLOAT> nn_dist;
-    std::vector<Py_ssize_t> nn_ind;
+    std::vector<FLOAT> d_core;
     if (M > 2) {
-        GENIECLUST_ASSERT(d_core);
-        nn_dist.resize(n*(M-1));
-        nn_ind.resize(n*(M-1));
-        Cknn1_euclid_brute(X, n, d, M-1, nn_dist.data(), nn_ind.data(),
+        d_core.resize(n);
+        GENIECLUST_ASSERT(nn_dist);
+        GENIECLUST_ASSERT(nn_ind);
+        Cknn1_euclid_brute(X, n, d, M-1, nn_dist, nn_ind,
                            /*squared=*/true, verbose);
         for (Py_ssize_t i=0; i<n; ++i) d_core[i] = nn_dist[i*(M-1)+(M-2)];
 
@@ -477,22 +479,25 @@ void Cmst_euclid_brute(
     }
 
     if (M > 2) {
-        for (Py_ssize_t i=0; i<n; ++i)
-            d_core[i] = sqrt(nn_dist[i*(M-1)+(M-2)]);
+        for (Py_ssize_t i=0; i<n*(M-1); ++i)
+            nn_dist[i] = sqrt(nn_dist[i]);
     }
     else if (M == 2) {
-        // for M==2 we just need the nearest neighbours, and the MST connects
-        // them with each other
+        // for M==2 we just need the nearest neighbours,
+        // and the MST connects them with each other
         for (Py_ssize_t i=0; i<n; ++i)
-            d_core[i] = INFINITY;
+            nn_dist[i] = INFINITY;
 
         for (Py_ssize_t i=0; i<n-1; ++i) {
-            if (d_core[mst_ind[2*i+0]] > mst_dist[i])
-                d_core[mst_ind[2*i+0]] = mst_dist[i];
-            if (d_core[mst_ind[2*i+1]] > mst_dist[i])
-                d_core[mst_ind[2*i+1]] = mst_dist[i];
+            if (nn_dist[mst_ind[2*i+0]] > mst_dist[i]) {
+                nn_dist[mst_ind[2*i+0]] = mst_dist[i];
+                nn_ind[mst_ind[2*i+0]] = mst_ind[2*i+1];
+            }
+            if (nn_dist[mst_ind[2*i+1]] > mst_dist[i]) {
+                nn_dist[mst_ind[2*i+1]] = mst_dist[i];
+                nn_ind[mst_ind[2*i+1]] = mst_ind[2*i+0];
+            }
         }
-
     }
 
     if (verbose) GENIECLUST_PRINT("\b\b\b\bdone.\n");
@@ -659,7 +664,8 @@ void Cknn1_euclid_kdtree(
 template <class FLOAT, Py_ssize_t D>
 void _mst_euclid_kdtree(
     FLOAT* X, Py_ssize_t n, Py_ssize_t M,
-    FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core,
+    FLOAT* mst_dist, Py_ssize_t* mst_ind,
+    FLOAT* nn_dist, Py_ssize_t* nn_ind,
     Py_ssize_t max_leaf_size,
     Py_ssize_t first_pass_max_brute_size,
     bool use_dtb,
@@ -675,18 +681,21 @@ void _mst_euclid_kdtree(
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
-    quitefastkdtree::mst<FLOAT, D, DISTANCE>(tree, mst_dist, mst_ind, d_core);
+    quitefastkdtree::mst<FLOAT, D, DISTANCE>(
+        tree, mst_dist, mst_ind, nn_dist, nn_ind
+    );
     GENIECLUST_PROFILER_STOP("mst call")
 
     GENIECLUST_PROFILER_START
     for (Py_ssize_t i=0; i<n-1; ++i)
         mst_dist[i] = sqrt(mst_dist[i]);
 
-    Ctree_order(n-1, mst_dist, mst_ind);
-    if (d_core) {
-        for (Py_ssize_t i=0; i<n; ++i)
-            d_core[i] = sqrt(d_core[i]);
+    if (M>1) {
+        for (Py_ssize_t i=0; i<n*(M-1); ++i)
+            nn_dist[i] = sqrt(nn_dist[i]);
     }
+
+    Ctree_order(n-1, mst_dist, mst_ind);
     GENIECLUST_PROFILER_STOP("Cmst_euclid_kdtree finalise")
 
 }
@@ -786,8 +795,10 @@ void _mst_euclid_kdtree(
  * @param mst_ind [out] a vector of length 2*(n-1), representing
  *        a c_contiguous array of shape (n-1,2), defining the edges
  *        corresponding to mst_d, with mst_i[j,0] < mst_i[j,1] for all j
- * @param d_core [out] NULL for M==1; distances to the points'
- *        (M-1)-th neighbours
+ * @param nn_dist [out] NULL for M==1 or the n*(M-1) distances to the n points'
+ *        (M-1) nearest neighbours
+ * @param nn_ind [out] NULL for M==1 or the n*(M-1) indexes of the n points'
+ *        (M-1) nearest neighbours
  * @param max_leaf_size maximal number of points in the K-d tree's leaves
  * @param first_pass_max_brute_size minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm
  * @param use_dtb whether a dual or a single-tree Boruvka algorithm should be used
@@ -796,7 +807,8 @@ void _mst_euclid_kdtree(
 template <class FLOAT>
 void Cmst_euclid_kdtree(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
-    FLOAT* mst_dist, Py_ssize_t* mst_ind, FLOAT* d_core=nullptr,
+    FLOAT* mst_dist, Py_ssize_t* mst_ind,
+    FLOAT* nn_dist=nullptr, Py_ssize_t* nn_ind=nullptr,
     Py_ssize_t max_leaf_size=32,
     Py_ssize_t first_pass_max_brute_size=32,
     bool use_dtb=false,
@@ -817,7 +829,7 @@ void Cmst_euclid_kdtree(
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... ");
 
-    #define ARGS_mst_euclid_kdtree X, n, M, mst_dist, mst_ind, d_core, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+    #define ARGS_mst_euclid_kdtree X, n, M, mst_dist, mst_ind, nn_dist, nn_ind, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
 
     /* LMAO; templates... */
     GENIECLUST_PROFILER_START

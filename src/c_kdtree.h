@@ -455,8 +455,8 @@ public:
 
 
     inline Py_ssize_t get_n() const { return n; }
-    inline std::vector<Py_ssize_t>& get_perm() { return perm; }
-    inline FLOAT* get_data() { return data; }
+    inline const Py_ssize_t* get_perm() const { return perm.data(); }
+    inline const FLOAT* get_data() const { return data; }
 
 
     void kneighbours(Py_ssize_t which, FLOAT* knn_dist, Py_ssize_t* knn_ind, Py_ssize_t k)
@@ -492,7 +492,7 @@ void kneighbours(
     Py_ssize_t k
 ) {
     Py_ssize_t n = tree.get_n();
-    const Py_ssize_t* perm = tree.get_perm().data();
+    const Py_ssize_t* perm = tree.get_perm();
 
     #if OPENMP_IS_ENABLED
     #pragma omp parallel for schedule(static)
@@ -536,7 +536,7 @@ void kneighbours(
         tree.kneighbours(Y+i*D, knn_dist+k*i, knn_ind+k*i, k);
     }
 
-    const Py_ssize_t* perm = tree.get_perm().data();
+    const Py_ssize_t* perm = tree.get_perm();
     for (Py_ssize_t i=0; i<m*k; ++i) {
         knn_ind[i] = perm[knn_ind[i]];
     }

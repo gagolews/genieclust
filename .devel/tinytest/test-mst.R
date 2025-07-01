@@ -8,15 +8,19 @@ ade4_mstree <- function(D)
     t0[] <- t(apply(t0, 1, sort))
     t0 <- cbind(t0, as.matrix(D)[t0])
     t0 <- t0[order(t0[, 3]), ]
-    list(
-        mst.index=t0[,-3],
-        mst.dist=t0[,3]
-    )
+    t0
 }
 
-# more tests in the Python version
+fastmst_euclid <- function(X, M=1, ...)
+{
+    .res <- mst_euclid(X, M, ...)
+    result <- cbind(.res[["mst.index"]], .res[["mst.dist"]])
+    attr(result, "nn.index")  <- .res[["nn.index"]]
+    attr(result, "nn.dist")   <- .res[["nn.dist"]]
+    result
+}
 
-#set.seed(123)
+
 n <- 1000
 
 for (d in c(2, 20)) {
@@ -26,32 +30,40 @@ for (d in c(2, 20)) {
     t0 <- ade4_mstree(D)
 
     ts <- list(
-        mst_euclid(X, algorithm="auto"),
-        mst_euclid(X, algorithm="brute"),
-        mst_euclid(X, algorithm="kd_tree_single"),
-        mst_euclid(X, algorithm="kd_tree_dual")
+        fastmst_euclid(X, algorithm="auto"),
+        fastmst_euclid(X, algorithm="brute"),
+        fastmst_euclid(X, algorithm="kd_tree_single"),
+        fastmst_euclid(X, algorithm="kd_tree_dual"),
+        genieclust:::.oldmst.matrix(X, "euclidean"),
+        genieclust::mst(X, distance="euclidean"),
+        genieclust::mst(D)
     )
 
     for (t1 in ts) {
-        expect_true(all(t1$mst.index[,1] < t1$mst.index[,2]))
-        expect_true(!is.unsorted(t1$mst.dist))
-        expect_true(abs(sum(t0$mst.dist)-sum(t1$mst.dist)) < 1e-9)
+        expect_true(all(t1[,1] < t1[,2]))
+        expect_true(!is.unsorted(t1[,3]))
+        expect_equal(sum(t0[,3]), sum(t1[,3]))
     }
 
 
     for (M in c(2, 5, 10)) {
-        t0 <- mst_euclid(X, M=M, algorithm="auto")
+        t0 <- genieclust:::.oldmst.matrix(X, M=M, distance="euclidean")
 
         ts <- list(
-            mst_euclid(X, M=M, algorithm="brute"),
-            mst_euclid(X, M=M, algorithm="kd_tree_single"),
-            mst_euclid(X, M=M, algorithm="kd_tree_dual")
+            fastmst_euclid(X, M=M, algorithm="auto"),
+            fastmst_euclid(X, M=M, algorithm="brute"),
+            fastmst_euclid(X, M=M, algorithm="kd_tree_single"),
+            fastmst_euclid(X, M=M, algorithm="kd_tree_dual"),
+            genieclust::mst(X, M=M, distance="euclidean"),
+            genieclust::mst(D, M=M)
         )
 
         for (t1 in ts) {
-            expect_true(all(t1$mst.index[,1] < t1$mst.index[,2]))
-            expect_true(!is.unsorted(t1$mst.dist))
-            expect_true(abs(sum(t0$mst.dist)-sum(t1$mst.dist)) < 1e-9)
+            expect_true(all(t1[,1] < t1[,2]))
+            expect_true(!is.unsorted(t1[,3]))
+            expect_equal(sum(t0[,3]), sum(t1[,3]))
+            expect_equal(attr(t1, "nn.index"), attr(t0, "nn.index"))
+            expect_equal(attr(t1, "nn.dist"), attr(t0, "nn.dist"))
         }
     }
 }

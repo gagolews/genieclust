@@ -8,7 +8,7 @@
 ![genieclust for R](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg)
 
 
-> **Genie finds meaningful clusters quickly – even on large data sets.**
+> **Genie finds meaningful clusters quickly – even in large data sets.**
 >
 > A comprehensive tutorial, benchmarks, and a reference manual is available
 at <https://genieclust.gagolewski.com/>.
@@ -20,10 +20,10 @@ as specified below. Thank you.
 
 ## About
 
-A faster and more powerful version of *Genie* – a robust and outlier
-resistant clustering algorithm (see Gagolewski, Bartoszuk, Cena, 2016),
-originally included in the R package
-[**genie**](https://CRAN.R-project.org/package=genie).
+*Genie* is a robust and outlier resistant clustering algorithm
+(see Gagolewski, Bartoszuk, Cena, 2016). Its original implementation was
+included in the R package [**genie**](https://CRAN.R-project.org/package=genie).
+Here is its faster, extended, more powerful version.
 
 The idea behind Genie is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
@@ -39,26 +39,27 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
-Genie is based on minimal spanning trees of the pairwise distance
-graphs. Thus, it is also **very fast** – determining the whole cluster hierarchy
+Genie is based on minimal spanning trees of pairwise distance graphs.
+Thus, it can also be pretty **fast**: determining the whole cluster hierarchy
 for datasets of millions of points can be completed within minutes. Therefore,
 it is nicely suited for solving **extreme clustering tasks** (large datasets
-with any number of clusters to detect) for data (also sparse) that fit into
-memory.
+with a high number of clusters to detect).
 
-Genie also allows clustering with respect to mutual reachability distances
+*genieclust* allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a robustified version
-of *HDBSCAN\**  (see Campello et al., 2013) that is able to detect a predefined
-number of clusters (actually, a whole hierarchy thereof). Hence, it doesn't
+of *HDBSCAN\**  (see Campello et al., 2013) that is able to identify a predefined
+number of clusters (actually, their whole hierarchy). The good news is that it doesn't
 dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
-The package also features an implementation of economic inequality indices
-(the Gini, Bonferroni index), external cluster validity measures
-(e.g., the normalised clustering accuracy and partition similarity indices
-such as the adjusted Rand, Fowlkes-Mallows, or mutual information scores),
-and internal cluster validity indices
-(e.g., the Calinski-Harabasz, Davies-Bouldin, Ball-Hall, Silhouette,
-and generalised Dunn indices).
+The package also features an implementation of:
+
+* economic inequality indices (the Gini, Bonferroni, or de Vergottini index),
+* external cluster validity measures (e.g., the normalised clustering accuracy
+    and partition similarity indices such as the adjusted Rand, Fowlkes-Mallows,
+    or mutual information scores),
+* internal cluster validity indices (e.g., the Calinski-Harabasz,
+    Davies-Bouldin, Ball-Hall, Silhouette, or generalised Dunn indices).
+
 
 
 ## Author and Contributors
@@ -78,14 +79,15 @@ and [**CVI**](https://github.com/gagolews/optim_cvi)),
 
 ## Examples, Tutorials, and Documentation
 
-R's interface is compatible with `stats::hclust()`, but there is more.
+R's interface is compatible with `stats::hclust()`,
+but there is more:
 
 ```r
-X <- ... # some data
+X <- ...  # some data
 h <- gclust(X)
-plot(h) # plot cluster dendrogram
+plot(h)  # plot cluster dendrogram
 cutree(h, k=2)
-# or genie(X, k=2)
+# or simply:  genie(X, k=2)
 ```
 
 
@@ -94,11 +96,11 @@ cutree(h, k=2)
 
 
 
-The Python language version of **genieclust** follows a **scikit-learn**-like API:
+The Python language version of **genieclust** has a **scikit-learn**-like API:
 
 ```python
 import genieclust
-X = ... # some data
+X = ...  # some data
 g = genieclust.Genie(n_clusters=2)
 labels = g.fit_predict(X)
 ```
@@ -110,8 +112,8 @@ Tutorials and the package documentation are available
 [Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/).
 
 
-## How to Install
 
+## How to Install
 
 ### Python Version
 
@@ -121,9 +123,8 @@ To install via `pip` (see [PyPI](https://pypi.org/project/genieclust)):
 pip3 install genieclust
 ```
 
-The package requires Python 3.7+ together with **cython** as well as
-**numpy**, **scipy**, **matplotlib**, **scikit-learn**, and **mlpack**.
-Optional dependency: **nmslib**.
+The package requires Python 3.10+ together with **cython**,
+**numpy**, **scipy**, **matplotlib**, and **scikit-learn**.
 
 
 
@@ -151,7 +152,7 @@ See the package entry on
 The core functionality is implemented in the form of a header-only
 C++ library. It can thus be easily adapted for use in other environments.
 
-New contributions are welcome (e.g., Julia, Matlab, ...).
+New contributions are welcome, e.g., Julia, Matlab/GNU Octave wrappers.
 
 
 

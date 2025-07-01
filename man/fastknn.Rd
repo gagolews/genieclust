@@ -27,6 +27,10 @@ will include the query points themselves amongst their own neighbours}
 K-d trees can only be used for d between 2 and 20 only;
 \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces}
 
+\item{max_leaf_size}{maximal number of points in the K-d tree leaves;
+smaller leaves use more memory, yet are not necessarily faster;
+use \code{0} to select the default value, currently set to 32}
+
 \item{squared}{whether to return the squared Euclidean distance}
 
 \item{verbose}{whether to print diagnostic messages}

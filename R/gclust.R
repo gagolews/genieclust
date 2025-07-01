@@ -43,43 +43,48 @@
 #' of the MST in an increasing order of weights. However, it prevents
 #' the formation of clusters of highly imbalanced sizes; once the Gini index
 #' (see \code{\link{gini_index}()}) of the cluster size distribution
-#' raises above \code{gini_threshold}, a forced merge of a point group
-#' of the smallest size is performed. Its appealing simplicity goes hand
-#' in hand with its usability; Genie often outperforms
-#' other clustering approaches on benchmark data,
+#' raises above \code{gini_threshold}, the merging of a point group
+#' of the smallest size is enforced.
+#'
+#' Genie's simplicity goes hand in hand with its usability; it often
+#' outperforms other clustering approaches on benchmark data,
 #' such as \url{https://github.com/gagolews/clustering-benchmarks}.
 #'
-#' As an experimental feature, the clustering can now also be computed with respect to the
-#' mutual reachability distance (based, e.g., on the Euclidean metric),
+#' The clustering can now also be computed with respect to the
+#' mutual reachability distances (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
-#' (see Campello et al., 2013). If \code{M} > 1, then the mutual reachability
-#' distance \eqn{m(i,j)} with smoothing factor \code{M} is used instead of the
-#' chosen "raw" distance \eqn{d(i,j)}. It holds \eqn{m(i,j)=\max(d(i,j), c(i), c(j))},
-#' where \eqn{c(i)} is \eqn{d(i,k)} with \eqn{k} being the
-#' (\code{M}-1)-th nearest neighbour of \eqn{i}.
-#' This makes "noise" and "boundary" points being "pulled away" from each other.
+#' (see Campello et al., 2013). If \eqn{M>1}, then the mutual reachability
+#' distance \eqn{m(i,j)} with a smoothing factor \eqn{M} is used instead of the
+#' chosen "raw" distance \eqn{d(i,j)}.  It holds
+#' \eqn{m(i,j)=\max(d(i,j), c(i), c(j))}, where the core distance \eqn{c(i)} is
+#' the distance to the \eqn{i}-th point's (\eqn{M-1})-th
+#' nearest neighbour.  This makes "noise" and "boundary" points being
+#' more "pulled away" from each other.
 #'
-#' The Genie correction together with the smoothing factor \code{M} > 1 (note that
-#' \code{M} = 2 corresponds to the original distance) gives a robustified version of
-#' the HDBSCAN* algorithm that is able to detect a predefined number of
-#' clusters. Hence it does not dependent on the DBSCAN's somewhat magical
-#' \code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
+#' The Genie correction together with the smoothing factor \eqn{M>1}
+#' (note that \eqn{M=2} corresponds to the original distance) gives
+#' a robustified version of the HDBSCAN* algorithm that is able to detect
+#' a predefined number of clusters. Hence it does not dependent on the DBSCAN's
+#' somewhat magical \code{eps} parameter or the HDBSCAN's
+#' \code{min_cluster_size} one.
 #'
 #'
 #' @details
-#' Note that, as in the case of all the distance-based methods,
+#' As in the case of all the distance-based methods,
 #' the standardisation of the input features is definitely worth giving a try.
 #' Oftentimes, more sophisticated feature engineering (e.g., dimensionality
 #' reduction) will lead to more meaningful results.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},
 #' \code{\link{mst}()} will be called to compute an MST, which generally
-#' takes at most \eqn{O(n^2)} time (by default, a faster algorithm is selected
-#' automatically for low-dimensional Euclidean spaces).
+#' takes at most \eqn{O(n^2)} time. However, by default, a faster algorithm
+#' based on K-d trees is selected automatically for low-dimensional Euclidean
+#' spaces; see \code{\link{mst_euclid}}.
 #'
-#' Given a minimum spanning tree, the Genie algorithm runs in \eqn{O(n \sqrt{n})} time.
-#' Therefore, if you want to test different \code{gini_threshold}s,
-#' (or \code{k}s), it is best to explicitly compute the MST first.
+#' Once a minimum spanning tree is determined, the Genie algorithm runs in
+#' \eqn{O(n \sqrt{n})} time.  If you want to test different
+#' \code{gini_threshold}s or \code{k}s,  it is best to explicitly compute
+#' the MST first.
 #'
 #' According to the algorithm's original definition,
 #' the resulting partition tree (dendrogram) might violate
@@ -104,31 +109,31 @@
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information.
 #' @param ... further arguments passed to \code{\link{mst}()}.
-#' @param k the desired number of clusters to detect, \code{k} = 1 with \code{M} > 1
-#'     acts as a noise point detector.
+#' @param k the desired number of clusters to detect, \eqn{k=1} with
+#'      \eqn{M>1} acts as a noise point detector.
 #' @param detect_noise whether the minimum spanning tree's leaves
-#'     should be marked as noise points, defaults to \code{TRUE} if \code{M} > 1
+#'     should be marked as noise points, defaults to \code{TRUE} if \eqn{M>1}
 #'     for compatibility with HDBSCAN*.
-#' @param M smoothing factor; \code{M} <= 2 gives the selected \code{distance};
+#' @param M smoothing factor; \eqn{M \leq 2} gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used.
 #' @param postprocess one of \code{"boundary"} (default), \code{"none"}
-#'     or \code{"all"};  in effect only if \code{M} > 1.
+#'     or \code{"all"};  in effect only if \eqn{M > 1}.
 #'     By default, only "boundary" points are merged
 #'     with their nearest "core" points (A point is a boundary point if it is
-#'     a noise point and it's amongst its adjacent vertex's
-#'     \code{M}-1 nearest neighbours). To force a classical
+#'     a noise point and it is amongst its adjacent vertex's
+#'     (\eqn{M-1})-th nearest neighbours). To force a classical
 #'     k-partition of a data set (with no notion of noise),
-#'     choose "all".
+#'     choose \code{"all"}.
 #'
 #'
 #' @return
 #' \code{gclust()} computes the whole clustering hierarchy; it
 #' returns a list of class \code{hclust},
 #' see \code{\link[stats]{hclust}}. Use \code{\link[stats]{cutree}} to obtain
-#' an arbitrary k-partition.
+#' an arbitrary \code{k}-partition.
 #'
-#' \code{genie()} returns a \code{k}-partition - a vector with elements in 1,...,k,
-#' whose i-th element denotes the i-th input point's cluster label.
+#' \code{genie()} returns a \code{k}-partition - a vector whose i-th element
+#' denotes the i-th input point's cluster label between 1 and \code{k}
 #' Missing values (\code{NA}) denote noise points (if \code{detect_noise}
 #' is \code{TRUE}).
 #'

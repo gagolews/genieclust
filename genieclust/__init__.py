@@ -21,7 +21,7 @@ genieclust Python Package
 # ############################################################################ #
 
 # version string, e.g., "1.0.0.9001" or "1.1.1"
-__version__ = "1.1.6.9666"
+__version__ = "1.1.99.9666"
 
 
 from . import plots
@@ -41,4 +41,3 @@ _omp_max_threads_original = fastmst.omp_get_max_threads()
 _omp_num_threads_envvar = int(os.getenv("OMP_NUM_THREADS", -1))
 if _omp_num_threads_envvar > 0:
     fastmst.omp_set_num_threads(_omp_num_threads_envvar)
-

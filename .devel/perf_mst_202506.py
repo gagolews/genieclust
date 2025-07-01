@@ -1,6 +1,7 @@
-n_jobs = 10
+n_jobs = 1
 n_trials = 3
 seed = 123
+
 n = 2**15
 scenarios = [
     # (n, 2, 1,  "pareto(2)"),
@@ -24,19 +25,24 @@ scenarios = [
     # (n, 2, 10, "norm"),
     # (n, 3, 10, "norm"),
     # (n, 5, 10, "norm"),
-    (1208592, -3, 1,  "thermogauss_scan001"),
-    (1208592, -3, 10, "thermogauss_scan001"),
-    (1208592, 2, 1,   "norm"),
-    (1208592, 2, 10,  "norm"),
-    (1208592, 3, 1,   "norm"),
-    (1208592, 3, 10,  "norm"),
-    (1208592, 5, 1,   "norm"),
-    (1208592, 5, 10,  "norm"),
-    (1208592, 10, 1,  "norm"),
-    (1208592, 10, 10, "norm"),
+    (1208592, -3,  1,  "thermogauss_scan001"),
+    (1208592, -3, 10,  "thermogauss_scan001"),
+    (1208592,  2,  1,  "norm"),
+    (1208592,  2, 10,  "norm"),
+    (1208592,  3,  1,  "norm"),
+    (1208592,  3, 10,  "norm"),
+    (1208592,  5,  1,  "norm"),
+    (1208592,  5, 10,  "norm"),
+    (1208592, 10,  1,  "norm"),
+    (1208592, 10, 10,  "norm"),
 ]
 
-ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506.csv"
+scenarios = []
+for d in range(2, 11):
+    for log2n in [17]:
+        scenarios.append( (2**log2n, d,  1, "norm") )
+        scenarios.append( (2**log2n, d, 10, "norm") )
+
 
 # ------------------------------------------------------------------------------
 
@@ -46,6 +52,9 @@ import numpy as np
 import pandas as pd
 import timeit
 import time
+
+hostname = os.uname()[1]
+ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506-%s.csv" % (hostname, )
 
 # import os.path
 # if os.path.isfile(ofname): raise Exception("file exists")
@@ -190,7 +199,7 @@ def mst_mlpack(X, M, leaf_size=1):
 
 
 def mst_quitefast_brute(X, M):
-    if X.shape[0] > 100_000: return None
+    if X.shape[0] > 300000: return None
     res = genieclust.fastmst.mst_euclid(X, M, algorithm="brute")
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
@@ -240,7 +249,6 @@ else:
     numba.set_num_threads(genieclust.omp_max_treads_original)
     genieclust.fastmst.omp_set_num_threads(genieclust.omp_max_treads_original)
 
-results = []
 for n, d, M, s in scenarios:
     np.random.seed(seed)
     if s == "norm":
@@ -266,6 +274,7 @@ for n, d, M, s in scenarios:
         generator(X[:100, :].copy(), M)
 
     for _trial in range(1, n_trials+1):
+        results = []
         np.random.seed(_trial)
         _res_ref = None
         for case, generator in cases.items():
@@ -295,21 +304,8 @@ for n, d, M, s in scenarios:
                 trial=_trial,
                 seed=seed,
                 time=int(time.time()),
-                host=os.uname()[1],
+                host=hostname,
             ))
 
+        pd.DataFrame(results).to_csv(ofname, index=False, mode="a", header=False)
 
-
-import pandas as pd
-results = pd.DataFrame(results)
-
-results.to_csv(ofname, index=False, mode="a", header=False)
-
-aggregates = results.groupby(["n", "d", "M", "s", "method", "nthreads"]).agg(
-    dict(
-        elapsed=["min", "median", "max"],
-        Δdist=["min", "max"],
-        Δidx=["min", "max"],
-    )
-)
-print(aggregates)

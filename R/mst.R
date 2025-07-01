@@ -32,44 +32,30 @@
 #' (*) Note that if the distances are non unique,
 #' there might be multiple minimum trees spanning a given graph.
 #'
+#' If \code{d} is a matrix and the use of Euclidean distance is requested
+#' (the default), then \code{\link{mst_euclid}} is called
+#' to determine the MST.  As it is based on K-d trees, it is quite fast
+#' in low dimensional spaces, even for 10M points.
 #'
-#' Two MST algorithms are available.
-#' First, our implementation of the Jarnik (Prim/Dijkstra)-like method
-#' requires \eqn{O(n^2)} time. The algorithm is parallelised; the number of
-#' threads is determined by the \code{OMP_NUM_THREADS} environment variable;
-#' see \code{\link[base]{Sys.setenv}}. This method is recommended for
-#' high-dimensional spaces. As a rule of thumb, datasets up to 100000 points
-#' should be processed quite quickly. For 1M points, give it an hour or so.
+#' Otherwise, a much slower implementation of the Jarnik (Prim/Dijkstra)-like
+#' method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
+#' the number of threads is determined by the \code{OMP_NUM_THREADS} environment
+#' variable. As a rule of thumb, datasets up to 100k points
+#' should be processed quite quickly (within a few minutes).
 #'
-#' Second, we give access to the implementation of the Dual-Tree Boruvka
-#' algorithm from the \code{mlpack} library. The algorithm is based on K-d trees
-#' and is very fast but only for low-dimensional Euclidean spaces
-#' (due to the curse of dimensionality). The Jarnik algorithm should be
-#' used if there are more than 5-10 features.
-#'
-#'
-#' If \code{d} is a numeric matrix of size \eqn{n} by \eqn{p}, representing
-#' \eqn{n} points in a \eqn{p}-dimensional space,
-#' the \eqn{n (n-1)/2} distances are computed on the fly: the algorithms
-#' requires \eqn{O(n)} memory.
-#'
-#' If \code{M} >= 2, then the mutual reachability distance \eqn{m(i,j)}
-#' with the smoothing factor \code{M} (see Campello et al. 2013)
+#' If \eqn{M>1}, then the mutual reachability distance \eqn{m(i,j)}
+#' with the smoothing factor \eqn{M} (see Campello et al. 2013)
 #' is used instead of the chosen "raw" distance \eqn{d(i,j)}.
-#' It holds \eqn{m(i, j)=\max(d(i,j), c(i), c(j))}, where \eqn{c(i)} is
-#' \eqn{d(i, k)} with \eqn{k} being the (\code{M}-1)-th nearest neighbour of \eqn{i}.
+#' It holds \eqn{m(i, j)=\max\{d(i,j), c(i), c(j)\}}, where \eqn{c(i)} is
+#' the core distance, i.e., the distance between the \eqn{i}-th point and
+#' its (\code{M}-1)-th nearest neighbour.
 #' This makes "noise" and "boundary" points being "pulled away" from each other.
 #' The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
-#' the mutual reachability distance can mark some observations are noise points.
-#'
-#' Note that the case \code{M} = 2 corresponds to the original distance, but we
-#' return the (1-)nearest neighbours as well.
+#' the mutual reachability distance can mark some observations as noise points.
 #'
 #'
 #' @seealso
-#' \code{\link{emst_mlpack}()} for a very fast alternative
-#' in the case of (very) low-dimensional Euclidean spaces (and \code{M} = 1).
-#'
+#' \code{\link{mst_euclid}}
 #'
 #' @references
 #' Jarnik V., O jistem problemu minimalnim,
@@ -105,47 +91,45 @@
 #'     \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 #'     \code{"cosine"}
 #'
-#' @param M smoothing factor; \code{M} = 1 gives the selected \code{distance};
-#'     otherwise, the mutual reachability distance is used
-#'
-#' @param algorithm MST algorithm to use: \code{"auto"} (default),
-#'     \code{"jarnik"}, or \code{"mlpack"};
-#'     if \code{"auto"}, select \code{"mlpack"} for low-dimensional Euclidean
-#'     spaces and \code{"jarnik"} otherwise
-#'
-#' @param leaf_size size of leaves in the K-d tree (\code{"mlpack"});
-#'     controls the trade-off between speed and memory consumption
-#'
-#' @param cast_float32 logical; whether to compute the distances using 32-bit
-#'     instead of 64-bit precision floating-point arithmetic (up to 2x faster)
+#' @param M smoothing factor; \code{M} = 1 selects the requested
+#'      \code{distance}; otherwise, the corresponding degree-\code{M} mutual
+#'      reachability distance is used; \code{M} should be rather small,
+#'      say, \eqn{\leq 20}
 #'
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
 #'
-#' @param ... further arguments passed to or from other methods
+#' @param ... further arguments passed to or from other methods,
+#'     in particular, to \code{\link{mst_euclid}}
 #'
 #'
 #' @return
-#' Returns a numeric matrix of class \code{mst} with n-1 rows and 3 columns:
-#' \code{from}, \code{to}, and \code{dist} sorted nondecreasingly.
-#' Its i-th row specifies the i-th edge of the MST which is incident to the
-#' vertices \code{from[i]} and \code{to[i]} \code{from[i] < to[i]}  (in 1,...,n)
+#' Returns a numeric matrix of class \code{mst} with \eqn{n-1} rows and
+#' three columns: \code{from}, \code{to}, and \code{dist} sorted
+#' nondecreasingly. Its i-th row specifies the i-th edge of the MST
+#' which is incident to the vertices \code{from[i]} and \code{to[i]} with
+#' \code{from[i] < to[i]}  (in 1,...,n)
 #' and \code{dist[i]} gives the corresponding weight, i.e., the
 #' distance between the point pair.
 #'
 #' The \code{Size} attribute specifies the number of points, \eqn{n}.
 #' The \code{Labels} attribute gives the labels of the input points (optionally).
-#' The \code{method} attribute gives the name of the distance used.
+#' The \code{method} attribute provides the name of the distance used.
 #'
-#' If \code{M} > 1, the \code{nn} attribute gives the indices of the \code{M}-1
-#' nearest neighbours of each point.
+#' If \code{M} > 1, the \code{nn.index} attribute gives the indices
+#' of the \code{M}-1 nearest neighbours of each point
+#' and \code{nn.dist} provides the corresponding distances
+#' (if returned by the underlying function).
 #'
 #'
 #' @examples
 #' library("datasets")
 #' data("iris")
-#' X <- iris[1:4]
-#' tree <- mst(X)
+#' X <- jitter(as.matrix(iris[1:2]))  # some data
+#' T <- mst(X)
+#' plot(X, asp=1, las=1)
+#' segments(X[T[, 1], 1], X[T[, 1], 2],
+#'          X[T[, 2], 1], X[T[, 2], 2])
 #'
 #' @rdname mst
 #' @export
@@ -163,33 +147,21 @@ mst.default <- function(
     d,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=1L,
-    algorithm=c("auto", "jarnik", "mlpack"),
-    leaf_size=1L,
-    cast_float32=FALSE,
     verbose=FALSE, ...)
 {
     d <- as.matrix(d)
-    distance <- match.arg(distance)
-    algorithm <- match.arg(algorithm)
-    cast_float32 <- !identical(cast_float32, FALSE)
-    verbose <- !identical(verbose, FALSE)
     M <- as.integer(M)[1]
-    leaf_size <- as.integer(leaf_size)[1]
+    distance <- match.arg(distance)
+    verbose <- !identical(verbose, FALSE)
 
-    if (algorithm == "auto") {
-        if (distance %in% c("euclidean", "l2") && ncol(d) <= 7L && M == 1L)
-            algorithm <- "mlpack"
-        else
-            algorithm <- "jarnik"
-    }
-
-    if (algorithm == "mlpack") {
-        stopifnot(M == 1L)
-        stopifnot(distance %in% c("euclidean", "l2"))
-        result <- .emst_mlpack(d, leaf_size, verbose)
+    if (distance %in% c("euclidean", "l2")) {
+        .res <- mst_euclid(d, M, ..., verbose=verbose)
+        result <- cbind(.res[["mst.index"]], .res[["mst.dist"]])
+        attr(result, "nn.index")  <- .res[["nn.index"]]
+        attr(result, "nn.dist")   <- .res[["nn.dist"]]
     }
     else {
-        result <- .mst.default(d, distance, M, cast_float32, verbose)
+        result <- .oldmst.matrix(d, distance, M, ..., verbose=verbose)
     }
 
     stopifnot(result[, 1] < result[, 2])
@@ -217,7 +189,7 @@ mst.dist <- function(
     #cast_float32 <- !identical(cast_float32, FALSE)
     verbose <- !identical(verbose, FALSE)
     M <- as.integer(M)[1]
-    result <- .mst.dist(d, M, verbose)
+    result <- .oldmst.dist(d, M, verbose)
 
     structure(
         result,
@@ -232,40 +204,3 @@ mst.dist <- function(
 
 registerS3method("mst", "default", "mst.default")
 registerS3method("mst", "dist",    "mst.dist")
-
-
-
-
-
-#' @title Euclidean Minimum Spanning Tree [DEPRECATED]
-#'
-#' @description
-#' This function is deprecated. Use \code{\link{mst}()} instead.
-#'
-#'
-#' @param d a numeric matrix (or an object coercible to one,
-#'     e.g., a data frame with numeric-like columns)
-#'
-#' @param leaf_size size of leaves in the K-d tree,
-#'     controls the trade-off between speed and memory consumption
-#'
-#' @param verbose logical; whether to print diagnostic messages
-#'
-#'
-#' @return
-#' An object of class \code{mst}, see \code{\link{mst}()} for details.
-#'
-#' @export
-emst_mlpack <- function(d, leaf_size=1, verbose=FALSE)
-{
-    # if (!requireNamespace("mlpack", quietly=TRUE)) {
-    #     warning("Package `mlpack` is not installed. Using mst() instead.")
-    #     return(mst.default(d, verbose=verbose, cast_float32=FALSE))
-    # }
-    # mst <- mlpack::emst(d, leaf_size=leaf_size, naive=naive, verbose=verbose)$output
-    # mst[, 1] <- mst[, 1] + 1  # 0-based -> 1-based indexing
-    # mst[, 2] <- mst[, 2] + 1  # 0-based -> 1-based indexing
-
-    warning("`emst_mlpack` is deprecated; use `mst(..., algorithm='mlpack')` instead")
-    mst.default(d, leaf_size=leaf_size, verbose=verbose, algorithm="mlpack")
-}

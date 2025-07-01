@@ -116,8 +116,8 @@ IntegerVector dot_genie(
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
         stop("`gini_threshold` must be in [0, 1]");
 
-    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn")))
-        stop("`nn` attribute of the MST not set; unable to proceed with this postprocessing action");
+    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn.index")))
+        stop("`nn.index` attribute of the MST not set; unable to proceed with this postprocessing action");
 
     Py_ssize_t n = mst.nrow()+1;
 
@@ -145,7 +145,7 @@ IntegerVector dot_genie(
         Rf_warning("The number of clusters detected is different from the requested one due to the presence of noise points.");
 
     if (detect_noise && postprocess == "boundary") {
-        NumericMatrix nn_r = mst.attr("nn");
+        NumericMatrix nn_r = mst.attr("nn.index");
         GENIECLUST_ASSERT(nn_r.nrow() == n);
         Py_ssize_t M = nn_r.ncol()+1;
         GENIECLUST_ASSERT(M < n);

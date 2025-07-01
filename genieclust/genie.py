@@ -24,18 +24,19 @@ import os
 import sys
 import math
 import numpy as np
-import scipy.sparse
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
-from . import oldmst  # TODO: deprecate
+from . import oldmst
 from . import fastmst
 import warnings
-import mlpack
 
-try:
-    import nmslib
-except:
-    nmslib = None
+# import scipy.sparse
+# import mlpack
+
+# try:
+#     import nmslib
+# except:
+#     nmslib = None
 
 
 
@@ -58,17 +59,17 @@ class GenieBase(BaseEstimator, ClusterMixin):
             n_clusters,
             M,
             affinity,
-            exact,
+            # exact,
             compute_full_tree,
             compute_all_cuts,
             postprocess,
-            cast_float32,
-            mlpack_enabled,
-            mlpack_leaf_size,
-            nmslib_n_neighbors,
-            nmslib_params_init,
-            nmslib_params_index,
-            nmslib_params_query,
+            # cast_float32,
+            # mlpack_enabled,
+            # mlpack_leaf_size,
+            # nmslib_n_neighbors,
+            # nmslib_params_init,
+            # nmslib_params_index,
+            # nmslib_params_query,
             verbose):
         # # # # # # # # # # # #
         super().__init__()
@@ -76,17 +77,17 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.n_features          = None  # can be overwritten by GIc
         self.M                   = M
         self.affinity            = affinity
-        self.exact               = exact
+        # self.exact               = exact
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.postprocess         = postprocess
-        self.cast_float32        = cast_float32
-        self.mlpack_enabled      = mlpack_enabled
-        self.mlpack_leaf_size    = mlpack_leaf_size
-        self.nmslib_n_neighbors  = nmslib_n_neighbors
-        self.nmslib_params_init  = nmslib_params_init
-        self.nmslib_params_index = nmslib_params_index
-        self.nmslib_params_query = nmslib_params_query
+        # self.cast_float32        = cast_float32
+        # self.mlpack_enabled      = mlpack_enabled
+        # self.mlpack_leaf_size    = mlpack_leaf_size
+        # self.nmslib_n_neighbors  = nmslib_n_neighbors
+        # self.nmslib_params_init  = nmslib_params_init
+        # self.nmslib_params_index = nmslib_params_index
+        # self.nmslib_params_query = nmslib_params_query
         self.verbose             = verbose
 
         self.n_samples_          = None
@@ -183,7 +184,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["M"] < 1:
             raise ValueError("`M` must be > 0.")
 
-        cur_state["exact"]             = bool(self.exact)
+        cur_state["exact"]             = True  # bool(self.exact)
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
@@ -230,29 +231,29 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["exact"] and cur_state["affinity"] not in _affinity_exact_options:
             raise ValueError("`affinity` should be one of %s" % repr(_affinity_exact_options))
 
-        if type(self.mlpack_enabled) is str:
-            cur_state["mlpack_enabled"] = str(self.mlpack_enabled).lower()
-            if cur_state["mlpack_enabled"] != "auto":
-                raise ValueError("`mlpack_enabled` must be one of: 'auto', True, False.")
-        else:
-            cur_state["mlpack_enabled"] = bool(self.mlpack_enabled)
+        # if type(self.mlpack_enabled) is str:
+        #     cur_state["mlpack_enabled"] = str(self.mlpack_enabled).lower()
+        #     if cur_state["mlpack_enabled"] != "auto":
+        #         raise ValueError("`mlpack_enabled` must be one of: 'auto', True, False.")
+        # else:
+        #     cur_state["mlpack_enabled"] = bool(self.mlpack_enabled)
 
-        cur_state["mlpack_leaf_size"] = int(self.mlpack_leaf_size)  # mlpack will check this
+        # cur_state["mlpack_leaf_size"] = int(self.mlpack_leaf_size)  # mlpack will check this
 
 
-        cur_state["nmslib_n_neighbors"] = int(self.nmslib_n_neighbors)
-
-        if type(self.nmslib_params_init) is not dict:
-            raise ValueError("`nmslib_params_init` must be a `dict`.")
-        cur_state["nmslib_params_init"] = self.nmslib_params_init.copy()
-
-        if type(self.nmslib_params_index) is not dict:
-            raise ValueError("`nmslib_params_index` must be a `dict`.")
-        cur_state["nmslib_params_index"] = self.nmslib_params_index.copy()
-
-        if type(self.nmslib_params_query) is not dict:
-            raise ValueError("`nmslib_params_query` must be a `dict`.")
-        cur_state["nmslib_params_query"] = self.nmslib_params_query.copy()
+        # cur_state["nmslib_n_neighbors"] = int(self.nmslib_n_neighbors)
+        #
+        # if type(self.nmslib_params_init) is not dict:
+        #     raise ValueError("`nmslib_params_init` must be a `dict`.")
+        # cur_state["nmslib_params_init"] = self.nmslib_params_init.copy()
+        #
+        # if type(self.nmslib_params_index) is not dict:
+        #     raise ValueError("`nmslib_params_index` must be a `dict`.")
+        # cur_state["nmslib_params_index"] = self.nmslib_params_index.copy()
+        #
+        # if type(self.nmslib_params_query) is not dict:
+        #     raise ValueError("`nmslib_params_query` must be a `dict`.")
+        # cur_state["nmslib_params_query"] = self.nmslib_params_query.copy()
 
         # this is more like an inherent dimensionality for GIc
         cur_state["n_features"] = self.n_features   # users can set this manually
@@ -290,16 +291,16 @@ class GenieBase(BaseEstimator, ClusterMixin):
             if cur_state["n_features"] < 0:
                 cur_state["n_features"] = X.shape[1]
 
-        if cur_state["mlpack_enabled"] == "auto":
-            cur_state["mlpack_enabled"] = cur_state["affinity"] == "l2" and \
-                    X.shape[1] <= 7 and \
-                    cur_state["M"] == 1
+        # if cur_state["mlpack_enabled"] == "auto":
+        #     cur_state["mlpack_enabled"] = cur_state["affinity"] == "l2" and \
+        #             X.shape[1] <= 7 and \
+        #             cur_state["M"] == 1
 
-        if cur_state["mlpack_enabled"]:
-            if cur_state["affinity"] != "l2":
-                raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
-            elif cur_state["M"] != 1:
-                raise ValueError("`mlpack` can only be used with `M` = 1.")
+        # if cur_state["mlpack_enabled"]:
+        #     if cur_state["affinity"] != "l2":
+        #         raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
+        #     elif cur_state["M"] != 1:
+        #         raise ValueError("`mlpack` can only be used with `M` = 1.")
 
         tree_w = None
         tree_e = None
@@ -374,128 +375,128 @@ class GenieBase(BaseEstimator, ClusterMixin):
         return cur_state
 
 
-    def _get_mst_approx(self, X, cur_state):
-        if nmslib is None:
-            raise ValueError("Package `nmslib` is not available.")
-
-        if cur_state["affinity"] == "precomputed":
-            raise ValueError(
-                "`affinity` of 'precomputed' can only be used "
-                "with `exact` = True.")
-
-        if cur_state["cast_float32"]:
-            if cur_state["affinity"] in ["leven", "normleven", "jaccard_sparse",
-                                         "bit_jaccard", "bit_hamming"]:
-                raise ValueError("`cast_float32` cannot be used with this `affinity`.")
-
-            if scipy.sparse.isspmatrix(X):
-                X = scipy.sparse.csr_matrix(X, dtype=np.float32, copy=False)
-            else:
-                X = np.asarray(X, dtype=np.float32, order="C")
-
-        n_samples  = np.shape(X)[0]
-
-        if cur_state["n_features"] < 0 and np.ndim(X) >= 2:
-            cur_state["n_features"] = np.shape(X)[1]
-
-        if "indexThreadQty" in cur_state["nmslib_params_index"]:
-            warnings.warn("Set `indexThreadQty` via the OMP_NUM_THREADS "
-                          "environment variable.")
-
-        if os.getenv("OMP_NUM_THREADS"):
-            n_threads = max(1, int(os.getenv("OMP_NUM_THREADS")))
-            cur_state["nmslib_params_index"]["indexThreadQty"] = n_threads
-        else:
-            n_threads = 0
-
-        if "space" in cur_state["nmslib_params_init"]:
-            warnings.warn("Set `space` via the `affinity` parameter.")
-        cur_state["nmslib_params_init"]["space"] = cur_state["affinity"]
-
-        if "data_type" not in cur_state["nmslib_params_init"]:
-            # nmslib.DataType.DENSE_VECTOR|OBJECT_AS_STRING|SPARSE_VECTOR
-            if scipy.sparse.isspmatrix(X):
-                data_type = nmslib.DataType.SPARSE_VECTOR
-            elif np.ndim(X) == 2:
-                data_type = nmslib.DataType.DENSE_VECTOR
-            else:
-                data_type = nmslib.DataType.OBJECT_AS_STRING
-            cur_state["nmslib_params_init"]["data_type"] = data_type
-
-        if "dtype" not in cur_state["nmslib_params_init"]:
-            # nmslib.DistType.FLOAT|INT use FLOAT except for `leven`
-            cur_state["nmslib_params_init"]["dtype"] = \
-                nmslib.DistType.FLOAT if cur_state["affinity"] != "leven" else \
-                nmslib.DistType.INT
-
-        cur_state["nmslib_n_neighbors"] = min(
-            n_samples-2,
-            max(1, cur_state["nmslib_n_neighbors"]))
-
-        if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:
-            raise ValueError("Increase `nmslib_n_neighbors` or decrease `M`.")
-
-        tree_w = None
-        tree_e = None
-        nn_w   = None
-        nn_e   = None
-        d_core = None
-
-
-        if self._last_state is not None and \
-                cur_state["X"]                   == self._last_state["X"] and \
-                cur_state["affinity"]            == self._last_state["affinity"] and \
-                cur_state["exact"]               == self._last_state["exact"] and \
-                cur_state["nmslib_n_neighbors"]  == self._last_state["nmslib_n_neighbors"] and \
-                cur_state["nmslib_params_init"]  == self._last_state["nmslib_params_init"] and \
-                cur_state["nmslib_params_index"] == self._last_state["nmslib_params_index"] and \
-                cur_state["nmslib_params_query"] == self._last_state["nmslib_params_query"]:
-
-            if cur_state["M"] == self._last_state["M"]:
-                tree_w = self._tree_w
-                tree_e = self._tree_e
-                nn_w   = self._nn_w
-                nn_e   = self._nn_e
-            elif cur_state["M"] < self._last_state["M"]:
-                nn_w   = self._nn_w
-                nn_e   = self._nn_e
-
-        if nn_w is None or nn_e is None:
-            index = nmslib.init(**cur_state["nmslib_params_init"])
-            index.addDataPointBatch(X)
-            index.createIndex(
-                cur_state["nmslib_params_index"],
-                print_progress=cur_state["verbose"])
-            index.setQueryTimeParams(cur_state["nmslib_params_query"])
-            nns = index.knnQueryBatch(
-                X,
-                k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
-                num_threads=n_threads)
-            index = None  # no longer needed
-            nn_w, nn_e = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
-            nns = None  # no longer needed
-
-        if cur_state["M"] > 1:
-            d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
-
-
-        if tree_w is None or tree_e is None:
-            tree_w, tree_e = oldmst.mst_from_nn(
-                nn_w,
-                nn_e,
-                d_core,
-                stop_disconnected=False,
-                verbose=cur_state["verbose"])
-            # We can have a forest here...
-
-        self.n_samples_   = n_samples
-        self._tree_w      = tree_w
-        self._tree_e      = tree_e
-        self._nn_w        = nn_w
-        self._nn_e        = nn_e
-        self._d_core      = d_core
-
-        return cur_state
+    # def _get_mst_approx(self, X, cur_state):
+    #     if nmslib is None:
+    #         raise ValueError("Package `nmslib` is not available.")
+    #
+    #     if cur_state["affinity"] == "precomputed":
+    #         raise ValueError(
+    #             "`affinity` of 'precomputed' can only be used "
+    #             "with `exact` = True.")
+    #
+    #     if cur_state["cast_float32"]:
+    #         if cur_state["affinity"] in ["leven", "normleven", "jaccard_sparse",
+    #                                      "bit_jaccard", "bit_hamming"]:
+    #             raise ValueError("`cast_float32` cannot be used with this `affinity`.")
+    #
+    #         if scipy.sparse.isspmatrix(X):
+    #             X = scipy.sparse.csr_matrix(X, dtype=np.float32, copy=False)
+    #         else:
+    #             X = np.asarray(X, dtype=np.float32, order="C")
+    #
+    #     n_samples  = np.shape(X)[0]
+    #
+    #     if cur_state["n_features"] < 0 and np.ndim(X) >= 2:
+    #         cur_state["n_features"] = np.shape(X)[1]
+    #
+    #     if "indexThreadQty" in cur_state["nmslib_params_index"]:
+    #         warnings.warn("Set `indexThreadQty` via the OMP_NUM_THREADS "
+    #                       "environment variable.")
+    #
+    #     if os.getenv("OMP_NUM_THREADS"):
+    #         n_threads = max(1, int(os.getenv("OMP_NUM_THREADS")))
+    #         cur_state["nmslib_params_index"]["indexThreadQty"] = n_threads
+    #     else:
+    #         n_threads = 0
+    #
+    #     if "space" in cur_state["nmslib_params_init"]:
+    #         warnings.warn("Set `space` via the `affinity` parameter.")
+    #     cur_state["nmslib_params_init"]["space"] = cur_state["affinity"]
+    #
+    #     if "data_type" not in cur_state["nmslib_params_init"]:
+    #         # nmslib.DataType.DENSE_VECTOR|OBJECT_AS_STRING|SPARSE_VECTOR
+    #         if scipy.sparse.isspmatrix(X):
+    #             data_type = nmslib.DataType.SPARSE_VECTOR
+    #         elif np.ndim(X) == 2:
+    #             data_type = nmslib.DataType.DENSE_VECTOR
+    #         else:
+    #             data_type = nmslib.DataType.OBJECT_AS_STRING
+    #         cur_state["nmslib_params_init"]["data_type"] = data_type
+    #
+    #     if "dtype" not in cur_state["nmslib_params_init"]:
+    #         # nmslib.DistType.FLOAT|INT use FLOAT except for `leven`
+    #         cur_state["nmslib_params_init"]["dtype"] = \
+    #             nmslib.DistType.FLOAT if cur_state["affinity"] != "leven" else \
+    #             nmslib.DistType.INT
+    #
+    #     cur_state["nmslib_n_neighbors"] = min(
+    #         n_samples-2,
+    #         max(1, cur_state["nmslib_n_neighbors"]))
+    #
+    #     if cur_state["nmslib_n_neighbors"] < cur_state["M"]-1:
+    #         raise ValueError("Increase `nmslib_n_neighbors` or decrease `M`.")
+    #
+    #     tree_w = None
+    #     tree_e = None
+    #     nn_w   = None
+    #     nn_e   = None
+    #     d_core = None
+    #
+    #
+    #     if self._last_state is not None and \
+    #             cur_state["X"]                   == self._last_state["X"] and \
+    #             cur_state["affinity"]            == self._last_state["affinity"] and \
+    #             cur_state["exact"]               == self._last_state["exact"] and \
+    #             cur_state["nmslib_n_neighbors"]  == self._last_state["nmslib_n_neighbors"] and \
+    #             cur_state["nmslib_params_init"]  == self._last_state["nmslib_params_init"] and \
+    #             cur_state["nmslib_params_index"] == self._last_state["nmslib_params_index"] and \
+    #             cur_state["nmslib_params_query"] == self._last_state["nmslib_params_query"]:
+    #
+    #         if cur_state["M"] == self._last_state["M"]:
+    #             tree_w = self._tree_w
+    #             tree_e = self._tree_e
+    #             nn_w   = self._nn_w
+    #             nn_e   = self._nn_e
+    #         elif cur_state["M"] < self._last_state["M"]:
+    #             nn_w   = self._nn_w
+    #             nn_e   = self._nn_e
+    #
+    #     if nn_w is None or nn_e is None:
+    #         index = nmslib.init(**cur_state["nmslib_params_init"])
+    #         index.addDataPointBatch(X)
+    #         index.createIndex(
+    #             cur_state["nmslib_params_index"],
+    #             print_progress=cur_state["verbose"])
+    #         index.setQueryTimeParams(cur_state["nmslib_params_query"])
+    #         nns = index.knnQueryBatch(
+    #             X,
+    #             k=cur_state["nmslib_n_neighbors"] + 1,  # will return self as well
+    #             num_threads=n_threads)
+    #         index = None  # no longer needed
+    #         nn_w, nn_e = internal.nn_list_to_matrix(nns, cur_state["nmslib_n_neighbors"] + 1)
+    #         nns = None  # no longer needed
+    #
+    #     if cur_state["M"] > 1:
+    #         d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
+    #
+    #
+    #     if tree_w is None or tree_e is None:
+    #         tree_w, tree_e = oldmst.mst_from_nn(
+    #             nn_w,
+    #             nn_e,
+    #             d_core,
+    #             stop_disconnected=False,
+    #             verbose=cur_state["verbose"])
+    #         # We can have a forest here...
+    #
+    #     self.n_samples_   = n_samples
+    #     self._tree_w      = tree_w
+    #     self._tree_e      = tree_e
+    #     self._nn_w        = nn_w
+    #     self._nn_e        = nn_e
+    #     self._d_core      = d_core
+    #
+    #     return cur_state
 
 
     def _get_mst(self, X, cur_state):
@@ -504,10 +505,9 @@ class GenieBase(BaseEstimator, ClusterMixin):
         if cur_state["verbose"]:
             print("[genieclust] Preprocessing data.", file=sys.stderr)
 
-        if cur_state["exact"]:
-            cur_state = self._get_mst_exact(X, cur_state)
-        else:
-            cur_state = self._get_mst_approx(X, cur_state)
+        # if cur_state["exact"]:
+        cur_state = self._get_mst_exact(X, cur_state)
+        # else: cur_state = self._get_mst_approx(X, cur_state)
 
         # this might be an "intrinsic" dimensionality:
         self.n_features_  = cur_state["n_features"]
@@ -559,7 +559,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 class Genie(GenieBase):
     """
-    Genie++ hierarchical clustering algorithm
+    Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
 
     Parameters
@@ -570,12 +570,9 @@ class Genie(GenieBase):
 
         If `M` > 1 and `postprocess` is not ``"all"``, `n_clusters` = 1
         can act as a noise point/outlier detector.
-        The approximate method (see parameter `exact`) can sometimes
-        fail to detect the coarsest-grained partitions; in such a case,
-        more clusters might be returned (with a warning).
 
     gini_threshold : float
-        Threshold for the Genie correction in [0,1].
+        A threshold for the Genie correction in [0,1].
 
         The Gini index is used to quantify the inequality of the cluster
         size distribution. Low thresholds highly penalise the formation
@@ -584,73 +581,32 @@ class Genie(GenieBase):
         linkage algorithm if additionally `M` = 1 .
 
         The algorithm tends to be *stable* with respect to small changes
-        to the threshold — they do not tend to affect the output clustering.
+        to the threshold, as they usually do not affect the output clustering.
         Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth giving a try.
 
     M : int
         Smoothing factor for the mutual reachability distance [6]_.
 
         `M` = 1 gives the original Genie algorithm [1]_ (with no noise/boundary
-        points detection) with respect to the chosen affinity as-is. Note that
-        for `M > 1` we need additionally :math:`O(M n)` working memory
-        for storing of points' nearest neighbours.
+        points detection) with respect to the chosen distance.
 
     affinity : str
         Metric used to compute the linkage.
 
-        *   For `exact` = ``True``:
+        One of:
+        ``"l2"`` (synonym: ``"euclidean"``),
+        ``"l1"`` (synonym: ``"manhattan"``, ``"cityblock"``),
+        ``"cosinesimil"`` (synonym: ``"cosine"``), or
+        ``"precomputed"``.
 
-            One of:
-            ``"l2"`` (synonym: ``"euclidean"``),
-            ``"l1"`` (synonym: ``"manhattan"``, ``"cityblock"``),
-            ``"cosinesimil"`` (synonym: ``"cosine"``), or
-            ``"precomputed"``.
-
-            In the latter case, the `X` argument to the `fit` method
-            must be a distance vector or a square-form distance matrix;
-            see `scipy.spatial.distance.pdist`.
-
-        *   For `exact` = ``False``:
-
-            Any dissimilarity supported by `nmslib`, see [5]_ and
-            https://github.com/nmslib/nmslib/blob/master/manual/spaces.md,
-            for instance:
-            ``"l2"``,
-            ``"l2_sparse"``,
-            ``"l1"``,
-            ``"l1_sparse"``,
-            ``"linf"``,
-            ``"linf_sparse"``,
-            ``"cosinesimil"``,
-            ``"cosinesimil_sparse"``,
-            ``"negdotprod"``,
-            ``"negdotprod_sparse"``,
-            ``"angulardist"``,
-            ``"angulardist_sparse"``,
-            ``"leven"``,
-            ``"normleven"``,
-            ``"jaccard_sparse"``,
-            ``"bit_jaccard"``,
-            ``"bit_hamming"``.
-
-    exact : bool
-        Whether to compute the minimum spanning tree exactly or rather
-        estimate it based on an approximate near-neighbour graph.
-
-        The exact method has time complexity of :math:`O(d n^2)` [2]_
-        (however, see `mlpack_enabled`) but only needs :math:`O(n)` memory.
-
-        If `exact` is ``False``, the minimum spanning tree is approximated
-        based on an approximate :math:`k`\\ -nearest neighbours graph found by
-        `nmslib` [5]_. This is typically very fast but requires
-        :math:`O(k n)` memory.
+        In the latter case, the `X` argument to the `fit` method
+        must be a distance vector or a square-form distance matrix;
+        see `scipy.spatial.distance.pdist`.
 
     compute_full_tree : bool
-        Whether to determine the whole cluster hierarchy and the
-        linkage matrix.
+        Whether to determine the whole cluster hierarchy and the linkage matrix.
 
-        Only available if `M` = 1 and `exact` is ``True``.
-        Enables plotting of dendrograms or cutting
+        Only available for `M` = 1. Enables plotting of dendrograms or cutting
         of the hierarchy at an arbitrary level, see the
         `children_`, `distances_`, `counts_` attributes.
 
@@ -670,69 +626,9 @@ class Genie(GenieBase):
         By default, only boundary points are merged with their nearest
         *core* points.
 
-        To force a classical `n_clusters`-partition
-        of a data set (with no notion of noise), choose ``"all"``.
-        Furthermore, ``"none"`` leaves all leaves, i.e., noise/boundary points
-        as-is.
-
-
-    cast_float32 : bool
-        Whether casting of data type to ``float32`` is to be performed.
-
-        If `exact` is ``True``, it decreases the run-time up to two times
-        at the cost of greater memory use. Note that `nmslib`
-        *requires* ``float32`` data anyway when using dense or sparse
-        numeric matrix inputs.
-
-        By setting `cast_float32` to ``False``, you must ensure
-        that the inputs are of acceptable form.
-
-    mlpack_enabled : "auto" or bool
-        If `exact` is ``True``, controls whether `mlpack.emst`
-        (the Dual-Tree Boruvka algorithm over K-d trees)
-        should be used for computing the Euclidean minimum spanning tree
-        instead of the parallelised Jarník-Prim algorithm.
-
-        `mlpack.emst` is oftentimes very fast in low-dimensional spaces.
-        It only supports the `affinity` of ``'l2'`` and `M` = 1.
-        By default, we rely on `mlpack` if `n_features` <= 7.
-
-    mlpack_leaf_size : int
-        Leaf size in the K-d tree when `mlpack.emst` is used.
-
-        According to the `mlpack` manual, leaves of size 1 give the best
-        performance at the cost of greater memory use.
-
-    nmslib_n_neighbors : int
-        The number of approximate nearest neighbours used to estimate
-        the minimum spanning tree when when `exact` is ``False``.
-
-        If the number of nearest neighbours is too small, the nearest
-        neighbour graph might be disconnected and the number of obtained
-        clusters might be greater than the requested one.
-
-        `nmslib_n_neighbors` must not be less than `M` - 1.
-
-    nmslib_params_init : dict
-        A dictionary of parameters to be passed to `nmslib.init`
-        when `exact` is ``False``.
-
-        See https://github.com/nmslib/nmslib/blob/master/manual/methods.md,
-        https://github.com/nmslib/nmslib/blob/master/manual/spaces.md
-        and https://nmslib.github.io/nmslib/
-        for more details. The `space`, `data_type`, and `dtype` parameters
-        will be set based on the chosen `affinity` and the input `X`.
-
-    nmslib_params_index : dict
-        A dictionary of parameters to be passed to `index.createIndex`,
-        where `index` is the object constructed with `nmslib.init`.
-
-        The `indexThreadQty` parameter will be set based on the
-        ``OMP_NUM_THREADS`` environment variable.
-
-    nmslib_params_query : dict
-        A dictionary of parameters to be passed to `index.setQueryTimeParams`,
-        where `index` is the object constructed with `nmslib.init`.
+        To force a classical `n_clusters`-partition of a data set (with no
+        notion of noise), choose ``"all"``. Furthermore, ``"none"`` leaves
+        all leaves, i.e., noise/boundary points as-is.
 
     verbose : bool
         Whether to print diagnostic messages and progress information
@@ -760,17 +656,10 @@ class Genie(GenieBase):
         (there might be points with labels of -1 even if `postprocess`
         is ``"all"``).
 
-        Note that the approximate method (`exact` of ``False``) might fail
-        to determine the fine-grained clusters (if the approximate
-        neighbour graph is disconnected) - the actual number of clusters
-        detected can be larger.
-
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
-
-        As we argued above, the approximate method might sometimes yield
-        a more fine-grained partition than the requested one (with a warning).
-        Moreover, there might be too many noise/boundary points in the dataset.
+        It can be different from the requested one if there are too many
+        noise points in the dataset.
 
     n_samples_ : int
         The number of points in the fitted dataset.

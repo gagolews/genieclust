@@ -22,7 +22,6 @@
 
 #include "c_common.h"
 #include "c_matrix.h"
-// #include "c_oldmst.h"
 #include "c_fastmst.h"
 #include <cmath>
 
@@ -66,199 +65,6 @@ int Romp_get_max_threads()
 {
     return Comp_get_max_threads();
 }
-
-
-
-// template<typename T>
-// NumericMatrix internal_compute_mst(CDistance<T>* D, Py_ssize_t n, Py_ssize_t M, bool verbose)
-// {
-//     NumericMatrix ret(n-1, 3);
-//
-//     CDistance<T>* D2 = NULL;
-//     if (M >= 2) { // yep, we need it for M==2 as well
-//         if (verbose) GENIECLUST_PRINT("[genieclust] Determining the core distance.\n");
-//
-//         Py_ssize_t k = M-1;
-//         CMatrix<Py_ssize_t> nn_i(n, k);
-//         CMatrix<T> nn_d(n, k);
-//         Cknn_from_complete(D, n, k, nn_d.data(), nn_i.data());
-//
-//         NumericMatrix nn_r(n, k);
-//
-//         std::vector<T> d_core(n);
-//         for (Py_ssize_t i=0; i<n; ++i) {
-//             d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
-//             GENIECLUST_ASSERT(std::isfinite(d_core[i]));
-//
-//             for (Py_ssize_t j=0; j<k; ++j) {
-//                 GENIECLUST_ASSERT(nn_i(i,j) != i);
-//                 nn_r(i,j) = nn_i(i,j)+1; // 1-based indexing
-//             }
-//         }
-//
-//         ret.attr("nn") = nn_r;
-//
-//         D2 = new CDistanceMutualReachability<T>(d_core.data(), n, D);
-//     }
-//
-//     CMatrix<Py_ssize_t> mst_i(n-1, 2);
-//     std::vector<T>  mst_d(n-1);
-//
-//     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
-//     Cmst_from_complete<T>(D2?D2:D, n, mst_d.data(), mst_i.data(), verbose);
-//     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-//
-//     if (D2) delete D2;
-//
-//     for (Py_ssize_t i=0; i<n-1; ++i) {
-//         GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
-//         GENIECLUST_ASSERT(std::isfinite(mst_d[i]));
-//         ret(i,0) = mst_i(i,0)+1;  // R-based indexing
-//         ret(i,1) = mst_i(i,1)+1;  // R-based indexing
-//         ret(i,2) = mst_d[i];
-//     }
-//
-//     return ret;
-// }
-//
-//
-//
-//
-//
-// template<typename T>
-// NumericMatrix internal_mst_default(
-//     NumericMatrix X,
-//     String distance,
-//     Py_ssize_t M,
-//     /*bool use_mlpack, */
-//     bool verbose)
-// {
-//     Py_ssize_t n = X.nrow();
-//     Py_ssize_t d = X.ncol();
-//     NumericMatrix ret;
-//
-//     if (M < 1 || M >= n-1)
-//         stop("`M` must be an integer in [1, n-1)");
-//
-//     CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
-//
-//     T* _X2 = X2.data();
-//     for (Py_ssize_t i=0; i<n*d; i++) {
-//         if (!std::isfinite(_X2[i]))
-//             Rf_error("All elements in the input matrix must be finite and non-missing.");
-//     }
-//
-//
-// #if 1
-//     // Special case (most frequently used)
-//     if (distance == "euclidean" || distance == "l2")
-//     {
-//         NumericMatrix ret(n-1, 3);
-//         CMatrix<Py_ssize_t> mst_i(n-1, 2);
-//         std::vector<T>  mst_d(n-1);
-//
-//         if (M == 1) { // yes, M==2 needs 1-nns
-//             if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
-//             Cmst_euclid<T>(_X2, n, d, mst_d.data(), mst_i.data(), nullptr, verbose);
-//             if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-//         }
-//         else {
-//             if (verbose) GENIECLUST_PRINT("[genieclust] Computing the nearest neighbours.\n");
-//             Py_ssize_t k = M-1;
-//             CMatrix<Py_ssize_t> nn_i(n, k);
-//             CMatrix<T> nn_d(n, k);
-//             Cknn_sqeuclid_brute(_X2, n, d, k, nn_d.data(), nn_i.data(), verbose);
-//
-//             NumericMatrix nn_r(n, k);
-//
-//             std::vector<T> d_core(n);
-//             for (Py_ssize_t i=0; i<n; ++i) {
-//                 d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
-//                 GENIECLUST_ASSERT(std::isfinite(d_core[i]));
-//
-//                 for (Py_ssize_t j=0; j<k; ++j) {
-//                     GENIECLUST_ASSERT(nn_i(i,j) != i);
-//                     nn_r(i,j) = nn_i(i,j)+1; // 1-based indexing
-//                 }
-//             }
-//
-//             ret.attr("nn") = nn_r;
-//
-//             if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST.\n");
-//             Cmst_euclid<T>(_X2, n, d, mst_d.data(), mst_i.data(), d_core.data(), verbose);
-//             if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
-//         }
-//
-//         for (Py_ssize_t i=0; i<n-1; ++i) {
-//             GENIECLUST_ASSERT(mst_i(i,0) < mst_i(i,1));
-//             GENIECLUST_ASSERT(std::isfinite(mst_d[i]));
-//             ret(i,0) = mst_i(i,0)+1;  // R-based indexing
-//             ret(i,1) = mst_i(i,1)+1;  // R-based indexing
-//             ret(i,2) = mst_d[i];
-//         }
-//
-//         return ret;
-//     }
-// #endif
-//
-//
-//     CDistance<T>* D = NULL;
-//     if (distance == "euclidean" || distance == "l2")
-//        D = (CDistance<T>*)(new CDistanceEuclideanSquared<T>(X2.data(), n, d));
-//     else if (distance == "manhattan" || distance == "cityblock" || distance == "l1")
-//         D = (CDistance<T>*)(new CDistanceManhattan<T>(X2.data(), n, d));
-//     else if (distance == "cosine")
-//         D = (CDistance<T>*)(new CDistanceCosine<T>(X2.data(), n, d));
-//     else
-//         stop("given `distance` is not supported (yet)");
-//
-//     ret = internal_compute_mst<T>(D, n, M, verbose);
-//     delete D;
-//
-//     if (distance == "euclidean" || distance == "l2") {
-//         for (Py_ssize_t i=0; i<n-1; ++i) {
-//             ret(i,2) = sqrt(ret(i,2));
-//         }
-//     }
-//
-//     return ret;
-// }
-//
-//
-//
-//
-//
-//
-// // [[Rcpp::export(".mst.default")]]
-// NumericMatrix dot_mst_default(
-//     NumericMatrix X,
-//     String distance="euclidean",
-//     int M=1,
-//     bool cast_float32=true,
-//     bool verbose=false)
-// {
-//     if (cast_float32)
-//         return internal_mst_default<float >(X, distance, M, verbose);
-//     else
-//         return internal_mst_default<double>(X, distance, M, verbose);
-// }
-//
-//
-//
-// // [[Rcpp::export(".mst.dist")]]
-// NumericMatrix dot_mst_dist(
-//     NumericVector d,
-//     int M=1,
-//     bool verbose=false)
-// {
-//     Py_ssize_t n = (Py_ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);
-//     GENIECLUST_ASSERT(n*(n-1)/2 == d.size());
-//
-//     CDistancePrecomputedVector<double> D(REAL(SEXP(d)), n);
-//
-//     return internal_compute_mst<double>(&D, n, M, verbose);
-// }
-
 
 
 
@@ -314,7 +120,7 @@ int Romp_get_max_threads()
 //'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 //' @param max_leaf_size maximal number of points in the K-d tree leaves;
 //'        smaller leaves use more memory, yet are not necessarily faster;
-//'        use \code{0] to select the default value, currently set to 32
+//'        use \code{0} to select the default value, currently set to 32
 //' @param squared whether to return the squared Euclidean distance
 //' @param verbose whether to print diagnostic messages
 //'
@@ -701,45 +507,55 @@ List mst_euclid(
             XC[j++] = (FLOAT)_X(i, u);  // row-major
 
 
-    std::vector<Py_ssize_t> mst_ind((n-1)*2);
+    std::vector<Py_ssize_t> mst_ind((n-1)*2);    // C-order
     std::vector<FLOAT>      mst_dist(n-1);       // TODO: use out_dist
-    std::vector<FLOAT>      d_core((M==1)?0:n);  // TODO: use out_dcore
+    std::vector<Py_ssize_t> nn_ind((M==1)?0:(n*(M-1)));
+    std::vector<FLOAT>      nn_dist((M==1)?0:(n*(M-1)));
 
     if (use_kdtree)
         Cmst_euclid_kdtree(
             XC.data(), n, d, M, mst_dist.data(), mst_ind.data(),
-            (M==1)?nullptr:d_core.data(),
-            max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+            (M==1)?nullptr:nn_dist.data(), (M==1)?nullptr:nn_ind.data(),
+            max_leaf_size, first_pass_max_brute_size, use_dtb,
+            verbose
         );
     else
         Cmst_euclid_brute(
             XC.data(), n, d, M, mst_dist.data(), mst_ind.data(),
-            (M==1)?nullptr:d_core.data(), verbose
+            (M==1)?nullptr:nn_dist.data(), (M==1)?nullptr:nn_ind.data(),
+            verbose
         );
 
-    Rcpp::IntegerMatrix out_ind(n-1, 2);
-    Rcpp::NumericVector out_dist(n-1);
+    Rcpp::IntegerMatrix out_mst_ind(n-1, 2);
+    Rcpp::NumericVector out_mst_dist(n-1);
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        out_ind(i, 0)  = mst_ind[2*i+0]+1.0;  // R-based indexing
-        out_ind(i, 1)  = mst_ind[2*i+1]+1.0;  // R-based indexing
-        out_dist(i)    = mst_dist[i];
+        out_mst_ind(i, 0)  = mst_ind[2*i+0]+1.0;  // R-based indexing
+        out_mst_ind(i, 1)  = mst_ind[2*i+1]+1.0;  // R-based indexing
+        out_mst_dist(i)    = mst_dist[i];
     }
 
     if (M == 1) {
         return Rcpp::List::create(
-            Rcpp::Named("mst.index")=out_ind,
-            Rcpp::Named("mst.dist")=out_dist
+            Rcpp::Named("mst.index")=out_mst_ind,
+            Rcpp::Named("mst.dist") =out_mst_dist
         );
     }
     else {
-        Rcpp::NumericVector out_dcore(n);
+        Rcpp::IntegerMatrix out_nn_ind(n, M-1);
+        Rcpp::NumericMatrix out_nn_dist(n, M-1);
+        Py_ssize_t u=0;
         for (Py_ssize_t i=0; i<n; ++i) {
-            out_dcore(i) = d_core[i];
+            for (Py_ssize_t j=0; j<M-1; ++j) {
+                out_nn_ind(i, j)  = nn_ind[u]+1;  // 1-based indexing
+                out_nn_dist(i, j) = nn_dist[u];
+                ++u;
+            }
         }
         return Rcpp::List::create(
-            Rcpp::Named("mst.index")=out_ind,
-            Rcpp::Named("mst.dist")=out_dist,
-            Rcpp::Named("core.dist")=out_dcore
+            Rcpp::Named("mst.index")=out_mst_ind,
+            Rcpp::Named("mst.dist") =out_mst_dist,
+            Rcpp::Named("nn.index") =out_nn_ind,
+            Rcpp::Named("nn.dist")  =out_nn_dist
         );
     }
 }

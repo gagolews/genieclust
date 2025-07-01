@@ -29,17 +29,17 @@ universal clustering approach for every kind of problem, but Genie
 is definitely worth a try!
 
 Genie is based on minimum spanning trees {cite}`cvimst`
-of the pairwise distance graphs. Thus, it is also **very fast** — determining
-the whole cluster hierarchy for datasets of millions of points, can be
-completed within {any}`minutes <weave/timings>`. Therefore, it is capable
-of solving **extreme clustering tasks** (large datasets with any number
-of clusters to detect) on data that fit into memory.
+of the pairwise distance graphs. Thus, it can also be pretty **fast**:
+determining the whole cluster hierarchy for datasets of millions of points
+can be completed within minutes. Therefore, it is nicely suited for solving
+**extreme clustering tasks** (large datasets with a high number of clusters
+to detect).
 
 Genie also allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a robustified version
-of *HDBSCAN\** {cite}`hdbscan` that is able to detect a predefined
-number of clusters (actually, a whole hierarchy thereof). Hence, it doesn't
-dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
+of *HDBSCAN\** {cite}`hdbscan` that is able to identify a predefined
+number of clusters (actually, their whole hierarchy. The good news is that it
+doesn't dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 
 
@@ -47,7 +47,7 @@ dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 The **Python version** of *genieclust* is available via
 [PyPI](https://pypi.org/project/genieclust/), e.g.,
-via a call to
+via a call to:
 
 ```bash
 pip3 install genieclust
@@ -81,7 +81,8 @@ by calling:
 install.packages("genieclust")
 ```
 
-Its interface is compatible with the classic `stats::hclust()`, but there is more.
+Its interface is compatible with the classic `stats::hclust()`,
+but there is more:
 
 ```r
 X <- ...  # some data
@@ -104,16 +105,12 @@ The implemented algorithms include:
 
 -  *Genie++* – a reimplementation of the original Genie algorithm
     from the R package [*genie*](https://cran.r-project.org/web/packages/genie)
-    {cite}`genieins`: much faster than the original one;
-    supports approximate disconnected MSTs;
+    {cite}`genieins`; much faster than the original one;
+    supports arbitrary spanning forests;
 
 -   *Genie+HDBSCAN\** – a robustified (Geniefied) retake on the *HDBSCAN\**
     {cite}`hdbscan` method that detects noise points in data and
-    outputs clusters of predefined sizes;
-
--   *GIc* (*Genie+Information Criterion*) –
-    a heuristic agglomerative algorithm {cite}`cenaphd` to minimise an information-theoretic criterion {cite}`itm`; see {cite}`cvimst`
-    *(Python only)*.
+    outputs clusters of predefined sizes.
 
 Other features:
 
@@ -142,8 +139,8 @@ Other features:
 *genieclust* is distributed under the open source GNU AGPL v3 license
 and can be downloaded from [GitHub](https://github.com/gagolews/genieclust).
 The core functionality is implemented in the form of a header-only C++
-library, so it may be adapted to new environments relatively easily —
-any valuable contributions are welcome (Julia, Matlab, etc.).
+library, so it may be adapted to new environments relatively easily:
+any valuable contributions are welcome (Julia or Matlab bindings, etc.).
 
 
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)

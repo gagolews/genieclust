@@ -462,7 +462,7 @@ omp_get_max_threads <- function() {
 #'     \code{"auto"} selects \code{"kd_tree"} in low-dimensional spaces
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
 #'        smaller leaves use more memory, yet are not necessarily faster;
-#'        use \code{0] to select the default value, currently set to 32
+#'        use \code{0} to select the default value, currently set to 32
 #' @param squared whether to return the squared Euclidean distance
 #' @param verbose whether to print diagnostic messages
 #'
@@ -651,12 +651,10 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' library("datasets")
 #' data("iris")
 #' X <- jitter(as.matrix(iris[1:2]))  # some data
-#' neighbours <- knn_euclid(X, 1)  # 1-NNs of each point
+#' T <- mst_euclid(X)                 # Euclidean MST of X
 #' plot(X, asp=1, las=1)
-#' segments(X[,1], X[,2], X[neighbours$nn.index,1], X[neighbours$nn.index,2])
-#'
-#' knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
-#'
+#' segments(X[T$mst.index[, 1], 1], X[T$mst.index[, 1], 2],
+#'          X[T$mst.index[, 2], 1], X[T$mst.index[, 2], 2])
 #'
 #' @seealso \code{\link{knn_euclid}}
 #'
@@ -779,5 +777,13 @@ bonferroni_index <- function(x) {
 #' @export
 devergottini_index <- function(x) {
     .Call(`_genieclust_devergottini_index`, x)
+}
+
+.oldmst.matrix <- function(X, distance = "euclidean", M = 1L, cast_float32 = FALSE, verbose = FALSE) {
+    .Call(`_genieclust_dot_oldmst_matrix`, X, distance, M, cast_float32, verbose)
+}
+
+.oldmst.dist <- function(d, M = 1L, verbose = FALSE) {
+    .Call(`_genieclust_dot_oldmst_dist`, d, M, verbose)
 }
 
