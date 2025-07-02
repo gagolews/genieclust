@@ -11,11 +11,11 @@ for (d in c(2, 10, 50)) {
     for (k in c(1, 2, 5, n-1)) {
         nna <- knn_euclid(X, k)
         nnb <- knn_euclid(X, k, algorithm="brute")
-        expect_equal(nna$nn.ind, nnb$nn.ind)
+        expect_equal(nna$nn.index, nnb$nn.index)
         expect_equal(nna$nn.dist, nnb$nn.dist)
         if (d <= 20) {
             nnk <- knn_euclid(X, k, algorithm="kd_tree")
-            expect_equal(nna$nn.ind, nnk$nn.ind)
+            expect_equal(nna$nn.index, nnk$nn.index)
             expect_equal(nna$nn.dist, nnk$nn.dist)
         }
     }

@@ -172,14 +172,19 @@ ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 \examples{
 library("datasets")
 data("iris")
-X <- iris[1:4]
+X <- jitter(as.matrix(iris[2:3]))
 h <- gclust(X)
 y_pred <- cutree(h, 3)
-y_test <- iris[,5]
-plot(iris[,2], iris[,3], col=y_pred,
-   pch=as.integer(iris[,5]), asp=1, las=1)
+y_test <- as.integer(iris[,5])
+plot(X, col=y_pred, pch=y_test, asp=1, las=1)
 adjusted_rand_score(y_test, y_pred)
 normalized_clustering_accuracy(y_test, y_pred)
+
+y_pred2 <- genie(X, 3, M=5)  # clustering wrt 5-mutual reachability distance
+plot(X[,1], X[,2], col=y_pred2, pch=y_test, asp=1, las=1)
+noise <- is.na(y_pred2)  # noise/boundary points
+points(X[noise, ], col="gray", pch=10)
+normalized_clustering_accuracy(y_test[!noise], y_pred2[!noise])
 
 }
 \references{

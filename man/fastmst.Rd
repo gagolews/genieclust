@@ -40,8 +40,8 @@ currently set to 32}
 \item{verbose}{whether to print diagnostic messages}
 }
 \value{
-A list with two (M=1) or three (M>1) elements,
-\code{mst.index}, \code{mst.dist}, and optionally \code{core.dist}.
+A list with two (M=1) or four (M>1) elements, \code{mst.index} and
+\code{mst.dist}, and additionally \code{nn.index} and \code{nn.dist}.
 
 \code{mst.index} is a matrix with \eqn{n-1} rows and \code{2} columns,
 whose rows define the tree edges.
@@ -53,8 +53,9 @@ The tree edges are ordered w.r.t. weights nondecreasingly, and then by
 the indexes (lexicographic ordering of the \code{(weight, index1, index2)}
 triples).  For each \code{i}, it holds \code{mst_ind[i,1]<mst_ind[i,2]}.
 
-\code{core.dist} gives the \code{n} distances to each point's
-(\code{M-1})-th nearest neighbour.
+\code{nn.index} is an \code{n} by \code{M-1} matrix giving the indexes
+of each point's nearest neighbours. \code{nn.dist} provides the
+corresponding distances.
 }
 \description{
 The function determines the/a(*) minimum spanning tree (MST) of a set

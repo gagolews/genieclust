@@ -439,6 +439,7 @@ omp_get_max_threads <- function() {
 #' at runtime. For best speed, consider building the package
 #' from sources using, e.g., \code{-O3 -march=native} compiler flags.
 #'
+#'
 #' @references
 #' J.L. Bentley, Multidimensional binary search trees used for associative
 #' searching, \emph{Communications of the ACM} 18(9), 509–517, 1975,
@@ -630,8 +631,8 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #'
 #'
 #' @return
-#' A list with two (M=1) or three (M>1) elements,
-#' \code{mst.index}, \code{mst.dist}, and optionally \code{core.dist}.
+#' A list with two (M=1) or four (M>1) elements, \code{mst.index} and
+#' \code{mst.dist}, and additionally \code{nn.index} and \code{nn.dist}.
 #'
 #' \code{mst.index} is a matrix with \eqn{n-1} rows and \code{2} columns,
 #' whose rows define the tree edges.
@@ -643,8 +644,9 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' the indexes (lexicographic ordering of the \code{(weight, index1, index2)}
 #' triples).  For each \code{i}, it holds \code{mst_ind[i,1]<mst_ind[i,2]}.
 #'
-#' \code{core.dist} gives the \code{n} distances to each point's
-#' (\code{M-1})-th nearest neighbour.
+#' \code{nn.index} is an \code{n} by \code{M-1} matrix giving the indexes
+#' of each point's nearest neighbours. \code{nn.dist} provides the
+#' corresponding distances.
 #'
 #'
 #' @examples

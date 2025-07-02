@@ -113,13 +113,14 @@
 #' distance between the point pair.
 #'
 #' The \code{Size} attribute specifies the number of points, \eqn{n}.
-#' The \code{Labels} attribute gives the labels of the input points (optionally).
-#' The \code{method} attribute provides the name of the distance used.
+#' The \code{Labels} attribute gives the labels of the input points,
+#' if available.
+#' The \code{method} attribute provides the name of the distance function used.
 #'
-#' If \code{M} > 1, the \code{nn.index} attribute gives the indices
+#' If \eqn{M>1}, the \code{nn.index} attribute gives the indices
 #' of the \code{M}-1 nearest neighbours of each point
-#' and \code{nn.dist} provides the corresponding distances
-#' (if returned by the underlying function).
+#' and \code{nn.dist} provides the corresponding distances,
+#' both in the form of an \eqn{n} by \eqn{M-1} matrix.
 #'
 #'
 #' @examples

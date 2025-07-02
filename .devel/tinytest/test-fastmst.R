@@ -26,6 +26,9 @@ for (d in c(2, 20)) {
 
     for (M in c(2, 5, 10)) {
         t0 <- mst_euclid(X, M=M, algorithm="auto")
+        nna <- knn_euclid(X, M-1)
+        expect_equal(nna$nn.index, t0$nn.index)
+        expect_equal(nna$nn.dist, t0$nn.dist)
 
         ts <- list(
             mst_euclid(X, M=M, algorithm="brute"),
@@ -39,6 +42,9 @@ for (d in c(2, 20)) {
             expect_true(abs(sum(t0$mst.dist)-sum(t1$mst.dist)) < 1e-9)
             expect_equal(t1$nn.index, t0$nn.index)
             expect_equal(t1$nn.dist, t0$nn.dist)
+            expect_equal(dim(t1$nn.dist), dim(t1$nn.index))
+            expect_equal(dim(t1$nn.dist), c(n, M-1))
+
         }
     }
 }
