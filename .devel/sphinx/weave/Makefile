@@ -5,11 +5,11 @@ FILES_RMD = \
 	sklearn_toy_example.Rmd \
 	noise.Rmd               \
 	r.Rmd                   \
-	benchmarks_approx.Rmd   \
 	benchmarks_ar.Rmd       \
 	benchmarks_details.Rmd  \
 	timings.Rmd
 
+#	benchmarks_approx.Rmd   \
 #	sparse.Rmd              \
 #	string.Rmd              \
 

@@ -102,19 +102,27 @@ def mst_mutreach_check(X, metric='euclidean'):
         assert np.allclose(mst_d, mst_d2)
 
 
+        Dsorted = np.argsort(D, axis=1)
+        assert np.all(Dsorted[:,0] == np.arange(n))
+
+        nn_i1  = Dsorted[:, 1:M]
+        nn_d1 = D[np.repeat(np.arange(n).reshape(-1,1), M-1, axis=1), nn_i1]
+
         if metric == 'euclidean':
             for algo in ["brute", "auto", "kd_tree_single", "kd_tree_dual"]:
                 if d > 20 and algo in ["kd_tree_single", "kd_tree_dual"]:
                     continue
 
                 t0 = time.time()
-                mst_d2, mst_i2, d_core2 = genieclust.fastmst.mst_euclid(X, M=M, algorithm=algo)
+                mst_d2, mst_i2, nn_d2, nn_i2 = genieclust.fastmst.mst_euclid(X, M=M, algorithm=algo)
                 print("    mutreach(%d)-fastmst_%s    %10.3fs" % (M, algo, time.time()-t0,))
 
-                assert np.allclose(d_core, d_core2)
+                assert np.allclose(d_core, nn_d2[:,-1])
                 assert np.allclose(mst_d.sum(), mst_d2.sum())
                 #assert np.all(mst_i == mst_i2)  # mutreach-many duplicates - ambiguous
                 assert np.allclose(mst_d, mst_d2)
+                assert np.allclose(nn_d1, nn_d2)
+                assert np.all(nn_i1==nn_i2)
 
     return True
 

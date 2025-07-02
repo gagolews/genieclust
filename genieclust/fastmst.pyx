@@ -7,13 +7,12 @@
 
 
 """
-Functions to compute k-nearest neighbours and minimum spanning trees
-with respect to the Euclidean metric and the thereon-based mutual
-reachability distances. The module provides access to a quite fast
-implementation of K-d trees.
+k-nearest neighbours and minimum spanning trees with respect to the Euclidean
+metric or the thereon-based mutual reachability distances. The module provides
+access to a quite fast implementation of K-d trees.
 
 For best speed, consider building the package from sources
-using, e.g., `-O3 -march=native` compiler flags.
+using, e.g., `-O3 -march=native` compiler flags and with OpenMP support on.
 """
 
 # ############################################################################ #
@@ -420,7 +419,7 @@ cpdef tuple mst_euclid(
         the degree of the mutual reachability distance (should be rather small,
         say, `<= 20`). `M<=2` denotes the ordinary Euclidean distance
     algorithm : ``{"auto", "kd_tree_single", "kd_tree_dual", "brute"}``, default="auto"
-        K-d trees can only be used for d between 2 and 20 only.
+        K-d trees can only be used for `d` between 2 and 20 only.
         ``"auto"`` selects ``"kd_tree_dual"`` for `d<=3`, `M<=2`,
         and in a single-threaded setting only. ``"kd_tree_single"`` is used
         otherwise, unless `d>20`.
@@ -440,23 +439,26 @@ cpdef tuple mst_euclid(
     -------
 
     tuple
-        If `M==1`, a pair ``(mst_dist, mst_ind)`` defining the `n-1` edges
-        of an identified spanning tree is returned:
+        If `M==1`, a pair ``(mst_dist, mst_index)`` defining the `n-1` edges
+        of the computed spanning tree is returned:
 
           1. the `(n-1)`-ary array ``mst_dist`` is such that
           ``mst_dist[i]`` gives the weight of the `i`-th edge;
 
-          2. ``mst_ind`` is a matrix with `n-1` rows and `2` columns, where
-          ``{mst_ind[i,0], mst_ind[i,1]}`` defines the `i`-th edge of the tree.
-
-        For `M>1`, we additionally get:
-
-          3. the `n` core distances, i.e., the distances
-            to each point's `(M-1)`-th nearest neighbour.
+          2. ``mst_index`` is a matrix with `n-1` rows and `2` columns, where
+          ``{mst_index[i,0], mst_index[i,1]}`` defines the `i`-th edge of the tree.
 
         The tree edges are ordered w.r.t. weights nondecreasingly, and then by
         the indexes (lexicographic ordering of the ``(weight, index1, index2)``
-        triples).  For each `i`, it holds ``mst_ind[i,0]<mst_ind[i,1]``.
+        triples).  For each `i`, it holds ``mst_index[i,0]<mst_index[i,1]``.
+
+        For `M>1`, we additionally get:
+
+          3. an `n` by `M-1` matrix ``nn_dist`` giving the distances between
+          each point and its `M-1` nearest neighbours,
+
+          4. a matrix of the same shape ``nn_index`` providing the corresponding
+          indexes of the neighbours.
     """
 
     cdef Py_ssize_t n = X.shape[0]
@@ -511,25 +513,30 @@ cpdef tuple mst_euclid(
     cdef np.ndarray[floatT,ndim=2] X2
     X2 = np.asarray(X, order="C", copy=True)  # destroyable
 
-    cdef np.ndarray[floatT] d_core
-    if M > 1: d_core = np.empty(n,
-        dtype=np.float32 if floatT is float else np.float64)
-
+    cdef np.ndarray[Py_ssize_t,ndim=2] nn_ind
+    cdef np.ndarray[floatT,ndim=2]     nn_dist
+    if M > 1:
+        nn_ind  = np.empty((n, M-1), dtype=np.intp)
+        nn_dist = np.empty((n, M-1), dtype=np.float32 if floatT is float else np.float64)
 
     if use_kdtree:
         c_fastmst.Cmst_euclid_kdtree(
             &X2[0,0], n, d, M,
-            &mst_dist[0], &mst_ind[0,0], <floatT*>(0) if M==1 else &d_core[0],
+            &mst_dist[0], &mst_ind[0,0],
+            <floatT*>(0) if M==1 else &nn_dist[0,0],
+            <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
             max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
         )
     else:
         c_fastmst.Cmst_euclid_brute(
             &X2[0,0], n, d, M,
-            &mst_dist[0], &mst_ind[0,0], <floatT*>(0) if M==1 else &d_core[0],
+            &mst_dist[0], &mst_ind[0,0],
+            <floatT*>(0) if M==1 else &nn_dist[0,0],
+            <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
             verbose
         )
 
     if M == 1:
         return mst_dist, mst_ind
     else:
-        return mst_dist, mst_ind, d_core
+        return mst_dist, mst_ind, nn_dist, nn_ind

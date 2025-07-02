@@ -1,19 +1,19 @@
 # Basics
 
 *Genie* {cite}`genieins` is an agglomerative hierarchical clustering
-algorithm that links clusters minding that
-the Gini index (a measure of inequality used in, amongst others,
-economics) of the cluster sizes should not go too far above a given threshold.
-If this happens, instead of merging two closest clusters, a smallest cluster
-is joined with its nearest neighbour.
+algorithm. The idea behind *Genie* is beautifully simple. First, it makes each
+individual point the sole member of its own cluster. Then, it keeps merging pairs
+of the closest clusters, one after another. However, to **prevent
+the formation of clusters of highly imbalanced sizes** a point group of the
+smallest size will sometimes be combined with its nearest counterpart.
 
-In the following sections, we will show that Genie might outperform other popular methods
-in terms of clustering [quality](benchmarks_ar) and [speed](timings).
+In the following sections, we will demonstrate that Genie often outperforms
+other popular methods in terms of clustering [quality](benchmarks_ar)
+and [speed](timings).
 
 Here are a few examples of basic interactions with the Python version
 of the `genieclust` {cite}`genieclust` package,
-which can be installed from
-[PyPI](https://pypi.org/project/genieclust/), e.g.,
+which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
 
 
@@ -40,7 +40,6 @@ plt.rcParams.update({
 
 
 ## Breaking the Ice
-
 
 Let's load an example benchmark set, `jain` {cite}`jain`, which  comes
 with the true corresponding partition (as assigned by experts).
@@ -82,8 +81,8 @@ g = genieclust.Genie(n_clusters=n_clusters)
 labels_genie = g.fit_predict(X)
 ```
 
-For more details,
-see the documentation of the [genieclust.Genie](genieclust.Genie) class.
+For more details, see the documentation of the
+[genieclust.Genie](genieclust.Genie) class.
 
 
 
@@ -260,6 +259,7 @@ plt.show()
 ```
 
 For a list of graphical parameters, refer to the function's manual.
+
 
 
 ## Further Reading

@@ -14,8 +14,8 @@
 The *genieclust* package {cite}`genieclust` for Python and R implements
 a robust and outlier resistant clustering algorithm called *Genie* {cite}`genieins`.
 
-The idea behind *Genie* is beautifully simple. First, make each individual
-point the sole member of its own cluster. Then, keep merging pairs
+The idea behind *Genie* is beautifully simple. First, it makes each individual
+point the sole member of its own cluster. Then, it keeps merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes** a point group of the
 smallest size will sometimes be combined with its nearest counterpart.
@@ -187,8 +187,9 @@ weave/r
 <!--
 weave/sparse
 weave/string
+weave/benchmarks_approx
 require nmslib!
-which cannot be installed currently (hasn't been updated for a while)
+exact=False disabled as of v.1.2
 -->
 
 
@@ -220,7 +221,6 @@ Deep R Programming <https://deepr.gagolewski.com>
 
 news
 weave/benchmarks_details
-weave/benchmarks_approx
 z_bibliography
 ::::
 

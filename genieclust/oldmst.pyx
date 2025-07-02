@@ -74,7 +74,7 @@ cpdef tuple mst_from_nn(
     """
     genieclust.oldmst.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
 
-    Computes a minimum spanning tree of a (<=k)-nearest neighbour graph
+    Computes a minimum spanning forest for a (<=k)-nearest neighbour graph
 
 
 
