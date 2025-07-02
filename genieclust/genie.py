@@ -63,6 +63,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
             compute_full_tree,
             compute_all_cuts,
             postprocess,
+            fastmst_params,
             # cast_float32,
             # mlpack_enabled,
             # mlpack_leaf_size,
@@ -70,7 +71,8 @@ class GenieBase(BaseEstimator, ClusterMixin):
             # nmslib_params_init,
             # nmslib_params_index,
             # nmslib_params_query,
-            verbose):
+            verbose
+        ):
         # # # # # # # # # # # #
         super().__init__()
         self.n_clusters          = n_clusters
@@ -81,6 +83,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.postprocess         = postprocess
+        self.fastmst_params      = fastmst_params
         # self.cast_float32        = cast_float32
         # self.mlpack_enabled      = mlpack_enabled
         # self.mlpack_leaf_size    = mlpack_leaf_size
@@ -146,7 +149,9 @@ class GenieBase(BaseEstimator, ClusterMixin):
             #self._is_noise    = (self.labels_[0, :] < 0)
 
             # postprocess labels, if requested to do so
-            if cur_state["M"] < 2 or cur_state["postprocess"] == "none":
+            if cur_state["M"] < 2:
+                pass
+            elif cur_state["postprocess"] == "none":
                 pass
             elif cur_state["postprocess"] == "boundary":
                 assert self._nn_e is not None
@@ -182,7 +187,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
         cur_state["M"] = int(self.M)
         if cur_state["M"] < 1:
-            raise ValueError("`M` must be > 0.")
+            raise ValueError("`M` must be >= 1.")
 
         cur_state["exact"]             = True  # bool(self.exact)
 
@@ -194,7 +199,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
                           "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
-        cur_state["cast_float32"]      = bool(self.cast_float32)
+        # cur_state["cast_float32"]      = bool(self.cast_float32)
         cur_state["verbose"]           = bool(self.verbose)
 
         cur_state["n_clusters"] = int(self.n_clusters)
@@ -225,6 +230,10 @@ class GenieBase(BaseEstimator, ClusterMixin):
             cur_state["affinity"] = "cosinesimil_sparse"
         elif cur_state["affinity"] in ["cosine_sparse_fast"]:
             cur_state["affinity"] = "cosinesimil_sparse_fast"
+
+        if type(self.fastmst_params) is not dict:
+            raise ValueError("`fastmst_params` must be a dict")
+        cur_state["fastmst_params"] = self.fastmst_params
 
         _affinity_exact_options = (
             "l2", "l1", "cosinesimil", "precomputed")
@@ -266,13 +275,13 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
     def _get_mst_exact(self, X, cur_state):
+
         if cur_state["affinity"] == "precomputed":
             X = X.reshape(X.shape[0], -1)
             if X.shape[1] not in [1, X.shape[0]]:
                 raise ValueError(
-                    "`X` must be distance vector "
-                    "or a square-form distance matrix, "
-                    "see `scipy.spatial.distance.pdist` or "
+                    "`X` must be distance vector or a square-form distance "
+                    "matrix; see `scipy.spatial.distance.pdist` or "
                     "`scipy.spatial.distance.squareform`.")
             if X.shape[1] == 1:
                 # from a very advanced and sophisticated quadratic equation:
@@ -281,26 +290,18 @@ class GenieBase(BaseEstimator, ClusterMixin):
             else:
                 n_samples  = X.shape[0]
         else:
-            if cur_state["cast_float32"]:
-                if scipy.sparse.isspmatrix(X):
-                    raise ValueError("Sparse matrices are (currently) only "
-                                     "supported when `exact` is False")
-                X = np.asarray(X, dtype=np.float32, order="C")
-
+            # if cur_state["cast_float32"]:
+            #     if scipy.sparse.isspmatrix(X):
+            #         raise ValueError("Sparse matrices are (currently) only "
+            #                          "supported when `exact` is False")
+            #     X = np.asarray(X, dtype=np.float32, order="C")
+            if X.ndim != 2: raise ValueError("`X` must be a matrix")
             n_samples  = X.shape[0]
             if cur_state["n_features"] < 0:
                 cur_state["n_features"] = X.shape[1]
 
-        # if cur_state["mlpack_enabled"] == "auto":
-        #     cur_state["mlpack_enabled"] = cur_state["affinity"] == "l2" and \
-        #             X.shape[1] <= 7 and \
-        #             cur_state["M"] == 1
-
-        # if cur_state["mlpack_enabled"]:
-        #     if cur_state["affinity"] != "l2":
-        #         raise ValueError("`mlpack` can only be used with `affinity` = 'l2'.")
-        #     elif cur_state["M"] != 1:
-        #         raise ValueError("`mlpack` can only be used with `M` = 1.")
+        if cur_state["M"]-1 >= X.shape[0]:
+            raise ValueError("`M` is too large")
 
         tree_w = None
         tree_e = None
@@ -309,58 +310,57 @@ class GenieBase(BaseEstimator, ClusterMixin):
         d_core = None
 
         if self._last_state is not None and \
-                cur_state["X"]            == self._last_state["X"] and \
-                cur_state["affinity"]     == self._last_state["affinity"] and \
-                cur_state["exact"]        == self._last_state["exact"] and \
-                cur_state["cast_float32"] == self._last_state["cast_float32"]:
-
-            if cur_state["M"] == self._last_state["M"]:
-                tree_w = self._tree_w
-                tree_e  = self._tree_e
-                nn_w  = self._nn_w
-                nn_e   = self._nn_e
-            elif cur_state["M"] < self._last_state["M"]:
-                nn_w  = self._nn_w
-                nn_e   = self._nn_e
-
-        if cur_state["mlpack_enabled"]:
-            assert cur_state["M"] == 1
-            assert cur_state["affinity"] == "l2"
-
-            if tree_w is None or tree_e is None:
-                _res = mlpack.emst(
-                    X,
-                    leaf_size=cur_state["mlpack_leaf_size"],
-                    naive=False,
-                    copy_all_inputs=False,
-                    verbose=cur_state["verbose"])["output"]
-                tree_w = _res[:,  2].astype(X.dtype, order="C")
-                tree_e  = _res[:, :2].astype(np.intp, order="C")
+                cur_state["X"]        == self._last_state["X"] and \
+                cur_state["affinity"] == self._last_state["affinity"] and \
+                cur_state["M"]        == self._last_state["M"]:  # TODO
+            # reuse last MST & M-NNs
+            tree_w = self._tree_w
+            tree_e = self._tree_e
+            nn_w   = self._nn_w
+            nn_e   = self._nn_e
+            d_core = self._d_core
         else:
-            if cur_state["M"] >= 2:  # else d_core   = None
-                # Genie+HDBSCAN --- determine d_core
-                # TODO: mlpack for k-nns?
+            if cur_state["affinity"] == "l2":
+                _res = fastmst.mst_euclid(
+                    X, M=cur_state["M"],
+                    **cur_state["fastmst_params"],
+                    verbose=cur_state["verbose"]
+                )
 
-                if cur_state["M"]-1 >= X.shape[0]:
-                    raise ValueError("`M` is too large")
-
-                if nn_w is None or nn_e is None:
+                if cur_state["M"] == 1:
+                    tree_w, tree_e = _res
+                else:
+                    tree_w, tree_e, nn_w, nn_e = _res
+                    d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
+            else:
+                if cur_state["M"] >= 2:  # else d_core   = None
+                    # Genie+HDBSCAN --- determine d_core
                     nn_w, nn_e = oldmst.knn_from_distance(
                         X,  # if not c_contiguous, raises an error
                         k=cur_state["M"]-1,
                         metric=cur_state["affinity"],  # supports "precomputed"
-                        verbose=cur_state["verbose"])
+                        verbose=cur_state["verbose"]
+                    )
+                    d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
 
-                d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
+                # Use Prim's algorithm to determine the MST
+                # w.r.t. the distances computed on the fly
+                    tree_w, tree_e = oldmst.mst_from_distance(
+                        X,  # if not c_contiguous, raises an error
+                        metric=cur_state["affinity"],
+                        d_core=d_core,
+                        verbose=cur_state["verbose"]
+                    )
 
-            # Use Prim's algorithm to determine the MST
-            # w.r.t. the distances computed on the fly
-            if tree_w is None or tree_e is None:
-                tree_w, tree_e = oldmst.mst_from_distance(
-                    X,  # if not c_contiguous, raises an error
-                    metric=cur_state["affinity"],
-                    d_core=d_core,
-                    verbose=cur_state["verbose"])
+        assert tree_w.shape[0] == n_samples-1
+        assert tree_e.shape[0] == n_samples-1
+        assert tree_e.shape[1] == 2
+        if cur_state["M"] >= 2:
+            assert nn_w.shape[0] == n_samples
+            assert nn_w.shape[1] == cur_state["M"]-1
+            assert nn_e.shape[0] == n_samples
+            assert nn_e.shape[1] == cur_state["M"]-1
+            assert d_core.shape[0] == n_samples
 
         self.n_samples_   = n_samples
         self._tree_w      = tree_w
@@ -630,6 +630,10 @@ class Genie(GenieBase):
         notion of noise), choose ``"all"``. Furthermore, ``"none"`` leaves
         all leaves, i.e., noise/boundary points as-is.
 
+    fastmst_params : dict
+        Additional parameters to be passed to ``genieclust.fastmst.mst_euclid``
+        if ``affinity`` is ``"l2"``
+
     verbose : bool
         Whether to print diagnostic messages and progress information
         on ``stderr``.
@@ -667,7 +671,7 @@ class Genie(GenieBase):
     n_features_ : int
         The number of features in the fitted dataset.
 
-        If the information is not available, it is be set to -1.
+        If the information is not available, it will be set to -1.
 
     children_ : None or ndarray
         If `compute_full_tree` is ``True``, this is a matrix whose
@@ -684,7 +688,7 @@ class Genie(GenieBase):
 
         As the original Genie algorithm does not guarantee that distances
         are ordered increasingly (there are other hierarchical clustering
-        linkages that violate the ultrametricity property as well), Genie
+        linkages that violate the ultrametricity property too), Genie
         automatically applies the following correction:
 
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
@@ -702,8 +706,7 @@ class Genie(GenieBase):
     **Genie** is a robust and outlier resistant
     hierarchical clustering algorithm [1]_, originally published
     in the R package ``genie``. This new implementation is, amongst others,
-    much faster and now features optional smoothing and noise
-    point detection (if `M` > 1).
+    much faster and now features optional noise point detection (if `M` > 1).
 
     Genie is based on the minimum spanning tree (MST) of the
     pairwise distance graph of a given point set.
@@ -712,28 +715,20 @@ class Genie(GenieBase):
     the formation of clusters of highly imbalanced sizes; once the Gini index
     of the cluster size distribution raises above an assumed threshold,
     a forced merge of a point group of the smallest size is performed.
-    Its appealing simplicity goes hand in hand with its usability;
-    Genie often outperforms other clustering approaches on benchmark data.
+    Its appealing simplicity goes hand in hand with its usability; Genie often
+    outperforms other clustering approaches on many benchmark datasets.
 
     The Genie algorithm itself has :math:`O(n \\sqrt{n})` time
     and :math:`O(n)` memory complexity provided that a minimum spanning
     tree of the pairwise distance graph is given.
-    Generally, our parallelised implementation of a Jarník (Prim/Dijkstra)-like
-    method [2]_ will be called to compute an MST, which takes :math:`O(d n^2)` time.
-    However, `mlpack` [3]_ provides a very fast
-    alternative in the case of Euclidean spaces of (very) low dimensionality
-    and `M` = 1, see [4]_ and the `mlpack_enabled` parameter.
-    Moreover, in the approximate method (`exact` = ``False``) we apply
-    the Kruskal algorithm on the near-neighbour graph determined
-    by `nmslib` [5]_. Albeit this only gives *some* sort of a spanning *forest*,
-    such a data structure turns out to be very suitable for our clustering task
-    (note that the set of connected components will determine the top
-    level of the identified cluster hierarchy).
-
-    Note that the `nmslib` dependency is optional.
+    If the Euclidean distance is selected, then
+    ``genieclust.fastmst.mst_euclid`` is used to compute the MST;
+    it is quite fast in low-dimensional spaces.
+    Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
+    :math:`O(n^2)`-time algorithm is called.
 
     The Genie correction together with the smoothing factor `M` > 1
-    gives a robustified version of the HDBSCAN\\* [6]_ algorithm that,
+    gives a robustified version of the HDBSCAN\\* [2]_ algorithm that,
     contrary to its predecessor, is able to detect a *predefined* number of
     clusters. Hence, it is independent of the *DBSCAN*'s somewhat magical
     ``eps`` parameter or the *HDBSCAN*'s ``min_cluster_size`` one.
@@ -741,11 +736,11 @@ class Genie(GenieBase):
     mutual reachability distance (based, e.g., on the Euclidean metric).
     Formally, the distance :math:`m(i,j)` is used instead of the
     chosen "raw" distance, :math:`d(i,j)`. It holds
-    :math:`m(i,j)=\\max(d(i,j), c(i), c(j))`,
+    :math:`m(i,j)=\\max\\{d(i,j), c(i), c(j)\\}`,
     where the "core" distance :math:`c(i)` is given by
     :math:`d(i,k)` with :math:`k` being the (`M` - 1)-th nearest neighbour
     of :math:`i`. This makes "noise" and "boundary" points being "pulled away"
-    from each other, however, note that `M` = 2 corresponds to the
+    from each other. Note that `M` = 2 corresponds to the
     original distance. During the clustering procedure, all leaves of the MST
     do not take part in the clustering process. They may be merged
     with the nearest clusters during the postprocessing stage,
@@ -767,33 +762,13 @@ class Genie(GenieBase):
         clustering algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
 
-    .. [2] Olson C.F., Parallel algorithms for hierarchical clustering,
-        *Parallel Computing* 21(8), 1995, 1313-1325.
-        doi:10.1016/0167-8191(95)00017-I.
-
-    .. [3]
-        Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
-        mlpack 3: A fast, flexible machine learning library,
-        *Journal of Open Source Software* 3(26), 726, 2018.
-        doi:10.21105/joss.00726.
-
-    .. [4]
-        March W.B., Ram P., Gray A.G.,
-        Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-        *Proc. ACM SIGKDD'10*, 2010, 603-611.
-
-    .. [5]
-        Naidan B., Boytsov L., Malkov Y.,  Novak D.,
-        *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
-        https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
-
-    .. [6]
+    .. [2]
         Campello R.J.G.B., Moulavi D., Sander J.,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
         doi:10.1007/978-3-642-37456-2_14.
 
-    .. [7]
+    .. [3]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
@@ -808,39 +783,27 @@ class Genie(GenieBase):
             gini_threshold=0.3,
             M=1,
             affinity="l2",
-            exact=True,
+            # exact=True,
             compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
-            cast_float32=True,
-            mlpack_enabled="auto",
-            mlpack_leaf_size=1,
-            nmslib_n_neighbors=64,
-            nmslib_params_init=dict(method="hnsw"),
-            nmslib_params_index=dict(post=2),
-            nmslib_params_query=dict(),
-            verbose=False):
+            fastmst_params=dict(),
+            verbose=False
+        ):
         # # # # # # # # # # # #
         super().__init__(
             n_clusters=n_clusters,
             M=M,
             affinity=affinity,
-            exact=exact,
+            # exact=exact,
             compute_full_tree=compute_full_tree,
             compute_all_cuts=compute_all_cuts,
             postprocess=postprocess,
-            cast_float32=cast_float32,
-            mlpack_enabled=mlpack_enabled,
-            mlpack_leaf_size=mlpack_leaf_size,
-            nmslib_n_neighbors=nmslib_n_neighbors,
-            nmslib_params_init=nmslib_params_init,
-            nmslib_params_index=nmslib_params_index,
-            nmslib_params_query=nmslib_params_query,
-            verbose=verbose)
+            fastmst_params=fastmst_params,
+            verbose=verbose
+        )
 
         self.gini_threshold = gini_threshold
-        self._experimental_forced_merge = False  # experimental, likely to be removed - worse (#51)
-
         self._check_params()
 
 
@@ -852,8 +815,6 @@ class Genie(GenieBase):
         cur_state["gini_threshold"] = float(self.gini_threshold)
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("`gini_threshold` not in [0,1].")
-
-        cur_state["experimental_forced_merge"] = bool(self._experimental_forced_merge)  # experimental (#51)
 
         return cur_state
 
@@ -887,58 +848,35 @@ class Genie(GenieBase):
         Refer to the `labels_` and `n_clusters_` attributes for the result.
 
 
-        Acceptable `X` types depend whether we use the exact or the approximate
-        method.
+        Acceptable `X` types are as follows.
 
-        *   `X` when `exact` = ``True``.
+        For `affinity` of ``"precomputed"``, `X` should either
+        be a distance vector of length ``n_samples*(n_samples-1)/2``
+        (see `scipy.spatial.distance.pdist`) or a square distance matrix
+        of shape ``(n_samples, n_samples)``
+        (see `scipy.spatial.distance.squareform`).
 
-            For `affinity` of ``"precomputed"``, `X` should either
-            be a distance vector of length ``n_samples*(n_samples-1)/2``
-            (see `scipy.spatial.distance.pdist`) or a square distance matrix
-            of shape ``(n_samples, n_samples)``
-            (see `scipy.spatial.distance.squareform`).
+        Otherwise, `X` should be real-valued matrix
+        (dense ``numpy.ndarray``, or an object coercible to)
+        with ``n_samples`` rows and ``n_features`` columns.
 
-            Otherwise, `X` should be real-valued matrix
-            (dense ``numpy.ndarray``, or an object coercible to)
-            with ``n_samples`` rows and ``n_features`` columns.
-
-            In the latter case, it might be a good idea to standardise
-            or at least somehow preprocess the coordinates of the input data
-            points by calling, for instance,
-            ``X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)``
-            so that the dataset is centred at 0 and has total variance of 1.
-            This way the method becomes translation and scale invariant.
-            What's more, if data are recorded with small precision (say, up
-            to few decimal digits), adding a tiny bit of Gaussian noise will
-            ensure the solution is unique (note that this generally applies
-            to other distance-based clustering algorithms as well).
-
-        *   `X` when `exact` = ``False``.
-
-            The approximate method relies on `nmslib` for locating the
-            nearest neighbours. Therefore, it supports all datatypes
-            described in https://github.com/nmslib/nmslib/blob/master/manual/spaces.md.
-            Depending on the chosen `affinity`, `X` may hence be
-            a real-valued ``numpy.ndarray`` matrix with ``n_samples`` rows
-            and ``n_features`` columns,
-            a ``scipy.sparse.csr_matrix`` object, or
-            an array of ASCII strings.
-
-
-
-        References
-        ----------
-
-        .. [1]
-            Naidan B., Boytsov L., Malkov Y.,  Novak D.,
-            *Non-metric space library (NMSLIB) manual*, version 2.0, 2019.
-            https://github.com/nmslib/nmslib/blob/master/manual/latex/manual.pdf.
-
-
+        In the latter case, it might be a good idea to standardise
+        or at least somehow preprocess the coordinates of the input data
+        points by calling, for instance,
+        ``X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)``
+        so that the dataset is centred at 0 and has total variance of 1.
+        This way the method becomes translation and scale invariant.
+        What's more, if data are recorded with small precision (say, up
+        to few decimal digits), adding a tiny bit of Gaussian noise will
+        ensure the solution is unique (note that this generally applies
+        to other distance-based clustering algorithms as well).
         """
         cur_state = self._check_params()  # re-check, they might have changed
 
         cur_state = self._get_mst(X, cur_state)
+
+        if cur_state["n_clusters"] >= self.n_samples_:
+            raise ValueError("n_clusters must be < n_samples_")
 
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with Genie++.", file=sys.stderr)
@@ -951,8 +889,7 @@ class Genie(GenieBase):
             gini_threshold=cur_state["gini_threshold"],
             skip_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
-            compute_all_cuts=cur_state["compute_all_cuts"],
-            experimental_forced_merge=cur_state["experimental_forced_merge"])
+            compute_all_cuts=cur_state["compute_all_cuts"])
 
         cur_state = self._postprocess_outputs(res, cur_state)
 
@@ -996,9 +933,6 @@ class GIc(GenieBase):
     affinity : str
         See `genieclust.Genie`.
 
-    exact : bool, default=True
-        See `genieclust.Genie`.
-
     compute_full_tree : bool
         See `genieclust.Genie`.
 
@@ -1014,27 +948,6 @@ class GIc(GenieBase):
     postprocess : {"boundary", "none", "all"}
         See `genieclust.Genie`.
 
-    cast_float32 : bool
-        See `genieclust.Genie`.
-
-    mlpack_enabled : "auto" or bool
-        See `genieclust.Genie`.
-
-    mlpack_leaf_size : int
-        See `genieclust.Genie`.
-
-    nmslib_n_neighbors : int
-        See `genieclust.Genie`.
-
-    nmslib_params_init : dict
-        See `genieclust.Genie`.
-
-    nmslib_params_index : dict
-        See `genieclust.Genie`.
-
-    nmslib_params_query : dict
-        See `genieclust.Genie`.
-
     add_clusters : int
         Number of additional clusters to work with internally.
 
@@ -1043,6 +956,10 @@ class GIc(GenieBase):
 
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, `affinity` of ``"precomputed"`` needs this to be set manually.
+
+    fastmst_params : dict
+        Additional parameters to be passed to ``genieclust.fastmst.mst_euclid``
+        if ``affinity`` is ``"l2"``
 
     verbose : bool
         See `genieclust.Genie`.
@@ -1060,6 +977,8 @@ class GIc(GenieBase):
 
     genieclust.Genie
 
+    genieclust.fastmst.mst_euclid
+
 
 
     Notes
@@ -1070,7 +989,7 @@ class GIc(GenieBase):
     by Mueller's (et al.) ITM [2]_ and Gagolewski's (et al.) Genie [3]_;
     see also [4]_.
 
-    GIc computes an `n_clusters`-partition based on the pre-computed minimum
+    GIc computes an `n_clusters`-partition based on a pre-computed minimum
     spanning tree. Clusters are merged so as to maximise (heuristically)
     the information criterion discussed in [2]_.
 
@@ -1081,8 +1000,8 @@ class GIc(GenieBase):
     the intersection of the partitions found by multiple runs of
     the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7], which
     we observe to be a sensible choice for most clustering activities.
-    Hence, contrary to the Genie method, we can say that GIc as virtually
-    parameter-less. However, when run with different `n_clusters` parameter,
+    Hence, contrary to the Genie method, we can say that GIc is virtually
+    parameter-free. However, when run with different `n_clusters` parameter,
     it does not yield a hierarchy of nested partitions (unless some more
     laborious parameter tuning is applied).
 
@@ -1124,36 +1043,38 @@ class GIc(GenieBase):
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             M=1,
             affinity="l2",
-            exact=True,
+            # exact=True,
             compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
-            cast_float32=True,
-            mlpack_enabled="auto",
-            mlpack_leaf_size=1,
-            nmslib_n_neighbors=64,
-            nmslib_params_init=dict(method="hnsw"),
-            nmslib_params_index=dict(post=2),
-            nmslib_params_query=dict(),
+            # cast_float32=True,
+            # mlpack_enabled="auto",
+            # mlpack_leaf_size=1,
+            # nmslib_n_neighbors=64,
+            # nmslib_params_init=dict(method="hnsw"),
+            # nmslib_params_index=dict(post=2),
+            # nmslib_params_query=dict(),
             add_clusters=0,
             n_features=None,
+            fastmst_params=dict(),
             verbose=False):
         # # # # # # # # # # # #
         super().__init__(
             n_clusters=n_clusters,
             M=M,
             affinity=affinity,
-            exact=exact,
+            # exact=exact,
             compute_full_tree=compute_full_tree,
             compute_all_cuts=compute_all_cuts,
             postprocess=postprocess,
-            cast_float32=cast_float32,
-            mlpack_enabled=mlpack_enabled,
-            mlpack_leaf_size=mlpack_leaf_size,
-            nmslib_n_neighbors=nmslib_n_neighbors,
-            nmslib_params_init=nmslib_params_init,
-            nmslib_params_index=nmslib_params_index,
-            nmslib_params_query=nmslib_params_query,
+            fastmst_params=fastmst_params,
+            # cast_float32=cast_float32,
+            # mlpack_enabled=mlpack_enabled,
+            # mlpack_leaf_size=mlpack_leaf_size,
+            # nmslib_n_neighbors=nmslib_n_neighbors,
+            # nmslib_params_init=nmslib_params_init,
+            # nmslib_params_index=nmslib_params_index,
+            # nmslib_params_query=nmslib_params_query,
             verbose=verbose)
 
         self.gini_thresholds = gini_thresholds

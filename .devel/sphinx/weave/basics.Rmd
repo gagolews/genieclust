@@ -27,7 +27,7 @@ import genieclust
 
 
 ```{python settings,results="hide",echo=FALSE}
-import pweave
+#import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
@@ -153,6 +153,7 @@ genieclust.compare_partitions.adjusted_rand_score(labels_true, labels_kmeans)
 ```
 
 The adjusted Rand score of $\sim 0.3$ indicates a far-from-perfect fit.
+
 
 
 ## A Comparison with HDBSCAN\*

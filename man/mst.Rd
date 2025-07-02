@@ -110,12 +110,7 @@ Prim R., Shortest connection networks and some generalisations,
 
 March W.B., Ram P., Gray A.G.,
 Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-\emph{Proc. ACM SIGKDD'10}, 2010, 603-611,
-\url{https://mlpack.org/papers/emst.pdf}.
-
-Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S.,
-mlpack 3: A fast, flexible machine learning library,
-\emph{Journal of Open Source Software} 3(26), 2018, 726.
+\emph{Proc. ACM SIGKDD'10}, 2010, 603-611.
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,

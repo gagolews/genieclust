@@ -95,11 +95,13 @@ def test_gic_precomputed():
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
             labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 
-        k = len(np.unique(labels[labels>=0]))
 
         # center X + scale (NOT: standardize!)
         X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
         X += np.random.normal(0, 0.0001, X.shape)
+
+        K = len(np.unique(labels[labels>=0]))
+        assert K > 0 and K < X.shape[0]
 
         D = scipy.spatial.distance.pdist(X)
         if np.random.rand(1) > 0.5:
@@ -110,10 +112,10 @@ def test_gic_precomputed():
 
             print("%-20s g=%r n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
-            res1 = genieclust.GIc(k, gini_thresholds=g, exact=True,
+            res1 = genieclust.GIc(K, gini_thresholds=g,
                          affinity="precomputed", n_features=X.shape[1])
             res1 = res1.fit_predict(D)+1
-            res2 = genieclust.GIc(k, gini_thresholds=g, exact=True, affinity="euclidean").fit_predict(X)+1
+            res2 = genieclust.GIc(K, gini_thresholds=g, affinity="euclidean").fit_predict(X)+1
             ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")
             assert ari>1.0-1e-12
@@ -125,15 +127,15 @@ def test_gic_precomputed():
         # test compute_all_cuts
         K = 20
         g = np.arange(1, 8)/10
-        res1 = genieclust.GIc(K, gini_thresholds=g, exact=True, affinity="precomputed",
-            compute_all_cuts=True, M=20, verbose=True)
+        res1 = genieclust.GIc(K, gini_thresholds=g, affinity="precomputed",
+            compute_all_cuts=True, M=5, verbose=True)
         res1.n_features = X.shape[1]
         res1 = res1.fit_predict(D)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
         for k in range(1, res1.shape[0]):
             res2 = genieclust.GIc(k, gini_thresholds=g, add_clusters=K-k,
-                exact=True, M=20, affinity="precomputed", n_features=X.shape[1])
+                M=5, affinity="precomputed", n_features=X.shape[1])
             res2 = res2.fit_predict(D)
             assert np.all(res2 == res1[k,:])
 

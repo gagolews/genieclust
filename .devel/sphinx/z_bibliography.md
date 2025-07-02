@@ -2,24 +2,22 @@
 
 ## How to Cite
 
-When using *genieclust* in research publications, please
-cite {cite}`genieclust` and {cite}`genieins`
-as specified below. Thank you.
+When using *genieclust* in research publications, please cite
+{cite}`genieclust` and {cite}`genieins` as specified below.  Thank you.
 
 
 ## See Also
 
-* *fastcluster*: <http://www.danifold.net/fastcluster.html>
+* *scikit-learn*: <https://scikit-learn.org/stable/modules/clustering.html>
 
-* *hdbscan*: <https://github.com/scikit-learn-contrib/hdbscan>
+* *hdbscan*: <https://hdbscan.readthedocs.io/en/latest/index.html>
+
+* *fast_hdbscan*: <https://fast-hdbscan.readthedocs.io/en/latest/index.html>
+
+* *fastcluster*: <http://www.danifold.net/fastcluster.html>
 
 * *ITM*: <https://github.com/amueller/information-theoretic-mst>
 
-* *mlpack*: <https://www.mlpack.org/>
-
-* *nmslib*: <https://github.com/nmslib/nmslib/tree/master/python_bindings>
-
-* *scikit-learn*: <https://scikit-learn.org/stable/modules/clustering.html>
 
 
 ## Bibliography

@@ -24,7 +24,7 @@
 
 
 
-/*! ordered_map (dictionary) for keys in {0,1,...,n-1} (small ints).
+/*! An ordered_map (dictionary) for keys in {0,1,...,n-1} (small ints).
  * Elements are stored in the natural 0 <= 1 <= ... <= n-1 order.
  *
  * Most supported operations (except for inserting a new key

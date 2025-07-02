@@ -34,7 +34,7 @@ cdef extern from "../src/c_genie.h":
 
     cdef cppclass CGenie[T]:
         CGenie() except +
-        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves, bint experimental_forced_merge) except +
+        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
         void compute(Py_ssize_t n_clusters, double gini_threshold) except +
         Py_ssize_t get_max_n_clusters()
         Py_ssize_t get_links(Py_ssize_t* res)

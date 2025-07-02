@@ -333,10 +333,9 @@ public:
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
  *   in such a way that a chosen economic inequality measure
  *   (here, the Gini index) of the cluster sizes does not go too far above
- *   a given threshold. The method outperforms the Ward or average
- *   linkages, k-means, spectral clustering, DBSCAN, Birch and others in terms
- *   of the clustering quality on benchmark data (on average) while retaining
- *   the speed of the single linkage algorithm.
+ *   a given threshold. The method outperforms many other clustering algorithms
+ *   in terms of the clustering quality on many benchmark datasets
+ *   whilst retaining the speed of the single linkage algorithm.
  *
  *   This is a re-implementation of the original (Gagolewski et al., 2016)
  *   algorithm. New features include:
@@ -367,7 +366,8 @@ template <class T>
 class CGenie : public CGenieBase<T> {
 protected:
 
-    bool experimental_forced_merge; //<! EXPERIMENTAL (worse) if there are two clusters, both of the smallest sizes, try merging them first
+    // bool experimental_forced_merge; //<! EXPERIMENTAL (worse) if there are two clusters, both of the smallest sizes, try merging them first
+
 
     /*! Run the Genie++ partitioning.
      *
@@ -473,7 +473,7 @@ protected:
     }
 
 
-
+#if 0
     /*! Merge a pair of sets that reduces the Gini index below the threshold
      * (provided that is possible)
      *
@@ -565,12 +565,12 @@ protected:
 
         return it; // number of merges performed
     }
-
+#endif
 
 
 public:
-    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false, bool experimental_forced_merge=false)
-        : CGenieBase<T>(mst_d, mst_i, n, skip_leaves), experimental_forced_merge(experimental_forced_merge)
+    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false)
+        : CGenieBase<T>(mst_d, mst_i, n, skip_leaves)
     {
         ;
     }
@@ -596,15 +596,16 @@ public:
         CIntDict<Py_ssize_t> mst_skiplist(this->n - 1);
         this->mst_skiplist_init(&mst_skiplist);
 
-        if (experimental_forced_merge) {
+        #if 0
+        if (experimental_forced_merge)
             this->results.it = this->do_genie_experimental_forced_merge(&(this->results.ds),
                 &mst_skiplist, n_clusters, gini_threshold,
                 &(this->results.links));
-        } else {
+        else
+        #endif
             this->results.it = this->do_genie(&(this->results.ds),
                 &mst_skiplist, n_clusters, gini_threshold,
                 &(this->results.links));
-        }
     }
 
 };
@@ -618,6 +619,7 @@ public:
  *  GIc has been originally proposed by Anna Cena in [1] and was inspired
  *  by Mueller's (et al.) ITM [2] and Gagolewski's (et al.) Genie [3];
  *  see also [4].
+ *
  *
  *  References
  *  ==========

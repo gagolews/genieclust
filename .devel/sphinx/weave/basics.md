@@ -34,6 +34,50 @@ import genieclust
 
 
 
+## Breaking the Ice
+
+Let's load an example benchmark set, `jain` {cite}`jain`, which  comes
+with the true corresponding partition (as assigned by experts).
+
+
+``` python
+# see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
+dataset = "jain"
+# Load an example 2D dataset:
+X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
+
+# Load the corresponding reference labels. The original labels are in {1,2,..,k}.
+# We will make them more Python-ish by subtracting 1.
+labels_true = np.loadtxt("%s.labels0.gz" % dataset, dtype=np.intp)-1
+
+# The number of unique labels gives the true cluster count:
+n_clusters = len(np.unique(labels_true))
+```
+
+
+A scatter plot of the dataset together with the reference labels:
+
+
+``` python
+genieclust.plots.plot_scatter(X, labels=labels_true)
+plt.title("%s (n=%d, true n_clusters=%d)" % (dataset, X.shape[0], n_clusters))
+plt.axis("equal")
+```
+
+``` python
+plt.show()
+```
+
+(fig:basics-scatter)=
+```{figure} basics-figures/basics-scatter-1.*
+Reference labels.
+```
+
+Let us apply the Genie algorithm (with the default/recommended
+`gini_threshold` parameter value). The `genieclust` package's programming
+interface is [scikit-learn](https://scikit-learn.org/)-compatible {cite}`sklearn`.
+In particular, an object of class `Genie` is equipped with the
+`fit` and `fit_predict` methods {cite}`sklearn_api`.
 
 
 

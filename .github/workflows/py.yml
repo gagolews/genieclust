@@ -37,7 +37,7 @@ jobs:
         if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt --upgrade; fi
         python3 -m pip install wheel flake8 pytest --upgrade
         python3 -m pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
-        python3 -m pip install rpy2 pweave ipython jupyter tabulate --upgrade
+        python3 -m pip install rpy2 ipython jupyter tabulate --upgrade
     - name: Install optional dependencies (nmslib)
       continue-on-error: true
       run: |

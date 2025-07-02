@@ -24,14 +24,12 @@ Description: A retake on the Genie algorithm
     'HDBSCAN*' (that is able to detect a predefined number of
     clusters and hence it does not dependent on the somewhat
     fragile 'eps' parameter). The package also features an implementation
-    of inequality indices (e.g., Gini and Bonferroni),
-    external cluster validity measures (e.g., the normalised clustering accuracy,
-    the adjusted Rand index, the Fowlkes-Mallows index, and
-    normalised mutual information), and internal cluster validity indices
-    (e.g., the Calinski-Harabasz, Davies-Bouldin, Ball-Hall, Silhouette,
-    and generalised Dunn indices).
-    See also the 'Python' version of 'genieclust' available on 'PyPI', which
-    supports sparse data, more metrics, and even larger datasets.
+    of inequality indices (e.g., Gini and Bonferroni), external cluster validity
+    measures (e.g., the normalised clustering accuracy, the adjusted Rand index,
+    the Fowlkes-Mallows index, and normalised mutual information), and internal
+    cluster validity indices (e.g., the Calinski-Harabasz, Davies-Bouldin,
+    Ball-Hall, Silhouette, and generalised Dunn indices).
+    The 'Python' version of 'genieclust' is available on 'PyPI'.
 BugReports: https://github.com/gagolews/genieclust/issues
 URL:
     https://genieclust.gagolewski.com/,

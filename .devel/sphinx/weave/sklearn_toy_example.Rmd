@@ -14,7 +14,6 @@ on a larger data sample and with the Genie algorithm in the game.
 ```{python imports,results="hide3"}
 import time
 import warnings
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -28,7 +27,7 @@ np.random.seed(1234)
 
 
 ```{python results="hide",echo=FALSE}
-import pweave
+#import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("display.min_rows", 200)

@@ -20,11 +20,6 @@ except:
     genie = None
 
 
-try:
-    import mlpack
-except:
-    mlpack = None
-
 
 import os
 if os.path.exists(".devel/benchmark_data"):
@@ -80,7 +75,7 @@ def __test_genie(metric='euclidean'):
 
                 t01 = time.time()
                 _res1 = genieclust.Genie(
-                    k, gini_threshold=g, exact=True, affinity=metric, compute_full_tree=True)
+                    k, gini_threshold=g, affinity=metric, compute_full_tree=True)
                 res1 = _res1.fit_predict(X)+1
                 t11 = time.time()
                 print("t_py=%.3f" % (t11-t01), end="\t")
@@ -130,7 +125,7 @@ def test_genie_precomputed():
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
             labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 
-        k = len(np.unique(labels[labels>=0]))
+        K = len(np.unique(labels[labels>=0]))
 
         # center X + scale (NOT: standardize!)
         X = X+np.random.normal(0, 0.0001, X.shape)
@@ -147,22 +142,22 @@ def test_genie_precomputed():
             print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
             _res1 = genieclust.Genie(
-                k, gini_threshold=g, exact=True, affinity="precomputed")
+                K, gini_threshold=g, affinity="precomputed")
             res1 = _res1.fit_predict(D)+1
 
-            if mlpack is not None:
-                _res2 = genieclust.Genie(
-                    k, gini_threshold=g, exact=True, compute_full_tree=True,
-                    affinity="euclidean", mlpack_enabled=True)
-                res2 = _res2.fit_predict(X)+1
-                ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
-                print("ARI=%.3f" % ari, end="\t")
-                assert ari>1.0-1e-12
-                assert np.all(np.diff(_res2.distances_)>= 0.0)
+            # if mlpack is not None:
+            #     _res2 = genieclust.Genie(
+            #         K, gini_threshold=g, compute_full_tree=True,
+            #         affinity="euclidean", mlpack_enabled=True)
+            #     res2 = _res2.fit_predict(X)+1
+            #     ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
+            #     print("ARI=%.3f" % ari, end="\t")
+            #     assert ari>1.0-1e-12
+            #     assert np.all(np.diff(_res2.distances_)>= 0.0)
 
             _res2 = genieclust.Genie(
-                k, gini_threshold=g, exact=True,
-                affinity="euclidean", compute_full_tree=True, mlpack_enabled=False)
+                k, gini_threshold=g,
+                affinity="euclidean", compute_full_tree=True)
             res2 = _res2.fit_predict(X)+1
             ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")
@@ -177,24 +172,24 @@ def test_genie_precomputed():
         # test compute_all_cuts
         K = 16
         g = 0.1
-        res1 = genieclust.Genie(K, gini_threshold=g, exact=True, affinity="euclidean",
+        res1 = genieclust.Genie(K, gini_threshold=g, affinity="euclidean",
             compute_all_cuts=True, M=2).fit_predict(X)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
         for k in range(1, res1.shape[0]):
-            res2 = genieclust.Genie(k, gini_threshold=g, exact=True, affinity="euclidean",
+            res2 = genieclust.Genie(k, gini_threshold=g, affinity="euclidean",
                 M=2).fit_predict(X)
             assert np.all(res2 == res1[k,:])
 
         # test compute_all_cuts
         K = 16
         g = 0.1
-        res1 = genieclust.Genie(K, gini_threshold=g, exact=True, affinity="euclidean",
+        res1 = genieclust.Genie(K, gini_threshold=g, affinity="euclidean",
             compute_all_cuts=True, M=25).fit_predict(X)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
         for k in range(1, res1.shape[0]):
-            res2 = genieclust.Genie(k, gini_threshold=g, exact=True, affinity="euclidean",
+            res2 = genieclust.Genie(k, gini_threshold=g, affinity="euclidean",
                 M=25).fit_predict(X)
             assert np.all(res2 == res1[k,:])
 
