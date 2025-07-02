@@ -37,11 +37,11 @@ scenarios = [
     (1208592, 10, 10,  "norm"),
 ]
 
-scenarios = []
-for d in range(2, 11):
-    for log2n in [17]:
-        scenarios.append( (2**log2n, d,  1, "norm") )
-        scenarios.append( (2**log2n, d, 10, "norm") )
+# scenarios = []
+# for d in range(2, 11):
+#     for log2n in [17]:
+#         scenarios.append( (2**log2n, d,  1, "norm") )
+#         scenarios.append( (2**log2n, d, 10, "norm") )
 
 
 # ------------------------------------------------------------------------------
@@ -143,6 +143,7 @@ def mst_r_quitefast_default(X, M):
 
 # BallTreeBoruvkaAlgorithm - much slower
 def mst_hdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
+    if X.shape[0] > 300000: return None
     tree = KDTree(X, metric='euclidean', leaf_size=leaf_size)
     alg = KDTreeBoruvkaAlgorithm(
         tree,
