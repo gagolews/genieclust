@@ -2,7 +2,7 @@
  *
  *  Code originally contributed in <https://github.com/gagolews/optim_cvi>,
  *  see https://doi.org/10.1016/j.ins.2021.10.004.
- *  Copyleft (C) 2020, Maciej Bartoszuk <http://bartoszuk.rexamine.com>
+ *  Copyleft (C) 2020, Maciej Bartoszuk
  *
  *  For the 'genieclust' version:
  *  Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>

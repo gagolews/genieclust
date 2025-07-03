@@ -101,20 +101,114 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 y_true <- iris[[5]]
 y_pred <- kmeans(as.matrix(iris[1:4]), 3)$cluster
 normalized_clustering_accuracy(y_true, y_pred)
+```
+
+```
+## [1] 0.84
+```
+
+``` r
 normalized_pivoted_accuracy(y_true, y_pred)
+```
+
+```
+## [1] 0.84
+```
+
+``` r
 pair_sets_index(y_true, y_pred)
+```
+
+```
+## [1] 0.7568238
+```
+
+``` r
 pair_sets_index(y_true, y_pred, simplified=TRUE)
+```
+
+```
+## [1] 0.7470968
+```
+
+``` r
 adjusted_rand_score(y_true, y_pred)
+```
+
+```
+## [1] 0.7302383
+```
+
+``` r
 rand_score(table(y_true, y_pred)) # the same
+```
+
+```
+## [1] 0.8797315
+```
+
+``` r
 adjusted_fm_score(y_true, y_pred)
+```
+
+```
+## [1] 0.7304411
+```
+
+``` r
 fm_score(y_true, y_pred)
+```
+
+```
+## [1] 0.8208081
+```
+
+``` r
 mi_score(y_true, y_pred)
+```
+
+```
+## [1] 0.8255911
+```
+
+``` r
 normalized_mi_score(y_true, y_pred)
+```
+
+```
+## [1] 0.7581757
+```
+
+``` r
 adjusted_mi_score(y_true, y_pred)
+```
+
+```
+## [1] 0.7551192
+```
+
+``` r
 normalized_confusion_matrix(y_true, y_pred)
+```
+
+```
+##      [,1] [,2] [,3]
+## [1,]   50    0    0
+## [2,]    0   48    2
+## [3,]    0   14   36
+```
+
+``` r
 normalizing_permutation(y_true, y_pred)
+```
+
+```
+## [1] 1 2 3
 ```

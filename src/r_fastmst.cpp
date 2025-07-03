@@ -304,10 +304,11 @@ List knn_euclid(
 //' (*) We note that if there are many pairs of equidistant points,
 //' there can be many minimum spanning trees. In particular, it is likely
 //' that there are point pairs with the same mutual reachability distances.
-//' To make the definition less ambiguous (albeit with no guarantees),
+//' !!! TODO NOTE not true anymore
+//' ~~To make the definition less ambiguous (albeit with no guarantees),
 //' internally, we rely on the adjusted distance
 //' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
-//' where \eqn{\varepsilon} is a small positive constant.
+//' where \eqn{\varepsilon} is a small positive constant.~~ !!!
 //'
 //' The implemented algorithms, see the \code{algorithm} parameter, assume
 //' that \code{M} is rather small; say, \eqn{M \leq 20}.

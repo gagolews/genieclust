@@ -143,12 +143,10 @@ library, so it may be adapted to new environments relatively easily:
 any valuable contributions are welcome (Julia or Matlab bindings, etc.).
 
 
-**Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com)
+**Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
 
-Contributors:
-[Maciej Bartoszuk](http://bartoszuk.rexamine.com) and
-[Anna Cena](https://cena.rexamine.com)
-(*genieclust*'s predecessor [*genie*](https://cran.r-project.org/web/packages/genie) {cite}`genieins`
+Contributors: Maciej Bartoszuk and Anna Cena (*genieclust*'s predecessor
+[*genie*](https://cran.r-project.org/web/packages/genie) {cite}`genieins`
 and some internal cluster validity measures [*CVI*](https://github.com/gagolews/optim_cvi)  {cite}`cvi`);
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
@@ -166,7 +164,7 @@ About <self>
 Author <https://www.gagolewski.com/>
 Source Code (GitHub) <https://github.com/gagolews/genieclust>
 Bug Tracker and Feature Suggestions <https://github.com/gagolews/genieclust/issues>
-PyPI Entry <https://pypi.org/project/genieclust/>
+PyPI Entry <https://pypi.org/project/genieclust>
 CRAN Entry <https://CRAN.R-project.org/package=genieclust>
 ::::
 
@@ -190,12 +188,13 @@ weave/string
 weave/benchmarks_approx
 require nmslib!
 exact=False disabled as of v.1.2
+weave/benchmarks_details
 -->
 
 
 ::::{toctree}
 :maxdepth: 1
-:caption: API Documentation
+:caption: Reference Manual
 :hidden:
 
 genieclust
@@ -205,22 +204,13 @@ rapi
 
 ::::{toctree}
 :maxdepth: 1
-:caption: See Also
+:caption: Other
 :hidden:
 
-Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com>
+Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com/>
 Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
-Deep R Programming <https://deepr.gagolewski.com>
-::::
-
-
-::::{toctree}
-:maxdepth: 1
-:caption: Appendix
-:hidden:
-
+Deep R Programming <https://deepr.gagolewski.com/>
 news
-weave/benchmarks_details
 z_bibliography
 ::::
 

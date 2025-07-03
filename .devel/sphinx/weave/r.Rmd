@@ -1,6 +1,6 @@
 # R Interface Examples
 
-The latest stable release of the R package `genieclust` is available from the
+The latest stable release of the R package *genieclust* is available from the
 [CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
 We can install it by calling:
 
@@ -17,7 +17,7 @@ library("genieclust")
 
 
 
-Let's consider the [Sustainable Society Indices](http://www.ssfindex.com/)
+Let's take the [Sustainable Society Indices](http://www.ssfindex.com/)
 dataset that measures the Human, Environmental, and Economic Wellbeing
 in each country. There are seven categories on the scale $[0, 10]$.
 
@@ -30,7 +30,7 @@ head(X)  # preview
 ```
 
 
-The `genieclust` interface is compatible with R's workhorse
+The API of *genieclust* is compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`.
 Yet, for efficiency reasons, it is better to feed `genieclust::gclust()`
 with the input matrix directly:
@@ -50,7 +50,7 @@ sample(y_pred, 25)  # preview
 ```
 
 This gives the cluster IDs allocated to each country.
-Let's depict the obtained partition using the `rworldmap` package:
+Let's depict the obtained partition using the *rworldmap* package:
 
 ```{r ssi-map,echo=-c(1,2,7),results="hide",message=FALSE,fig.cap="Countries grouped w.r.t. the SSI categories."}
 par(ann=FALSE)  # no axes
@@ -64,7 +64,7 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
 ```
 
 
-We can compute, e.g., the average indicators in each identified group:
+We can compute, for instance, the average indicators in each identified group:
 
 ```{r ssi-colmeans}
 t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
@@ -100,7 +100,7 @@ Conclusion:
 calling `genie()` directly will be slightly faster than referring to
 `cutree(gclust(...))`.
 
-* `genieclust` also features partition similarity scores
+* *genieclust* also features partition similarity scores
 (such as the adjusted Rand index) that can be used as
 external cluster validity measures.
 

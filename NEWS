@@ -124,7 +124,7 @@
 
 ## 1.0.1 (2022-08-08)
 
-*  [GENERAL] A paper on the `genieclust` package is now available:
+*  [GENERAL] A paper on the *genieclust* package is now available:
    M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
    SoftwareX 15, 100722, 2021, DOI:
    [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).

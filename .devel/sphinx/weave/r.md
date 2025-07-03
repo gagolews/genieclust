@@ -23,7 +23,7 @@ library("genieclust")
 
 
 
-Let's consider the [Sustainable Society Indices](http://www.ssfindex.com/)
+Let's take the [Sustainable Society Indices](http://www.ssfindex.com/)
 dataset that measures the Human, Environmental, and Economic Wellbeing
 in each country. There are seven categories on the scale $[0, 10]$.
 
@@ -116,7 +116,7 @@ Countries grouped w.r.t. the SSI categories.
 ```
 
 
-We can compute, e.g., the average indicators in each identified group:
+We can compute, for instance, the average indicators in each identified group:
 
 
 ``` r

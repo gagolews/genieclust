@@ -10,7 +10,7 @@ website that shows the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
 on a larger data sample and with the Genie algorithm in the game.
 
-**TL;DR — The resulting figure is at the bottom.**
+**TL;DR — See the bottom of the page for the resulting figure.**
 
 
 
@@ -19,7 +19,6 @@ on a larger data sample and with the Genie algorithm in the game.
 ``` python
 import time
 import warnings
-
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -147,6 +146,7 @@ for i_dataset, (dataset, algo_params) in enumerate(datasets):
         plt.ylim(-2.5, 2.5)
         plt.xticks(())
         plt.yticks(())
+        plt.axis("equal")
         plt.text(.99, .01, ('%.2fs' % (t1 - t0)).lstrip('0'),
                  transform=plt.gca().transAxes, size=15,
                  horizontalalignment='right')
@@ -160,7 +160,7 @@ plt.show()
 Outputs of different clustering algorithms
 ```
 
-It turns out that the out-of-the-box Genie algorithm not only generates the most
-meaningful partitions but also it is the fastest.
-Of course, none of the algorithms cannot be ideal for all the possible datasets,
+The out-of-the-box Genie algorithm not only generates the most
+meaningful partitions but also is the fastest.
+Of course, no algorithm is ideal in all the possible scenarios,
 but Genie is definitely worth a try in your next data mining challenge.

@@ -1,5 +1,5 @@
 n_jobs = 1
-n_trials = 3
+n_trials = 1
 seed = 123
 
 n = 2**15
@@ -22,9 +22,9 @@ scenarios = [
     # (n, 2, 2, "norm"),
     # (n, 3, 2, "norm"),
     # (n, 5, 2, "norm"),
-    # (n, 2, 10, "norm"),
-    # (n, 3, 10, "norm"),
-    # (n, 5, 10, "norm"),
+    (n, 2, 10, "norm"),
+    (n, 3, 10, "norm"),
+    (n, 5, 10, "norm"),
     # (1208592, -3,  1,  "thermogauss_scan001"),
     # (1208592, -3, 10,  "thermogauss_scan001"),
     # (1208592,  2,  1,  "norm"),
@@ -34,7 +34,7 @@ scenarios = [
     # (1208592,  5,  1,  "norm"),
     # (1208592,  5, 10,  "norm"),
     # (1208592, 10,  1,  "norm"),
-    (1208592, 10, 10,  "norm"),
+    # (1208592, 10, 10,  "norm"),
 ]
 
 # scenarios = []

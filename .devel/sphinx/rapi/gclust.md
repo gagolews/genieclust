@@ -123,6 +123,9 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 library("datasets")
 data("iris")
@@ -131,12 +134,39 @@ h <- gclust(X)
 y_pred <- cutree(h, 3)
 y_test <- as.integer(iris[,5])
 plot(X, col=y_pred, pch=y_test, asp=1, las=1)
-adjusted_rand_score(y_test, y_pred)
-normalized_clustering_accuracy(y_test, y_pred)
+```
 
+![plot of chunk gclust](figure/gclust-1.png)
+
+``` r
+adjusted_rand_score(y_test, y_pred)
+```
+
+```
+## [1] 0.6956362
+```
+
+``` r
+normalized_clustering_accuracy(y_test, y_pred)
+```
+
+```
+## [1] 0.81
+```
+
+``` r
 y_pred2 <- genie(X, 3, M=5)  # clustering wrt 5-mutual reachability distance
 plot(X[,1], X[,2], col=y_pred2, pch=y_test, asp=1, las=1)
 noise <- is.na(y_pred2)  # noise/boundary points
 points(X[noise, ], col="gray", pch=10)
+```
+
+![plot of chunk gclust](figure/gclust-2.png)
+
+``` r
 normalized_clustering_accuracy(y_test[!noise], y_pred2[!noise])
+```
+
+```
+## [1] 0.8229167
 ```

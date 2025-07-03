@@ -291,10 +291,11 @@ void Cknn2_euclid_brute(
  *  (\*) We note that if there are many pairs of equidistant points,
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
- *  To make the definition less ambiguous (albeit with no guarantees),
+ *  !!! TODO NOTE not true anymore
+ *  ~~To make the definition less ambiguous (albeit with no guarantees),
  *  internally, we rely on the adjusted distance
  *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
- *  where :math:`\\varepsilon` is a small positive constant.
+ *  where :math:`\\varepsilon` is a small positive constant.~~ !!!
  *
  *  Time complexity: O(n^2). It is assumed that M is rather small
  *  (say, M<=20). If M>2, all pairwise the distances are computed twice
@@ -348,8 +349,10 @@ void Cmst_euclid_brute(
     if (M-1 >= n) throw std::domain_error("M >= n-1");
 
     std::vector<FLOAT> d_core;
+    std::vector<FLOAT> dist_nn_unadj;
     if (M > 2) {
         d_core.resize(n);
+        dist_nn_unadj.resize(n);
         GENIECLUST_ASSERT(nn_dist);
         GENIECLUST_ASSERT(nn_ind);
         Cknn1_euclid_brute(X, n, d, M-1, nn_dist, nn_ind,
@@ -407,19 +410,40 @@ void Cmst_euclid_brute(
             #pragma omp parallel for schedule(static,MST_OMP_CHUNK_SIZE)
             #endif
             for (Py_ssize_t j=i; j<n; ++j) {
+                // if (d_core[i-1] > dist_nn[j]) continue;
                 FLOAT dd = 0.0;
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
-                if (dd < dist_nn[j]) {  // otherwise why bother
-                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
-                    if (dd <= d_core_max)
-                        dd = d_core_max + dd/DCORE_DIST_ADJ;
-                    else
-                        dd = dd + dd/DCORE_DIST_ADJ;
+                if (dd > /* not >= */ dist_nn[j]) continue;  // otherwise why bother
 
+                // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
+                // FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
+                // if (d_core_max > dd)
+                    // dd = d_core_max + dd*DCORE_DIST_ADJ;
+                // else
+                    // dd = dd + dd*DCORE_DIST_ADJ;
+                // if (dd < dist_nn[j]) {
+                //     dist_nn[j] = dd;
+                //     dist_nn_unadj[j] = dd;
+                //     ind_nn[j] = i-1;
+                // }
+
+                // so dd <= dist_nn[j]
+                FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
+                FLOAT dd_unadj = dd;
+
+                if (dd_unadj > d_core_max) {
                     if (dd < dist_nn[j]) {
                         dist_nn[j] = dd;
+                        dist_nn_unadj[j] = dd_unadj;
+                        ind_nn[j] = i-1;
+                    }
+                }
+                else {  // d_core_max >= dd
+                    dd = d_core_max;
+                    if (dd < dist_nn[j] || (dd == dist_nn[j] && dd_unadj > dist_nn_unadj[j])) {
+                        dist_nn[j] = dd;
+                        dist_nn_unadj[j] = dd_unadj;
                         ind_nn[j] = i-1;
                     }
                 }
@@ -443,12 +467,13 @@ void Cmst_euclid_brute(
 
 
         if (M > 2) {
+            std::swap(dist_nn_unadj[best_j], dist_nn_unadj[i]);
             std::swap(d_core[best_j], d_core[i]);
-            // recompute the distance without the ambiguity correction
-            dist_nn[i] = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
-            dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
+            // // recompute the distance without the ambiguity correction
+            // dist_nn[i] = 0.0;
+            // for (Py_ssize_t u=0; u<d; ++u)
+            //     dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
+            // dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
         }
 
         // don't visit i again - it's being added to the tree
@@ -725,10 +750,11 @@ void _mst_euclid_kdtree(
  *  (\*) We note that if there are many pairs of equidistant points,
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
- *  To make the definition less ambiguous (albeit with no guarantees),
+ *  !!! TODO NOTE not true anymore
+ *  ~~To make the definition less ambiguous (albeit with no guarantees),
  *  internally, we rely on the adjusted distance
  *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
- *  where :math:`\\varepsilon` is a small positive constant.
+ *  where :math:`\\varepsilon` is a small positive constant.~~ !!!
  *
  *  The implemented algorithm assumes that `M` is rather small; say, `M <= 20`.
  *

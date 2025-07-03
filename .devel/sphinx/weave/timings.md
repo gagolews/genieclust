@@ -4,8 +4,12 @@
 
 # Timings (How Fast Is It?)
 
+::::{note}
+This section needs to be updated for the new release of *genieclust* ≥ 1.2.0.
+::::
+
 In the [previous section](benchmarks_ar), we have demonstrated
-that Genie generates partitions of decent *quality*. However, is it quick?
+that Genie often generates partitions of decent *quality*. However, is it quick?
 Let's compare it against K-means from [scikit-learn](https://scikit-learn.org/)
 {cite}`sklearn` version 0.23.1
 (`sklearn.cluster.KMeans`) for different number of threads
@@ -113,7 +117,6 @@ hierarchical algorithms in this study.
 
 ## Timings as a Function of `n` and `d`
 
-
 In order to study the run-times as a function dataset size and dimensionality,
 let's consider a series of synthetic benchmarks, each with two Gaussian blobs of size `n/2`
 (with i.i.d. coordinates), in a `d`-dimensional space.
@@ -199,7 +202,7 @@ t0 = time.time()
 g.fit(X)
 print("time elapsed - first run: %.3f" % (time.time()-t0))
 ## Genie()
-## time elapsed - first run: 0.609
+## time elapsed - first run: 0.119
 ```
 
 

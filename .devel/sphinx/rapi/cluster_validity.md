@@ -79,10 +79,24 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 X <- as.matrix(iris[,1:4])
 X[,] <- jitter(X)  # otherwise we get a non-unique solution
 y <- as.integer(iris[[5]])
 calinski_harabasz_index(X, y)  # good
+```
+
+```
+## [1] 486.6681
+```
+
+``` r
 calinski_harabasz_index(X, sample(1:3, nrow(X), replace=TRUE))  # bad
+```
+
+```
+## [1] 2.836713
 ```

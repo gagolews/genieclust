@@ -628,7 +628,7 @@ class Genie(GenieBase):
 
         To force a classical `n_clusters`-partition of a data set (with no
         notion of noise), choose ``"all"``. Furthermore, ``"none"`` leaves
-        all leaves, i.e., noise/boundary points as-is.
+        all leaves marked as noise.
 
     fastmst_params : dict
         Additional parameters to be passed to ``genieclust.fastmst.mst_euclid``

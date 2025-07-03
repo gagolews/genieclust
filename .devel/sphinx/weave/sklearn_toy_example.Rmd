@@ -6,7 +6,7 @@ website that shows the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
 on a larger data sample and with the Genie algorithm in the game.
 
-**TL;DR — The resulting figure is at the bottom.**
+**TL;DR — See the bottom of the page for the resulting figure.**
 
 
 
@@ -45,8 +45,7 @@ First, we generate the datasets. Note that in the
 
 ```{python generate_data,results="hide"}
 n_samples = 10000
-noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5,
-                                      noise=.05)
+noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5, noise=.05)
 noisy_moons = datasets.make_moons(n_samples=n_samples, noise=.05)
 blobs = datasets.make_blobs(n_samples=n_samples, random_state=8)
 no_structure = np.random.rand(n_samples, 2), None
@@ -69,13 +68,12 @@ Then, we run the clustering procedures and plot the results.
 ```{python clustering,results="hide",fig.cap="Outputs of different clustering algorithms"}
 # Set up cluster parameters
 plt.figure(figsize=(9 * 1.3 + 2, 14.5))
-plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
-                    hspace=.01)
+plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96,
+                    wspace=.05, hspace=.01)
 
 plot_num = 1
 
-default_base = {'n_neighbors': 10,
-                'n_clusters': 3}
+default_base = {'n_neighbors': 10, 'n_clusters': 3}
 
 datasets = [
     (noisy_circles, {'n_clusters': 2}),
@@ -149,6 +147,7 @@ for i_dataset, (dataset, algo_params) in enumerate(datasets):
         plt.ylim(-2.5, 2.5)
         plt.xticks(())
         plt.yticks(())
+        plt.axis("equal")
         plt.text(.99, .01, ('%.2fs' % (t1 - t0)).lstrip('0'),
                  transform=plt.gca().transAxes, size=15,
                  horizontalalignment='right')
@@ -157,7 +156,7 @@ for i_dataset, (dataset, algo_params) in enumerate(datasets):
 plt.show()
 ```
 
-It turns out that the out-of-the-box Genie algorithm not only generates the most
-meaningful partitions but also it is the fastest.
-Of course, none of the algorithms cannot be ideal for all the possible datasets,
+The out-of-the-box Genie algorithm not only generates the most
+meaningful partitions but also is the fastest.
+Of course, no algorithm is ideal in all the possible scenarios,
 but Genie is definitely worth a try in your next data mining challenge.

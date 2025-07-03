@@ -70,6 +70,9 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 library("datasets")
 data("iris")
@@ -77,7 +80,20 @@ X <- jitter(as.matrix(iris[1:2]))  # some data
 neighbours <- knn_euclid(X, 1)  # 1-NNs of each point
 plot(X, asp=1, las=1)
 segments(X[,1], X[,2], X[neighbours$nn.index,1], X[neighbours$nn.index,2])
+```
 
+![plot of chunk fastknn](figure/fastknn-1.png)
+
+``` r
 knn_euclid(X, 5, matrix(c(6, 4), nrow=1))  # five closest points to (6, 4)
+```
 
+```
+## $nn.index
+##      [,1] [,2] [,3] [,4] [,5]
+## [1,]   15   19   16   34   86
+## 
+## $nn.dist
+##           [,1]      [,2]      [,3]      [,4]      [,5]
+## [1,] 0.2159604 0.3682194 0.4916704 0.5240702 0.6041195
 ```

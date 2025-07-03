@@ -320,7 +320,7 @@ cpdef tuple mst_euclid(
     (not including the query points themselves).
     In clustering and density estimation, `M` plays the role of a smoothing
     factor; see [10]_ and the references therein for discussion. This parameter
-    corresponds to the ``hdbscan`` Python package's ``min_samples=M-1``.
+    corresponds to the *hdbscan* Python package's ``min_samples=M-1``.
 
 
     Implementation
@@ -329,10 +329,11 @@ cpdef tuple mst_euclid(
     (\*) We note that if there are many pairs of equidistant points,
     there can be many minimum spanning trees. In particular, it is likely
     that there are point pairs with the same mutual reachability distances.
-    To make the definition less ambiguous (albeit with no guarantees),
+    !!! TODO NOTE not true anymore
+    ~~To make the definition less ambiguous (albeit with no guarantees),
     internally, we rely on the adjusted distance
     :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
-    where :math:`\\varepsilon` is a small positive constant.
+    where :math:`\\varepsilon` is a small positive constant.~~ !!!
 
     The implemented algorithms, see the `algorithm` parameter, assume that
     `M` is rather small; say, `M <= 20`.

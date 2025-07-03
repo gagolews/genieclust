@@ -96,6 +96,9 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 library("datasets")
 data("iris")
@@ -105,3 +108,5 @@ plot(X, asp=1, las=1)
 segments(X[T$mst.index[, 1], 1], X[T$mst.index[, 1], 2],
          X[T$mst.index[, 2], 1], X[T$mst.index[, 2], 2])
 ```
+
+![plot of chunk fastmst](figure/fastmst-1.png)

@@ -6,9 +6,9 @@ FILES_RMD = \
 	noise.Rmd               \
 	r.Rmd                   \
 	benchmarks_ar.Rmd       \
-	benchmarks_details.Rmd  \
 	timings.Rmd
 
+# 	benchmarks_details.Rmd  \
 #	benchmarks_approx.Rmd   \
 #	sparse.Rmd              \
 #	string.Rmd              \

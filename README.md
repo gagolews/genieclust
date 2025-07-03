@@ -67,10 +67,9 @@ The package also features an implementation of:
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
 
 Contributors:
-Maciej Bartoszuk,
-[Anna Cena](https://cena.rexamine.com/) (R packages
-[**genie**](https://CRAN.R-project.org/package=genie)
-and [**CVI**](https://github.com/gagolews/optim_cvi)),
+Maciej Bartoszuk, Anna Cena (R packages
+[**genie**](https://CRAN.R-project.org/package=genie) and
+[**CVI**](https://github.com/gagolews/optim_cvi)), and
 [Peter M. Larsen](https://github.com/pmla)
 ([rectangular_lsap](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
 

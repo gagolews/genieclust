@@ -12,7 +12,7 @@ other popular methods in terms of clustering [quality](benchmarks_ar)
 and [speed](timings).
 
 Here are a few examples of basic interactions with the Python version
-of the `genieclust` {cite}`genieclust` package,
+of the *genieclust* {cite}`genieclust` package,
 which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
 
@@ -69,8 +69,8 @@ plt.show()
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The `genieclust` package's programming
-interface is [scikit-learn](https://scikit-learn.org/)-compatible {cite}`sklearn`.
+`gini_threshold` parameter value). The *genieclust* package's programming
+interface is [*scikit-learn*](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
 
@@ -161,7 +161,7 @@ The adjusted Rand score of $\sim 0.3$ indicates a far-from-perfect fit.
 Let's also make a comparison against a version of the DBSCAN
 {cite}`predbscan,dbscan` algorithm. The original DBSCAN relies on a somewhat
 magical `eps` parameter, which might be hard to tune in practice. However,
-the [hdbscan](https://github.com/scikit-learn-contrib/hdbscan) package
+the [*hdbscan*](https://hdbscan.readthedocs.io) package
 {cite}`hdbscanpkg` implements its robustified variant
 {cite}`hdbscan`, which makes the algorithm much more user-friendly.
 
@@ -183,9 +183,8 @@ plt.show()
 ```
 
 **Side note.**
-Gray plotting symbols denote "noise" points — we'll get back to them
-in another section; it turns out that the Genie algorithm is also equipped
-with such a feature (on demand).
+Gray plotting symbols denote "noise" points; we'll get back to this feature
+in [another section](noise).
 
 
 
@@ -266,7 +265,7 @@ For a list of graphical parameters, refer to the function's manual.
 ## Further Reading
 
 For more details, refer to the package's API reference
-manual: [genieclust.Genie](genieclust.Genie).
+manual: [`genieclust.Genie`](genieclust.Genie).
 To learn more about Python, check out Marek's open-access (free!) textbook
-[Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/)
+[*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.

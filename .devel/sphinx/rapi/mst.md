@@ -62,9 +62,7 @@ Olson C.F., Parallel algorithms for hierarchical clustering, *Parallel Computing
 
 Prim R., Shortest connection networks and some generalisations, *The Bell System Technical Journal* 36(6), 1957, 1389-1401.
 
-March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD\'10*, 2010, 603-611, <https://mlpack.org/papers/emst.pdf>.
-
-Curtin R.R., Edel M., Lozhnikov M., Mentekidis Y., Ghaisas S., Zhang S., mlpack 3: A fast, flexible machine learning library, *Journal of Open Source Software* 3(26), 2018, 726.
+March W.B., Ram P., Gray A.G., Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications, *Proc. ACM SIGKDD\'10*, 2010, 603-611.
 
 Campello R.J.G.B., Moulavi D., Sander J., Density-based clustering based on hierarchical density estimates, *Lecture Notes in Computer Science* 7819, 2013, 160-172, [doi:10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
@@ -78,6 +76,9 @@ Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical
 
 ## Examples
 
+
+
+
 ``` r
 library("datasets")
 data("iris")
@@ -87,3 +88,5 @@ plot(X, asp=1, las=1)
 segments(X[T[, 1], 1], X[T[, 1], 2],
          X[T[, 2], 1], X[T[, 2], 2])
 ```
+
+![plot of chunk mst](figure/mst-1.png)
