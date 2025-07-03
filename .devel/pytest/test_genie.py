@@ -49,7 +49,7 @@ def __test_genie(metric='euclidean'):
                 X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
                 labels = np.loadtxt("%s/%s.labels0.gz" % (path,dataset), dtype=np.intp)-1
 
-            k = len(np.unique(labels[labels>=0]))
+            K = len(np.unique(labels[labels>=0]))
 
             # center X + scale (NOT: standardize!)
             X = (X-X.mean(axis=0))/X.std(axis=None, ddof=1)
@@ -75,21 +75,21 @@ def __test_genie(metric='euclidean'):
 
                 t01 = time.time()
                 _res1 = genieclust.Genie(
-                    k, gini_threshold=g, affinity=metric, compute_full_tree=True)
+                    K, gini_threshold=g, affinity=metric, compute_full_tree=True)
                 res1 = _res1.fit_predict(X)+1
                 t11 = time.time()
                 print("t_py=%.3f" % (t11-t01), end="\t")
 
                 assert np.all(np.diff(_res1.distances_)>= 0.0)
-                assert len(np.unique(res1)) == k
+                assert len(np.unique(res1)) == K
 
                 if stats is not None and genie is not None and metric != 'cosine':
                     t02 = time.time()
-                    res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), k)
+                    res2 = stats.cutree(genie.hclust2(objects=X, d=metric, thresholdGini=g), K)
                     t12 = time.time()
                     print("t_r=%.3f" % (t12-t02), end="\t")
                     res2 = np.array(res2, np.intp)
-                    assert len(np.unique(res2)) == k
+                    assert len(np.unique(res2)) == K
 
                     ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
                     print("ARI=%.3f" % ari, end="\t")
@@ -156,7 +156,7 @@ def test_genie_precomputed():
             #     assert np.all(np.diff(_res2.distances_)>= 0.0)
 
             _res2 = genieclust.Genie(
-                k, gini_threshold=g,
+                K, gini_threshold=g,
                 affinity="euclidean", compute_full_tree=True)
             res2 = _res2.fit_predict(X)+1
             ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)

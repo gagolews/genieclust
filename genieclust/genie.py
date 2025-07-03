@@ -345,12 +345,12 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
                 # Use Prim's algorithm to determine the MST
                 # w.r.t. the distances computed on the fly
-                    tree_w, tree_e = oldmst.mst_from_distance(
-                        X,  # if not c_contiguous, raises an error
-                        metric=cur_state["affinity"],
-                        d_core=d_core,
-                        verbose=cur_state["verbose"]
-                    )
+                tree_w, tree_e = oldmst.mst_from_distance(
+                    X,  # if not c_contiguous, raises an error
+                    metric=cur_state["affinity"],
+                    d_core=d_core,
+                    verbose=cur_state["verbose"]
+                )
 
         assert tree_w.shape[0] == n_samples-1
         assert tree_e.shape[0] == n_samples-1
