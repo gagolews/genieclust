@@ -2,7 +2,10 @@ n_jobs = 1
 n_trials = 1
 seed = 123
 
-n = 2**15
+max_n_slow_methods = 300_000
+max_n_brute = 300_000
+
+n = 2**16
 scenarios = [
     # (n, 2, 1,  "pareto(2)"),
     # (n, 2, 2,  "pareto(2)"),
@@ -22,11 +25,12 @@ scenarios = [
     # (n, 2, 2, "norm"),
     # (n, 3, 2, "norm"),
     # (n, 5, 2, "norm"),
+    (n, 2, 1, "norm"),
+    (n, 5, 1, "norm"),
+    (1208592, -3,  1,  "thermogauss_scan001"),
     (n, 2, 10, "norm"),
-    (n, 3, 10, "norm"),
     (n, 5, 10, "norm"),
-    # (1208592, -3,  1,  "thermogauss_scan001"),
-    # (1208592, -3, 10,  "thermogauss_scan001"),
+    (1208592, -3, 10,  "thermogauss_scan001"),
     # (1208592,  2,  1,  "norm"),
     # (1208592,  2, 10,  "norm"),
     # (1208592,  3,  1,  "norm"),
@@ -53,6 +57,7 @@ import pandas as pd
 import timeit
 import time
 
+start_time = int(time.time())
 hostname = os.uname()[1]
 ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506-%s.csv" % (hostname, )
 
@@ -143,7 +148,7 @@ def mst_r_quitefast_default(X, M):
 
 # BallTreeBoruvkaAlgorithm - much slower
 def mst_hdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
-    if X.shape[0] > 300000: return None
+    if X.shape[0] > max_n_slow_methods: return None
     tree = KDTree(X, metric='euclidean', leaf_size=leaf_size)
     alg = KDTreeBoruvkaAlgorithm(
         tree,
@@ -200,7 +205,7 @@ def mst_mlpack(X, M, leaf_size=1):
 
 
 def mst_quitefast_brute(X, M):
-    if X.shape[0] > 300000: return None
+    if X.shape[0] > max_n_brute: return None
     res = genieclust.fastmst.mst_euclid(X, M, algorithm="brute")
     tree_w, tree_e = res[:2]
     return tree_w, tree_e
@@ -304,7 +309,7 @@ for n, d, M, s in scenarios:
                 nthreads=n_jobs,
                 trial=_trial,
                 seed=seed,
-                time=int(time.time()),
+                time=start_time,
                 host=hostname,
             ))
 
