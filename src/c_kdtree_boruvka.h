@@ -164,9 +164,9 @@ private:
     inline void point_vs_points(Py_ssize_t idx_from, Py_ssize_t idx_to)
     {
         const FLOAT* y = data+D*idx_from;
-        for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
-            if (cluster == ds_par[j]) continue;
-            if (USE_DCORE) {
+        if (USE_DCORE) {
+            for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
+                if (cluster == ds_par[j]) continue;
                 if (dcore[j] >= nn_dist) continue;
 
                 FLOAT dd = DISTANCE::point_point(x, y);
@@ -191,8 +191,10 @@ private:
                 // }
 
 
-            }
-            else {
+        }
+        else {
+            for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
+                if (cluster == ds_par[j]) continue;
                 FLOAT dd = DISTANCE::point_point(x, y);
                 if (dd < nn_dist) {
                     nn_dist = dd;
@@ -212,7 +214,6 @@ private:
         }
 
         if (USE_DCORE && nn_dist <= root->min_dcore) {
-            // works for M<=2 as then min_dcore==0.0;
             // we have a better candidate already
             return;
         }
@@ -303,7 +304,7 @@ protected:
     std::vector<Py_ssize_t> Mnn_ind;
 
     template <bool USE_DCORE>
-    inline void leaf_vs_leaf(NODE* roota, NODE* rootb)
+    inline void leaf_vs_leaf_dtb(NODE* roota, NODE* rootb)
     {
         // assumes ds.find(i) == ds.get_parent(i) for all i!
         const FLOAT* _x = this->data + roota->idx_from*D;
@@ -342,17 +343,8 @@ protected:
 
     void update_min_dcore()
     {
-        GENIECLUST_ASSERT(M>2);
+        GENIECLUST_ASSERT(M>=2);
 
-        // if (M <= 2) {
-        //     for (Py_ssize_t i=(Py_ssize_t)this->nodes.size()-1; i>=0; --i)
-        //     {
-        //         NODE* curnode = &(this->nodes[i]);
-        //         curnode->min_dcore = 0.0;
-        //     }
-        // }
-        // else {
-        // nodes is a deque...
         for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
         {
             if (curnode->is_leaf()) {
@@ -446,7 +438,7 @@ protected:
             }
 
             if (M == 2) {
-                dcore[i] = nn_dist[i];  // actually redundant...
+                dcore[i]    = nn_dist[i];
                 Mnn_dist[i] = nn_dist[i];
                 Mnn_ind[i]  = nn_ind[i];
             }
@@ -597,8 +589,8 @@ protected:
         if (roota->is_leaf()) {
             if (rootb->is_leaf()) {
 
-                if (M>2) leaf_vs_leaf<true>(roota, rootb);
-                else     leaf_vs_leaf<false>(roota, rootb);
+                if (M>2) leaf_vs_leaf_dtb<true>(roota, rootb);
+                else     leaf_vs_leaf_dtb<false>(roota, rootb);
 
                 if (roota->cluster_repr >= 0) {  // all points are in the same cluster
                     roota->cluster_max_dist = nn_dist[roota->cluster_repr];
