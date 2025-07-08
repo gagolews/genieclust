@@ -1,4 +1,4 @@
-n_jobs = 10
+n_jobs = 1
 n_trials = 1
 seed = 123
 
@@ -278,15 +278,17 @@ def mst_quitefast_kdtree_dual(X, M, max_leaf_size=8, first_pass_max_brute_size=3
 
 
 cases = dict(
-    quitefast_kdtree_single   = lambda X, M: mst_quitefast_kdtree_single(X, M),
-    quitefast_kdtree_dual     = lambda X, M: mst_quitefast_kdtree_dual(X, M),
-    quitefast_brute           = lambda X, M: mst_quitefast_brute(X, M),
-    mlpack                    = lambda X, M: mst_mlpack(X, M),
-    wangyiqiu                 = lambda X, M: mst_wangyiqiu(X, M),
-    fasthdbscan_kdtree        = lambda X, M: mst_fasthdbscan_kdtree(X, M),
-    hdbscan_kdtree            = lambda X, M: mst_hdbscan_kdtree(X, M),
-    r_mlpack                  = lambda X, M: mst_r_mlpack(X, M),
-    r_quitefast_default       = lambda X, M: mst_r_quitefast_default(X, M),
+    quitefast_kdtree_single    = lambda X, M: mst_quitefast_kdtree_single(X, M),
+    quitefast_kdtree_dual      = lambda X, M: mst_quitefast_kdtree_dual(X, M),
+    quitefast_kdtree_single_M2 = lambda X, M: mst_quitefast_kdtree_single(X, 2) if M==1 else None,
+    quitefast_kdtree_dual_M2   = lambda X, M: mst_quitefast_kdtree_dual(X, 2) if M==1 else None,
+    quitefast_brute            = lambda X, M: mst_quitefast_brute(X, M),
+    mlpack                     = lambda X, M: mst_mlpack(X, M),
+    wangyiqiu                  = lambda X, M: mst_wangyiqiu(X, M),
+    fasthdbscan_kdtree         = lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    hdbscan_kdtree             = lambda X, M: mst_hdbscan_kdtree(X, M),
+    r_mlpack                   = lambda X, M: mst_r_mlpack(X, M),
+    r_quitefast_default        = lambda X, M: mst_r_quitefast_default(X, M),
 )
 
 

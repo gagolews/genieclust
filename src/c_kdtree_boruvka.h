@@ -164,9 +164,10 @@ private:
     inline void point_vs_points(Py_ssize_t idx_from, Py_ssize_t idx_to)
     {
         const FLOAT* y = data+D*idx_from;
-        if (USE_DCORE) {
-            for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
-                if (cluster == ds_par[j]) continue;
+        for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
+            if (cluster == ds_par[j]) continue;
+
+            if (USE_DCORE) {
                 if (dcore[j] >= nn_dist) continue;
 
                 FLOAT dd = DISTANCE::point_point(x, y);
@@ -189,12 +190,8 @@ private:
                 //     nn_dist = dd;
                 //     nn_ind = j;
                 // }
-
-
-        }
-        else {
-            for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
-                if (cluster == ds_par[j]) continue;
+            }
+            else {  // not USE_DCORE
                 FLOAT dd = DISTANCE::point_point(x, y);
                 if (dd < nn_dist) {
                     nn_dist = dd;
@@ -429,7 +426,7 @@ protected:
                 this->data, nullptr, i, &nn_dist[i], &nn_ind[i], k,
                 first_pass_max_brute_size
             );
-            nn.find(&this->nodes[0], false);
+            nn.find(&this->nodes[0], /*reset=*/false);
 
             if (omp_nthreads == 1 && nn_dist[i] < nn_dist[nn_ind[i]]) {
                 // the speed up is rather small...
@@ -474,7 +471,7 @@ protected:
                 this->data, nullptr, i, Mnn_dist.data()+k*i, Mnn_ind.data()+k*i, k,
                 first_pass_max_brute_size
             );
-            nn.find(&this->nodes[0], false);
+            nn.find(&this->nodes[0], /*reset=*/false);
             dcore[i] = Mnn_dist[i*k+(k-1)];
         }
 

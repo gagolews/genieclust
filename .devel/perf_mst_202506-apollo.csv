@@ -344,3 +344,109 @@ r_quitefast_default,2.296293020248413,0.0,1454150.1379761116,1422848,1208592,-3,
 #          quitefast_kdtree_dual: t=        3.63889 Δdist=        0.00000 Δind=    212880
 #             fasthdbscan_kdtree: t=       12.36281 Δdist=        0.00001 Δind=   1418748
 #            r_quitefast_default: t=        2.29629 Δdist=        0.00000 Δind=   1422848
+quitefast_kdtree_single,1.0336663722991943,0.0,1454150.1379761116,0,1208592,-3,10,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_dual,2.951272487640381,0.0,1454150.1379761116,214695,1208592,-3,10,thermogauss_scan001,10,1,123,1751991268,apollo
+wangyiqiu,2.095170021057129,0.0,1454150.1379761116,1314538,1208592,-3,10,thermogauss_scan001,10,1,123,1751991268,apollo
+fasthdbscan_kdtree,3.3783535957336426,9.099720045924187e-06,1454150.1379852113,1421130,1208592,-3,10,thermogauss_scan001,10,1,123,1751991268,apollo
+r_quitefast_default,0.9530222415924072,0.0,1454150.1379761116,1425461,1208592,-3,10,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_single,0.9301042556762695,0.0,66533.07176375248,0,1208592,3,10,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_dual,4.771421432495117,0.0,66533.07176375248,114975,1208592,3,10,norm,10,1,123,1751991268,apollo
+wangyiqiu,4.561990022659302,-1.4551915228366852e-11,66533.07176375246,1310484,1208592,3,10,norm,10,1,123,1751991268,apollo
+fasthdbscan_kdtree,6.918813467025757,-6.257323548197746e-10,66533.07176375185,1446503,1208592,3,10,norm,10,1,123,1751991268,apollo
+r_quitefast_default,0.8717648983001709,0.0,66533.07176375248,1451710,1208592,3,10,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_single,0.986518144607544,0.0,699204.1443884636,0,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_dual,1.8379237651824951,0.0,699204.1443884636,142,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_single_M2,1.075763463973999,0.0,699204.1443884636,0,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_dual_M2,1.8469512462615967,0.0,699204.1443884636,142,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+wangyiqiu,1.1104700565338135,0.0,699204.1443884636,520,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+fasthdbscan_kdtree,5.364036321640015,0.0010080380598083138,699204.1453965016,9750,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+r_quitefast_default,1.0114150047302246,0.0,699204.1443884636,0,1208592,-3,1,thermogauss_scan001,10,1,123,1751991268,apollo
+quitefast_kdtree_single,1.1240274906158447,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_dual,3.352146863937378,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_single_M2,1.1088523864746094,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_dual_M2,3.376940965652466,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+wangyiqiu,1.9015800952911377,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+fasthdbscan_kdtree,19.304898500442505,2.299930201843381e-08,33577.92692207733,4,1208592,3,1,norm,10,1,123,1751991268,apollo
+r_quitefast_default,1.2449910640716553,0.0,33577.92692205433,0,1208592,3,1,norm,10,1,123,1751991268,apollo
+quitefast_kdtree_single,2.3618886470794678,0.0,1454150.1379761116,0,1208592,-3,10,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_dual,3.6232597827911377,0.0,1454150.1379761116,212880,1208592,-3,10,thermogauss_scan001,1,1,123,1751991409,apollo
+wangyiqiu,7.190449953079224,0.0,1454150.1379761116,1318059,1208592,-3,10,thermogauss_scan001,1,1,123,1751991409,apollo
+fasthdbscan_kdtree,12.344024658203125,9.099720045924187e-06,1454150.1379852113,1418748,1208592,-3,10,thermogauss_scan001,1,1,123,1751991409,apollo
+r_quitefast_default,2.3090388774871826,0.0,1454150.1379761116,1422848,1208592,-3,10,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_single,2.4108712673187256,0.0,66533.07176375248,0,1208592,3,10,norm,1,1,123,1751991409,apollo
+quitefast_kdtree_dual,5.736500024795532,0.0,66533.07176375248,112629,1208592,3,10,norm,1,1,123,1751991409,apollo
+wangyiqiu,17.6110999584198,-1.4551915228366852e-11,66533.07176375246,1321147,1208592,3,10,norm,1,1,123,1751991409,apollo
+fasthdbscan_kdtree,20.476030111312866,-6.257323548197746e-10,66533.07176375185,1445209,1208592,3,10,norm,1,1,123,1751991409,apollo
+r_quitefast_default,2.508378028869629,0.0,66533.07176375248,1450453,1208592,3,10,norm,1,1,123,1751991409,apollo
+quitefast_kdtree_single,3.17014217376709,0.0,699204.1443884636,0,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_dual,2.1269288063049316,0.0,699204.1443884636,150,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_single_M2,3.186152696609497,0.0,699204.1443884636,0,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_dual_M2,2.132497549057007,0.0,699204.1443884636,150,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+wangyiqiu,3.238179922103882,0.0,699204.1443884636,530,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+fasthdbscan_kdtree,24.385149240493774,0.0010080380598083138,699204.1453965016,9762,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+r_quitefast_default,2.122422218322754,0.0,699204.1443884636,150,1208592,-3,1,thermogauss_scan001,1,1,123,1751991409,apollo
+quitefast_kdtree_single,3.785820484161377,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+quitefast_kdtree_dual,3.6948859691619873,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+quitefast_kdtree_single_M2,3.8128280639648438,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+quitefast_kdtree_dual_M2,3.7187373638153076,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+wangyiqiu,7.046780109405518,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+fasthdbscan_kdtree,61.42970323562622,2.299930201843381e-08,33577.92692207733,4,1208592,3,1,norm,1,1,123,1751991409,apollo
+r_quitefast_default,3.673182964324951,0.0,33577.92692205433,0,1208592,3,1,norm,1,1,123,1751991409,apollo
+# 2025-07-08 18:25
+# n=1208592, d=3, M=10, s=thermogauss_scan001, threads=10
+#        quitefast_kdtree_single: t=        1.03367 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        2.95127 Δdist=        0.00000 Δind=    214695
+#                      wangyiqiu: t=        2.09517 Δdist=        0.00000 Δind=   1314538
+#             fasthdbscan_kdtree: t=        3.37835 Δdist=        0.00001 Δind=   1421130
+#            r_quitefast_default: t=        0.95302 Δdist=        0.00000 Δind=   1425461
+# n=1208592, d=3, M=10, s=norm, threads=10
+#        quitefast_kdtree_single: t=        0.93010 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        4.77142 Δdist=        0.00000 Δind=    114975
+#                      wangyiqiu: t=        4.56199 Δdist=       -0.00000 Δind=   1310484
+#             fasthdbscan_kdtree: t=        6.91881 Δdist=       -0.00000 Δind=   1446503
+#            r_quitefast_default: t=        0.87176 Δdist=        0.00000 Δind=   1451710
+# n=1208592, d=3, M=1, s=thermogauss_scan001, threads=10
+#        quitefast_kdtree_single: t=        0.98652 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        1.83792 Δdist=        0.00000 Δind=       142
+#     quitefast_kdtree_single_M2: t=        1.07576 Δdist=        0.00000 Δind=         0
+#       quitefast_kdtree_dual_M2: t=        1.84695 Δdist=        0.00000 Δind=       142
+#                      wangyiqiu: t=        1.11047 Δdist=        0.00000 Δind=       520
+#             fasthdbscan_kdtree: t=        5.36404 Δdist=        0.00101 Δind=      9750
+#            r_quitefast_default: t=        1.01142 Δdist=        0.00000 Δind=         0
+# n=1208592, d=3, M=1, s=norm, threads=10
+#        quitefast_kdtree_single: t=        1.12403 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        3.35215 Δdist=        0.00000 Δind=         0
+#     quitefast_kdtree_single_M2: t=        1.10885 Δdist=        0.00000 Δind=         0
+#       quitefast_kdtree_dual_M2: t=        3.37694 Δdist=        0.00000 Δind=         0
+#                      wangyiqiu: t=        1.90158 Δdist=        0.00000 Δind=         0
+#             fasthdbscan_kdtree: t=       19.30490 Δdist=        0.00000 Δind=         4
+#            r_quitefast_default: t=        1.24499 Δdist=        0.00000 Δind=         0
+# n=1208592, d=3, M=10, s=thermogauss_scan001, threads=1
+#        quitefast_kdtree_single: t=        2.36189 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        3.62326 Δdist=        0.00000 Δind=    212880
+#                      wangyiqiu: t=        7.19045 Δdist=        0.00000 Δind=   1318059
+#             fasthdbscan_kdtree: t=       12.34402 Δdist=        0.00001 Δind=   1418748
+#            r_quitefast_default: t=        2.30904 Δdist=        0.00000 Δind=   1422848
+# n=1208592, d=3, M=10, s=norm, threads=1
+#        quitefast_kdtree_single: t=        2.41087 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        5.73650 Δdist=        0.00000 Δind=    112629
+#                      wangyiqiu: t=       17.61110 Δdist=       -0.00000 Δind=   1321147
+#             fasthdbscan_kdtree: t=       20.47603 Δdist=       -0.00000 Δind=   1445209
+#            r_quitefast_default: t=        2.50838 Δdist=        0.00000 Δind=   1450453
+# n=1208592, d=3, M=1, s=thermogauss_scan001, threads=1
+#        quitefast_kdtree_single: t=        3.17014 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        2.12693 Δdist=        0.00000 Δind=       150
+#     quitefast_kdtree_single_M2: t=        3.18615 Δdist=        0.00000 Δind=         0
+#       quitefast_kdtree_dual_M2: t=        2.13250 Δdist=        0.00000 Δind=       150
+#                      wangyiqiu: t=        3.23818 Δdist=        0.00000 Δind=       530
+#             fasthdbscan_kdtree: t=       24.38515 Δdist=        0.00101 Δind=      9762
+#            r_quitefast_default: t=        2.12242 Δdist=        0.00000 Δind=       150
+# n=1208592, d=3, M=1, s=norm, threads=1
+#        quitefast_kdtree_single: t=        3.78582 Δdist=        0.00000 Δind=         0
+#          quitefast_kdtree_dual: t=        3.69489 Δdist=        0.00000 Δind=         0
+#     quitefast_kdtree_single_M2: t=        3.81283 Δdist=        0.00000 Δind=         0
+#       quitefast_kdtree_dual_M2: t=        3.71874 Δdist=        0.00000 Δind=         0
+#                      wangyiqiu: t=        7.04678 Δdist=        0.00000 Δind=         0
+#             fasthdbscan_kdtree: t=       61.42970 Δdist=        0.00000 Δind=         4
+#            r_quitefast_default: t=        3.67318 Δdist=        0.00000 Δind=         0
+#
