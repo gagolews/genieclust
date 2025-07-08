@@ -3,6 +3,7 @@ n_trials = 1
 seed = 123
 
 max_n_slow_methods = 300_000
+max_n_medium_methods = 1_000_000
 max_n_brute = 300_000
 
 n = 2**16
@@ -26,11 +27,13 @@ scenarios = [
     # (n, 3, 2, "norm"),
     # (n, 5, 2, "norm"),
     (1208592, -3, 10,  "thermogauss_scan001"),
-    (n, 2, 1, "norm"),
-    (n, 5, 1, "norm"),
+    (1208592, 3, 10,  "norm"),
+    # (n, 2, 1, "norm"),
+    # (n, 2, 10, "norm"),
+    # (n, 5, 1, "norm"),
     (1208592, -3,  1,  "thermogauss_scan001"),
-    (n, 2, 10, "norm"),
-    (n, 5, 10, "norm"),
+    (1208592, 3, 1,  "norm"),
+    # (n, 5, 10, "norm"),
     # (1208592,  2,  1,  "norm"),
     # (1208592,  2, 10,  "norm"),
     # (1208592,  3,  1,  "norm"),
@@ -58,7 +61,7 @@ import pandas as pd
 import timeit
 import time
 import subprocess
-
+import re
 
 start_time = int(time.time())
 hostname = os.uname()[1]
@@ -128,21 +131,41 @@ def tree_order(tree_w, tree_e):
     return genieclust.fastmst.tree_order(tree_w, tree_e)
 
 
+# # not as fast as ours, lacking Python interface, a newer version does not build
+# # see mst_wangyiqiu
+# def mst_pargeo(X, M):
+#     if M > 1: return None
+#     np.savetxt("/tmp/input.numpy", X)
+#     subprocess.run([
+#         "/home/gagolews/Python/genieclust/.devel/wangyiqiu_pargeo/build/executable/emst", "-o", "/tmp/output.pargeo", "/tmp/input.numpy"], capture_output=True, env=None, check=True)
+#     tree_e = np.genfromtxt("/tmp/output.pargeo", dtype=int)
+#     tree_w = np.sqrt(
+#                 np.sum((X[tree_e[:,0],:]-X[tree_e[:,1],:])**2, axis=1)
+#             )
+#     return tree_order(tree_w, tree_e)
 
-def mst_pargeo(X, M):
-    if M > 1:
-        return None
-    subprocess.run([
-        "/home/gagolews/Python/genieclust/.devel/wangyiqiu_pargeo/build/executable/emst", "-o", "/tmp/output.pargeo", "/tmp/input.numpy"], capture_output=True, env=None, check=True)
-    tree_e = np.genfromtxt("/tmp/output.pargeo", dtype=int)
-    tree_w = np.sqrt(
-                np.sum((X[tree_e[:,0],:]-X[tree_e[:,1],:])**2, axis=1)
-            )
-    return tree_w, tree_e
+
+
+# forcing this to work required a bit of hackery...
+# edit compiler flags in flags.make manually, add -O3 -march=native
+def mst_wangyiqiu(X, M):
+    np.savetxt("/tmp/input.numpy", X)
+    out = subprocess.run([
+        "/home/gagolews/Python/genieclust/.devel/wangyiqiu_hdbscan/build/src/hdbscan", "-o", "/tmp/output.wangyiqiu", "-m", str(max(1, M)), "/tmp/input.numpy"], capture_output=True, env=None, check=True)
+    t = float(re.search("mst-total-time = (.*)", out.stdout.decode("utf-8")).group(1))
+    res = np.loadtxt("/tmp/output.wangyiqiu")
+    res = tree_order(
+        res[:, 2].astype("float", order="C"),
+        res[:,:2].astype(np.intp, order="C")
+    )
+    return (*res, t)
 
 
 def mst_r_mlpack(X, M, leaf_size=1):
     if M > 1 or n_jobs > 1:
+        return None
+
+    if X.shape[0] > max_n_medium_methods:
         return None
 
     np_cv_rules = default_converter + numpy2ri.converter
@@ -209,6 +232,10 @@ def mst_fasthdbscan_kdtree(X, M, leaf_size=40, leaf_size_div=3):
 def mst_mlpack(X, M, leaf_size=1):
     if M > 1 or n_jobs > 1:
         return None
+
+    if X.shape[0] > max_n_medium_methods:
+        return None
+
     _res = mlpack.emst(
         X,
         leaf_size=leaf_size,  # "One-element leaves give the empirically best performance, but at the cost of greater memory requirements."
@@ -255,7 +282,7 @@ cases = dict(
     quitefast_kdtree_dual     = lambda X, M: mst_quitefast_kdtree_dual(X, M),
     quitefast_brute           = lambda X, M: mst_quitefast_brute(X, M),
     mlpack                    = lambda X, M: mst_mlpack(X, M),
-    pargeo                    = lambda X, M: mst_pargeo(X, M),
+    wangyiqiu                 = lambda X, M: mst_wangyiqiu(X, M),
     fasthdbscan_kdtree        = lambda X, M: mst_fasthdbscan_kdtree(X, M),
     hdbscan_kdtree            = lambda X, M: mst_hdbscan_kdtree(X, M),
     r_mlpack                  = lambda X, M: mst_r_mlpack(X, M),
@@ -294,11 +321,9 @@ for n, d, M, s in scenarios:
     print("n=%d, d=%d, M=%d, s=%s, threads=%d" % (X.shape[0], X.shape[1], M, s, n_jobs))
 
     # preflight (e.g., for fast_hdbscan)
-    np.savetxt("/tmp/input.numpy", X[:100, :])
     for name, generator in cases.items():
         generator(X[:100, :].copy(), M)
 
-    np.savetxt("/tmp/input.numpy", X)
     for _trial in range(1, n_trials+1):
         results = []
         np.random.seed(_trial)
@@ -306,8 +331,14 @@ for n, d, M, s in scenarios:
         for case, generator in cases.items():
             t0 = timeit.time.time()
             _res = generator(X, M)
-            t1 = timeit.time.time()
             if _res is None: continue
+
+            if len(_res) == 3:
+                t1 = t0 + _res[2]  # own time measurement
+                _res = _res[:2]
+            else:
+                t1 = timeit.time.time()
+
             if _res_ref is None: _res_ref = _res
             _res = tree_order(*_res)
             print("%30s: t=%15.5f Δdist=%15.5f Δind=%10.0f" % (
