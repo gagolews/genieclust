@@ -1,4 +1,4 @@
-n_jobs = 1
+n_jobs = 10
 n_trials = 1
 seed = 123
 
@@ -25,12 +25,12 @@ scenarios = [
     # (n, 2, 2, "norm"),
     # (n, 3, 2, "norm"),
     # (n, 5, 2, "norm"),
+    (1208592, -3, 10,  "thermogauss_scan001"),
     (n, 2, 1, "norm"),
     (n, 5, 1, "norm"),
     (1208592, -3,  1,  "thermogauss_scan001"),
     (n, 2, 10, "norm"),
     (n, 5, 10, "norm"),
-    (1208592, -3, 10,  "thermogauss_scan001"),
     # (1208592,  2,  1,  "norm"),
     # (1208592,  2, 10,  "norm"),
     # (1208592,  3,  1,  "norm"),
@@ -48,6 +48,7 @@ scenarios = [
 #         scenarios.append( (2**log2n, d, 10, "norm") )
 
 
+
 # ------------------------------------------------------------------------------
 
 import os
@@ -56,6 +57,8 @@ import numpy as np
 import pandas as pd
 import timeit
 import time
+import subprocess
+
 
 start_time = int(time.time())
 hostname = os.uname()[1]
@@ -66,8 +69,9 @@ ofname = "/home/gagolews/Python/genieclust/.devel/perf_mst_202506-%s.csv" % (hos
 
 
 if n_jobs > 0:
-    os.environ["OMP_NUM_THREADS"] = str(n_jobs)
-    os.environ["NUMBA_NUM_THREADS"] = str(n_jobs)
+    os.environ["OMP_NUM_THREADS"]    = str(n_jobs)
+    os.environ["PARLAY_NUM_THREADS"] = str(n_jobs)
+    os.environ["NUMBA_NUM_THREADS"]  = str(n_jobs)
 
 os.environ["COLUMNS"] = "200"  # output width, in characters
 np.set_printoptions(
@@ -122,6 +126,19 @@ def tree_order(tree_w, tree_e):
     tree_w = tree_w.astype("float", order="C")
     tree_e = tree_e.astype(np.intp, order="C")
     return genieclust.fastmst.tree_order(tree_w, tree_e)
+
+
+
+def mst_pargeo(X, M):
+    if M > 1:
+        return None
+    subprocess.run([
+        "/home/gagolews/Python/genieclust/.devel/wangyiqiu_pargeo/build/executable/emst", "-o", "/tmp/output.pargeo", "/tmp/input.numpy"], capture_output=True, env=None, check=True)
+    tree_e = np.genfromtxt("/tmp/output.pargeo", dtype=int)
+    tree_w = np.sqrt(
+                np.sum((X[tree_e[:,0],:]-X[tree_e[:,1],:])**2, axis=1)
+            )
+    return tree_w, tree_e
 
 
 def mst_r_mlpack(X, M, leaf_size=1):
@@ -238,6 +255,7 @@ cases = dict(
     quitefast_kdtree_dual     = lambda X, M: mst_quitefast_kdtree_dual(X, M),
     quitefast_brute           = lambda X, M: mst_quitefast_brute(X, M),
     mlpack                    = lambda X, M: mst_mlpack(X, M),
+    pargeo                    = lambda X, M: mst_pargeo(X, M),
     fasthdbscan_kdtree        = lambda X, M: mst_fasthdbscan_kdtree(X, M),
     hdbscan_kdtree            = lambda X, M: mst_hdbscan_kdtree(X, M),
     r_mlpack                  = lambda X, M: mst_r_mlpack(X, M),
@@ -276,9 +294,11 @@ for n, d, M, s in scenarios:
     print("n=%d, d=%d, M=%d, s=%s, threads=%d" % (X.shape[0], X.shape[1], M, s, n_jobs))
 
     # preflight (e.g., for fast_hdbscan)
+    np.savetxt("/tmp/input.numpy", X[:100, :])
     for name, generator in cases.items():
         generator(X[:100, :].copy(), M)
 
+    np.savetxt("/tmp/input.numpy", X)
     for _trial in range(1, n_trials+1):
         results = []
         np.random.seed(_trial)

@@ -27,6 +27,7 @@
 #define GENIECLUST_R
 #include "../src/c_fastmst.h"
 #include "perf_knn_202506-pico_tree.h"
+#include "perf_knn_202506-pargeo.h"
 
 //' [[Rcpp::export]]
 void test() { }
