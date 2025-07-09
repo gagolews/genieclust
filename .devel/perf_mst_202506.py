@@ -1,4 +1,4 @@
-n_jobs = 10
+n_jobs = 1
 n_trials = 1
 seed = 123
 
@@ -28,12 +28,12 @@ scenarios = [
     # (n, 5, 2, "norm"),
     (1208592, -3, 10,  "thermogauss_scan001"),
     (1208592, 3, 10,  "norm"),
-    # (n, 2, 1, "norm"),
-    # (n, 2, 10, "norm"),
-    # (n, 5, 1, "norm"),
     (1208592, -3,  1,  "thermogauss_scan001"),
     (1208592, 3, 1,  "norm"),
-    # (n, 5, 10, "norm"),
+    (n, 2, 1, "norm"),
+    (n, 2, 10, "norm"),
+    (n, 5, 1, "norm"),
+    (n, 5, 10, "norm"),
     # (1208592,  2,  1,  "norm"),
     # (1208592,  2, 10,  "norm"),
     # (1208592,  3,  1,  "norm"),
@@ -154,11 +154,11 @@ def mst_wangyiqiu(X, M):
         "/home/gagolews/Python/genieclust/.devel/wangyiqiu_hdbscan/build/src/hdbscan", "-o", "/tmp/output.wangyiqiu", "-m", str(max(1, M)), "/tmp/input.numpy"], capture_output=True, env=None, check=True)
     t = float(re.search("mst-total-time = (.*)", out.stdout.decode("utf-8")).group(1))
     res = np.loadtxt("/tmp/output.wangyiqiu")
-    res = tree_order(
+    return (
         res[:, 2].astype("float", order="C"),
-        res[:,:2].astype(np.intp, order="C")
+        res[:,:2].astype(np.intp, order="C"),
+        t
     )
-    return (*res, t)
 
 
 def mst_r_mlpack(X, M, leaf_size=1):
@@ -281,11 +281,11 @@ cases = dict(
     quitefast_kdtree_single    = lambda X, M: mst_quitefast_kdtree_single(X, M),
     quitefast_kdtree_dual      = lambda X, M: mst_quitefast_kdtree_dual(X, M),
     quitefast_brute            = lambda X, M: mst_quitefast_brute(X, M),
-    mlpack                     = lambda X, M: mst_mlpack(X, M),
+    # mlpack                     = lambda X, M: mst_mlpack(X, M),
     wangyiqiu                  = lambda X, M: mst_wangyiqiu(X, M),
-    fasthdbscan_kdtree         = lambda X, M: mst_fasthdbscan_kdtree(X, M),
-    hdbscan_kdtree             = lambda X, M: mst_hdbscan_kdtree(X, M),
-    r_mlpack                   = lambda X, M: mst_r_mlpack(X, M),
+    # fasthdbscan_kdtree         = lambda X, M: mst_fasthdbscan_kdtree(X, M),
+    # hdbscan_kdtree             = lambda X, M: mst_hdbscan_kdtree(X, M),
+    # r_mlpack                   = lambda X, M: mst_r_mlpack(X, M),
     r_quitefast_default        = lambda X, M: mst_r_quitefast_default(X, M),
 )
 
@@ -341,11 +341,13 @@ for n, d, M, s in scenarios:
 
             if _res_ref is None: _res_ref = _res
             _res = tree_order(*_res)
-            print("%30s: t=%15.5f Δdist=%15.5f Δind=%10.0f" % (
+            nleaves = np.sum(np.unique(_res[1], return_counts=True)[1]==1)
+            print("%30s: t=%15.5f Δdist=%15.5f Δind=%10.0f nleaves=%8d" % (
                 case,
                 t1-t0,
                 np.sum(_res[0])-np.sum(_res_ref[0]),
                 np.sum(_res[1] != _res_ref[1]),
+                nleaves,
             ))
             results.append(dict(
                 method=case,
@@ -353,6 +355,7 @@ for n, d, M, s in scenarios:
                 Δdist=np.sum(_res[0])-np.sum(_res_ref[0]),
                 Σdist=np.sum(_res[0]),
                 Δidx=np.sum(_res[1] != _res_ref[1]),
+                nleaves=nleaves,
                 n=n,
                 d=d,
                 M=M,

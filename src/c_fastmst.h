@@ -291,11 +291,10 @@ void Cknn2_euclid_brute(
  *  (\*) We note that if there are many pairs of equidistant points,
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
- *  !!! TODO NOTE not true anymore
- *  ~~To make the definition less ambiguous (albeit with no guarantees),
+ *  To make the definition less ambiguous (albeit with no guarantees),
  *  internally, we rely on the adjusted distance
  *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
- *  where :math:`\\varepsilon` is a small positive constant.~~ !!!
+ *  where :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
  *
  *  Time complexity: O(n^2). It is assumed that M is rather small
  *  (say, M<=20). If M>2, all pairwise the distances are computed twice
@@ -334,6 +333,8 @@ void Cknn2_euclid_brute(
  *        (M-1) nearest neighbours
  * @param nn_ind [out] NULL for M==1 or the n*(M-1) indexes of the n points'
  *        (M-1) nearest neighbours
+ * @param dcore_dist_adj if negative, farther NNs are preferred if they
+ *        correspond to the same core distance; M>2 only
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -341,6 +342,7 @@ void Cmst_euclid_brute(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind,
     FLOAT* nn_dist, Py_ssize_t* nn_ind,
+    FLOAT dcore_dist_adj = -0.00000001490116119384765625,
     bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
@@ -349,10 +351,8 @@ void Cmst_euclid_brute(
     if (M-1 >= n) throw std::domain_error("M >= n-1");
 
     std::vector<FLOAT> d_core;
-    std::vector<FLOAT> dist_nn_unadj;
     if (M > 2) {
         d_core.resize(n);
-        dist_nn_unadj.resize(n);
         GENIECLUST_ASSERT(nn_dist);
         GENIECLUST_ASSERT(nn_ind);
         Cknn1_euclid_brute(X, n, d, M-1, nn_dist, nn_ind,
@@ -369,9 +369,6 @@ void Cmst_euclid_brute(
     // ind_nn[j] is the vertex from the current tree closest to vertex j
     std::vector<Py_ssize_t> ind_nn(n);
     std::vector<FLOAT> dist_nn(n, INFINITY);  // dist_nn[j] = d(j, ind_nn[j])
-
-    //std::vector<FLOAT> distances(n);
-    //FLOAT* _distances = distances.data();
 
     std::vector<Py_ssize_t> ind_left(n);  // aka perm
     for (Py_ssize_t i=0; i<n; ++i) ind_left[i] = i;
@@ -414,38 +411,11 @@ void Cmst_euclid_brute(
                 FLOAT dd = 0.0;
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
-                if (dd > /* not >= */ dist_nn[j]) continue;  // otherwise why bother
+                dd = max3(dd, d_core[i-1], d_core[j]) + dd*dcore_dist_adj;
 
-                // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                // FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
-                // if (d_core_max > dd)
-                    // dd = d_core_max + dd*DCORE_DIST_ADJ;
-                // else
-                    // dd = dd + dd*DCORE_DIST_ADJ;
-                // if (dd < dist_nn[j]) {
-                //     dist_nn[j] = dd;
-                //     dist_nn_unadj[j] = dd;
-                //     ind_nn[j] = i-1;
-                // }
-
-                // so dd <= dist_nn[j]
-                FLOAT d_core_max = std::max(d_core[i-1], d_core[j]);
-                FLOAT dd_unadj = dd;
-
-                if (dd_unadj > d_core_max) {
-                    if (dd < dist_nn[j]) {
-                        dist_nn[j] = dd;
-                        dist_nn_unadj[j] = dd_unadj;
-                        ind_nn[j] = i-1;
-                    }
-                }
-                else {  // d_core_max >= dd
-                    dd = d_core_max;
-                    if (dd < dist_nn[j] || (dd == dist_nn[j] && dd_unadj > dist_nn_unadj[j])) {
-                        dist_nn[j] = dd;
-                        dist_nn_unadj[j] = dd_unadj;
-                        ind_nn[j] = i-1;
-                    }
+                if (dd < dist_nn[j]) {
+                    dist_nn[j] = dd;
+                    ind_nn[j] = i-1;
                 }
             }
         }
@@ -466,14 +436,13 @@ void Cmst_euclid_brute(
         for (Py_ssize_t u=0; u<d; ++u) std::swap(X[best_j*d+u], X[i*d+u]);
 
 
-        if (M > 2) {
-            std::swap(dist_nn_unadj[best_j], dist_nn_unadj[i]);
+        if (M > 2 && dcore_dist_adj != 0.0) {
             std::swap(d_core[best_j], d_core[i]);
-            // // recompute the distance without the ambiguity correction
-            // dist_nn[i] = 0.0;
-            // for (Py_ssize_t u=0; u<d; ++u)
-            //     dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
-            // dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
+            // recompute the distance without the ambiguity correction
+            dist_nn[i] = 0.0;
+            for (Py_ssize_t u=0; u<d; ++u)
+                dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
+            dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
         }
 
         // don't visit i again - it's being added to the tree
@@ -694,6 +663,7 @@ void _mst_euclid_kdtree(
     Py_ssize_t max_leaf_size,
     Py_ssize_t first_pass_max_brute_size,
     bool use_dtb,
+    bool from_farthest,
     bool /*verbose*/
 ) {
     using DISTANCE=quitefastkdtree::kdtree_distance_sqeuclid<FLOAT, D>;
@@ -702,7 +672,7 @@ void _mst_euclid_kdtree(
 
     GENIECLUST_PROFILER_START
     quitefastkdtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
-        max_leaf_size, first_pass_max_brute_size, use_dtb);
+        max_leaf_size, first_pass_max_brute_size, use_dtb, from_farthest);
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
@@ -826,8 +796,13 @@ void _mst_euclid_kdtree(
  * @param nn_ind [out] NULL for M==1 or the n*(M-1) indexes of the n points'
  *        (M-1) nearest neighbours
  * @param max_leaf_size maximal number of points in the K-d tree's leaves
- * @param first_pass_max_brute_size minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm
- * @param use_dtb whether a dual or a single-tree Boruvka algorithm should be used
+ * @param first_pass_max_brute_size minimal number of points in a node to treat
+ *        it as a leaf (unless it's actually a leaf) in the first iteration
+ *        of the algorithm
+ * @param use_dtb whether a dual or a single-tree Boruvka algorithm
+ *        should be used
+ * @param dcore_dist_adj if negative, farther NNs are preferred if they
+ *        correspond to the same core distance; M>2 only
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -838,9 +813,12 @@ void Cmst_euclid_kdtree(
     Py_ssize_t max_leaf_size=32,
     Py_ssize_t first_pass_max_brute_size=32,
     bool use_dtb=false,
+    FLOAT dcore_dist_adj = -0.00000001490116119384765625,
     bool verbose=false
 ) {
     GENIECLUST_PROFILER_USE
+
+    bool from_farthest = (dcore_dist_adj<0.0);
 
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
@@ -855,29 +833,35 @@ void Cmst_euclid_kdtree(
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Computing the MST... ");
 
-    #define ARGS_mst_euclid_kdtree X, n, M, mst_dist, mst_ind, nn_dist, nn_ind, max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+    #define IF_d_CALL_MST_EUCLID_KDTREE(D_) \
+        if (d == D_) \
+            _mst_euclid_kdtree<FLOAT,  D_>(\
+                X, n, M, mst_dist, mst_ind, \
+                nn_dist, nn_ind, max_leaf_size, first_pass_max_brute_size, \
+                use_dtb, from_farthest, verbose \
+            )
 
     /* LMAO; templates... */
     GENIECLUST_PROFILER_START
-    /**/ if (d ==  2) _mst_euclid_kdtree<FLOAT,  2>(ARGS_mst_euclid_kdtree);
-    else if (d ==  3) _mst_euclid_kdtree<FLOAT,  3>(ARGS_mst_euclid_kdtree);
-    else if (d ==  4) _mst_euclid_kdtree<FLOAT,  4>(ARGS_mst_euclid_kdtree);
-    else if (d ==  5) _mst_euclid_kdtree<FLOAT,  5>(ARGS_mst_euclid_kdtree);
-    else if (d ==  6) _mst_euclid_kdtree<FLOAT,  6>(ARGS_mst_euclid_kdtree);
-    else if (d ==  7) _mst_euclid_kdtree<FLOAT,  7>(ARGS_mst_euclid_kdtree);
-    else if (d ==  8) _mst_euclid_kdtree<FLOAT,  8>(ARGS_mst_euclid_kdtree);
-    else if (d ==  9) _mst_euclid_kdtree<FLOAT,  9>(ARGS_mst_euclid_kdtree);
-    else if (d == 10) _mst_euclid_kdtree<FLOAT, 10>(ARGS_mst_euclid_kdtree);
-    else if (d == 11) _mst_euclid_kdtree<FLOAT, 11>(ARGS_mst_euclid_kdtree);
-    else if (d == 12) _mst_euclid_kdtree<FLOAT, 12>(ARGS_mst_euclid_kdtree);
-    else if (d == 13) _mst_euclid_kdtree<FLOAT, 13>(ARGS_mst_euclid_kdtree);
-    else if (d == 14) _mst_euclid_kdtree<FLOAT, 14>(ARGS_mst_euclid_kdtree);
-    else if (d == 15) _mst_euclid_kdtree<FLOAT, 15>(ARGS_mst_euclid_kdtree);
-    else if (d == 16) _mst_euclid_kdtree<FLOAT, 16>(ARGS_mst_euclid_kdtree);
-    else if (d == 17) _mst_euclid_kdtree<FLOAT, 17>(ARGS_mst_euclid_kdtree);
-    else if (d == 18) _mst_euclid_kdtree<FLOAT, 18>(ARGS_mst_euclid_kdtree);
-    else if (d == 19) _mst_euclid_kdtree<FLOAT, 19>(ARGS_mst_euclid_kdtree);
-    else if (d == 20) _mst_euclid_kdtree<FLOAT, 20>(ARGS_mst_euclid_kdtree);
+    /**/ IF_d_CALL_MST_EUCLID_KDTREE(2);
+    else IF_d_CALL_MST_EUCLID_KDTREE(3);
+    else IF_d_CALL_MST_EUCLID_KDTREE(4);
+    else IF_d_CALL_MST_EUCLID_KDTREE(5);
+    else IF_d_CALL_MST_EUCLID_KDTREE(6);
+    else IF_d_CALL_MST_EUCLID_KDTREE(7);
+    else IF_d_CALL_MST_EUCLID_KDTREE(8);
+    else IF_d_CALL_MST_EUCLID_KDTREE(9);
+    else IF_d_CALL_MST_EUCLID_KDTREE(10);
+    else IF_d_CALL_MST_EUCLID_KDTREE(11);
+    else IF_d_CALL_MST_EUCLID_KDTREE(12);
+    else IF_d_CALL_MST_EUCLID_KDTREE(13);
+    else IF_d_CALL_MST_EUCLID_KDTREE(14);
+    else IF_d_CALL_MST_EUCLID_KDTREE(15);
+    else IF_d_CALL_MST_EUCLID_KDTREE(16);
+    else IF_d_CALL_MST_EUCLID_KDTREE(17);
+    else IF_d_CALL_MST_EUCLID_KDTREE(18);
+    else IF_d_CALL_MST_EUCLID_KDTREE(19);
+    else IF_d_CALL_MST_EUCLID_KDTREE(20);
     else {
         // TODO: does it work for d==1?
         // although then a trivial, faster algorithm exists...

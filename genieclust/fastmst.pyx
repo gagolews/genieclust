@@ -296,10 +296,12 @@ cpdef tuple mst_euclid(
     str algorithm="auto",
     int max_leaf_size=0,
     int first_pass_max_brute_size=0,
+    floatT dcore_dist_adj=-2.0**-26,
     bint verbose=False
 ):
     """
-    genieclust.fastmst.mst_euclid(X, M=1, algorithm="auto", max_leaf_size=0, first_pass_max_brute_size=0, verbose=False)
+    genieclust.fastmst.mst_euclid(X, M=1, algorithm="auto", max_leaf_size=0,
+        first_pass_max_brute_size=0, dcore_dist_adj=-2.0**-26, verbose=False)
 
     The function determines the/a(\*) minimum spanning tree (MST) of a set
     of `n` points, i.e., an acyclic undirected graph whose vertices represent
@@ -329,11 +331,16 @@ cpdef tuple mst_euclid(
     (\*) We note that if there are many pairs of equidistant points,
     there can be many minimum spanning trees. In particular, it is likely
     that there are point pairs with the same mutual reachability distances.
-    !!! TODO NOTE not true anymore
-    ~~To make the definition less ambiguous (albeit with no guarantees),
-    internally, we rely on the adjusted distance
+    To make the definition less ambiguous (albeit with no guarantees),
+    internally, the brute-force algorithm relies on the adjusted distance
     :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
-    where :math:`\\varepsilon` is a small positive constant.~~ !!!
+    where :math:`\\varepsilon` is a small positive constant, where
+    :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
+    On the other hand, negative ``dcore_dist_adj`` cause the K-d tree-based
+    methods to tend to connect to farther points in the case of the same
+    core distance instead of closer ones if the adjustment is positive.
+    In the former case, the resulting spanning tree tends to have more
+    leaves.
 
     The implemented algorithms, see the `algorithm` parameter, assume that
     `M` is rather small; say, `M <= 20`.
@@ -430,8 +437,14 @@ cpdef tuple mst_euclid(
         use ``0`` to select the default value, currently set to 32 for the
         single-tree and 8 for the dual-tree Borůvka algorithm
     first_pass_max_brute_size : int
-        minimal number of points in a node to treat it as a leaf (unless it's actually a leaf) in the first iteration of the algorithm;
+        minimal number of points in a node to treat it as a leaf (unless
+        it's actually a leaf) in the first iteration of the algorithm;
         use ``0`` to select the default value, currently set to 32
+    dcore_dist_adj : float
+        mutual reachability distance adjustment, a constant close to 0;
+        in the case of ambiguity caused by equal core distances,
+        negative values will prefer connecting to farther points wrt the
+        original distance, and closer ones in the case of a positive value
     verbose: bool
         whether to print diagnostic messages
 
@@ -526,7 +539,8 @@ cpdef tuple mst_euclid(
             &mst_dist[0], &mst_ind[0,0],
             <floatT*>(0) if M==1 else &nn_dist[0,0],
             <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
-            max_leaf_size, first_pass_max_brute_size, use_dtb, verbose
+            max_leaf_size, first_pass_max_brute_size,
+            use_dtb, dcore_dist_adj, verbose
         )
     else:
         c_fastmst.Cmst_euclid_brute(
@@ -534,6 +548,7 @@ cpdef tuple mst_euclid(
             &mst_dist[0], &mst_ind[0,0],
             <floatT*>(0) if M==1 else &nn_dist[0,0],
             <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
+            dcore_dist_adj,
             verbose
         )
 

@@ -38,8 +38,6 @@
 #include "c_mst_triple.h"
 
 
-#define DCORE_DIST_ADJ 0.0 /*(1.0/(1<<26))*/
-
 
 namespace quitefastkdtree {
 
@@ -172,13 +170,8 @@ private:
 
             if (dcore[j] >= nn_dist) continue;
             if (USE_DCORE) {
-
                 FLOAT dd = DISTANCE::point_point(x, y);
-                if (dd >= nn_dist) continue;
-
-                FLOAT d_core_max = std::max(dcore[which], dcore[j]);
-                dd = std::max(d_core_max, dd);
-
+                dd = max3(dd, dcore[which], dcore[j]);
                 if (dd < nn_dist) {
                     nn_dist = dd;
                     nn_ind = j;
@@ -233,12 +226,11 @@ private:
             x, root->left, root->right, USE_DCORE
         );
 
-        if (sel.nearer_dist >= nn_dist) return;
+        if (sel.nearer_dist < nn_dist) {
+            find_nn<USE_DCORE>(sel.nearer_node);
 
-        find_nn<USE_DCORE>(sel.nearer_node);
-
-        if (sel.farther_dist < nn_dist) {
-            find_nn<USE_DCORE>(sel.farther_node);
+            if (sel.farther_dist < nn_dist)
+                find_nn<USE_DCORE>(sel.farther_node);
         }
     }
 
@@ -252,7 +244,7 @@ public:
         Py_ssize_t M
     ) :
         which(which), cluster(ds_par[which]), x(data+D*which), data(data),
-        dcore(dcore), ds_par(ds_par), M(M)
+        dcore(dcore), M(M), ds_par(ds_par)
     {
 
     }
@@ -299,7 +291,7 @@ protected:
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
 
     const bool use_dtb;
-    const bool from_farthest;
+    const bool from_farthest;  // M>2 only
 
     // std::vector<Py_ssize_t> ptperm;  // !use_dtb only
 
@@ -327,11 +319,9 @@ protected:
                 FLOAT dij = DISTANCE::point_point(_x, this->data+j*D);
 
                 if (USE_DCORE) {
-                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    FLOAT dcore_max = std::max(dcore[i], dcore[j]);
-
-                    if (dij < dcore_max)
-                        dij = dcore_max; // + dij*DCORE_DIST_ADJ;
+                    dij = max3(dij, dcore[i], dcore[j]);
+                    // if (dij < dcore_max)
+                        // dij = dcore_max; // + dij*DCORE_DIST_ADJ;
                     //else
                     //    dij = dij + dij*DCORE_DIST_ADJ;
                 }
@@ -800,7 +790,7 @@ public:
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size),
-        use_dtb(use_dtb), from_farthest(from_farthest),  M(M)
+        use_dtb(use_dtb), from_farthest(from_farthest), M(M)
     {
         GENIECLUST_ASSERT(M>0);
         dcore.resize(n);  // we actually want it for M==1 too (1-NN dist)
