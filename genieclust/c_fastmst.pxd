@@ -9,7 +9,7 @@
 
 """
 Minimum spanning tree and k-nearest neighbour algorithms
-(the "new">=2025 interface, quite fast, the Euclidean distance only)
+(the "new">=2025 interface, quite fast, the Euclidean and mutual reachability distance only)
 """
 
 # ############################################################################ #

@@ -31,7 +31,7 @@ from . import compare_partitions
 from . import cluster_validity
 from . import internal
 from . import fastmst
-from . import oldmst  # TODO: deprecate
+from . import oldmst
 from .genie import Genie, GIc
 
 

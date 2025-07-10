@@ -529,9 +529,15 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' there can be many minimum spanning trees. In particular, it is likely
 #' that there are point pairs with the same mutual reachability distances.
 #' To make the definition less ambiguous (albeit with no guarantees),
-#' internally, we rely on the adjusted distance
+#' internally, the brute-force algorithm relies on the adjusted distance
 #' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
-#' where \eqn{\varepsilon} is a small positive constant.
+#' where \eqn{\varepsilon} is close to 0, see \code{dcore_dist_adj}.
+#' For the K-d tree-based methods, on the other hand, negative
+#' \code{dcore_dist_adj} indicates the preference towards connecting to
+#' farther points wrt the original metric in the case of the same
+#' core distance instead of closer ones if the adjustment is positive.
+#' When preferring farther points, the resulting spanning tree tends to
+#' have more leaves.
 #'
 #' The implemented algorithms, see the \code{algorithm} parameter, assume
 #' that \code{M} is rather small; say, \eqn{M \leq 20}.
@@ -627,6 +633,11 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #'        treat it as a leaf (unless it's actually a leaf) in the first
 #'        iteration of the algorithm; use \code{0} to select the default value,
 #'        currently set to 32
+#' @param dcore_dist_adj mutual reachability distance adjustment,
+#'        a constant close to 0; in the case of ambiguity caused by equal
+#'        core distances, a negative value will prefer connecting to farther
+#'        points wrt the original distance, and closer ones in the case of
+#'        a positive value
 #' @param verbose whether to print diagnostic messages
 #'
 #'
@@ -662,8 +673,8 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #'
 #' @rdname fastmst
 #' @export
-mst_euclid <- function(X, M = 1L, algorithm = "auto", max_leaf_size = 0L, first_pass_max_brute_size = 0L, verbose = FALSE) {
-    .Call(`_genieclust_mst_euclid`, X, M, algorithm, max_leaf_size, first_pass_max_brute_size, verbose)
+mst_euclid <- function(X, M = 1L, algorithm = "auto", max_leaf_size = 0L, first_pass_max_brute_size = 0L, dcore_dist_adj = -0.00000001490116119384765625, verbose = FALSE) {
+    .Call(`_genieclust_mst_euclid`, X, M, algorithm, max_leaf_size, first_pass_max_brute_size, dcore_dist_adj, verbose)
 }
 
 .genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {

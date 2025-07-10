@@ -312,8 +312,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mst_euclid
-List mst_euclid(SEXP X, int M, Rcpp::String algorithm, int max_leaf_size, int first_pass_max_brute_size, bool verbose);
-RcppExport SEXP _genieclust_mst_euclid(SEXP XSEXP, SEXP MSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP first_pass_max_brute_sizeSEXP, SEXP verboseSEXP) {
+List mst_euclid(SEXP X, int M, Rcpp::String algorithm, int max_leaf_size, int first_pass_max_brute_size, double dcore_dist_adj, bool verbose);
+RcppExport SEXP _genieclust_mst_euclid(SEXP XSEXP, SEXP MSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP first_pass_max_brute_sizeSEXP, SEXP dcore_dist_adjSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -322,8 +322,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type algorithm(algorithmSEXP);
     Rcpp::traits::input_parameter< int >::type max_leaf_size(max_leaf_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type first_pass_max_brute_size(first_pass_max_brute_sizeSEXP);
+    Rcpp::traits::input_parameter< double >::type dcore_dist_adj(dcore_dist_adjSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(mst_euclid(X, M, algorithm, max_leaf_size, first_pass_max_brute_size, verbose));
+    rcpp_result_gen = Rcpp::wrap(mst_euclid(X, M, algorithm, max_leaf_size, first_pass_max_brute_size, dcore_dist_adj, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -443,7 +444,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_genieclust_Romp_set_num_threads", (DL_FUNC) &_genieclust_Romp_set_num_threads, 1},
     {"_genieclust_Romp_get_max_threads", (DL_FUNC) &_genieclust_Romp_get_max_threads, 0},
     {"_genieclust_knn_euclid", (DL_FUNC) &_genieclust_knn_euclid, 7},
-    {"_genieclust_mst_euclid", (DL_FUNC) &_genieclust_mst_euclid, 6},
+    {"_genieclust_mst_euclid", (DL_FUNC) &_genieclust_mst_euclid, 7},
     {"_genieclust_dot_genie", (DL_FUNC) &_genieclust_dot_genie, 6},
     {"_genieclust_dot_gclust", (DL_FUNC) &_genieclust_dot_gclust, 3},
     {"_genieclust_gini_index", (DL_FUNC) &_genieclust_gini_index, 1},

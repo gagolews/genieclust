@@ -304,11 +304,18 @@ List knn_euclid(
 //' (*) We note that if there are many pairs of equidistant points,
 //' there can be many minimum spanning trees. In particular, it is likely
 //' that there are point pairs with the same mutual reachability distances.
-//' !!! TODO NOTE not true anymore
-//' ~~To make the definition less ambiguous (albeit with no guarantees),
-//' internally, we rely on the adjusted distance
+//' To make the definition less ambiguous (albeit with no guarantees),
+//' internally, the brute-force algorithm relies on the adjusted distance
 //' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
-//' where \eqn{\varepsilon} is a small positive constant.~~ !!!
+//' where \eqn{\varepsilon} is close to 0; see \code{dcore_dist_adj}.
+//' For the K-d tree-based methods, on the other hand, negative
+//' \code{dcore_dist_adj} indicates the preference towards connecting to
+//' farther points wrt the original metric in the case of the same
+//' core distance instead of closer ones if the adjustment is positive.
+//' When preferring farther points, the resulting spanning tree tends to
+//' have more leaves.
+//' Furthermore, setting \code{dcore_dist_adj} to minus infinity,
+//' prefers NNs with smaller core distances. This results in even more leaves.
 //'
 //' The implemented algorithms, see the \code{algorithm} parameter, assume
 //' that \code{M} is rather small; say, \eqn{M \leq 20}.
@@ -404,6 +411,11 @@ List knn_euclid(
 //'        treat it as a leaf (unless it's actually a leaf) in the first
 //'        iteration of the algorithm; use \code{0} to select the default value,
 //'        currently set to 32
+//' @param dcore_dist_adj mutual reachability distance adjustment,
+//'        a constant close to 0; in the case of ambiguity caused by equal
+//'        core distances, a negative value will prefer connecting to farther
+//'        points wrt the original distance, and closer ones in the case of
+//'        a positive value
 //' @param verbose whether to print diagnostic messages
 //'
 //'
@@ -446,6 +458,7 @@ List mst_euclid(
     Rcpp::String algorithm="auto",
     int max_leaf_size=0,
     int first_pass_max_brute_size=0,
+    double dcore_dist_adj=-0.00000001490116119384765625,
     bool verbose=false
 ) {
     using FLOAT = double;  // float is not faster..
@@ -520,13 +533,13 @@ List mst_euclid(
             XC.data(), n, d, M, mst_dist.data(), mst_ind.data(),
             (M==1)?nullptr:nn_dist.data(), (M==1)?nullptr:nn_ind.data(),
             max_leaf_size, first_pass_max_brute_size, use_dtb,
-            verbose
+            dcore_dist_adj, verbose
         );
     else
         Cmst_euclid_brute(
             XC.data(), n, d, M, mst_dist.data(), mst_ind.data(),
             (M==1)?nullptr:nn_dist.data(), (M==1)?nullptr:nn_ind.data(),
-            verbose
+            dcore_dist_adj, verbose
         );
 
     Rcpp::IntegerMatrix out_mst_ind(n-1, 2);

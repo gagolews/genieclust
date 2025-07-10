@@ -396,13 +396,6 @@ protected:
         GENIECLUST_ASSERT(idx_left > idx_from);
         GENIECLUST_ASSERT(idx_left < idx_to);
 
-        // for (Py_ssize_t i=idx_from; i<idx_left; ++i) {  // TODO: delme
-        //     GENIECLUST_ASSERT(data[i*D+split_dim] <= split_val);
-        // }
-        // for (Py_ssize_t i=idx_left; i<idx_to; ++i) {  // TODO: delme
-        //     GENIECLUST_ASSERT(data[i*D+split_dim] > split_val);
-        // }
-
         GENIECLUST_ASSERT(data[idx_left*D+split_dim] > split_val);
         GENIECLUST_ASSERT(data[(idx_left-1)*D+split_dim] <= split_val);
 

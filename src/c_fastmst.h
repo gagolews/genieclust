@@ -342,7 +342,7 @@ void Cmst_euclid_brute(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind,
     FLOAT* nn_dist, Py_ssize_t* nn_ind,
-    FLOAT dcore_dist_adj = -0.00000001490116119384765625,
+    FLOAT dcore_dist_adj=-0.00000001490116119384765625,
     bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
@@ -663,7 +663,7 @@ void _mst_euclid_kdtree(
     Py_ssize_t max_leaf_size,
     Py_ssize_t first_pass_max_brute_size,
     bool use_dtb,
-    bool from_farthest,
+    FLOAT dcore_dist_adj,
     bool /*verbose*/
 ) {
     using DISTANCE=quitefastkdtree::kdtree_distance_sqeuclid<FLOAT, D>;
@@ -672,7 +672,7 @@ void _mst_euclid_kdtree(
 
     GENIECLUST_PROFILER_START
     quitefastkdtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
-        max_leaf_size, first_pass_max_brute_size, use_dtb, from_farthest);
+        max_leaf_size, first_pass_max_brute_size, use_dtb, dcore_dist_adj);
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
@@ -720,11 +720,7 @@ void _mst_euclid_kdtree(
  *  (\*) We note that if there are many pairs of equidistant points,
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
- *  !!! TODO NOTE not true anymore
- *  ~~To make the definition less ambiguous (albeit with no guarantees),
- *  internally, we rely on the adjusted distance
- *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
- *  where :math:`\\varepsilon` is a small positive constant.~~ !!!
+ *  See ``dcore_dist_adj`` for an adjustment to address this (partially).
  *
  *  The implemented algorithm assumes that `M` is rather small; say, `M <= 20`.
  *
@@ -801,8 +797,10 @@ void _mst_euclid_kdtree(
  *        of the algorithm
  * @param use_dtb whether a dual or a single-tree Boruvka algorithm
  *        should be used
- * @param dcore_dist_adj if negative, farther NNs are preferred if they
- *        correspond to the same core distance; M>2 only
+ * @param dcore_dist_adj (M>2 only) if negative, farther NNs wrt the original
+ *        distance are preferred if they correspond to the same core distance;
+ *        if positive, we prefer closer NNs;
+ *        -INFINITY chooses neighbours with the smallest core distance
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -817,8 +815,6 @@ void Cmst_euclid_kdtree(
     bool verbose=false
 ) {
     GENIECLUST_PROFILER_USE
-
-    bool from_farthest = (dcore_dist_adj<0.0);
 
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
@@ -838,7 +834,7 @@ void Cmst_euclid_kdtree(
             _mst_euclid_kdtree<FLOAT,  D_>(\
                 X, n, M, mst_dist, mst_ind, \
                 nn_dist, nn_ind, max_leaf_size, first_pass_max_brute_size, \
-                use_dtb, from_farthest, verbose \
+                use_dtb, dcore_dist_adj, verbose \
             )
 
     /* LMAO; templates... */

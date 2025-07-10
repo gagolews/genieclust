@@ -334,13 +334,14 @@ cpdef tuple mst_euclid(
     To make the definition less ambiguous (albeit with no guarantees),
     internally, the brute-force algorithm relies on the adjusted distance
     :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
-    where :math:`\\varepsilon` is a small positive constant, where
-    :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
-    On the other hand, negative ``dcore_dist_adj`` cause the K-d tree-based
-    methods to tend to connect to farther points in the case of the same
+    where :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
+    For the K-d tree-based methods, on the other hand, negative
+    ``dcore_dist_adj`` indicates the preference towards connecting to
+    farther points wrt the original metric in the case of the same
     core distance instead of closer ones if the adjustment is positive.
-    In the former case, the resulting spanning tree tends to have more
-    leaves.
+    When preferring farther points, the resulting spanning tree tends to have
+    more leaves.  Furthermore, setting ``dcore_dist_adj`` to minus infinity,
+    prefers NNs with smaller core distances. This results in even more leaves.
 
     The implemented algorithms, see the `algorithm` parameter, assume that
     `M` is rather small; say, `M <= 20`.
@@ -443,7 +444,7 @@ cpdef tuple mst_euclid(
     dcore_dist_adj : float
         mutual reachability distance adjustment, a constant close to 0;
         in the case of ambiguity caused by equal core distances,
-        negative values will prefer connecting to farther points wrt the
+        a negative value will prefer connecting to farther points wrt the
         original distance, and closer ones in the case of a positive value
     verbose: bool
         whether to print diagnostic messages
