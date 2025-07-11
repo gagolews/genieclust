@@ -287,7 +287,7 @@ protected:
     CDisjointSets ds;
 
     std::vector<FLOAT>      nn_dist;  // nn_dist[find(i)] - distance to i's nn
-    std::vector<Py_ssize_t> nn_ind;   // nn_ind[find(i)] - index of i's nn
+    std::vector<Py_ssize_t> nn_ind;   // nn_ind[find(i)]  - index of i's nn
     std::vector<Py_ssize_t> nn_from;  // nn_from[find(i)] - the relevant member of i
 
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
@@ -301,6 +301,10 @@ protected:
     std::vector<FLOAT> dcore;  // distances to the (M-1)-th nns of each point if M>1 or 1-NN for M==1
     std::vector<FLOAT> Mnn_dist;  // M-1 nearest neighbours of each point if M>1
     std::vector<Py_ssize_t> Mnn_ind;
+
+
+    std::vector<NODE*> leaves;
+
 
     template <bool USE_DCORE>
     inline void leaf_vs_leaf_dtb(NODE* roota, NODE* rootb)
@@ -335,6 +339,18 @@ protected:
                 }
             }
         }
+    }
+
+
+    void setup_leaves()
+    {
+        Py_ssize_t nleaves = 0;
+        for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
+            if (curnode->is_leaf()) nleaves++;
+        leaves.resize(nleaves);
+        Py_ssize_t i = 0;
+        for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
+            if (curnode->is_leaf()) leaves[i++] = &curnode;
     }
 
 
@@ -787,6 +803,8 @@ protected:
         GENIECLUST_PROFILER_START
         if (M>2) update_min_dcore();
         GENIECLUST_PROFILER_STOP("update_min_dcore")
+
+        setup_leaves();
 
         // if (!use_dtb && M >= 2) {
         //     ptperm.resize(this->n);
