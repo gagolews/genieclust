@@ -24,7 +24,7 @@ Updated 2025-07-11 (fastmst)
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import time
 import os.path
 import scipy.spatial
 import sys
@@ -101,6 +101,7 @@ _nrow, _ncol = int(np.floor(np.sqrt(n_examples))), int(np.ceil(np.sqrt(n_example
 if _nrow*_ncol < n_examples:
     _ncol += 1
     assert _nrow*_ncol >= n_examples
+total_time = 0.0
 for ex in range(n_examples):
     _i += 1
     plt.subplot(_nrow, _ncol, _i)
@@ -109,6 +110,7 @@ for ex in range(n_examples):
     # if X.shape[1] != 2:
         # continue
 
+    t0 = time.time()
     algo = ["Lumbermark", "Genie"][0]
     if algo == "Lumbermark":
         algo_params = dict(M=6, min_cluster_factor=0.15, fastmst_params=dict(dcore_dist_adj=-np.inf))
@@ -120,6 +122,7 @@ for ex in range(n_examples):
         y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
     else:
         stop("incorrect 'algo'")
+    total_time += time.time()-t0
 
     is_noise = L._is_noise  # np.repeat(False, X.shape[0])#
     tree_e = L._tree_e
@@ -209,6 +212,6 @@ plt.tight_layout()
 plt.show()
 
 ncas = np.array(ncas)
-print("%s (%r)" % (algo, algo_params))
+print("%s %r\ntime: %.3f" % (algo, algo_params, total_time))
 print("NCA: %10s %10s %10s %10s %10s" % ("Min", "Median", "Mean", "#<.8", "#≥.95"))
 print("NCA: %10.3f %10.3f %10.3f %10d %10d" % (np.min(ncas), np.median(ncas), np.mean(ncas), np.sum(ncas<0.8), np.sum(ncas>0.95)))

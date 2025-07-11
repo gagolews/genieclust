@@ -15,6 +15,7 @@
  *  the source file defining the base class.
  *
  *
+ *
  *  Copyleft (C) 2025, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -180,9 +181,9 @@ private:
 
                 // // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
                 // if (dd <= d_core_max)
-                //     dd = d_core_max + dd*DCORE_DIST_ADJ;
+                //     dd = d_core_max + dd*mutreach_adj;
                 // else
-                //     dd = dd + dd*DCORE_DIST_ADJ;
+                //     dd = dd + dd*mutreach_adj;
                 // if (dd < nn_dist) {
                 //     nn_dist = dd;
                 //     nn_ind = j;
@@ -292,7 +293,7 @@ protected:
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
 
     const bool use_dtb;
-    const FLOAT dcore_dist_adj;  // M>2 only
+    const FLOAT mutreach_adj;  // M>2 only
 
     // std::vector<Py_ssize_t> ptperm;  // !use_dtb only
 
@@ -322,9 +323,9 @@ protected:
                 if (USE_DCORE) {
                     dij = max3(dij, dcore[i], dcore[j]);
                     // if (dij < dcore_max)
-                        // dij = dcore_max; // + dij*DCORE_DIST_ADJ;
+                        // dij = dcore_max; // + dij*mutreach_adj;
                     //else
-                    //    dij = dij + dij*DCORE_DIST_ADJ;
+                    //    dij = dij + dij*mutreach_adj;
                 }
 
                 if (dij < nn_dist[ds_find_i]) {
@@ -368,6 +369,11 @@ protected:
             this->ds.find(i);
         // now ds.find(i) == ds.get_parent(i) for all i
 
+        // Py_ssize_t TMP_clusterrepr_node = 0;
+        // Py_ssize_t TMP_clusterrepr_leaf = 0;
+        // Py_ssize_t TMP_count_node = 0;
+        // Py_ssize_t TMP_count_leaf = 0;
+
         // nodes is a deque...
         for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
         {
@@ -375,6 +381,14 @@ protected:
 
             if (curnode->cluster_repr >= 0) {
                 curnode->cluster_repr = ds.get_parent(curnode->cluster_repr);
+                // if (curnode->is_leaf()) {
+                //     TMP_count_leaf++;
+                //     TMP_clusterrepr_leaf++;
+                // }
+                // else {
+                //     TMP_count_node++;
+                //     TMP_clusterrepr_node++;
+                // }
                 continue;
             }
 
@@ -386,6 +400,8 @@ protected:
                         break;
                     }
                 }
+                // TMP_count_leaf++;
+                // if (curnode->cluster_repr >= 0) TMP_clusterrepr_leaf++;
             }
             else {
                 // all descendants have already been processed as children in `nodes` occur after their parents
@@ -395,8 +411,14 @@ protected:
                         curnode->cluster_repr = curnode->left->cluster_repr;
                 }
                 // else curnode->cluster_repr = -1;  // it already is
+
+                // TMP_count_node++;
+                // if (curnode->cluster_repr >= 0) TMP_clusterrepr_node++;
             }
         }
+
+        // GENIECLUST_PRINT("   leaf=%10d/%10d (%5.2f%%)  ", TMP_clusterrepr_leaf, TMP_count_leaf, 100.0*TMP_clusterrepr_leaf/(double)TMP_count_leaf);
+        // GENIECLUST_PRINT("nonleaf=%10d/%10d (%5.2f%%)\n", TMP_clusterrepr_node, TMP_count_node, 100.0*TMP_clusterrepr_node/(double)TMP_count_node);
     }
 
 
@@ -486,7 +508,17 @@ protected:
         // but NNs wrt d_m might be ambiguous - we might want to pick,
         // e.g., the farthest or the closest one wrt the original dist
 
-        if (std::isinf(dcore_dist_adj) && dcore_dist_adj < 0.0) {
+        // the correction for ambiguity is only applied at this stage!
+
+        #define MERGE_I_J(_i, _j) { \
+            tree_ind[tree_num*2+0] = _i; \
+            tree_ind[tree_num*2+1] = _j; \
+            tree_dist[tree_num] = dcore[_i]; \
+            ds.merge(_i, _j); \
+            tree_num++; \
+        }
+
+        if (mutreach_adj <= -1) {
             // connect with j whose dcore[j] is the smallest
             for (Py_ssize_t i=0; i<this->n; ++i) {
                 Py_ssize_t bestj = -1;
@@ -499,30 +531,36 @@ protected:
                         bestdcorej = dcore[j];
                     }
                 }
-                if (bestj >= 0) {
-                    tree_ind[tree_num*2+0] = i;
-                    tree_ind[tree_num*2+1] = bestj;
-                    tree_dist[tree_num] = dcore[i];
-                    ds.merge(i, bestj);
-                    tree_num++;
+                if (bestj >= 0) MERGE_I_J(i, bestj);
+            }
+        }
+        else if (mutreach_adj >= 1) {
+            // connect with j whose dcore[j] is the largest
+            for (Py_ssize_t i=0; i<this->n; ++i) {
+                Py_ssize_t bestj = -1;
+                FLOAT bestdcorej = -INFINITY;
+                for (Py_ssize_t v=0; v<k; ++v)
+                {
+                    Py_ssize_t j = Mnn_ind[i*k+v];
+                    if (dcore[i] >= dcore[j] && bestdcorej < dcore[j] && ds.find(i) != ds.find(j)) {
+                        bestj = j;
+                        bestdcorej = dcore[j];
+                    }
                 }
+                if (bestj >= 0) MERGE_I_J(i, bestj);
             }
         }
         else {
             for (Py_ssize_t i=0; i<this->n; ++i) {
-                // connect with j whose d(i,j) is the smallest (dcore_dist_adj>=0.0) or largest (dcore_dist_adj<0.0)
+                // connect with j whose d(i,j) is the smallest (1>mutreach_adj>0) or largest (-1<mutreach_adj<0)
+                // stops searching early, because the original distances are sorted
 
                 for (Py_ssize_t v=0; v<k; ++v)
                 {
-                    Py_ssize_t j = Mnn_ind[i*k+((dcore_dist_adj<0.0)?(k-1-v):(v))];
+                    Py_ssize_t j = Mnn_ind[i*k+((mutreach_adj<0.0)?(k-1-v):(v))];
                     if (dcore[i] >= dcore[j] && ds.find(i) != ds.find(j)) {
                         // j is the nearest neighbour of i wrt mutreach dist.
-                        tree_ind[tree_num*2+0] = i;
-                        tree_ind[tree_num*2+1] = j;
-                        //tree_dist[tree_num] = dcore[i]+Mnn_dist[i*k+v]*DCORE_DIST_ADJ;//dcore[i];
-                        tree_dist[tree_num] = dcore[i];
-                        ds.merge(i, j);
-                        tree_num++;
+                        MERGE_I_J(i, j);
                         break;  // other candidates have d_M >= dcore[i] anyway
                     }
                 }
@@ -635,7 +673,7 @@ protected:
                 if (nn_dist[ds_find_i] <= dcore[i]) continue;
                 for (Py_ssize_t v=0; v<k; ++v)
                 {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((dcore_dist_adj<0.0)?(k-1-v):(v))];
+                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
                     if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
                         nn_dist[ds_find_i] = dcore[i];
                         nn_ind[ds_find_i]  = j;
@@ -683,7 +721,7 @@ protected:
                 const Py_ssize_t k = M-1;
                 for (Py_ssize_t v=0; v<k; ++v)
                 {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((dcore_dist_adj<0.0)?(k-1-v):(v))];
+                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
                     if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
                         nn_dist_cur = dcore[i];
                         nn_ind_cur = j;
@@ -709,7 +747,7 @@ protected:
                 #if OPENMP_IS_ENABLED
                 if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
                 #endif
-                if (nn_dist_cur < nn_dist[ds_find_i]) {
+                if (nn_dist_cur < nn_dist[ds_find_i]) {  // check again, it might've changed
                     GENIECLUST_ASSERT(nn_ind_cur != i);
                     nn_dist[ds_find_i] = nn_dist_cur;
                     nn_ind[ds_find_i]  = nn_ind_cur;
@@ -805,7 +843,7 @@ protected:
                 }
             }
 
-            GENIECLUST_PROFILER_STOP("find_mst iter #%d", (int)_iter)
+            GENIECLUST_PROFILER_STOP("find_mst iter #%d (tree_num=%d)", (int)_iter, tree_num)
         }
     }
 
@@ -818,17 +856,21 @@ public:
     }
 
 
+    /**!
+     * see fastmst.h for the description of the parameters,
+     * no need to repeat that here
+     */
     kdtree_boruvka(
         FLOAT* data, const Py_ssize_t n, const Py_ssize_t M=1,
         const Py_ssize_t max_leaf_size=16,
         const Py_ssize_t first_pass_max_brute_size=16,
         const bool use_dtb=false,
-        const FLOAT dcore_dist_adj=-INFINITY
+        const FLOAT mutreach_adj=-INFINITY
     ) :
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size),
-        use_dtb(use_dtb), dcore_dist_adj(dcore_dist_adj), M(M)
+        use_dtb(use_dtb), mutreach_adj(mutreach_adj), M(M)
     {
         GENIECLUST_ASSERT(M>0);
         dcore.resize(n);  // we actually want it for M==1 too (1-NN dist)

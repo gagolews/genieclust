@@ -16,6 +16,7 @@ all: r python
 python:
 	# python3 setup.py install --user  # deprecated
 	# python3 -m build  # requires the 'build' package, creates an isolated envir
+	# -DGENIECLUST_PROFILER
 	CPPFLAGS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wpedantic -Wextra -Wall" python3 -m pip install .
 
 py-test: python

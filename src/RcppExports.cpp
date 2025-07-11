@@ -312,8 +312,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mst_euclid
-List mst_euclid(SEXP X, int M, Rcpp::String algorithm, int max_leaf_size, int first_pass_max_brute_size, double dcore_dist_adj, bool verbose);
-RcppExport SEXP _genieclust_mst_euclid(SEXP XSEXP, SEXP MSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP first_pass_max_brute_sizeSEXP, SEXP dcore_dist_adjSEXP, SEXP verboseSEXP) {
+List mst_euclid(SEXP X, int M, Rcpp::String algorithm, int max_leaf_size, int first_pass_max_brute_size, double mutreach_adj, bool verbose);
+RcppExport SEXP _genieclust_mst_euclid(SEXP XSEXP, SEXP MSEXP, SEXP algorithmSEXP, SEXP max_leaf_sizeSEXP, SEXP first_pass_max_brute_sizeSEXP, SEXP mutreach_adjSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -322,9 +322,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type algorithm(algorithmSEXP);
     Rcpp::traits::input_parameter< int >::type max_leaf_size(max_leaf_sizeSEXP);
     Rcpp::traits::input_parameter< int >::type first_pass_max_brute_size(first_pass_max_brute_sizeSEXP);
-    Rcpp::traits::input_parameter< double >::type dcore_dist_adj(dcore_dist_adjSEXP);
+    Rcpp::traits::input_parameter< double >::type mutreach_adj(mutreach_adjSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(mst_euclid(X, M, algorithm, max_leaf_size, first_pass_max_brute_size, dcore_dist_adj, verbose));
+    rcpp_result_gen = Rcpp::wrap(mst_euclid(X, M, algorithm, max_leaf_size, first_pass_max_brute_size, mutreach_adj, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

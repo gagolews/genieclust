@@ -296,12 +296,15 @@ cpdef tuple mst_euclid(
     str algorithm="auto",
     int max_leaf_size=0,
     int first_pass_max_brute_size=0,
-    floatT dcore_dist_adj=-2.0**-26,
+    floatT mutreach_adj=-1.00000011920928955078125,
     bint verbose=False
 ):
     """
-    genieclust.fastmst.mst_euclid(X, M=1, algorithm="auto", max_leaf_size=0,
-        first_pass_max_brute_size=0, dcore_dist_adj=-2.0**-26, verbose=False)
+    genieclust.fastmst.mst_euclid(
+        X, M=1, algorithm="auto", max_leaf_size=0,
+        first_pass_max_brute_size=0, mutreach_adj=-1.00000011920928955078125,
+        verbose=False
+    )
 
     The function determines the/a(\*) minimum spanning tree (MST) of a set
     of `n` points, i.e., an acyclic undirected graph whose vertices represent
@@ -332,16 +335,20 @@ cpdef tuple mst_euclid(
     there can be many minimum spanning trees. In particular, it is likely
     that there are point pairs with the same mutual reachability distances.
     To make the definition less ambiguous (albeit with no guarantees),
-    internally, the brute-force algorithm relies on the adjusted distance
-    :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
-    where :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
-    For the K-d tree-based methods, on the other hand, negative
-    ``dcore_dist_adj`` indicates the preference towards connecting to
-    farther points wrt the original metric in the case of the same
-    core distance instead of closer ones if the adjustment is positive.
-    When preferring farther points, the resulting spanning tree tends to have
-    more leaves.  Furthermore, setting ``dcore_dist_adj`` to minus infinity,
-    prefers NNs with smaller core distances. This results in even more leaves.
+    internally, the brute-force algorithm relies on the adjusted distance:
+    :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)` or
+    :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}-\\varepsilon \\min\\{c_M(i), c_M(j)\\}`,
+    where :math:`\\varepsilon` is close to 0.
+    `|mutreach_adj| < 1` selects the former formula (`ε=mutreach_adj`)
+    whilst `1 < |mutreach_adj| < 2` chooses the latter (`ε=mutreach_adj±1`).
+    For the K-d tree-based methods, on the other hand, `mutreach_adj`
+    indicates the preference towards connecting to farther/closer
+    points wrt the original metric or having smaller/larger core distances
+    if a point `i` has multiple nearest-neighbour candidates `j'`, `j''` with
+    :math:`c_M(i) \geq \\max\\{d(i, j'),  c_M(j')\\}` and
+    :math:`c_M(i) \geq \\max\\{d(i, j''), c_M(j'')\\}`.
+    Generally, the smaller the `mutreach_adj`, the more leaves there will
+    be in the tree (note that there are only four types of adjustments, though).
 
     The implemented algorithms, see the `algorithm` parameter, assume that
     `M` is rather small; say, `M <= 20`.
@@ -359,7 +366,7 @@ cpdef tuple mst_euclid(
     on [5]_.  As far as our implementation is concerned, the dual-tree approach
     is often only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
     a single-threaded setting.  For another (approximate) adaptation
-    of the dual-tree algorithm to the mutual reachability distance; see [11]_.
+    of the dual-tree algorithm to the mutual reachability distance, see [11]_.
 
     Nevertheless, it is well-known that K-d trees perform well only in spaces
     of low intrinsic dimensionality (a.k.a. the "curse").  For high `d`,
@@ -441,11 +448,15 @@ cpdef tuple mst_euclid(
         minimal number of points in a node to treat it as a leaf (unless
         it's actually a leaf) in the first iteration of the algorithm;
         use ``0`` to select the default value, currently set to 32
-    dcore_dist_adj : float
-        mutual reachability distance adjustment, a constant close to 0;
-        in the case of ambiguity caused by equal core distances,
-        a negative value will prefer connecting to farther points wrt the
-        original distance, and closer ones in the case of a positive value
+    mutreach_adj : float
+        adjustment for mutual reachability distance ambiguity (for M>2)
+        whose fractional part should be close to 0:
+        values in `(-1,0)` prefer connecting to farther NNs,
+        values in `(0, 1)` fall for closer NNs (which is what many other
+        implementations provide),
+        values in `(-2,-1)` prefer connecting to points with smaller core distances,
+        values in `(1, 2)` favour larger core distances;
+        see above for more details
     verbose: bool
         whether to print diagnostic messages
 
@@ -541,7 +552,7 @@ cpdef tuple mst_euclid(
             <floatT*>(0) if M==1 else &nn_dist[0,0],
             <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
             max_leaf_size, first_pass_max_brute_size,
-            use_dtb, dcore_dist_adj, verbose
+            use_dtb, mutreach_adj, verbose
         )
     else:
         c_fastmst.Cmst_euclid_brute(
@@ -549,7 +560,7 @@ cpdef tuple mst_euclid(
             &mst_dist[0], &mst_ind[0,0],
             <floatT*>(0) if M==1 else &nn_dist[0,0],
             <Py_ssize_t*>(0) if M==1 else &nn_ind[0,0],
-            dcore_dist_adj,
+            mutreach_adj,
             verbose
         )
 

@@ -2,6 +2,15 @@ n_jobs = 1
 n_trials = 1
 seed = 123
 
+"""
+CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
+CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
+CPPFLAGS="-O3 -march=native" pip3 install numpy==2.2.6  --no-binary="numpy"  --ignore-installed # for numba
+CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
+CPPFLAGS="-O3 -march=native" CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
+# mlpack's source distribution is not available from PyPI
+"""
+
 
 n = 2**16
 scenarios = [
@@ -23,22 +32,22 @@ scenarios = [
     # (n, 2, 2, "norm"),
     # (n, 3, 2, "norm"),
     # (n, 5, 2, "norm"),
-    (1208592, -3, 10,  "thermogauss_scan001"),
-    (1208592, 3, 10,  "norm"),
-    (1208592, -3,  1,  "thermogauss_scan001"),
-    (1208592, 3, 1,  "norm"),
+    # (1208592, -3, 10,  "thermogauss_scan001"),
+    # (1208592, 3, 10,  "norm"),
+    # (1208592, -3,  1,  "thermogauss_scan001"),
+    # (1208592, 3, 1,  "norm"),
     # (n, 2, 1, "norm"),
-    # (n, 2, 10, "norm"),
+    (n, 2, 10, "norm"),
     # (n, 5, 1, "norm"),
-    # (n, 5, 10, "norm"),
+    (n, 5, 10, "norm"),
     # (1208592,  2,  1,  "norm"),
     # (1208592,  2, 10,  "norm"),
     # (1208592,  3,  1,  "norm"),
     # (1208592,  3, 10,  "norm"),
     # (1208592,  5,  1,  "norm"),
     # (1208592,  5, 10,  "norm"),
-    # (1208592, 10,  1,  "norm"),
-    # (1208592, 10, 10,  "norm"),
+    # (1208592,  10,  1,  "norm"),
+    # (1208592,  10, 10,  "norm"),
 ]
 
 # scenarios = []
@@ -82,14 +91,6 @@ pd.set_option("display.width", 200)
 
 
 
-"""
-CPPFLAGS="-O3 -march=native" pip3 install fast_hdbscan --force --no-binary="fast_hdbscan" --verbose  # relies on numba, which forces -O3 -march=native anyway
-CPPFLAGS="-O3 -march=native" pip3 install pykdtree --force --no-binary="pykdtree" --verbose
-CPPFLAGS="-O3 -march=native" pip3 install numpy==2.2.6  --no-binary="numpy"  --ignore-installed # for numba
-CPPFLAGS="-O3 -march=native" pip3 install ~/Python/genieclust --force --verbose
-CXX_DEFS="-O3 -march=native" Rscript -e 'install.packages(c("RANN", "Rnanoflann", "dbscan", "nabor", "reticulate", "mlpack"))'
-# mlpack's source distribution is not available from PyPI
-"""
 
 
 import importlib
@@ -109,17 +110,18 @@ for m in modules:
 import perf_mst_202506_defs as msts
 
 cases = dict(
-    quitefast_kdtree_single    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
-    quitefast_kdtree_single2    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, dcore_dist_adj=-np.inf),
-    quitefast_kdtree_single3    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, dcore_dist_adj=1),
-    quitefast_kdtree_dual      = lambda X, M: msts.mst_quitefast_kdtree_dual(X, M),
-    quitefast_brute            = lambda X, M: msts.mst_quitefast_brute(X, M),
+    quitefast_kdtree_single     = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
+    # quitefast_kdtree_single2    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=-0.00000011920928955078125),
+    # quitefast_kdtree_single4    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=+0.00000011920928955078125),
+    # quitefast_kdtree_single5    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=+1.00000011920928955078125),
+    quitefast_kdtree_dual       = lambda X, M: msts.mst_quitefast_kdtree_dual(X, M),
+    quitefast_brute             = lambda X, M: msts.mst_quitefast_brute(X, M),
     # mlpack                     = lambda X, M: msts.mst_mlpack(X, M),
-    wangyiqiu                  = lambda X, M: msts.mst_wangyiqiu(X, M),
+    # wangyiqiu                  = lambda X, M: msts.mst_wangyiqiu(X, M),
     # fasthdbscan_kdtree         = lambda X, M: msts.mst_fasthdbscan_kdtree(X, M),
     # hdbscan_kdtree             = lambda X, M: msts.mst_hdbscan_kdtree(X, M),
     # r_mlpack                   = lambda X, M: msts.mst_r_mlpack(X, M),
-    r_quitefast_default        = lambda X, M: msts.mst_r_quitefast_default(X, M),
+    # r_quitefast_default        = lambda X, M: msts.mst_r_quitefast_default(X, M),
 )
 
 

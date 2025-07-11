@@ -65,6 +65,7 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include "c_disjoint_sets.h"
 #include "c_kdtree_boruvka.h"
 // #include "c_picotree.h"
@@ -292,9 +293,12 @@ void Cknn2_euclid_brute(
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
  *  To make the definition less ambiguous (albeit with no guarantees),
- *  internally, we rely on the adjusted distance
- *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)`,
- *  where :math:`\\varepsilon` is close to 0, see ``dcore_dist_adj``.
+ *  internally, we rely on the adjusted distance:
+ *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}+\\varepsilon d(i, j)` or
+ *  :math:`d_M(i, j)=\\max\\{c_M(i), c_M(j), d(i, j)\\}-\\varepsilon \\min\\{c_M(i), c_M(j)\\}`,
+ *  where :math:`\\varepsilon` is close to 0. ``|mutreach_adj| < 1`` selects
+ *  the former (ε=``mutreach_adj``) whilst ``1 < |mutreach_adj| < 2``
+ *  chooses the latter (ε=``mutreach_adj``±1).
  *
  *  Time complexity: O(n^2). It is assumed that M is rather small
  *  (say, M<=20). If M>2, all pairwise the distances are computed twice
@@ -333,8 +337,13 @@ void Cknn2_euclid_brute(
  *        (M-1) nearest neighbours
  * @param nn_ind [out] NULL for M==1 or the n*(M-1) indexes of the n points'
  *        (M-1) nearest neighbours
- * @param dcore_dist_adj if negative, farther NNs are preferred if they
- *        correspond to the same core distance; M>2 only
+ * @param mutreach_adj adjustment for mutual reachability distance ambiguity (for M>2) whose fractional part should be close to 0:
+ *        values in `(-1,0)` prefer connecting to farther NNs,
+ *        values in `(0, 1)` fall for closer NNs,
+ *        values in `(-2,-1)` prefer connecting to points with smaller core distances,
+ *        values in `(1, 2)` favour larger core distances;
+ *        see above for more details
+ *
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -342,13 +351,24 @@ void Cmst_euclid_brute(
     FLOAT* X, Py_ssize_t n, Py_ssize_t d, Py_ssize_t M,
     FLOAT* mst_dist, Py_ssize_t* mst_ind,
     FLOAT* nn_dist, Py_ssize_t* nn_ind,
-    FLOAT dcore_dist_adj=-0.00000001490116119384765625,
+    FLOAT mutreach_adj=-1.00000011920928955078125,
     bool verbose=false
 ) {
     if (n <= 0)   throw std::domain_error("n <= 0");
     if (d <= 0)   throw std::domain_error("d <= 0");
     if (M <= 0)   throw std::domain_error("M <= 0");
     if (M-1 >= n) throw std::domain_error("M >= n-1");
+    GENIECLUST_ASSERT(mst_dist);
+    GENIECLUST_ASSERT(mst_ind);
+
+    if (std::abs(mutreach_adj)>=2) throw std::domain_error("|mutreach_adj|>=2");
+    bool mutreach_adj_via_dcore = (std::abs(mutreach_adj) >= 1);
+    mutreach_adj = mutreach_adj - std::trunc(mutreach_adj);  // fractional part
+    if (std::abs(mutreach_adj) < 2.0*std::numeric_limits<FLOAT>::epsilon())
+        mutreach_adj = 0.0;
+
+
+
 
     std::vector<FLOAT> d_core;
     if (M > 2) {
@@ -411,7 +431,24 @@ void Cmst_euclid_brute(
                 FLOAT dd = 0.0;
                 for (Py_ssize_t u=0; u<d; ++u)
                     dd += square(x_cur[u]-X[j*d+u]);
-                dd = max3(dd, d_core[i-1], d_core[j]) + dd*dcore_dist_adj;
+
+                if (mutreach_adj_via_dcore) {
+                    if (d_core[i-1] <= d_core[j]) {
+                        if (dd <= d_core[j])
+                            dd = d_core[j]   - mutreach_adj*d_core[i-1];  // minus
+                        else
+                            dd = dd          - mutreach_adj*d_core[i-1];
+                    }
+                    else {  // d_core[j] < d_core[i-1]
+                        if (dd <= d_core[i-1])
+                            dd = d_core[i-1] - mutreach_adj*d_core[j];
+                        else
+                            dd = dd          - mutreach_adj*d_core[j];
+                    }
+                }
+                else {
+                    dd = max3(dd, d_core[i-1], d_core[j]) + mutreach_adj*dd; // plus
+                }
 
                 if (dd < dist_nn[j]) {
                     dist_nn[j] = dd;
@@ -421,8 +458,8 @@ void Cmst_euclid_brute(
         }
 #endif
 
-        // we want to include the vertex that is closest to the vertices
-        // of the tree constructed so far
+        // we want to include the vertex that is closest to
+        // the vertices of the tree constructed so far
         Py_ssize_t best_j = i;
         for (Py_ssize_t j=i+1; j<n; ++j)
             if (dist_nn[j] < dist_nn[best_j])
@@ -436,13 +473,15 @@ void Cmst_euclid_brute(
         for (Py_ssize_t u=0; u<d; ++u) std::swap(X[best_j*d+u], X[i*d+u]);
 
 
-        if (M > 2 && dcore_dist_adj != 0.0) {
+        if (M > 2) {
             std::swap(d_core[best_j], d_core[i]);
-            // recompute the distance without the ambiguity correction
-            dist_nn[i] = 0.0;
-            for (Py_ssize_t u=0; u<d; ++u)
-                dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
-            dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
+            if (mutreach_adj != 0.0) {
+                // recompute the distance without the ambiguity correction
+                dist_nn[i] = 0.0;
+                for (Py_ssize_t u=0; u<d; ++u)
+                    dist_nn[i] += square(X[i*d+u]-X[ind_nn[i]*d+u]);
+                dist_nn[i] = max3(dist_nn[i], d_core[ind_nn[i]], d_core[i]);
+            }
         }
 
         // don't visit i again - it's being added to the tree
@@ -663,7 +702,7 @@ void _mst_euclid_kdtree(
     Py_ssize_t max_leaf_size,
     Py_ssize_t first_pass_max_brute_size,
     bool use_dtb,
-    FLOAT dcore_dist_adj,
+    FLOAT mutreach_adj,
     bool /*verbose*/
 ) {
     using DISTANCE=quitefastkdtree::kdtree_distance_sqeuclid<FLOAT, D>;
@@ -672,7 +711,7 @@ void _mst_euclid_kdtree(
 
     GENIECLUST_PROFILER_START
     quitefastkdtree::kdtree_boruvka<FLOAT, D, DISTANCE> tree(X, n, M,
-        max_leaf_size, first_pass_max_brute_size, use_dtb, dcore_dist_adj);
+        max_leaf_size, first_pass_max_brute_size, use_dtb, mutreach_adj);
     GENIECLUST_PROFILER_STOP("tree init")
 
     GENIECLUST_PROFILER_START
@@ -720,7 +759,7 @@ void _mst_euclid_kdtree(
  *  (\*) We note that if there are many pairs of equidistant points,
  *  there can be many minimum spanning trees. In particular, it is likely
  *  that there are point pairs with the same mutual reachability distances.
- *  See ``dcore_dist_adj`` for an adjustment to address this (partially).
+ *  See ``mutreach_adj`` for an adjustment to address this (partially).
  *
  *  The implemented algorithm assumes that `M` is rather small; say, `M <= 20`.
  *
@@ -797,10 +836,12 @@ void _mst_euclid_kdtree(
  *        of the algorithm
  * @param use_dtb whether a dual or a single-tree Borůvka algorithm
  *        should be used
- * @param dcore_dist_adj (M>2 only) if negative, farther NNs wrt the original
- *        distance are preferred if they correspond to the same core distance;
- *        if positive, we prefer closer NNs;
- *        -INFINITY chooses neighbours with the smallest core distance
+ * @param mutreach_adj (M>2 only) adjustment for mutual reachability distance
+ *        ambiguity (for M>2):
+ *        values in `(-1,0)` prefer connecting to farther NNs,
+ *        values in `(0, 1)` fall for closer NNs,
+ *        values in `(-2,-1)` prefer connecting to points with smaller core distances,
+ *        values in `(1, 2)` favour larger core distances
  * @param verbose should we output diagnostic/progress messages?
  */
 template <class FLOAT>
@@ -811,7 +852,7 @@ void Cmst_euclid_kdtree(
     Py_ssize_t max_leaf_size=32,
     Py_ssize_t first_pass_max_brute_size=32,
     bool use_dtb=false,
-    FLOAT dcore_dist_adj = -0.00000001490116119384765625,
+    FLOAT mutreach_adj=-1.00000011920928955078125,
     bool verbose=false
 ) {
     GENIECLUST_PROFILER_USE
@@ -820,9 +861,12 @@ void Cmst_euclid_kdtree(
     if (d <= 0)   throw std::domain_error("d <= 0");
     if (M <= 0)   throw std::domain_error("M <= 0");
     if (M-1 >= n) throw std::domain_error("M >= n-1");
+    if (std::abs(mutreach_adj)>=2) throw std::domain_error("|mutreach_adj|>=2");
+    GENIECLUST_ASSERT(mst_dist);
+    GENIECLUST_ASSERT(mst_ind);
 
-    if (max_leaf_size <= 0)
-        throw std::domain_error("max_leaf_size <= 0");
+    if (max_leaf_size <= 0) throw std::domain_error("max_leaf_size <= 0");
+
 
     //if (first_pass_max_brute_size <= 0)
     // does no harm - will have no effect
@@ -834,7 +878,7 @@ void Cmst_euclid_kdtree(
             _mst_euclid_kdtree<FLOAT,  D_>(\
                 X, n, M, mst_dist, mst_ind, \
                 nn_dist, nn_ind, max_leaf_size, first_pass_max_brute_size, \
-                use_dtb, dcore_dist_adj, verbose \
+                use_dtb, mutreach_adj, verbose \
             )
 
     /* LMAO; templates... */

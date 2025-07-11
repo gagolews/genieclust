@@ -529,17 +529,20 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' there can be many minimum spanning trees. In particular, it is likely
 #' that there are point pairs with the same mutual reachability distances.
 #' To make the definition less ambiguous (albeit with no guarantees),
-#' internally, the brute-force algorithm relies on the adjusted distance
-#' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
-#' where \eqn{\varepsilon} is close to 0; see \code{dcore_dist_adj}.
-#' For the K-d tree-based methods, on the other hand, negative
-#' \code{dcore_dist_adj} indicates the preference towards connecting to
-#' farther points wrt the original metric in the case of the same
-#' core distance instead of closer ones if the adjustment is positive.
-#' When preferring farther points, the resulting spanning tree tends to
-#' have more leaves.
-#' Furthermore, setting \code{dcore_dist_adj} to minus infinity,
-#' prefers NNs with smaller core distances. This results in even more leaves.
+#' internally, the brute-force algorithm relies on the adjusted distance:
+#' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)} or
+#' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}-\varepsilon \min\{c_M(i), c_M(j)\}},
+#' where \eqn{\varepsilon} is close to 0.
+#' |\code{mutreach_adj}|<1 selects the former formula (ε=\code{mutreach_adj})
+#' whilst 1<|\code{mutreach_adj}|<2 chooses the latter (ε=\code{mutreach_adj}±1).
+#' For the K-d tree-based methods, on the other hand, \code{mutreach_adj}
+#' indicates the preference towards connecting to farther/closer
+#' points wrt the original metric or having smaller/larger core distances
+#' if a point \eqn{i} has multiple nearest-neighbour candidates \eqn{j'}, \eqn{j''} with
+#' \eqn{c_M(i) \geq \max\{d(i, j'),  c_M(j')\}`} and
+#' \eqn{c_M(i) \geq \max\{d(i, j''),  c_M(j'')\}`}.
+#' Generally, the smaller the \code{mutreach_adj}, the more leaves there will
+#' be in the tree (note that there are only four types of adjustments, though).
 #'
 #' The implemented algorithms, see the \code{algorithm} parameter, assume
 #' that \code{M} is rather small; say, \eqn{M \leq 20}.
@@ -558,7 +561,7 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' on (March et al., 2010). As far as our implementation is concerned,
 #' the dual-tree approach is often only faster in 2- and 3-dimensional spaces,
 #' for \eqn{M\leq 2}, and in a single-threaded setting.  For another (approximate)
-#' adaptation of the dual-tree algorithm to the mutual reachability distance;
+#' adaptation of the dual-tree algorithm to the mutual reachability distance,
 #' see (McInnes and Healy, 2017).
 #'
 #' Nevertheless, it is well-known that K-d trees perform well only in spaces
@@ -619,27 +622,30 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #'
 #' @param X the "database"; a matrix of shape (n,d)
 #' @param M the degree of the mutual reachability distance
-#'          (should be rather small, say, \eqn{\leq 20}).
-#'          \eqn{M\leq 2} denotes the ordinary Euclidean distance
+#'    (should be rather small, say, \eqn{\leq 20}).
+#'    \eqn{M\leq 2} denotes the ordinary Euclidean distance
 #' @param algorithm \code{"auto"}, \code{"kd_tree_single"}
-#'          \code{"kd_tree_dual"} or \code{"brute"};
-#'     K-d trees can only be used for d between 2 and 20 only;
-#'     \code{"auto"} selects \code{"kd_tree_dual"} for \eqn{d\leq 3},
-#'     \eqn{M\leq 2}, and in a single-threaded setting only.
-#'     \code{"kd_tree_single"} is used otherwise, unless \eqn{d>20}.
+#'    \code{"kd_tree_dual"} or \code{"brute"};
+#'    K-d trees can only be used for d between 2 and 20 only;
+#'    \code{"auto"} selects \code{"kd_tree_dual"} for \eqn{d\leq 3},
+#'    \eqn{M\leq 2}, and in a single-threaded setting only.
+#'    \code{"kd_tree_single"} is used otherwise, unless \eqn{d>20}.
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
-#'        smaller leaves use more memory, yet are not necessarily faster;
-#'        use \code{0} to select the default value, currently set to 32 for the
-#'        single-tree and 8 for the dual-tree Borůvka algorithm
+#'    smaller leaves use more memory, yet are not necessarily faster;
+#'    use \code{0} to select the default value, currently set to 32 for the
+#'    single-tree and 8 for the dual-tree Borůvka algorithm
 #' @param first_pass_max_brute_size minimal number of points in a node to
-#'        treat it as a leaf (unless it's actually a leaf) in the first
-#'        iteration of the algorithm; use \code{0} to select the default value,
-#'        currently set to 32
-#' @param dcore_dist_adj mutual reachability distance adjustment,
-#'        a constant close to 0; in the case of ambiguity caused by equal
-#'        core distances, a negative value will prefer connecting to farther
-#'        points wrt the original distance, and closer ones in the case of
-#'        a positive value
+#'    treat it as a leaf (unless it's actually a leaf) in the first
+#'    iteration of the algorithm; use \code{0} to select the default value,
+#'    currently set to 32
+#' @param mutreach_adj adjustment for mutual reachability distance ambiguity
+#'    (for \eqn{M>2}) whose fractional part should be close to 0:
+#'    values in \eqn{(-1,0)} prefer connecting to farther NNs,
+#'    values in \eqn{(0, 1)} fall for closer NNs (which is what many other
+#'    implementations provide),
+#'    values in \eqn{(-2,-1)} prefer connecting to points with smaller core distances,
+#'    values in \eqn{(1, 2)} favour larger core distances;
+#'    see above for more details
 #' @param verbose whether to print diagnostic messages
 #'
 #'
@@ -675,8 +681,8 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #'
 #' @rdname fastmst
 #' @export
-mst_euclid <- function(X, M = 1L, algorithm = "auto", max_leaf_size = 0L, first_pass_max_brute_size = 0L, dcore_dist_adj = -0.00000001490116119384765625, verbose = FALSE) {
-    .Call(`_genieclust_mst_euclid`, X, M, algorithm, max_leaf_size, first_pass_max_brute_size, dcore_dist_adj, verbose)
+mst_euclid <- function(X, M = 1L, algorithm = "auto", max_leaf_size = 0L, first_pass_max_brute_size = 0L, mutreach_adj = -1.00000011920928955078125, verbose = FALSE) {
+    .Call(`_genieclust_mst_euclid`, X, M, algorithm, max_leaf_size, first_pass_max_brute_size, mutreach_adj, verbose)
 }
 
 .genie <- function(mst, k, gini_threshold, postprocess, detect_noise, verbose) {
