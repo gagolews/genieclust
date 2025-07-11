@@ -45,9 +45,9 @@ import warnings
 ###############################################################################
 
 
-class GenieBase(BaseEstimator, ClusterMixin):
+class MSTClusterMixin(BaseEstimator, ClusterMixin):
     """
-    Base class for Genie and GIc
+    Base class for Genie, GIc, and other MST-based clustering algorithms
 
     For detailed description of the parameters and attributes,
     see `genieclust.Genie`.
@@ -557,7 +557,7 @@ class GenieBase(BaseEstimator, ClusterMixin):
 
 
 
-class Genie(GenieBase):
+class Genie(MSTClusterMixin):
     """
     Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
@@ -907,7 +907,7 @@ class Genie(GenieBase):
 
 
 
-class GIc(GenieBase):
+class GIc(MSTClusterMixin):
     """
     GIc (Genie+Information Criterion) clustering algorithm
 

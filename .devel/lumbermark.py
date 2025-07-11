@@ -34,6 +34,7 @@ def _lumbermark(
     min_cluster_factor,
     M,
     skip_leaves,
+    fastmst_params=dict(),
     verbose=False
 ):
     assert n_clusters > 0
@@ -43,46 +44,27 @@ def _lumbermark(
     n = X.shape[0]
 
 
-    if M <= 2:
-        mst_w, mst_e = genieclust.internal.mst_from_distance(X, "euclidean")
+    _res = genieclust.fastmst.mst_euclid(
+        X, M=M,
+        **fastmst_params,
+        verbose=verbose
+    )
+
+    if M == 1:
+        tree_w, tree_e = _res
     else:
-        if M-1 >= X.shape[0]:
-            raise ValueError("`M` is too large")
+        tree_w, tree_e, nn_w, nn_e = _res
+        d_core = genieclust.internal.get_d_core(nn_w, nn_e, M)
 
-        nn_dist, nn_ind = genieclust.internal.knn_from_distance(
-            X, k=M-1, metric="euclidean", verbose=verbose
-        )
+    tree_w = tree_w
+    tree_e = tree_e
 
-        # d_core = nn_dist.mean(axis=1).astype(X.dtype, order="C") NOTE: not better ;)
-        d_core = genieclust.internal.get_d_core(nn_dist, nn_ind, M) # i.e., d_core = nn_dist[:, M-2].astype(X.dtype, order="C")
-
-        # _o = np.argsort(d_core)[::-1]  # order wrt decreasing "core" size
-        # mst_w, mst_e = genieclust.internal.mst_from_distance(
-        #     np.ascontiguousarray(X[_o, :]),
-        #     metric="euclidean",
-        #     d_core=np.ascontiguousarray(d_core[_o]),
-        #     verbose=verbose
-        # )
-        # mst_e = np.c_[ _o[mst_e[:, 0]], _o[mst_e[:, 1]] ]
-
-        mst_w, mst_e = genieclust.internal.mst_from_distance(
-            np.ascontiguousarray(X),
-            metric="euclidean",
-            d_core=np.ascontiguousarray(d_core),
-            verbose=verbose
-        )
-
-
-    _o = np.argsort(mst_w)
-    mst_w = mst_w[_o]
-    mst_e = mst_e[_o, :]
-
-    l = genieclust.internal.lumbermark_from_mst(mst_w, mst_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
+    l = genieclust.internal.lumbermark_from_mst(tree_w, tree_e, n_clusters, min_cluster_size, min_cluster_factor, skip_leaves)
 
     return (
         l["labels"],
-        mst_w,
-        mst_e,
+        tree_w,
+        tree_e,
         l["n_clusters"],
         l["links"],
         l["is_noise"]
@@ -97,9 +79,10 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         *,
         n_clusters,
         min_cluster_size=10,
-        min_cluster_factor=0.25,  # try also 0.1 or less for clusters of imbalanced sizes
-        M=2,  # try also M=6 or M=4 or M=11  (mutual reachability distance); M=2 is M=1 but with skip_leaves
+        min_cluster_factor=0.15,  # try also 0.1 or less for clusters of imbalanced sizes
+        M=6,  # try also M=6 or M=4 or M=11  (mutual reachability distance); M=2 is M=1 but with skip_leaves
         skip_leaves=None,  # by default, True if M>1
+        fastmst_params=dict(),
         verbose=False
     ):
         self.n_clusters              = n_clusters
@@ -108,6 +91,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
         self.M                       = M
         self.skip_leaves             = skip_leaves
         self.verbose                 = verbose
+        self.fastmst_params          = fastmst_params
 
 
     def fit(self, X, y=None):
@@ -154,6 +138,7 @@ class Lumbermark(BaseEstimator, ClusterMixin):
             min_cluster_factor=self.min_cluster_factor,
             M=self.M,
             skip_leaves=self.skip_leaves_,
+            fastmst_params=self.fastmst_params,
             verbose=self.verbose
         )
 
