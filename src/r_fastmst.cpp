@@ -406,7 +406,7 @@ List knn_euclid(
 //' @param max_leaf_size maximal number of points in the K-d tree leaves;
 //'        smaller leaves use more memory, yet are not necessarily faster;
 //'        use \code{0} to select the default value, currently set to 32 for the
-//'        single-tree and 8 for the dual-tree Boruvka algorithm
+//'        single-tree and 8 for the dual-tree Borůvka algorithm
 //' @param first_pass_max_brute_size minimal number of points in a node to
 //'        treat it as a leaf (unless it's actually a leaf) in the first
 //'        iteration of the algorithm; use \code{0} to select the default value,

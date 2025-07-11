@@ -1,7 +1,7 @@
-/*  Boruvka-type algorithms for finding minimum spanning trees
+/*  Borůvka-type algorithms for finding minimum spanning trees
  *  wrt the Euclidean metric or the thereon-based mutual reachability distance.
  *
- *  The dual-tree Boruvka version is, in principle, based on
+ *  The dual-tree Borůvka version is, in principle, based on
  *  "Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis,
  *  and Applications" by W.B. March, P. Ram, A.G. Gray published
  *  in ACM SIGKDD 2010.  As far as our implementation
@@ -140,7 +140,7 @@ struct kdtree_node_orderer {
 
 /** A class enabling searching for the nearest neighbour
  *  outside of the current point's cluster;
- *  (for the "single-tree" Boruvka algo); it is thread-safe
+ *  (for the "single-tree" Borůvka algo); it is thread-safe
  */
 template <
     typename FLOAT,

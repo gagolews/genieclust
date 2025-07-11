@@ -276,7 +276,7 @@ void Cknn2_euclid_brute(
 }
 
 
-/*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
+/*! A Jarník (Prim/Dijkstra)-like algorithm for determining
  *  a(*) Euclidean minimum spanning tree (MST) or
  *  one wrt an M-mutual reachability distance.
  *
@@ -730,10 +730,10 @@ void _mst_euclid_kdtree(
  *  suggested in [7]_, and a node pruning strategy inspired by the discussion
  *  in [8]_.
  *
- *  The "single-tree" version of the Boruvka algorithm is naively
+ *  The "single-tree" version of the Borůvka algorithm is naively
  *  parallelisable: in every iteration, it seeks each point's nearest "alien",
  *  i.e., the nearest point thereto from another cluster.
- *  The "dual-tree" Boruvka version of the algorithm is, in principle, based
+ *  The "dual-tree" Borůvka version of the algorithm is, in principle, based
  *  on [5]_. As far as our implementation is concerned, the dual-tree approach
  *  is only faster in 2- and 3-dimensional spaces, for `M<=2`, and in
  *  a single-threaded setting.  For another (approximate) adaptation
@@ -795,7 +795,7 @@ void _mst_euclid_kdtree(
  * @param first_pass_max_brute_size minimal number of points in a node to treat
  *        it as a leaf (unless it's actually a leaf) in the first iteration
  *        of the algorithm
- * @param use_dtb whether a dual or a single-tree Boruvka algorithm
+ * @param use_dtb whether a dual or a single-tree Borůvka algorithm
  *        should be used
  * @param dcore_dist_adj (M>2 only) if negative, farther NNs wrt the original
  *        distance are preferred if they correspond to the same core distance;

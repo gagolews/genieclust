@@ -1,7 +1,7 @@
 /* Minimum spanning tree and k-nearest neighbour algorithms
  * (the "old"/generic<2025 interface)
  *
- *  1. Prim-Jarnik's for complete undirected graphs,
+ *  1. Jarník (Prim)'s for complete undirected graphs,
  *  2. Kruskal's for k-NN graphs (for approximate MSTs).
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
@@ -128,7 +128,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
 
 
 
-/*! A Jarnik (Prim/Dijkstra)-like algorithm for determining
+/*! A Jarník (Prim/Dijkstra)-like algorithm for determining
  *  a(*) minimum spanning tree (MST) of a complete undirected graph
  *  with weights given by, e.g., a symmetric n*n matrix.
  *
@@ -144,7 +144,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *  Information Sciences 363 (2016) 8-23.
  *
- *  V. Jarnik, O jistem problemu minimalnim,
+ *  V. Jarník, O jistem problemu minimalnim,
  *  Prace Moravske Prirodovedecke Spolecnosti 6 (1930) 57-63.
  *
  *  C.F. Olson, Parallel algorithms for hierarchical clustering,

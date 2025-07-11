@@ -72,7 +72,7 @@ If \code{d} is a matrix and the use of Euclidean distance is requested
 to determine the MST.  As it is based on K-d trees, it is quite fast
 in low dimensional spaces, even for 10M points.
 
-Otherwise, a much slower implementation of the Jarnik (Prim/Dijkstra)-like
+Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
 method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
 the number of threads is determined by the \code{OMP_NUM_THREADS} environment
 variable. As a rule of thumb, datasets up to 100k points
@@ -99,18 +99,24 @@ segments(X[T[, 1], 1], X[T[, 1], 2],
 
 }
 \references{
-Jarnik V., O jistem problemu minimalnim,
+V. Jarník, O jistem problemu minimalnim,
 \emph{Prace Moravske Prirodovedecke Spolecnosti} 6, 1930, 57-63.
 
-Olson C.F., Parallel algorithms for hierarchical clustering,
+C.F. Olson, Parallel algorithms for hierarchical clustering,
 \emph{Parallel Computing} 21, 1995, 1313-1325.
 
-Prim R., Shortest connection networks and some generalisations,
+R. Prim, Shortest connection networks and some generalisations,
 \emph{The Bell System Technical Journal} 36(6), 1957, 1389-1401.
 
-March W.B., Ram P., Gray A.G.,
-Fast Euclidean Minimum Spanning Tree: Algorithm, Analysis, and Applications,
-\emph{Proc. ACM SIGKDD'10}, 2010, 603-611.
+O. Borůvka, O jistém problému minimálním, \emph{Práce Moravské
+Přírodovědecké Společnosti} 3, 1926, 37–58.
+
+J.L. Bentley, Multidimensional binary search trees used for associative
+searching, \emph{Communications of the ACM} 18(9), 509–517, 1975,
+\doi{10.1145/361002.361007}.
+W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
+tree: Algorithm, analysis, and applications, \emph{Proc. 16th ACM SIGKDD
+Intl. Conf. Knowledge Discovery and Data Mining (KDD '10)}, 2010, 603–612.
 
 Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,

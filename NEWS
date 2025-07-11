@@ -178,7 +178,7 @@
 *  [GENERAL] Clustering with respect to HDBSCAN*-like
    mutual reachability distances is supported.
 
-*  [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
+*  [GENERAL] The parallelised Jarník-Prim algorithm now supports on-the-fly
    distance computations. Euclidean minimum spanning tree can be
    determined with `mlpack`, which is much faster in low-dimensional spaces.
 

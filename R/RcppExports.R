@@ -531,13 +531,15 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' To make the definition less ambiguous (albeit with no guarantees),
 #' internally, the brute-force algorithm relies on the adjusted distance
 #' \eqn{d_M(i, j)=\max\{c_M(i), c_M(j), d(i, j)\}+\varepsilon d(i, j)},
-#' where \eqn{\varepsilon} is close to 0, see \code{dcore_dist_adj}.
+#' where \eqn{\varepsilon} is close to 0; see \code{dcore_dist_adj}.
 #' For the K-d tree-based methods, on the other hand, negative
 #' \code{dcore_dist_adj} indicates the preference towards connecting to
 #' farther points wrt the original metric in the case of the same
 #' core distance instead of closer ones if the adjustment is positive.
 #' When preferring farther points, the resulting spanning tree tends to
 #' have more leaves.
+#' Furthermore, setting \code{dcore_dist_adj} to minus infinity,
+#' prefers NNs with smaller core distances. This results in even more leaves.
 #'
 #' The implemented algorithms, see the \code{algorithm} parameter, assume
 #' that \code{M} is rather small; say, \eqn{M \leq 20}.
@@ -628,7 +630,7 @@ knn_euclid <- function(X, k = 1L, Y = NULL, algorithm = "auto", max_leaf_size = 
 #' @param max_leaf_size maximal number of points in the K-d tree leaves;
 #'        smaller leaves use more memory, yet are not necessarily faster;
 #'        use \code{0} to select the default value, currently set to 32 for the
-#'        single-tree and 8 for the dual-tree Boruvka algorithm
+#'        single-tree and 8 for the dual-tree Borůvka algorithm
 #' @param first_pass_max_brute_size minimal number of points in a node to
 #'        treat it as a leaf (unless it's actually a leaf) in the first
 #'        iteration of the algorithm; use \code{0} to select the default value,
