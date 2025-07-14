@@ -49,9 +49,16 @@ struct kdtree_node_clusterable : public kdtree_node_base<FLOAT, D>
     kdtree_node_clusterable* left;
     kdtree_node_clusterable* right;
 
+    struct t_dtb_data { FLOAT cluster_max_dist; };
+    struct t_qtb_data { FLOAT lastbest_dist; Py_ssize_t lastbest_ind; Py_ssize_t lastbest_from; };
+
     Py_ssize_t cluster_repr;  //< representative point index if all descendants are in the same cluster, -1 otherwise
-    FLOAT cluster_max_dist;   // for DTB, redundant otherwise (TODO: template them out)
     FLOAT min_dcore;          // for M>2, redundant otherwise (TODO: template them out)
+
+    union {
+        t_dtb_data dtb_data;
+        t_qtb_data qtb_data;
+    };
 
     kdtree_node_clusterable() {
         left = nullptr;
@@ -170,7 +177,7 @@ private:
         for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
             if (cluster == ds_par[j]) continue;
 
-            if (dcore[j] >= nn_dist) continue;
+            if (USE_DCORE && dcore[j] >= nn_dist) continue;
             FLOAT dd = DISTANCE::point_point(x, y);
             if (USE_DCORE) dd = max3(dd, dcore[which], dcore[j]);
             if (dd < nn_dist) {
@@ -286,13 +293,13 @@ private:
     {
         const FLOAT* x = data+D*curleaf->idx_from;
         for (Py_ssize_t which=curleaf->idx_from; which<curleaf->idx_to; ++which, x+=D) {
-            if (dcore[which] >= nn_dist) continue;
+            if (USE_DCORE && dcore[which] >= nn_dist) continue;
 
             const FLOAT* y = data+D*idx_from;
             for (Py_ssize_t j=idx_from; j<idx_to; ++j, y+=D) {
                 if (curleaf->cluster_repr == ds_par[j]) continue;
 
-                if (dcore[j] >= nn_dist) continue;
+                if (USE_DCORE && dcore[j] >= nn_dist) continue;
                 FLOAT dd = DISTANCE::point_point(x, y);
                 if (USE_DCORE) dd = max3(dd, dcore[which], dcore[j]);
                 if (dd < nn_dist) {
@@ -395,15 +402,22 @@ protected:
 
     const Py_ssize_t first_pass_max_brute_size;  // used in the first iter (finding 1-nns)
 
-    const bool use_dtb;
+    enum BORUVKA_TYPE { BORUVKA_STB, BORUVKA_QTB, BORUVKA_DTB };
+    BORUVKA_TYPE boruvka_variant;
+    bool reset_nns;
+
     const FLOAT mutreach_adj;  // M>2 only
 
-    // std::vector<Py_ssize_t> ptperm;  // !use_dtb only
+    std::vector<FLOAT> lastbest_dist;   // !use_dtb only
+    std::vector<Py_ssize_t> lastbest_ind;   // !use_dtb only
 
-    const Py_ssize_t M;  // mutual reachability distance - "smoothing factor"
-    std::vector<FLOAT> dcore;  // distances to the (M-1)-th nns of each point if M>1 or 1-NN for M==1
-    std::vector<FLOAT> Mnn_dist;  // M-1 nearest neighbours of each point if M>1
+    const Py_ssize_t M;              // mutual reachability distance - "smoothing factor"
+    std::vector<FLOAT> dcore;        // distances to the (M-1)-th nns of each point if M>1 or 1-NN for M==1
+    std::vector<FLOAT> Mnn_dist;     // M-1 nearest neighbours of each point if M>1
     std::vector<Py_ssize_t> Mnn_ind;
+
+    omp_lock_t omp_lock;
+    int omp_nthreads;
 
 
     std::vector<NODE*> leaves; // TODO: sesquitree only
@@ -417,7 +431,7 @@ protected:
         for (Py_ssize_t i=roota->idx_from; i<roota->idx_to; ++i, _x += D)
         {
             Py_ssize_t ds_find_i = ds.get_parent(i);
-            if (dcore[i] >= nn_dist[ds_find_i]) continue;
+            if (USE_DCORE && dcore[i] >= nn_dist[ds_find_i]) continue;
 
             for (Py_ssize_t j=rootb->idx_from; j<rootb->idx_to; ++j)
             {
@@ -454,12 +468,26 @@ protected:
 
         leaves.resize(nleaves);
 
-        Py_ssize_t i = 0;
+        Py_ssize_t _leafnum = 0;
 
-        for (auto curnode = this->nodes.begin(); curnode != this->nodes.end(); ++curnode)
-            if (curnode->is_leaf()) leaves[i++] = &(*curnode);
+        for (auto curnode = this->nodes.begin(); curnode != this->nodes.end(); ++curnode) {
+            if (curnode->is_leaf()) {
+                leaves[_leafnum++] = &(*curnode);
 
-        GENIECLUST_ASSERT(i == nleaves);
+                curnode->qtb_data.lastbest_dist = INFINITY;
+                curnode->qtb_data.lastbest_ind  = -1;
+                curnode->qtb_data.lastbest_from = -1;
+                for (Py_ssize_t i=curnode->idx_from; i<curnode->idx_to; ++i) {
+                    if (curnode->qtb_data.lastbest_dist > lastbest_dist[i]) {
+                        curnode->qtb_data.lastbest_dist = lastbest_dist[i];
+                        curnode->qtb_data.lastbest_ind  = lastbest_ind[i];
+                        curnode->qtb_data.lastbest_from = i;
+                    }
+                }
+            }
+        }
+
+        GENIECLUST_ASSERT(_leafnum == nleaves);
     }
 
 
@@ -490,6 +518,8 @@ protected:
 
     void update_cluster_data()
     {
+        // Performed in each iteration
+
         for (Py_ssize_t i=0; i<this->n; ++i)
             this->ds.find(i);
         // now ds.find(i) == ds.get_parent(i) for all i
@@ -502,7 +532,7 @@ protected:
         // nodes is a deque...
         for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
         {
-            curnode->cluster_max_dist = INFINITY;
+            if (boruvka_variant == BORUVKA_DTB) curnode->dtb_data.cluster_max_dist = INFINITY;  // for DTB
 
             if (curnode->cluster_repr >= 0) {
                 curnode->cluster_repr = ds.get_parent(curnode->cluster_repr);
@@ -552,13 +582,6 @@ protected:
         GENIECLUST_ASSERT(M <= 2);
         const Py_ssize_t k = 1;
 
-
-        #if OPENMP_IS_ENABLED
-        int omp_nthreads = Comp_get_max_threads();
-        #else
-        int omp_nthreads = 1;
-        #endif
-
         for (Py_ssize_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
         for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i] = -1;
 
@@ -580,17 +603,20 @@ protected:
                 nn_ind[nn_ind[i]] = i;
             }
 
-            if (M == 1)
-                dcore[i]    = nn_dist[i];  // can be useful (for pruning of outliers)
-            else {
+            if (M > 1) {
                 dcore[i]    = nn_dist[i];
                 Mnn_dist[i] = nn_dist[i];
                 Mnn_ind[i]  = nn_ind[i];
             }
+
         }
 
         // connect nearest neighbours with each other
         for (Py_ssize_t i=0; i<this->n; ++i) {
+
+            lastbest_dist[i] = nn_dist[i];
+            lastbest_ind[i] = -1;  // doesn't matter at this stage
+
             if (ds.find(i) != ds.find(nn_ind[i])) {
                 tree_ind[tree_num*2+0] = i;
                 tree_ind[tree_num*2+1] = nn_ind[i];
@@ -643,33 +669,27 @@ protected:
             tree_num++; \
         }
 
-        if (mutreach_adj <= -1) {
-            // connect with j whose dcore[j] is the smallest
+        if (mutreach_adj <= -1 || mutreach_adj >= 1) {
             for (Py_ssize_t i=0; i<this->n; ++i) {
+                // mutreach_adj <= -1 - connect with j whose dcore[j] is the smallest
+                // mutreach_adj >=  1 - connect with j whose dcore[j] is the largest
+
+                lastbest_dist[i] = dcore[i];  // merely a lower bound
+                lastbest_ind[i] = -1;  // doesn't matter at this stage
+
                 Py_ssize_t bestj = -1;
-                FLOAT bestdcorej = INFINITY;
+                FLOAT bestdcorej = (mutreach_adj <= -1)?INFINITY:(-INFINITY);
                 for (Py_ssize_t v=0; v<k; ++v)
                 {
                     Py_ssize_t j = Mnn_ind[i*k+v];
-                    if (dcore[i] >= dcore[j] && bestdcorej >= dcore[j] && ds.find(i) != ds.find(j)) {
-                        bestj = j;
-                        bestdcorej = dcore[j];
-                    }
-                }
-                if (bestj >= 0) MERGE_I_J(i, bestj);
-            }
-        }
-        else if (mutreach_adj >= 1) {
-            // connect with j whose dcore[j] is the largest
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                Py_ssize_t bestj = -1;
-                FLOAT bestdcorej = -INFINITY;
-                for (Py_ssize_t v=0; v<k; ++v)
-                {
-                    Py_ssize_t j = Mnn_ind[i*k+v];
-                    if (dcore[i] >= dcore[j] && bestdcorej < dcore[j] && ds.find(i) != ds.find(j)) {
-                        bestj = j;
-                        bestdcorej = dcore[j];
+                    if (dcore[i] >= dcore[j] && ds.find(i) != ds.find(j)) {
+                        if (
+                            (mutreach_adj <= -1 && bestdcorej >= dcore[j]) ||
+                            (mutreach_adj >=  1 && bestdcorej <  dcore[j])
+                        ) {
+                            bestj = j;
+                            bestdcorej = dcore[j];
+                        }
                     }
                 }
                 if (bestj >= 0) MERGE_I_J(i, bestj);
@@ -679,6 +699,9 @@ protected:
             for (Py_ssize_t i=0; i<this->n; ++i) {
                 // connect with j whose d(i,j) is the smallest (1>mutreach_adj>0) or largest (-1<mutreach_adj<0)
                 // stops searching early, because the original distances are sorted
+
+                lastbest_dist[i] = dcore[i];  // merely a lower bound
+                lastbest_ind[i] = -1;  // doesn't matter at this stage
 
                 for (Py_ssize_t v=0; v<k; ++v)
                 {
@@ -716,7 +739,7 @@ protected:
 
         // pruning below!
         //FLOAT dist = distance_node_node_sqeuclid(roota, rootb);
-        //if (roota->cluster_max_dist < dist) {
+        //if (roota->dtb_data.cluster_max_dist < dist) {
         //    // we've a better candidate already - nothing to do
         //    return;
         //}
@@ -728,14 +751,14 @@ protected:
                 else     leaf_vs_leaf_dtb<false>(roota, rootb);
 
                 if (roota->cluster_repr >= 0) {  // all points are in the same cluster
-                    roota->cluster_max_dist = nn_dist[roota->cluster_repr];
+                    roota->dtb_data.cluster_max_dist = nn_dist[roota->cluster_repr];
                 }
                 else {
-                    roota->cluster_max_dist = nn_dist[ds.get_parent(roota->idx_from)];
+                    roota->dtb_data.cluster_max_dist = nn_dist[ds.get_parent(roota->idx_from)];
                     for (Py_ssize_t i=roota->idx_from+1; i<roota->idx_to; ++i) {
                         FLOAT dist_cur = nn_dist[ds.get_parent(i)];
-                        if (dist_cur > roota->cluster_max_dist)
-                            roota->cluster_max_dist = dist_cur;
+                        if (dist_cur > roota->dtb_data.cluster_max_dist)
+                            roota->dtb_data.cluster_max_dist = dist_cur;
                     }
                 }
             }
@@ -744,43 +767,43 @@ protected:
                 kdtree_node_orderer<FLOAT, D, DISTANCE, NODE> sel(roota, rootb->left, rootb->right, (M>2));
 
                 // prune nodes too far away if we have better candidates
-                if (roota->cluster_max_dist > sel.nearer_dist) {
+                if (roota->dtb_data.cluster_max_dist > sel.nearer_dist) {
                     find_mst_next_dtb(roota, sel.nearer_node);
-                    if (roota->cluster_max_dist > sel.farther_dist)
+                    if (roota->dtb_data.cluster_max_dist > sel.farther_dist)
                         find_mst_next_dtb(roota, sel.farther_node);
                 }
 
 
-                // roota->cluster_max_dist updated above
+                // roota->dtb_data.cluster_max_dist updated above
             }
         }
         else {  // roota is not a leaf
             if (rootb->is_leaf()) {
                 kdtree_node_orderer<FLOAT, D, DISTANCE, NODE> sel(rootb, roota->left, roota->right, (M>2));
-                if (sel.nearer_node->cluster_max_dist > sel.nearer_dist)
+                if (sel.nearer_node->dtb_data.cluster_max_dist > sel.nearer_dist)
                     find_mst_next_dtb(sel.nearer_node, rootb);
-                if (sel.farther_node->cluster_max_dist > sel.farther_dist)  // separate if!
+                if (sel.farther_node->dtb_data.cluster_max_dist > sel.farther_dist)  // separate if!
                     find_mst_next_dtb(sel.farther_node, rootb);
             }
             else {
                 kdtree_node_orderer<FLOAT, D, DISTANCE, NODE> sel(roota->left, rootb->left, rootb->right, (M>2));
-                if (roota->left->cluster_max_dist > sel.nearer_dist) {
+                if (roota->left->dtb_data.cluster_max_dist > sel.nearer_dist) {
                     find_mst_next_dtb(roota->left, sel.nearer_node);
-                    if (roota->left->cluster_max_dist > sel.farther_dist)
+                    if (roota->left->dtb_data.cluster_max_dist > sel.farther_dist)
                         find_mst_next_dtb(roota->left, sel.farther_node);
                 }
 
                 sel = kdtree_node_orderer<FLOAT, D, DISTANCE, NODE>(roota->right, rootb->left, rootb->right, (M>2));
-                if (roota->right->cluster_max_dist > sel.nearer_dist) {
+                if (roota->right->dtb_data.cluster_max_dist > sel.nearer_dist) {
                     find_mst_next_dtb(roota->right, sel.nearer_node);
-                    if (roota->right->cluster_max_dist > sel.farther_dist)
+                    if (roota->right->dtb_data.cluster_max_dist > sel.farther_dist)
                         find_mst_next_dtb(roota->right, sel.farther_node);
                 }
             }
 
-            roota->cluster_max_dist = std::max(
-                roota->left->cluster_max_dist,
-                roota->right->cluster_max_dist
+            roota->dtb_data.cluster_max_dist = std::max(
+                roota->left->dtb_data.cluster_max_dist,
+                roota->right->dtb_data.cluster_max_dist
             );
         }
     }
@@ -788,30 +811,8 @@ protected:
 
     void find_mst_next_dtb()
     {
-        if (M > 2) {
-            // reuse M-1 NNs if d==dcore[i] as an initialiser to nn_ind/dist/from;
-            // good speed-up sometimes (we'll be happy with any match; leaves
-            // are formed in the 1st iteration of the algorithm)
-            const Py_ssize_t k = M-1;
-            for (Py_ssize_t i=0; i<this->n; ++i) {
-                Py_ssize_t ds_find_i = ds.get_parent(i);
-                if (nn_dist[ds_find_i] <= dcore[i]) continue;
-                for (Py_ssize_t v=0; v<k; ++v)
-                {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
-                    if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
-                        nn_dist[ds_find_i] = dcore[i];
-                        nn_ind[ds_find_i]  = j;
-                        nn_from[ds_find_i] = i;
-                        break;  // other candidates have d_M >= dcore[i] anyway
-                    }
-                }
-            }
-        }
-
         find_mst_next_dtb(&this->nodes[0], &this->nodes[0]);
     }
-
 
 
     void find_mst_next_qtb()
@@ -820,18 +821,11 @@ protected:
         // i.e., the nearest "alien"
         // go leaf-by-leaf
         #if OPENMP_IS_ENABLED
-        omp_lock_t nn_dist_lock;
-        int omp_nthreads = Comp_get_max_threads();
-        if (omp_nthreads > 1) omp_init_lock(&nn_dist_lock);
-        #else
-        int omp_nthreads = 1;
-        #endif
-
-        #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
         for (size_t l=0; l<leaves.size(); ++l) {
             NODE* curleaf = leaves[l];
+
             if (curleaf->cluster_repr >= 0 && curleaf->idx_to - curleaf->idx_from > 1)  // all elems in the same cluster
             {
                 GENIECLUST_ASSERT(curleaf->cluster_repr == ds.get_parent(curleaf->idx_from));
@@ -840,39 +834,48 @@ protected:
                 // NOTE: assumption: no race condition/atomic read...
                 FLOAT nn_dist_best = nn_dist[ds_find_i];
 
-                FLOAT min_dcore = dcore[curleaf->idx_from];
-                for (Py_ssize_t i=curleaf->idx_from+1; i<curleaf->idx_to; ++i)
-                    if (min_dcore > dcore[i]) min_dcore = dcore[i];
-                if (nn_dist_best <= min_dcore) continue;
+                if (nn_dist_best <= curleaf->qtb_data.lastbest_dist) continue;
 
-                kdtree_nearest_outsider_multi<FLOAT, D, DISTANCE, NODE> nn(
-                    this->data, this->dcore.data(),
-                    curleaf, ds.get_parents(), M
-                );
-                nn.find(&this->nodes[0], nn_dist_best);
-                FLOAT nn_dist_cur = nn.get_nn_dist();
-                Py_ssize_t nn_ind_cur = nn.get_nn_ind();
-                Py_ssize_t nn_from_cur = nn.get_nn_from();
+                if (curleaf->qtb_data.lastbest_ind >= 0) {
+                    Py_ssize_t ds_find_j = ds.get_parent(curleaf->qtb_data.lastbest_ind);
+                    if (ds_find_i == ds_find_j)
+                        curleaf->qtb_data.lastbest_ind = -1;
+                }
 
-                if (nn_ind_cur < 0) continue;
+                if (curleaf->qtb_data.lastbest_ind < 0) {
+                    kdtree_nearest_outsider_multi<FLOAT, D, DISTANCE, NODE> nn(
+                        this->data, (M>2)?(this->dcore.data()):NULL,
+                        curleaf, ds.get_parents(), M
+                    );
+                    nn.find(&this->nodes[0], reset_nns?INFINITY:nn_dist_best);
+                    curleaf->qtb_data.lastbest_ind = nn.get_nn_ind();
+                    if (curleaf->qtb_data.lastbest_ind >= 0) {
+                        curleaf->qtb_data.lastbest_dist = nn.get_nn_dist();
+                        curleaf->qtb_data.lastbest_from = nn.get_nn_from();
+                    }
+                }
+
+                if (curleaf->qtb_data.lastbest_ind < 0) continue;
+
+                Py_ssize_t ds_find_j = ds.get_parent(curleaf->qtb_data.lastbest_ind);
+                GENIECLUST_ASSERT(ds_find_i != ds_find_j);
 
                 #if OPENMP_IS_ENABLED
-                if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
+                if (omp_nthreads > 1) omp_set_lock(&omp_lock);
                 #endif
-                if (nn_dist_cur < nn_dist[ds_find_i]) {
-                    nn_dist[ds_find_i] = nn_dist_cur;
-                    nn_ind[ds_find_i]  = nn_ind_cur;
-                    nn_from[ds_find_i] = nn_from_cur;
+                if (curleaf->qtb_data.lastbest_dist < nn_dist[ds_find_i]) {
+                    nn_dist[ds_find_i] = curleaf->qtb_data.lastbest_dist;
+                    nn_ind[ds_find_i]  = curleaf->qtb_data.lastbest_ind;
+                    nn_from[ds_find_i] = curleaf->qtb_data.lastbest_from;
                 }
 
-                Py_ssize_t ds_find_j = ds.get_parent(nn_ind_cur);
-                if (nn_dist_cur < nn_dist[ds_find_j]) {
-                    nn_dist[ds_find_j] = nn_dist_cur;
-                    nn_ind[ds_find_j]  = nn_from_cur;
-                    nn_from[ds_find_j] = nn_ind_cur;
+                if (curleaf->qtb_data.lastbest_dist < nn_dist[ds_find_j]) {
+                    nn_dist[ds_find_j] = curleaf->qtb_data.lastbest_dist;
+                    nn_ind[ds_find_j]  = curleaf->qtb_data.lastbest_from;
+                    nn_from[ds_find_j] = curleaf->qtb_data.lastbest_ind;
                 }
                 #if OPENMP_IS_ENABLED
-                if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
+                if (omp_nthreads > 1) omp_unset_lock(&omp_lock);
                 #endif
             }
             else {
@@ -883,80 +886,64 @@ protected:
                     // NOTE: assumption: no race condition/atomic read...
                     FLOAT nn_dist_best = nn_dist[ds_find_i];
 
-                    if (nn_dist_best <= dcore[i]) continue;  // speeds up even for M==1
+                    if (nn_dist_best <= lastbest_dist[i]) continue;  // speeds up even for M==1
 
-                    FLOAT nn_dist_cur;
-                    Py_ssize_t nn_ind_cur = -1;
-
-                    if (M > 2) {
-                        // reuse M-1 NNs if d==dcore[i] (we'll be happy with any match; leaves
-                        // are formed in the 1st iteration of the algorithm)
-                        const Py_ssize_t k = M-1;
-                        for (Py_ssize_t v=0; v<k; ++v)
-                        {
-                            Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
-                            if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
-                                nn_dist_cur = dcore[i];
-                                nn_ind_cur = j;
-                                break;  // other candidates have d_M >= dcore[i] anyway
-                            }
-                        }
-                    }
-
-                    if (nn_ind_cur < 0) {
+                    if (lastbest_ind[i] < 0) {
                         kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
-                            this->data, this->dcore.data(),
+                            this->data, (M>2)?(this->dcore.data()):NULL,
                             i, ds.get_parents(), M
                         );
-                        nn.find(&this->nodes[0], nn_dist_best);
-                        nn_dist_cur = nn.get_nn_dist();
-                        nn_ind_cur = nn.get_nn_ind();
+                        nn.find(&this->nodes[0], reset_nns?INFINITY:nn_dist_best);
+                        lastbest_ind[i] = nn.get_nn_ind();  // can be negative if best found >= nn_dist_best
+                        if (lastbest_ind[i] >= 0)
+                            lastbest_dist[i] = nn.get_nn_dist();
                     }
 
-                    if (nn_ind_cur < 0) continue;
+                    if (lastbest_ind[i] < 0) continue;
+
+                    Py_ssize_t ds_find_j = ds.get_parent(lastbest_ind[i]);
+                    GENIECLUST_ASSERT(ds_find_i != ds_find_j);
 
                     #if OPENMP_IS_ENABLED
-                    if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
+                    if (omp_nthreads > 1) omp_set_lock(&omp_lock);
                     #endif
-                    if (nn_dist_cur < nn_dist[ds_find_i]) {
-                        GENIECLUST_ASSERT(nn_ind_cur != i);
-                        nn_dist[ds_find_i] = nn_dist_cur;
-                        nn_ind[ds_find_i]  = nn_ind_cur;
+
+                    if (lastbest_dist[i] < nn_dist[ds_find_i]) {
+                        nn_dist[ds_find_i] = lastbest_dist[i];
+                        nn_ind[ds_find_i]  = lastbest_ind[i];
                         nn_from[ds_find_i] = i;
                     }
 
-                    Py_ssize_t ds_find_j = ds.get_parent(nn_ind_cur);
-                    if (nn_dist_cur < nn_dist[ds_find_j]) {
-                        nn_dist[ds_find_j] = nn_dist_cur;
+                    if (lastbest_dist[i] < nn_dist[ds_find_j]) {
+                        nn_dist[ds_find_j] = lastbest_dist[i];
                         nn_ind[ds_find_j]  = i;
-                        nn_from[ds_find_j] = nn_ind_cur;
+                        nn_from[ds_find_j] = lastbest_ind[i];
                     }
+
                     #if OPENMP_IS_ENABLED
-                    if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
+                    if (omp_nthreads > 1) omp_unset_lock(&omp_lock);
                     #endif
+                }
+
+                curleaf->qtb_data.lastbest_dist = INFINITY;
+                curleaf->qtb_data.lastbest_ind  = -1;
+                curleaf->qtb_data.lastbest_from = -1;
+                for (Py_ssize_t i=curleaf->idx_from; i<curleaf->idx_to; ++i) {
+                    if (curleaf->qtb_data.lastbest_dist > lastbest_dist[i]) {
+                        curleaf->qtb_data.lastbest_dist = lastbest_dist[i];
+                        curleaf->qtb_data.lastbest_ind  = lastbest_ind[i];
+                        curleaf->qtb_data.lastbest_from = i;
+                    }
                 }
             }
         }
-
-        #if OPENMP_IS_ENABLED
-        if (omp_nthreads > 1) omp_destroy_lock(&nn_dist_lock);
-        #endif
     }
-
 
 
     void find_mst_next_stb()
     {
         // find the point from another cluster that is closest to the i-th point
         // i.e., the nearest "alien"
-        #if OPENMP_IS_ENABLED
-        omp_lock_t nn_dist_lock;
-        int omp_nthreads = Comp_get_max_threads();
-        if (omp_nthreads > 1) omp_init_lock(&nn_dist_lock);
-        #else
-        int omp_nthreads = 1;
-        #endif
-
         #if OPENMP_IS_ENABLED
         #pragma omp parallel for schedule(static)
         #endif
@@ -967,62 +954,107 @@ protected:
             // NOTE: assumption: no race condition/atomic read...
             FLOAT nn_dist_best = nn_dist[ds_find_i];
 
-            if (nn_dist_best <= dcore[i]) continue;  // speeds up even for M==1
+            if (nn_dist_best <= lastbest_dist[i]) continue;  // speeds up even for M==1
 
-            FLOAT nn_dist_cur;
-            Py_ssize_t nn_ind_cur = -1;
-
-            if (M > 2) {
-                // reuse M-1 NNs if d==dcore[i] (we'll be happy with any match; leaves
-                // are formed in the 1st iteration of the algorithm)
-                const Py_ssize_t k = M-1;
-                for (Py_ssize_t v=0; v<k; ++v)
-                {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
-                    if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
-                        nn_dist_cur = dcore[i];
-                        nn_ind_cur = j;
-                        break;  // other candidates have d_M >= dcore[i] anyway
-                    }
-                }
-            }
-
-            if (nn_ind_cur < 0) {
+            if (lastbest_ind[i] < 0) {
                 kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
-                    this->data, this->dcore.data(),
+                    this->data, (M>2)?(this->dcore.data()):NULL,
                     i, ds.get_parents(), M
                 );
-                nn.find(&this->nodes[0], nn_dist_best);
-                nn_dist_cur = nn.get_nn_dist();
-                nn_ind_cur = nn.get_nn_ind();
+                nn.find(&this->nodes[0], reset_nns?INFINITY:nn_dist_best);
+                lastbest_ind[i]  = nn.get_nn_ind();    // can be negative if best found >= nn_dist_best
+                if (lastbest_ind[i] >= 0)
+                    lastbest_dist[i] = nn.get_nn_dist();
             }
 
-            if (nn_ind_cur < 0) continue;
+            if (lastbest_ind[i] < 0) continue;
+
+            Py_ssize_t ds_find_j = ds.get_parent(lastbest_ind[i]);
+            GENIECLUST_ASSERT(ds_find_i != ds_find_j);
 
             #if OPENMP_IS_ENABLED
-            if (omp_nthreads > 1) omp_set_lock(&nn_dist_lock);
+            if (omp_nthreads > 1) omp_set_lock(&omp_lock);
             #endif
-            if (nn_dist_cur < nn_dist[ds_find_i]) {
-                GENIECLUST_ASSERT(nn_ind_cur != i);
-                nn_dist[ds_find_i] = nn_dist_cur;
-                nn_ind[ds_find_i]  = nn_ind_cur;
+
+            if (lastbest_dist[i] < nn_dist[ds_find_i]) {
+                nn_dist[ds_find_i] = lastbest_dist[i];
+                nn_ind[ds_find_i]  = lastbest_ind[i];
                 nn_from[ds_find_i] = i;
             }
 
-            Py_ssize_t ds_find_j = ds.get_parent(nn_ind_cur);
-            if (nn_dist_cur < nn_dist[ds_find_j]) {
-                nn_dist[ds_find_j] = nn_dist_cur;
+            if (lastbest_dist[i] < nn_dist[ds_find_j]) {
+                nn_dist[ds_find_j] = lastbest_dist[i];
                 nn_ind[ds_find_j]  = i;
-                nn_from[ds_find_j] = nn_ind_cur;
+                nn_from[ds_find_j] = lastbest_ind[i];
             }
+
             #if OPENMP_IS_ENABLED
-            if (omp_nthreads > 1) omp_unset_lock(&nn_dist_lock);
+            if (omp_nthreads > 1) omp_unset_lock(&omp_lock);
             #endif
         }
+    }
 
-        #if OPENMP_IS_ENABLED
-        if (omp_nthreads > 1) omp_destroy_lock(&nn_dist_lock);
-        #endif
+
+    void update_lastbest()
+    {
+        if (boruvka_variant != BORUVKA_DTB) {
+            // we don't get access to individual NNs in DTB, except in the 1st iter
+
+            for (Py_ssize_t i=0; i<this->n; ++i) {
+                if (lastbest_ind[i] < 0) continue;
+
+                Py_ssize_t ds_find_i = ds.get_parent(i);
+                Py_ssize_t ds_find_j = ds.get_parent(lastbest_ind[i]);
+                if (ds_find_i == ds_find_j) {
+                    lastbest_ind[i] = -1;
+                    continue;
+                }
+
+                if (nn_dist[ds_find_i] > lastbest_dist[i]) {
+                    nn_dist[ds_find_i] = lastbest_dist[i];
+                    nn_ind[ds_find_i]  = lastbest_ind[i];
+                    nn_from[ds_find_i] = i;
+                }
+
+                if (nn_dist[ds_find_j] > lastbest_dist[i]) {
+                    nn_dist[ds_find_j] = lastbest_dist[i];
+                    nn_ind[ds_find_j]  = i;
+                    nn_from[ds_find_j] = lastbest_ind[i];
+                }
+            }
+        }
+
+        if (M > 2) {
+            // reuse M-1 NNs if d==dcore[i] as an initialiser to nn_ind/dist/from;
+            // good speed-up sometimes (we'll be happy with any match; leaves
+            // are formed in the 1st iteration of the algorithm)
+            const Py_ssize_t k = M-1;
+            for (Py_ssize_t i=0; i<this->n; ++i) {
+                Py_ssize_t ds_find_i = ds.get_parent(i);
+                if (nn_dist[ds_find_i] <= lastbest_dist[i] || lastbest_dist[i] > dcore[i]) continue;
+                for (Py_ssize_t v=0; v<k; ++v)
+                {
+                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?(k-1-v):(v))];
+                    if (ds_find_i == ds.get_parent(j) || dcore[i] < dcore[j]) continue;
+
+                    nn_dist[ds_find_i] = dcore[i];
+                    nn_ind[ds_find_i]  = j;
+                    nn_from[ds_find_i] = i;
+
+                    lastbest_dist[i] = dcore[i];  // actually unchanged
+                    lastbest_ind[i] = j;
+
+                    Py_ssize_t ds_find_j = ds.get_parent(j);
+                    if (nn_dist[ds_find_j] > dcore[j]) {
+                        nn_dist[ds_find_j] = dcore[i];
+                        nn_ind[ds_find_j]  = i;
+                        nn_from[ds_find_j] = j;
+                    }
+
+                    break;  // other candidates have d_M >= dcore[i] anyway
+                }
+            }
+        }
     }
 
 
@@ -1039,13 +1071,8 @@ protected:
         if (M>2) update_min_dcore();
         GENIECLUST_PROFILER_STOP("update_min_dcore")
 
-       if (!this->use_dtb && this->max_leaf_size != first_pass_max_brute_size) setup_leaves();  // TODO: sesquitree only
-
-        // if (!use_dtb && M >= 2) {
-        //     ptperm.resize(this->n);
-        //     for (Py_ssize_t i=0; i<this->n; ++i) ptperm[i] = i;
-        //     Cargsort(ptperm.data(), dcore.data(), this->n, false);
-        // }
+        if (boruvka_variant == BORUVKA_QTB)
+            setup_leaves();  // TODO: sesquitree only
 
         std::vector<Py_ssize_t> ds_parents(this->n);
         Py_ssize_t ds_k;
@@ -1074,18 +1101,16 @@ protected:
                     ds_parents[ds_k++] = i;
                 }
             }
-            // for (Py_ssize_t i=0; i<this->n; ++i) nn_dist[i] = INFINITY;
-            // for (Py_ssize_t i=0; i<this->n; ++i) nn_ind[i]  = this->n;
-            // for (Py_ssize_t i=0; i<this->n; ++i) nn_from[i] = this->n;
 
-            if (this->use_dtb)
+
+            update_lastbest();
+
+            if (boruvka_variant == BORUVKA_DTB)
                 find_mst_next_dtb();
-            else {
-                if (this->max_leaf_size != first_pass_max_brute_size)
-                    find_mst_next_qtb(); // TODO: sesquitree only
-                else
-                    find_mst_next_stb();
-            }
+            else if (boruvka_variant == BORUVKA_QTB) // TODO
+                find_mst_next_qtb();
+            else
+                find_mst_next_stb();
 
             for (Py_ssize_t j=0; j<ds_k; ++j) {
                 Py_ssize_t i = ds_parents[j];
@@ -1109,7 +1134,7 @@ public:
     kdtree_boruvka()
         : kdtree<FLOAT, D, DISTANCE, NODE>()
     {
-
+        omp_nthreads = -1;
     }
 
 
@@ -1127,26 +1152,58 @@ public:
         kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_num(0),
         ds(n), nn_dist(n), nn_ind(n), nn_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size),
-        use_dtb(use_dtb), mutreach_adj(mutreach_adj), M(M)
+        mutreach_adj(mutreach_adj), M(M)
     {
         GENIECLUST_ASSERT(M>0);
-        dcore.resize(n);  // we actually want it for M==1 too (1-NN dist)
-        if (M >= 2) Mnn_dist.resize(n*(M-1));
-        if (M >= 2) Mnn_ind.resize(n*(M-1));
+
+        if (M >= 2) {
+            dcore.resize(n);
+            Mnn_dist.resize(n*(M-1));
+            Mnn_ind.resize(n*(M-1));
+        }
+
+        lastbest_dist.resize(n);
+        lastbest_ind.resize(n);
+
+        if (use_dtb)
+            boruvka_variant = BORUVKA_DTB;
+        else {
+            if (max_leaf_size != first_pass_max_brute_size) // TODO
+                boruvka_variant = BORUVKA_QTB;
+            else
+                boruvka_variant = BORUVKA_STB;
+        }
+
+        reset_nns = (M<=2);  // plain Euclidean MST benefits from this
+
+
+        #if OPENMP_IS_ENABLED
+        omp_nthreads = Comp_get_max_threads();
+        if (omp_nthreads > 1) omp_init_lock(&omp_lock);
+        #else
+        omp_nthreads = 1;
+        #endif
     }
 
+
+    ~kdtree_boruvka()
+    {
+        #if OPENMP_IS_ENABLED
+        if (omp_nthreads > 1) omp_destroy_lock(&omp_lock);
+        #endif
+    }
 
 
     void mst(FLOAT* tree_dist, Py_ssize_t* tree_ind)
     {
         this->tree_dist = tree_dist;
-        this->tree_ind = tree_ind;
+        this->tree_ind  = tree_ind;
 
         if (ds.get_k() != (Py_ssize_t)this->n) ds.reset();
         tree_num = 0;
 
         for (Py_ssize_t i=0; i<this->n-1; ++i)     tree_dist[i] = INFINITY;
-        for (Py_ssize_t i=0; i<2*(this->n-1); ++i) tree_ind[i]  = this->n;
+        for (Py_ssize_t i=0; i<2*(this->n-1); ++i) tree_ind[i]  = -1;
 
         // nodes is a deque...
         for (auto curnode = this->nodes.rbegin(); curnode != this->nodes.rend(); ++curnode)
@@ -1156,9 +1213,21 @@ public:
     }
 
 
-    inline const FLOAT* get_Mnn_dist() const { return this->Mnn_dist.data(); }
-    inline const Py_ssize_t* get_Mnn_ind() const { return this->Mnn_ind.data(); }
-    inline const FLOAT* get_dcore() const { return this->dcore.data(); }
+    inline const FLOAT* get_Mnn_dist() const
+    {
+        GENIECLUST_ASSERT(M>1);
+        return this->Mnn_dist.data();
+    }
+
+    inline const Py_ssize_t* get_Mnn_ind() const {
+        GENIECLUST_ASSERT(M>1);
+        return this->Mnn_ind.data();
+    }
+
+    inline const FLOAT* get_dcore() const {
+        GENIECLUST_ASSERT(M>1);
+        return this->dcore.data();
+    }
 
     inline Py_ssize_t get_M() const { return this->M; }
 };

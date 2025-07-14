@@ -1,4 +1,4 @@
-n_jobs = 1
+n_jobs = 10
 n_trials = 1
 seed = 123
 
@@ -113,6 +113,7 @@ import perf_mst_202506_defs as msts
 
 cases = dict(
     quitefast_kdtree_single       = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
+    # quitefast_kdtree_sesqui_20    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=20),  # TODO param hack
     quitefast_kdtree_sesqui_16    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=16),  # TODO param hack
     # quitefast_kdtree_sesqui_12    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=12),  # TODO param hack
     # quitefast_kdtree_single2    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=-0.00000011920928955078125),

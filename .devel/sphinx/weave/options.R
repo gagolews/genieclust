@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com/>
 
 options(encoding="UTF-8")
 set.seed(666)
@@ -7,7 +7,7 @@ options(digits=5)
 options(stringsAsFactors=FALSE)  # default in R 4.0
 options(max.print=99)
 options(useFancyQuotes=FALSE)
-reticulate::use_python("/home/gagolews/.virtualenvs/python3-default/bin/python3")
+reticulate::use_python("/usr/bin/python3")
 options(warnPartialMatchArgs=TRUE)
 options(warnPartialMatchAttr=TRUE)
 options(warnPartialMatchDollar=TRUE)

@@ -84,9 +84,9 @@ html: python r news weave rd2myst weave-examples
 	    "file://`pwd`/.devel/sphinx/_build/html/index.html"
 
 docs: html
-	@echo "*** Making 'docs' is only recommended when publishing the"\
+	@echo "*** Making 'docs' is only recommended when publishing the "\
 	    "official release, because it updates the package homepage."
-	@echo "*** Therefore, we check if the package version is like 1.2.3"\
+	@echo "*** Therefore, we check if the package version is like 1.2.3 "\
 	    "and not 1.2.2.9007."
 	Rscript --vanilla -e "stopifnot(length(unclass(packageVersion('${PKGNAME}'))[[1]]) < 4)"
 	rm -rf docs/
