@@ -1045,7 +1045,7 @@ protected:
                     lastbest_ind[i] = j;
 
                     Py_ssize_t ds_find_j = ds.get_parent(j);
-                    if (nn_dist[ds_find_j] > dcore[j]) {
+                    if (nn_dist[ds_find_j] > dcore[i]) {
                         nn_dist[ds_find_j] = dcore[i];
                         nn_ind[ds_find_j]  = i;
                         nn_from[ds_find_j] = j;

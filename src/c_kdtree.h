@@ -31,7 +31,6 @@
 #include "c_common.h"
 
 #include <cmath>
-#include <cstddef>
 #include <algorithm>
 #include <vector>
 #include <deque>

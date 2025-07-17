@@ -113,8 +113,12 @@ import perf_mst_202506_defs as msts
 
 cases = dict(
     quitefast_kdtree_single       = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
+    # quitefast_kdtree_single_2       = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
+    # quitefast_kdtree_single_3       = lambda X, M: msts.mst_quitefast_kdtree_single(X, M),
     # quitefast_kdtree_sesqui_20    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=20),  # TODO param hack
     quitefast_kdtree_sesqui_16    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=16),  # TODO param hack
+    # quitefast_kdtree_sesqui_16_2    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=16),  # TODO param hack
+    # quitefast_kdtree_sesqui_16_3    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=16),  # TODO param hack
     # quitefast_kdtree_sesqui_12    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, max_leaf_size=12),  # TODO param hack
     # quitefast_kdtree_single2    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=-0.00000011920928955078125),
     # quitefast_kdtree_single4    = lambda X, M: msts.mst_quitefast_kdtree_single(X, M, mutreach_adj=+0.00000011920928955078125),
@@ -187,7 +191,7 @@ for n, d, M, s in scenarios:
             if _res_ref is None: _res_ref = _res
             _res = tree_order(*_res)
             nleaves = np.sum(np.unique(_res[1], return_counts=True)[1]==1)
-            print("%30s: t=%15.5f Δdist=%15.5f Δind=%10.0f nleaves=%8d" % (
+            print("%30s: t=%15.5f Δdist=%15.12f Δind=%10.0f nleaves=%8d" % (
                 case,
                 t1-t0,
                 np.sum(_res[0])-np.sum(_res_ref[0]),

@@ -47,11 +47,33 @@ def mst_wangyiqiu(X, M):
         "/home/gagolews/Python/genieclust/.devel/wangyiqiu_hdbscan/build/src/hdbscan", "-o", "/tmp/output.wangyiqiu", "-m", str(max(1, M)), "/tmp/input.numpy"], capture_output=True, env=None, check=True)
     t = float(re.search("mst-total-time = (.*)", out.stdout.decode("utf-8")).group(1))
     res = np.loadtxt("/tmp/output.wangyiqiu")
-    return (
-        res[:, 2].astype("float", order="C"),
-        res[:,:2].astype(np.intp, order="C"),
-        t
-    )
+
+    i1 = res[:, 0].astype(np.intp, order="C")
+    i2 = res[:, 1].astype(np.intp, order="C")
+
+    if M > 2:
+        d_core = genieclust.fastmst.knn_euclid(X, M-1)[0][:, -1]
+
+        tree_w = np.maximum(
+            np.maximum(d_core[i1], d_core[i2]),
+            np.sqrt(
+                np.sum((X[i1,:]-X[i2,:])**2, axis=1)
+            )
+        )
+    else:
+        tree_w = np.sqrt(
+                np.sum((X[i1,:]-X[i2,:])**2, axis=1)
+            )
+    tree_e = np.c_[i1, i2].astype(np.intp, order="C")
+
+    return (tree_w, tree_e, t)
+
+
+    # return (
+    #     res[:, 2].astype("float", order="C"),
+    #     res[:,:2].astype(np.intp, order="C"),
+    #     t
+    # )
 
 
 def mst_r_mlpack(X, M, leaf_size=1):

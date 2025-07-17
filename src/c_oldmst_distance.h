@@ -1,5 +1,4 @@
-/*  Various distances (Euclidean, mutual reachability distance, ...).
-/*  Used by c_oldmst.h
+/*  Various distances (Euclidean, mutual reachability distance, ...). Used by c_oldmst.h
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *

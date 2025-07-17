@@ -86,7 +86,7 @@ public:
 
     /*! Danger zone! Ensure find() was called upon each element */
     inline Py_ssize_t get_parent(Py_ssize_t x) const { return this->par[x]; }
-    inline const Py_ssize_t* get_parents() const { return  this->par.data(); }
+    inline const Py_ssize_t* get_parents() const { return this->par.data(); }
 
 
     /*! Finds the subset id for a given x.
@@ -95,11 +95,21 @@ public:
      */
     Py_ssize_t find(Py_ssize_t x)
     {
-        if (x < 0 || x >= this->n) throw std::domain_error("x not in [0,n)");
+        if (x < 0 || x >= this->n) throw std::domain_error("CDisjointSets: x not in [0,n)");
 
-        if (this->par[x] != x) {
-            this->par[x] = this->find(this->par[x]);
-        }
+        if (this->par[x] == x) return x;
+
+        this->par[x] = this->find(this->par[x]);
+
+        // if (this->par[x] == this->par[this->par[x]]) {
+        //     // common case - eliminate recursion
+        //     this->par[x] = this->par[this->par[x]];
+        // }
+        // else {
+        //     this->par[this->par[x]] = this->find(this->par[this->par[x]]);
+        //     this->par[x] = this->par[this->par[x]];
+        // }
+
         return this->par[x];
     }
 
@@ -122,7 +132,7 @@ public:
     {
         x = this->find(x);  // includes a range check for x
         y = this->find(y);  // includes a range check for y
-        if (x == y) throw std::invalid_argument("find(x) == find(y)");
+        if (x == y) throw std::invalid_argument("CDisjointSets: find(x) == find(y)");
         if (y < x) std::swap(x, y);
 
         this->par[y] = x;

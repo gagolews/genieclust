@@ -18,7 +18,8 @@
 #define __c_common_h
 
 
-#ifdef Py_PYTHON_H
+#ifdef GENIECLUST_PYTHON
+#undef GENIECLUST_PYTHON
 #define GENIECLUST_PYTHON 1
 #endif
 
@@ -49,6 +50,7 @@
 #if GENIECLUST_R
 #include <Rcpp.h>
 #else
+#include "Python.h"
 #include <cstdio>
 #endif
 

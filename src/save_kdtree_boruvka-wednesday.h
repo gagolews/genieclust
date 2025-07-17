@@ -36,7 +36,6 @@
 #include "c_common.h"
 #include "c_kdtree.h"
 #include "c_disjoint_sets.h"
-#include <omp.h>
 
 
 
@@ -387,10 +386,14 @@ template <
 class kdtree_boruvka : public kdtree<FLOAT, D, DISTANCE, NODE>
 {
 protected:
-    FLOAT*  tree_dist;       ///< size n-1
-    Py_ssize_t* tree_ind;    ///< size 2*(n-1)
+    FLOAT*  tree_dist;       ///< size n-1  [out]
+    Py_ssize_t* tree_ind;    ///< size 2*(n-1)  [out]
     Py_ssize_t  tree_edges;  /// number of MST edges already found
     Py_ssize_t  tree_iter;   /// iteration of the algorithm
+
+    std::vector<FLOAT> lastnn_dist;
+    std::vector<Py_ssize_t> lastnn_ind;
+
     CDisjointSets ds;
 
     std::vector<FLOAT>      ncl_dist;  // ncl_dist[find(i)] - distance to the i-th cluster's nearest cluster
@@ -405,10 +408,6 @@ protected:
 
     const FLOAT mutreach_adj;  // M>2 only
 
-    std::vector<FLOAT> lastnn_dist;   // !use_dtb only
-    std::vector<Py_ssize_t> lastnn_ind;   // !use_dtb only
-
-    std::vector<Py_ssize_t> ds_parents;
 
     const Py_ssize_t M;              // mutual reachability distance - "smoothing factor"
     std::vector<FLOAT> dcore;        // distances to the (M-1)-th nns of each point if M>1 or 1-NN for M==1
@@ -475,22 +474,7 @@ protected:
 
     void update_cluster_data()
     {
-        // 1. ensure that ds.find(i) == ds.get_parent(i) for all i
-        // 2. reset ncl_dist
-        // 3. setup ds_parents
-        Py_ssize_t ds_k = 0;
-        for (Py_ssize_t i=0; i<this->n; ++i) {
-            // ds.find(i) - not thread safe
-            if (i == this->ds.find(i)) {  // the parent is always first!
-                ncl_dist[i] = INFINITY;
-                ncl_ind[i]  = -1;
-                ncl_from[i] = -1;
-                ds_parents[ds_k++] = i;
-            }
-        }
-        GENIECLUST_ASSERT(ds_k == ds.get_k());
-
-        if (boruvka_variant != BORUVKA_DTB && tree_iter > 1) {
+        if (boruvka_variant != BORUVKA_DTB) {
             // BORUVKA_DTB cannot update lastnn data
 
             // tree_iter == 1 -> all lastnn_ind == -1;
@@ -502,9 +486,8 @@ protected:
 
                 Py_ssize_t ds_find_i = ds.get_parent(i);
                 Py_ssize_t ds_find_j = ds.get_parent(lastnn_ind[i]);
-
                 if (ds_find_i == ds_find_j) {
-                    lastnn_ind[i] = -1;
+                    lastnn_ind[i] = -1;  // invalidate
                     continue;
                 }
 
@@ -520,40 +503,75 @@ protected:
                     ncl_from[ds_find_j] = lastnn_ind[i];
                 }
             }
-        }
 
-        if (boruvka_variant == BORUVKA_DTB && M > 2) {
+            if (M > 2) {
+                // reuse the (M-1) NNs
+                for (Py_ssize_t i=0; i<this->n; ++i) {
+                    Py_ssize_t ds_find_i = ds.get_parent(i);
+                    if (
+                        lastnn_ind[i] >= 0 ||
+                        ncl_dist[ds_find_i] <= lastnn_dist[i] ||
+                        lastnn_dist[i] > dcore[i]
+                    ) continue;
+
+                    for (Py_ssize_t v=0; v<M-1; ++v) {
+                        Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?((M-1)-1-v):(v))];
+                        if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
+                            lastnn_dist[i] = dcore[i];  // unchanged
+                            lastnn_ind[i] = j;
+
+                            ncl_dist[ds_find_i] = dcore[i];
+                            ncl_ind[ds_find_i]  = j;
+                            ncl_from[ds_find_i] = i;
+
+                            Py_ssize_t ds_find_j = ds.get_parent(j);
+                            if (ncl_dist[ds_find_j] > dcore[i]) {
+                                ncl_dist[ds_find_j] = dcore[i];
+                                ncl_ind[ds_find_j]  = i;
+                                ncl_from[ds_find_j] = j;
+                            }
+
+                            break;  // other candidates have d_M >= dcore[i] anyway
+                        }
+                    }
+                }
+            }
+        }
+        else if (/*boruvka_variant == BORUVKA_DTB &&*/ M > 2) {
             // reuse M-1 NNs if d==dcore[i] as an initialiser to nn_ind/dist/from;
             // good speed-up sometimes (we'll be happy with any match; leaves
             // are formed in the 1st iteration of the algorithm)
+            const Py_ssize_t k = M-1;
             for (Py_ssize_t i=0; i<this->n; ++i) {
-                if (lastnn_ind[i] <= -M) continue;
+                if (tree_iter == 1) GENIECLUST_ASSERT(lastnn_ind[i] == -M);
+                //if (lastnn_ind[i] >= -1) continue;
+                //GENIECLUST_ASSERT(lastnn_ind[i] >= -M);
 
                 Py_ssize_t ds_find_i = ds.get_parent(i);
                 if (ncl_dist[ds_find_i] <= dcore[i]) continue;
 
-                Py_ssize_t v = -lastnn_ind[i]-1; // -1→0, -2→1, ..., -M→M-1
+                Py_ssize_t v = 0; //lastnn_ind[i]+M; // -M→0, -M+1→1, ..., -M+(M-1)→M-1
                 GENIECLUST_ASSERT(v >= 0);
-                for (; v<M-1; ++v)
+                for (; v<k; ++v)
                 {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?((M-1)-1-v):(v))];
-                    if (ds_find_i == ds.get_parent(j) || dcore[i] < dcore[j]) continue;
+                    Py_ssize_t j = Mnn_ind[i*k+((mutreach_adj<0.0)?(k-1-v):(v))];
+                    if (ds_find_i != ds.get_parent(j) && dcore[i] >= dcore[j]) {
 
-                    ncl_dist[ds_find_i] = dcore[i];
-                    ncl_ind[ds_find_i]  = j;
-                    ncl_from[ds_find_i] = i;
+                        ncl_dist[ds_find_i] = dcore[i];
+                        ncl_ind[ds_find_i]  = j;
+                        ncl_from[ds_find_i] = i;
 
-                    Py_ssize_t ds_find_j = ds.get_parent(j);
-                    if (ncl_dist[ds_find_j] > dcore[i]) {
-                        ncl_dist[ds_find_j] = dcore[i];
-                        ncl_ind[ds_find_j]  = i;
-                        ncl_from[ds_find_j] = j;
+                        Py_ssize_t ds_find_j = ds.get_parent(j);
+                        if (ncl_dist[ds_find_j] > dcore[i]) {
+                            ncl_dist[ds_find_j] = dcore[i];
+                            ncl_ind[ds_find_j]  = i;
+                            ncl_from[ds_find_j] = j;
+                        }
+
+                        break;  // other candidates have d_M >= dcore[i] anyway
                     }
-
-                    break;  // other candidates have d_M >= dcore[i] anyway
                 }
-
-                lastnn_ind[i] = -(v+1);
+                //lastnn_ind[i] = v-M;  // start from the same v next time
             }
         }
     }
@@ -683,8 +701,7 @@ protected:
             dcore[i] = Mnn_dist[i*k+(k-1)];  // distance to the (M-1)-th NN
 
             lastnn_dist[i] = dcore[i];  // merely a lower bound
-            lastnn_ind[i] = -1;  // important: all lastnns invalidated
-
+            lastnn_ind[i] = -M;  // important: all lastnns invalidated
         }
 
 
@@ -953,20 +970,6 @@ protected:
 
                     if (ncl_dist_cur <= lastnn_dist[i]) continue;  // speeds up even for M==1
 
-                    if (lastnn_ind[i] < 0 && M > 2 && lastnn_dist[i] <= dcore[i]) {
-                        // try reusing (M-1) NN data
-                        for (Py_ssize_t v=0; v<M-1; ++v)
-                        {
-                            Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?((M-1)-1-v):(v))];
-                            if (ds_find_i == ds.get_parent(j) || dcore[i] < dcore[j]) continue;
-
-                            lastnn_dist[i] = dcore[i];
-                            lastnn_ind[i] = j;
-
-                            break;  // other candidates have d_M >= dcore[i] anyway
-                        }
-                    }
-
                     if (lastnn_ind[i] < 0) {
                         kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
                             this->data, (M>2)?(this->dcore.data()):NULL,
@@ -1025,20 +1028,6 @@ protected:
 
             if (ncl_dist_cur <= lastnn_dist[i]) continue;  // speeds up even for M==1
 
-            if (lastnn_ind[i] < 0 && M > 2 && lastnn_dist[i] <= dcore[i]) {
-                // try reusing (M-1) NN data
-                for (Py_ssize_t v=0; v<M-1; ++v)
-                {
-                    Py_ssize_t j = Mnn_ind[i*(M-1)+((mutreach_adj<0.0)?((M-1)-1-v):(v))];
-                    if (ds_find_i == ds.get_parent(j) || dcore[i] < dcore[j]) continue;
-
-                    lastnn_dist[i] = dcore[i];
-                    lastnn_ind[i] = j;
-
-                    break;  // other candidates have d_M >= dcore[i] anyway
-                }
-            }
-
             if (lastnn_ind[i] < 0) {
                 kdtree_nearest_outsider<FLOAT, D, DISTANCE, NODE> nn(
                     this->data, (M>2)?(this->dcore.data()):NULL,
@@ -1085,7 +1074,7 @@ protected:
         GENIECLUST_PROFILER_USE
 
         GENIECLUST_PROFILER_START
-        // the 1st iteration: connect nearest neighbours with each other
+        // the 1st (0th) iteration: connect nearest neighbours with each other
         find_mst_first();
         GENIECLUST_PROFILER_STOP("find_mst_first")
 
@@ -1099,6 +1088,7 @@ protected:
             GENIECLUST_PROFILER_STOP("setup_leaves")
         }
 
+        std::vector<Py_ssize_t> ds_parents(this->n);  // list of parents in the current ds
         while (ds.get_k() != 1) {
             tree_iter++;
 
@@ -1107,6 +1097,24 @@ protected:
             #elif GENIECLUST_PYTHON
             if (PyErr_CheckSignals() != 0) throw std::runtime_error("signal caught");
             #endif
+
+            for (Py_ssize_t i=0; i<this->n; ++i)
+                this->ds.find(i);
+
+            // 1. ensure that ds.find(i) == ds.get_parent(i) for all i
+            // 2. reset ncl_dist
+            // 3. setup ds_parents
+            Py_ssize_t ds_k = 0;
+            for (Py_ssize_t i=0; i<this->n; ++i) {
+                // ds.find(i) - not thread safe
+                if (i == ds.get_parent(i)) {  // the parent is always first!
+                    ncl_dist[i] = INFINITY;
+                    ncl_ind[i]  = -1;
+                    ncl_from[i] = -1;
+                    ds_parents[ds_k++] = i;
+                }
+            }
+            GENIECLUST_ASSERT(ds_k == ds.get_k());
 
 
             // set up ds_parents, ncl_dist, etc.
@@ -1166,10 +1174,11 @@ public:
         const bool use_dtb=false,
         const FLOAT mutreach_adj=-INFINITY
     ) :
-        kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size), tree_edges(0),
+        kdtree<FLOAT, D, DISTANCE, NODE>(data, n, max_leaf_size),
+        lastnn_dist(n), lastnn_ind(n),
         ds(n), ncl_dist(n), ncl_ind(n), ncl_from(n),
         first_pass_max_brute_size(first_pass_max_brute_size),
-        mutreach_adj(mutreach_adj), ds_parents(n), M(M)
+        mutreach_adj(mutreach_adj), M(M)
     {
         GENIECLUST_ASSERT(M>0);
 
@@ -1178,9 +1187,6 @@ public:
             Mnn_dist.resize(n*(M-1));
             Mnn_ind.resize(n*(M-1));
         }
-
-        lastnn_dist.resize(n);
-        lastnn_ind.resize(n);
 
         if (use_dtb)
             boruvka_variant = BORUVKA_DTB;
