@@ -1,5 +1,6 @@
 import numpy as np
 import genieclust
+import quitefastmst
 import time
 import gc
 
@@ -18,7 +19,7 @@ def test_plot():
     genieclust.plots.plot_scatter(X)
     genieclust.plots.plot_scatter(X[:,0], X[:,1])
     genieclust.plots.plot_scatter(X, labels=np.random.choice(np.arange(10), n))
-    mst_d, mst_i = genieclust.fastmst.mst_euclid(X)
+    mst_d, mst_i = quitefastmst.mst_euclid(X)
     genieclust.plots.plot_segments(mst_i, X)
     genieclust.plots.plot_segments(mst_i, X[:,0], X[:,1])
 

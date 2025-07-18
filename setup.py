@@ -36,13 +36,6 @@ cython_modules = {
     "genieclust.internal": [
         os.path.join("genieclust", "internal.pyx")
     ],
-    "genieclust.fastmst": [
-        os.path.join("src", "knn_euclid_brute.cpp"),
-        os.path.join("src", "knn_euclid_kdtree.cpp"),
-        os.path.join("src", "mst_euclid_brute.cpp"),
-        os.path.join("src", "mst_euclid_kdtree.cpp"),
-        os.path.join("genieclust", "fastmst.pyx"),
-    ],
     "genieclust.oldmst": [
         os.path.join("genieclust", "oldmst.pyx")
     ],
@@ -173,6 +166,7 @@ setuptools.setup(
         "Cython",  # not: cython
         "matplotlib",
         "scikit-learn",
+        "quitefastmst",
       ],
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",

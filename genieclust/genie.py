@@ -27,7 +27,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, ClusterMixin
 from . import internal
 from . import oldmst
-from . import fastmst
+import quitefastmst
 import warnings
 
 # import scipy.sparse
@@ -63,7 +63,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             compute_full_tree,
             compute_all_cuts,
             postprocess,
-            fastmst_params,
+            quitefastmst_params,
             # cast_float32,
             # mlpack_enabled,
             # mlpack_leaf_size,
@@ -83,7 +83,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.postprocess         = postprocess
-        self.fastmst_params      = fastmst_params
+        self.quitefastmst_params = quitefastmst_params
         # self.cast_float32        = cast_float32
         # self.mlpack_enabled      = mlpack_enabled
         # self.mlpack_leaf_size    = mlpack_leaf_size
@@ -231,9 +231,9 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         elif cur_state["affinity"] in ["cosine_sparse_fast"]:
             cur_state["affinity"] = "cosinesimil_sparse_fast"
 
-        if type(self.fastmst_params) is not dict:
-            raise ValueError("`fastmst_params` must be a dict")
-        cur_state["fastmst_params"] = self.fastmst_params
+        if type(self.quitefastmst_params) is not dict:
+            raise ValueError("`quitefastmst_params` must be a dict")
+        cur_state["quitefastmst_params"] = self.quitefastmst_params
 
         _affinity_exact_options = (
             "l2", "l1", "cosinesimil", "precomputed")
@@ -321,9 +321,9 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             d_core = self._d_core
         else:
             if cur_state["affinity"] == "l2":
-                _res = fastmst.mst_euclid(
+                _res = quitefastmst.mst_euclid(
                     X, M=cur_state["M"],
-                    **cur_state["fastmst_params"],
+                    **cur_state["quitefastmst_params"],
                     verbose=cur_state["verbose"]
                 )
 
@@ -630,8 +630,8 @@ class Genie(MSTClusterMixin):
         notion of noise), choose ``"all"``. Furthermore, ``"none"`` leaves
         all leaves marked as noise.
 
-    fastmst_params : dict
-        Additional parameters to be passed to ``genieclust.fastmst.mst_euclid``
+    quitefastmst_params : dict
+        Additional parameters to be passed to ``quitefastmst.mst_euclid``
         if ``affinity`` is ``"l2"``
 
     verbose : bool
@@ -722,7 +722,7 @@ class Genie(MSTClusterMixin):
     and :math:`O(n)` memory complexity provided that a minimum spanning
     tree of the pairwise distance graph is given.
     If the Euclidean distance is selected, then
-    ``genieclust.fastmst.mst_euclid`` is used to compute the MST;
+    ``quitefastmst.mst_euclid`` is used to compute the MST;
     it is quite fast in low-dimensional spaces.
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
@@ -787,7 +787,7 @@ class Genie(MSTClusterMixin):
             compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="boundary",
-            fastmst_params=dict(),
+            quitefastmst_params=dict(),
             verbose=False
         ):
         # # # # # # # # # # # #
@@ -799,7 +799,7 @@ class Genie(MSTClusterMixin):
             compute_full_tree=compute_full_tree,
             compute_all_cuts=compute_all_cuts,
             postprocess=postprocess,
-            fastmst_params=fastmst_params,
+            quitefastmst_params=quitefastmst_params,
             verbose=verbose
         )
 
@@ -957,8 +957,8 @@ class GIc(MSTClusterMixin):
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, `affinity` of ``"precomputed"`` needs this to be set manually.
 
-    fastmst_params : dict
-        Additional parameters to be passed to ``genieclust.fastmst.mst_euclid``
+    quitefastmst_params : dict
+        Additional parameters to be passed to ``quitefastmst.mst_euclid``
         if ``affinity`` is ``"l2"``
 
     verbose : bool
@@ -977,7 +977,7 @@ class GIc(MSTClusterMixin):
 
     genieclust.Genie
 
-    genieclust.fastmst.mst_euclid
+    quitefastmst.mst_euclid
 
 
 
@@ -1056,7 +1056,7 @@ class GIc(MSTClusterMixin):
             # nmslib_params_query=dict(),
             add_clusters=0,
             n_features=None,
-            fastmst_params=dict(),
+            quitefastmst_params=dict(),
             verbose=False):
         # # # # # # # # # # # #
         super().__init__(
@@ -1067,7 +1067,7 @@ class GIc(MSTClusterMixin):
             compute_full_tree=compute_full_tree,
             compute_all_cuts=compute_all_cuts,
             postprocess=postprocess,
-            fastmst_params=fastmst_params,
+            quitefastmst_params=quitefastmst_params,
             # cast_float32=cast_float32,
             # mlpack_enabled=mlpack_enabled,
             # mlpack_leaf_size=mlpack_leaf_size,

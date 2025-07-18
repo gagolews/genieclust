@@ -4,6 +4,7 @@ import scipy.spatial.distance
 import time
 import gc
 import genieclust
+import quitefastmst
 import scipy.spatial
 
 import os
@@ -34,13 +35,13 @@ def knn_ref(X, k, Y, metric):
 
 def knn_fastmst_brute(X, k, Y, metric):
     if metric != "euclidean": return None
-    return genieclust.fastmst.knn_euclid(X, k=k, Y=Y, algorithm="brute")
+    return quitefastmst.knn_euclid(X, k=k, Y=Y, algorithm="brute")
 
 
 def knn_fastmst_kdtree(X, k, Y, metric):
     if metric != "euclidean": return None
     if X.shape[1] > 20: return None
-    return genieclust.fastmst.knn_euclid(X, k=k, Y=Y, algorithm="kd_tree")
+    return quitefastmst.knn_euclid(X, k=k, Y=Y, algorithm="kd_tree")
 
 
 knn_algos=dict(

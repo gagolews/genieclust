@@ -4,6 +4,7 @@ import scipy.spatial.distance
 import time
 import gc
 import genieclust
+import quitefastmst
 
 import os
 if os.path.exists(".devel/benchmark_data"):
@@ -15,7 +16,6 @@ else:
 
 
 
-# TODO: test fastmst......
 
 def mst_check(X, metric='euclidean', **kwargs):
     n = X.shape[0]
@@ -67,7 +67,7 @@ def mst_check(X, metric='euclidean', **kwargs):
                 continue
 
             t0 = time.time()
-            mst_d2, mst_i2 = genieclust.fastmst.mst_euclid(X, algorithm=algo)
+            mst_d2, mst_i2 = quitefastmst.mst_euclid(X, algorithm=algo)
             print("    fastmst_%s    %10.3fs" % (algo, time.time()-t0,))
 
             assert np.allclose(mst_d.sum(), mst_d2.sum())
@@ -114,7 +114,7 @@ def mst_mutreach_check(X, metric='euclidean'):
                     continue
 
                 t0 = time.time()
-                mst_d2, mst_i2, nn_d2, nn_i2 = genieclust.fastmst.mst_euclid(X, M=M, algorithm=algo)
+                mst_d2, mst_i2, nn_d2, nn_i2 = quitefastmst.mst_euclid(X, M=M, algorithm=algo)
                 print("    mutreach(%d)-fastmst_%s    %10.3fs" % (M, algo, time.time()-t0,))
 
                 assert np.allclose(d_core, nn_d2[:,-1])

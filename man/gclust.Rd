@@ -155,7 +155,7 @@ If \code{d} is a numeric matrix or an object of class \code{dist},
 \code{\link{mst}()} will be called to compute an MST, which generally
 takes at most \eqn{O(n^2)} time. However, by default, a faster algorithm
 based on K-d trees is selected automatically for low-dimensional Euclidean
-spaces; see \code{\link{mst_euclid}}.
+spaces; see \code{\link[quitefastmst]{mst_euclid}}.
 
 Once a minimum spanning tree is determined, the Genie algorithm runs in
 \eqn{O(n \sqrt{n})} time.  If you want to test different

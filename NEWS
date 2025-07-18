@@ -2,12 +2,10 @@
 
 ## to-be 1.2.0 ... (2025-xx-xx)
 
-* [Python and R] New algorithms for finding Euclidean minimum spanning
+* [Python and R] Using the new algorithms for finding Euclidean minimum spanning
     trees and nearest neighbours based on K-d trees (quite fast in low
-    dimensional spaces): `fastmst.mst_euclid`, `fastmst.knn_euclid`.
-
-* [Python and R] Faster minimum spanning spanning trees wrt mutual reachability
-    distances corresponding to the Euclidean metric.
+    dimensional spaces) `mst_euclid` and `knn_euclid` from the `quitefastmst`
+    package.
 
 * [Python and R] [BACKWARD INCOMPATIBILITY] `mlpack` is not used anymore.
 

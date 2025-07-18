@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: Fast and Robust Hierarchical Clustering with Noise Point Detection
 Version: 1.1.99.9666
-Date: 2025-07-10
+Date: 2025-07-18
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -29,13 +29,14 @@ Description: A retake on the Genie algorithm
     the Fowlkes-Mallows index, and normalised mutual information), and internal
     cluster validity indices (e.g., the Calinski-Harabasz, Davies-Bouldin,
     Ball-Hall, Silhouette, and generalised Dunn indices).
-    The 'Python' version of 'genieclust' is available on 'PyPI'.
+    The 'Python' version of 'genieclust' is available via 'PyPI'.
 BugReports: https://github.com/gagolews/genieclust/issues
 URL:
     https://genieclust.gagolewski.com/,
     https://clustering-benchmarks.gagolewski.com/,
     https://github.com/gagolews/genieclust
 License: AGPL-3
+Depends: quitefastmst
 Imports:
     Rcpp (>= 1.0.4),
     stats,

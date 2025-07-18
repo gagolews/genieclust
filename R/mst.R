@@ -33,7 +33,7 @@
 #' there might be multiple minimum trees spanning a given graph.
 #'
 #' If \code{d} is a matrix and the use of Euclidean distance is requested
-#' (the default), then \code{\link{mst_euclid}} is called
+#' (the default), then \code{\link[quitefastmst]{mst_euclid}} is called
 #' to determine the MST.  As it is based on K-d trees, it is quite fast
 #' in low dimensional spaces, even for 10M points.
 #'
@@ -55,7 +55,7 @@
 #'
 #'
 #' @seealso
-#' \code{\link{mst_euclid}}
+#' \code{\link[quitefastmst]{mst_euclid}}
 #'
 #' @references
 #' V. Jarník, O jistem problemu minimalnim,
@@ -102,7 +102,7 @@
 #'     and progress information
 #'
 #' @param ... further arguments passed to or from other methods,
-#'     in particular, to \code{\link{mst_euclid}}
+#'     in particular, to \code{\link[quitefastmst]{mst_euclid}}
 #'
 #'
 #' @return

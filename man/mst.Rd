@@ -24,7 +24,7 @@ e.g., a data frame with numeric-like columns) or an
 object of class \code{dist}; see \code{\link[stats]{dist}}}
 
 \item{...}{further arguments passed to or from other methods,
-in particular, to \code{\link{mst_euclid}}}
+in particular, to \code{\link[quitefastmst]{mst_euclid}}}
 
 \item{distance}{metric used in the case where \code{d} is a matrix; one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -68,7 +68,7 @@ whose weights correspond to the pairwise distances between the points.
 there might be multiple minimum trees spanning a given graph.
 
 If \code{d} is a matrix and the use of Euclidean distance is requested
-(the default), then \code{\link{mst_euclid}} is called
+(the default), then \code{\link[quitefastmst]{mst_euclid}} is called
 to determine the MST.  As it is based on K-d trees, it is quite fast
 in low dimensional spaces, even for 10M points.
 
@@ -128,7 +128,7 @@ The official online manual of \pkg{genieclust} at \url{https://genieclust.gagole
 
 Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
 
-\code{\link{mst_euclid}}
+\code{\link[quitefastmst]{mst_euclid}}
 }
 \author{
 \href{https://www.gagolewski.com/}{Marek Gagolewski} and other contributors
