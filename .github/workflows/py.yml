@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.9', '3.13']
 
     env:
         R_LIBS_SITE: /usr/lib/R/site-library
@@ -35,7 +35,7 @@ jobs:
         python3 -m pip install --upgrade pip
         if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt --upgrade; fi
         python3 -m pip install wheel rpy2 pytest --upgrade
-    - name: Test and check Python
+    - name: Install and Test Python package
       run: |
         source python-venv/bin/activate
         python3 -m pip install .

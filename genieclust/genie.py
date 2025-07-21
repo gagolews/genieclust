@@ -30,15 +30,6 @@ from . import oldmst
 import quitefastmst
 import warnings
 
-# import scipy.sparse
-# import mlpack
-
-# try:
-#     import nmslib
-# except:
-#     nmslib = None
-
-
 
 ###############################################################################
 ###############################################################################

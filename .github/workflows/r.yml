@@ -17,7 +17,11 @@ jobs:
         #sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev
         sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'clusterCrit', 'clusterSim', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack', 'quitefastmst'))"
-    - name: Test and check R
+    - name: Install and Test R package
+      run: |
+        sudo R CMD INSTALL .
+        sudo Rscript -e 'source(".devel/tinytest.R")'
+    - name: Check R package
       run: |
         #sudo make r-check
         cd .. && sudo R CMD build genieclust && sudo R_DEFAULT_INTERNET_TIMEOUT=240 _R_CHECK_CRAN_INCOMING_REMOTE_=FALSE _R_CHECK_FORCE_SUGGESTS_=0 R CMD check `ls -t genieclust*.tar.gz | head -1` --as-cran --no-manual

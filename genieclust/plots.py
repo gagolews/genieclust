@@ -242,6 +242,7 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
 
         Plotting the Euclidean minimum spanning tree:
 
+        >>> import quitefastmst
         >>> X = np.random.randn(100, 2)
         >>> mst = quitefastmst.mst_euclid(X)
         >>> genieclust.plots.plot_scatter(X)

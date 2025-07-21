@@ -125,9 +125,8 @@ pip3 install genieclust  # python3 -m pip install genieclust
 The package requires Python 3.9+ with
 **cython**,
 **numpy**,
-**scipy**,
-**matplotlib**,
 **scikit-learn**,
+**matplotlib**,
 and
 [**quitefastmst**](https://quitefastmst.gagolewski.com/).
 
@@ -225,5 +224,5 @@ Rezaei, M., Fränti, P., Set matching measures for external cluster validity,
 *IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,
 2173–2186 [DOI: 10.1109/TKDE.2016.2551240](https://doi.org/10.1109/TKDE.2016.2551240).
 
-See the package's [homepage](https://genieclust.gagolewski.com/) for more
+See **genieclusts**'s [homepage](https://genieclust.gagolewski.com/) for more
 references.

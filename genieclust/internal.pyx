@@ -516,7 +516,7 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
         children_[i, 0] = ids[i1]
         children_[i, 1] = ids[i2]
         par = ds.merge(i1, i2)
-        ids[par] = n+i # see scipy.cluster.hierarchy.linkage
+        ids[par] = n+i  # see scipy.cluster.hierarchy.linkage
         distances_[i] = mst_d[w] if i >= num_unused else 0.0
         counts_[i] = ds.get_count(par)
 

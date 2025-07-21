@@ -1,6 +1,5 @@
 Cython
 numpy
-scipy
 matplotlib
 scikit-learn
 quitefastmst
