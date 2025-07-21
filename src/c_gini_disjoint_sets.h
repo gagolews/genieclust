@@ -133,7 +133,7 @@ public:
  *  The merge() operation, which also recomputes the Gini index,
  *  has O(sqrt n) time complexity.
  *
- *  For a use case, see: Gagolewski M., Bartoszuk M., Cena A.,
+ *  For a use case, see: Gagolewski, M., Bartoszuk, M., Cena, A.,
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *  Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
  */

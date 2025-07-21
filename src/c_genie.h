@@ -358,7 +358,7 @@ public:
  *   References
  *   ===========
  *
- *   Gagolewski M., Bartoszuk M., Cena A.,
+ *   Gagolewski, M., Bartoszuk, M., Cena, A.,
  *   Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *   Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
  */
@@ -624,18 +624,18 @@ public:
  *  References
  *  ==========
  *
- *  [1] Cena A., Adaptive hierarchical clustering algorithms based on
+ *  [1] Cena, A., Adaptive hierarchical clustering algorithms based on
  *  data aggregation methods, PhD Thesis, Systems Research Institute,
  *  Polish Academy of Sciences 2018.
  *
- *  [2] Mueller A., Nowozin S., Lampert C.H., Information Theoretic
+ *  [2] Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
  *  Clustering using Minimum Spanning Trees, DAGM-OAGM 2012.
  *
- *  [3] Gagolewski M., Bartoszuk M., Cena A.,
+ *  [3] Gagolewski, M., Bartoszuk, M., Cena, A.,
  *  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
  *  Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
  *
- *  [4] Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+ *  [4] Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
  *  Clustering with Minimum Spanning Trees: How Good Can It Be?,
  *  Journal of Classification 42, 2025, 90-112. doi:10.1007/s00357-024-09483-1
  */

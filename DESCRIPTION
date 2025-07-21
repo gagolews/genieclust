@@ -38,7 +38,7 @@ URL:
 License: AGPL-3
 Depends: quitefastmst
 Imports:
-    Rcpp (>= 1.0.4),
+    Rcpp,
     stats,
     utils
 Suggests:

@@ -1,6 +1,8 @@
 library("tinytest")
 library("genieclust")
 library("ade4")
+library("quitefastmst")
+
 
 ade4_mstree <- function(D)
 {
@@ -11,7 +13,7 @@ ade4_mstree <- function(D)
     t0
 }
 
-fastmst_euclid <- function(X, M=1, ...)
+quitefastmst_euclid <- function(X, M=1, ...)
 {
     .res <- mst_euclid(X, M, ...)
     result <- cbind(.res[["mst.index"]], .res[["mst.dist"]])
@@ -30,10 +32,11 @@ for (d in c(2, 20)) {
     t0 <- ade4_mstree(D)
 
     ts <- list(
-        fastmst_euclid(X, algorithm="auto"),
-        fastmst_euclid(X, algorithm="brute"),
-        fastmst_euclid(X, algorithm="kd_tree_single"),
-        fastmst_euclid(X, algorithm="kd_tree_dual"),
+        quitefastmst_euclid(X, algorithm="auto"),
+        quitefastmst_euclid(X, algorithm="brute"),
+        quitefastmst_euclid(X, algorithm="single_kd_tree"),
+        quitefastmst_euclid(X, algorithm="sesqui_kd_tree"),
+        quitefastmst_euclid(X, algorithm="dual_kd_tree"),
         genieclust:::.oldmst.matrix(X, "euclidean"),
         genieclust::mst(X, distance="euclidean"),
         genieclust::mst(D)
@@ -50,10 +53,11 @@ for (d in c(2, 20)) {
         t0 <- genieclust:::.oldmst.matrix(X, M=M, distance="euclidean")
 
         ts <- list(
-            fastmst_euclid(X, M=M, algorithm="auto"),
-            fastmst_euclid(X, M=M, algorithm="brute"),
-            fastmst_euclid(X, M=M, algorithm="kd_tree_single"),
-            fastmst_euclid(X, M=M, algorithm="kd_tree_dual"),
+            quitefastmst_euclid(X, M=M, algorithm="auto"),
+            quitefastmst_euclid(X, M=M, algorithm="brute"),
+            quitefastmst_euclid(X, M=M, algorithm="single_kd_tree"),
+            quitefastmst_euclid(X, M=M, algorithm="sesqui_kd_tree"),
+            quitefastmst_euclid(X, M=M, algorithm="dual_kd_tree"),
             genieclust::mst(X, M=M, distance="euclidean"),
             genieclust::mst(D, M=M)
         )

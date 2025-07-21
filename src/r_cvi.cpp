@@ -118,38 +118,38 @@ std::vector<Py_ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, Py_s
 //' A single numeric value (the more, the \emph{better}).
 //'
 //' @references
-//' Ball G.H., Hall D.J.,
+//' Ball, G.H., Hall, D.J.,
 //' \emph{ISODATA: A novel method of data analysis and pattern classification},
 //' Technical report No. AD699616, Stanford Research Institute, 1965.
 //'
-//' Bezdek J., Pal N., Some new indexes of cluster validity,
+//' Bezdek, J., Pal, N., Some new indexes of cluster validity,
 //' \emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
 //' 1998, 301-315, \doi{10.1109/3477.678624}.
 //'
-//' Calinski T., Harabasz J., A dendrite method for cluster analysis,
+//' Calinski, T., Harabasz, J., A dendrite method for cluster analysis,
 //' \emph{Communications in Statistics} 3(1), 1974, 1-27,
 //' \doi{10.1080/03610927408827101}.
 //'
-//' Davies D.L., Bouldin D.W.,
+//' Davies, D.L., Bouldin, D.W.,
 //' A Cluster Separation Measure,
 //' \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
 //' PAMI-1 (2), 1979, 224-227, \doi{10.1109/TPAMI.1979.4766909}.
 //'
-//' Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
+//' Dunn, J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
 //' Compact Well-Separated Clusters, \emph{Journal of Cybernetics} 3(3), 1973,
 //' 32-57, \doi{10.1080/01969727308546046}.
 //'
-//' Gagolewski M., Bartoszuk M., Cena A.,
+//' Gagolewski, M., Bartoszuk, M., Cena, A.,
 //' Are cluster validity measures (in)valid?, \emph{Information Sciences} 581,
 //' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 //' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 //'
-//' Gagolewski M., A Framework for Benchmarking Clustering Algorithms,
+//' Gagolewski, M., A Framework for Benchmarking Clustering Algorithms,
 //' \emph{SoftwareX} 20, 2022, 101270,
 //' \doi{10.1016/j.softx.2022.101270},
 //' \url{https://clustering-benchmarks.gagolewski.com}.
 //'
-//' Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+//' Rousseeuw, P.J., Silhouettes: A Graphical Aid to the Interpretation and
 //' Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
 //' 20, 1987, 53-65, \doi{10.1016/0377-0427(87)90125-7}.
 //'

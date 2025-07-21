@@ -69,8 +69,8 @@ there might be multiple minimum trees spanning a given graph.
 
 If \code{d} is a matrix and the use of Euclidean distance is requested
 (the default), then \code{\link[quitefastmst]{mst_euclid}} is called
-to determine the MST.  As it is based on K-d trees, it is quite fast
-in low dimensional spaces, even for 10M points.
+to determine the MST.  It is quite fast in spaces of low intrinsic
+dimensionality, even for 10M points.
 
 Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
 method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
@@ -118,7 +118,7 @@ W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
 tree: Algorithm, analysis, and applications, \emph{Proc. 16th ACM SIGKDD
 Intl. Conf. Knowledge Discovery and Data Mining (KDD '10)}, 2010, 603–612.
 
-Campello R.J.G.B., Moulavi D., Sander J.,
+R.J.G.B. Campello, D. Moulavi, J. Sander,
 Density-based clustering based on hierarchical density estimates,
 \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 \doi{10.1007/978-3-642-37456-2_14}.

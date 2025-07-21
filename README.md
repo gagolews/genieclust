@@ -45,7 +45,7 @@ for datasets of millions of points can be completed within minutes. Therefore,
 it is nicely suited for solving **extreme clustering tasks** (large datasets
 with a high number of clusters to detect).
 
-*genieclust* allows clustering with respect to mutual reachability distances
+**genieclust** allows clustering with respect to mutual reachability distances
 so that it can act as a **noise point detector** or a robustified version
 of *HDBSCAN\**  (see Campello et al., 2013) that is able to identify a predefined
 number of clusters (actually, their whole hierarchy). The good news is that it doesn't
@@ -71,7 +71,7 @@ Maciej Bartoszuk, Anna Cena (R packages
 [**genie**](https://CRAN.R-project.org/package=genie) and
 [**CVI**](https://github.com/gagolews/optim_cvi)), and
 [Peter M. Larsen](https://github.com/pmla)
-([rectangular_lsap](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
+([`rectangular_lsap`](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
 
 
 
@@ -90,7 +90,7 @@ cutree(h, k=2)
 ```
 
 
-*To learn more about R, check out Marek's open-access (free!) textbook*
+*To learn more about R, check out Marek's open-access textbook*
 [Deep R Programming](https://deepr.gagolewski.com/).
 
 
@@ -107,7 +107,7 @@ labels = g.fit_predict(X)
 Tutorials and the package documentation are available
 [here](https://genieclust.gagolewski.com/).
 
-*To learn more about Python, check out Marek's recent open-access (free!) textbook*
+*To learn more about Python, check out Marek's open-access textbook*
 [Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/).
 
 
@@ -116,32 +116,31 @@ Tutorials and the package documentation are available
 
 ### Python Version
 
-To install via `pip` (see [PyPI](https://pypi.org/project/genieclust)):
+To install from [PyPI](https://pypi.org/project/genieclust), call:
 
 ```bash
-pip3 install genieclust
+pip3 install genieclust  # python3 -m pip install genieclust
 ```
 
-The package requires Python 3.10+ together with **cython**,
-**numpy**, **scipy**, **matplotlib**, and **scikit-learn**.
-
-
-
-
-
+The package requires Python 3.9+ with
+**cython**,
+**numpy**,
+**scipy**,
+**matplotlib**,
+**scikit-learn**,
+and
+[**quitefastmst**](https://quitefastmst.gagolewski.com/).
 
 
 ### R Version
 
 
-To install the most recent release, call:
+To install from [CRAN](https://CRAN.R-project.org/package=genieclust), call:
 
 ```r
 install.packages("genieclust")
 ```
 
-See the package entry on
-[CRAN](https://CRAN.R-project.org/package=genieclust).
 
 
 
@@ -149,7 +148,7 @@ See the package entry on
 ### Other
 
 The core functionality is implemented in the form of a header-only
-C++ library. It can thus be easily adapted for use in other environments.
+C++ library. It can thus be easily adapted for use in other projects.
 
 New contributions are welcome, e.g., Julia, Matlab/GNU Octave wrappers.
 
@@ -180,49 +179,49 @@ Author: Peter M. Larsen. Distributed under the BSD-3-Clause license.
 
 The implementation of internal cluster validity measures
 were adapted from our previous project (Gagolewski, Bartoszuk, Cena, 2021);
-see [optim_cvi](https://github.com/gagolews/optim_cvi).
+see [`optim_cvi`](https://github.com/gagolews/optim_cvi).
 Originally distributed under the GNU Affero General Public License Version 3.
 
 
 ## References
 
-Gagolewski M., genieclust: Fast and robust hierarchical clustering,
+Gagolewski, M., genieclust: Fast and robust hierarchical clustering,
 *SoftwareX* **15**, 2021, 100722.
 [DOI: 10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
 <https://genieclust.gagolewski.com/>.
 
-Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
+Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm, *Information
 Sciences* **363**, 2016, 8–23.
 [DOI: 10.1016/j.ins.2016.05.003](https://doi.org/10.1016/j.ins.2016.05.003).
 
-Gagolewski M., Bartoszuk M., Cena A., Are cluster validity measures (in)valid?,
+Gagolewski, M., Bartoszuk, M., Cena, A., Are cluster validity measures (in)valid?,
 *Information Sciences* **581**, 2021, 620–636.
 [DOI: 10.1016/j.ins.2021.10.004](https://doi.org/10.1016/j.ins.2021.10.004).
 
-Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
 Clustering with minimum spanning trees: How good can it be?,
 *Journal of Classification* **42**, 2025, 90–112.
 [DOI: 10.1007/s00357-024-09483-1](https://doi.org/10.1007/s00357-024-09483-1).
 
-Gagolewski M., Normalised clustering accuracy: An asymmetric external
+Gagolewski, M., Normalised clustering accuracy: An asymmetric external
 cluster validity measure, *Journal of Classification* **42**, 2025, 2–30.
 [DOI: 10.1007/s00357-024-09482-2](https://doi.org/10.1007/s00357-024-09482-2).
 
-Gagolewski M., A framework for benchmarking clustering algorithms,
+Gagolewski, M., A framework for benchmarking clustering algorithms,
 *SoftwareX* **20**, 2022, 101270.
 [DOI: 10.1016/j.softx.2022.101270](https://doi.org/10.1016/j.softx.2022.101270).
 <https://clustering-benchmarks.gagolewski.com/>.
 
-Campello R.J.G.B., Moulavi D., Sander J.,
+Campello, R.J.G.B., Moulavi, D., Sander, J.,
 Density-based clustering based on hierarchical density estimates,
 *Lecture Notes in Computer Science* **7819**, 2013, 160–172.
 [DOI: 10.1007/978-3-642-37456-2_14](https://doi.org/10.1007/978-3-642-37456-2_14).
 
-Mueller A., Nowozin S., Lampert C.H., Information theoretic clustering
+Mueller, A., Nowozin, S., Lampert, C.H., Information theoretic clustering
 using minimum spanning trees, *DAGM-OAGM*, 2012.
 
-Rezaei M., Fränti P., Set matching measures for external cluster validity,
+Rezaei, M., Fränti, P., Set matching measures for external cluster validity,
 *IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,
 2173–2186 [DOI: 10.1109/TKDE.2016.2551240](https://doi.org/10.1109/TKDE.2016.2551240).
 

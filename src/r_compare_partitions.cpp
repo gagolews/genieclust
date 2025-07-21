@@ -173,31 +173,31 @@ std::vector<double> get_contingency_matrix(
 //'
 //'
 //' @references
-//' Gagolewski M., A framework for benchmarking clustering algorithms,
+//' Gagolewski, M., A framework for benchmarking clustering algorithms,
 //' \emph{SoftwareX} 20, 2022, 101270,
 //' \doi{10.1016/j.softx.2022.101270},
 //' \url{https://clustering-benchmarks.gagolewski.com}.
 //'
-//' Gagolewski M., Normalised clustering accuracy: An asymmetric external
+//' Gagolewski, M., Normalised clustering accuracy: An asymmetric external
 //' cluster validity measure, \emph{Journal of Classification} 42, 2025, 2-30.
 //' \doi{10.1007/s00357-024-09482-2}.
 //'
-//' Hubert L., Arabie P., Comparing partitions,
+//' Hubert, L., Arabie, P., Comparing partitions,
 //' \emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 //'
-//' Meila M., Heckerman D., An experimental comparison of model-based clustering
+//' Meila, M., Heckerman, D., An experimental comparison of model-based clustering
 //' methods, \emph{Machine Learning} 42, 2001, pp. 9-29,
 //' \doi{10.1023/A:1007648401407}.
 //'
-//' Rezaei M., Franti P., Set matching measures for external cluster validity,
+//' Rezaei, M., Franti, P., Set matching measures for external cluster validity,
 //' \emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016,
 //' 2173-2186.
 //'
-//' Steinley D., Properties of the Hubert-Arabie adjusted Rand index,
+//' Steinley, D., Properties of the Hubert-Arabie adjusted Rand index,
 //' \emph{Psychological Methods} 9(3), 2004, pp. 386-396,
 //' \doi{10.1037/1082-989X.9.3.386}.
 //'
-//' Vinh N.X., Epps J., Bailey J.,
+//' Vinh, N.X., Epps, J., Bailey, J.,
 //' Information theoretic measures for clusterings comparison:
 //' Variants, properties, normalization and correction for chance,
 //' \emph{Journal of Machine Learning Research} 11, 2010, 2837-2854.

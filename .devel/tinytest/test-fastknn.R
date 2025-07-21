@@ -1,6 +1,6 @@
 library("tinytest")
 library("genieclust")
-
+library("quitefastmst")
 
 #set.seed(123)
 n <- 100

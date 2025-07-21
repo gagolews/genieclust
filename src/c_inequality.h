@@ -46,7 +46,7 @@
  * References
  * ----------
  *
- * Gini C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini,
+ * Gini, C., Variabilita e Mutabilita, Tipografia di Paolo Cuppini,
  * Bologna, 1912.
  *
  *
@@ -92,7 +92,7 @@ double Cgini_sorted(const T* x, Py_ssize_t n)
  * References
  * ----------
  *
- * Bonferroni C., Elementi di Statistica Generale, Libreria Seber,
+ * Bonferroni, C., Elementi di Statistica Generale, Libreria Seber,
  * Firenze, 1930.
  *
  * @param x non-decreasingly sorted c_contiguous input vector >= 0

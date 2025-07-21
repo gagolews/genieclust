@@ -43,7 +43,7 @@
  *   References
  *   ===========
  *
- *   Gagolewski M., TODO, 2025
+ *   Gagolewski, M., TODO, 2025
  */
 template <class floatT>
 class CLumbermark {

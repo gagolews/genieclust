@@ -350,7 +350,7 @@ struct CDistanceCosine : public CDistance<T>  {
  *  References:
  *  ==========
  *
- *  [1] Campello R.J.G.B., Moulavi D., Sander J.,
+ *  [1] Campello, R.J.G.B., Moulavi, D., Sander, J.,
  *      Density-based clustering based on hierarchical density estimates,
  *      *Lecture Notes in Computer Science* 7819, 2013, 160-172,
  *      doi:10.1007/978-3-642-37456-2_14.

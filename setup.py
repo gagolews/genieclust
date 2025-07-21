@@ -167,7 +167,8 @@ setuptools.setup(
         "matplotlib",
         "scikit-learn",
         "quitefastmst",
-      ],
+    ],
+    python_requires=">=3.9",
     download_url="https://github.com/gagolews/genieclust",
     url="https://genieclust.gagolewski.com/",
     project_urls={

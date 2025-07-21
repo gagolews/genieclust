@@ -62,8 +62,8 @@ def mst_check(X, metric='euclidean', **kwargs):
 
 
     if metric == 'euclidean':
-        for algo in ["auto", "brute", "kd_tree_single", "kd_tree_dual"]:
-            if d > 20 and algo in ["kd_tree_single", "kd_tree_dual"]:
+        for algo in ["auto", "brute", "single_kd_tree", "sesqui_kd_tree", "dual_kd_tree"]:
+            if d > 20 and algo in ["single_kd_tree", "sesqui_kd_tree", "dual_kd_tree"]:
                 continue
 
             t0 = time.time()
@@ -109,8 +109,8 @@ def mst_mutreach_check(X, metric='euclidean'):
         nn_d1 = D[np.repeat(np.arange(n).reshape(-1,1), M-1, axis=1), nn_i1]
 
         if metric == 'euclidean':
-            for algo in ["brute", "auto", "kd_tree_single", "kd_tree_dual"]:
-                if d > 20 and algo in ["kd_tree_single", "kd_tree_dual"]:
+            for algo in ["brute", "auto", "single_kd_tree", "sesqui_kd_tree", "dual_kd_tree"]:
+                if d > 20 and algo in ["single_kd_tree", "sesqui_kd_tree", "dual_kd_tree"]:
                     continue
 
                 t0 = time.time()

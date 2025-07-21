@@ -1,5 +1,6 @@
 library("tinytest")
 library("genieclust")
+library("quitefastmst")
 
 # more tests in the Python version
 
@@ -13,8 +14,9 @@ for (d in c(2, 20)) {
 
     ts <- list(
         mst_euclid(X, algorithm="brute"),
-        mst_euclid(X, algorithm="kd_tree_single"),
-        mst_euclid(X, algorithm="kd_tree_dual")
+        mst_euclid(X, algorithm="single_kd_tree"),
+        mst_euclid(X, algorithm="sesqui_kd_tree"),
+        mst_euclid(X, algorithm="dual_kd_tree")
     )
 
     for (t1 in ts) {
@@ -32,8 +34,9 @@ for (d in c(2, 20)) {
 
         ts <- list(
             mst_euclid(X, M=M, algorithm="brute"),
-            mst_euclid(X, M=M, algorithm="kd_tree_single"),
-            mst_euclid(X, M=M, algorithm="kd_tree_dual")
+            mst_euclid(X, M=M, algorithm="single_kd_tree"),
+            mst_euclid(X, M=M, algorithm="sesqui_kd_tree"),
+            mst_euclid(X, M=M, algorithm="dual_kd_tree")
         )
 
         for (t1 in ts) {

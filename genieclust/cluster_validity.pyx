@@ -139,18 +139,18 @@ cpdef double calinski_harabasz_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
 
     .. [3]
-        Calinski T., Harabasz J., A dendrite method for cluster analysis,
+        Calinski, T., Harabasz, J., A dendrite method for cluster analysis,
         *Communications in Statistics* 3(1), 1974, 1–27,
         https://doi.org/10.1080/03610927408827101.
 
@@ -236,18 +236,18 @@ cpdef double negated_ball_hall_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
 
     .. [3]
-        Ball G.H., Hall D.J.,
+        Ball, G.H., Hall, D.J.,
         *ISODATA: A novel method of data analysis and pattern classification*,
         Technical report No. AD699616, Stanford Research Institute, 1965.
     """
@@ -332,18 +332,18 @@ cpdef double negated_davies_bouldin_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
 
     .. [3]
-        Davies D.L., Bouldin D.W., A Cluster Separation Measure,
+        Davies, D.L., Bouldin, D.W., A Cluster Separation Measure,
         *IEEE Transactions on Pattern Analysis and Machine Intelligence*
         PAMI-1 (2), 1979, 224-227, https://doi.org/10.1109/TPAMI.1979.4766909.
 
@@ -430,12 +430,12 @@ cpdef double negated_wcss_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
@@ -523,12 +523,12 @@ cpdef double silhouette_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
@@ -621,18 +621,18 @@ cpdef double silhouette_w_index(X, y):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
 
     .. [3]
-        Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+        Rousseeuw, P.J., Silhouettes: A Graphical Aid to the Interpretation and
         Validation of Cluster Analysis, *Computational and Applied Mathematics*
         20, 1987, 53-65, https://doi.org/10.1016/0377-0427(87)90125-7.
 
@@ -720,12 +720,12 @@ cpdef double wcnn_index(X, y, int M=25):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
@@ -827,12 +827,12 @@ cpdef double dunnowa_index(
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
@@ -942,18 +942,18 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
     ----------
 
     .. [1]
-        Gagolewski M., *A Framework for Benchmarking Clustering Algorithms*,
+        Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
         *SoftwareX* 20, 2022, 101270.
         https://clustering-benchmarks.gagolewski.com.
 
     .. [2]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
         620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
 
     .. [3]
-        Bezdek J., Pal N., Some new indexes of cluster validity,
+        Bezdek, J., Pal, N., Some new indexes of cluster validity,
         *IEEE Transactions on Systems, Man, and Cybernetics, Part B* 28,
         1998, 301-315, https://doi.org/10.1109/3477.678624/.
 

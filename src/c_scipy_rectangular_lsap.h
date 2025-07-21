@@ -88,7 +88,7 @@ Py_ssize_t __augmenting_path(
  *  References
  *  ==========
  *
- *  Crouse D.F., On implementing 2D rectangular assignment algorithms,
+ *  Crouse, D.F., On implementing 2D rectangular assignment algorithms,
  *  *IEEE Transactions on Aerospace and Electronic Systems* **52**(4), 2016,
  *  pp. 1679-1696, doi:10.1109/TAES.2016.140952.
  *

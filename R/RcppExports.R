@@ -87,31 +87,31 @@
 #'
 #'
 #' @references
-#' Gagolewski M., A framework for benchmarking clustering algorithms,
+#' Gagolewski, M., A framework for benchmarking clustering algorithms,
 #' \emph{SoftwareX} 20, 2022, 101270,
 #' \doi{10.1016/j.softx.2022.101270},
 #' \url{https://clustering-benchmarks.gagolewski.com}.
 #'
-#' Gagolewski M., Normalised clustering accuracy: An asymmetric external
+#' Gagolewski, M., Normalised clustering accuracy: An asymmetric external
 #' cluster validity measure, \emph{Journal of Classification} 42, 2025, 2-30.
 #' \doi{10.1007/s00357-024-09482-2}.
 #'
-#' Hubert L., Arabie P., Comparing partitions,
+#' Hubert, L., Arabie, P., Comparing partitions,
 #' \emph{Journal of Classification} 2(1), 1985, 193-218, esp. Eqs. (2) and (4).
 #'
-#' Meila M., Heckerman D., An experimental comparison of model-based clustering
+#' Meila, M., Heckerman, D., An experimental comparison of model-based clustering
 #' methods, \emph{Machine Learning} 42, 2001, pp. 9-29,
 #' \doi{10.1023/A:1007648401407}.
 #'
-#' Rezaei M., Franti P., Set matching measures for external cluster validity,
+#' Rezaei, M., Franti, P., Set matching measures for external cluster validity,
 #' \emph{IEEE Transactions on Knowledge and Data Mining} 28(8), 2016,
 #' 2173-2186.
 #'
-#' Steinley D., Properties of the Hubert-Arabie adjusted Rand index,
+#' Steinley, D., Properties of the Hubert-Arabie adjusted Rand index,
 #' \emph{Psychological Methods} 9(3), 2004, pp. 386-396,
 #' \doi{10.1037/1082-989X.9.3.386}.
 #'
-#' Vinh N.X., Epps J., Bailey J.,
+#' Vinh, N.X., Epps, J., Bailey, J.,
 #' Information theoretic measures for clusterings comparison:
 #' Variants, properties, normalization and correction for chance,
 #' \emph{Journal of Machine Learning Research} 11, 2010, 2837-2854.
@@ -279,38 +279,38 @@ normalizing_permutation <- function(x, y = NULL) {
 #' A single numeric value (the more, the \emph{better}).
 #'
 #' @references
-#' Ball G.H., Hall D.J.,
+#' Ball, G.H., Hall, D.J.,
 #' \emph{ISODATA: A novel method of data analysis and pattern classification},
 #' Technical report No. AD699616, Stanford Research Institute, 1965.
 #'
-#' Bezdek J., Pal N., Some new indexes of cluster validity,
+#' Bezdek, J., Pal, N., Some new indexes of cluster validity,
 #' \emph{IEEE Transactions on Systems, Man, and Cybernetics, Part B} 28,
 #' 1998, 301-315, \doi{10.1109/3477.678624}.
 #'
-#' Calinski T., Harabasz J., A dendrite method for cluster analysis,
+#' Calinski, T., Harabasz, J., A dendrite method for cluster analysis,
 #' \emph{Communications in Statistics} 3(1), 1974, 1-27,
 #' \doi{10.1080/03610927408827101}.
 #'
-#' Davies D.L., Bouldin D.W.,
+#' Davies, D.L., Bouldin, D.W.,
 #' A Cluster Separation Measure,
 #' \emph{IEEE Transactions on Pattern Analysis and Machine Intelligence}
 #' PAMI-1 (2), 1979, 224-227, \doi{10.1109/TPAMI.1979.4766909}.
 #'
-#' Dunn J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
+#' Dunn, J.C., A Fuzzy Relative of the ISODATA Process and Its Use in Detecting
 #' Compact Well-Separated Clusters, \emph{Journal of Cybernetics} 3(3), 1973,
 #' 32-57, \doi{10.1080/01969727308546046}.
 #'
-#' Gagolewski M., Bartoszuk M., Cena A.,
+#' Gagolewski, M., Bartoszuk, M., Cena, A.,
 #' Are cluster validity measures (in)valid?, \emph{Information Sciences} 581,
 #' 620-636, 2021, \doi{10.1016/j.ins.2021.10.004};
 #' preprint: \url{https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf}.
 #'
-#' Gagolewski M., A Framework for Benchmarking Clustering Algorithms,
+#' Gagolewski, M., A Framework for Benchmarking Clustering Algorithms,
 #' \emph{SoftwareX} 20, 2022, 101270,
 #' \doi{10.1016/j.softx.2022.101270},
 #' \url{https://clustering-benchmarks.gagolewski.com}.
 #'
-#' Rousseeuw P.J., Silhouettes: A Graphical Aid to the Interpretation and
+#' Rousseeuw, P.J., Silhouettes: A Graphical Aid to the Interpretation and
 #' Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
 #' 20, 1987, 53-65, \doi{10.1016/0377-0427(87)90125-7}.
 #'
@@ -444,15 +444,15 @@ wcnn_index <- function(X, y, M = 25L) {
 #'
 #'
 #' @references
-#' Bonferroni C., \emph{Elementi di Statistica Generale}, Libreria Seber,
+#' Bonferroni, C., \emph{Elementi di Statistica Generale}, Libreria Seber,
 #' Firenze, 1930.
 #'
-#' Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
+#' Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and
 #' outlier-resistant hierarchical clustering algorithm,
 #' \emph{Information Sciences} 363, 2016, pp. 8-23.
 #' \doi{10.1016/j.ins.2016.05.003}
 #'
-#' Gini C., \emph{Variabilita e Mutabilita},
+#' Gini, C., \emph{Variabilita e Mutabilita},
 #' Tipografia di Paolo Cuppini, Bologna, 1912.
 #'
 #'

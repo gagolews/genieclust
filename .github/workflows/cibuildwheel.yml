@@ -3,13 +3,10 @@ name: wheels
 on: workflow_dispatch
 
 env:
-    # nmslib does not build on 32bit Windows
-    # https://cibuildwheel.readthedocs.io/en/stable/options/
-    # cp39-win_amd64
-    # cp37-win32 cp38-win32 cp39-win32
     # TODO: manylinux aarch64
     # TODO: macos arm64
-    CIBW_SKIP: cp2* pp* cp35* cp36* cp37* cp38* cp39* *-win32 *-musllinux* *-macosx_*_universal2* *win_arm64* *-manylinux_arm64 *-manylinux_i686 *-manylinux_ppc64le *-manylinux_s390x *-manylinux_aarch64
+    CIBW_SKIP: cp38-*
+    #CIBW_SKIP: cp2* pp* cp35* cp36* cp37* cp38* #*-musllinux* *-macosx_*_universal2* *win_arm64* *-manylinux_arm64 *-manylinux_i686 *-manylinux_ppc64le *-manylinux_s390x *-manylinux_aarch64 # *-win32
     #CIBW_TEST_SKIP: "*-macosx_arm64"
     #CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
     CIBW_ARCHS: all
@@ -20,7 +17,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14, macos-15]
 
     steps:
       - uses: actions/checkout@v4

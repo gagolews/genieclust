@@ -89,15 +89,15 @@ devergottini_index(c(6, 0, 3, 1, 0))
 
 }
 \references{
-Bonferroni C., \emph{Elementi di Statistica Generale}, Libreria Seber,
+Bonferroni, C., \emph{Elementi di Statistica Generale}, Libreria Seber,
 Firenze, 1930.
 
-Gagolewski M., Bartoszuk M., Cena A., Genie: A new, fast, and
+Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and
 outlier-resistant hierarchical clustering algorithm,
 \emph{Information Sciences} 363, 2016, pp. 8-23.
 \doi{10.1016/j.ins.2016.05.003}
 
-Gini C., \emph{Variabilita e Mutabilita},
+Gini, C., \emph{Variabilita e Mutabilita},
 Tipografia di Paolo Cuppini, Bologna, 1912.
 }
 \author{

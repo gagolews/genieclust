@@ -188,17 +188,17 @@ normalized_clustering_accuracy(y_test[!noise], y_pred2[!noise])
 
 }
 \references{
-Gagolewski M., Bartoszuk M., Cena A.,
+Gagolewski, M., Bartoszuk, M., Cena, A.,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 \emph{Information Sciences} 363, 2016, 8-23,
 \doi{10.1016/j.ins.2016.05.003}.
 
-Campello R.J.G.B., Moulavi D., Sander J.,
+Campello, R.J.G.B., Moulavi, D., Sander, J.,
 Density-based clustering based on hierarchical density estimates,
 \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 \doi{10.1007/978-3-642-37456-2_14}.
 
-Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
 Clustering with minimum spanning trees: How good can it be?,
 \emph{Journal of Classification} 42, 2025, 90-112,
 \doi{10.1007/s00357-024-09483-1}.

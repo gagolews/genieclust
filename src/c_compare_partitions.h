@@ -261,7 +261,7 @@ void Ccontingency_table(O* Cout, Py_ssize_t xc, Py_ssize_t yc,
  *  References
  *  ==========
  *
- *  Hubert L., Arabie P., Comparing Partitions,
+ *  Hubert, L., Arabie, P., Comparing Partitions,
  *  Journal of Classification 2(1), 1985, pp. 193-218, esp. Eqs. (2) and (4)
  *
  *  @param C a c_contiguous confusion matrix of size xc*yc
@@ -320,7 +320,7 @@ CComparePartitionsPairsResult Ccompare_partitions_pairs(const T* C,
  *  References
  *  ==========
  *
- *  Vinh N.X., Epps J., Bailey J.,
+ *  Vinh, N.X., Epps, J., Bailey, J.,
  *  Information theoretic measures for clusterings comparison:
  *  Variants, properties, normalization and correction for chance,
  *  Journal of Machine Learning Research 11, 2010, pp. 2837-2854.
@@ -419,14 +419,14 @@ CComparePartitionsInfoResult Ccompare_partitions_info(const T* C,
  *  References
  *  ==========
  *
- *  Steinley D., Properties of the Hubert-Arabie adjusted Rand index,
+ *  Steinley, D., Properties of the Hubert-Arabie adjusted Rand index,
  *  Psychological Methods 9(3), 2004, pp. 386-396,
  *  DOI:10.1037/1082-989X.9.3.386.
  *
- *  Meila M., Heckerman D., An experimental comparison of model-based clustering
+ *  Meila, M., Heckerman, D., An experimental comparison of model-based clustering
  *  methods, Machine Learning 42, 2001, pp. 9-29, DOI:10.1023/A:1007648401407.
  *
- *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
+ *  Gagolewski, M., Normalised clustering accuracy: An asymmetric external
  *  cluster validity measure, Journal of Classification 42, 2025, 2-30.
  *  DOI:10.1007/s00357-024-09482-2.
  *
@@ -489,7 +489,7 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  References
  *  ==========
  *
- *  Gagolewski M., Normalised clustering accuracy: An asymmetric external
+ *  Gagolewski, M., Normalised clustering accuracy: An asymmetric external
  *  cluster validity measure, Journal of Classification 42, 2025, 2-30.
  *  DOI:10.1007/s00357-024-09482-2.
  *
@@ -556,7 +556,7 @@ double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
  *  References
  *  ==========
  *
- *  Rezaei M., Franti P., Set matching measures for external cluster validity,
+ *  Rezaei, M., Franti, P., Set matching measures for external cluster validity,
  *  IEEE Transactions on Knowledge and Data Mining 28(8), 2016, pp. 2173-2186,
  *  DOI: 10.1109/TKDE.2016.2551240
  *

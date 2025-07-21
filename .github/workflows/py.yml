@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     env:
         R_LIBS_SITE: /usr/lib/R/site-library
@@ -28,20 +28,13 @@ jobs:
         #sudo apt-get -y upgrade
         sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc libtirpc-dev
         sudo mkdir -p /usr/lib/R/site-library
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack'), lib='/usr/lib/R/site-library')"
-        #sudo Rscript -e "devtools::install_github('gagolews/Rd2rst')"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack', 'quitefastmst'), lib='/usr/lib/R/site-library')"
         sudo R CMD INSTALL .
         python3 -m venv python-venv
         source python-venv/bin/activate
         python3 -m pip install --upgrade pip
         if [ -f requirements.txt ]; then python3 -m pip install -r requirements.txt --upgrade; fi
-        python3 -m pip install wheel flake8 pytest --upgrade
-        python3 -m pip install sphinx numpydoc sphinx_rtd_theme sphinx-bootstrap-theme sphinxcontrib-jsmath sphinxcontrib-bibtex myst_parser --upgrade
-        python3 -m pip install rpy2 ipython jupyter tabulate --upgrade
-    - name: Install optional dependencies (nmslib)
-      continue-on-error: true
-      run: |
-        #sudo pip3 install nmslib --upgrade
+        python3 -m pip install wheel rpy2 pytest --upgrade
     - name: Test and check Python
       run: |
         source python-venv/bin/activate
