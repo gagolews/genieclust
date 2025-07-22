@@ -1209,16 +1209,19 @@ cpdef dict gic_from_mst(
     References
     ==========
 
-    [1] Cena, A., *Adaptive hierarchical clustering algorithms based on
-    data aggregation methods*, PhD Thesis, Systems Research Institute,
-    Polish Academy of Sciences 2018.
+    .. [1]
+        Cena, A., *Adaptive hierarchical clustering algorithms based on
+        data aggregation methods*, PhD Thesis, Systems Research Institute,
+        Polish Academy of Sciences 2018.
 
-    [2] Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
-    Clustering using Minimum Spanning Trees, *DAGM-OAGM* 2012.
+    .. [2]
+        Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
+        Clustering using Minimum Spanning Trees, *DAGM-OAGM* 2012.
 
-    [3] Gagolewski, M., Bartoszuk M., Cena, A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    *Information Sciences* 363, 2016, 8-23. DOI:10.1016/j.ins.2016.05.003
+    .. [3]
+        Gagolewski, M., Bartoszuk M., Cena, A.,
+        Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+        *Information Sciences* 363, 2016, 8-23. DOI:10.1016/j.ins.2016.05.003
 
 
 

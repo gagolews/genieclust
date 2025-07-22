@@ -949,8 +949,7 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
     .. [2]
         Gagolewski, M., Bartoszuk, M., Cena, A.,
         Are cluster validity measures (in)valid?, *Information Sciences* **581**,
-        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004
-        `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.
+        620–636, 2021, https://doi.org/10.1016/j.ins.2021.10.004.
 
     .. [3]
         Bezdek, J., Pal, N., Some new indexes of cluster validity,

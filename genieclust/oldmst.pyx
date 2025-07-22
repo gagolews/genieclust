@@ -190,18 +190,22 @@ cpdef tuple mst_from_complete(
     References
     ----------
 
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
+    .. [1]
+        M. Gagolewski, M. Bartoszuk, A. Cena, Genie: A new, fast, and
+        outlier-resistant hierarchical clustering algorithm,
+        Information Sciences 363 (2016) 8–23.
 
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+    .. [2]
+        V. Jarník, O jistém problému minimálním,
+        Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Computing 21(8) (1995) 1313–1325.
+    .. [3]
+        C.F. Olson, Parallel algorithms for hierarchical clustering,
+        Parallel Computing 21(8) (1995) 1313–1325.
 
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    The Bell System Technical Journal 36(6) (1957) 1389–1401.
+    .. [4]
+        R. Prim, Shortest connection networks and some generalizations,
+        The Bell System Technical Journal 36(6) (1957) 1389–1401.
 
 
     Parameters
@@ -274,18 +278,22 @@ cpdef tuple mst_from_distance(
     References
     ----------
 
-    [1] M. Gagolewski, M. Bartoszuk, A. Cena,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363 (2016) 8–23.
+    .. [1]
+        M. Gagolewski, M. Bartoszuk, A. Cena, Genie: A new, fast, and
+        outlier-resistant hierarchical clustering algorithm,
+        Information Sciences 363 (2016) 8–23.
 
-    [2] V. Jarník, O jistém problému minimálním,
-    Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
+    .. [2]
+        V. Jarník, O jistém problému minimálním,
+        Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    [3] C.F. Olson, Parallel algorithms for hierarchical clustering,
-    Parallel Computing 21(8) (1995) 1313–1325.
+    .. [3]
+        C.F. Olson, Parallel algorithms for hierarchical clustering,
+        Parallel Computing 21(8) (1995) 1313–1325.
 
-    [4] R. Prim, Shortest connection networks and some generalizations,
-    The Bell System Technical Journal 36(6) (1957) 1389–1401.
+    .. [4]
+        R. Prim, Shortest connection networks and some generalizations,
+        The Bell System Technical Journal 36(6) (1957) 1389–1401.
 
 
     Parameters
