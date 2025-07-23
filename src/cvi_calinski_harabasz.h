@@ -39,7 +39,7 @@
 class CalinskiHarabaszIndex : public CentroidsBasedIndex
 {
 protected:
-    std::vector<FLOAT_T> centroid; ///< the centroid of the whole X, size d
+    std::vector<FLOAT_T> centroid; ///< the centroid of X, size d
     FLOAT_T numerator;             ///< sum of intra-cluster squared L2 distances
     FLOAT_T denominator;           ///< sum of within-cluster squared L2 distances
 
@@ -57,7 +57,7 @@ public:
     {
         // centroid[i,j] == 0.0 already
 
-        // compute the centroid of the whole dataset
+        // compute the centroid of the dataset
         for (size_t i=0; i<n; ++i) {
             for (size_t j=0; j<d; ++j) {
                 centroid[j] += X(i, j);

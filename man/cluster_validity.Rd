@@ -72,9 +72,9 @@ of the generalised Dunn (Bezdek-Pal) index (denominator:
 A single numeric value (the more, the \emph{better}).
 }
 \description{
-Implementation of a number of so-called cluster validity indices critically
+Implementation of cluster validity indices
 reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2
-therein and (Gagolewski, 2022) for the respective definitions.
+therein for the respective definitions.
 
 The greater the index value, the more \emph{valid} (whatever that means)
 the assessed partition. For consistency, the Ball-Hall and
@@ -131,6 +131,6 @@ Validation of Cluster Analysis, \emph{Computational and Applied Mathematics}
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 
-Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
+Gagolewski, M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}
 
 }

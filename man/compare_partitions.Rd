@@ -49,7 +49,7 @@ or a confusion matrix with K rows and L columns
 \item{y}{an integer vector of length n (or an object coercible to)
 representing an L-partition of the same set (e.g., the output of a
 clustering algorithm we wish to compare with \code{x}),
-or NULL (if x is an K*L confusion matrix)}
+or NULL (if x is an \eqn{K\times L} confusion matrix)}
 
 \item{simplified}{whether to assume E=1 in the definition of the pair sets index index,
 i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)}
@@ -67,7 +67,8 @@ Each cluster validity measure is a single numeric value.
 The functions described in this section quantify the similarity between
 two label vectors \code{x} and \code{y} which represent two partitions
 of a set of \eqn{n} elements into, respectively, \eqn{K} and \eqn{L}
-nonempty and pairwise disjoint subsets.
+nonempty and pairwise disjoint subsets; for a review, refer
+to the paper by Gagolewski (2025).
 
 For instance, \code{x} and \code{y} can represent two clusterings
 of a dataset with \eqn{n} observations specified by two vectors
@@ -87,15 +88,15 @@ of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4)
 represent the same 2-partition.
 }
 \details{
-\code{normalized_clustering_accuracy()} (Gagolewski, 2023)
-is an asymmetric external cluster validity measure
-which assumes that the label vector \code{x} (or rows in the confusion
+\code{normalized_clustering_accuracy()} is an asymmetric external cluster
+validity measure proposed by Gagolewski (2025).
+It assumes that the label vector \code{x} (or rows in the confusion
 matrix) represents the reference (ground truth) partition.
-It is an average proportion of correctly classified points in each cluster
-above the worst case scenario of uniform membership assignment,
-with cluster ID matching based on the solution to the maximal linear
+It is the average proportion of correctly classified points in each cluster
+above the worst case scenario representing the uniform membership assignment,
+with the cluster ID matching based on the solution to the maximal linear
 sum assignment problem; see \code{\link{normalized_confusion_matrix}}).
-It is given by:
+The index is given by:
 \eqn{\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}},
 where \eqn{C} is a confusion matrix with \eqn{K} rows and \eqn{L} columns,
 \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}}, and
@@ -104,13 +105,13 @@ under the assumption that \eqn{c_{i,j}=0} for \eqn{i>K} or \eqn{j>L}
 and \eqn{0/0=0}.
 
 \code{normalized_pivoted_accuracy()} is defined as
-\eqn{(\max_\sigma \sum_{j=1}^{\max(K,L)} c_{\sigma(j),j}/n-1/\max(K,L))/(1-1/\max(K,L))},
+\eqn{(\max_\sigma \sum_{j=1}^{\max(K,L)} \frac{c_{\sigma(j),j}/n-1/\max(K,L)}{1-1/\max(K,L)}},
 where \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}},
 and \eqn{n} is the sum of all elements in \eqn{C}.
 For non-square matrices, missing rows/columns are assumed
 to be filled with 0s.
 
-\code{pair_sets_index()} (PSI) was introduced in (Rezaei, Franti, 2016).
+\code{pair_sets_index()} (PSI) was introduced by Rezaei and Franti (2016).
 The simplified PSI assumes E=1 in the definition of the index,
 i.e., uses Eq. (20) in the said paper instead of Eq. (18).
 For non-square matrices, missing rows/columns are assumed
@@ -118,20 +119,20 @@ to be filled with 0s.
 
 \code{rand_score()} gives the Rand score (the "probability" of agreement
 between the two partitions) and
-\code{adjusted_rand_score()} is its version corrected for chance,
-see (Hubert, Arabie, 1985): its expected value is 0 given two independent
+\code{adjusted_rand_score()} is its version corrected for chance
+(see Hubert, Arabie, 1985): its expected value is 0 given two independent
 partitions. Due to the adjustment, the resulting index may be negative
 for some inputs.
 
 Similarly, \code{fm_score()} gives the Fowlkes-Mallows (FM) score
 and \code{adjusted_fm_score()} is its adjusted-for-chance version;
-see (Hubert, Arabie, 1985).
+(see Hubert, Arabie, 1985).
 
 \code{mi_score()}, \code{adjusted_mi_score()} and
 \code{normalized_mi_score()} are information-theoretic
 scores, based on mutual information,
 see the definition of \eqn{AMI_{sum}} and \eqn{NMI_{sum}}
-in (Vinh et al., 2010).
+in the paper by Vinh et al. (2010).
 
 
 \code{normalized_confusion_matrix()} computes the confusion matrix
@@ -143,7 +144,7 @@ The reordering of the columns of a confusion matrix can be determined
 by calling \code{normalizing_permutation()}.
 
 Also note that the built-in
-\code{\link{table}()} determines the standard confusion matrix.
+\code{\link{table}()} function determines the standard confusion matrix.
 }
 \examples{
 y_true <- iris[[5]]
@@ -199,6 +200,6 @@ Variants, properties, normalization and correction for chance,
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 
-Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
+Gagolewski, M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}
 
 }

@@ -37,7 +37,7 @@ plt.rcParams["patch.facecolor"] = _colours[0]
 np.random.seed(123)  # initialise the pseudorandom number generator
 
 plt.rcParams.update({  # further graphical parameters
-    "font.size":         12.5,
+    "font.size":         14,
     "font.family":       "sans-serif",
     "font.sans-serif":   ["Alegreya Sans", "Alegreya"],
     "figure.autolayout": True,

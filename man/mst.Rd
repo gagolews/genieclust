@@ -24,7 +24,8 @@ e.g., a data frame with numeric-like columns) or an
 object of class \code{dist}; see \code{\link[stats]{dist}}}
 
 \item{...}{further arguments passed to or from other methods,
-in particular, to \code{\link[quitefastmst]{mst_euclid}}}
+in particular, to \code{\link[quitefastmst]{mst_euclid}}
+from the \pkg{quitefastmst} package}
 
 \item{distance}{metric used in the case where \code{d} is a matrix; one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -73,10 +74,10 @@ to determine the MST.  It is quite fast in spaces of low intrinsic
 dimensionality, even for 10M points.
 
 Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
-method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
+method, which requires \eqn{O(n^2)} time, is used.  The algorithm is parallelised;
 the number of threads is determined by the \code{OMP_NUM_THREADS} environment
 variable. As a rule of thumb, datasets up to 100k points
-should be processed quite quickly (within a few minutes).
+should be processed relatively quickly.
 
 If \eqn{M>1}, then the mutual reachability distance \eqn{m(i,j)}
 with the smoothing factor \eqn{M} (see Campello et al. 2013)
@@ -85,7 +86,7 @@ It holds \eqn{m(i, j)=\max\{d(i,j), c(i), c(j)\}}, where \eqn{c(i)} is
 the core distance, i.e., the distance between the \eqn{i}-th point and
 its (\code{M}-1)-th nearest neighbour.
 This makes "noise" and "boundary" points being "pulled away" from each other.
-The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
+The Genie clustering algorithm (see \code{\link{gclust}}) with respect to
 the mutual reachability distance can mark some observations as noise points.
 }
 \examples{
@@ -126,7 +127,7 @@ Density-based clustering based on hierarchical density estimates,
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}
 
-Gagolewski M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}.
+Gagolewski, M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}
 
 \code{\link[quitefastmst]{mst_euclid}}
 }

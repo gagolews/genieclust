@@ -74,7 +74,7 @@ weave:
 news:
 	cd .devel/sphinx && cp ../../NEWS news.md
 
-html: python r news weave rd2myst weave-examples
+html: news weave rd2myst weave-examples
 	rm -rf .devel/sphinx/_build/
 	cd .devel/sphinx && make html
 	.devel/sphinx/fix-html.sh .devel/sphinx/_build/html/rapi/

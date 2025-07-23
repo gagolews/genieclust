@@ -38,10 +38,10 @@
 #' dimensionality, even for 10M points.
 #'
 #' Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
-#' method, which requires \eqn{O(n^2)} time.  The algorithm is parallelised;
+#' method, which requires \eqn{O(n^2)} time, is used.  The algorithm is parallelised;
 #' the number of threads is determined by the \code{OMP_NUM_THREADS} environment
 #' variable. As a rule of thumb, datasets up to 100k points
-#' should be processed quite quickly (within a few minutes).
+#' should be processed relatively quickly.
 #'
 #' If \eqn{M>1}, then the mutual reachability distance \eqn{m(i,j)}
 #' with the smoothing factor \eqn{M} (see Campello et al. 2013)
@@ -50,7 +50,7 @@
 #' the core distance, i.e., the distance between the \eqn{i}-th point and
 #' its (\code{M}-1)-th nearest neighbour.
 #' This makes "noise" and "boundary" points being "pulled away" from each other.
-#' The Genie++ clustering algorithm (see \code{\link{gclust}}) with respect to
+#' The Genie clustering algorithm (see \code{\link{gclust}}) with respect to
 #' the mutual reachability distance can mark some observations as noise points.
 #'
 #'
@@ -103,6 +103,7 @@
 #'
 #' @param ... further arguments passed to or from other methods,
 #'     in particular, to \code{\link[quitefastmst]{mst_euclid}}
+#'     from the \pkg{quitefastmst} package
 #'
 #'
 #' @return

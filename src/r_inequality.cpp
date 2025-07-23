@@ -27,7 +27,7 @@
 //' \code{devergottini_index()} implements the De Vergottini index.
 //'
 //' @details
-//' These indices can be used to quantify the "inequality" of a numeric sample.
+//' These indices can be used to quantify the "inequality" of a sample.
 //' They can be conceived as normalised measures of data dispersion.
 //' For constant vectors (perfect equity), the indices yield values of 0.
 //' Vectors with all elements but one equal to 0 (perfect inequality),
@@ -35,7 +35,7 @@
 //' They follow the Pigou-Dalton principle (are Schur-convex):
 //' setting \eqn{x_i = x_i - h} and \eqn{x_j = x_j + h} with \eqn{h > 0}
 //' and \eqn{x_i - h \geq  x_j + h} (taking from the "rich" and
-//' giving to the "poor") decreases the inequality
+//' giving to the "poor") decreases the inequality.
 //'
 //' These indices have applications in economics, amongst others.
 //' The Genie clustering algorithm uses the Gini index as a measure
@@ -48,7 +48,7 @@
 //'     \sum_{i=1}^{n} (n-2i+1) x_{\sigma(n-i+1)}
 //'     }{
 //'     (n-1) \sum_{i=1}^n x_i
-//'     },
+//'     }.
 //' }
 //'
 //' The normalised Bonferroni index is given by:
@@ -72,18 +72,10 @@
 //'
 //' Here, \eqn{\sigma} is an ordering permutation of \eqn{(x_1,\dots,x_n)}.
 //'
-//' Time complexity: \eqn{O(n)} for sorted (increasingly) data.
-//' Otherwise, the vector will be sorted.
-//'
 //'
 //' @references
 //' Bonferroni, C., \emph{Elementi di Statistica Generale}, Libreria Seber,
 //' Firenze, 1930.
-//'
-//' Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and
-//' outlier-resistant hierarchical clustering algorithm,
-//' \emph{Information Sciences} 363, 2016, pp. 8-23.
-//' \doi{10.1016/j.ins.2016.05.003}
 //'
 //' Gini, C., \emph{Variabilita e Mutabilita},
 //' Tipografia di Paolo Cuppini, Bologna, 1912.
@@ -97,7 +89,7 @@
 //' gini_index(c(2, 2, 2, 2, 2))   # no inequality
 //' gini_index(c(0, 0, 10, 0, 0))  # one has it all
 //' gini_index(c(7, 0, 3, 0, 0))   # give to the poor, take away from the rich
-//' gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. Pigou-Dalton principle)
+//' gini_index(c(6, 0, 3, 1, 0))   # (a.k.a. the Pigou-Dalton principle)
 //' bonferroni_index(c(2, 2, 2, 2, 2))
 //' bonferroni_index(c(0, 0, 10, 0, 0))
 //' bonferroni_index(c(7, 0, 3, 0, 0))

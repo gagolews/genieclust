@@ -1032,7 +1032,7 @@ cdef class GiniDisjointSets():
 
 
 #############################################################################
-# The Genie++ Clustering Algorithm (internal)
+# The Genie Clustering Algorithm (internal)
 #############################################################################
 
 cpdef dict genie_from_mst(
@@ -1044,7 +1044,7 @@ cpdef dict genie_from_mst(
         bint compute_full_tree=True,
         bint compute_all_cuts=False
     ):
-    """The Genie++ Clustering Algorithm (with extensions)
+    """The Genie Clustering Algorithm (with extensions)
 
     Determines a dataset's partition based on a precomputed MST.
 
@@ -1091,7 +1091,7 @@ cpdef dict genie_from_mst(
         Mark leaves as noise;
         Prevents forming singleton-clusters.
     compute_full_tree : bool
-        Compute the whole merge sequence or stop early?
+        Compute the entire merge sequence or stop early?
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
         Implies `compute_full_tree`.
@@ -1254,7 +1254,7 @@ cpdef dict gic_from_mst(
         Mark leaves as noise;
         Prevents forming singleton-clusters.
     compute_full_tree : bool
-        Compute the whole merge sequence or stop early?
+        Compute the entire merge sequence or stop early?
         Implies compute_full_tree.
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?

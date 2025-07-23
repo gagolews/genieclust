@@ -15,10 +15,10 @@ postprocess_contents <- function(contents)
         "The official online manual of \\pkg{genieclust} at ",
         "\\url{https://genieclust.gagolewski.com/}\n",
         "\n",
-        "Gagolewski M., ",
+        "Gagolewski, M., ",
         "\\pkg{genieclust}: Fast and robust hierarchical clustering, ",
         "\\emph{SoftwareX} 15:100722, 2021, ",
-        "\\doi{10.1016/j.softx.2021.100722}.\n",
+        "\\doi{10.1016/j.softx.2021.100722}\n",
         "\n"
     )
 

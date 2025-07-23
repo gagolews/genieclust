@@ -1,5 +1,5 @@
 """
-The Genie++ Clustering Algorithm
+The Genie Clustering Algorithm (with Extras)
 """
 
 # ############################################################################ #
@@ -595,7 +595,7 @@ class Genie(MSTClusterMixin):
         see `scipy.spatial.distance.pdist`.
 
     compute_full_tree : bool
-        Whether to determine the whole cluster hierarchy and the linkage matrix.
+        Whether to determine the entire cluster hierarchy and the linkage matrix.
 
         Only available for `M` = 1. Enables plotting of dendrograms or cutting
         of the hierarchy at an arbitrary level, see the
@@ -870,9 +870,9 @@ class Genie(MSTClusterMixin):
             raise ValueError("n_clusters must be < n_samples_")
 
         if cur_state["verbose"]:
-            print("[genieclust] Determining clusters with Genie++.", file=sys.stderr)
+            print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
-        # apply the Genie++ algorithm (the fast part):
+        # apply the Genie algorithm (the fast part):
         res = internal.genie_from_mst(
             self._tree_w,
             self._tree_e,
@@ -989,7 +989,7 @@ class GIc(MSTClusterMixin):
     a pair of clusters that maximises the information criterion [2]_.
     By default, the initial partition is determined by considering
     the intersection of the partitions found by multiple runs of
-    the Genie++ method with thresholds [0.1, 0.3, 0.5, 0.7], which
+    the Genie method with thresholds [0.1, 0.3, 0.5, 0.7], which
     we observe to be a sensible choice for most clustering activities.
     Hence, contrary to the Genie method, we can say that GIc is virtually
     parameter-free. However, when run with different `n_clusters` parameter,

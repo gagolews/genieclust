@@ -4,7 +4,7 @@
 
 # R Interface Examples
 
-The latest stable release of the R package `genieclust` is available from the
+The latest stable release of the R package **genieclust** is available from the
 [CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
 We can install it by calling:
 
@@ -51,7 +51,7 @@ head(X)  # preview
 ```
 
 
-The `genieclust` interface is compatible with R's workhorse
+The API of **genieclust** is compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`.
 Yet, for efficiency reasons, it is better to feed `genieclust::gclust()`
 with the input matrix directly:
@@ -98,7 +98,7 @@ sample(y_pred, 25)  # preview
 ```
 
 This gives the cluster IDs allocated to each country.
-Let's depict the obtained partition using the `rworldmap` package:
+Let's depict the obtained partition using the **rworldmap** package:
 
 
 ``` r
@@ -112,7 +112,7 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
 
 (fig:ssi-map)=
 ```{figure} r-figures/ssi-map-1.*
-Countries grouped w.r.t. the SSI categories.
+Countries grouped with respect to the SSI categories
 ```
 
 
@@ -156,7 +156,7 @@ plot(as.dendrogram(h_oecd), horiz=TRUE)
 
 (fig:ssi-oecd-dendrogram)=
 ```{figure} r-figures/ssi-oecd-dendrogram-1.*
-Cluster dendrogram for the OECD countries.
+Cluster dendrogram for the OECD countries
 ```
 
 
@@ -167,7 +167,7 @@ Conclusion:
 calling `genie()` directly will be slightly faster than referring to
 `cutree(gclust(...))`.
 
-* `genieclust` also features partition similarity scores
+* **genieclust** also features partition similarity scores
 (such as the adjusted Rand index) that can be used as
 external cluster validity measures.
 
@@ -175,6 +175,6 @@ For more details, refer to the package's {any}`documentation <../rapi>`.
 Also, see the Python examples regarding noise point detection,
 benchmarking, timing, etc.
 
-*To learn more about R, check out Marek's recent open-access (free!) textbook*
+*To learn more about R, check out Marek's open-access textbook*
 [Deep R Programming](https://deepr.gagolewski.com/)
 {cite}`deepr`.

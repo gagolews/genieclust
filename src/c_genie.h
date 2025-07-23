@@ -1,4 +1,4 @@
-/*  The Genie++ Clustering Algorithm
+/*  The Genie Clustering Algorithm
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -20,7 +20,6 @@
 #include "c_common.h"
 #include <algorithm>
 #include <vector>
-#include <deque>
 #include <cmath>
 
 #include "c_gini_disjoint_sets.h"
@@ -328,7 +327,7 @@ public:
 
 
 
-/*!  The Genie++ Hierarchical Clustering Algorithm
+/*!  The Genie Hierarchical Clustering Algorithm
  *
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
  *   in such a way that a chosen economic inequality measure
@@ -369,7 +368,7 @@ protected:
     // bool experimental_forced_merge; //<! EXPERIMENTAL (worse) if there are two clusters, both of the smallest sizes, try merging them first
 
 
-    /*! Run the Genie++ partitioning.
+    /*! Run the Genie partitioning.
      *
      *  @param ds
      *  @param mst_skiplist
@@ -578,7 +577,7 @@ public:
     CGenie() : CGenie(NULL, NULL, 0, false) { }
 
 
-    /*! Run the Genie++ algorithm
+    /*! Run the Genie algorithm
      *
      * @param n_clusters number of clusters to find, 1 for the complete hierarchy
      *    (warning: the algorithm might stop early if there are many noise points
@@ -643,7 +642,7 @@ template <class T>
 class CGIc : public CGenie<T> {
 protected:
 
-    /*! Run the Genie++ algorithm with different thresholds for the Gini index
+    /*! Run the Genie algorithm with different thresholds for the Gini index
      *  and determine the intersection of all the resulting
      *  n_clusters-partitions; for this, we need the union of the
      *  set of MST edges that were left "unmerged".

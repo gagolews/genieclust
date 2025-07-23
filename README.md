@@ -8,7 +8,7 @@
 ![genieclust for R](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20R/badge.svg)
 
 
-> **Genie finds meaningful clusters quickly – even in large data sets.**
+> **Genie finds meaningful clusters. It does so quickly, even in large datasets.**
 >
 > A comprehensive tutorial, benchmarks, and a reference manual is available
 at <https://genieclust.gagolewski.com/>.
@@ -20,38 +20,38 @@ as specified below. Thank you.
 
 ## About
 
-*Genie* is a robust and outlier resistant clustering algorithm
+*Genie* is a robust and outlier-resistant hierarchical clustering algorithm
 (see Gagolewski, Bartoszuk, Cena, 2016). Its original implementation was
 included in the R package [**genie**](https://CRAN.R-project.org/package=genie).
-Here is its faster, extended, more powerful version.
+This is its faster and more powerful version.
 
-The idea behind Genie is beautifully simple. First, make each individual
+The idea behind *Genie( is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
-the formation of clusters of highly imbalanced sizes** a point group of
-the *smallest* size will sometimes be combined with its nearest counterpart.
+the formation of clusters of highly imbalanced sizes**, a point group of
+the *smallest* size is sometimes combined with its nearest counterpart.
 
-Genie's appealing simplicity goes hand in hand with its usability;
-it **often outperforms other clustering approaches**
-such as K-means, BIRCH, or average, Ward, and complete linkage
+*Genie*'s appealing simplicity goes hand in hand with its usability.
+It **often outperforms other clustering approaches**
+such as K-means, BIRCH, or average, complete, and Ward's linkage
 on [benchmark data](https://github.com/gagolews/clustering-benchmarks).
 Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try.
 
-Genie is based on minimal spanning trees of pairwise distance graphs.
+*Genie* is based on minimal spanning trees of pairwise distance graphs.
 Thus, it can also be pretty **fast**: thanks to
 [**quitefastmst**](https://quitefastmst.gagolewski.com/),
-determining the whole cluster hierarchy for datasets of millions of points
-can be completed within minutes. Therefore, it is nicely suited for solving
-**extreme clustering tasks** (large datasets with a high number of clusters
-to detect).
+determining the entire cluster hierarchy for datasets containing millions of points
+can be completed in minutes. Therefore, it is well suited to solving
+**extreme clustering tasks** (involving large datasets with a high number
+of clusters to detect).
 
-**genieclust** allows clustering with respect to mutual reachability distances
-so that it can act as a **noise point detector** or a version
-of *HDBSCAN\**  (see Campello et al., 2013) that is able to identify a predefined
-number of clusters (actually, their whole hierarchy). The good news is that it
-doesn't dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
+**genieclust** allows clustering with respect to mutual reachability distances,
+enabling it to act as a **noise point detector** or a version
+of *HDBSCAN\**  (see Campello et al., 2013) that can identify a predefined
+number of clusters or their entire hierarchy.  The good news is that it
+doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 The package also features an implementation of:
 

@@ -8,18 +8,17 @@
 algorithm. The idea behind *Genie* is beautifully simple. First, it makes each
 individual point the sole member of its own cluster. Then, it keeps merging pairs
 of the closest clusters, one after another. However, to **prevent
-the formation of clusters of highly imbalanced sizes** a point group of the
+the formation of clusters of highly imbalanced sizes**, a point group of the
 smallest size will sometimes be combined with its nearest counterpart.
 
-In the following sections, we will demonstrate that Genie often outperforms
+In the following sections, we demonstrate that Genie often outperforms
 other popular methods in terms of clustering [quality](benchmarks_ar)
 and [speed](timings).
 
 Here are a few examples of basic interactions with the Python version
-of the `genieclust` {cite}`genieclust` package,
+of the **genieclust** {cite}`genieclust` package,
 which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
-
 
 
 
@@ -36,8 +35,8 @@ import genieclust
 
 ## Breaking the Ice
 
-Let's load an example benchmark set, `jain` {cite}`jain`, which  comes
-with the true corresponding partition (as assigned by experts).
+Let's load an example benchmark set, `jain` {cite}`jain`, which comes
+with the true corresponding partition (as assigned by an expert).
 
 
 ``` python
@@ -70,12 +69,12 @@ plt.show()
 
 (fig:basics-scatter)=
 ```{figure} basics-figures/basics-scatter-1.*
-Reference labels.
+Reference labels
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The `genieclust` package's programming
-interface is [scikit-learn](https://scikit-learn.org/)-compatible {cite}`sklearn`.
+`gini_threshold` parameter value). The **genieclust** package's programming
+interface is [**scikit-learn**](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
 
@@ -107,7 +106,7 @@ plt.show()
 
 (fig:basics-plot-pred)=
 ```{figure} basics-figures/basics-plot-pred-3.*
-Labels predicted by Genie.
+Labels predicted by Genie
 ```
 
 Very nice. Great success.
@@ -141,9 +140,7 @@ This denotes a perfect match between these two.
 
 ## A Comparison with k-means
 
-
-For the sake of comparison, let us apply the k-means algorithm on the same dataset.
-
+Let's apply the k-means algorithm on the same dataset for comparison.
 
 
 ``` python
@@ -161,11 +158,11 @@ plt.show()
 
 (fig:basics-plot-km)=
 ```{figure} basics-figures/basics-plot-km-5.*
-Labels predicted by k-means.
+Labels predicted by k-means
 ```
 
 
-It is well known that the k-means algorithm can only split the input space into
+It is well-known that the k-means algorithm can only split the input space into
 convex regions (compare the notion of the
 [Voronoi diagrams](https://en.wikipedia.org/wiki/Voronoi_diagram),
 so we should not be very surprised with this result.
@@ -195,7 +192,7 @@ The adjusted Rand score of $\sim 0.3$ indicates a far-from-perfect fit.
 Let's also make a comparison against a version of the DBSCAN
 {cite}`predbscan,dbscan` algorithm. The original DBSCAN relies on a somewhat
 magical `eps` parameter, which might be hard to tune in practice. However,
-the [hdbscan](https://github.com/scikit-learn-contrib/hdbscan) package
+the [**hdbscan**](https://hdbscan.readthedocs.io) package
 {cite}`hdbscanpkg` implements its robustified variant
 {cite}`hdbscan`, which makes the algorithm much more user-friendly.
 
@@ -221,7 +218,7 @@ plt.show()
 
 (fig:basics-plot-hdbscan)=
 ```{figure} basics-figures/basics-plot-hdbscan-7.*
-Labels predicted by HDBSCAN\*.
+Labels predicted by HDBSCAN\*
 ```
 
 **Side note.**
@@ -262,7 +259,7 @@ plt.show()
 
 (fig:basics-plot-hdbscan2)=
 ```{figure} basics-figures/basics-plot-hdbscan2-9.*
-Labels predicted by HDBSCAN\*.
+Labels predicted by HDBSCAN\*
 ```
 
 Strangely enough, `min_cluster_size` of $11$ generates four clusters,
@@ -292,7 +289,7 @@ plt.show()
 
 (fig:basics-plot-genie2)=
 ```{figure} basics-figures/basics-plot-genie2-11.*
-Labels predicted by Genie.
+Labels predicted by Genie
 ```
 
 
@@ -320,7 +317,7 @@ plt.show()
 
 (fig:basics-dendrogram-1)=
 ```{figure} basics-figures/basics-dendrogram-1-13.*
-Example dendrogram.
+Example dendrogram
 ```
 
 Another example:
@@ -337,17 +334,17 @@ plt.show()
 
 (fig:basics-dendrogram-2)=
 ```{figure} basics-figures/basics-dendrogram-2-15.*
-Another example dendrogram.
+Another example dendrogram
 ```
 
-For a list of graphical parameters, refer to the function's manual.
+For a list of graphical parameters, refer to this function's manual.
 
 
 
 ## Further Reading
 
 For more details, refer to the package's API reference
-manual: [genieclust.Genie](genieclust.Genie).
-To learn more about Python, check out Marek's open-access (free!) textbook
-[Minimalist Data Wrangling in Python](https://datawranglingpy.gagolewski.com/)
+manual: [`genieclust.Genie`](genieclust.Genie).
+To learn more about Python, check out Marek's open-access textbook
+[*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.

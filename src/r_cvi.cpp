@@ -24,7 +24,6 @@
 
 #include "c_common.h"
 #include "c_matrix.h"
-#include "cvi.h"
 #include "cvi_calinski_harabasz.h"
 #include "cvi_davies_bouldin.h"
 #include "cvi_silhouette.h"
@@ -73,9 +72,9 @@ std::vector<Py_ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, Py_s
 //' @title Internal Cluster Validity Measures
 //'
 //' @description
-//' Implementation of a number of so-called cluster validity indices critically
+//' Implementation of cluster validity indices
 //' reviewed in (Gagolewski, Bartoszuk, Cena, 2021). See Section 2
-//' therein and (Gagolewski, 2022) for the respective definitions.
+//' therein for the respective definitions.
 //'
 //' The greater the index value, the more \emph{valid} (whatever that means)
 //' the assessed partition. For consistency, the Ball-Hall and

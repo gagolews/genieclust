@@ -4,18 +4,17 @@
 algorithm. The idea behind *Genie* is beautifully simple. First, it makes each
 individual point the sole member of its own cluster. Then, it keeps merging pairs
 of the closest clusters, one after another. However, to **prevent
-the formation of clusters of highly imbalanced sizes** a point group of the
+the formation of clusters of highly imbalanced sizes**, a point group of the
 smallest size will sometimes be combined with its nearest counterpart.
 
-In the following sections, we will demonstrate that Genie often outperforms
+In the following sections, we demonstrate that Genie often outperforms
 other popular methods in terms of clustering [quality](benchmarks_ar)
 and [speed](timings).
 
 Here are a few examples of basic interactions with the Python version
-of the *genieclust* {cite}`genieclust` package,
+of the **genieclust** {cite}`genieclust` package,
 which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
-
 
 
 ```{python imports,results="hide"}
@@ -27,22 +26,16 @@ import genieclust
 
 
 ```{python settings,results="hide",echo=FALSE}
-#import pweave
 from tabulate import tabulate
 np.set_printoptions(precision=3, threshold=50, edgeitems=50)
 pd.set_option("min_rows", 200)
-plt.style.use("bmh")
-plt.rcParams.update({
-    'font.size': 9,
-    'font.family': 'sans-serif',
-    'font.sans-serif': ['Ubuntu Condensed', 'Alegreya', 'Alegreya Sans']})
 ```
 
 
 ## Breaking the Ice
 
-Let's load an example benchmark set, `jain` {cite}`jain`, which  comes
-with the true corresponding partition (as assigned by experts).
+Let's load an example benchmark set, `jain` {cite}`jain`, which comes
+with the true corresponding partition (as assigned by an expert).
 
 ```{python basics-load}
 # see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
@@ -61,7 +54,7 @@ n_clusters = len(np.unique(labels_true))
 
 A scatter plot of the dataset together with the reference labels:
 
-```{python basics-scatter,results="hide",fig.cap="Reference labels."}
+```{python basics-scatter,results="hide",fig.cap="Reference labels"}
 genieclust.plots.plot_scatter(X, labels=labels_true)
 plt.title("%s (n=%d, true n_clusters=%d)" % (dataset, X.shape[0], n_clusters))
 plt.axis("equal")
@@ -69,8 +62,8 @@ plt.show()
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The *genieclust* package's programming
-interface is [*scikit-learn*](https://scikit-learn.org/)-compatible {cite}`sklearn`.
+`gini_threshold` parameter value). The **genieclust** package's programming
+interface is [**scikit-learn**](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
 
@@ -88,7 +81,7 @@ For more details, see the documentation of the
 
 Plotting of the discovered partition:
 
-```{python basics-plot-pred,results="hide",fig.cap="Labels predicted by Genie."}
+```{python basics-plot-pred,results="hide",fig.cap="Labels predicted by Genie"}
 genieclust.plots.plot_scatter(X, labels=labels_genie)
 plt.title("Genie (gini_threshold=%g)" % g.gini_threshold)
 plt.axis("equal")
@@ -121,11 +114,9 @@ This denotes a perfect match between these two.
 
 ## A Comparison with k-means
 
+Let's apply the k-means algorithm on the same dataset for comparison.
 
-For the sake of comparison, let us apply the k-means algorithm on the same dataset.
-
-
-```{python basics-plot-km,results="hide",fig.cap="Labels predicted by k-means."}
+```{python basics-plot-km,results="hide",fig.cap="Labels predicted by k-means"}
 import sklearn.cluster
 km = sklearn.cluster.KMeans(n_clusters=n_clusters)
 labels_kmeans = km.fit_predict(X)
@@ -136,7 +127,7 @@ plt.show()
 ```
 
 
-It is well known that the k-means algorithm can only split the input space into
+It is well-known that the k-means algorithm can only split the input space into
 convex regions (compare the notion of the
 [Voronoi diagrams](https://en.wikipedia.org/wiki/Voronoi_diagram),
 so we should not be very surprised with this result.
@@ -161,14 +152,14 @@ The adjusted Rand score of $\sim 0.3$ indicates a far-from-perfect fit.
 Let's also make a comparison against a version of the DBSCAN
 {cite}`predbscan,dbscan` algorithm. The original DBSCAN relies on a somewhat
 magical `eps` parameter, which might be hard to tune in practice. However,
-the [*hdbscan*](https://hdbscan.readthedocs.io) package
+the [**hdbscan**](https://hdbscan.readthedocs.io) package
 {cite}`hdbscanpkg` implements its robustified variant
 {cite}`hdbscan`, which makes the algorithm much more user-friendly.
 
 Here are the clustering results with the `min_cluster_size` parameter
 of 3, 5, 10, and 15:
 
-```{python basics-plot-hdbscan,results="hide",fig.cap="Labels predicted by HDBSCAN\\*.",fig.height=5.9375}
+```{python basics-plot-hdbscan,results="hide",fig.cap="Labels predicted by HDBSCAN\\*",fig.height=5.9375}
 import hdbscan
 mcs = [3, 5, 10, 15]
 for i in range(len(mcs)):
@@ -200,7 +191,7 @@ Unfortunately, we cannot easily guess how many clusters will be generated
 by this method. At first glance, it would seem that `min_cluster_size`
 should lie somewhere between 10 and 15, but...
 
-```{python basics-plot-hdbscan2,results="hide",fig.cap="Labels predicted by HDBSCAN\\*.",fig.height=5.9375}
+```{python basics-plot-hdbscan2,results="hide",fig.cap="Labels predicted by HDBSCAN\\*",fig.height=5.9375}
 mcs = range(10, 16)
 for i in range(len(mcs)):
     h = hdbscan.HDBSCAN(min_cluster_size=mcs[i])
@@ -222,7 +213,7 @@ it can generate a sequence of *nested* partitions, which means that by
 increasing `n_clusters`, we split one and only one cluster
 into two subgroups. This makes the resulting partitions more stable.
 
-```{python basics-plot-genie2,results="hide",fig.cap="Labels predicted by Genie.",fig.height=5.9375}
+```{python basics-plot-genie2,results="hide",fig.cap="Labels predicted by Genie",fig.height=5.9375}
 ncl = range(2, 8)
 for i in range(len(ncl)):
     g = genieclust.Genie(n_clusters=ncl[i])
@@ -240,7 +231,7 @@ plt.show()
 
 Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
 
-```{python basics-dendrogram-1,fig.cap="Example dendrogram.",results="hide"}
+```{python basics-dendrogram-1,fig.cap="Example dendrogram",results="hide"}
 import scipy.cluster.hierarchy
 g = genieclust.Genie(compute_full_tree=True)
 g.fit(X)
@@ -252,13 +243,13 @@ plt.show()
 
 Another example:
 
-```{python basics-dendrogram-2,fig.cap="Another example dendrogram.",results="hide"}
+```{python basics-dendrogram-2,fig.cap="Another example dendrogram",results="hide"}
 scipy.cluster.hierarchy.dendrogram(linkage_matrix,
     truncate_mode="lastp", p=15, orientation="left")
 plt.show()
 ```
 
-For a list of graphical parameters, refer to the function's manual.
+For a list of graphical parameters, refer to this function's manual.
 
 
 
@@ -266,6 +257,6 @@ For a list of graphical parameters, refer to the function's manual.
 
 For more details, refer to the package's API reference
 manual: [`genieclust.Genie`](genieclust.Genie).
-To learn more about Python, check out Marek's open-access (free!) textbook
+To learn more about Python, check out Marek's open-access textbook
 [*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.

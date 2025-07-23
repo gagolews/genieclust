@@ -1,9 +1,5 @@
 # Clustering with Noise Point Detection
 
-::::{note}
-This section needs to be updated for the new release of *genieclust* ≥ 1.2.0.
-::::
-
 
 ```{python imports,results="hide"}
 import numpy as np
@@ -21,7 +17,7 @@ pd.set_option("display.min_rows", 200)
 
 
 Let's load an example dataset that can be found
-at the [*hdbscan*](https://hdbscan.readthedocs.io)
+at the [**hdbscan**](https://hdbscan.readthedocs.io)
 {cite}`hdbscanpkg` package's project site:
 
 ```{python noise-load}
@@ -38,7 +34,7 @@ each dataset might reveal many different clusterings that users might
 find useful for whatever their goal is).
 The label `-1` designates noise points (light grey markers).
 
-```{python noise-scatter,results="hide",fig.cap="Reference labels."}
+```{python noise-scatter,results="hide",fig.cap="Reference labels"}
 genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5)
 plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
 plt.axis("equal")
@@ -65,7 +61,7 @@ $i$ and its $(M-1)$-th nearest neighbour.
 Here are the effects of playing with the $M$ parameter
 (we keep the default `gini_threshold`):
 
-```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with noise point detection.",fig.height=5.9375}
+```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with noise point detection",fig.height=5.9375}
 Ms = [2, 5, 10, 25]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
@@ -77,13 +73,11 @@ for i in range(len(Ms)):
 plt.show()
 ```
 
-For a more natural look-and-feel, it can be a good idea to first identify
-the noise points with Genie, remove them from the data set (at least temporarily),
-and then apply the clustering procedure once again
-(did we mention that our algorithm is fast?)
+We can also first identify the noise points with Genie, remove them temporarily
+from the dataset, and then apply the clustering procedure once again
 but now with respect to the original distance (here: Euclidean):
 
-```{python noise-Genie2,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset."}
+```{python noise-Genie2,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset"}
 # Step 1: Noise point identification
 g1 = genieclust.Genie(n_clusters=n_clusters, M=50)
 labels_noise = g1.fit_predict(X)
@@ -102,17 +96,17 @@ plt.show()
 
 
 Contrary to the excellent implementation of HDBSCAN\*
-that is featured in the [*hdbscan*](https://hdbscan.readthedocs.io)
+that is featured in the [**hdbscan**](https://hdbscan.readthedocs.io)
 package {cite}`hdbscanpkg` and which also relies on a minimum spanning tree
 with respect to $d_M$, in our case,
 we still have the hierarchical Genie {cite}`genieins` algorithm under the hood.
 It means that we can request a *specific* number of clusters.
 Moreover, we can easily switch between partitions
-of finer or coarser granularity.
+of finer or coarser granularity: they are appropriately nested.
 
 
-```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset – different number of clusters requested.",fig.height=5.9375}
-ncs = [5, 6, 7, 8, 10, 15]
+```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset – different number of clusters requested",fig.height=5.9375}
+ncs = [4, 5, 6, 7, 8, 9]
 for i in range(len(ncs)):
     g = genieclust.Genie(n_clusters=ncs[i])
     labels_genie = g.fit_predict(X[non_noise, :])
@@ -129,7 +123,8 @@ plt.show()
 ## A Comparision with HDBSCAN\*
 
 
-Here are the results returned by [*hdbscan*](https://hdbscan.readthedocs.io) with default parameters:
+Here are the results returned by [**hdbscan**](https://hdbscan.readthedocs.io)
+with default parameters:
 
 ```{python noise-import-HDBSCAN}
 import hdbscan
@@ -147,12 +142,12 @@ plt.show()
 
 
 By tuning up `min_cluster_size` and/or `min_samples` (which corresponds
-to our `M` parameter; by the way, `min_samples` defaults to `min_cluster_size`
+to our `M-1`; by the way, `min_samples` defaults to `min_cluster_size`
 if not provided explicitly), we can obtain a partition that is even closer
 to the reference one:
 
 
-```{python noise-HDBSCAN2,results="hide",fig.cap="Labels predicted by HDBSCAN\\* – different settings.",fig.height=5.9375}
+```{python noise-HDBSCAN2,results="hide",fig.cap="Labels predicted by HDBSCAN\\* – different settings",fig.height=5.9375}
 mcss = [5, 10, 25]
 mss = [5, 10]
 for i in range(len(mcss)):
@@ -168,4 +163,3 @@ plt.show()
 ```
 
 Neat.
-

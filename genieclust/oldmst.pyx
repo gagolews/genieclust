@@ -9,8 +9,8 @@
 The "old" (<=2025), slow yet quite generic functions to compute
 k-nearest neighbours and minimum spanning trees.
 
-See the `quitefastmst` package for faster algorithms working in the
-Euclidean space.
+See the `quitefastmst` <https://quitefastmst.gagolewski.com/>
+package for faster algorithms working in the Euclidean space.
 
 Minimum spanning tree algorithms:
 (a) Prim-Jarník's for complete undirected Graphs,

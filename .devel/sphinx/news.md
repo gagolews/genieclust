@@ -1,13 +1,10 @@
 # Changelog
 
-## to-be 1.2.0 ... (2025-xx-xx)
+## 1.2.0 (2025-xx-xx)
 
-* [Python and R] New algorithms for finding Euclidean minimum spanning
-    trees and nearest neighbours based on K-d trees (quite fast in low
-    dimensional spaces): `fastmst.mst_euclid`, `fastmst.knn_euclid`.
-
-* [Python and R] Faster minimum spanning spanning trees wrt mutual reachability
-    distances corresponding to the Euclidean metric.
+* [Python and R] Using the new implementation of Euclidean and mutual
+    reachability minimum spanning trees (quite fast in low dimensional spaces)
+    from the [`quitefastmst`](https://quitefastmst.gagolewski.com/) package.
 
 * [Python and R] [BACKWARD INCOMPATIBILITY] `mlpack` is not used anymore.
 
@@ -124,7 +121,7 @@
 
 ## 1.0.1 (2022-08-08)
 
-*  [GENERAL] A paper on the `genieclust` package is now available:
+*  [GENERAL] A paper on the *genieclust* package is now available:
    M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
    SoftwareX 15, 100722, 2021, DOI:
    [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
@@ -178,9 +175,9 @@
 *  [GENERAL] Clustering with respect to HDBSCAN*-like
    mutual reachability distances is supported.
 
-*  [GENERAL] The parallelised Jarnik-Prim algorithm now supports on-the-fly
-   distance computations. Euclidean minimum spanning tree can be
-   determined with `mlpack`, which is much faster in low-dimensional spaces.
+*  [GENERAL] The parallelised Jarník-Prim algorithm now supports on-the-fly
+   distance computations. Euclidean minimum spanning tree can be determined
+   with `mlpack`, which is much faster in low-dimensional spaces.
 
 *  [R] R version is now available.
 

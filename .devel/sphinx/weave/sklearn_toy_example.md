@@ -15,7 +15,6 @@ on a larger data sample and with the Genie algorithm in the game.
 
 
 
-
 ``` python
 import time
 import warnings
@@ -41,8 +40,7 @@ First, we generate the datasets. Note that in the
 
 ``` python
 n_samples = 10000
-noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5,
-                                      noise=.05)
+noisy_circles = datasets.make_circles(n_samples=n_samples, factor=.5, noise=.05)
 noisy_moons = datasets.make_moons(n_samples=n_samples, noise=.05)
 blobs = datasets.make_blobs(n_samples=n_samples, random_state=8)
 no_structure = np.random.rand(n_samples, 2), None
@@ -66,13 +64,12 @@ Then, we run the clustering procedures and plot the results.
 ``` python
 # Set up cluster parameters
 plt.figure(figsize=(9 * 1.3 + 2, 14.5))
-plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96, wspace=.05,
-                    hspace=.01)
+plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96,
+                    wspace=.05, hspace=.01)
 
 plot_num = 1
 
-default_base = {'n_neighbors': 10,
-                'n_clusters': 3}
+default_base = {'n_neighbors': 10, 'n_clusters': 3}
 
 datasets = [
     (noisy_circles, {'n_clusters': 2}),

@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
 Title: Fast and Robust Hierarchical Clustering with Noise Point Detection
-Version: 1.1.99.9666
-Date: 2025-07-18
+Version: 1.2.0
+Date: 2025-07-23
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -12,19 +12,16 @@ Authors@R: c(
     person("Anna", "Cena", role = c("ctb")),
     person("Peter M.", "Larsen", role = c("ctb"))
     )
-Description: A retake on the Genie algorithm
-    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>), which is a robust
-    hierarchical clustering method
+Description: The Genie algorithm
+    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>) is a robust
+    and outlier-resistant hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
-    It is now faster and more memory efficient; determining the whole cluster
-    hierarchy for datasets of 10M points in low dimensional Euclidean spaces or
-    100K points in high-dimensional ones takes only a minute or so.
-    Allows clustering with respect to mutual reachability distances
-    so that it can act as a noise point detector or a robustified version of
-    'HDBSCAN*' (that is able to detect a predefined number of
-    clusters and hence it does not dependent on the somewhat
-    fragile 'eps' parameter). The package also features an implementation
-    of inequality indices (e.g., Gini and Bonferroni), external cluster validity
+    This package features its faster and more powerful version.
+    It allows clustering with respect to mutual reachability distances,
+    enabling it to act as a noise point detector or a version of
+    'HDBSCAN*' that can identify a predefined number of
+    clusters. The package also features an implementation
+    of the Gini and Bonferroni inequality indices, external cluster validity
     measures (e.g., the normalised clustering accuracy, the adjusted Rand index,
     the Fowlkes-Mallows index, and normalised mutual information), and internal
     cluster validity indices (e.g., the Calinski-Harabasz, Davies-Bouldin,
@@ -36,11 +33,11 @@ URL:
     https://clustering-benchmarks.gagolewski.com/,
     https://github.com/gagolews/genieclust
 License: AGPL-3
-Depends: quitefastmst
 Imports:
     Rcpp,
     stats,
-    utils
+    utils,
+    quitefastmst
 Suggests:
     datasets,
 LinkingTo: Rcpp

@@ -10,7 +10,6 @@ on a larger data sample and with the Genie algorithm in the game.
 
 
 
-
 ```{python imports,results="hide3"}
 import time
 import warnings

@@ -1,4 +1,4 @@
-/*  The Genie++ Clustering Algorithm - R Wrapper
+/*  The Genie Clustering Algorithm - R Wrapper
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
