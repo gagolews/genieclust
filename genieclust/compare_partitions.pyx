@@ -497,7 +497,7 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     :math:`i>K` or :math:`j>L` and :math:`0/0=0`.
 
     `normalized_pivoted_accuracy` is defined as
-    :math:`(\\max_\\sigma \\sum_{j=1}^{\\max(K,L)} c_{\\sigma(j),j}/n-1/\\max(K,L))/(1-1/\\max(K,L))`,
+    :math:`(\\max_\\sigma \\sum_{j=1}^{\\max(K,L)} \\frac{c_{\\sigma(j),j}/n-1/\\max(K,L)}{1-1/\\max(K,L)}`,
     where :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,\\max(K,L)\\}`,
     and :math:`n` is the sum of all elements in :math:`C`.
     For non-square matrices, missing rows/columns are assumed

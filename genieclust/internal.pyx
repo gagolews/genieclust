@@ -565,7 +565,7 @@ cdef class DisjointSets:
     see https://en.wikipedia.org/wiki/Disjoint-set_data_structure.
     This is by design, as some other operations in the current
     package rely on the assumption that the parent ID of each
-    element is always <= than itself.
+    element is always ≤ than itself.
 
     """
     cdef c_disjoint_sets.CDisjointSets ds
@@ -726,7 +726,7 @@ cdef class DisjointSets:
         Notes
         -----
 
-        This is a slow operation. Do you really need it?
+        A slow operation. Do you really need it?
 
         """
         cdef Py_ssize_t i
@@ -988,7 +988,7 @@ cdef class GiniDisjointSets():
         Notes
         -----
 
-        This is a slow operation. Do you really need it?
+        A slow operation. Do you really need it?
 
         """
         cdef Py_ssize_t i

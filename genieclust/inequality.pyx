@@ -291,7 +291,7 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
         \\frac{ \\sum_{i=1}^n \\left(
             \\sum_{j=i}^{n} \\frac{1}{j}
         \\right) x_{\\sigma(n-i+1)} }{\\sum_{i=1}^{n} x_i} - 1
-        \\right)
+        \\right),
 
     where :math:`\\sigma` is an ordering permutation of :math:`(x_1,\\dots,x_n)`.
 

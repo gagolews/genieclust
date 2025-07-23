@@ -13,7 +13,7 @@
 
 
 """
-Functions one might find useful, but not necessarily.
+Auxiliary functions
 """
 
 
