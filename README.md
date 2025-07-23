@@ -37,19 +37,21 @@ such as K-means, BIRCH, or average, Ward, and complete linkage
 on [benchmark data](https://github.com/gagolews/clustering-benchmarks).
 Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
-is definitely worth a try!
+is definitely worth a try.
 
 Genie is based on minimal spanning trees of pairwise distance graphs.
-Thus, it can also be pretty **fast**: determining the whole cluster hierarchy
-for datasets of millions of points can be completed within minutes. Therefore,
-it is nicely suited for solving **extreme clustering tasks** (large datasets
-with a high number of clusters to detect).
+Thus, it can also be pretty **fast**: thanks to
+[**quitefastmst**](https://quitefastmst.gagolewski.com/),
+determining the whole cluster hierarchy for datasets of millions of points
+can be completed within minutes. Therefore, it is nicely suited for solving
+**extreme clustering tasks** (large datasets with a high number of clusters
+to detect).
 
 **genieclust** allows clustering with respect to mutual reachability distances
-so that it can act as a **noise point detector** or a robustified version
+so that it can act as a **noise point detector** or a version
 of *HDBSCAN\**  (see Campello et al., 2013) that is able to identify a predefined
-number of clusters (actually, their whole hierarchy). The good news is that it doesn't
-dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
+number of clusters (actually, their whole hierarchy). The good news is that it
+doesn't dependent on the *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 The package also features an implementation of:
 
@@ -78,7 +80,7 @@ Maciej Bartoszuk, Anna Cena (R packages
 
 ## Examples, Tutorials, and Documentation
 
-R's interface is compatible with `stats::hclust()`,
+The R interface is compatible with `stats::hclust()`,
 but there is more:
 
 ```r
@@ -219,10 +221,6 @@ Density-based clustering based on hierarchical density estimates,
 
 Mueller, A., Nowozin, S., Lampert, C.H., Information theoretic clustering
 using minimum spanning trees, *DAGM-OAGM*, 2012.
-
-Rezaei, M., Fränti, P., Set matching measures for external cluster validity,
-*IEEE Transactions on Knowledge and Data Engineering* **28**(8), 2016,
-2173–2186 [DOI: 10.1109/TKDE.2016.2551240](https://doi.org/10.1109/TKDE.2016.2551240).
 
 See **genieclusts**'s [homepage](https://genieclust.gagolewski.com/) for more
 references.

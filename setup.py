@@ -87,11 +87,11 @@ class genieclust_build_ext(build_ext):
                 e.extra_compile_args += ['-openmp', '-std=c++17']
                 e.extra_link_args += ['-openmp']
         elif sys.platform == "darwin":  # and 'openmp' in os.getenv('CPPFLAGS', ''):
-            # -fopenmp can't be passed as compile flag when using Apple-clang.
+            # https://github.com/scikit-learn/scikit-learn/blob/d640b7fc61ce716af9d113a7c92c953c1ec3e36f/sklearn/_build_utils/openmp_helpers.py
+            # says: "-fopenmp can't be passed as compile flag when using Apple-clang.
             # OpenMP support has to be enabled during preprocessing.
-            #
             # For example, our macOS wheel build jobs use the following environment
-            # variables to build with Apple-clang and the brew installed "libomp":
+            # variables to build with Apple-clang and the brew installed "libomp":"
             #
             # export CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
             # export CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
@@ -139,11 +139,11 @@ ext_kwargs = dict(
 )
 
 
-with open("README.md", "r") as fh:
+with open("README.md", "r", encoding="utf8") as fh:
     long_description = fh.read()
 
 
-with open("genieclust/__init__.py", "r") as fh:
+with open("genieclust/__init__.py", "r", encoding="utf8") as fh:
     __version__ = re.search("(?m)^\\s*__version__\\s*=\\s*[\"']([0-9.]+)[\"']", fh.read())
     if __version__ is None:
         raise ValueError("the package version could not be read")
@@ -184,7 +184,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3",
         #"Programming Language :: Python :: 3.7",
         #"Programming Language :: Python :: 3.8",
-        #"Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
