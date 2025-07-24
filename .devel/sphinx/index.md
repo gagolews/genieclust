@@ -76,8 +76,7 @@ labels = g.fit_predict(X)
 ## R Version
 
 The **R version** of **genieclust** can be downloaded from
-[CRAN](https://cran.r-project.org/web/packages/genieclust/)
-by calling:
+[CRAN](https://CRAN.R-project.org/package=genieclust) by calling:
 
 ```r
 install.packages("genieclust")
@@ -106,7 +105,7 @@ cutree(h, k=2)
 The implemented algorithms include:
 
 -  *Genie* – a reimplementation of the original Genie algorithm
-    from the R package [**genie**](https://cran.r-project.org/web/packages/genie)
+    from the R package [**genie**](https://CRAN.R-project.org/package=genie)
     {cite}`genieins`; much faster than the original one;
     supports arbitrary spanning forests;
 
@@ -150,7 +149,7 @@ New contributions are welcome, e.g., Julia, Matlab/GNU Octave wrappers.
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
 
 Contributors: Maciej Bartoszuk and Anna Cena (*genieclust*'s predecessor
-R package [**genie**](https://cran.r-project.org/web/packages/genie) {cite}`genieins`
+R package [**genie**](https://CRAN.R-project.org/package=genie) {cite}`genieins`
 and some internal cluster validity measures [*CVI*](https://github.com/gagolews/optim_cvi) {cite}`cvi`);
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)

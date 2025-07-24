@@ -1,11 +1,10 @@
 
 
 
-
 # R Interface Examples
 
 The latest stable release of the R package **genieclust** is available from the
-[CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
+[CRAN](https://CRAN.R-project.org/package=genieclust) repository.
 We can install it by calling:
 
 
@@ -62,12 +61,12 @@ with the input matrix directly:
 # faster than gclust(dist(X)):
 h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
-## 
+##
 ## Call:
 ## gclust.mst(d = mst.default(d, distance = distance, verbose = verbose,     ...), gini_threshold = gini_threshold, verbose = verbose)
-## 
-## Cluster method   : Genie(0.3) 
-## Distance         : euclidean 
+##
+## Cluster method   : Genie(0.3)
+## Distance         : euclidean
 ## Number of objects: 154
 ```
 
@@ -77,23 +76,23 @@ In order to extract a desired *k*-partition, we can call `stats::cutree()`:
 ``` r
 y_pred <- cutree(h, k=3)
 sample(y_pred, 25)  # preview
-##                Iran            Slovenia             Morocco 
-##                   1                   3                   1 
-## Trinidad and Tobago        Sierra Leone            Colombia 
-##                   1                   2                   1 
-##        Turkmenistan               Syria             Nigeria 
-##                   1                   1                   2 
-##             Tunisia               Ghana              Sweden 
-##                   1                   2                   1 
-##         Netherlands              Bhutan              Mexico 
-##                   3                   1                   1 
-##             Jamaica        Saudi Arabia             Hungary 
-##                   1                   1                   3 
-##                Peru          Kazakhstan               Spain 
-##                   1                   1                   3 
-##               Japan        Korea, North               China 
-##                   1                   1                   1 
-##             Liberia 
+##                Iran            Slovenia             Morocco
+##                   1                   3                   1
+## Trinidad and Tobago        Sierra Leone            Colombia
+##                   1                   2                   1
+##        Turkmenistan               Syria             Nigeria
+##                   1                   1                   2
+##             Tunisia               Ghana              Sweden
+##                   1                   2                   1
+##         Netherlands              Bhutan              Mexico
+##                   3                   1                   1
+##             Jamaica        Saudi Arabia             Hungary
+##                   1                   1                   3
+##                Peru          Kazakhstan               Spain
+##                   1                   1                   3
+##               Japan        Korea, North               China
+##                   1                   1                   1
+##             Liberia
 ##                   2
 ```
 

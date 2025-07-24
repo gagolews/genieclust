@@ -1,7 +1,7 @@
 # R Interface Examples
 
 The latest stable release of the R package **genieclust** is available from the
-[CRAN](https://cran.r-project.org/web/packages/genieclust/) repository.
+[CRAN](https://CRAN.R-project.org/package=genieclust) repository.
 We can install it by calling:
 
 ```{r install, eval=FALSE}
