@@ -85,7 +85,7 @@ which relies on the near-neighbour search routines implemented in the *nmslib* p
 
 ```{python sparse-example-cluster}
 import genieclust
-g = genieclust.Genie(n_clusters=200, exact=False, affinity="cosinesimil_sparse")
+g = genieclust.Genie(n_clusters=200, exact=False, metric="cosinesimil_sparse")
 movies["cluster"] = g.fit_predict(X)
 ```
 

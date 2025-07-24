@@ -6,13 +6,13 @@
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Timings (How Fast Is It?)" href="timings.html" /><link rel="prev" title="Comparing Algorithms on Toy Datasets" href="sklearn_toy_example.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/weave/benchmarks_ar.html" />
 
-    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>Benchmarks (How Good Is It?) - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
     
     
@@ -104,19 +104,6 @@
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -157,7 +144,7 @@
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -204,7 +191,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -222,7 +209,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9003
+1.2.0
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -236,7 +223,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
@@ -245,26 +232,24 @@
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Point Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_genie.html">genieclust.Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_gic.html">genieclust.GIc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_tools.html">genieclust.tools</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_root.html">genieclust</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_inequality.html">genieclust.inequality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_internal.html">genieclust.internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rapi/emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/inequality.html">inequality: Inequality Measures</a></li>
@@ -272,17 +257,13 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks_details.html">Benchmarks — Detailed Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
 </ul>
 
@@ -315,7 +296,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -323,315 +304,8 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="benchmarks-how-good-is-it">
 <h1>Benchmarks (How Good Is It?)<a class="headerlink" href="#benchmarks-how-good-is-it" title="Link to this heading">¶</a></h1>
-<p>In this section we evaluate the usefulness of different clustering algorithms.
-We use our <a class="reference external" href="https://github.com/gagolews/clustering-benchmarks">framework for benchmarking clustering algorithms (benchmark suite version 1.0.1)</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com/, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> which aggregates datasets from various sources,
-including, but not limited to <span id="id2">[<a class="reference internal" href="../z_bibliography.html#id37" title="Dua, D. and Graff, C. (2019).  UCI Machine Learning Repository. URL: http://archive.ics.uci.edu/ml.">6</a>, <a class="reference internal" href="../z_bibliography.html#id42" title="Fränti, P., Mariescu-Istodor, R., and Zhong, C. (2016).  XNN graph. Lecture Notes in Computer Science, 10029:207–217. DOI: 10.1007/978-3-319-49055-7_19.">9</a>, <a class="reference internal" href="../z_bibliography.html#id38" title="Fränti, P. and Sieranoja, S. (2018).  K-means properties on six clustering benchmark datasets. Applied Intelligence, 48(12):4743–4759. DOI: 10.1007/s10489-018-1238-7.">10</a>, <a class="reference internal" href="../z_bibliography.html#id41" title="Graves, D. and Pedrycz, W. (2010).  Kernel-based fuzzy clustering and fuzzy clustering: A comparative experimental study. Fuzzy Sets and Systems, 161:522–543. DOI: 10.1016/j.fss.2009.10.021.">19</a>, <a class="reference internal" href="../z_bibliography.html#id43" title="Karypis, G., Han, E.H., and Kumar, V. (1999).  CHAMELEON: Hierarchical clustering using dynamic modeling. Computer, 32(8):68–75. DOI: 10.1109/2.781637.">22</a>, <a class="reference internal" href="../z_bibliography.html#id40" title="Ultsch, A. (2005).  Clustering with SOM: U*C. In: Workshop on Self-Organizing Maps, pp. 75–82.">33</a>]</span>.
-Ground-truth/reference label vectors are provided alongside each dataset.
-They define the desired number of clusters. Hence, we only study
-the algorithms that allow for setting of <code class="docutils literal notranslate"><span class="pre">n_clusters</span></code> explicitly.</p>
-<p>We will apply a few agglomerative hierarchical
-methods (average, centroid, complete, single, and Ward linkage; implemented in the
-<a class="reference external" href="http://www.danifold.net/fastcluster.html">fastcluster</a> package <span id="id3">[<a class="reference internal" href="../z_bibliography.html#id21" title="Müllner, D. (2013).  fastcluster: Fast hierarchical, agglomerative clustering routines for R and Python. Journal of Statistical Software, 53(9):1–18. DOI: 10.18637/jss.v053.i09.">28</a>]</span>),
-k-means, expectation-maximisation (EM) for Gaussian mixtures, Birch, spectral
-(implemented in <a class="reference external" href="https://scikit-learn.org/">scikit-learn</a> <span id="id4">[<a class="reference internal" href="../z_bibliography.html#id35" title="Pedregosa, F. and others. (2011).  Scikit-learn: Machine learning in Python. Journal of Machine Learning Research, 12(85):2825–2830. URL: http://jmlr.org/papers/v12/pedregosa11a.html.">31</a>]</span>),
-<a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a> <span id="id5">[<a class="reference internal" href="../z_bibliography.html#id17" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">27</a>]</span>,
-and Genie <span id="id6">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>.</p>
-<p>The adjusted Rand index (see <span id="id7">[<a class="reference internal" href="../z_bibliography.html#id20" title="Hubert, L. and Arabie, P. (1985).  Comparing partitions. Journal of Classification, 2(1):193–218. DOI: 10.1007/BF01908075.">20</a>]</span>) will be used
-to quantify the agreement between
-a reference and a predicted clustering on the scale <span class="math notranslate nohighlight">\([0,1]\)</span>,
-with score of 1.0 denoting perfect agreement. However, as there might be
-multiple equally valid/plausible/useful partitions (see also
-<span id="id8">[<a class="reference internal" href="../z_bibliography.html#id36" title="Dasgupta, S. and Ng, V. (2009).  Single data, multiple clusterings. In: Proc. NIPS Workshop Clustering: Science or Art? Towards Principled Approaches. URL: https://clusteringtheory.org.">5</a>]</span> and <span id="id9">[<a class="reference internal" href="../z_bibliography.html#id7" title="Gagolewski, M. (2022).  A framework for benchmarking clustering algorithms. SoftwareX, 20:101270. URL: https://clustering-benchmarks.gagolewski.com/, DOI: 10.1016/j.softx.2022.101270.">12</a>]</span> for discussion),
-the outputs generated by a single algorithm is evaluated
-against all the available reference labellings and the maximal similarity score
-is reported.</p>
-<p>For more detailed results based on other partition similarity scores,
-see the <a class="reference internal" href="benchmarks_details.html"><span class="doc std std-doc">Appendix</span></a>.</p>
-<section id="small-datasets">
-<h2>Small Datasets<a class="headerlink" href="#small-datasets" title="Link to this heading">¶</a></h2>
-<p>As some of the algorithms tested here have failed to generate a solution
-within reasonable time limits (e.g., spectral clustering),
-in this part we restrict ourselves to the datasets with up to 10,000 observations.
-As suggested in the benchmark suite’s description, we omit the over-populous
-“parametric” Gaussian-distributed batteries <code class="docutils literal notranslate"><span class="pre">h2mg</span></code> and <code class="docutils literal notranslate"><span class="pre">g2mg</span></code>.</p>
-<p>Here are the boxplots of the empirical distributions of the adjusted Rand index.
-We report the results for Birch and spectral clustering with parameters
-that lead to the highest average AR score
-(the former was tested on a parameter grid of
-<code class="docutils literal notranslate"><span class="pre">branching_factor</span> <span class="pre">in</span> <span class="pre">[10,</span> <span class="pre">50,</span> <span class="pre">100]</span></code>
-and <code class="docutils literal notranslate"><span class="pre">threshold</span> <span class="pre">in</span> <span class="pre">[0.005,</span> <span class="pre">0.01,</span> <span class="pre">0.025,</span> <span class="pre">0.05,</span> <span class="pre">0.1,</span> <span class="pre">0.25,</span> <span class="pre">0.5,</span> <span class="pre">1.0]</span></code>
-and the latter on <code class="docutils literal notranslate"><span class="pre">affinity</span> <span class="pre">in</span> <span class="pre">[&quot;rbf&quot;,</span> <span class="pre">&quot;laplacian&quot;,</span> <span class="pre">&quot;poly&quot;,</span> <span class="pre">&quot;sigmoid&quot;]</span></code>
-and <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">in</span> <span class="pre">[0.25,</span> <span class="pre">0.5,</span> <span class="pre">1.0,</span> <span class="pre">2.5,</span> <span class="pre">5.0]</span></code>).
-Moreover, Gaussian mixtures used <code class="docutils literal notranslate"><span class="pre">n_init=100</span></code>.</p>
-<figure class="align-default" id="id13">
-<span id="fig-plot-small"></span><img alt="../_images/plot_small-1.png" src="../_images/plot_small-1.png" />
-<figcaption>
-<p><span class="caption-number">Figure 10 </span><span class="caption-text">Distribution of the AR index for each algorithm (small datasets); best=1.0.</span><a class="headerlink" href="#id13" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>The Genie algorithm with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 0.3 gives the highest average
-and median AR index and, at the same time, is subject to the least variability.
-The (parametric!) EM algorithm fitting mixtures of Gaussians and the (perhaps lesser-known)
-information-theoretic <a class="reference external" href="https://github.com/amueller/information-theoretic-mst">ITM</a>
-<span id="id10">[<a class="reference internal" href="../z_bibliography.html#id17" title="Müller, A.C., Nowozin, S., and Lampert, C.H. (2012).  Information theoretic clustering using minimum spanning trees. In: Proc. German Conference on Pattern Recognition. URL: https://github.com/amueller/information-theoretic-mst.">27</a>]</span> method (which is also based on a minimum spanning tree;
-compare <span id="id11">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2024).  Clustering with minimum spanning trees: How good can it be? Journal of Classification. in press. URL: https://link.springer.com/content/pdf/10.1007/s00357-024-09483-1.pdf, DOI: 10.1007/s00357-024-09483-1.">18</a>]</span>)
-tend to output good quality outcomes as well.</p>
-<p>Descriptive statistics for the ranks (for each dataset,
-each algorithm that gets the highest AR index rounded to 2 decimal digits,
-gets a rank of 1); lower ranks are better:</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p></p></th>
-<th class="head"><p>count</p></th>
-<th class="head"><p>mean</p></th>
-<th class="head"><p>std</p></th>
-<th class="head"><p>min</p></th>
-<th class="head"><p>25%</p></th>
-<th class="head"><p>50%</p></th>
-<th class="head"><p>75%</p></th>
-<th class="head"><p>max</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Average linkage</p></td>
-<td><p>72</p></td>
-<td><p>6.6</p></td>
-<td><p>3.5</p></td>
-<td><p>1</p></td>
-<td><p>4.8</p></td>
-<td><p>7</p></td>
-<td><p>9.2</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-odd"><td><p>Birch_0.01</p></td>
-<td><p>72</p></td>
-<td><p>5.8</p></td>
-<td><p>2.9</p></td>
-<td><p>1</p></td>
-<td><p>4</p></td>
-<td><p>6</p></td>
-<td><p>8</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-even"><td><p>Complete linkage</p></td>
-<td><p>72</p></td>
-<td><p>7.7</p></td>
-<td><p>3.2</p></td>
-<td><p>1</p></td>
-<td><p>6</p></td>
-<td><p>8</p></td>
-<td><p>11</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-odd"><td><p>Gaussian mixtures</p></td>
-<td><p>72</p></td>
-<td><p>4.2</p></td>
-<td><p>3.6</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>3</p></td>
-<td><p>7</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.1</p></td>
-<td><p>72</p></td>
-<td><p>3.8</p></td>
-<td><p>3.3</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>3</p></td>
-<td><p>6</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.3</p></td>
-<td><p>72</p></td>
-<td><p>3.3</p></td>
-<td><p>3</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>5</p></td>
-<td><p>11</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.5</p></td>
-<td><p>72</p></td>
-<td><p>4.2</p></td>
-<td><p>3.9</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>8</p></td>
-<td><p>11</p></td>
-</tr>
-<tr class="row-odd"><td><p>ITM</p></td>
-<td><p>72</p></td>
-<td><p>5.4</p></td>
-<td><p>3.9</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>5</p></td>
-<td><p>9</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-even"><td><p>K-means</p></td>
-<td><p>72</p></td>
-<td><p>5.6</p></td>
-<td><p>3.8</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>6</p></td>
-<td><p>9</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-odd"><td><p>Single linkage</p></td>
-<td><p>72</p></td>
-<td><p>7.4</p></td>
-<td><p>5.1</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>11</p></td>
-<td><p>12</p></td>
-<td><p>12</p></td>
-</tr>
-<tr class="row-even"><td><p>Spectral_RBF_5</p></td>
-<td><p>72</p></td>
-<td><p>5.2</p></td>
-<td><p>3.5</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>6</p></td>
-<td><p>8</p></td>
-<td><p>11</p></td>
-</tr>
-<tr class="row-odd"><td><p>Ward linkage</p></td>
-<td><p>72</p></td>
-<td><p>6</p></td>
-<td><p>3</p></td>
-<td><p>1</p></td>
-<td><p>4</p></td>
-<td><p>6</p></td>
-<td><p>8</p></td>
-<td><p>12</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="large-datasets">
-<h2>Large Datasets<a class="headerlink" href="#large-datasets" title="Link to this heading">¶</a></h2>
-<p>Below we provide the results for the larger datasets (70,000-105,600 points).</p>
-<figure class="align-default" id="id14">
-<span id="fig-plot-large"></span><img alt="../_images/plot_large-3.png" src="../_images/plot_large-3.png" />
-<figcaption>
-<p><span class="caption-number">Figure 11 </span><span class="caption-text">Distribution of the AR index for each algorithm (large datasets); best=1.0.</span><a class="headerlink" href="#id14" title="Link to this image">¶</a></p>
-</figcaption>
-</figure>
-<p>This time, the ITM method and Genie with <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code> of 0.1 give
-the highest typical scores.</p>
-<p>Descriptive statistics for the ranks (AR index):</p>
-<div class="table-wrapper colwidths-auto docutils container">
-<table class="docutils align-default">
-<thead>
-<tr class="row-odd"><th class="head"><p></p></th>
-<th class="head"><p>count</p></th>
-<th class="head"><p>mean</p></th>
-<th class="head"><p>std</p></th>
-<th class="head"><p>min</p></th>
-<th class="head"><p>25%</p></th>
-<th class="head"><p>50%</p></th>
-<th class="head"><p>75%</p></th>
-<th class="head"><p>max</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Genie_0.1</p></td>
-<td><p>6</p></td>
-<td><p>1.8</p></td>
-<td><p>1.2</p></td>
-<td><p>1</p></td>
-<td><p>1</p></td>
-<td><p>1.5</p></td>
-<td><p>2</p></td>
-<td><p>4</p></td>
-</tr>
-<tr class="row-odd"><td><p>Genie_0.3</p></td>
-<td><p>6</p></td>
-<td><p>3.2</p></td>
-<td><p>1.7</p></td>
-<td><p>1</p></td>
-<td><p>2</p></td>
-<td><p>3</p></td>
-<td><p>4.8</p></td>
-<td><p>5</p></td>
-</tr>
-<tr class="row-even"><td><p>Genie_0.5</p></td>
-<td><p>6</p></td>
-<td><p>4.8</p></td>
-<td><p>1.9</p></td>
-<td><p>1</p></td>
-<td><p>5</p></td>
-<td><p>5.5</p></td>
-<td><p>6</p></td>
-<td><p>6</p></td>
-</tr>
-<tr class="row-odd"><td><p>ITM</p></td>
-<td><p>6</p></td>
-<td><p>3.3</p></td>
-<td><p>2.3</p></td>
-<td><p>1</p></td>
-<td><p>1.5</p></td>
-<td><p>3</p></td>
-<td><p>5.2</p></td>
-<td><p>6</p></td>
-</tr>
-<tr class="row-even"><td><p>K-means</p></td>
-<td><p>6</p></td>
-<td><p>3.3</p></td>
-<td><p>1.6</p></td>
-<td><p>1</p></td>
-<td><p>2.2</p></td>
-<td><p>3.5</p></td>
-<td><p>4.8</p></td>
-<td><p>5</p></td>
-</tr>
-<tr class="row-odd"><td><p>Single linkage</p></td>
-<td><p>6</p></td>
-<td><p>6.8</p></td>
-<td><p>0.4</p></td>
-<td><p>6</p></td>
-<td><p>7</p></td>
-<td><p>7</p></td>
-<td><p>7</p></td>
-<td><p>7</p></td>
-</tr>
-<tr class="row-even"><td><p>Ward linkage</p></td>
-<td><p>6</p></td>
-<td><p>3.2</p></td>
-<td><p>1.5</p></td>
-<td><p>1</p></td>
-<td><p>2.2</p></td>
-<td><p>3.5</p></td>
-<td><p>4</p></td>
-<td><p>5</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">¶</a></h2>
-<p>Overall, the Genie algorithm often outperforms other algorithms considered
-in this study, at least on this rich benchmark battery.
-In <span id="id12">[<a class="reference internal" href="../z_bibliography.html#id11" title="Gagolewski, M., Bartoszuk, M., and Cena, A. (2016).  Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm. Information Sciences, 363:8–23. URL: https://arxiv.org/pdf/2209.05757, DOI: 10.1016/j.ins.2016.05.003.">16</a>]</span>, based on a much smaller sample of reference datasets,
-we have recommended using <code class="docutils literal notranslate"><span class="pre">gini_threshold=0.3</span></code>,
-which is set as the default also in the <code class="docutils literal notranslate"><span class="pre">genieclust</span></code> package.
-However, sometimes inspecting thresholds equal to 0.1 and 0.5 is worth a try.
-Interestingly, the algorithm is quite stable in the sense that
-small changes of this parameter should not affect the generated clusterings
-in a significant way.</p>
-</section>
+<p>See <a class="reference external" href="https://link.springer.com/content/pdf/10.1007/s00357-024-09483-1.pdf"><em>Clustering with minimum spanning trees: How good can it be?</em></a>
+<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id4" title="Gagolewski, M., Cena, A., Bartoszuk, M., and Brzozowski, L. (2025).  Clustering with minimum spanning trees: How good can it be? Journal of Classification, 42:90–112. URL: https://link.springer.com/content/pdf/10.1007/s00357-024-09483-1.pdf, DOI: 10.1007/s00357-024-09483-1.">11</a>]</span>, in particular, Figure 3 and Table 4.</p>
 </section>
 
         </article>
@@ -669,7 +343,7 @@ in a significant way.</p>
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-04-08T14:04:15+0200.
+              Last updated on 2025-07-24T16:19:16+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -678,38 +352,15 @@ in a significant way.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            In this section
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Benchmarks (How Good Is It?)</a><ul>
-<li><a class="reference internal" href="#small-datasets">Small Datasets</a></li>
-<li><a class="reference internal" href="#large-datasets">Large Datasets</a></li>
-<li><a class="reference internal" href="#summary">Summary</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=56c7b1c9"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+</div><script src="../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>

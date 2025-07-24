@@ -15,6 +15,7 @@ exclude src/.clangd
 exclude src/Makevars*
 exclude R/*
 exclude docs/*
+exclude inst/*
 exclude man/*
 exclude .devel/*
 exclude .git/*

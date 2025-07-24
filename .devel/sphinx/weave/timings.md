@@ -27,7 +27,7 @@ g = genieclust.Genie(n_clusters=2)
 g.fit(X)
 print("Elapsed time: %.2f secs." % (time.time()-t0))
 ## Genie()
-## Elapsed time: 1.32 secs.
+## Elapsed time: 1.30 secs.
 ```
 
 Note that due to the curse of dimensionality, processing

@@ -31,4 +31,4 @@ from . import compare_partitions
 from . import cluster_validity
 from . import internal
 from . import oldmst
-from .genie import Genie, GIc
+from .genie import MSTClusterMixin, Genie, GIc

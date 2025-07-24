@@ -17,7 +17,7 @@ python:
 	# python3 setup.py install --user  # deprecated
 	# python3 -m build  # requires the 'build' package, creates an isolated envir
 	# -DGENIECLUST_PROFILER
-	CPPFLAGS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wpedantic -Wextra -Wall" python3 -m pip install .
+	CPPFLAGS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wpedantic -Wextra -Wall" python3 -m pip install . --no-build-isolation
 
 py-test: python
 	pytest
@@ -35,7 +35,10 @@ py-check: python
 
 r-autoconf:
 	Rscript -e 'Rcpp::compileAttributes()'
-	CXX_DEFS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --preclean
+	#CXX_DEFS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --preclean
+
+r: r-autoconf
+	CXX_DEFS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --html
 	# Roxygen2 adds the -O0 flag if load_installed is not passed!
 	Rscript -e "\
 	    source('.devel/roxygen2-patch.R');\
@@ -43,9 +46,7 @@ r-autoconf:
 	        roclets=c('rd', 'collate', 'namespace', 'vignette'), \
 	        load_code=roxygen2::load_installed\
 	)"
-
-r: r-autoconf
-	R CMD INSTALL . --html
+	CXX_DEFS="${CPPFLAGS} -UNDEBUG -DDEBUG -Wall -Wextra -Wpedantic" R CMD INSTALL . --html
 
 r-test: r
 	Rscript -e 'source(".devel/tinytest.R")'
@@ -74,7 +75,7 @@ weave:
 news:
 	cd .devel/sphinx && cp ../../NEWS news.md
 
-html: news weave rd2myst weave-examples
+html: r python news weave rd2myst weave-examples
 	rm -rf .devel/sphinx/_build/
 	cd .devel/sphinx && make html
 	.devel/sphinx/fix-html.sh .devel/sphinx/_build/html/rapi/

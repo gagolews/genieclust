@@ -31,12 +31,12 @@ X_lodim = ad.obsm['X_pca']
 import genieclust
 import numpy as np
 
-g = genieclust.Genie(n_clusters=4, affinity='cosine', M=25, postprocess="all")
+g = genieclust.Genie(n_clusters=4, metric='cosine', M=25, postprocess="all")
 labels = g.fit_predict(X_hidim)
 ad.obs['genie_labels'] = labels.astype(str)
 sc.pl.umap(ad, color='genie_labels')
 
-g = genieclust.Genie(n_clusters=3, affinity='cosine')
+g = genieclust.Genie(n_clusters=3, metric='cosine')
 labels = g.fit_predict(X_lodim)
 ad.obs['genie_labels'] = labels.astype(str)
 sc.pl.umap(ad, color='genie_labels')

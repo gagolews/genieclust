@@ -3,16 +3,16 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]" href="emst_mlpack.html" /><link rel="prev" title="cluster_validity: Internal Cluster Validity Measures" href="cluster_validity.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="gclust: Hierarchical Clustering Algorithm Genie" href="gclust.html" /><link rel="prev" title="cluster_validity: Internal Cluster Validity Measures" href="cluster_validity.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/compare_partitions.html" />
 
-    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 7.3.7 and Furo 2024.05.06 -->
+    <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
         <title>compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=387cc868" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=36a5483c" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
     
     
@@ -104,19 +104,6 @@
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
-    </svg>
-  </symbol>
   <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
     <title>Auto light/dark, in light mode</title>
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -157,7 +144,7 @@
       <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
       <path d="M13.5 6.5l4 4" />
       <path d="M20 21l2 -2l-2 -2" />
-      <path d="M17 17l-2 2l2 2" /
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
   <symbol id="svg-eye" viewBox="0 0 24 24">
@@ -222,7 +209,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.1.6.9003
+1.2.0
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -236,7 +223,7 @@
 <li class="toctree-l1"><a class="reference external" href="https://www.gagolewski.com/">Author</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust">Source Code (GitHub)</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/gagolews/genieclust/issues">Bug Tracker and Feature Suggestions</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust/">PyPI Entry</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
@@ -245,26 +232,24 @@
 <li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../weave/noise.html">Clustering with Noise Points Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/noise.html">Clustering with Noise Point Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/r.html">R Interface Examples</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
 <ul class="current">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../genieclust.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_genie.html">genieclust.Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_gic.html">genieclust.GIc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_cluster_validity.html">genieclust.cluster_validity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_compare_partitions.html">genieclust.compare_partitions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../genieclust_tools.html">genieclust.tools</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_root.html">genieclust</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_inequality.html">genieclust.inequality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_internal.html">genieclust.internal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_plots.html">genieclust.plots</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="emst_mlpack.html">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
 <li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inequality.html">inequality: Inequality Measures</a></li>
@@ -272,17 +257,13 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">See Also</span></p>
+<p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com">Deep R Programming</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Appendix</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">Changelog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_details.html">Benchmarks — Detailed Results</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_approx.html">Benchmarks — Approximate Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../z_bibliography.html">References</a></li>
 </ul>
 
@@ -325,7 +306,7 @@
 <h1>compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores<a class="headerlink" href="#compare-partitions-external-cluster-validity-measures-and-pairwise-partition-similarity-scores" title="Link to this heading">¶</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>The functions described in this section quantify the similarity between two label vectors <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> which represent two partitions of a set of <span class="math notranslate nohighlight">\(n\)</span> elements into, respectively, <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(L\)</span> nonempty and pairwise disjoint subsets.</p>
+<p>The functions described in this section quantify the similarity between two label vectors <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> which represent two partitions of a set of <span class="math notranslate nohighlight">\(n\)</span> elements into, respectively, <span class="math notranslate nohighlight">\(K\)</span> and <span class="math notranslate nohighlight">\(L\)</span> nonempty and pairwise disjoint subsets; for a review, refer to the paper by Gagolewski (2025).</p>
 <p>For instance, <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> can represent two clusterings of a dataset with <span class="math notranslate nohighlight">\(n\)</span> observations specified by two vectors of labels. The functions described here can be used as external cluster validity measures, where we assume that <code class="docutils literal notranslate"><span class="pre">x</span></code> is a reference (ground-truth) partition whilst <code class="docutils literal notranslate"><span class="pre">y</span></code> is the vector of predicted cluster memberships.</p>
 <p>All indices except <code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy()</span></code> can act as a pairwise partition similarity score: they are symmetric, i.e., <code class="docutils literal notranslate"><span class="pre">index(x,</span> <span class="pre">y)</span> <span class="pre">==</span> <span class="pre">index(y,</span> <span class="pre">x)</span></code>.</p>
 <p>Each index except <code class="docutils literal notranslate"><span class="pre">mi_score()</span></code> (which computes the mutual information score) outputs 1 given two identical partitions. Note that partitions are always defined up to a permutation (bijection) of the set of possible labels, e.g., (1, 1, 2, 1) and (4, 4, 2, 4) represent the same 2-partition.</p>
@@ -372,7 +353,7 @@
 <td><p>an integer vector of length n (or an object coercible to) representing a K-partition of an n-set (e.g., a reference partition), or a confusion matrix with K rows and L columns (see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html"><code class="docutils literal notranslate"><span class="pre">table(x,</span> <span class="pre">y)</span></code></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">y</span></code></p></td>
-<td><p>an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with <code class="docutils literal notranslate"><span class="pre">x</span></code>), or NULL (if x is an K*L confusion matrix)</p></td>
+<td><p>an integer vector of length n (or an object coercible to) representing an L-partition of the same set (e.g., the output of a clustering algorithm we wish to compare with <code class="docutils literal notranslate"><span class="pre">x</span></code>), or NULL (if x is an <span class="math notranslate nohighlight">\(K\times L\)</span> confusion matrix)</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">simplified</span></code></p></td>
 <td><p>whether to assume E=1 in the definition of the pair sets index index, i.e., use Eq. (20) in (Rezaei, Franti, 2016) instead of Eq. (18)</p></td>
@@ -386,14 +367,14 @@
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy()</span></code> (Gagolewski, 2023) is an asymmetric external cluster validity measure which assumes that the label vector <code class="docutils literal notranslate"><span class="pre">x</span></code> (or rows in the confusion matrix) represents the reference (ground truth) partition. It is an average proportion of correctly classified points in each cluster above the worst case scenario of uniform membership assignment, with cluster ID matching based on the solution to the maximal linear sum assignment problem; see <a class="reference internal" href="#"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix</span></code></span></a>). It is given by: <span class="math notranslate nohighlight">\(\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}\)</span>, where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and <span class="math notranslate nohighlight">\(L\)</span> columns, <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, L}\)</span> is the i-th row sum, under the assumption that <span class="math notranslate nohighlight">\(c_{i,j}=0\)</span> for <span class="math notranslate nohighlight">\(i&gt;K\)</span> or <span class="math notranslate nohighlight">\(j&gt;L\)</span> and <span class="math notranslate nohighlight">\(0/0=0\)</span>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy()</span></code> is defined as <span class="math notranslate nohighlight">\((\max_\sigma \sum_{j=1}^{\max(K,L)} c_{\sigma(j),j}/n-1/\max(K,L))/(1-1/\max(K,L))\)</span>, where <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and <span class="math notranslate nohighlight">\(n\)</span> is the sum of all elements in <span class="math notranslate nohighlight">\(C\)</span>. For non-square matrices, missing rows/columns are assumed to be filled with 0s.</p>
-<p><code class="docutils literal notranslate"><span class="pre">pair_sets_index()</span></code> (PSI) was introduced in (Rezaei, Franti, 2016). The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18). For non-square matrices, missing rows/columns are assumed to be filled with 0s.</p>
-<p><code class="docutils literal notranslate"><span class="pre">rand_score()</span></code> gives the Rand score (the “probability” of agreement between the two partitions) and <code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code> is its version corrected for chance, see (Hubert, Arabie, 1985): its expected value is 0 given two independent partitions. Due to the adjustment, the resulting index may be negative for some inputs.</p>
-<p>Similarly, <code class="docutils literal notranslate"><span class="pre">fm_score()</span></code> gives the Fowlkes-Mallows (FM) score and <code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code> is its adjusted-for-chance version; see (Hubert, Arabie, 1985).</p>
-<p><code class="docutils literal notranslate"><span class="pre">mi_score()</span></code>, <code class="docutils literal notranslate"><span class="pre">adjusted_mi_score()</span></code> and <code class="docutils literal notranslate"><span class="pre">normalized_mi_score()</span></code> are information-theoretic scores, based on mutual information, see the definition of <span class="math notranslate nohighlight">\(AMI_{sum}\)</span> and <span class="math notranslate nohighlight">\(NMI_{sum}\)</span> in (Vinh et al., 2010).</p>
+<p><code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy()</span></code> is an asymmetric external cluster validity measure proposed by Gagolewski (2025). It assumes that the label vector <code class="docutils literal notranslate"><span class="pre">x</span></code> (or rows in the confusion matrix) represents the reference (ground truth) partition. It is the average proportion of correctly classified points in each cluster above the worst case scenario representing the uniform membership assignment, with the cluster ID matching based on the solution to the maximal linear sum assignment problem; see <a class="reference internal" href="#"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix</span></code></span></a>). The index is given by: <span class="math notranslate nohighlight">\(\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}\)</span>, where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and <span class="math notranslate nohighlight">\(L\)</span> columns, <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, L}\)</span> is the i-th row sum, under the assumption that <span class="math notranslate nohighlight">\(c_{i,j}=0\)</span> for <span class="math notranslate nohighlight">\(i&gt;K\)</span> or <span class="math notranslate nohighlight">\(j&gt;L\)</span> and <span class="math notranslate nohighlight">\(0/0=0\)</span>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy()</span></code> is defined as <span class="math notranslate nohighlight">\((\max_\sigma \sum_{j=1}^{\max(K,L)} \frac{c_{\sigma(j),j}/n-1/\max(K,L)}{1-1/\max(K,L)}\)</span>, where <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and <span class="math notranslate nohighlight">\(n\)</span> is the sum of all elements in <span class="math notranslate nohighlight">\(C\)</span>. For non-square matrices, missing rows/columns are assumed to be filled with 0s.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pair_sets_index()</span></code> (PSI) was introduced by Rezaei and Franti (2016). The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18). For non-square matrices, missing rows/columns are assumed to be filled with 0s.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rand_score()</span></code> gives the Rand score (the “probability” of agreement between the two partitions) and <code class="docutils literal notranslate"><span class="pre">adjusted_rand_score()</span></code> is its version corrected for chance (see Hubert, Arabie, 1985): its expected value is 0 given two independent partitions. Due to the adjustment, the resulting index may be negative for some inputs.</p>
+<p>Similarly, <code class="docutils literal notranslate"><span class="pre">fm_score()</span></code> gives the Fowlkes-Mallows (FM) score and <code class="docutils literal notranslate"><span class="pre">adjusted_fm_score()</span></code> is its adjusted-for-chance version; (see Hubert, Arabie, 1985).</p>
+<p><code class="docutils literal notranslate"><span class="pre">mi_score()</span></code>, <code class="docutils literal notranslate"><span class="pre">adjusted_mi_score()</span></code> and <code class="docutils literal notranslate"><span class="pre">normalized_mi_score()</span></code> are information-theoretic scores, based on mutual information, see the definition of <span class="math notranslate nohighlight">\(AMI_{sum}\)</span> and <span class="math notranslate nohighlight">\(NMI_{sum}\)</span> in the paper by Vinh et al. (2010).</p>
 <p><code class="docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code> computes the confusion matrix and permutes its rows and columns so that the sum of the elements of the main diagonal is the largest possible (by solving the maximal assignment problem). The function only accepts <span class="math notranslate nohighlight">\(K \leq L\)</span>. The reordering of the columns of a confusion matrix can be determined by calling <code class="docutils literal notranslate"><span class="pre">normalizing_permutation()</span></code>.</p>
-<p>Also note that the built-in <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html"><code class="docutils literal notranslate"><span class="pre">table()</span></code></a> determines the standard confusion matrix.</p>
+<p>Also note that the built-in <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/table.html"><code class="docutils literal notranslate"><span class="pre">table()</span></code></a> function determines the standard confusion matrix.</p>
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">¶</a></h2>
@@ -407,18 +388,18 @@
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p>Gagolewski M., A framework for benchmarking clustering algorithms, <em>SoftwareX</em> 20, 2022, 101270, <a class="reference external" href="https://doi.org/10.1016/j.softx.2022.101270">doi:10.1016/j.softx.2022.101270</a>, <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
-<p>Gagolewski M., Normalised clustering accuracy: An asymmetric external cluster validity measure, <em>Journal of Classification</em>, 2024, in press, <a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">doi:10.1007/s00357-024-09482-2</a>.</p>
-<p>Hubert L., Arabie P., Comparing partitions, <em>Journal of Classification</em> 2(1), 1985, 193-218, esp. Eqs. (2) and (4).</p>
-<p>Meila M., Heckerman D., An experimental comparison of model-based clustering methods, <em>Machine Learning</em> 42, 2001, pp. 9-29, <a class="reference external" href="https://doi.org/10.1023/A%3A1007648401407">doi:10.1023/A:1007648401407</a>.</p>
-<p>Rezaei M., Franti P., Set matching measures for external cluster validity, <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016, 2173-2186.</p>
-<p>Steinley D., Properties of the Hubert-Arabie adjusted Rand index, <em>Psychological Methods</em> 9(3), 2004, pp. 386-396, <a class="reference external" href="https://doi.org/10.1037/1082-989X.9.3.386">doi:10.1037/1082-989X.9.3.386</a>.</p>
-<p>Vinh N.X., Epps J., Bailey J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, <em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854.</p>
+<p>Gagolewski, M., A framework for benchmarking clustering algorithms, <em>SoftwareX</em> 20, 2022, 101270, <a class="reference external" href="https://doi.org/10.1016/j.softx.2022.101270">doi:10.1016/j.softx.2022.101270</a>, <a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
+<p>Gagolewski, M., Normalised clustering accuracy: An asymmetric external cluster validity measure, <em>Journal of Classification</em> 42, 2025, 2-30. <a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">doi:10.1007/s00357-024-09482-2</a>.</p>
+<p>Hubert, L., Arabie, P., Comparing partitions, <em>Journal of Classification</em> 2(1), 1985, 193-218, esp. Eqs. (2) and (4).</p>
+<p>Meila, M., Heckerman, D., An experimental comparison of model-based clustering methods, <em>Machine Learning</em> 42, 2001, pp. 9-29, <a class="reference external" href="https://doi.org/10.1023/A%3A1007648401407">doi:10.1023/A:1007648401407</a>.</p>
+<p>Rezaei, M., Franti, P., Set matching measures for external cluster validity, <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016, 2173-2186.</p>
+<p>Steinley, D., Properties of the Hubert-Arabie adjusted Rand index, <em>Psychological Methods</em> 9(3), 2004, pp. 386-396, <a class="reference external" href="https://doi.org/10.1037/1082-989X.9.3.386">doi:10.1037/1082-989X.9.3.386</a>.</p>
+<p>Vinh, N.X., Epps, J., Bailey, J., Information theoretic measures for clusterings comparison: Variants, properties, normalization and correction for chance, <em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854.</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
-<p>Gagolewski M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a>.</p>
+<p>Gagolewski, M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a></p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
@@ -463,12 +444,12 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="emst_mlpack.html">
+          <a class="next-page" href="gclust.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">emst_mlpack: Euclidean Minimum Spanning Tree [DEPRECATED]</div>
+                <div class="title">gclust: Hierarchical Clustering Algorithm Genie</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -493,7 +474,7 @@
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-04-08T14:04:15+0200.
+              Last updated on 2025-07-24T16:19:16+0200.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -535,10 +516,10 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=56c7b1c9"></script>
-    <script src="../_static/doctools.js?v=9a2dae69"></script>
+</div><script src="../_static/documentation_options.js?v=6efca38a"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script src="../_static/scripts/furo.js?v=4e2eecee"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>

@@ -113,9 +113,9 @@ def test_gic_precomputed():
             print("%-20s g=%r n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
             res1 = genieclust.GIc(K, gini_thresholds=g,
-                         affinity="precomputed", n_features=X.shape[1])
+                         metric="precomputed", n_features=X.shape[1])
             res1 = res1.fit_predict(D)+1
-            res2 = genieclust.GIc(K, gini_thresholds=g, affinity="euclidean").fit_predict(X)+1
+            res2 = genieclust.GIc(K, gini_thresholds=g, metric="euclidean").fit_predict(X)+1
             ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")
             assert ari>1.0-1e-12
@@ -127,7 +127,7 @@ def test_gic_precomputed():
         # test compute_all_cuts
         K = 20
         g = np.arange(1, 8)/10
-        res1 = genieclust.GIc(K, gini_thresholds=g, affinity="precomputed",
+        res1 = genieclust.GIc(K, gini_thresholds=g, metric="precomputed",
             compute_all_cuts=True, M=5, verbose=True)
         res1.n_features = X.shape[1]
         res1 = res1.fit_predict(D)
@@ -135,7 +135,7 @@ def test_gic_precomputed():
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
         for k in range(1, res1.shape[0]):
             res2 = genieclust.GIc(k, gini_thresholds=g, add_clusters=K-k,
-                M=5, affinity="precomputed", n_features=X.shape[1])
+                M=5, metric="precomputed", n_features=X.shape[1])
             res2 = res2.fit_predict(D)
             assert np.all(res2 == res1[k,:])
 

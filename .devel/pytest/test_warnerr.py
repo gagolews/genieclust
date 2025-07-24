@@ -36,8 +36,8 @@ def test_warnerr(metric='euclidean'):
     with pytest.raises(Exception): genieclust.Genie(n_clusters=-1).fit(X)
     with pytest.raises(Exception): genieclust.Genie(gini_threshold=-1e-12).fit(X)
     with pytest.raises(Exception): genieclust.Genie(gini_threshold=1+1e-12).fit(X)
-    with pytest.raises(Exception): genieclust.Genie(affinity="euclidianne").fit(X)
-    with pytest.raises(Exception): genieclust.Genie(affinity="precomputed").fit(X)
+    with pytest.raises(Exception): genieclust.Genie(metric="euclidianne").fit(X)
+    with pytest.raises(Exception): genieclust.Genie(metric="precomputed").fit(X)
     with pytest.raises(Exception): genieclust.Genie(M=0).fit(X)
     with pytest.raises(Exception): genieclust.Genie(M=n+1).fit(X)
     with pytest.raises(Exception): genieclust.Genie(postprocess="say what??").fit(X)
@@ -45,21 +45,21 @@ def test_warnerr(metric='euclidean'):
 
     with pytest.raises(Exception): genieclust.GIc(add_clusters=-1).fit(X)
     with pytest.raises(Exception): genieclust.GIc(gini_thresholds=[-1e-12]).fit(X)
-    with pytest.raises(Exception): genieclust.GIc(affinity="precomputed").fit(scipy.spatial.distance.pdist(X))
+    with pytest.raises(Exception): genieclust.GIc(metric="precomputed").fit(scipy.spatial.distance.pdist(X))
 
     with pytest.warns(Warning): genieclust.Genie(M=2, compute_full_tree=True).fit(X)
 
     # if mlpack is None:
     #     with pytest.raises(Exception): genieclust.Genie(mlpack_enabled=True).fit(X)
     # else:
-    #     with pytest.raises(Exception): genieclust.Genie(mlpack_enabled=True, affinity="l1").fit(X)
+    #     with pytest.raises(Exception): genieclust.Genie(mlpack_enabled=True, metric="l1").fit(X)
     #     with pytest.raises(Exception): genieclust.Genie(mlpack_enabled=True, M=2).fit(X)
     #
     # if nmslib is None:
     #     with pytest.raises(Exception): genieclust.Genie(exact=False).fit(X)
     # else:
-    #     with pytest.raises(Exception): genieclust.Genie(affinity="leven", exact=False, cast_float32=True).fit(X)
-    #     with pytest.raises(Exception): genieclust.Genie(affinity="precomputed", exact=False).fit(X)
+    #     with pytest.raises(Exception): genieclust.Genie(metric="leven", exact=False, cast_float32=True).fit(X)
+    #     with pytest.raises(Exception): genieclust.Genie(metric="precomputed", exact=False).fit(X)
     #     with pytest.raises(Exception): genieclust.Genie(M=10, nmslib_n_neighbors=8, exact=False).fit(X)
     #     with pytest.raises(Exception): genieclust.Genie(nmslib_params_init=[], exact=False).fit(X)
     #     with pytest.raises(Exception): genieclust.Genie(nmslib_params_index=[], exact=False).fit(X)

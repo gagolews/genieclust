@@ -39,7 +39,6 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 from libc.math cimport INFINITY
 
-
 ctypedef fused T:
     int
     long

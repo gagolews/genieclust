@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.2.0 (2025-xx-xx)
+
+## To Do
+
+* Check for NA/NaN/Inf in the input matrices.
+
+
+## 1.2.0 (2025-07-24)
 
 * [Python and R] Using the new implementation of Euclidean and mutual
     reachability minimum spanning trees (quite fast in low dimensional spaces)
@@ -12,10 +18,16 @@
     with `nmslib` is no longer supported directly (the package has not been
     updated for a while).
 
+* [Python] `MSTClusterMixin(BaseEstimator, ClusterMixin)`: A base class for
+    Genie, GIc, and other MST-based clustering algorithms.
+
+* [Python] [BACKWARD INCOMPATIBILITY] `Genie` and `GIc`: `affinity` was
+    renamed `matrix`.
+
 
 ## 1.1.6 (2024-08-22)
 
-* [Python] The package now works with *numpy* 2.0.
+* [Python] The package now works with `numpy` 2.0.
 
 
 ## 1.1.5 (2023-10-18)
@@ -50,8 +62,7 @@
 ## 1.1.4 (2023-03-31)
 
 *  [Python] The GIc algorithm is no longer marked as experimental;
-   its description is provided in
-   <https://doi.org/10.1007/s00357-024-09483-1>.
+   its description is provided in <https://doi.org/10.1007/s00357-024-09483-1>.
 
 
 ## 1.1.3 (2023-01-17)
@@ -134,7 +145,7 @@
 
 ## 1.0.0 (2021-04-22)
 
-*  [R] Use `mlpack` instead of `RcppMLPACK` (#72).
+*  [R] Using `mlpack` instead of `RcppMLPACK` (#72).
    This package is merely suggested, not dependent upon.
 
 
@@ -151,15 +162,15 @@
 
 ## 0.9.4 (2020-07-31)
 
-*  [BUGFIX] [R] Fix build errors on Solaris.
+*  [BUGFIX] [R] Fixed build errors on Solaris.
 
 
 ## 0.9.3 (2020-07-25)
 
-*  [BUGFIX] [Python] Add code coverage CI. Fix some minor inconsistencies.
-   Automate the `bdist` build chain.
+*  [BUGFIX] [Python] Added code coverage CI. Fixed some minor inconsistencies.
+   Automated the `bdist` build chain.
 
-*  [R] Update DESCRIPTION to meet the CRAN policies.
+*  [R] Updated DESCRIPTION to meet the CRAN policies.
 
 
 ## 0.9.2 (2020-07-22)
@@ -173,7 +184,7 @@
    The core functionality is now implemented in C++ (with OpenMP).
 
 *  [GENERAL] Clustering with respect to HDBSCAN*-like
-   mutual reachability distances is supported.
+   mutual reachability distances is now supported.
 
 *  [GENERAL] The parallelised Jarník-Prim algorithm now supports on-the-fly
    distance computations. Euclidean minimum spanning tree can be determined
@@ -182,10 +193,10 @@
 *  [R] R version is now available.
 
 *  [Python] [Experimental] The GIc algorithm proposed by Anna Cena
-   in her 2018 PhD thesis is added.
+   in her 2018 PhD thesis wad added.
 
 *  [Python] Approximate version based on nearest neighbour graphs produced
-   by `nmslib` is added.
+   by `nmslib` was added.
 
 
 ## 0.1a2 (2018-05-23)

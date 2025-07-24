@@ -55,7 +55,7 @@ g = genieclust.Genie(
     exact=False,  # use nmslib
     cast_float32=False,  # do not convert the string list to a matrix
     nmslib_params_index=dict(post=0),  # faster
-    affinity="leven")
+    metric="leven")
 labels_pred = g.fit_predict(strings)
 ```
 

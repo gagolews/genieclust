@@ -1,5 +1,11 @@
 # Changelog
 
+
+## To Do
+
+* Check for NA/NaN/Inf in the input matrices.
+
+
 ## 1.2.0 (2025-07-24)
 
 * [Python and R] Using the new implementation of Euclidean and mutual
@@ -12,10 +18,16 @@
     with `nmslib` is no longer supported directly (the package has not been
     updated for a while).
 
+* [Python] `MSTClusterMixin(BaseEstimator, ClusterMixin)`: A base class for
+    Genie, GIc, and other MST-based clustering algorithms.
+
+* [Python] [BACKWARD INCOMPATIBILITY] `Genie` and `GIc`: `affinity` was
+    renamed `matrix`.
+
 
 ## 1.1.6 (2024-08-22)
 
-* [Python] The package now works with *numpy* 2.0.
+* [Python] The package now works with `numpy` 2.0.
 
 
 ## 1.1.5 (2023-10-18)
@@ -50,8 +62,7 @@
 ## 1.1.4 (2023-03-31)
 
 *  [Python] The GIc algorithm is no longer marked as experimental;
-   its description is provided in
-   <https://doi.org/10.1007/s00357-024-09483-1>.
+   its description is provided in <https://doi.org/10.1007/s00357-024-09483-1>.
 
 
 ## 1.1.3 (2023-01-17)

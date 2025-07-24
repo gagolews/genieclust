@@ -35,7 +35,7 @@ print("n=%d, d=%d, g=%.2f, k=%d" %(n,d,g,k))
 print("OMP_NUM_THREADS=%d"%int(os.environ["OMP_NUM_THREADS"]))
 
 t01 = time.time()
-res1 = Genie(k, gini_threshold=g, exact=True, affinity=metric, verbose=verbose).fit_predict(X)+1
+res1 = Genie(k, gini_threshold=g, exact=True, metric=metric, verbose=verbose).fit_predict(X)+1
 t11 = time.time()
 print("t_py =%.3f" % (t11-t01))
 
@@ -44,7 +44,7 @@ assert len(np.unique(res1)) == k
 
 
 t03 = time.time()
-res3 = Genie(k, gini_threshold=g, exact=False, compute_full_tree=False, affinity=metric, verbose=verbose).fit_predict(X)+1
+res3 = Genie(k, gini_threshold=g, exact=False, compute_full_tree=False, metric=metric, verbose=verbose).fit_predict(X)+1
 t13 = time.time()
 ari = adjusted_rand_score(res1, res3)
 print("t_py2=%.3f (rel_to_py=%.3f; ari=%.8f)" % (t13-t03,(t03-t13)/(t01-t11), ari))

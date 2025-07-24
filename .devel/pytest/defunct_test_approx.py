@@ -92,7 +92,7 @@ def __test_genie_approx(metric='euclidean'):
 
                 if not (metric in ['maximum']):
                     t01 = time.time()
-                    res1 = genieclust.Genie(k, gini_threshold=g, exact=True, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1
+                    res1 = genieclust.Genie(k, gini_threshold=g, exact=True, metric=metric, verbose=verbose, M=M).fit_predict(X)+1
                     t11 = time.time()
                     print("t_py=%.3f" % (t11-t01), end="\t")
                 else:
@@ -119,7 +119,7 @@ def __test_genie_approx(metric='euclidean'):
 
 
                 t03 = time.time()
-                res3 = genieclust.Genie(k, gini_threshold=g, exact=False, affinity=metric, verbose=verbose, M=M).fit_predict(X)+1
+                res3 = genieclust.Genie(k, gini_threshold=g, exact=False, metric=metric, verbose=verbose, M=M).fit_predict(X)+1
                 t13 = time.time()
                 print("t_py2=%.3f" % (t13-t03), end="\t")
 
@@ -129,7 +129,7 @@ def __test_genie_approx(metric='euclidean'):
                     ari = genieclust.compare_partitions.adjusted_rand_score(res1, res3)
                     print("ARI2=%.3f" % ari, end="\t")
                     if ari < 1.0-1e-12:
-                        warnings.warn("(exact=False) ARI=%.3f for dataset=%s, g=%.2f, affinity=%s" %(
+                        warnings.warn("(exact=False) ARI=%.3f for dataset=%s, g=%.2f, metric=%s" %(
                             ari, dataset, g, metric
                             ))
 
@@ -141,7 +141,7 @@ def __test_genie_approx(metric='euclidean'):
 
 
 
-def __test_sparse(affinity='euclidean_sparse'):
+def __test_sparse(metric='euclidean_sparse'):
     if nmslib is None: return
     if mlpack is None: return
 
@@ -151,13 +151,13 @@ def __test_sparse(affinity='euclidean_sparse'):
 
     X = scipy.sparse.csr_matrix(X)
 
-    genieclust.Genie(affinity=affinity, exact=False).fit(X)
+    genieclust.Genie(metric=metric, exact=False).fit(X)
 
 
 
 
 
-def __test_string(affinity='leven'):
+def __test_string(metric='leven'):
     if nmslib is None: return
     if mlpack is None: return
 
@@ -166,7 +166,7 @@ def __test_string(affinity='leven'):
     for i in range(1, 100):
         X.append("a"*i)
 
-    genieclust.Genie(affinity=affinity, exact=False, cast_float32=False).fit(X)
+    genieclust.Genie(metric=metric, exact=False, cast_float32=False).fit(X)
 
 
 

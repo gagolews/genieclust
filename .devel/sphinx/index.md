@@ -200,7 +200,7 @@ weave/benchmarks_details
 :caption: Reference Manual
 :hidden:
 
-genieclust
+pythonapi
 rapi
 ::::
 
