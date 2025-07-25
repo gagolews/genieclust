@@ -3,7 +3,7 @@ name: wheels
 on: workflow_dispatch
 
 env:
-    CIBW_SKIP: cp36-* cp37-* cp38-* *-win32 *_ppc64le *_s390x *_i686 *_universal2 *_riscv64 *_armv7l
+    CIBW_SKIP: cp36-* cp37-* cp38-* *-win32 *_ppc64le *_s390x *_i686 *_universal2 *_riscv64 *_armv7l cp314-*
     CIBW_ARCHS: all
     PYTHONUTF8: 1
     #*-win32 *-musllinux* *-macosx_*_universal2* *win_arm64* *-manylinux_arm64 *-manylinux_i686 *-manylinux_ppc64le *-manylinux_s390x *-manylinux_aarch64
