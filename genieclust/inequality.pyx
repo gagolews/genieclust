@@ -31,7 +31,6 @@ Inequality measures
 import numpy as np
 cimport numpy as np
 np.import_array()
-from . cimport c_inequality
 
 ctypedef fused T:
     int
@@ -43,6 +42,13 @@ ctypedef fused T:
 
 cdef T square(T x):
     return x*x
+
+
+
+cdef extern from "../src/c_inequality.h":
+    double Cgini_sorted[T](const T* x, Py_ssize_t n) except +
+    double Cbonferroni_sorted[T](const T* x, Py_ssize_t n) except +
+    double Cdevergottini_sorted[T](const T* x, Py_ssize_t n) except +
 
 
 
@@ -156,7 +162,7 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     if not is_sorted: x = np.sort(x)
     else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
 
-    return c_inequality.Cgini_sorted(&x[0], x.shape[0])
+    return Cgini_sorted(&x[0], x.shape[0])
 
 
 
@@ -244,7 +250,7 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     if not is_sorted: x = np.sort(x)
     else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
 
-    return c_inequality.Cbonferroni_sorted(&x[0], x.shape[0])
+    return Cbonferroni_sorted(&x[0], x.shape[0])
 
 
 
@@ -325,4 +331,4 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
     if not is_sorted: x = np.sort(x)
     else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
 
-    return c_inequality.Cdevergottini_sorted(&x[0], x.shape[0])
+    return Cdevergottini_sorted(&x[0], x.shape[0])

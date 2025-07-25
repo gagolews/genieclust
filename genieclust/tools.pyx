@@ -60,7 +60,11 @@ ctypedef fused floatT:
 
 
 
-from . cimport c_argfuns
+
+
+cdef extern from "../src/c_argfuns.h":
+    void Cargsort[T](Py_ssize_t* ret, T* x, Py_ssize_t n, bint stable)
+    Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)
 
 
 
@@ -209,7 +213,7 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
     """
     x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
     cdef Py_ssize_t n = x.shape[0]
-    return c_argfuns.Cargkmin(&x[0], n, k, <Py_ssize_t*>0)
+    return Cargkmin(&x[0], n, k, <Py_ssize_t*>0)
 
 
 
@@ -252,5 +256,5 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
 #     x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
 #     cdef Py_ssize_t n = x.shape[0]
 #     cdef np.ndarray[Py_ssize_t] ret = np.empty(n, dtype=np.intp)
-#     c_argfuns.Cargsort(&ret[0], &x[0], n, stable)
+#     Cargsort(&ret[0], &x[0], n, stable)
 #     return ret

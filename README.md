@@ -1,4 +1,4 @@
-<a href="https://genieclust.gagolewski.com"><img src="https://www.gagolewski.com/_static/img/genieclust.png" align="right" height="128" width="128" /></a>
+<a href="https://genieclust.gagolewski.com/"><img src="https://www.gagolewski.com/_static/img/genieclust.png" align="right" height="128" width="128" /></a>
 # [**genieclust**](https://genieclust.gagolewski.com/) Package for R and Python
 
 ### *Genie*: Fast and Robust Hierarchical Clustering with Noise Point Detection
@@ -222,5 +222,5 @@ Density-based clustering based on hierarchical density estimates,
 Mueller, A., Nowozin, S., Lampert, C.H., Information theoretic clustering
 using minimum spanning trees, *DAGM-OAGM*, 2012.
 
-See **genieclusts**'s [homepage](https://genieclust.gagolewski.com/) for more
+See **genieclust**'s [homepage](https://genieclust.gagolewski.com/) for more
 references.

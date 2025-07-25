@@ -45,8 +45,41 @@ For even more details, see the
 import numpy as np
 cimport numpy as np
 np.import_array()
-from . cimport c_compare_partitions
-from . cimport c_cvi
+
+
+cdef extern from "../src/c_cvi.h":
+    double c_calinski_harabasz_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_dunnowa_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t M,
+        const char* owa_numerator, const char* owa_denominator)
+
+    double c_generalised_dunn_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t lowercase_d, size_t uppercase_d)
+
+    double c_negated_ball_hall_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_negated_davies_bouldin_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_negated_wcss_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_silhouette_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_silhouette_w_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K)
+
+    double c_wcnn_index(const double* X, const Py_ssize_t* y,
+        size_t n, size_t d, Py_ssize_t K, size_t M)
+
+
+cdef extern from "../src/c_compare_partitions.h":
+    void Cminmax[T](const T* x, Py_ssize_t n, T* xmin, T* xmax)
+
 
 
 cdef Py_ssize_t _get_K(np.ndarray[Py_ssize_t] _y, size_t n, size_t d):
@@ -60,7 +93,7 @@ cdef Py_ssize_t _get_K(np.ndarray[Py_ssize_t] _y, size_t n, size_t d):
         )
 
     cdef Py_ssize_t ymin, ymax
-    c_compare_partitions.Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
+    Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
     cdef Py_ssize_t K = ymax-ymin+1
     if ymin != 0:
         raise ValueError("min(y) != 0.")
@@ -163,7 +196,7 @@ cpdef double calinski_harabasz_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_calinski_harabasz_index(
+    return c_calinski_harabasz_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -259,7 +292,7 @@ cpdef double negated_ball_hall_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_negated_ball_hall_index(
+    return c_negated_ball_hall_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -356,7 +389,7 @@ cpdef double negated_davies_bouldin_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_negated_davies_bouldin_index(
+    return c_negated_davies_bouldin_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -449,7 +482,7 @@ cpdef double negated_wcss_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_negated_wcss_index(
+    return c_negated_wcss_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -547,7 +580,7 @@ cpdef double silhouette_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_silhouette_index(
+    return c_silhouette_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -645,7 +678,7 @@ cpdef double silhouette_w_index(X, y):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_silhouette_w_index(
+    return c_silhouette_w_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K
     )
 
@@ -741,7 +774,7 @@ cpdef double wcnn_index(X, y, int M=25):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_wcnn_index(
+    return c_wcnn_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K, _M
     )
 
@@ -848,7 +881,7 @@ cpdef double dunnowa_index(
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_dunnowa_index(
+    return c_dunnowa_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K, _M,
             unicode(owa_numerator).encode('utf8'),
             unicode(owa_denominator).encode('utf8')
@@ -965,7 +998,7 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
 
     cdef Py_ssize_t K = _get_K(_y, n, d)
 
-    return c_cvi.c_generalised_dunn_index(
+    return c_generalised_dunn_index(
         <double*>(&_X[0, 0]), <Py_ssize_t*>(&_y[0]), n, d, K,
             lowercase_d, uppercase_d
     )

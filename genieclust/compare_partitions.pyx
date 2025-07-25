@@ -39,7 +39,47 @@ For more details, see the
 import numpy as np
 cimport numpy as np
 np.import_array()
-from . cimport c_compare_partitions
+
+
+cdef extern from "../src/c_compare_partitions.h":
+    cdef struct CComparePartitionsPairsResult:
+        double ar
+        double r
+        double fm
+        double afm
+
+    cdef struct CComparePartitionsInfoResult:
+        double mi
+        double nmi
+        double ami
+
+    cdef struct CCompareSetMatchingResult:
+        double psi_unclipped
+        double spsi_unclipped
+
+    void Cminmax[T](const T* x, Py_ssize_t n, T* xmin, T* xmax)
+
+    void Ccontingency_table[T](T* Cout, Py_ssize_t xc, Py_ssize_t yc,
+        Py_ssize_t xmin, Py_ssize_t ymin,
+        Py_ssize_t* x, Py_ssize_t* y, Py_ssize_t n)
+
+    void Cnormalizing_permutation[T](const T* C, Py_ssize_t xc, Py_ssize_t yc,
+        Py_ssize_t* Iout)
+
+    void Capply_pivoting[T](const T* C, Py_ssize_t xc, Py_ssize_t yc, T* Cout)
+
+    CComparePartitionsPairsResult Ccompare_partitions_pairs[T](const T* C,
+        Py_ssize_t xc, Py_ssize_t yc)
+
+    CComparePartitionsInfoResult Ccompare_partitions_info[T](const T* C,
+        Py_ssize_t xc, Py_ssize_t yc)
+
+    double Ccompare_partitions_npa[T](const T* C, Py_ssize_t xc, Py_ssize_t yc)
+
+    double Ccompare_partitions_nca[T](const T* C, Py_ssize_t xc, Py_ssize_t yc)
+
+    CCompareSetMatchingResult Ccompare_partitions_psi[T](const T* C,
+        Py_ssize_t xc, Py_ssize_t yc)
 
 
 cdef np.ndarray _get_confusion_matrix(x, y=None, bint force_double=False):
@@ -149,7 +189,7 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
     if xc > yc:
         raise ValueError("the number of rows cannot be greater than the number of columns")
 
-    c_compare_partitions.Cnormalizing_permutation(&_C[0,0], xc, yc, &perm[0])
+    Cnormalizing_permutation(&_C[0,0], xc, yc, &perm[0])
 
     return perm
 
@@ -231,12 +271,12 @@ cpdef np.ndarray normalize_confusion_matrix(C):
     if np.can_cast(_C_intp_or_double, np.intp):
         _Ci = np.array(_C_intp_or_double, dtype=np.intp)
         _Di = np.zeros_like(_Ci)
-        c_compare_partitions.Capply_pivoting(&_Ci[0,0], xc, yc, &_Di[0,0])
+        Capply_pivoting(&_Ci[0,0], xc, yc, &_Di[0,0])
         return _Di
     else:
         _Cd = np.array(_C_intp_or_double, dtype=np.double)
         _Dd = np.zeros_like(_Cd)
-        c_compare_partitions.Capply_pivoting(&_Cd[0,0], xc, yc, &_Dd[0,0])
+        Capply_pivoting(&_Cd[0,0], xc, yc, &_Dd[0,0])
         return _Dd
 
 
@@ -289,13 +329,13 @@ cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
     cdef np.ndarray[Py_ssize_t] _x = np.array(x, dtype=np.intp)
     cdef Py_ssize_t n = _x.shape[0]
     cdef Py_ssize_t xmin, xmax
-    c_compare_partitions.Cminmax(<Py_ssize_t*>(&_x[0]), n, <Py_ssize_t*>(&xmin), <Py_ssize_t*>(&xmax))
+    Cminmax(<Py_ssize_t*>(&_x[0]), n, <Py_ssize_t*>(&xmin), <Py_ssize_t*>(&xmax))
     cdef Py_ssize_t xc = (xmax-xmin+1)
 
     cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
     if n != _y.shape[0]: raise ValueError("incompatible lengths")
     cdef Py_ssize_t ymin, ymax
-    c_compare_partitions.Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
+    Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
     cdef Py_ssize_t yc = (ymax-ymin+1)
 
     cdef Py_ssize_t CONFUSION_MATRIX_MAXSIZE = 1000000
@@ -307,12 +347,12 @@ cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
 
     if not force_double:
         Ci = np.empty((xc, yc), dtype=np.intp)
-        c_compare_partitions.Ccontingency_table(&Ci[0,0], xc, yc,
+        Ccontingency_table(&Ci[0,0], xc, yc,
             xmin, ymin, &_x[0], &_y[0], n)
         return Ci
     else:
         Cd = np.empty((xc, yc), dtype=np.double)
-        c_compare_partitions.Ccontingency_table(&Cd[0,0], xc, yc,
+        Ccontingency_table(&Cd[0,0], xc, yc,
             xmin, ymin, &_x[0], &_y[0], n)
         return Cd
 
@@ -579,13 +619,13 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
 
-    cdef dict res1 = c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc)
+    cdef dict res1 = Ccompare_partitions_pairs(&C[0,0], xc, yc)
 
-    cdef dict res2 = c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc)
+    cdef dict res2 = Ccompare_partitions_info(&C[0,0], xc, yc)
 
-    cdef double npa = c_compare_partitions.Ccompare_partitions_npa(&C[0,0], xc, yc)
+    cdef double npa = Ccompare_partitions_npa(&C[0,0], xc, yc)
 
-    cdef dict res3 = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc)
+    cdef dict res3 = Ccompare_partitions_psi(&C[0,0], xc, yc)
     cdef dict res3_clipped = {
         "psi": res3["psi_unclipped"],
         "spsi": res3["spsi_unclipped"],
@@ -597,7 +637,7 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     cdef double nca = np.nan
     if xc == yc:
-        nca = c_compare_partitions.Ccompare_partitions_nca(&C[0,0], xc, yc)
+        nca = Ccompare_partitions_nca(&C[0,0], xc, yc)
 
     return {
         **res1,
@@ -652,7 +692,7 @@ cpdef double adjusted_rand_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).ar
+    return Ccompare_partitions_pairs(&C[0,0], xc, yc).ar
 
 
 cpdef double rand_score(x, y=None):
@@ -698,7 +738,7 @@ cpdef double rand_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).r
+    return Ccompare_partitions_pairs(&C[0,0], xc, yc).r
 
 
 cpdef double adjusted_fm_score(x, y=None):
@@ -745,7 +785,7 @@ cpdef double adjusted_fm_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).afm
+    return Ccompare_partitions_pairs(&C[0,0], xc, yc).afm
 
 
 cpdef double fm_score(x, y=None):
@@ -791,7 +831,7 @@ cpdef double fm_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_pairs(&C[0,0], xc, yc).fm
+    return Ccompare_partitions_pairs(&C[0,0], xc, yc).fm
 
 
 cpdef double mi_score(x, y=None):
@@ -837,7 +877,7 @@ cpdef double mi_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).mi
+    return Ccompare_partitions_info(&C[0,0], xc, yc).mi
 
 
 
@@ -884,7 +924,7 @@ cpdef double normalized_mi_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).nmi
+    return Ccompare_partitions_info(&C[0,0], xc, yc).nmi
 
 
 cpdef double adjusted_mi_score(x, y=None):
@@ -930,7 +970,7 @@ cpdef double adjusted_mi_score(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_info(&C[0,0], xc, yc).ami
+    return Ccompare_partitions_info(&C[0,0], xc, yc).ami
 
 
 
@@ -981,7 +1021,7 @@ cpdef double normalized_pivoted_accuracy(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_npa(&C[0,0], xc, yc)
+    return Ccompare_partitions_npa(&C[0,0], xc, yc)
 
 
 
@@ -1044,7 +1084,7 @@ cpdef double normalized_clustering_accuracy(x, y=None):
     cdef np.ndarray[double, ndim=2] C = _get_confusion_matrix(x, y, force_double=True)
     cdef Py_ssize_t xc = C.shape[0]
     cdef Py_ssize_t yc = C.shape[1]
-    return c_compare_partitions.Ccompare_partitions_nca(&C[0,0], xc, yc)
+    return Ccompare_partitions_nca(&C[0,0], xc, yc)
 
 
 cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True):
@@ -1115,9 +1155,9 @@ cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True
     cdef double res
 
     if simplified:
-        res = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).spsi_unclipped
+        res = Ccompare_partitions_psi(&C[0,0], xc, yc).spsi_unclipped
     else:
-        res = c_compare_partitions.Ccompare_partitions_psi(&C[0,0], xc, yc).psi_unclipped
+        res = Ccompare_partitions_psi(&C[0,0], xc, yc).psi_unclipped
 
     if clipped:
         if res < 0.0: res = 0.0

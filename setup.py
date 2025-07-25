@@ -99,30 +99,15 @@ class genieclust_build_ext(build_ext):
             # export LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib
             #                          -L/usr/local/opt/libomp/lib -lomp"
             for e in self.extensions:
-                e.extra_compile_args += ['-std=c++17', '-O3']
+                e.extra_compile_args += ['-std=c++17']
             pass
         elif sys.platform == "linux":
-            # Default flag for GCC and clang:
+            # Default flags for GCC and clang:
             for e in self.extensions:
-                e.extra_compile_args += ['-fopenmp', '-std=c++17', '-O3']
+                e.extra_compile_args += ['-fopenmp', '-std=c++17']
                 e.extra_link_args += ['-fopenmp']
         else:
             pass
-
-        # Old version:
-        # c = self.compiler.compiler_type
-        # if c == "msvc":
-        #     for e in self.extensions:
-        #         e.extra_compile_args += "/openmp"
-        # elif c == "mingw32":
-        #     for e in self.extensions:
-        #         e.extra_compile_args += "-fopenmp"
-        #         e.extra_link_args += "-fopenmp"
-        # elif c == "unix":
-        #     # Well... gcc/clang has -fopenmp,
-        #     # icc has -openmp, oracle has -xopenmp, etc.
-        #     # The user should specify CXXFLAGS and LDFLAGS herself, I think.
-        #     pass
 
         build_ext.build_extensions(self)
 
@@ -189,6 +174,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
         "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
         "Programming Language :: Python :: 3 :: Only",
         "Operating System :: Microsoft :: Windows",
         "Operating System :: POSIX",

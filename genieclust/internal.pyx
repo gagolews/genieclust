@@ -38,6 +38,12 @@ cimport libc.math
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libc.math cimport INFINITY
+from libcpp.vector cimport vector
+
+cdef extern from "../src/c_argfuns.h":
+    Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)
+
+
 
 ctypedef fused T:
     int
@@ -52,491 +58,36 @@ ctypedef fused floatT:
     double
 
 
-from . cimport c_preprocess
-from . cimport c_postprocess
-from . cimport c_disjoint_sets
-from . cimport c_gini_disjoint_sets
-from . cimport c_genie
-from . cimport c_lumbermark
-from . cimport c_argfuns
 
-
-
-################################################################################
-
-cpdef np.ndarray[floatT] get_d_core(
-    floatT[:,::1] dist,
-    Py_ssize_t[:,::1] ind,
-    Py_ssize_t M):
-    """
-    Get "core" distance = distance to the (M-1)-th nearest neighbour
-    (if available, otherwise, distance to the furthest away one at hand).
-
-
-    Parameters
-    ----------
-
-    dist : a c_contiguous ndarray, shape (n,k)
-        dist[i,:] is sorted nondecreasingly for all i,
-        dist[i,j] gives the weight of the edge {i, ind[i,j]}
-    ind : a c_contiguous ndarray, shape (n,k)
-        edge definition, interpreted as {i, ind[i,j]};
-        -1 denotes a "missing value"
-    M : int
-        "smoothing factor"
-
-
-    Returns
-    -------
-
-    ndarray
-        of length dist.shape[0]
-    """
-
-    cdef Py_ssize_t n = dist.shape[0]
-    cdef Py_ssize_t k = dist.shape[1]
-
-    if not (ind.shape[0] == n and ind.shape[1] == k):
-        raise ValueError("shapes of dist and ind must match")
-
-    if M-2 >= k:
-        raise ValueError("too few nearest neighbours provided")
-
-    cdef np.ndarray[floatT] d_core = np.empty(n,
-        dtype=np.float32 if floatT is float else np.float64)
-
-    #Python equivalent if all NNs are available:
-    #assert nn_dist.shape[1] >= cur_state["M"]-1
-    #d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
-
-    cdef Py_ssize_t i, j
-    for i in range(n):
-        j = M-2
-        while ind[i, j] < 0:
-            j -= 1
-            if j < 0: raise ValueError("no nearest neighbours provided")
-        d_core[i] = dist[i, j]
-
-    return d_core
-
-
-
-cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
-    """
-    (provided for testing only)
-
-    Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its `(M-1)`-th nearest neighbour.
-    Note that `M==1` always yields all distances equal to zero.
-    The core distances are needed when computing the mutual reachability
-    distance in the HDBSCAN* algorithm.
-
-    See Campello R.J.G.B., Moulavi D., Sander J.,
-    Density-based clustering based on hierarchical density estimates,
-    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-    doi:10.1007/978-3-642-37456-2_14.
-
-    The input distance matrix for a given point cloud X may be computed,
-    e.g., via a call to
-    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
-
-
-    Parameters
-    ----------
-
-    dist : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-    M : int
-        A smoothing factor >= 1.
-
-
-    Returns
-    -------
-
-    d_core : ndarray, shape (n_samples,)
-        d_core[i] gives the distance between the i-th point and its M-th nearest
-        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
-    """
-    cdef Py_ssize_t n = dist.shape[0], i, j
-    cdef floatT v
-    cdef np.ndarray[floatT] d_core = np.zeros(n,
-        dtype=np.float32 if floatT is float else np.float64)
-    cdef floatT[::1] row
-
-    if M < 1: raise ValueError("M < 1")
-    if dist.shape[1] != n: raise ValueError("not a square matrix")
-    if M >= n: raise ValueError("M >= matrix size")
-
-    if M == 1: return d_core # zeros
-
-    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
-    for i in range(n):
-        row = dist[i,:]
-        j = c_argfuns.Cargkmin(&row[0], row.shape[0], M-1, buf.data())
-        d_core[i] = dist[i, j]
-
-    return d_core
-
-
-
-cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
-        np.ndarray[floatT,ndim=2] dist,
-        np.ndarray[floatT] d_core):
-    """
-    (provided for testing only)
-
-    Given a pairwise distance matrix, computes the mutual reachability
-    distance w.r.t. the given core distance vector; see ``genieclust.internal.core_distance``,
-    ``new_dist[i,j] = max(dist[i,j], d_core[i], d_core[j])``.
-
-    See Campello R.J.G.B., Moulavi D., Sander J.,
-    Density-based clustering based on hierarchical density estimates,
-    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-    doi:10.1007/978-3-642-37456-2_14.
-
-    The input distance matrix for a given point cloud X
-    may be computed, e.g., via a call to
-    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
-
-
-    Parameters
-    ----------
-
-    dist : ndarray, shape (n_samples,n_samples)
-        A pairwise n*n distance matrix.
-    d_core : ndarray, shape (n_samples,)
-        See genieclust.internal.core_distance().
-
-
-    Returns
-    -------
-
-    R : ndarray, shape (n_samples,n_samples)
-        A new distance matrix, giving the mutual reachability distance.
-    """
-    cdef Py_ssize_t n = dist.shape[0], i, j
-    cdef floatT v
-    if dist.shape[1] != n: raise ValueError("not a square matrix")
-
-    cdef np.ndarray[floatT,ndim=2] R = np.array(dist,
-        dtype=np.float32 if floatT is float else np.float64)
-    for i in range(0, n-1):
-        for j in range(i+1, n):
-            v = dist[i, j]
-            if v < d_core[i]: v = d_core[i]
-            if v < d_core[j]: v = d_core[j]
-            R[i, j] = R[j, i] = v
-
-    return R
-
-
-
-
-
-
-cpdef tuple nn_list_to_matrix(
-    list nns,
-    Py_ssize_t k_max):
-    """
-    genieclust.internal.nn_list_to_matrix(nns, k_max)
-
-    Converts a list of (<=`k_max`)-nearest neighbours to a matrix of `k_max` NNs
-
-
-    Parameters
-    ----------
-
-    nns : list
-        Each ``nns[i]`` should be a pair of ``c_contiguous`` `ndarray`\ s.
-        An edge ``{i, nns[i][0][j]}`` has weight ``nns[i][1][j]``.
-        Each ``nns[i][0]`` is of type `int32` and ``nns[i][1]``
-        is of type `float32` (for compatibility with `nmslib`).
-    k_max : int
-        If `k_max` is greater than 0, `O(n*k_max)` space will be reserved
-        for auxiliary data.
-
-
-    Returns
-    -------
-
-    tuple like ``(nn_dist, nn_ind)``
-        See `genieclust.internal.mst_from_nn`.
-        Unused elements (last items in each row)
-        will be filled with ``INFINITY`` and `-1`, respectively.
-
-
-    See also
-    --------
-
-    genieclust.internal.mst_from_nn :
-        Constructs a minimum spanning tree from a near-neighbour matrix
-
-    """
-    cdef Py_ssize_t n = len(nns)
-    cdef np.ndarray[int]   nn_i
-    cdef np.ndarray[float] nn_d
-
-    cdef np.ndarray[Py_ssize_t,ndim=2] ret_nn_ind  = np.empty((n, k_max), dtype=np.intp)
-    cdef np.ndarray[float,ndim=2]  ret_nn_dist = np.empty((n, k_max), dtype=np.float32)
-
-    cdef Py_ssize_t i, j, k, l
-    cdef Py_ssize_t i1, i2
-    cdef float d
-
-    for i in range(n):
-        nn_i = nns[i][0]
-        nn_d = nns[i][1].astype(np.float32, copy=False)
-        k = nn_i.shape[0]
-        if nn_d.shape[0] != k:
-            raise ValueError("nns has arrays of different lengths as elements")
-
-        l = 0
-        for j in range(k):
-            i2 = nn_i[j]
-            d = nn_d[j]
-            if i2 >= 0 and i != i2:
-                if l >= k_max: raise ValueError("`k_max` is too small")
-                ret_nn_ind[i, l]  = i2
-                ret_nn_dist[i, l] = d
-                if l > 0 and ret_nn_dist[i, l] < ret_nn_dist[i, l-1]:
-                    raise ValueError("nearest neighbours not sorted")
-                l += 1
-
-        while l < k_max:
-            ret_nn_ind[i, l]  = -1
-            ret_nn_dist[i, l] = INFINITY
-            l += 1
-
-    return ret_nn_dist, ret_nn_ind
-
-
-
-cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
-    """
-    genieclust.internal.get_graph_node_degrees(ind, n)
-
-    Given an adjacency list representing an undirected simple graph over
-    a vertex set {0,...,n-1}, returns an array deg with deg[i] denoting
-    the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
-
-
-    Parameters
-    ----------
-
-    ind : ndarray, shape (m,2)
-        A 2-column matrix such that {ind[i,0], ind[i,1]} represents
-        one of m undirected edges. Negative indices are ignored.
-    n : int
-        Number of vertices.
-
-
-    Returns
-    -------
-
-    deg : ndarray, shape(n,)
-        An integer array of length n.
-    """
-    cdef Py_ssize_t num_edges = ind.shape[0]
-    assert ind.shape[1] == 2
-    cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
-
-    # _openmp_set_num_threads()
-    c_preprocess.Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
-
-    return deg
-
-
-# TODO: add Cget_graph_node_inclists
-
-
-################################################################################
-# Noisy k-partition and other post-processing routines
-################################################################################
-
-
-cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
-        Py_ssize_t[:,::1] mst_i,
-        Py_ssize_t[::1] c,
-        Py_ssize_t[:,::1] nn_i,
-        Py_ssize_t M):
-    """
-    genieclust.internal.merge_boundary_points(mst_i, c, nn_i, M)
-
-    A noisy k-partition post-processing: given a k-partition (with noise
-    points included), merges all "boundary" noise points with their nearest
-    "core" points.
-
-
-    Parameters
-    ----------
-
-    mst_i : c_contiguous array
-        See genieclust.mst.mst_from_distance()
-    c : c_contiguous array of shape (n_samples,)
-        c[i] gives the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
-    nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
-        nn_ind[i,:] gives the indices of the i-th point's
-        nearest neighbours; -1 indicates a "missing value"
-    M : int
-        smoothing factor, M>=2
-
-
-    Returns
-    -------
-
-    c : ndarray, shape (n_samples,)
-        A new integer vector c with c[i] denoting the cluster
-        id (in {-1, 0, ..., k-1}) of the i-th object.
-    """
-    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
-
-    # _openmp_set_num_threads()
-    c_postprocess.Cmerge_boundary_points(
-        &mst_i[0,0], mst_i.shape[0],
-        &nn_i[0,0], nn_i.shape[1], M,
-        &cl2[0], cl2.shape[0])
-
-    return cl2
-
-
-cpdef np.ndarray[Py_ssize_t] merge_noise_points(
-        Py_ssize_t[:,::1] mst_i,
-        Py_ssize_t[::1] c):
-    """
-    genieclust.internal.merge_noise_points(mst_i, c)
-
-    A noisy k-partition post-processing: given a k-partition (with noise
-    points included), merges all noise points with their nearest clusters.
-
-
-    Parameters
-    ----------
-
-    mst_i : c_contiguous array
-        See genieclust.mst.mst_from_distance()
-    c : c_contiguous array of shape (n_samples,)
-        c[i] gives the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
-
-
-    Returns
-    -------
-
-    c : ndarray, shape (n_samples,)
-        A new integer vector c with c[i] denoting the cluster
-        id (in {0, ..., k-1}) of the i-th object.
-    """
-    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
-
-    # _openmp_set_num_threads()
-    c_postprocess.Cmerge_noise_points(
-        &mst_i[0,0], mst_i.shape[0],
-        &cl2[0], cl2.shape[0])
-
-    return cl2
-
-
-cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
-                              floatT[::1] mst_d,
-                              Py_ssize_t[:,::1] mst_i):
-    """
-    genieclust.internal.get_linkage_matrix(links, mst_d, mst_i)
-
-
-    Parameters
-    ----------
-
-    links : ndarray
-        see return value of genieclust.internal.genie_from_mst.
-    mst_d, mst_i : ndarray
-        Minimal spanning tree defined by a pair (mst_i, mst_d),
-        see genieclust.mst.
-
-
-    Returns
-    -------
-
-    Z : dict
-        A dictionary with 3 keys: children, distances, counts,
-        see the description of Z[:,:2], Z[:,2] and Z[:,3], respectively,
-        in scipy.cluster.hierarchy.linkage.
-    """
-    cdef Py_ssize_t n = mst_i.shape[0]+1
-    cdef Py_ssize_t i, i1, i2, par, w, num_unused, j
-
-    if not n-1 == mst_d.shape[0]:
-        raise ValueError("ill-defined MST")
-    if not n-1 == links.shape[0]:
-        raise ValueError("ill-defined MST")
-
-    cdef c_gini_disjoint_sets.CGiniDisjointSets ds = \
-        c_gini_disjoint_sets.CGiniDisjointSets(n)
-
-    cdef np.ndarray[Py_ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         distances_ = np.empty(n-1,
-        dtype=np.float32 if floatT is float else np.float64)
-    cdef np.ndarray[Py_ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
-    cdef np.ndarray[Py_ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
-    cdef np.ndarray[Py_ssize_t]        ids        = np.empty(n, dtype=np.intp)
-
-    num_unused = n-1
-    for i in range(n-1):
-        if links[i] < 0: break # no more mst edges
-        if links[i] >= n-1: raise ValueError("ill-defined links")
-        used[links[i]] += 1
-        num_unused -= 1
-
-    for i in range(n):
-        ids[i] = i
-
-    w = -1
-    for i in range(n-1):
-        if i < num_unused:
-            # get the next unused edge (links a leaf node)
-            while True:
-                w += 1
-                assert w < n-1
-                if not used[w]: break
-        else:
-            assert 0 <= i-num_unused < n-1
-            w = links[i-num_unused]
-
-        assert 0 <= w < n-1
-        i1 = mst_i[w, 0]
-        i2 = mst_i[w, 1]
-        if not 0 <= i1 < n: raise ValueError("ill-defined MST")
-        if not 0 <= i2 < n: raise ValueError("ill-defined MST")
-
-        i1 = ds.find(i1)
-        i2 = ds.find(i2)
-        children_[i, 0] = ids[i1]
-        children_[i, 1] = ids[i2]
-        par = ds.merge(i1, i2)
-        ids[par] = n+i  # see scipy.cluster.hierarchy.linkage
-        distances_[i] = mst_d[w] if i >= num_unused else 0.0
-        counts_[i] = ds.get_count(par)
-
-
-
-    # corrections for departures from ultrametricity:
-    # distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]
-    for i in range(n-2, 0, -1):
-        if distances_[i-1] > distances_[i]:
-            distances_[i-1] = distances_[i]
-
-    return dict(
-        children=children_,
-        distances=distances_,
-        counts=counts_
-    )
 
 
 ################################################################################
 # DisjointSets (Union-Find)
 ################################################################################
+
+
+cdef extern from "../src/c_disjoint_sets.h":
+    cdef cppclass CDisjointSets:
+        CDisjointSets() except +
+        CDisjointSets(Py_ssize_t) except +
+        Py_ssize_t get_k()
+        Py_ssize_t get_n()
+        Py_ssize_t find(Py_ssize_t)
+        Py_ssize_t merge(Py_ssize_t, Py_ssize_t)
+
+
+cdef extern from "../src/c_gini_disjoint_sets.h":
+    cdef cppclass CGiniDisjointSets:
+        CGiniDisjointSets() except +
+        CGiniDisjointSets(Py_ssize_t) except +
+        Py_ssize_t get_k()
+        Py_ssize_t get_n()
+        Py_ssize_t find(Py_ssize_t)
+        Py_ssize_t merge(Py_ssize_t, Py_ssize_t)
+        double get_gini()
+        Py_ssize_t get_smallest_count()
+        Py_ssize_t get_count(Py_ssize_t)
+        void get_counts(Py_ssize_t*)
 
 
 
@@ -567,10 +118,10 @@ cdef class DisjointSets:
     element is always ≤ than itself.
 
     """
-    cdef c_disjoint_sets.CDisjointSets ds
+    cdef CDisjointSets ds
 
     def __cinit__(self, Py_ssize_t n):
-        self.ds = c_disjoint_sets.CDisjointSets(n)
+        self.ds = CDisjointSets(n)
 
     def __len__(self):
         """
@@ -711,8 +262,6 @@ cdef class DisjointSets:
         """
         Returns a list of lists representing the current partition
 
-
-
         Returns
         -------
 
@@ -755,9 +304,7 @@ cdef class DisjointSets:
 
 cdef class GiniDisjointSets():
     """
-    Augmented disjoint sets (Union-Find) over `{0,1,...,n-1}`
-
-
+    Disjoint sets (Union-Find) over `{0,1,...,n-1}` with extras.
 
     Parameters
     ----------
@@ -770,20 +317,20 @@ cdef class GiniDisjointSets():
     -----
 
     The class allows to compute the normalised Gini index of the
-    distribution of subset sizes, i.e.,
-    :math:`G(x_1,\dots,x_k) = \\frac{\\sum_{i=1}^{n-1} \\sum_{j=i+1}^n |x_i-x_j|}{        (n-1) \\sum_{i=1}^n x_i}`\ , where :math:`x_i` is the
-    number of elements in the `i`-th subset in the current
-    partition.
+    subset sizes, i.e.,
+    :math:`G(x_1,\dots,x_k) = \\frac{\\sum_{i=1}^{n-1} \\sum_{j=i+1}^n |x_i-x_j|}{(n-1) \\sum_{i=1}^n x_i}`\ ,
+    where :math:`x_i` is the number of elements in the `i`-th subset in
+    the current partition.
 
     For a use case, see: Gagolewski, M., Bartoszuk, M., Cena, A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     *Information Sciences* **363**, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
     """
-    cdef c_gini_disjoint_sets.CGiniDisjointSets ds
+    cdef CGiniDisjointSets ds
 
     def __cinit__(self, Py_ssize_t n):
-        self.ds = c_gini_disjoint_sets.CGiniDisjointSets(n)
+        self.ds = CGiniDisjointSets(n)
 
     def __len__(self):
         """
@@ -1030,9 +577,507 @@ cdef class GiniDisjointSets():
 
 
 
+
+################################################################################
+
+cpdef np.ndarray[floatT] get_d_core(
+    floatT[:,::1] dist,
+    Py_ssize_t[:,::1] ind,
+    Py_ssize_t M):
+    """
+    Get "core" distance = distance to the (M-1)-th nearest neighbour
+    (if available, otherwise, distance to the furthest away one at hand).
+
+
+    Parameters
+    ----------
+
+    dist : a c_contiguous ndarray, shape (n,k)
+        dist[i,:] is sorted nondecreasingly for all i,
+        dist[i,j] gives the weight of the edge {i, ind[i,j]}
+    ind : a c_contiguous ndarray, shape (n,k)
+        edge definition, interpreted as {i, ind[i,j]};
+        -1 denotes a "missing value"
+    M : int
+        "smoothing factor"
+
+
+    Returns
+    -------
+
+    ndarray
+        of length dist.shape[0]
+    """
+
+    cdef Py_ssize_t n = dist.shape[0]
+    cdef Py_ssize_t k = dist.shape[1]
+
+    if not (ind.shape[0] == n and ind.shape[1] == k):
+        raise ValueError("shapes of dist and ind must match")
+
+    if M-2 >= k:
+        raise ValueError("too few nearest neighbours provided")
+
+    cdef np.ndarray[floatT] d_core = np.empty(n,
+        dtype=np.float32 if floatT is float else np.float64)
+
+    #Python equivalent if all NNs are available:
+    #assert nn_dist.shape[1] >= cur_state["M"]-1
+    #d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+
+    cdef Py_ssize_t i, j
+    for i in range(n):
+        j = M-2
+        while ind[i, j] < 0:
+            j -= 1
+            if j < 0: raise ValueError("no nearest neighbours provided")
+        d_core[i] = dist[i, j]
+
+    return d_core
+
+
+
+cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
+    """
+    (provided for testing only)
+
+    Given a pairwise distance matrix, computes the "core distance", i.e.,
+    the distance of each point to its `(M-1)`-th nearest neighbour.
+    Note that `M==1` always yields all distances equal to zero.
+    The core distances are needed when computing the mutual reachability
+    distance in the HDBSCAN* algorithm.
+
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
+
+    The input distance matrix for a given point cloud X may be computed,
+    e.g., via a call to
+    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
+
+
+    Parameters
+    ----------
+
+    dist : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+    M : int
+        A smoothing factor >= 1.
+
+
+    Returns
+    -------
+
+    d_core : ndarray, shape (n_samples,)
+        d_core[i] gives the distance between the i-th point and its M-th nearest
+        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
+    """
+    cdef Py_ssize_t n = dist.shape[0], i, j
+    cdef floatT v
+    cdef np.ndarray[floatT] d_core = np.zeros(n,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef floatT[::1] row
+
+    if M < 1: raise ValueError("M < 1")
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
+    if M >= n: raise ValueError("M >= matrix size")
+
+    if M == 1: return d_core # zeros
+
+    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
+    for i in range(n):
+        row = dist[i,:]
+        j = Cargkmin(&row[0], row.shape[0], M-1, buf.data())
+        d_core[i] = dist[i, j]
+
+    return d_core
+
+
+
+cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
+        np.ndarray[floatT,ndim=2] dist,
+        np.ndarray[floatT] d_core):
+    """
+    (provided for testing only)
+
+    Given a pairwise distance matrix, computes the mutual reachability
+    distance w.r.t. the given core distance vector; see ``genieclust.internal.core_distance``,
+    ``new_dist[i,j] = max(dist[i,j], d_core[i], d_core[j])``.
+
+    See Campello R.J.G.B., Moulavi D., Sander J.,
+    Density-based clustering based on hierarchical density estimates,
+    *Lecture Notes in Computer Science* 7819, 2013, 160-172,
+    doi:10.1007/978-3-642-37456-2_14.
+
+    The input distance matrix for a given point cloud X
+    may be computed, e.g., via a call to
+    ``scipy.spatial.distance.squareform(scipy.spatial.distance.pdist(X))``.
+
+
+    Parameters
+    ----------
+
+    dist : ndarray, shape (n_samples,n_samples)
+        A pairwise n*n distance matrix.
+    d_core : ndarray, shape (n_samples,)
+        See genieclust.internal.core_distance().
+
+
+    Returns
+    -------
+
+    R : ndarray, shape (n_samples,n_samples)
+        A new distance matrix, giving the mutual reachability distance.
+    """
+    cdef Py_ssize_t n = dist.shape[0], i, j
+    cdef floatT v
+    if dist.shape[1] != n: raise ValueError("not a square matrix")
+
+    cdef np.ndarray[floatT,ndim=2] R = np.array(dist,
+        dtype=np.float32 if floatT is float else np.float64)
+    for i in range(0, n-1):
+        for j in range(i+1, n):
+            v = dist[i, j]
+            if v < d_core[i]: v = d_core[i]
+            if v < d_core[j]: v = d_core[j]
+            R[i, j] = R[j, i] = v
+
+    return R
+
+
+
+
+
+
+cpdef tuple nn_list_to_matrix(
+    list nns,
+    Py_ssize_t k_max):
+    """
+    genieclust.internal.nn_list_to_matrix(nns, k_max)
+
+    Converts a list of (<=`k_max`)-nearest neighbours to a matrix of `k_max` NNs
+
+
+    Parameters
+    ----------
+
+    nns : list
+        Each ``nns[i]`` should be a pair of ``c_contiguous`` `ndarray`\ s.
+        An edge ``{i, nns[i][0][j]}`` has weight ``nns[i][1][j]``.
+        Each ``nns[i][0]`` is of type `int32` and ``nns[i][1]``
+        is of type `float32` (for compatibility with `nmslib`).
+    k_max : int
+        If `k_max` is greater than 0, `O(n*k_max)` space will be reserved
+        for auxiliary data.
+
+
+    Returns
+    -------
+
+    tuple like ``(nn_dist, nn_ind)``
+        See `genieclust.internal.mst_from_nn`.
+        Unused elements (last items in each row)
+        will be filled with ``INFINITY`` and `-1`, respectively.
+
+
+    See also
+    --------
+
+    genieclust.internal.mst_from_nn :
+        Constructs a minimum spanning tree from a near-neighbour matrix
+
+    """
+    cdef Py_ssize_t n = len(nns)
+    cdef np.ndarray[int]   nn_i
+    cdef np.ndarray[float] nn_d
+
+    cdef np.ndarray[Py_ssize_t,ndim=2] ret_nn_ind  = np.empty((n, k_max), dtype=np.intp)
+    cdef np.ndarray[float,ndim=2]  ret_nn_dist = np.empty((n, k_max), dtype=np.float32)
+
+    cdef Py_ssize_t i, j, k, l
+    cdef Py_ssize_t i1, i2
+    cdef float d
+
+    for i in range(n):
+        nn_i = nns[i][0]
+        nn_d = nns[i][1].astype(np.float32, copy=False)
+        k = nn_i.shape[0]
+        if nn_d.shape[0] != k:
+            raise ValueError("nns has arrays of different lengths as elements")
+
+        l = 0
+        for j in range(k):
+            i2 = nn_i[j]
+            d = nn_d[j]
+            if i2 >= 0 and i != i2:
+                if l >= k_max: raise ValueError("`k_max` is too small")
+                ret_nn_ind[i, l]  = i2
+                ret_nn_dist[i, l] = d
+                if l > 0 and ret_nn_dist[i, l] < ret_nn_dist[i, l-1]:
+                    raise ValueError("nearest neighbours not sorted")
+                l += 1
+
+        while l < k_max:
+            ret_nn_ind[i, l]  = -1
+            ret_nn_dist[i, l] = INFINITY
+            l += 1
+
+    return ret_nn_dist, ret_nn_ind
+
+
+
+cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
+    """
+    genieclust.internal.get_graph_node_degrees(ind, n)
+
+    Given an adjacency list representing an undirected simple graph over
+    a vertex set {0,...,n-1}, returns an array deg with deg[i] denoting
+    the degree of the i-th vertex. For instance, deg[i]==1 marks a leaf node.
+
+
+    Parameters
+    ----------
+
+    ind : ndarray, shape (m,2)
+        A 2-column matrix such that {ind[i,0], ind[i,1]} represents
+        one of m undirected edges. Negative indices are ignored.
+    n : int
+        Number of vertices.
+
+
+    Returns
+    -------
+
+    deg : ndarray, shape(n,)
+        An integer array of length n.
+    """
+    cdef Py_ssize_t num_edges = ind.shape[0]
+    assert ind.shape[1] == 2
+    cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
+
+    # _openmp_set_num_threads()
+    Cget_graph_node_degrees(&ind[0,0], num_edges, n, &deg[0])
+
+    return deg
+
+
+################################################################################
+# Noisy k-partition and other post-processing routines
+################################################################################
+
+
+cdef extern from "../src/c_preprocess.h":
+    cdef void Cget_graph_node_degrees(Py_ssize_t* ind, Py_ssize_t m,
+            Py_ssize_t n, Py_ssize_t* deg)
+
+
+cdef extern from "../src/c_postprocess.h":
+    void Cmerge_boundary_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
+        const Py_ssize_t* nn, Py_ssize_t num_neighbours, Py_ssize_t M,
+        Py_ssize_t* c, Py_ssize_t n)
+
+    void Cmerge_noise_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
+        Py_ssize_t* c, Py_ssize_t n)
+
+
+
+
+cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t[::1] c,
+        Py_ssize_t[:,::1] nn_i,
+        Py_ssize_t M):
+    """
+    genieclust.internal.merge_boundary_points(mst_i, c, nn_i, M)
+
+    A noisy k-partition post-processing: given a k-partition (with noise
+    points included), merges all "boundary" noise points with their nearest
+    "core" points.
+
+
+    Parameters
+    ----------
+
+    mst_i : c_contiguous array
+        See genieclust.mst.mst_from_distance()
+    c : c_contiguous array of shape (n_samples,)
+        c[i] gives the cluster id
+        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
+        Class -1 denotes the `noise' cluster.
+    nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
+        nn_ind[i,:] gives the indices of the i-th point's
+        nearest neighbours; -1 indicates a "missing value"
+    M : int
+        smoothing factor, M>=2
+
+
+    Returns
+    -------
+
+    c : ndarray, shape (n_samples,)
+        A new integer vector c with c[i] denoting the cluster
+        id (in {-1, 0, ..., k-1}) of the i-th object.
+    """
+    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
+
+    # _openmp_set_num_threads()
+    Cmerge_boundary_points(
+        &mst_i[0,0], mst_i.shape[0],
+        &nn_i[0,0], nn_i.shape[1], M,
+        &cl2[0], cl2.shape[0])
+
+    return cl2
+
+
+cpdef np.ndarray[Py_ssize_t] merge_noise_points(
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t[::1] c):
+    """
+    genieclust.internal.merge_noise_points(mst_i, c)
+
+    A noisy k-partition post-processing: given a k-partition (with noise
+    points included), merges all noise points with their nearest clusters.
+
+
+    Parameters
+    ----------
+
+    mst_i : c_contiguous array
+        See genieclust.mst.mst_from_distance()
+    c : c_contiguous array of shape (n_samples,)
+        c[i] gives the cluster id
+        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
+        Class -1 denotes the `noise' cluster.
+
+
+    Returns
+    -------
+
+    c : ndarray, shape (n_samples,)
+        A new integer vector c with c[i] denoting the cluster
+        id (in {0, ..., k-1}) of the i-th object.
+    """
+    cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
+
+    # _openmp_set_num_threads()
+    Cmerge_noise_points(
+        &mst_i[0,0], mst_i.shape[0],
+        &cl2[0], cl2.shape[0])
+
+    return cl2
+
+
+cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
+                              floatT[::1] mst_d,
+                              Py_ssize_t[:,::1] mst_i):
+    """
+    genieclust.internal.get_linkage_matrix(links, mst_d, mst_i)
+
+
+    Parameters
+    ----------
+
+    links : ndarray
+        see return value of genieclust.internal.genie_from_mst.
+    mst_d, mst_i : ndarray
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        see genieclust.mst.
+
+
+    Returns
+    -------
+
+    Z : dict
+        A dictionary with 3 keys: children, distances, counts,
+        see the description of Z[:,:2], Z[:,2] and Z[:,3], respectively,
+        in scipy.cluster.hierarchy.linkage.
+    """
+    cdef Py_ssize_t n = mst_i.shape[0]+1
+    cdef Py_ssize_t i, i1, i2, par, w, num_unused, j
+
+    if not n-1 == mst_d.shape[0]:
+        raise ValueError("ill-defined MST")
+    if not n-1 == links.shape[0]:
+        raise ValueError("ill-defined MST")
+
+    cdef CGiniDisjointSets ds = CGiniDisjointSets(n)
+
+    cdef np.ndarray[Py_ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
+    cdef np.ndarray[floatT]         distances_ = np.empty(n-1,
+        dtype=np.float32 if floatT is float else np.float64)
+    cdef np.ndarray[Py_ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t]        ids        = np.empty(n, dtype=np.intp)
+
+    num_unused = n-1
+    for i in range(n-1):
+        if links[i] < 0: break # no more mst edges
+        if links[i] >= n-1: raise ValueError("ill-defined links")
+        used[links[i]] += 1
+        num_unused -= 1
+
+    for i in range(n):
+        ids[i] = i
+
+    w = -1
+    for i in range(n-1):
+        if i < num_unused:
+            # get the next unused edge (links a leaf node)
+            while True:
+                w += 1
+                assert w < n-1
+                if not used[w]: break
+        else:
+            assert 0 <= i-num_unused < n-1
+            w = links[i-num_unused]
+
+        assert 0 <= w < n-1
+        i1 = mst_i[w, 0]
+        i2 = mst_i[w, 1]
+        if not 0 <= i1 < n: raise ValueError("ill-defined MST")
+        if not 0 <= i2 < n: raise ValueError("ill-defined MST")
+
+        i1 = ds.find(i1)
+        i2 = ds.find(i2)
+        children_[i, 0] = ids[i1]
+        children_[i, 1] = ids[i2]
+        par = ds.merge(i1, i2)
+        ids[par] = n+i  # see scipy.cluster.hierarchy.linkage
+        distances_[i] = mst_d[w] if i >= num_unused else 0.0
+        counts_[i] = ds.get_count(par)
+
+
+
+    # corrections for departures from ultrametricity:
+    # distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]
+    for i in range(n-2, 0, -1):
+        if distances_[i-1] > distances_[i]:
+            distances_[i-1] = distances_[i]
+
+    return dict(
+        children=children_,
+        distances=distances_,
+        counts=counts_
+    )
+
+
 #############################################################################
 # The Genie Clustering Algorithm (internal)
 #############################################################################
+
+cdef extern from "../src/c_genie.h":
+
+    cdef cppclass CGenie[T]:
+        CGenie() except +
+        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
+        void compute(Py_ssize_t n_clusters, double gini_threshold) except +
+        Py_ssize_t get_max_n_clusters()
+        Py_ssize_t get_links(Py_ssize_t* res)
+        Py_ssize_t get_labels(Py_ssize_t n_clusters, Py_ssize_t* res)
+        void get_labels_matrix(Py_ssize_t n_clusters, Py_ssize_t* res)
+        void get_is_noise(int* res)
+
 
 cpdef dict genie_from_mst(
         floatT[::1] mst_d,
@@ -1047,23 +1092,18 @@ cpdef dict genie_from_mst(
 
     Determines a dataset's partition based on a precomputed MST.
 
-    Gagolewsk,i M., Bartoszuk, M., Cena, A.,
+    Gagolewski, M., Bartoszuk, M., Cena, A.,
     Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
     Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
 
-    The Genie algorithm links two clusters in such a way that a chosen
-    economic inequality measure (here, the Gini index) of the cluster sizes
-    does not increase drastically above a given threshold.
-    The introduced method most often outperforms
-    the Ward or average linkage, k-means, spectral clustering,
-    DBSCAN, Birch, and others in terms of the clustering
-    quality on benchmark data while retaining the single linkage speed.
+    Refer to the online manual at <https://genieclust.gagolewski.com/> for
+    more details.
 
     This is a new implementation of the original algorithm,
     which runs in O(n sqrt(n))-time. Additionally, MST leaves can be
     marked as noise points (if `skip_leaves==True`). This is useful,
-    if the Genie algorithm is applied on the MST with respect to
-    the HDBSCAN-like mutual reachability distance.
+    if the Genie algorithm is applied on MSTs with respect to
+    mutual reachability distances.
 
     The input tree can actually be any spanning tree.
     Moreover, it does not even have to be a connected graph.
@@ -1141,8 +1181,8 @@ cpdef dict genie_from_mst(
 
     # _openmp_set_num_threads()
 
-    cdef c_genie.CGenie[floatT] g
-    g = c_genie.CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
+    cdef CGenie[floatT] g
+    g = CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
 
     if compute_all_cuts:
         compute_full_tree = True
@@ -1176,6 +1216,19 @@ cpdef dict genie_from_mst(
 #############################################################################
 # The Genie+Information Criterion (G+IC) Clustering Algorithm
 #############################################################################
+
+cdef extern from "../src/c_genie.h":
+
+    cdef cppclass CGIc[T]:
+        CGIc() except +
+        CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
+        void compute(Py_ssize_t n_clusters, Py_ssize_t add_clusters,
+            double n_features, double* gini_thresholds, Py_ssize_t n_thresholds)  except +
+        Py_ssize_t get_max_n_clusters()
+        Py_ssize_t get_links(Py_ssize_t* res)
+        Py_ssize_t get_labels(Py_ssize_t n_clusters, Py_ssize_t* res)
+        void get_labels_matrix(Py_ssize_t n_clusters, Py_ssize_t* res)
+
 
 
 cpdef dict gic_from_mst(
@@ -1299,8 +1352,8 @@ cpdef dict gic_from_mst(
 
     # _openmp_set_num_threads()
 
-    cdef c_genie.CGIc[floatT] g
-    g = c_genie.CGIc[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
+    cdef CGIc[floatT] g
+    g = CGIc[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
 
     if compute_all_cuts:
         compute_full_tree = True
@@ -1329,110 +1382,3 @@ cpdef dict gic_from_mst(
                 n_clusters=n_clusters_,
                 links=links_,
                 iters=iters_)
-
-
-
-
-#############################################################################
-# The Lumbermark Clustering Algorithm (internal)
-#############################################################################
-
-cpdef dict lumbermark_from_mst(
-        floatT[::1] mst_d,
-        Py_ssize_t[:,::1] mst_i,
-        Py_ssize_t n_clusters,
-        Py_ssize_t min_cluster_size=10,
-        floatT min_cluster_factor=0.25,
-        bint skip_leaves=True
-        ):
-    """The Lumbermark Clustering Algorithm
-
-    Determines a dataset's partition based on a precomputed MST.
-
-    TODO: citation
-    Gagolewski, M., TODO, 2025
-
-
-
-    Parameters
-    ----------
-
-    mst_d, mst_i : ndarray
-        A spanning tree defined by a pair (mst_i, mst_d),
-        see genieclust.mst.
-    n_clusters : int
-        Number of clusters the dataset is split into.
-    min_cluster_size : int
-        Minimal cluster size
-    min_cluster_factor : float
-        Output cluster sizes won't be smaller than min_cluster_factor/n_clusters*n_points (noise points excluding)
-    skip_leaves : bool
-        Marks leaves and degree-2 nodes incident to cut edges as noise
-        and does not take them into account whilst determining the partition
-        sizes.  Noise markers can be fetched separately.
-        Noise points will still be assigned to nearest clusters.
-
-
-    Returns
-    -------
-
-    res : dict, with the following elements:
-        labels : ndarray, shape (n,)
-
-            labels[i] gives the cluster id of the i-th input point;
-            a number between 0 and n_clusters-1.
-
-        n_clusters : integer
-            actual number of clusters found, 0 if labels is None.
-
-        links : ndarray, shape (n_clusters-1, )
-            cut edges (indexes) of the spanning tree whose removal
-            leads to the formation of clusters (connected components).
-
-        is_noise : ndarray, shape (n,)
-            is_noise[i] is True if the i-th point is a noise/boundary node.
-
-
-    """
-    cdef Py_ssize_t n = mst_i.shape[0]+1
-
-    if not 1 <= n_clusters <= n:
-        raise ValueError("incorrect n_clusters")
-    if not n-1 == mst_d.shape[0] and n > 1:
-        raise ValueError("ill-defined MST")
-
-
-    cdef np.ndarray[Py_ssize_t] labels_
-    cdef np.ndarray[Py_ssize_t] links_
-    cdef np.ndarray[bool] is_noise_
-    cdef Py_ssize_t n_clusters_
-
-    # _openmp_set_num_threads()
-
-    cdef c_lumbermark.CLumbermark[floatT] l
-    l = c_lumbermark.CLumbermark[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
-
-    n_clusters_ = l.compute(
-        n_clusters, min_cluster_size, min_cluster_factor
-    )
-
-    if n_clusters_ <= 0:
-        raise RuntimeError("no clusters detected")
-    elif n_clusters_ != n_clusters:
-        warnings.warn("the number of clusters detected does not match the requested one")
-
-    links_ = np.empty(n_clusters_-1, dtype=np.intp)
-    l.get_links(&links_[0])
-
-    labels_ = np.empty(n, dtype=np.intp)
-    l.get_labels(&labels_[0])
-
-    is_noise_ = np.empty(n, dtype=np.bool)
-    l.get_is_noise(&is_noise_[0])
-
-    return dict(
-        labels=labels_,
-        n_clusters=n_clusters_,
-        links=links_,
-        is_noise=is_noise_
-    )

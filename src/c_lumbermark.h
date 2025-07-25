@@ -21,10 +21,6 @@
 #include "c_common.h"
 #include <algorithm>
 #include <vector>
-#include <deque>
-#include <cmath>
-
-#include "c_disjoint_sets.h"
 #include "c_preprocess.h"
 
 #include <limits>
@@ -115,7 +111,7 @@ protected:
     }
 
 
-    /*! vertex visitor (kth pass):
+    /*! vertex visitor (k-th pass):
      *  going from v, visits w and then all its neighbours, mst_i[e,:] = {v,w};
      *  marks them as members of the c-th cluster. */
     Py_ssize_t visitk(Py_ssize_t v, Py_ssize_t e, Py_ssize_t c)
@@ -293,10 +289,15 @@ public:
                 // else
                 //     GENIECLUST_PRINT("%3d\n", e_last);
 
-                // NOTE: we could be taking the fact that a node incident to a cut edge might become a leaf into account (size adjustment), but it's too much of a hassle; the benefits are questionable
+                // NOTE: we could be taking into account the fact that a node
+                // incident to a cut edge might become a leaf (size adjustment),
+                // but it's too much of a hassle; the benefits are questionable
             } while (!(
                 mst_labels[e_last] > 0 &&
-                std::min(mst_cutsizes[e_last], cluster_sizes[mst_labels[e_last]]-mst_cutsizes[e_last]) >= min_cluster_size
+                std::min(
+                    mst_cutsizes[e_last],
+                    cluster_sizes[mst_labels[e_last]]-mst_cutsizes[e_last]
+                ) >= min_cluster_size
             ));
 
             cut_edges[n_clusters_-1] = e_last;
@@ -311,7 +312,8 @@ public:
                 if (skip_leaves) {
                     GENIECLUST_ASSERT(deg[v] > 1);
                     if (deg[v] == 2) {
-                        // mark v as incident to a cut edge and a noise edge, because it's a leaf in the newly-formed cluster
+                        // mark v as incident to a cut edge and a noise edge,
+                        // because it's a leaf in the newly-formed cluster
                         Py_ssize_t e = inc[v][0];
                         if (e == e_last) e = inc[v][1];
                         mst_labels[e] = LUMBERMARK_NOISEEDGE;

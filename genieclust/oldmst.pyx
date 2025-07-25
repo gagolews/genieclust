@@ -61,7 +61,55 @@ ctypedef fused floatT:
     double
 
 
-from . cimport c_oldmst
+
+
+cdef extern from "../src/c_oldmst.h":
+
+    cdef cppclass CDistance[T]:
+        pass
+
+    cdef cppclass CDistanceMutualReachability[T]: # inherits from CDistance
+        CDistanceMutualReachability()
+        CDistanceMutualReachability(const T* d_core, Py_ssize_t n, CDistance[T]* d_pairwise)
+
+    cdef cppclass CDistanceEuclidean[T]: # inherits from CDistance
+        CDistanceEuclidean()
+        CDistanceEuclidean(T* X, Py_ssize_t n, Py_ssize_t d)
+
+    cdef cppclass CDistanceEuclideanSquared[T]: # inherits from CDistance
+        CDistanceEuclideanSquared()
+        CDistanceEuclideanSquared(T* X, Py_ssize_t n, Py_ssize_t d)
+
+    cdef cppclass CDistanceManhattan[T]: # inherits from CDistance
+        CDistanceManhattan()
+        CDistanceManhattan(T* X, Py_ssize_t n, Py_ssize_t d)
+
+    cdef cppclass CDistanceCosine[T]: # inherits from CDistance
+        CDistanceCosine()
+        CDistanceCosine(T* X, Py_ssize_t n, Py_ssize_t d)
+
+    cdef cppclass CDistancePrecomputedMatrix[T]: # inherits from CDistance
+        CDistancePrecomputedMatrix()
+        CDistancePrecomputedMatrix(T* d, Py_ssize_t n)
+
+    cdef cppclass CDistancePrecomputedVector[T]: # inherits from CDistance
+        CDistancePrecomputedVector()
+        CDistancePrecomputedVector(T* d, Py_ssize_t n)
+
+
+
+    void Cknn_from_complete[T](
+        CDistance[T]* D, Py_ssize_t n, Py_ssize_t k,
+        T* dist, Py_ssize_t* ind, bint verbose) except +
+
+    void Cmst_from_complete[T](
+        CDistance[T]* D, Py_ssize_t n,
+        T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
+
+    Py_ssize_t Cmst_from_nn[T](
+        T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
+        T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
+
 
 
 ################################################################################
@@ -152,7 +200,7 @@ cpdef tuple mst_from_nn(
         d_core_ptr = &d_core[0]
 
     # _openmp_set_num_threads()
-    cdef Py_ssize_t n_edges = c_oldmst.Cmst_from_nn(
+    cdef Py_ssize_t n_edges = Cmst_from_nn(
         &dist[0,0], &ind[0,0],
         d_core_ptr,
         n, k,
@@ -240,15 +288,15 @@ cpdef tuple mst_from_complete(
     cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
-    cdef c_oldmst.CDistance[floatT]* D = NULL
+    cdef CDistance[floatT]* D = NULL
     if d == 1:
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+        D = <CDistance[floatT]*>new CDistancePrecomputedVector[floatT](&X[0,0], n)
     else:
         assert d == n
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
+        D = <CDistance[floatT]*>new CDistancePrecomputedMatrix[floatT](&X[0,0], n)
 
     # _openmp_set_num_threads()
-    c_oldmst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
+    Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if D:  del D
 
@@ -336,30 +384,30 @@ cpdef tuple mst_from_distance(
     cdef np.ndarray[floatT] mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
-    cdef c_oldmst.CDistance[floatT]* D = NULL
-    cdef c_oldmst.CDistance[floatT]* D2 = NULL
+    cdef CDistance[floatT]* D = NULL
+    cdef CDistance[floatT]* D2 = NULL
 
     if metric == "euclidean" or metric == "l2":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceEuclidean[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceManhattan[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine" or metric == "cosinesimil":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceCosine[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceCosine[floatT](&X[0,0], n, d)
     elif metric == "precomputed":
         if d == 1:
-            D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+            D = <CDistance[floatT]*>new CDistancePrecomputedVector[floatT](&X[0,0], n)
         else:
             assert d == n
-            D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
+            D = <CDistance[floatT]*>new CDistancePrecomputedMatrix[floatT](&X[0,0], n)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 
     if d_core is not None:
         D2 = D  # must be deleted separately
-        D  = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
+        D  = <CDistance[floatT]*>new CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
     # _openmp_set_num_threads()
-    c_oldmst.Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
+    Cmst_from_complete(D, n, &mst_dist[0], &mst_ind[0,0], verbose)
 
     if D:  del D
     if D2: del D2
@@ -430,30 +478,30 @@ cpdef tuple knn_from_distance(floatT[:,::1] X, Py_ssize_t k,
     cdef np.ndarray[Py_ssize_t,ndim=2] ind  = np.empty((n, k), dtype=np.intp)
     cdef np.ndarray[floatT,ndim=2]  dist = np.empty((n, k),
         dtype=np.float32 if floatT is float else np.float64)
-    cdef c_oldmst.CDistance[floatT]* D = NULL
-    cdef c_oldmst.CDistance[floatT]* D2 = NULL
+    cdef CDistance[floatT]* D = NULL
+    cdef CDistance[floatT]* D2 = NULL
 
     if metric == "euclidean" or metric == "l2":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceEuclidean[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceEuclidean[floatT](&X[0,0], n, d)
     elif metric == "manhattan" or metric == "cityblock" or metric == "l1":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceManhattan[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceManhattan[floatT](&X[0,0], n, d)
     elif metric == "cosine" or metric == "cosinesimil":
-        D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceCosine[floatT](&X[0,0], n, d)
+        D = <CDistance[floatT]*>new CDistanceCosine[floatT](&X[0,0], n, d)
     elif metric == "precomputed":
         if d == 1:
-            D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedVector[floatT](&X[0,0], n)
+            D = <CDistance[floatT]*>new CDistancePrecomputedVector[floatT](&X[0,0], n)
         else:
             assert d == n
-            D = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistancePrecomputedMatrix[floatT](&X[0,0], n)
+            D = <CDistance[floatT]*>new CDistancePrecomputedMatrix[floatT](&X[0,0], n)
     else:
         raise NotImplementedError("given `metric` is not supported (yet)")
 
     if d_core is not None:
         D2 = D # must be deleted separately
-        D  = <c_oldmst.CDistance[floatT]*>new c_oldmst.CDistanceMutualReachability[floatT](&d_core[0], n, D2)
+        D  = <CDistance[floatT]*>new CDistanceMutualReachability[floatT](&d_core[0], n, D2)
 
     # _openmp_set_num_threads()
-    c_oldmst.Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0], verbose)
+    Cknn_from_complete(D, n, k, &dist[0,0], &ind[0,0], verbose)
 
     if D:  del D
     if D2: del D2
