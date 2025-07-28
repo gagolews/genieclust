@@ -533,8 +533,8 @@ class Genie(MSTClusterMixin):
         *n_clusters = 1* makes the algorithm behave like a noise
         point/outlier detector.
 
-    gini_threshold : float
-        The threshold for the Genie correction in [0,1].
+    gini_threshold : float in [0,1]
+        The threshold for the Genie correction.
 
         The Gini index is used to quantify the inequality of the cluster
         size distribution. Low thresholds highly penalise the formation
@@ -806,7 +806,7 @@ class Genie(MSTClusterMixin):
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
-        # apply the Genie algorithm (the fast part):
+        # apply the Genie algorithm:
         res = internal.genie_from_mst(
             self._tree_w,
             self._tree_e,
@@ -814,7 +814,8 @@ class Genie(MSTClusterMixin):
             gini_threshold=cur_state["gini_threshold"],
             skip_leaves=(cur_state["M"] > 1),
             compute_full_tree=cur_state["compute_full_tree"],
-            compute_all_cuts=cur_state["compute_all_cuts"])
+            compute_all_cuts=cur_state["compute_all_cuts"]
+        )
 
         cur_state = self._postprocess_outputs(res, cur_state)
 
