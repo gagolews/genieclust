@@ -1,6 +1,7 @@
 """
 2025-04-17: Test Lumbermark
-Updated 2025-07-11 (fastmst)
+Updated 2025-07-28 (genieclust 1.2.0)
+TODO: Lumbermark+quitefastmst
 """
 
 # ############################################################################ #
@@ -111,13 +112,14 @@ for ex in range(n_examples):
         # continue
 
     t0 = time.time()
-    algo = ["Lumbermark", "Genie"][0]
+    algo = ["Lumbermark", "Genie"][1]
     if algo == "Lumbermark":
         algo_params = dict(M=6, min_cluster_factor=0.15, fastmst_params=dict(dcore_dist_adj=-np.inf))
         L = lumbermark.Lumbermark(n_clusters=n_clusters, **algo_params)
         y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
     elif algo == "Genie":
-        algo_params = dict(M=6, gini_threshold=0.4, postprocess="all", fastmst_params=dict(dcore_dist_adj=-np.inf))
+        eps = 0.00000011920928955078125
+        algo_params = dict(M=6, gini_threshold=0.4, postprocess="all", quitefastmst_params=dict(mutreach_adj=-1-eps))
         L = genieclust.Genie(n_clusters=n_clusters, **algo_params)
         y_pred = L.fit_predict(X)+1  # 0-based -> 1-based
     else:

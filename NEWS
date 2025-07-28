@@ -7,6 +7,12 @@
 *   PyPI build for Python 3.14
 
 
+## (under development)
+
+*   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
+    now invalidates the cached MST.
+
+
 ## 1.2.0 (2025-07-24)
 
 *   [Python and R] Using the new implementation of Euclidean and mutual

@@ -370,7 +370,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
         if self._last_state is not None and \
                 cur_state["X"]        == self._last_state["X"] and \
-                cur_state["metric"] == self._last_state["metric"] and \
+                cur_state["metric"]   == self._last_state["metric"] and \
+                cur_state["quitefastmst_params"] == self._last_state["quitefastmst_params"] and \
                 cur_state["M"]        == self._last_state["M"]:  # TODO
             # reuse last MST & M-NNs
             tree_w = self._tree_w
