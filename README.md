@@ -1,7 +1,7 @@
 <a href="https://genieclust.gagolewski.com/"><img src="https://www.gagolewski.com/_static/img/genieclust.png" align="right" height="128" width="128" /></a>
 # [**genieclust**](https://genieclust.gagolewski.com/) Package for R and Python
 
-### *Genie*: Fast and Robust Hierarchical Clustering with Noise Point Detection
+### *Genie*: Fast and Robust Hierarchical Clustering with Outlier Detection
 
 
 ![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
@@ -23,7 +23,7 @@ as specified below. Thank you.
 *Genie* is a robust and outlier-resistant hierarchical clustering algorithm
 (see Gagolewski, Bartoszuk, Cena, 2016). Its original implementation was
 included in the R package [**genie**](https://CRAN.R-project.org/package=genie).
-This is its faster and more powerful version.
+This is its faster and more capable variant.
 
 The idea behind *Genie( is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
@@ -42,15 +42,15 @@ is definitely worth a try.
 *Genie* is based on minimal spanning trees of pairwise distance graphs.
 Thus, it can also be pretty **fast**: thanks to
 [**quitefastmst**](https://quitefastmst.gagolewski.com/),
-determining the entire cluster hierarchy for datasets containing millions of points
-can be completed in minutes. Therefore, it is well suited to solving
+determining the entire cluster hierarchy for datasets containing millions
+of points can be completed in minutes. Therefore, it is well suited to solving
 **extreme clustering tasks** (involving large datasets with a high number
 of clusters to detect).
 
 **genieclust** allows clustering with respect to mutual reachability distances,
-enabling it to act as a **noise point detector** or a version
-of *HDBSCAN\**  (see Campello et al., 2013) that can identify a predefined
-number of clusters or their entire hierarchy.  The good news is that it
+enabling it to act as an **outlier detector** or an alternative to
+*HDBSCAN\** (see Campello et al., 2013) that can identify a predefined
+number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 The package also features an implementation of:

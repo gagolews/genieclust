@@ -1,5 +1,5 @@
 /*  The "old" (<= 2025) functions to compute minimum spanning trees
- *  wrt different distances (slower but generic).
+ *  w.r.t. different distances (slower but more universal).
  *
  *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -31,25 +31,24 @@ NumericMatrix internal_oldmst_compute(
     NumericMatrix ret(n-1, 3);
 
     CDistance<T>* D2 = NULL;
-    if (M >= 2) {
-        // TODO we need it for M==2 as well, but this data can be read from the
+    if (M >= 1) {
+        // TODO we need it for M==1 as well, but this data can be read from the
         // MST data below!
         if (verbose) GENIECLUST_PRINT("[genieclust] Determining the core distance.\n");
 
-        Py_ssize_t k = M-1;
-        CMatrix<Py_ssize_t> nn_i(n, k);
-        CMatrix<T> nn_d(n, k);
-        Cknn_from_complete(D, n, k, nn_d.data(), nn_i.data());
+        CMatrix<Py_ssize_t> nn_i(n, M);
+        CMatrix<T> nn_d(n, M);
+        Cknn_from_complete(D, n, M, nn_d.data(), nn_i.data());
 
-        IntegerMatrix out_nn_ind(n, k);
-        NumericMatrix out_nn_dist(n, k);
+        IntegerMatrix out_nn_ind(n, M);
+        NumericMatrix out_nn_dist(n, M);
 
         std::vector<T> d_core(n);
         for (Py_ssize_t i=0; i<n; ++i) {
-            d_core[i] = nn_d(i, k-1); // distance to the k-th nearest neighbour
+            d_core[i] = nn_d(i, M-1); // distance to the M-th nearest neighbour
             GENIECLUST_ASSERT(std::isfinite(d_core[i]));
 
-            for (Py_ssize_t j=0; j<k; ++j) {
+            for (Py_ssize_t j=0; j<M; ++j) {
                 GENIECLUST_ASSERT(nn_i(i,j) != i);
                 out_nn_ind(i,j)  = nn_i(i,j)+1; // 1-based indexing
                 out_nn_dist(i,j) = nn_d(i,j);
@@ -98,8 +97,8 @@ NumericMatrix internal_oldmst_matrix(
     Py_ssize_t d = X.ncol();
     NumericMatrix ret;
 
-    if (M < 1 || M >= n-1)
-        stop("`M` must be an integer in [1, n-1)");
+    if (M < 0 || M >= n)
+        stop("`M` must be an integer in [0, n-1]");
 
     CMatrix<T> X2(REAL(SEXP(X)), n, d, false); // Fortran- to C-contiguous
 
@@ -128,10 +127,10 @@ NumericMatrix internal_oldmst_matrix(
             ret(i,2) = sqrt(ret(i,2));
         }
 
-        if (M > 1) {
+        if (M > 0) {
             Rcpp::NumericMatrix out_nn_dist = ret.attr("nn.dist");
             for (Py_ssize_t i=0; i<n; ++i) {
-                for (Py_ssize_t j=0; j<M-1; ++j) {
+                for (Py_ssize_t j=0; j<M; ++j) {
                     out_nn_dist(i,j) = sqrt(out_nn_dist(i,j));
                 }
             }
@@ -146,7 +145,7 @@ NumericMatrix internal_oldmst_matrix(
 NumericMatrix dot_oldmst_matrix(
     NumericMatrix X,
     String distance="euclidean",
-    int M=1,
+    int M=0,
     bool cast_float32=false,
     bool verbose=false
 ) {
@@ -160,7 +159,7 @@ NumericMatrix dot_oldmst_matrix(
 // [[Rcpp::export(".oldmst.dist")]]
 NumericMatrix dot_oldmst_dist(
     NumericVector d,
-    int M=1,
+    int M=0,
     bool verbose=false
 ) {
     Py_ssize_t n = (Py_ssize_t)round((sqrt(1.0+8.0*d.size())+1.0)/2.0);

@@ -6,8 +6,30 @@
 
 *   PyPI build for Python 3.14
 
+*   For M>1 and non-Euclidean distances, the output MST edge weights
+    are slightly perturbed because of the applied continuity correction.
+    These values should be manually corrected at the postprocessing stage
+    after/in a call to `Cmst_from_complete`.
+
 
 ## (under development)
+
+*   `quitefastmst` version >= 0.9.1 is now required; the introduced
+    backward-incompatible changes have been addressed (see below for a list).
+
+*   [BACKWARD INCOMPATIBILITY] The definition of the mutual reachability
+    distance has changed.  Unlike in Campello et al.'s 2013 paper,
+    now the core distance is the distance to the *M*-th nearest neighbour,
+    not the *(M-1)*-th one (not including self).
+
+*   TODO:  outlier detection with based on mutual reachability distances
+    is now marked as supported.
+
+*   [BACKWARD INCOMPATIBILITY] TODO: `detect_noise` in `genie.default`...
+
+*   [BACKWARD INCOMPATIBILITY] TODO: `postprocess`....
+
+...
 
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
@@ -19,16 +41,16 @@
     reachability minimum spanning trees (quite fast in low dimensional spaces)
     from the [`quitefastmst`](https://quitefastmst.gagolewski.com/) package.
 
-*   [Python and R] [BACKWARD INCOMPATIBILITY] `mlpack` is not used anymore.
+*   [BACKWARD INCOMPATIBILITY] `mlpack` is not used anymore.
 
-*   [Python] [BACKWARD INCOMPATIBILITY] Seeking approximate near-neighbours
+*   [BACKWARD INCOMPATIBILITY] [Python] Seeking approximate near-neighbours
     with `nmslib` is no longer supported directly (the package has not been
     updated for a while).
 
 *   [Python] `MSTClusterMixin(BaseEstimator, ClusterMixin)`: A base class for
     Genie, GIc, and other MST-based clustering algorithms.
 
-*   [Python] [BACKWARD INCOMPATIBILITY] `Genie` and `GIc`: `affinity` was
+*   [BACKWARD INCOMPATIBILITY] [Python] `Genie` and `GIc`: `affinity` was
     renamed `matrix`.
 
 
@@ -39,12 +61,11 @@
 
 ## 1.1.5 (2023-10-18)
 
-*   [BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures
-    are no longer referred to as inequity measures.
+*   [BACKWARD INCOMPATIBILITY] Inequality measures are no longer referred
+    to as inequity measures.
 
-*   [BACKWARD INCOMPATIBILITY] [Python and R]
-    Some external cluster validity measures were renamed:
-    `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
+*   [BACKWARD INCOMPATIBILITY] Some external cluster validity measures were
+     renamed: `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
     `normalized_accuracy` -> `normalized_pivoted_accuracy`.
 
 *   [BACKWARD INCOMPATIBILITY] [Python] `compare_partitions2` has been removed,
@@ -95,7 +116,7 @@
 
 *   [Python] #75: `nmslib` is now optional.
 
-*   [BUILD TIME]: The use of `ssize_t` was not portable.
+*   [BUILD TIME] The use of `ssize_t` was not portable.
 
 
 ## 1.1.0 (2022-09-05)
@@ -139,7 +160,7 @@
 
 ## 1.0.1 (2022-08-08)
 
-*   [GENERAL] A paper on the *genieclust* package is now available:
+*   A paper on the *genieclust* package is now available:
     M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
     SoftwareX 15, 100722, 2021, DOI:
     [10.1016/j.softx.2021.100722](https://doi.org/10.1016/j.softx.2021.100722).
@@ -187,19 +208,20 @@
 
 ## 0.9.1 (2020-07-18)
 
-*   [GENERAL] The package has been completely rewritten.
+*   The package has been completely rewritten.
     The core functionality is now implemented in C++ (with OpenMP).
-
-*   [GENERAL] Clustering with respect to HDBSCAN*-like
-    mutual reachability distances is now supported.
-
-*   [GENERAL] The parallelised Jarník-Prim algorithm now supports on-the-fly
-    distance computations. Euclidean minimum spanning tree can be determined
-    with `mlpack`, which is much faster in low-dimensional spaces.
 
 *   [R] R version is now available.
 
-*   [Python] [Experimental] The GIc algorithm proposed by Anna Cena
+*   [EXPERIMENTAL] Clustering with respect to HDBSCAN*-like mutual reachability
+    distances is now supported.
+
+*   The parallelised Jarník-Prim algorithm now supports on-the-fly
+    distance computations.  Euclidean minimum spanning tree can be determined
+    with `mlpack`, which is much faster in low-dimensional spaces.
+
+
+*   [EXPERIMENTAL] [Python] The GIc algorithm proposed by Anna Cena
     in her 2018 PhD thesis wad added.
 
 *   [Python] Approximate version based on nearest neighbour graphs produced

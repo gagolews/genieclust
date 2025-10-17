@@ -26,9 +26,9 @@ for (d in c(2, 20)) {
     }
 
 
-    for (M in c(2, 5, 10)) {
+    for (M in c(1, 2, 10, n-1)) {
         t0 <- mst_euclid(X, M=M, algorithm="auto")
-        nna <- knn_euclid(X, M-1)
+        nna <- knn_euclid(X, M)
         expect_equal(nna$nn.index, t0$nn.index)
         expect_equal(nna$nn.dist, t0$nn.dist)
 
@@ -46,7 +46,7 @@ for (d in c(2, 20)) {
             expect_equal(t1$nn.index, t0$nn.index)
             expect_equal(t1$nn.dist, t0$nn.dist)
             expect_equal(dim(t1$nn.dist), dim(t1$nn.index))
-            expect_equal(dim(t1$nn.dist), c(n, M-1))
+            expect_equal(dim(t1$nn.dist), c(n, M))
 
         }
     }

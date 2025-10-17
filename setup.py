@@ -138,7 +138,7 @@ with open("genieclust/__init__.py", "r", encoding="utf8") as fh:
 setuptools.setup(
     name="genieclust",
     version=__version__,
-    description="Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection",
+    description="Genie: Fast and Robust Hierarchical Clustering with Outlier Detection",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Marek Gagolewski",
@@ -150,7 +150,7 @@ setuptools.setup(
         "numpy",
         "matplotlib",
         "scikit-learn",
-        "quitefastmst",
+        "quitefastmst>=0.9.1",
     ],
     python_requires=">=3.9",
     download_url="https://github.com/gagolews/genieclust",

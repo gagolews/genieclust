@@ -1,7 +1,6 @@
 """
 2025-04-17: Test Lumbermark
-Updated 2025-07-28 (genieclust 1.2.0)
-TODO: Lumbermark+quitefastmst
+Updated 2025-07-28 (genieclust 1.2.0, Lumbermark+quitefastmst)
 """
 
 # ############################################################################ #

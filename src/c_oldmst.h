@@ -279,8 +279,8 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
  *        (undirected) edge definition, interpreted as {i, ind[i,j]};
  *        negative indices as well as those such that ind[i,j]==i are ignored
  * @param d_core "core" distance (or NULL);
- *        if not NULL then the distance between 2 points will be
- *        d(i, ind[i,j]) = max(d(i, ind[i,j]), d_core[i], d_core[ind[i,j]])
+ *        if not NULL then the distance between two points will be
+ *        d'(i, ind[i,j]) = max(d(i, ind[i,j]), d_core[i], d_core[ind[i,j]])
  * @param n number of nodes
  * @param k minimal degree of all the nodes
  * @param mst_dist [out] c_contiguous vector of length n-1, gives weights of the
@@ -299,7 +299,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
  * @return number of edges in the minimal spanning forest
  */
 template <class T>
-Py_ssize_t Cmst_from_nn(
+Py_ssize_t Cmst_from_nn(  // TODO: remove
     const T* dist,
     const Py_ssize_t* ind,
     const T* d_core,

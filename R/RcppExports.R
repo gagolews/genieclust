@@ -486,11 +486,11 @@ devergottini_index <- function(x) {
     .Call(`_genieclust_devergottini_index`, x)
 }
 
-.oldmst.matrix <- function(X, distance = "euclidean", M = 1L, cast_float32 = FALSE, verbose = FALSE) {
+.oldmst.matrix <- function(X, distance = "euclidean", M = 0L, cast_float32 = FALSE, verbose = FALSE) {
     .Call(`_genieclust_dot_oldmst_matrix`, X, distance, M, cast_float32, verbose)
 }
 
-.oldmst.dist <- function(d, M = 1L, verbose = FALSE) {
+.oldmst.dist <- function(d, M = 0L, verbose = FALSE) {
     .Call(`_genieclust_dot_oldmst_dist`, d, M, verbose)
 }
 

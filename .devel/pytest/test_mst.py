@@ -21,31 +21,18 @@ def mst_check(X, metric='euclidean', **kwargs):
     n = X.shape[0]
     d = X.shape[1]
 
-    n_neighbors = n-1
-
-    t0 = time.time()
-    dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
-    dist_complete = scipy.spatial.distance.squareform(dist_complete)
-    mst_d, mst_i = genieclust.oldmst.mst_from_complete(dist_complete)
-    print("    precomputed-matrix %10.3fs" % (time.time()-t0,))
-
+    print(n, d)
 
     t0 = time.time()
     dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
     mst_d1, mst_i1 = genieclust.oldmst.mst_from_complete(dist_complete.reshape(dist_complete.shape[0],-1))
     print("    precomputed-vector %10.3fs" % (time.time()-t0,))
 
-    assert np.allclose(mst_d.sum(), mst_d1.sum())
-    assert np.all(mst_i == mst_i1)
-    assert np.allclose(mst_d, mst_d1)
-
     t0 = time.time()
-    nn = sklearn.neighbors.NearestNeighbors(n_neighbors=n_neighbors, metric=metric, **kwargs)
-    nn.fit(X)
-    dist, ind = nn.kneighbors()
-    mst_d1, mst_i1 = genieclust.oldmst.mst_from_nn(dist, ind)
-    print("    NearestNeighbors %10.3fs" % (time.time()-t0,))
-
+    dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
+    dist_complete = scipy.spatial.distance.squareform(dist_complete)
+    mst_d, mst_i = genieclust.oldmst.mst_from_complete(dist_complete)
+    print("    precomputed-matrix %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d1.sum())
     assert np.all(mst_i == mst_i1)
@@ -84,7 +71,7 @@ def mst_mutreach_check(X, metric='euclidean'):
     D = scipy.spatial.distance.pdist(X, metric=metric)
     D = scipy.spatial.distance.squareform(D)
 
-    for M in [2, 3, 5, n-1]:
+    for M in [1, 2, 3, 5]:
         d_core     = genieclust.internal._core_distance(D, M)
 
         t0 = time.time()
@@ -93,8 +80,7 @@ def mst_mutreach_check(X, metric='euclidean'):
         print("    mutreach1-D(%d) %10.3fs" % (M, time.time()-t0,))
 
         t0 = time.time()
-        mst_d2, mst_i2 = genieclust.oldmst.mst_from_distance(X, metric=metric,
-            d_core=d_core)
+        mst_d2, mst_i2 = genieclust.oldmst.mst_from_distance(X, metric=metric, d_core=d_core)
         print("    mutreach2(%d)   %10.3fs" % (M, time.time()-t0,))
 
         assert np.allclose(mst_d.sum(), mst_d2.sum())
@@ -105,8 +91,8 @@ def mst_mutreach_check(X, metric='euclidean'):
         Dsorted = np.argsort(D, axis=1)
         assert np.all(Dsorted[:,0] == np.arange(n))
 
-        nn_i1  = Dsorted[:, 1:M]
-        nn_d1 = D[np.repeat(np.arange(n).reshape(-1,1), M-1, axis=1), nn_i1]
+        nn_i1  = Dsorted[:, 1:(M+1)]
+        nn_d1 = D[np.repeat(np.arange(n).reshape(-1,1), M, axis=1), nn_i1]
 
         if metric == 'euclidean':
             for algo in ["brute", "auto", "single_kd_tree", "sesqui_kd_tree", "dual_kd_tree"]:
@@ -130,7 +116,7 @@ def mst_mutreach_check(X, metric='euclidean'):
 def test_MST():
     for dataset in ["big_one", "pathbased", "h2mg_64_50"]:
         if dataset == "big_one":
-            X =  np.random.rand(1000, 20)
+            X = np.random.rand(1000, 20)
         else:
             X = np.loadtxt("%s/%s.data.gz" % (path,dataset), ndmin=2)
 

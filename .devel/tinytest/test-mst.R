@@ -13,7 +13,7 @@ ade4_mstree <- function(D)
     t0
 }
 
-quitefastmst_euclid <- function(X, M=1, ...)
+quitefastmst_euclid <- function(X, M=0, ...)
 {
     .res <- mst_euclid(X, M, ...)
     result <- cbind(.res[["mst.index"]], .res[["mst.dist"]])
@@ -49,7 +49,7 @@ for (d in c(2, 20)) {
     }
 
 
-    for (M in c(2, 5, 10)) {
+    for (M in c(1, 2, 10, n-1)) {
         t0 <- genieclust:::.oldmst.matrix(X, M=M, distance="euclidean")
 
         ts <- list(
@@ -65,7 +65,7 @@ for (d in c(2, 20)) {
         for (t1 in ts) {
             expect_true(all(t1[,1] < t1[,2]))
             expect_true(!is.unsorted(t1[,3]))
-            expect_equal(sum(t0[,3]), sum(t1[,3]))
+            expect_true(abs(sum(t0[,3])-sum(t1[,3])) < 1e-3)  # there's an ambiguity correction in place...
             expect_equal(attr(t1, "nn.index"), attr(t0, "nn.index"))
             expect_equal(attr(t1, "nn.dist"), attr(t0, "nn.dist"))
         }

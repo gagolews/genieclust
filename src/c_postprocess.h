@@ -22,14 +22,14 @@
 
 
 
-/*! Merge all "boundary" points with their nearest "core" points
+/*! Merge all "boundary" points with their nearest "core" points  TODO
  *
  *
  *  For all the boundary points i, set c[i] = c[j], where {i,j} is an edge
  *  in a spanning forest given by an adjacency matrix ind.
  *
  *  The i-th point is a boundary point if it is a noise point, i.e., c[i] < 0,
- *  and it is amongst j's M-1 nearest neighbours.
+ *  and it is amongst j's M nearest neighbours.
  *
  *
  *  @param ind c_contiguous matrix of size num_edges*2,
@@ -41,7 +41,7 @@
  *     nn[i,:] gives the indices of the i-th point's
  *     nearest neighbours; -1 indicates a "missing value"
  *  @param num_neighbours number of columns in nn
- *  @param M smoothing factor, 2 <= M < num_neighbours
+ *  @param M smoothing factor, 1 <= M <= num_neighbours
  *  @param c [in/out] c_contiguous vector of length n, where
  *      c[i] denotes the cluster id
  *      (in {-1, 0, 1, ..., k-1} for some k) of the i-th object, i=0,...,n-1.
@@ -57,7 +57,7 @@ void Cmerge_boundary_points(
     Py_ssize_t* c,
     Py_ssize_t n
 ) {
-    if (M < 2 || M-2 >= num_neighbours)
+    if (M < 1 || M > num_neighbours)
         throw std::domain_error("Incorrect smoothing factor M");
 
     for (Py_ssize_t i=0; i<num_edges; ++i) {
@@ -83,7 +83,7 @@ void Cmerge_boundary_points(
         // u is a boundary point if u is amongst v's M-1 nearest neighbours
 
         //c[u] = -1; // it's negative anyway
-        for (Py_ssize_t j=0; j<M-1; ++j) {
+        for (Py_ssize_t j=0; j<M; ++j) {
             // -1s are ignored (they should be at the end of the array btw)
             if (nn[v*num_neighbours+j] == u) {
                 // yes, it's a boundary point
@@ -95,7 +95,7 @@ void Cmerge_boundary_points(
 }
 
 
-/*! Merge all noise points with their nearest clusters
+/*! Merge all noise points with their nearest clusters  TODO
  *
  *  For all the points i with some cluster identifier c[i] < 0, i.e., for
  *  all the noise points, set c[i] = c[j],

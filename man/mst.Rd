@@ -11,12 +11,12 @@ mst(d, ...)
 \method{mst}{default}(
   d,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-  M = 1L,
+  M = 0L,
   verbose = FALSE,
   ...
 )
 
-\method{mst}{dist}(d, M = 1L, verbose = FALSE, ...)
+\method{mst}{dist}(d, M = 0L, verbose = FALSE, ...)
 }
 \arguments{
 \item{d}{either a numeric matrix (or an object coercible to one,
@@ -32,7 +32,7 @@ from the \pkg{quitefastmst} package}
 \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 \code{"cosine"}}
 
-\item{M}{smoothing factor; \code{M} = 1 selects the requested
+\item{M}{smoothing factor; \eqn{M=0} selects the requested
 \code{distance}; otherwise, the corresponding degree-\code{M} mutual
 reachability distance is used; \code{M} should be rather small,
 say, \eqn{\leq 20}}
@@ -43,7 +43,7 @@ and progress information}
 \value{
 Returns a numeric matrix of class \code{mst} with \eqn{n-1} rows and
 three columns: \code{from}, \code{to}, and \code{dist} sorted
-nondecreasingly. Its i-th row specifies the i-th edge of the MST
+nondecreasingly. Its \eqn{i}-th row specifies the \eqn{i}-th edge of the MST
 which is incident to the vertices \code{from[i]} and \code{to[i]} with
 \code{from[i] < to[i]}  (in 1,...,n)
 and \code{dist[i]} gives the corresponding weight, i.e., the
@@ -54,10 +54,10 @@ The \code{Labels} attribute gives the labels of the input points,
 if available.
 The \code{method} attribute provides the name of the distance function used.
 
-If \eqn{M>1}, the \code{nn.index} attribute gives the indices
-of the \code{M}-1 nearest neighbours of each point
+If \eqn{M>0}, the \code{nn.index} attribute gives the indices
+of the \code{M} nearest neighbours of each point
 and \code{nn.dist} provides the corresponding distances,
-both in the form of an \eqn{n} by \eqn{M-1} matrix.
+both in the form of an \eqn{n} by \eqn{M} matrix.
 }
 \description{
 Determine a(*) minimum spanning tree (MST) of the complete
@@ -65,7 +65,7 @@ undirected graph representing a set of \eqn{n} points
 whose weights correspond to the pairwise distances between the points.
 }
 \details{
-(*) Note that if the distances are non unique,
+(*) Note that if the distances are not unique,
 there might be multiple minimum trees spanning a given graph.
 
 If \code{d} is a matrix and the use of Euclidean distance is requested
@@ -74,20 +74,23 @@ to determine the MST.  It is quite fast in spaces of low intrinsic
 dimensionality, even for 10M points.
 
 Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
-method, which requires \eqn{O(n^2)} time, is used.  The algorithm is parallelised;
-the number of threads is determined by the \code{OMP_NUM_THREADS} environment
-variable. As a rule of thumb, datasets up to 100k points
-should be processed relatively quickly.
+method, which requires \eqn{O(n^2)} time, is used.
+The algorithm is parallelised; the number of threads is determined
+by the \code{OMP_NUM_THREADS} environment variable. As a rule of thumb,
+datasets up to 100k points should be processed relatively quickly.
 
-If \eqn{M>1}, then the mutual reachability distance \eqn{m(i,j)}
-with the smoothing factor \eqn{M} (see Campello et al. 2013)
-is used instead of the chosen "raw" distance \eqn{d(i,j)}.
-It holds \eqn{m(i, j)=\max\{d(i,j), c(i), c(j)\}}, where \eqn{c(i)} is
-the core distance, i.e., the distance between the \eqn{i}-th point and
-its (\code{M}-1)-th nearest neighbour.
-This makes "noise" and "boundary" points being "pulled away" from each other.
-The Genie clustering algorithm (see \code{\link{gclust}}) with respect to
-the mutual reachability distance can mark some observations as noise points.
+For the smoothing factor \eqn{M>0},
+the mutual reachability distance \eqn{d_M(i,j)} (Campello et al., 2013)
+is used instead of the chosen "raw" distance \eqn{d(i,j)}.  It holds
+\eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
+\eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
+nearest neighbour (not including self, unlike in Campello et al., 2013).
+This pulls "noise" and "border" points away from each other.
+
+Possible ties between mutually reachability distances are resolved
+in such a way that connecting to a neighbour of the smallest
+core distance is preferred.  This leads to MSTs with more leaves and hubs;
+see (Gagolewski, 2015) for discussion.
 }
 \examples{
 library("datasets")
@@ -100,29 +103,31 @@ segments(X[T[, 1], 1], X[T[, 1], 2],
 
 }
 \references{
-V. Jarník, O jistem problemu minimalnim,
+Jarník V., O jistem problemu minimalnim,
 \emph{Prace Moravske Prirodovedecke Spolecnosti} 6, 1930, 57-63.
 
-C.F. Olson, Parallel algorithms for hierarchical clustering,
+Olson C.F., Parallel algorithms for hierarchical clustering,
 \emph{Parallel Computing} 21, 1995, 1313-1325.
 
-R. Prim, Shortest connection networks and some generalisations,
+Prim R., Shortest connection networks and some generalisations,
 \emph{The Bell System Technical Journal} 36(6), 1957, 1389-1401.
 
-O. Borůvka, O jistém problému minimálním, \emph{Práce Moravské
+Borůvka O., O jistém problému minimálním, \emph{Práce Moravské
 Přírodovědecké Společnosti} 3, 1926, 37–58.
 
-J.L. Bentley, Multidimensional binary search trees used for associative
+Bentley J.L., Multidimensional binary search trees used for associative
 searching, \emph{Communications of the ACM} 18(9), 509–517, 1975,
 \doi{10.1145/361002.361007}.
-W.B. March, R. Parikshit, A.G. Gray, Fast Euclidean minimum spanning
+March W.B., Parikshit R., Gray A., Fast Euclidean minimum spanning
 tree: Algorithm, analysis, and applications, \emph{Proc. 16th ACM SIGKDD
 Intl. Conf. Knowledge Discovery and Data Mining (KDD '10)}, 2010, 603–612.
 
-R.J.G.B. Campello, D. Moulavi, J. Sander,
+Campello R.J.G.B., Moulavi D., Sander J.,
 Density-based clustering based on hierarchical density estimates,
 \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 \doi{10.1007/978-3-642-37456-2_14}.
+
+Gagolewski M., TODO, 2025
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

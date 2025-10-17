@@ -1,4 +1,5 @@
-/*  Various distances (Euclidean, mutual reachability distance, ...). Used by c_oldmst.h
+/*  Various distances (Euclidean, mutual reachability distance, ...).
+ *  Used by c_oldmst.h
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -343,17 +344,23 @@ struct CDistanceCosine : public CDistance<T>  {
 
 
 
-/*! A class to compute the "mutual reachability" (Campello et al., 2013)
+/*! A class to compute the "mutual reachability" [1]_
  *  distances from the i-th point to all given k points based on the "core"
  *  distances and a CDistance class instance.
+ *
+ *  Possible ties in mutual reachability distances are resolved in such
+ *  a way that neighbours with smaller core distances are preferred, see [2]_.
+ *
  *
  *  References:
  *  ==========
  *
- *  [1] Campello, R.J.G.B., Moulavi, D., Sander, J.,
+ *  [1] Campello R.J.G.B., Moulavi D., Sander J.,
  *      Density-based clustering based on hierarchical density estimates,
  *      *Lecture Notes in Computer Science* 7819, 2013, 160-172,
  *      doi:10.1007/978-3-642-37456-2_14.
+ *
+ *  [2] Gagolewski M., TODO, 2025
  *
  */
 template<class T>
@@ -391,28 +398,24 @@ struct CDistanceMutualReachability : public CDistance<T>
                 // if (d_core[w] > __buf[w]) __buf[w] = d_core[w];
 
                 T d_core_max;
-                // T d_core_min;
+                T d_core_min;
+
                 if (d_core[i] >= d_core[w]) {
                     d_core_max = d_core[i];
-                    // d_core_min = d_core[w];
+                    d_core_min = d_core[w];
                 }
                 else {
                     d_core_max = d_core[w];
-                    // d_core_min = d_core[i];
+                    d_core_min = d_core[i];
                 }
 
-                if (d_core_max <= d[w]) {
+                if (d[w] > d_core_max) {
                     __buf[w] = d[w];
                 }
                 else {
-#define MUTREACH_SHARPEN 1
-#if MUTREACH_SHARPEN == 0
-                    __buf[w] = d_core_max;
-#elif MUTREACH_SHARPEN == 1
                     // make it unambiguous:
-                    // pulled-away from each other, but ordered w.r.t. the original pairwise distances (increasingly)
-                    __buf[w] = d_core_max+d[w]/(1<<24);
-#endif
+                    // pulled-away from each other, but ordered w.r.t. the core distances (increasingly)
+                    __buf[w] = d_core_max+d_core_min*0.00000011920928955078125;
                 }
             }
         }

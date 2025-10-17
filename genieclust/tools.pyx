@@ -181,7 +181,8 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
 
     Run time is :math:`O(nk)` and working memory is :math:`O(k)`.
     An insertion sort-like scheme is used to locate the order statistic.
-    In practice, the function is very fast for small `k` and randomly ordered or almost sorted (increasingly) data.
+    In practice, the function is very fast for small `k` and randomly
+    ordered or almost sorted (increasingly) data.
 
 
     Parameters

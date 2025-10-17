@@ -39,36 +39,38 @@
 #' clustering algorithm by Gagolewski, Bartoszuk, and Cena (2016).
 #' The Genie algorithm is based on the minimum spanning tree (MST) of the
 #' pairwise distance graph of a given point set.
-#' Just like the single linkage, it consumes the edges
+#' Just like the Single Linkage method, it consumes the edges
 #' of the MST in an increasing order of weights. However, it prevents
 #' the formation of clusters of highly imbalanced sizes; once the Gini index
 #' (see \code{\link{gini_index}()}) of the cluster size distribution
-#' raises above \code{gini_threshold}, the merging of a point group
+#' raises above \code{gini_threshold}, merging a point group
 #' of the smallest size is enforced.
 #'
 #' The clustering can also be computed with respect to the
 #' mutual reachability distances (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
-#' (see Campello et al., 2013). If \eqn{M>1}, then the mutual reachability
-#' distance \eqn{m(i,j)} with a smoothing factor \eqn{M} is used instead of the
+#' (see Campello et al., 2013).
+#' For the smoothing factor \eqn{M>0},
+#' the mutual reachability distance \eqn{d_M(i,j)} is used instead of the
 #' chosen "raw" distance \eqn{d(i,j)}.  It holds
-#' \eqn{m(i,j)=\max(d(i,j), c(i), c(j))}, where the core distance \eqn{c(i)} is
-#' the distance to the \eqn{i}-th point's (\eqn{M-1})-th
-#' nearest neighbour.  This makes "noise" and "boundary" points being
-#' more "pulled away" from each other.
+#' \eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
+#' \eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
+#' nearest neighbour (not including self, unlike in Campello et al., 2013).
+#' This pulls "noise" and "border" points away from each other.
 #'
-#' The Genie correction together with the smoothing factor \eqn{M>1}
-#' (note that \eqn{M=2} corresponds to the original distance) gives
-#' a version of the HDBSCAN* algorithm that is able to detect
-#' a predefined number of clusters. Hence it does not dependent on the DBSCAN's
+#' The Genie algorithm with the smoothing factor \eqn{M>0}
+#' (note that \eqn{M\leq 1} corresponds to the original distance) gives
+#' an alternative to the HDBSCAN* algorithm that is able to detect
+#' a predefined number of clusters and indicate outliers.
+#' Hence, it does not dependent on the DBSCAN's
 #' \code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
 #'
 #'
 #' @details
 #' As in the case of all the distance-based methods,
 #' the standardisation of the input features is definitely worth giving a try.
-#' Oftentimes, more sophisticated feature engineering (e.g., dimensionality
-#' reduction) will lead to more meaningful results.
+#' Oftentimes, applying some more sophisticated feature engineering techniques
+#' (e.g., dimensionality reduction) might lead to more meaningful results.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},
 #' \code{\link{mst}()} will be called to compute an MST, which generally
@@ -106,18 +108,18 @@
 #'     and progress information
 #' @param ... further arguments passed to \code{\link{mst}()}
 #' @param k the desired number of clusters to detect, \eqn{k=1} with
-#'      \eqn{M>1} acts as a noise point detector
-#' @param detect_noise whether the minimum spanning tree's leaves
-#'     should be marked as noise points, defaults to \code{TRUE} if \eqn{M>1}
-#'     for compatibility with HDBSCAN*
-#' @param M smoothing factor; \eqn{M \leq 2} gives the selected \code{distance};
+#'      \eqn{M>0} acts as an outlier detector
+#' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used
-#' @param postprocess one of \code{"boundary"} (default), \code{"none"}
-#'     or \code{"all"};  in effect only if \eqn{M > 1}.
+#' @param detect_noise TODO whether the minimum spanning tree's leaves
+#'     should be marked as noise points, defaults to \code{TRUE} if \eqn{M>0}
+#'     for compatibility with HDBSCAN*
+#' @param postprocess TODO one of \code{"boundary"} (default), \code{"none"}
+#'     or \code{"all"};  in effect only if \eqn{M > 0}.
 #'     By default, only "boundary" points are merged
 #'     with their nearest "core" points (A point is a boundary point if it is
 #'     a noise point and it is amongst its adjacent vertex's
-#'     (\eqn{M-1})-th nearest neighbours). To force a classical
+#'     \eqn{M} nearest neighbours). To force a classical
 #'     k-partition of a data set (with no notion of noise),
 #'     choose \code{"all"}
 #'
@@ -127,10 +129,10 @@
 #' returns a list of class \code{hclust}; see \code{\link[stats]{hclust}}.
 #' Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
 #'
-#' \code{genie()} returns a \code{k}-partition - a vector whose i-th element
-#' denotes the i-th input point's cluster label between 1 and \code{k}
-#' If \code{detect_noise} is \code{TRUE}, missing values (\code{NA}) denote
-#' noise points.
+#' \code{genie()} returns a \code{k}-partition, i.e., a vector whose
+#' \eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
+#' between 1 and \code{k}.  If \code{detect_noise} is \code{TRUE},
+#' missing values (\code{NA}) denote noise points.
 #'
 #'
 #' @seealso
@@ -141,20 +143,22 @@
 #'
 #'
 #' @references
-#' Gagolewski, M., Bartoszuk, M., Cena, A.,
+#' Gagolewski M., Bartoszuk M., Cena A.,
 #' Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 #' \emph{Information Sciences} 363, 2016, 8-23,
 #' \doi{10.1016/j.ins.2016.05.003}
 #'
-#' Campello, R.J.G.B., Moulavi, D., Sander, J.,
+#' Campello R.J.G.B., Moulavi D., Sander J.,
 #' Density-based clustering based on hierarchical density estimates,
 #' \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 #' \doi{10.1007/978-3-642-37456-2_14}
 #'
-#' Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+#' Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
 #' Clustering with minimum spanning trees: How good can it be?,
 #' \emph{Journal of Classification} 42, 2025, 90-112,
 #' \doi{10.1007/s00357-024-09483-1}
+#'
+#' Gagolewski M., TODO, 2025
 #'
 #'
 #' @examples
@@ -168,7 +172,7 @@
 #' adjusted_rand_score(y_test, y_pred)
 #' normalized_clustering_accuracy(y_test, y_pred)
 #'
-#' y_pred2 <- genie(X, 3, M=5)  # clustering wrt 5-mutual reachability distance
+#' y_pred2 <- genie(X, 3, M=5)  # the 5-mutual reachability distance
 #' plot(X[,1], X[,2], col=y_pred2, pch=y_test, asp=1, las=1)
 #' noise <- is.na(y_pred2)  # noise/boundary points
 #' points(X[noise, ], col="gray", pch=10)
@@ -254,9 +258,9 @@ genie.default <- function(
     k,
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-    M=1L,
-    postprocess=c("boundary", "none", "all"),
-    detect_noise=M>1L,
+    M=0L,
+    postprocess=c("boundary", "none", "all"),  # TODO
+    detect_noise=M>0L,  # TODO
     verbose=FALSE,
     ...)
 {
@@ -280,9 +284,9 @@ genie.dist <- function(
     d,
     k,
     gini_threshold=0.3,
-    M=1L,
-    postprocess=c("boundary", "none", "all"),
-    detect_noise=M>1L,
+    M=0L,
+    postprocess=c("boundary", "none", "all"),  # TODO
+    detect_noise=M>0L,  # TODO
     verbose=FALSE,
     ...)
 {
@@ -304,8 +308,8 @@ genie.dist <- function(
 genie.mst <- function(d,
     k,
     gini_threshold=0.3,
-    postprocess=c("boundary", "none", "all"),
-    detect_noise=FALSE,
+    postprocess=c("boundary", "none", "all"),  # TODO
+    detect_noise=FALSE,  # TODO
     verbose=FALSE,
     ...)
 {

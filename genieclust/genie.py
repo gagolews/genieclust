@@ -38,7 +38,7 @@ import warnings
 
 class MSTClusterMixin(BaseEstimator, ClusterMixin):
     """
-    A base class for :any:`genieclust.Genie`,
+    The base class for :any:`genieclust.Genie`,
     :any:`genieclust.GIc`, and other MST-based clustering algorithms [2]_.
 
 
@@ -48,13 +48,13 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     n_clusters : int
         The number of clusters to detect.
 
-        If *M > 1* and *postprocess* is not ``"all"``, setting
+        If *M > 0* and *postprocess* is not ``"all"``, setting
         *n_clusters = 1* makes the algorithm behave like a noise
-        point/outlier detector.
+        point/outlier detector. TODO
 
     M : int
         Smoothing factor for the mutual reachability distance [1]_.
-        *M = 1* and *M = 2* indicate the original distance as given by
+        *M = 0* and *M = 1* indicate the original distance as given by
         the *metric* parameter.
 
     metric : str
@@ -77,13 +77,13 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
 
     postprocess : {``"boundary"``, ``"none"``, ``"all"``}
-        Controls the treatment of noise/boundary points after the clusters are
-        identified.
+        Controls the treatment of noise/border points after the clusters are
+        identified.   TODO
 
-        In effect only if `M` > 1. Each leaf in the minimum spanning tree
-        is treated as a *noise* point. We call it a *boundary point*
-        if it is amongst its adjacent vertex's `M` - 1 nearest neighbours.
-        By default, only boundary points are merged with their nearest
+        In effect only if `M` > 0. Each leaf in the minimum spanning tree
+        is treated as a *noise* point.  We call it a *border point*
+        if it is amongst its adjacent vertex's `M` nearest neighbours.
+        By default, only border points are merged with their nearest
         *core* points.
 
         To force a classical *n_clusters*-partition of a data set (with no
@@ -107,20 +107,24 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
 
-    If *M > 1*, then the minimum spanning tree is computed with respect to the
-    mutual reachability distance (based, e.g., on the Euclidean metric).
+    If *M > 0*, then the minimum spanning tree is computed with respect to the
+    mutual reachability distance (based, e.g., on the Euclidean metric) [1]_.
     Formally, the distance :math:`d_M(i,j)` is used instead of the
     chosen "raw" distance, :math:`d(i,j)`. It holds
     :math:`d_M(i,j)=\\max\\{d(i,j), c_M(i), c_M(j)\\}`, where the "core"
     distance :math:`c_M(i)` is given by :math:`d(i,k)` with :math:`k` being
-    the :math:`(M-1)`-th nearest neighbour of :math:`i`. This makes "noise"
-    and "boundary" points being "pulled away" from each other.
+    :math:`i`'s :math:`M`-th nearest neighbour
+    (not including self, unlike in [1]_). This makes "noise"
+    and "border" points being "pulled away" from each other.
 
-    Note that *M = 2* corresponds to the original distance.
+    Possible ties between mutually reachability distances are resolved
+    in such a way that connecting to a neighbour of the smallest
+    core distance is preferred.  This leads to MSTs with more leaves and hubs;
+    see [3]_ for discussion.
 
     The underlying clustering algorithm might leave out all MST leaves from
     the clustering process. They may be merged with the nearest clusters at the
-    postprocessing stage, or left marked as "noise" observations.
+    postprocessing stage, or left marked as outliers.
 
 
     :Environment variables:
@@ -139,8 +143,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
         Normally an integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
-        If *M > 1*, noise/boundary points are labelled ``-1``
-        (unless taken care of at the postprocessing stage).
+        If *M > 0*, the MST leaves are treated as outliers and are
+        labelled ``-1`` (unless taken care of at the postprocessing stage).
 
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
@@ -162,16 +166,19 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     ----------
 
     .. [1]
-        Campello, R.J.G.B., Moulavi, D., Sander, J.,
+        Campello R.J.G.B., Moulavi D., Sander J.,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
         doi:10.1007/978-3-642-37456-2_14.
 
     .. [2]
-        Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+        Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
         doi:10.1007/s00357-024-09483-1.
+
+    .. [3]
+       Gagolewski M., TODO, 2025
 
     """
 
@@ -251,13 +258,13 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             #self._is_noise    = (self.labels_[0, :] < 0)
 
             # postprocess labels, if requested to do so
-            if cur_state["M"] < 2:
+            if cur_state["M"] < 1:
                 pass
             elif cur_state["postprocess"] == "none":
                 pass
             elif cur_state["postprocess"] == "boundary":
                 assert self._nn_e is not None
-                assert self._nn_e.shape[1] >= cur_state["M"] - 1
+                assert self._nn_e.shape[1] >= cur_state["M"]
                 for i in range(start_partition, self.labels_.shape[0]):
                     self.labels_[i, :] = internal.merge_boundary_points(
                         self._tree_e, self.labels_[i, :],
@@ -278,8 +285,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             cur_state = dict()
 
         cur_state["M"] = int(self.M)
-        if cur_state["M"] < 1:
-            raise ValueError("`M` must be >= 1.")
+        if cur_state["M"] < 0:
+            raise ValueError("`M` must be >= 0.")
 
         cur_state["exact"]             = True  # bool(self.exact)
 
@@ -359,7 +366,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             if cur_state["n_features"] < 0:
                 cur_state["n_features"] = X.shape[1]
 
-        if cur_state["M"]-1 >= X.shape[0]:
+        if cur_state["M"] >= X.shape[0]:
             raise ValueError("`M` is too large")
 
         tree_w = None
@@ -387,17 +394,17 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
                     verbose=cur_state["verbose"]
                 )
 
-                if cur_state["M"] == 1:
+                if cur_state["M"] == 0:
                     tree_w, tree_e = _res
                 else:
                     tree_w, tree_e, nn_w, nn_e = _res
                     d_core = internal.get_d_core(nn_w, nn_e, cur_state["M"])
             else:
-                if cur_state["M"] >= 2:  # else d_core   = None
+                if cur_state["M"] >= 1:  # else d_core   = None
                     # Genie+HDBSCAN --- determine d_core
                     nn_w, nn_e = oldmst.knn_from_distance(
                         X,  # if not c_contiguous, raises an error
-                        k=cur_state["M"]-1,
+                        k=cur_state["M"],
                         metric=cur_state["metric"],  # supports "precomputed"
                         verbose=cur_state["verbose"]
                     )
@@ -417,9 +424,9 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         assert tree_e.shape[1] == 2
         if cur_state["M"] >= 2:
             assert nn_w.shape[0] == n_samples
-            assert nn_w.shape[1] == cur_state["M"]-1
+            assert nn_w.shape[1] == cur_state["M"]
             assert nn_e.shape[0] == n_samples
-            assert nn_e.shape[1] == cur_state["M"]-1
+            assert nn_e.shape[1] == cur_state["M"]
             assert d_core.shape[0] == n_samples
 
         self.n_samples_    = n_samples
@@ -529,9 +536,8 @@ class Genie(MSTClusterMixin):
     n_clusters : int
         The number of clusters to detect.
 
-        If *M > 1* and *postprocess* is not ``"all"``, setting
-        *n_clusters = 1* makes the algorithm behave like a noise
-        point/outlier detector.
+        TODO If *M > 0* and *postprocess* is not ``"all"``, setting
+        *n_clusters = 1* makes the algorithm behave as an outlier detector.
 
     gini_threshold : float in [0,1]
         The threshold for the Genie correction.
@@ -539,7 +545,7 @@ class Genie(MSTClusterMixin):
         The Gini index is used to quantify the inequality of the cluster
         size distribution. Low thresholds highly penalise the formation
         of small clusters. Threshold of 1.0 disables the correction:
-        in such a case, if *M = 1*, then the method is equivalent to the single
+        in such a case, if *M = 0*, then the method is equivalent to the single
         linkage algorithm.
 
         The algorithm tends to be *stable* with respect to small changes
@@ -548,12 +554,12 @@ class Genie(MSTClusterMixin):
 
     M : int
         The smoothing factor for the mutual reachability distance [2]_.
-        *M = 1* and *M = 2* indicate the original distance as given by
+        *M ≤ 1* indicates the original distance as given by
         the *metric* parameter; see :any:`genieclust.MSTClusterMixin`
         for more details.
 
-        *M = 1* gives the original Genie algorithm [1]_ (with no noise/boundary
-        point detection) with respect to the chosen distance.
+        *M = 0* gives the original Genie algorithm [1]_
+        (with no outlier detection) with respect to the chosen distance.
 
     metric : str
         The metric used to compute the linkage; see
@@ -563,7 +569,7 @@ class Genie(MSTClusterMixin):
     compute_full_tree : bool
         Whether to determine the entire cluster hierarchy and the linkage matrix.
 
-        Only available if *M = 1*. Enables plotting dendrograms or cutting
+        Only available if *M = 0*. Enables plotting dendrograms or cutting
         the cluster hierarchy at an arbitrary level; see the
         *children_*, *distances_*, *counts_* attributes.
 
@@ -575,7 +581,7 @@ class Genie(MSTClusterMixin):
 
     postprocess : {``"boundary"``, ``"none"``, ``"all"``}
         Controls the treatment of noise/boundary points after the clusters are
-        identified; see :any:`genieclust.MSTClusterMixin` for more details.
+        identified; see :any:`genieclust.MSTClusterMixin` for more details. TODO
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -653,7 +659,7 @@ class Genie(MSTClusterMixin):
     **Genie** is a robust and outlier-resistant hierarchical clustering
     algorithm [1]_, originally published in the R package ``genie``. This new
     implementation is, amongst others, much faster and now features optional
-    noise point detection (if *M > 1*).
+    outlier detection (if *M > 1*).
 
     Genie is based on the minimum spanning tree (MST) of the
     pairwise distance graph of a given point set (refer to
@@ -675,16 +681,15 @@ class Genie(MSTClusterMixin):
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
 
-    The Genie correction together with the smoothing factor *M > 1*
-    controlling the mutual reachability distance gives a version of the
+    The Genie correction together with the smoothing factor *M > 0*
+    controlling the mutual reachability distance gives an alternative to the
     HDBSCAN\\* [2]_ algorithm that, contrary to its predecessor, is able to
     detect a *predefined* number of clusters. Hence, it is independent of
     *DBSCAN*'s ``eps`` parameter or *HDBSCAN*'s ``min_cluster_size`` one.
 
-    Note that *M = 2* corresponds to the original distance.
-    If *M > 1*, all MST leaves are left out from the clustering process.
+    If *M > 0*, all MST leaves are left out from the clustering process.
     They may be merged with the nearest clusters at the postprocessing stage,
-    or left marked as "noise" observations.
+    or left marked as outliers; see [4]_ for discussion.
 
 
     :Environment variables:
@@ -697,22 +702,25 @@ class Genie(MSTClusterMixin):
     ----------
 
     .. [1]
-        Gagolewski, M., Bartoszuk, M., Cena, A.,
+        Gagolewski M., Bartoszuk M., Cena A.,
         Genie: A new, fast, and outlier-resistant hierarchical
         clustering algorithm, *Information Sciences* 363, 2016, 8-23.
         doi:10.1016/j.ins.2016.05.003.
 
     .. [2]
-        Campello, R.J.G.B., Moulavi, D., Sander, J.,
+        Campello R.J.G.B., Moulavi D., Sander J.,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
         doi:10.1007/978-3-642-37456-2_14.
 
     .. [3]
-        Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+        Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
         doi:10.1007/s00357-024-09483-1.
+
+    .. [4]
+        Gagolewski M., TODO, 2025
 
     """
 
@@ -721,11 +729,11 @@ class Genie(MSTClusterMixin):
             n_clusters=2,
             *,
             gini_threshold=0.3,
-            M=1,
+            M=0,
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
-            postprocess="boundary",
+            postprocess="boundary",  # TODO
             quitefastmst_params=dict(),
             verbose=False
         ):
@@ -756,9 +764,9 @@ class Genie(MSTClusterMixin):
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
-                not (cur_state["M"] == 1 and cur_state["exact"]):
+                not (cur_state["M"] == 0 and cur_state["exact"]):
             cur_state["compute_full_tree"] = False
-            warnings.warn("`compute_full_tree` is only available when `M` = 1 "
+            warnings.warn("`compute_full_tree` is only available when `M` = 0 "
                           "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
@@ -812,7 +820,7 @@ class Genie(MSTClusterMixin):
             self._tree_e,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            skip_leaves=(cur_state["M"] > 1),
+            skip_leaves=(cur_state["M"] > 0),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"]
         )
@@ -820,7 +828,7 @@ class Genie(MSTClusterMixin):
         cur_state = self._postprocess_outputs(res, cur_state)
 
         if cur_state["compute_full_tree"]:
-            assert cur_state["exact"] and cur_state["M"] == 1
+            assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,
@@ -986,7 +994,7 @@ class GIc(MSTClusterMixin):
             n_clusters=2,
             *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
-            M=1,
+            M=0,
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
@@ -1030,9 +1038,9 @@ class GIc(MSTClusterMixin):
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
-                not (cur_state["M"] == 1 and cur_state["exact"]):
+                not (cur_state["M"] == 0 and cur_state["exact"]):
             cur_state["compute_full_tree"] = False
-            warnings.warn("`compute_full_tree` is only available when `M` = 1 "
+            warnings.warn("`compute_full_tree` is only available when `M` = 0 "
                           "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
@@ -1092,14 +1100,14 @@ class GIc(MSTClusterMixin):
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
-            skip_leaves=(cur_state["M"] > 1),
+            skip_leaves=(cur_state["M"] > 0),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
 
         cur_state = self._postprocess_outputs(res, cur_state)
 
         if cur_state["compute_full_tree"]:
-            assert cur_state["exact"] and cur_state["M"] == 1
+            assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,

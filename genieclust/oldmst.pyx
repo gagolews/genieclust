@@ -6,7 +6,7 @@
 # cython: language_level=3
 
 """
-The "old" (<=2025), slow yet quite generic functions to compute
+The "old" (<=2025), slow yet more universal functions to compute
 k-nearest neighbours and minimum spanning trees.
 
 See the `quitefastmst` <https://quitefastmst.gagolewski.com/>
@@ -14,7 +14,7 @@ package for faster algorithms working in the Euclidean space.
 
 Minimum spanning tree algorithms:
 (a) Prim-Jarník's for complete undirected Graphs,
-(b) Kruskal's for k-NN graphs (approximate MSTs).
+(b) Kruskal's for k-NN graphs (approximate MSTs) [DEPRECATED].
 """
 
 
@@ -106,7 +106,7 @@ cdef extern from "../src/c_oldmst.h":
         CDistance[T]* D, Py_ssize_t n,
         T* mst_dist, Py_ssize_t* mst_ind, bint verbose) except +
 
-    Py_ssize_t Cmst_from_nn[T](
+    Py_ssize_t Cmst_from_nn[T](  # TODO: remove
         T* dist, Py_ssize_t* ind, const T* d_core, Py_ssize_t n, Py_ssize_t k,
         T* mst_dist, Py_ssize_t* mst_ind, int* maybe_inexact, bint verbose) except +
 
@@ -114,7 +114,7 @@ cdef extern from "../src/c_oldmst.h":
 
 ################################################################################
 
-cpdef tuple mst_from_nn(
+cpdef tuple mst_from_nn(  # TODO: remove
     floatT[:,::1] dist,
     Py_ssize_t[:,::1] ind,
     floatT[::1] d_core=None,
@@ -124,8 +124,7 @@ cpdef tuple mst_from_nn(
     """
     genieclust.oldmst.mst_from_nn(dist, ind, d_core=None, stop_disconnected=True, stop_inexact=False, verbose=False)
 
-    Computes a minimum spanning forest for a (<=k)-nearest neighbour graph
-
+    Computes a minimum spanning forest for a (<=k)-nearest neighbour graph [DEPRECATED]
 
 
     Parameters
@@ -239,19 +238,14 @@ cpdef tuple mst_from_complete(
     ----------
 
     .. [1]
-        M. Gagolewski, M. Bartoszuk, A. Cena, Genie: A new, fast, and
-        outlier-resistant hierarchical clustering algorithm,
-        Information Sciences 363 (2016) 8–23.
-
-    .. [2]
         V. Jarník, O jistém problému minimálním,
         Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    .. [3]
+    .. [2]
         C.F. Olson, Parallel algorithms for hierarchical clustering,
         Parallel Computing 21(8) (1995) 1313–1325.
 
-    .. [4]
+    .. [3]
         R. Prim, Shortest connection networks and some generalizations,
         The Bell System Technical Journal 36(6) (1957) 1389–1401.
 
@@ -285,7 +279,7 @@ cpdef tuple mst_from_complete(
         assert n*(n-1)//2 == X.shape[0]
 
     cdef np.ndarray[Py_ssize_t,ndim=2] mst_ind  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         mst_dist = np.empty(n-1,
+    cdef np.ndarray[floatT]            mst_dist = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
 
     cdef CDistance[floatT]* D = NULL
@@ -322,26 +316,31 @@ cpdef tuple mst_from_distance(
     OMP_NUM_THREADS environment variable or via
     `quitefastmst.omp_set_num_threads` at runtime.
 
+    Possible ties in mutual reachability distances [4]_ are resolved in such
+    a way that neighbours with smaller core distances are preferred, see [5]_.
+
 
     References
     ----------
 
     .. [1]
-        M. Gagolewski, M. Bartoszuk, A. Cena, Genie: A new, fast, and
-        outlier-resistant hierarchical clustering algorithm,
-        Information Sciences 363 (2016) 8–23.
-
-    .. [2]
-        V. Jarník, O jistém problému minimálním,
+        Jarník V., O jistém problému minimálním,
         Práce Moravské Přírodovědecké Společnosti 6 (1930) 57–63.
 
-    .. [3]
-        C.F. Olson, Parallel algorithms for hierarchical clustering,
+    .. [2]
+        Olson C.F., Parallel algorithms for hierarchical clustering,
         Parallel Computing 21(8) (1995) 1313–1325.
 
-    .. [4]
-        R. Prim, Shortest connection networks and some generalizations,
+    .. [3]
+        Prim R., Shortest connection networks and some generalizations,
         The Bell System Technical Journal 36(6) (1957) 1389–1401.
+
+    .. [4] Campello R.J.G.B., Moulavi D., Sander J.,
+        Density-based clustering based on hierarchical density estimates,
+        Lecture Notes in Computer Science 7819 (2013) 160-172.
+
+    .. [5]
+        Gagolewski M., TODO, 2025
 
 
     Parameters

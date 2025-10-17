@@ -585,8 +585,11 @@ cpdef np.ndarray[floatT] get_d_core(
     Py_ssize_t[:,::1] ind,
     Py_ssize_t M):
     """
-    Get "core" distance = distance to the (M-1)-th nearest neighbour
+    Get "core" distance = distance to the M-th nearest neighbour
     (if available, otherwise, distance to the furthest away one at hand).
+
+    Note that unlike in Campello et al.'s 2013 paper, the definition
+    of the core distance does not include the distance to self.
 
 
     Parameters
@@ -615,19 +618,19 @@ cpdef np.ndarray[floatT] get_d_core(
     if not (ind.shape[0] == n and ind.shape[1] == k):
         raise ValueError("shapes of dist and ind must match")
 
-    if M-2 >= k:
+    if M > k:
         raise ValueError("too few nearest neighbours provided")
 
     cdef np.ndarray[floatT] d_core = np.empty(n,
         dtype=np.float32 if floatT is float else np.float64)
 
     #Python equivalent if all NNs are available:
-    #assert nn_dist.shape[1] >= cur_state["M"]-1
-    #d_core = nn_dist[:, cur_state["M"]-2].astype(X.dtype, order="C")
+    #assert nn_dist.shape[1] >= cur_state["M"]
+    #d_core = nn_dist[:, cur_state["M"]-1].astype(X.dtype, order="C")
 
     cdef Py_ssize_t i, j
     for i in range(n):
-        j = M-2
+        j = M-1
         while ind[i, j] < 0:
             j -= 1
             if j < 0: raise ValueError("no nearest neighbours provided")
@@ -642,15 +645,16 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
     (provided for testing only)
 
     Given a pairwise distance matrix, computes the "core distance", i.e.,
-    the distance of each point to its `(M-1)`-th nearest neighbour.
-    Note that `M==1` always yields all distances equal to zero.
+    the distance of each point to its `M`-th nearest neighbour.
+    Note that `M==0` always yields all distances equal to zero.
     The core distances are needed when computing the mutual reachability
     distance in the HDBSCAN* algorithm.
 
     See Campello R.J.G.B., Moulavi D., Sander J.,
     Density-based clustering based on hierarchical density estimates,
     *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-    doi:10.1007/978-3-642-37456-2_14.
+    doi:10.1007/978-3-642-37456-2_14 -- but unlike to the definition therein,
+    we do not consider the distance to self as part of the core distance setting.
 
     The input distance matrix for a given point cloud X may be computed,
     e.g., via a call to
@@ -671,7 +675,7 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
 
     d_core : ndarray, shape (n_samples,)
         d_core[i] gives the distance between the i-th point and its M-th nearest
-        neighbour. The i-th point's 1st nearest neighbour is the i-th point itself.
+        neighbour.
     """
     cdef Py_ssize_t n = dist.shape[0], i, j
     cdef floatT v
@@ -679,16 +683,16 @@ cpdef np.ndarray[floatT] _core_distance(np.ndarray[floatT,ndim=2] dist, int M):
         dtype=np.float32 if floatT is float else np.float64)
     cdef floatT[::1] row
 
-    if M < 1: raise ValueError("M < 1")
+    if M < 0: raise ValueError("M < 0")
     if dist.shape[1] != n: raise ValueError("not a square matrix")
     if M >= n: raise ValueError("M >= matrix size")
 
-    if M == 1: return d_core # zeros
+    if M == 0: return d_core  # zeros
 
-    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M)
+    cdef vector[Py_ssize_t] buf = vector[Py_ssize_t](M+1)
     for i in range(n):
         row = dist[i,:]
-        j = Cargkmin(&row[0], row.shape[0], M-1, buf.data())
+        j = Cargkmin(&row[0], row.shape[0], M, buf.data())
         d_core[i] = dist[i, j]
 
     return d_core
@@ -704,6 +708,8 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
     Given a pairwise distance matrix, computes the mutual reachability
     distance w.r.t. the given core distance vector; see ``genieclust.internal.core_distance``,
     ``new_dist[i,j] = max(dist[i,j], d_core[i], d_core[j])``.
+
+    Note that there may be many ties in the mutual reachability distances.
 
     See Campello R.J.G.B., Moulavi D., Sander J.,
     Density-based clustering based on hierarchical density estimates,
@@ -887,7 +893,8 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t[::1] c,
         Py_ssize_t[:,::1] nn_i,
-        Py_ssize_t M):
+        Py_ssize_t M
+    ):
     """
     genieclust.internal.merge_boundary_points(mst_i, c, nn_i, M)
 
@@ -895,6 +902,7 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
     points included), merges all "boundary" noise points with their nearest
     "core" points.
 
+    TODO
 
     Parameters
     ----------
@@ -909,7 +917,7 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
         nn_ind[i,:] gives the indices of the i-th point's
         nearest neighbours; -1 indicates a "missing value"
     M : int
-        smoothing factor, M>=2
+        smoothing factor, M>=1
 
 
     Returns
@@ -932,7 +940,8 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
 
 cpdef np.ndarray[Py_ssize_t] merge_noise_points(
         Py_ssize_t[:,::1] mst_i,
-        Py_ssize_t[::1] c):
+        Py_ssize_t[::1] c
+    ):
     """
     genieclust.internal.merge_noise_points(mst_i, c)
 

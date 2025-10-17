@@ -34,7 +34,7 @@ for (g in c(0.1, 0.3, 0.5, 0.7, 1.0)) {
 
 
 
-for (M in c(1, 2, 5)) {
+for (M in c(0, 1, 5)) {
     for (g in c(0.1, 0.3, 0.5, 0.7, 1.0)) {
         for (distance in c("euclidean", "manhattan")) {
 

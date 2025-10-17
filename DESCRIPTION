@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
-Title: Fast and Robust Hierarchical Clustering with Noise Point Detection
-Version: 1.2.0
-Date: 2025-07-24
+Title: Fast and Robust Hierarchical Clustering with Outlier Detection
+Version: 1.2.0.9001
+Date: 2025-10-17
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -16,9 +16,9 @@ Description: The Genie algorithm
     (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>) is a robust
     and outlier-resistant hierarchical clustering method
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
-    This package features its faster and more powerful version.
+    This package features its faster and more capable variant.
     It allows clustering with respect to mutual reachability distances,
-    enabling it to act as a noise point detector or a version of
+    enabling it to act as an outlier detector or an alternative to
     'HDBSCAN*' that can identify a predefined number of
     clusters. The package also features an implementation
     of the Gini and Bonferroni inequality indices, external cluster validity
@@ -37,7 +37,7 @@ Imports:
     Rcpp,
     stats,
     utils,
-    quitefastmst
+    quitefastmst (>= 0.9.1)
 Suggests:
     datasets,
 LinkingTo: Rcpp

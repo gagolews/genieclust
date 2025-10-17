@@ -147,11 +147,11 @@ IntegerVector dot_genie(
     if (detect_noise && postprocess == "boundary") {
         NumericMatrix nn_r = mst.attr("nn.index");
         GENIECLUST_ASSERT(nn_r.nrow() == n);
-        Py_ssize_t M = nn_r.ncol()+1;
+        Py_ssize_t M = nn_r.ncol();
         GENIECLUST_ASSERT(M < n);
-        CMatrix<Py_ssize_t> nn_i(n, M-1);
+        CMatrix<Py_ssize_t> nn_i(n, M);
         for (Py_ssize_t i=0; i<n; ++i) {
-            for (Py_ssize_t j=0; j<M-1; ++j) {
+            for (Py_ssize_t j=0; j<M; ++j) {
                 GENIECLUST_ASSERT(nn_r(i,j) >= 1);
                 GENIECLUST_ASSERT(nn_r(i,j) <= n);
                 nn_i(i,j) = (Py_ssize_t)nn_r(i,j)-1; // 0-based indexing
@@ -159,7 +159,7 @@ IntegerVector dot_genie(
         }
 
         Cmerge_boundary_points(mst_i.data(), n-1, nn_i.data(),
-                               M-1, M, xres.data(), n);
+                               M, M, xres.data(), n);
     }
     else if (detect_noise && postprocess == "all") {
         Cmerge_noise_points(mst_i.data(), n-1, xres.data(), n);
