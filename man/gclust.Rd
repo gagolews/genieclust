@@ -33,8 +33,8 @@ genie(d, ...)
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
-  postprocess = c("boundary", "none", "all"),
-  detect_noise = M > 0L,
+  postprocess = c("midliers", "none", "all"),
+  skip_leaves = M > 0L,
   verbose = FALSE,
   ...
 )
@@ -44,8 +44,8 @@ genie(d, ...)
   k,
   gini_threshold = 0.3,
   M = 0L,
-  postprocess = c("boundary", "none", "all"),
-  detect_noise = M > 0L,
+  postprocess = c("midliers", "none", "all"),
+  skip_leaves = M > 0L,
   verbose = FALSE,
   ...
 )
@@ -54,8 +54,8 @@ genie(d, ...)
   d,
   k,
   gini_threshold = 0.3,
-  postprocess = c("boundary", "none", "all"),
-  detect_noise = FALSE,
+  postprocess = c("midliers", "none", "all"),
+  skip_leaves = FALSE,
   verbose = FALSE,
   ...
 )
@@ -87,18 +87,17 @@ and progress information}
 \item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 otherwise, the mutual reachability distance is used}
 
-\item{postprocess}{TODO one of \code{"boundary"} (default), \code{"none"}
-or \code{"all"};  in effect only if \eqn{M > 0}.
-By default, only "boundary" points are merged
-with their nearest "core" points (A point is a boundary point if it is
-a noise point and it is amongst its adjacent vertex's
-\eqn{M} nearest neighbours). To force a classical
-k-partition of a data set (with no notion of noise),
-choose \code{"all"}}
+\item{postprocess}{\code{"midliers"} (default), \code{"none"}
+or \code{"all"}; in effect only if \eqn{M > 0}.
+By default, only midliers are merged with their adjacent neighbours
+in the tree, i.e., leaves that are amongst their adjacent nodes'
+\eqn{M} nearest neighbours.
+To force a classical k-partition of a data set (one that does not
+distinguish between inliers and outliers), choose \code{"all"}.}
 
-\item{detect_noise}{TODO whether the minimum spanning tree's leaves
-should be marked as noise points, defaults to \code{TRUE} if \eqn{M>0}
-for compatibility with HDBSCAN*}
+\item{skip_leaves}{whether the minimum spanning tree's leaves
+should be omitted from clustering and marked as outliers;
+defaults to \code{TRUE} if \eqn{M>0} for compatibility with HDBSCAN*}
 }
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it
@@ -107,8 +106,9 @@ Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
 
 \code{genie()} returns a \code{k}-partition, i.e., a vector whose
 \eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
-between 1 and \code{k}.  If \code{detect_noise} is \code{TRUE},
-missing values (\code{NA}) denote noise points.
+between 1 and \code{k}.  If \code{skip_leaves} is \code{TRUE}
+and \code{postprocess} is not \code{"all"},
+missing values (\code{NA}) denote outliers.
 }
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
@@ -132,14 +132,20 @@ chosen "raw" distance \eqn{d(i,j)}.  It holds
 \eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
 \eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
 nearest neighbour (not including self, unlike in Campello et al., 2013).
-This pulls "noise" and "border" points away from each other.
+This pulls outliers away from each other.
 
 The Genie algorithm with the smoothing factor \eqn{M>0}
 (note that \eqn{M\leq 1} corresponds to the original distance) gives
 an alternative to the HDBSCAN* algorithm that is able to detect
-a predefined number of clusters and indicate outliers.
-Hence, it does not dependent on the DBSCAN's
-\code{eps} parameter or the HDBSCAN's \code{min_cluster_size} one.
+a predefined number of clusters and indicate outliers;
+see Gagolewski, 2025.
+Hence, it does not dependent on DBSCAN's
+\code{eps} parameter or HDBSCAN's \code{min_cluster_size} one.
+
+If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
+process; see \code{skip_leaves}.  They may be merged with the nearest
+clusters at the postprocessing stage, or left marked as outliers;
+see [4]_ for discussion.
 }
 \details{
 As in the case of all the distance-based methods,
@@ -179,9 +185,9 @@ normalized_clustering_accuracy(y_test, y_pred)
 
 y_pred2 <- genie(X, 3, M=5)  # the 5-mutual reachability distance
 plot(X[,1], X[,2], col=y_pred2, pch=y_test, asp=1, las=1)
-noise <- is.na(y_pred2)  # noise/boundary points
-points(X[noise, ], col="gray", pch=10)
-normalized_clustering_accuracy(y_test[!noise], y_pred2[!noise])
+is_outlier <- is.na(y_pred2)
+points(X[is_outlier, ], col="gray", pch=10)
+normalized_clustering_accuracy(y_test[!is_outlier], y_pred2[!is_outlier])
 
 }
 \references{

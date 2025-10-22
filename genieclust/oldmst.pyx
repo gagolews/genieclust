@@ -317,7 +317,7 @@ cpdef tuple mst_from_distance(
     `quitefastmst.omp_set_num_threads` at runtime.
 
     Possible ties in mutual reachability distances [4]_ are resolved in such
-    a way that neighbours with smaller core distances are preferred, see [5]_.
+    a way that neighbours with smaller core distances are preferred; see [5]_.
 
 
     References

@@ -3,7 +3,7 @@
 FILES_RMD = \
 	basics.Rmd              \
 	sklearn_toy_example.Rmd \
-	noise.Rmd               \
+	outliers.Rmd            \
 	r.Rmd                   \
 	benchmarks_ar.Rmd       \
 	timings.Rmd

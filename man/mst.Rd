@@ -73,7 +73,7 @@ If \code{d} is a matrix and the use of Euclidean distance is requested
 to determine the MST.  It is quite fast in spaces of low intrinsic
 dimensionality, even for 10M points.
 
-Otherwise, a much slower implementation of the Jarník (Prim/Dijkstra)-like
+Otherwise, a much slower generic implementation of the Jarník (Prim/Dijkstra)-like
 method, which requires \eqn{O(n^2)} time, is used.
 The algorithm is parallelised; the number of threads is determined
 by the \code{OMP_NUM_THREADS} environment variable. As a rule of thumb,
@@ -85,7 +85,7 @@ is used instead of the chosen "raw" distance \eqn{d(i,j)}.  It holds
 \eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
 \eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
 nearest neighbour (not including self, unlike in Campello et al., 2013).
-This pulls "noise" and "border" points away from each other.
+This pulls outliers away from their neighbours.
 
 Possible ties between mutually reachability distances are resolved
 in such a way that connecting to a neighbour of the smallest

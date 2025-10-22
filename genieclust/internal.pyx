@@ -706,7 +706,8 @@ cpdef np.ndarray[floatT,ndim=2] _mutual_reachability_distance(
     (provided for testing only)
 
     Given a pairwise distance matrix, computes the mutual reachability
-    distance w.r.t. the given core distance vector; see ``genieclust.internal.core_distance``,
+    distance w.r.t. the given core distance vector;
+    see ``genieclust.internal.core_distance``,
     ``new_dist[i,j] = max(dist[i,j], d_core[i], d_core[j])``.
 
     Note that there may be many ties in the mutual reachability distances.
@@ -874,35 +875,36 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
 
 
 cdef extern from "../src/c_preprocess.h":
-    cdef void Cget_graph_node_degrees(Py_ssize_t* ind, Py_ssize_t m,
+    cdef void Cget_graph_node_degrees(Py_ssize_t* tree_ind, Py_ssize_t m,
             Py_ssize_t n, Py_ssize_t* deg)
 
 
 cdef extern from "../src/c_postprocess.h":
-    void Cmerge_boundary_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
-        const Py_ssize_t* nn, Py_ssize_t num_neighbours, Py_ssize_t M,
+    void Cmerge_midliers(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
+        const Py_ssize_t* nn_ind, Py_ssize_t num_neighbours, Py_ssize_t M,
         Py_ssize_t* c, Py_ssize_t n)
 
-    void Cmerge_noise_points(const Py_ssize_t* ind, Py_ssize_t num_edges,
+    void Cmerge_all(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         Py_ssize_t* c, Py_ssize_t n)
 
 
 
 
-cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
+cpdef np.ndarray[Py_ssize_t] merge_midliers(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t[::1] c,
         Py_ssize_t[:,::1] nn_i,
         Py_ssize_t M
     ):
     """
-    genieclust.internal.merge_boundary_points(mst_i, c, nn_i, M)
+    genieclust.internal.merge_midliers(mst_i, c, nn_i, M)
 
-    A noisy k-partition post-processing: given a k-partition (with noise
-    points included), merges all "boundary" noise points with their nearest
-    "core" points.
+    The `i`-th node is a midlier if it is a leaf in the spanning tree
+    (and hence it meets `c[i] < 0`) which is amongst the
+    M nearest neighbours of its adjacent vertex, `j`.
 
-    TODO
+    This procedure allocates `c[i]` to its its closest cluster, `c[j]`.
+
 
     Parameters
     ----------
@@ -910,9 +912,8 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
     mst_i : c_contiguous array
         See genieclust.mst.mst_from_distance()
     c : c_contiguous array of shape (n_samples,)
-        c[i] gives the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
+        c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
+        the i-th object.  Class -1 represents the leaves of the spanning tree.
     nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
         nn_ind[i,:] gives the indices of the i-th point's
         nearest neighbours; -1 indicates a "missing value"
@@ -925,28 +926,30 @@ cpdef np.ndarray[Py_ssize_t] merge_boundary_points(
 
     c : ndarray, shape (n_samples,)
         A new integer vector c with c[i] denoting the cluster
-        id (in {-1, 0, ..., k-1}) of the i-th object.
+        ID (in {-1, 0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cmerge_boundary_points(
+    Cmerge_midliers(
         &mst_i[0,0], mst_i.shape[0],
         &nn_i[0,0], nn_i.shape[1], M,
-        &cl2[0], cl2.shape[0])
+        &cl2[0], cl2.shape[0]
+    )
 
     return cl2
 
 
-cpdef np.ndarray[Py_ssize_t] merge_noise_points(
+cpdef np.ndarray[Py_ssize_t] merge_all(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t[::1] c
     ):
     """
-    genieclust.internal.merge_noise_points(mst_i, c)
+    genieclust.internal.merge_all(mst_i, c)
 
-    A noisy k-partition post-processing: given a k-partition (with noise
-    points included), merges all noise points with their nearest clusters.
+    For each leaf in the MST, `i` (and hence a vertex which meets `c[i] < 0`),
+    this procedure allocates `c[i]` to its its closest cluster, `c[j]`,
+    where `j` is the vertex adjacent to `i`.
 
 
     Parameters
@@ -955,9 +958,8 @@ cpdef np.ndarray[Py_ssize_t] merge_noise_points(
     mst_i : c_contiguous array
         See genieclust.mst.mst_from_distance()
     c : c_contiguous array of shape (n_samples,)
-        c[i] gives the cluster id
-        (in {-1, 0, 1, ..., k-1} for some k) of the i-th object.
-        Class -1 denotes the `noise' cluster.
+        c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
+        the i-th object.  Class -1 represents the leaves of the spanning tree.
 
 
     Returns
@@ -965,14 +967,15 @@ cpdef np.ndarray[Py_ssize_t] merge_noise_points(
 
     c : ndarray, shape (n_samples,)
         A new integer vector c with c[i] denoting the cluster
-        id (in {0, ..., k-1}) of the i-th object.
+        ID (in {0, ..., k-1}) of the i-th object.
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cmerge_noise_points(
+    Cmerge_all(
         &mst_i[0,0], mst_i.shape[0],
-        &cl2[0], cl2.shape[0])
+        &cl2[0], cl2.shape[0]
+    )
 
     return cl2
 
@@ -1085,7 +1088,7 @@ cdef extern from "../src/c_genie.h":
         Py_ssize_t get_links(Py_ssize_t* res)
         Py_ssize_t get_labels(Py_ssize_t n_clusters, Py_ssize_t* res)
         void get_labels_matrix(Py_ssize_t n_clusters, Py_ssize_t* res)
-        void get_is_noise(int* res)
+        #void get_is_outlier(int* res)
 
 
 cpdef dict genie_from_mst(
@@ -1110,17 +1113,15 @@ cpdef dict genie_from_mst(
 
     This is a new implementation of the original algorithm,
     which runs in O(n sqrt(n))-time. Additionally, MST leaves can be
-    marked as noise points (if `skip_leaves==True`). This is useful,
-    if the Genie algorithm is applied on MSTs with respect to
-    mutual reachability distances.
+    omitted from the clustering process and marked as outliers
+    (if `skip_leaves==True`). This is useful when the Genie algorithm
+    is applied on MSTs with respect to mutual reachability distances.
 
     The input tree can actually be any spanning tree.
     Moreover, it does not even have to be a connected graph.
 
     gini_threshold==1.0 and skip_leaves==False, gives the single linkage
-    algorithm. Set gini_threshold==1.0 and skip_leaves==True to get
-    a HDBSCAN-like behaviour (but ensure that the MST is computed
-    w.r.t. a mutual reachability distance).
+    algorithm.
 
 
     Parameters
@@ -1136,7 +1137,7 @@ cpdef dict genie_from_mst(
     gini_threshold : float
         The threshold for the Genie correction
     skip_leaves : bool
-        Mark leaves as noise;
+        Mark leaves as outliers.
         Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the entire merge sequence or stop early?
@@ -1154,8 +1155,8 @@ cpdef dict genie_from_mst(
 
             If compute_all_cuts==False, this gives the predicted labels,
             representing an n_clusters-partition of X.
-            labels[i] gives the cluster id of the i-th input point.
-            If skip_leaves==True, then label -1 denotes a noise point.
+            labels[i] gives the cluster ID of the i-th input point.
+            If skip_leaves==True, then label -1 denotes an outlier.
 
             If compute_all_cuts==True, then
             labels[i,:] gives the (i+1)-partition, i=0,...,n_clusters-1.
@@ -1168,7 +1169,7 @@ cpdef dict genie_from_mst(
             number of merge steps performed
 
         n_clusters : integer
-            actual number of clusters found, 0 if labels is None
+            actual number of clusters found, 0 if `labels` is None
 
     """
     cdef Py_ssize_t n = mst_i.shape[0]+1
@@ -1312,7 +1313,7 @@ cpdef dict gic_from_mst(
         If gini_thresholds is of length 1 and add_clusters==0,
         then the procedure is equivalent to the classical Genie algorithm.
     skip_leaves : bool
-        Mark leaves as noise;
+        Mark leaves as outliers.
         Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the entire merge sequence or stop early?
@@ -1328,7 +1329,7 @@ cpdef dict gic_from_mst(
         labels : ndarray, shape (n,) or None
             Predicted labels, representing an n_clusters-partition of X.
             labels[i] gives the cluster id of the i-th input point.
-            If skip_leaves==True, then label -1 denotes a noise point.
+            If skip_leaves==True, then label -1 denotes an outlier.
             Is None if n_clusters==0.
 
         links : ndarray, shape (n-1,)
@@ -1339,7 +1340,7 @@ cpdef dict gic_from_mst(
             number of merge steps performed
 
         n_clusters : integer
-            actual number of clusters found, 0 if labels is None
+            actual number of clusters found, 0 if `labels` is None
     """
     cdef Py_ssize_t n = mst_i.shape[0]+1
 

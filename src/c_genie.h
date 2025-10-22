@@ -62,11 +62,11 @@ protected:
                           */
     T* mst_d;            //<! n-1 edge weights, sorted increasingly
     Py_ssize_t n;        //<! number of points
-    bool skip_leaves;    //<! mark leaves as noise points?
+    bool skip_leaves;    //<! omit leaves and mark them as noise points/outliers?
 
     std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
 
-    Py_ssize_t noise_count; //<! now many noise points are there (leaves)
+    Py_ssize_t noise_count; //<! now many noise points/outliers are there (leaves if skip_leaves is true)
     std::vector<Py_ssize_t> denoise_index; //<! which noise point is it?
     std::vector<Py_ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
 
@@ -169,7 +169,7 @@ public:
             GENIECLUST_ASSERT(noise_count >= 2);
             GENIECLUST_ASSERT(j + noise_count == n);
         }
-        else { // there are no noise points
+        else {  // there are no noise points
             this->noise_count = 0;
             for (Py_ssize_t i=0; i<n; ++i) {
                 denoise_index[i]     = i; // identity
@@ -308,20 +308,17 @@ public:
     }
 
 
-    /*! Set res[i] to true if skip_leaves is true and
-     * the i-th point is a noise/boundary node,
+    /* Set res[i] to true if skip_leaves is true and
+     * the i-th point is an outlier,
      * i.e., a leaf of the spanning tree.
      *
-     * TODO: Like in Lumbermark, this could depend on n_clusters
-     * and mark nodes incident to cut edges as boundary points too.
+     * @param res [out] array of length n
      *
-     *  @param res [out] array of length n
-     */
-    void get_is_noise(int* res) const {
+    void get_is_outlier(int* res) const {
         for (Py_ssize_t i=0; i<n; ++i) {
             res[i] = (this->skip_leaves && this->deg[i] <= 1);
         }
-    }
+    }*/
 
 };
 
@@ -343,14 +340,12 @@ public:
  *   of a spanning tree/, this implementation requires amortised
  *   O(n sqrt(n))-time only.
  *
- *   2. The leaves of the MST can be marked as noise points
+ *   2. The leaves of the MST can be marked as noise points/outliers
  *   (if `skip_leaves==True`).  This is useful, if the Genie algorithm is
- *   applied on the MST with respect to the HDBSCAN-like mutual reachability
- *   distance.
+ *   applied on the MST with respect to a mutual reachability distance.
  *
- *   3. The MST does not need to be connected (is a spanning forest)
- *   (e.g., if it is computed based on a disconnected k-NN graph) -
- *   each connected component will never be merged with any other one.
+ *   3. The MST does not need to be connected -
+ *   each connected component will never be merged with another one.
  *
  *
  *

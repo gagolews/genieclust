@@ -25,7 +25,7 @@ as specified below. Thank you.
 included in the R package [**genie**](https://CRAN.R-project.org/package=genie).
 This is its faster and more capable variant.
 
-The idea behind *Genie( is beautifully simple. First, make each individual
+The idea behind *Genie* is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
 of the closest clusters, one after another. However, to **prevent
 the formation of clusters of highly imbalanced sizes**, a point group of

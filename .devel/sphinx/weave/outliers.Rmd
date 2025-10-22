@@ -1,4 +1,8 @@
-# Clustering with Noise Point Detection
+# TODO: Clustering with Outlier Detection 🚧
+
+::::{important}
+🚧🚧 This chapter is under construction.  Please come back later. 🚧🚧
+::::
 
 
 ```{python imports,results="hide"}
@@ -29,10 +33,9 @@ n_clusters = len(np.unique(labels_true[labels_true>=0]))
 
 
 
-Here are the "reference" labels as identified by an expert (of course,
-each dataset might reveal many different clusterings that users might
-find useful for whatever their goal is).
-The label `-1` designates noise points (light grey markers).
+Here are the reference labels as identified by a manual annotator.
+The light grey markers corresponding to the label `-1` designate points
+that can be considered outliers.
 
 ```{python noise-scatter,results="hide",fig.cap="Reference labels"}
 genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5)
@@ -45,24 +48,37 @@ plt.show()
 
 ## Smoothing Factor
 
-
 The **genieclust** package allows for clustering with respect
-to a mutual reachability distance, $d_M$,
-known from the HDBSCAN\* algorithm {cite}`hdbscan`.
-It is parameterised by *a smoothing factor*, $M\ge 2$, which
-controls how eagerly we tend to classify points as noise.
+to the mutual reachability distance, $d_M$,
+known from the DBSCAN\* algorithm {cite}`hdbscan`.
+This metric is parameterised by *a smoothing factor*, $M\ge 1$, which
+controls how eagerly points are filtered out from the clustering process.
 
-Instead of the ordinary (usually Euclidean) distance
+Namely, instead of the ordinary (usually Euclidean) distance
 between two points $i$ and $j$, $d(i,j)$, we take
-$d_M(i,j)=\max\{ c_M(i), c_M(j), d(i, j) \}$,
-where the $M$-*core* distance $c_M(i)$ is the distance between
-$i$ and its $(M-1)$-th nearest neighbour.
+$d_M(i,j)=\max\{ c_M(i), c_M(j), d(i, j) \}$, where the so-called $M$-*core*
+distance $c_M(i)$ is the distance between $i$ and its $M$-th nearest neighbour
+(here, not including $i$ itself, unlike in the original paper).
+
+DBSCAN\* and its hierarchical version, HDBSCAN\*, introduces the notion
+of noise and core points.  Furthermore, their predecessor, DBSCAN,
+also marks certain non-core values as border points.  They all rely
+on a specific threshold $\varepsilon$ that is applied onto the points'
+core distances.
+
+In **genieclust** we identify anomalies slightly differently.
+<!--
+Following  {cite}`geniem`
+TODO
+-->
+(🚧🚧 TODO: describe 🚧🚧)
+
 
 Here are the effects of playing with the $M$ parameter
 (we keep the default `gini_threshold`):
 
-```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with noise point detection",fig.height=5.9375}
-Ms = [2, 5, 10, 25]
+```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with outlier detection",fig.height=5.9375}
+Ms = [5, 10, 25, 50]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
@@ -73,46 +89,42 @@ for i in range(len(Ms)):
 plt.show()
 ```
 
-We can also first identify the noise points with Genie, remove them temporarily
+<!--
+We can also detect outliers with Genie, remove them temporarily
 from the dataset, and then apply the clustering procedure once again
 but now with respect to the original distance (here: Euclidean):
 
-```{python noise-Genie2,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset"}
+```{python noise-Genie2,results="hide",fig.cap="Labels predicted by Genie when outliers were first removed from the dataset"}
 # Step 1: Noise point identification
 g1 = genieclust.Genie(n_clusters=n_clusters, M=50)
-labels_noise = g1.fit_predict(X)
-non_noise = (labels_noise >= 0) # True == non-noise point
+labels_genie = g1.fit_predict(X)
+is_outlier = (labels_genie < 0)
 # Step 2: Clustering of non-noise points:
 g2 = genieclust.Genie(n_clusters=n_clusters)
-labels_genie = g2.fit_predict(X[non_noise, :])
+labels_genie_no_outliers = g2.fit_predict(X[~is_outlier, :])
 # Replace old labels with the new ones:
-labels_noise[non_noise] = labels_genie
+labels_genie[~is_outlier] = labels_genie_no_outliers
 # Scatter plot:
-genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
+genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
 plt.title("(gini_threshold=%g, noise points removed first; M=%d)"%(g2.gini_threshold, g1.M))
 plt.axis("equal")
 plt.show()
 ```
+-->
+
+Contrary to the HDBSCAN\* method featured in the [**hdbscan**](https://hdbscan.readthedocs.io)
+package {cite}`hdbscanpkg`, in our case, we can request a *specific* number of clusters.
+Moreover, we can easily switch between partitions of finer or coarser
+granularity.  As *Genie* is a hierarchical algorithm, the partitions are properly nested.
 
 
-Contrary to the excellent implementation of HDBSCAN\*
-that is featured in the [**hdbscan**](https://hdbscan.readthedocs.io)
-package {cite}`hdbscanpkg` and which also relies on a minimum spanning tree
-with respect to $d_M$, in our case,
-we still have the hierarchical Genie {cite}`genieins` algorithm under the hood.
-It means that we can request a *specific* number of clusters.
-Moreover, we can easily switch between partitions
-of finer or coarser granularity: they are appropriately nested.
-
-
-```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when noise points were removed from the dataset – different number of clusters requested",fig.height=5.9375}
-ncs = [4, 5, 6, 7, 8, 9]
+```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when outliers were removed from the dataset – different number of clusters requested",fig.height=5.9375}
+ncs = [4, 5, 6, 7]
 for i in range(len(ncs)):
-    g = genieclust.Genie(n_clusters=ncs[i])
-    labels_genie = g.fit_predict(X[non_noise, :])
-    plt.subplot(3, 2, i+1)
-    labels_noise[non_noise] = labels_genie
-    genieclust.plots.plot_scatter(X, labels=labels_noise, alpha=0.5)
+    g = genieclust.Genie(n_clusters=ncs[i], M=50)
+    labels_genie = g.fit_predict(X)
+    plt.subplot(2, 2, i+1)
+    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
     plt.title("(n_clusters=%d)"%(g.n_clusters))
     plt.axis("equal")
 plt.show()
@@ -142,7 +154,7 @@ plt.show()
 
 
 By tuning up `min_cluster_size` and/or `min_samples` (which corresponds
-to our `M-1`; by the way, `min_samples` defaults to `min_cluster_size`
+to our `M`; by the way, `min_samples` defaults to `min_cluster_size`
 if not provided explicitly), we can obtain a partition that is even closer
 to the reference one:
 
@@ -161,5 +173,3 @@ for i in range(len(mcss)):
         plt.axis("equal")
 plt.show()
 ```
-
-Neat.

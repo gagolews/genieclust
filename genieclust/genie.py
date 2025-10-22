@@ -49,8 +49,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         The number of clusters to detect.
 
         If *M > 0* and *postprocess* is not ``"all"``, setting
-        *n_clusters = 1* makes the algorithm behave like a noise
-        point/outlier detector. TODO
+        *n_clusters = 1* turns the algorithm to an outlier detector.
 
     M : int
         Smoothing factor for the mutual reachability distance [1]_.
@@ -76,19 +75,19 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         package.
 
 
-    postprocess : {``"boundary"``, ``"none"``, ``"all"``}
-        Controls the treatment of noise/border points after the clusters are
-        identified.   TODO
+    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
+        Controls the treatment of outliers after the clusters once identified.
 
-        In effect only if `M` > 0. Each leaf in the minimum spanning tree
-        is treated as a *noise* point.  We call it a *border point*
+        In effect only if *M > 0*. Each leaf in the spanning tree
+        is omitted from the clustering process.  We call it a *midlier*
         if it is amongst its adjacent vertex's `M` nearest neighbours.
-        By default, only border points are merged with their nearest
-        *core* points.
+        By default, only midliers are merged with their nearest
+        clusters, and the remaining leaves are considered outliers.
 
-        To force a classical *n_clusters*-partition of a data set (with no
-        notion of noise), choose ``"all"``. Furthermore, ``"none"`` leaves
-        all leaves marked as noise.
+        To force a classical *n_clusters*-partition of a data set (one that
+        marks no points as outliers), choose ``"all"``.
+
+        Furthermore, ``"none"`` leaves all leaves marked as outliers.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -114,8 +113,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     :math:`d_M(i,j)=\\max\\{d(i,j), c_M(i), c_M(j)\\}`, where the "core"
     distance :math:`c_M(i)` is given by :math:`d(i,k)` with :math:`k` being
     :math:`i`'s :math:`M`-th nearest neighbour
-    (not including self, unlike in [1]_). This makes "noise"
-    and "border" points being "pulled away" from each other.
+    (not including self, unlike in [1]_).
+    This pulls outliers away from their neighbours.
 
     Possible ties between mutually reachability distances are resolved
     in such a way that connecting to a neighbour of the smallest
@@ -131,8 +130,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         OMP_NUM_THREADS
             Controls the number of threads used for computing the minimum
             spanning tree.
-
-
 
 
     Attributes
@@ -169,13 +166,13 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         Campello R.J.G.B., Moulavi D., Sander J.,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-        doi:10.1007/978-3-642-37456-2_14.
+        DOI:10.1007/978-3-642-37456-2_14.
 
     .. [2]
         Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
-        doi:10.1007/s00357-024-09483-1.
+        DOI:10.1007/s00357-024-09483-1.
 
     .. [3]
        Gagolewski M., TODO, 2025
@@ -262,16 +259,16 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
                 pass
             elif cur_state["postprocess"] == "none":
                 pass
-            elif cur_state["postprocess"] == "boundary":
+            elif cur_state["postprocess"] == "midliers":
                 assert self._nn_e is not None
                 assert self._nn_e.shape[1] >= cur_state["M"]
                 for i in range(start_partition, self.labels_.shape[0]):
-                    self.labels_[i, :] = internal.merge_boundary_points(
+                    self.labels_[i, :] = internal.merge_midliers(
                         self._tree_e, self.labels_[i, :],
                         self._nn_e, cur_state["M"])
             elif cur_state["postprocess"] == "all":
                 for i in range(start_partition, self.labels_.shape[0]):
-                    self.labels_[i, :] = internal.merge_noise_points(
+                    self.labels_[i, :] = internal.merge_all(
                         self._tree_e, self.labels_[i, :])
 
         if reshaped:
@@ -296,7 +293,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         if cur_state["n_clusters"] < 0:
             raise ValueError("n_clusters must be >= 0")
 
-        _postprocess_options = ("boundary", "none", "all")
+        _postprocess_options = ("midliers", "none", "all")
         cur_state["postprocess"] = str(self.postprocess).lower()
         if cur_state["postprocess"] not in _postprocess_options:
             raise ValueError("`postprocess` should be one of %s" % repr(_postprocess_options))
@@ -536,7 +533,7 @@ class Genie(MSTClusterMixin):
     n_clusters : int
         The number of clusters to detect.
 
-        TODO If *M > 0* and *postprocess* is not ``"all"``, setting
+        If *M > 0* and *postprocess* is not ``"all"``, setting
         *n_clusters = 1* makes the algorithm behave as an outlier detector.
 
     gini_threshold : float in [0,1]
@@ -548,9 +545,10 @@ class Genie(MSTClusterMixin):
         in such a case, if *M = 0*, then the method is equivalent to the single
         linkage algorithm.
 
-        The algorithm tends to be *stable* with respect to small changes
-        to the threshold, as they usually do not affect the output clustering.
-        Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth giving a try.
+        Empirically, the algorithm tends to be *stable* with respect to small
+        changes to the threshold, as they usually do not affect the output
+        clustering. Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth
+        giving a try.
 
     M : int
         The smoothing factor for the mutual reachability distance [2]_.
@@ -571,17 +569,17 @@ class Genie(MSTClusterMixin):
 
         Only available if *M = 0*. Enables plotting dendrograms or cutting
         the cluster hierarchy at an arbitrary level; see the
-        *children_*, *distances_*, *counts_* attributes.
+        `children_`, `distances_`, `counts_` attributes.
 
     compute_all_cuts : bool
-        Whether to compute the requested *n_clusters*-partition and all
+        Whether to compute the requested `n_clusters`-partition and all
         the coarser-grained ones.
 
-        If ``True``, then the *labels_* attribute will be a matrix; see below.
+        If ``True``, then the `labels_` attribute will be a matrix; see below.
 
-    postprocess : {``"boundary"``, ``"none"``, ``"all"``}
-        Controls the treatment of noise/boundary points after the clusters are
-        identified; see :any:`genieclust.MSTClusterMixin` for more details. TODO
+    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
+        Controls the treatment of outliers once the clusters are
+        identified; see :any:`genieclust.MSTClusterMixin` for more details.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -601,7 +599,7 @@ class Genie(MSTClusterMixin):
         If `compute_all_cuts` is ``False`` (the default),
         it is an integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
-        If *M > 1*, noise/boundary points are labelled ``-1`` (unless taken care
+        If *M > 0*, outliers are labelled ``-1`` (unless taken care
         of at the postprocessing stage).
 
         Otherwise, i.e., if `compute_all_cuts` is ``True``,
@@ -659,7 +657,7 @@ class Genie(MSTClusterMixin):
     **Genie** is a robust and outlier-resistant hierarchical clustering
     algorithm [1]_, originally published in the R package ``genie``. This new
     implementation is, amongst others, much faster and now features optional
-    outlier detection (if *M > 1*).
+    outlier detection (if *M > 0*).
 
     Genie is based on the minimum spanning tree (MST) of the
     pairwise distance graph of a given point set (refer to
@@ -681,11 +679,12 @@ class Genie(MSTClusterMixin):
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
 
-    The Genie correction together with the smoothing factor *M > 0*
-    controlling the mutual reachability distance gives an alternative to the
-    HDBSCAN\\* [2]_ algorithm that, contrary to its predecessor, is able to
-    detect a *predefined* number of clusters. Hence, it is independent of
-    *DBSCAN*'s ``eps`` parameter or *HDBSCAN*'s ``min_cluster_size`` one.
+    The Genie algorithm together with the smoothing factor *M > 0*
+    (note that *M ≤ 1* corresponds to the original distance)
+    gives an alternative to the HDBSCAN\\* [2]_ algorithm that is able to
+    detect a predefined number of clusters; see [4]_.
+    Hence, it does not depend on DBSCAN's ``eps`` parameter or
+    *HDBSCAN*'s ``min_cluster_size`` one.
 
     If *M > 0*, all MST leaves are left out from the clustering process.
     They may be merged with the nearest clusters at the postprocessing stage,
@@ -733,7 +732,7 @@ class Genie(MSTClusterMixin):
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
-            postprocess="boundary",  # TODO
+            postprocess="midliers",
             quitefastmst_params=dict(),
             verbose=False
         ):
@@ -903,8 +902,8 @@ class GIc(MSTClusterMixin):
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, *metric* of ``"precomputed"`` needs this to be set manually.
 
-    postprocess : {``"boundary"``, ``"none"``, ``"all"``}
-        Controls the treatment of noise/boundary points after the clusters are
+    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
+        Controls the treatment of outliers after the clusters are
         identified; see :any:`genieclust.MSTClusterMixin` for more details.
 
     quitefastmst_params : dict
@@ -998,7 +997,7 @@ class GIc(MSTClusterMixin):
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
-            postprocess="boundary",
+            postprocess="midliers",
             add_clusters=0,
             n_features=None,
             quitefastmst_params=dict(),

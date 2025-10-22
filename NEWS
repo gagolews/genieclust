@@ -11,27 +11,31 @@
     These values should be manually corrected at the postprocessing stage
     after/in a call to `Cmst_from_complete`.
 
+*   For M>1, add an option to "preprocess" that marks nodes incident to
+    cut edges as midliers/outliers.
+
 
 ## (under development), to-be 1.3.0
 
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
-    backward-incompatible changes have been addressed (see below for a list).
+    backward-incompatible changes have been addressed (see below).
 
-*   [BACKWARD INCOMPATIBILITY] The definition of the mutual reachability
+*   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
     distance has changed.  Unlike in Campello et al.'s 2013 paper,
     now the core distance is the distance to the *M*-th nearest neighbour,
     not the *(M-1)*-th one (not including self).
 
-*   TODO:  outlier detection with based on mutual reachability distances
-    is no longer marked as experimental.  Note that we now rely on the
-    distance adjusted for the presence of ties, see (Gagolewski, 2025 TODO)
-    for discussion.
+*   [NEW FEATURE]  Outlier detection based on mutual reachability distances
+    is no longer marked as experimental.  Note that we now rely on mutual
+    reachability distances adjusted for the presence of ties such that
+    neighbours with smaller core distances are preferred;
+    see (in preparation: Gagolewski, 2025, TODO) for discussion.
 
-*   [BACKWARD INCOMPATIBILITY] TODO: `detect_noise` in `genie.default`...
+*   [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
+    was renamed `skip_leaves`.
 
-*   [BACKWARD INCOMPATIBILITY] TODO: `postprocess`....
-
-...
+*   [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
+    `"midliers"`, `"none"`, and `"all"`.
 
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
@@ -67,8 +71,8 @@
     to as inequity measures.
 
 *   [BACKWARD INCOMPATIBILITY] Some external cluster validity measures were
-     renamed: `adjusted_asymmetric_accuracy` -> `normalized_clustering_accuracy`,
-    `normalized_accuracy` -> `normalized_pivoted_accuracy`.
+    renamed: `adjusted_asymmetric_accuracy` → `normalized_clustering_accuracy`,
+    `normalized_accuracy` → `normalized_pivoted_accuracy`.
 
 *   [BACKWARD INCOMPATIBILITY] [Python] `compare_partitions2` has been removed,
     as `compare_partitions` and other partition similarity scores
@@ -215,13 +219,12 @@
 
 *   [R] R version is now available.
 
-*   [EXPERIMENTAL] Clustering with respect to HDBSCAN*-like mutual reachability
-    distances is now supported.
+*   [EXPERIMENTAL] A preliminary version of clustering with respect to
+    DBSCAN*-like mutual reachability distances is now supported.
 
 *   The parallelised Jarník-Prim algorithm now supports on-the-fly
     distance computations.  Euclidean minimum spanning tree can be determined
     with `mlpack`, which is much faster in low-dimensional spaces.
-
 
 *   [EXPERIMENTAL] [Python] The GIc algorithm proposed by Anna Cena
     in her 2018 PhD thesis wad added.

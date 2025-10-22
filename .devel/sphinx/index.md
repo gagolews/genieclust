@@ -1,4 +1,4 @@
-# *genieclust*: Fast and Robust Hierarchical Clustering with Noise Point Detection
+# *genieclust*: Fast and Robust Hierarchical Clustering with Outlier Detection
 
 ::::{image} _static/img/genie_toy_example.png
 :class: img-right-align-always
@@ -23,7 +23,7 @@ the *smallest* size is sometimes combined with its nearest counterpart.
 *Genie*'s appealing simplicity goes hand in hand with its usability.
 It **often outperforms other clustering approaches**
 such as K-means, BIRCH, or average, complete, and Ward's linkage
-on {any}`benchmark datasets <weave/benchmarks_ar>`.
+on {any}`benchmark data <weave/benchmarks_ar>`.
 Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try.
@@ -37,9 +37,9 @@ can be completed in minutes. Therefore, it is well suited to solving
 of clusters to detect).
 
 **genieclust** allows clustering with respect to mutual reachability distances,
-enabling it to act as a **noise point detector** or a version
-of *HDBSCAN\**  {cite}`hdbscan` that can identify a predefined
-number of clusters or their entire hierarchy.  The good news is that it
+enabling it to act as an **outlier detector** or an alternative
+to *HDBSCAN\**  {cite}`hdbscan` that can identify a predefined
+number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
 
@@ -100,21 +100,9 @@ cutree(h, k=2)
 ::::
 
 
-## Package Features
+## Other Package Features
 
-The implemented algorithms include:
-
--  *Genie* – a reimplementation of the original Genie algorithm
-    from the R package [**genie**](https://CRAN.R-project.org/package=genie)
-    {cite}`genieins`; much faster than the original one;
-    supports arbitrary spanning forests;
-
--   *Genie+HDBSCAN\** – a robustified (Geniefied) retake on the *HDBSCAN\**
-    {cite}`hdbscan` method that detects noise points in data and
-    outputs clusters of predefined sizes.
-
-
-Other:
+The package also features an implementation of:
 
 -   inequality measures: the normalised Gini, Bonferroni,
     and de Vergottini indices;
@@ -181,7 +169,7 @@ weave/basics
 weave/sklearn_toy_example
 weave/benchmarks_ar
 weave/timings
-weave/noise
+weave/outliers
 weave/r
 ::::
 

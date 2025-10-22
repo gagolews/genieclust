@@ -23,7 +23,7 @@
 using namespace Rcpp;
 
 
-/* This function was originally part of our `genie` package for R */
+/* This function was originally part of the `genie` package for R */
 void internal_generate_merge(Py_ssize_t n, NumericMatrix links, NumericMatrix merge)
 {
     std::vector<Py_ssize_t> elements(n+1, 0);
@@ -74,7 +74,7 @@ void internal_generate_merge(Py_ssize_t n, NumericMatrix links, NumericMatrix me
 }
 
 
-/* Originally, this function was part of our `genie` package for R */
+/* Originally, this function was part of the `genie` package for R */
 void internal_generate_order(Py_ssize_t n, NumericMatrix merge, NumericVector order)
 {
    std::vector< std::list<double> > relord(n+1);
@@ -104,27 +104,25 @@ void internal_generate_order(Py_ssize_t n, NumericMatrix merge, NumericVector or
 
 // [[Rcpp::export(".genie")]]
 IntegerVector dot_genie(
-        NumericMatrix mst,
-        int k,
-        double gini_threshold,
-        String postprocess,
-        bool detect_noise,
-        bool verbose)
-{
+    NumericMatrix mst,
+    int k,
+    double gini_threshold,
+    String postprocess,
+    bool skip_leaves,
+    bool verbose
+) {
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
 
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
         stop("`gini_threshold` must be in [0, 1]");
 
-    if (postprocess == "boundary" && detect_noise && Rf_isNull(mst.attr("nn.index")))
-        stop("`nn.index` attribute of the MST not set; unable to proceed with this postprocessing action");
-
     Py_ssize_t n = mst.nrow()+1;
 
-    if (k < 1 || k > n) stop("invalid requested number of clusters, `k`");
+    if (k < 1 || k > n) stop("invalid number of clusters requested, `k`");
 
     CMatrix<Py_ssize_t> mst_i(n-1, 2);
     std::vector<double>  mst_d(n-1);
+
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_i(i, 0) = (Py_ssize_t)mst(i, 0)-1;  // 1-based to 0-based indices
@@ -132,7 +130,7 @@ IntegerVector dot_genie(
         mst_d[i] = mst(i, 2);
     }
 
-    CGenie<double> g(mst_d.data(), mst_i.data(), n, detect_noise);
+    CGenie<double> g(mst_d.data(), mst_i.data(), n, skip_leaves);
     g.compute(k, gini_threshold);
 
 
@@ -142,32 +140,41 @@ IntegerVector dot_genie(
     Py_ssize_t k_detected = g.get_labels(k, xres.data());
 
     if (k_detected != k)
-        Rf_warning("The number of clusters detected is different from the requested one due to the presence of noise points.");
+        Rf_warning("The number of clusters detected is different from the requested one, possibly due to the presence of outliers.");
 
-    if (detect_noise && postprocess == "boundary") {
-        NumericMatrix nn_r = mst.attr("nn.index");
-        GENIECLUST_ASSERT(nn_r.nrow() == n);
-        Py_ssize_t M = nn_r.ncol();
-        GENIECLUST_ASSERT(M < n);
-        CMatrix<Py_ssize_t> nn_i(n, M);
-        for (Py_ssize_t i=0; i<n; ++i) {
-            for (Py_ssize_t j=0; j<M; ++j) {
-                GENIECLUST_ASSERT(nn_r(i,j) >= 1);
-                GENIECLUST_ASSERT(nn_r(i,j) <= n);
-                nn_i(i,j) = (Py_ssize_t)nn_r(i,j)-1; // 0-based indexing
+    if (skip_leaves) {
+        if (postprocess == "midliers") {
+            if (Rf_isNull(mst.attr("nn.index")))
+                stop("`nn.index` attribute of the MST not set; unable to proceed with this postprocessing action");
+
+            NumericMatrix nn_r = mst.attr("nn.index");
+            GENIECLUST_ASSERT(nn_r.nrow() == n);
+            Py_ssize_t M = nn_r.ncol();
+            GENIECLUST_ASSERT(M < n);
+            CMatrix<Py_ssize_t> nn_i(n, M);
+            for (Py_ssize_t i=0; i<n; ++i) {
+                for (Py_ssize_t j=0; j<M; ++j) {
+                    GENIECLUST_ASSERT(nn_r(i,j) >= 1);
+                    GENIECLUST_ASSERT(nn_r(i,j) <= n);
+                    nn_i(i,j) = (Py_ssize_t)nn_r(i,j)-1; // 0-based indexing
+                }
             }
-        }
 
-        Cmerge_boundary_points(mst_i.data(), n-1, nn_i.data(),
-                               M, M, xres.data(), n);
-    }
-    else if (detect_noise && postprocess == "all") {
-        Cmerge_noise_points(mst_i.data(), n-1, xres.data(), n);
+            Cmerge_midliers(mst_i.data(), n-1, nn_i.data(), M, M, xres.data(), n);
+        }
+        else if (postprocess == "all") {
+            Cmerge_all(mst_i.data(), n-1, xres.data(), n);
+        }
+        else if (postprocess == "none") {
+            ;  // pass
+        }
+        else
+            stop("invalid `postprocess`");
     }
 
     IntegerVector res(n);
     for (Py_ssize_t i=0; i<n; ++i) {
-        if (xres[i] < 0) res[i] = NA_INTEGER; // noise point
+        if (xres[i] < 0) res[i] = NA_INTEGER;  // outlier/noise point
         else res[i] = xres[i] + 1;
     }
 
@@ -180,10 +187,10 @@ IntegerVector dot_genie(
 
 // [[Rcpp::export(".gclust")]]
 List dot_gclust(
-        NumericMatrix mst,
-        double gini_threshold,
-        bool verbose)
-{
+    NumericMatrix mst,
+    double gini_threshold,
+    bool verbose
+) {
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
 
     if (gini_threshold < 0.0 || gini_threshold > 1.0)
@@ -199,7 +206,7 @@ List dot_gclust(
         mst_d[i] = mst(i, 2);
     }
 
-    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, noise_leaves=M>1*/);
+    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, skip_leaves=M>1*/);
     g.compute(1, gini_threshold);
 
 
@@ -207,7 +214,6 @@ List dot_gclust(
 
     std::vector<Py_ssize_t> links(n-1);
     g.get_links(links.data());
-
 
 
     NumericMatrix links2(n-1, 2);

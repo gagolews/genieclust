@@ -16,7 +16,6 @@ of the **genieclust** {cite}`genieclust` package,
 which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
 
-
 ```{python imports,results="hide"}
 import numpy as np
 import pandas as pd
