@@ -48,13 +48,13 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     n_clusters : int
         The number of clusters to detect.
 
-        If *M > 0* and *postprocess* is not ``"all"``, setting
+        If *M > 0* and `postprocess` is not ``"all"``, setting
         *n_clusters = 1* turns the algorithm to an outlier detector.
 
     M : int
         Smoothing factor for the mutual reachability distance [1]_.
         *M = 0* and *M = 1* indicate the original distance as given by
-        the *metric* parameter.
+        the `metric` parameter.
 
     metric : str
         The metric used to compute the linkage.
@@ -65,7 +65,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         ``"cosinesimil"`` (synonym: ``"cosine"``), or
         ``"precomputed"``.
 
-        For ``"precomputed"``, the *X* argument to the ``fit`` method
+        For ``"precomputed"``, the `X` argument to the ``fit`` method
         must be a distance vector or a square-form distance matrix;
         see ``scipy.spatial.distance.pdist``.
 
@@ -84,7 +84,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         By default, only midliers are merged with their nearest
         clusters, and the remaining leaves are considered outliers.
 
-        To force a classical *n_clusters*-partition of a data set (one that
+        To force a classical `n_clusters`-partition of a data set (one that
         marks no points as outliers), choose ``"all"``.
 
         Furthermore, ``"none"`` leaves all leaves marked as outliers.
@@ -265,14 +265,16 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
                 for i in range(start_partition, self.labels_.shape[0]):
                     self.labels_[i, :] = internal.merge_midliers(
                         self._tree_e, self.labels_[i, :],
-                        self._nn_e, cur_state["M"])
+                        self._nn_e, cur_state["M"]
+                    )
             elif cur_state["postprocess"] == "all":
                 for i in range(start_partition, self.labels_.shape[0]):
                     self.labels_[i, :] = internal.merge_all(
-                        self._tree_e, self.labels_[i, :])
+                        self._tree_e, self.labels_[i, :]
+                    )
 
         if reshaped:
-            self.labels_.shape = (self.labels_.shape[1],)
+            self.labels_.shape = (self.labels_.shape[1], )
 
         return cur_state
 
