@@ -90,9 +90,9 @@ Here are the effects of playing with the $M$ parameter
 
 
 ``` python
-Ms = [5, 10, 25, 50]
+Ms = [10, 25, 50, 100]
 for i in range(len(Ms)):
-    g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
+    g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i], postprocess="none")
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
     genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
@@ -120,7 +120,7 @@ granularity.  As *Genie* is a hierarchical algorithm, the partitions are properl
 ``` python
 ncs = [4, 5, 6, 7]
 for i in range(len(ncs)):
-    g = genieclust.Genie(n_clusters=ncs[i], M=50)
+    g = genieclust.Genie(n_clusters=ncs[i], M=100)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
     genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)

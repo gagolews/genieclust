@@ -222,7 +222,6 @@ plt.show()
 ```
 
 
-
 ## Dendrograms
 
 Dendrogram plotting is possible with `scipy.cluster.hierarchy`:

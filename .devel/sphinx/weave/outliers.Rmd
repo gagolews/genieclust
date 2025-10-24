@@ -82,7 +82,7 @@ Here are the effects of playing with the $M$ parameter
 (we keep the default `gini_threshold`):
 
 ```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with outlier detection",fig.height=5.9375}
-Ms = [5, 10, 25, 50]
+Ms = [10, 25, 50, 100]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
@@ -125,7 +125,7 @@ granularity.  As *Genie* is a hierarchical algorithm, the partitions are properl
 ```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when outliers were removed from the dataset – different number of clusters requested",fig.height=5.9375}
 ncs = [4, 5, 6, 7]
 for i in range(len(ncs)):
-    g = genieclust.Genie(n_clusters=ncs[i], M=50)
+    g = genieclust.Genie(n_clusters=ncs[i], M=100)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
     genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)

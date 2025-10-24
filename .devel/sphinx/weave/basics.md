@@ -289,7 +289,6 @@ Labels predicted by Genie
 ```
 
 
-
 ## Dendrograms
 
 Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
