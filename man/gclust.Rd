@@ -123,29 +123,15 @@ raises above \code{gini_threshold}, merging a point group
 of the smallest size is enforced.
 
 The clustering can also be computed with respect to the
-mutual reachability distances (based, e.g., on the Euclidean metric),
+\eqn{M}-mutual reachability distance (based, e.g., on the Euclidean metric),
 which is used in the definition of the HDBSCAN* algorithm
-(see Campello et al., 2013).
-For the smoothing factor \eqn{M>0},
-the mutual reachability distance \eqn{d_M(i,j)} is used instead of the
-chosen "raw" distance \eqn{d(i,j)}.  It holds
-\eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
-\eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
-nearest neighbour (not including self, unlike in Campello et al., 2013).
-This pulls outliers away from each other.
-
-The Genie algorithm with the smoothing factor \eqn{M>0}
-(note that \eqn{M\leq 1} corresponds to the original distance) gives
-an alternative to the HDBSCAN* algorithm that is able to detect
-a predefined number of clusters and indicate outliers;
-see Gagolewski, 2025.
-Hence, it does not dependent on DBSCAN's
-\code{eps} parameter or HDBSCAN's \code{min_cluster_size} one.
-
-If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
-process; see \code{skip_leaves}.  They may be merged with the nearest
-clusters at the postprocessing stage, or left marked as outliers;
-see [4]_ for discussion.
+(see \code{\link{mst}()} for the definition).
+For the smoothing factor \eqn{M>0}, outliers are pulled away from
+their neighbours.  This way, the Genie algorithm gives an alternative
+to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
+a predefined number of clusters and indicate outliers (Gagolewski, 2025)
+without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s \code{min_cluster_size}
+parameters.
 }
 \details{
 As in the case of all the distance-based methods,
@@ -162,15 +148,20 @@ the \pkg{quitefastmst} package.
 
 Once a minimum spanning tree is determined, the Genie algorithm runs in
 \eqn{O(n \sqrt{n})} time.  If you want to test different
-\code{gini_threshold}s or \code{k}s,  it is best to compute
-the MST first explicitly.
+\code{gini_threshold}s or \code{k}s, it is best to compute
+the MST explicitly beforehand.
 
-According to the algorithm's original definition,
+Due to Genie's original definition,
 the resulting partition tree (dendrogram) might violate
 the ultrametricity property (merges might occur at levels that
 are not increasing w.r.t. a between-cluster distance).
 \code{gclust()} automatically corrects departures from
 ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
+
+If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
+process; see \code{skip_leaves}.  Afterwards, some of them (midliers)
+are merged with the nearest clusters at the postprocessing stage,
+and other ones are marked as outliers; see [4]_ for discussion.
 }
 \examples{
 library("datasets")

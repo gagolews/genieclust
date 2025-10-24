@@ -218,9 +218,9 @@ Labels predicted by HDBSCAN\*
 ```
 
 **Side note.**
-Gray plotting symbols denote "noise" points; we'll get back to this feature
-in [another section](noise).
-
+Gray plotting symbols denote noise points.
+In [another section](outliers), we will show that our package is also
+equipped with an anomalous point detector.
 
 
 

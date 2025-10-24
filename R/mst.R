@@ -30,7 +30,8 @@
 #'
 #' @details
 #' (*) Note that if the distances are not unique,
-#' there might be multiple minimum trees spanning a given graph.
+#' there might be multiple trees spanning a given graph that meet the
+#' minimality property.
 #'
 #' If \code{d} is a matrix and the use of Euclidean distance is requested
 #' (the default), then \code{\link[quitefastmst]{mst_euclid}} is called
@@ -51,10 +52,14 @@
 #' nearest neighbour (not including self, unlike in Campello et al., 2013).
 #' This pulls outliers away from their neighbours.
 #'
-#' Possible ties between mutually reachability distances are resolved
-#' in such a way that connecting to a neighbour of the smallest
-#' core distance is preferred.  This leads to MSTs with more leaves and hubs;
-#' see (Gagolewski, 2015) for discussion.
+#' If ``quitefastmst`` is used, then possible ties between mutually
+#' reachability distances are resolved in such a way that connecting
+#' to a neighbour of the smallest core distance is preferred.
+#' This leads to MSTs with more leaves and hubs.  Moreover, the leaves are
+#' then reconnected in such a way that they become incident with vertices
+#' that have them amongst their *M* nearest neighbours (if possible without
+#' violating the minimality condition); see (Gagolewski, 2025) and the manual
+#' of \code{\link[quitefastmst]{mst_euclid}} for discussion.
 #'
 #'
 #' @seealso
@@ -106,9 +111,9 @@
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
 #'
-#' @param ... further arguments passed to or from other methods,
-#'     in particular, to \code{\link[quitefastmst]{mst_euclid}}
-#'     from the \pkg{quitefastmst} package
+#' @param mutreach_ties,mutreach_leaves,... further arguments passed to
+#'     or from other methods, in particular, to
+#'     \code{\link[quitefastmst]{mst_euclid}} from the \pkg{quitefastmst} package
 #'
 #'
 #' @return
@@ -125,7 +130,7 @@
 #' if available.
 #' The \code{method} attribute provides the name of the distance function used.
 #'
-#' If \eqn{M>0}, the \code{nn.index} attribute gives the indices
+#' If \eqn{M>0}, the \code{nn.index} attribute gives the indexes
 #' of the \code{M} nearest neighbours of each point
 #' and \code{nn.dist} provides the corresponding distances,
 #' both in the form of an \eqn{n} by \eqn{M} matrix.
@@ -156,21 +161,27 @@ mst.default <- function(
     d,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=0L,
-    verbose=FALSE, ...)
-{
+    verbose=FALSE,
+    mutreach_ties="dcore_min",
+    mutreach_leaves="reconnect_dcore_min",
+    ...
+) {
     d <- as.matrix(d)
     M <- as.integer(M)[1]
     distance <- match.arg(distance)
     verbose <- !identical(verbose, FALSE)
 
     if (distance %in% c("euclidean", "l2")) {
-        .res <- mst_euclid(d, M, ..., verbose=verbose)
+        .res <- mst_euclid(
+            d, M, ...,
+            verbose=verbose, mutreach_ties=mutreach_ties
+        )
         result <- cbind(.res[["mst.index"]], .res[["mst.dist"]])
         attr(result, "nn.index")  <- .res[["nn.index"]]
         attr(result, "nn.dist")   <- .res[["nn.dist"]]
     }
     else {
-        result <- .oldmst.matrix(d, distance, M, ..., verbose=verbose)
+        result <- .oldmst.matrix(d, distance, M, verbose=verbose)
     }
 
     stopifnot(result[, 1] < result[, 2])
@@ -193,8 +204,9 @@ mst.default <- function(
 mst.dist <- function(
     d,
     M=0L,
-    verbose=FALSE, ...)
-{
+    verbose=FALSE,
+    ...
+) {
     #cast_float32 <- !identical(cast_float32, FALSE)
     verbose <- !identical(verbose, FALSE)
     M <- as.integer(M)[1]

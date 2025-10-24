@@ -848,7 +848,7 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
 
     ind : ndarray, shape (m,2)
         A 2-column matrix such that {ind[i,0], ind[i,1]} represents
-        one of m undirected edges. Negative indices are ignored.
+        one of m undirected edges. Negative indexes are ignored.
     n : int
         Number of vertices.
 
@@ -915,7 +915,7 @@ cpdef np.ndarray[Py_ssize_t] merge_midliers(
         c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
         the i-th object.  Class -1 represents the leaves of the spanning tree.
     nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
-        nn_ind[i,:] gives the indices of the i-th point's
+        nn_ind[i,:] gives the indexes of the i-th point's
         nearest neighbours; -1 indicates a "missing value"
     M : int
         smoothing factor, M>=1

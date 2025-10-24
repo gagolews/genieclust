@@ -42,7 +42,7 @@
  *
  *  @param D a callable CDistance object such that a call to
  *         <T*>D(j, <Py_ssize_t*>M, Py_ssize_t l) returns an n-ary array
- *         with the distances from the j-th point to l points whose indices
+ *         with the distances from the j-th point to l points whose indexes
  *         are given in array M
  *  @param n number of points
  *  @param k number of nearest neighbours,
@@ -156,7 +156,7 @@ void Cknn_from_complete(CDistance<T>* D, Py_ssize_t n, Py_ssize_t k,
  *
  * @param D a CDistance object such that a call to
  *        <T*>D(j, <Py_ssize_t*>M, Py_ssize_t k) returns a length-n array
- *        with the distances from the j-th point to k points whose indices
+ *        with the distances from the j-th point to k points whose indexes
  *        are given in array M
  * @param n number of points
  * @param mst_d [out] vector of length n-1, gives weights of the
@@ -277,7 +277,7 @@ void Cmst_from_complete(CDistance<T>* D, Py_ssize_t n,
  *        dist[i,j] gives the weight of the (undirected) edge {i, ind[i,j]}
  * @param ind    a c_contiguous array, shape (n,k),
  *        (undirected) edge definition, interpreted as {i, ind[i,j]};
- *        negative indices as well as those such that ind[i,j]==i are ignored
+ *        negative indexes as well as those such that ind[i,j]==i are ignored
  * @param d_core "core" distance (or NULL);
  *        if not NULL then the distance between two points will be
  *        d'(i, ind[i,j]) = max(d(i, ind[i,j]), d_core[i], d_core[ind[i,j]])

@@ -116,14 +116,18 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     (not including self, unlike in [1]_).
     This pulls outliers away from their neighbours.
 
-    Possible ties between mutually reachability distances are resolved
-    in such a way that connecting to a neighbour of the smallest
-    core distance is preferred.  This leads to MSTs with more leaves and hubs;
-    see [3]_ for discussion.
+    If ``quitefastmst`` is used, then possible ties between mutually
+    reachability distances are resolved in such a way that connecting
+    to a neighbour of the smallest core distance is preferred.
+    This leads to MSTs with more leaves and hubs.  Moreover, the leaves are
+    then reconnected in such a way that they become incident with vertices
+    that have them amongst their *M* nearest neighbours (if possible without
+    violating the minimality condition); see [3]_ for discussion.
 
-    The underlying clustering algorithm might leave out all MST leaves from
-    the clustering process. They may be merged with the nearest clusters at the
-    postprocessing stage, or left marked as outliers.
+    For *M > 0*, the underlying clustering algorithm by default
+    leaves out all MST leaves from the clustering process.  Afterwards,
+    some of them (midliers) are merged with the nearest clusters at the
+    postprocessing stage, and other ones are marked as outliers.
 
 
     :Environment variables:
@@ -182,12 +186,12 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     def __init__(
             self,
             *,
-            n_clusters,
-            M,
-            metric,
-            postprocess,
-            quitefastmst_params,
-            verbose
+            n_clusters=2,
+            M=0,
+            metric="l2",
+            postprocess="midliers",
+            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
+            verbose=False
         ):
         # # # # # # # # # # # #
         super().__init__()
@@ -378,7 +382,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
                 cur_state["X"]        == self._last_state["X"] and \
                 cur_state["metric"]   == self._last_state["metric"] and \
                 cur_state["quitefastmst_params"] == self._last_state["quitefastmst_params"] and \
-                cur_state["M"]        == self._last_state["M"]:  # TODO
+                cur_state["M"]        == self._last_state["M"]:
             # reuse last MST & M-NNs
             tree_w = self._tree_w
             tree_e = self._tree_e
@@ -388,7 +392,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         else:
             if cur_state["metric"] == "l2":
                 _res = quitefastmst.mst_euclid(
-                    X, M=cur_state["M"],
+                    X,
+                    M=cur_state["M"],
                     **cur_state["quitefastmst_params"],
                     verbose=cur_state["verbose"]
                 )
@@ -682,11 +687,9 @@ class Genie(MSTClusterMixin):
     :math:`O(n^2)`-time algorithm is called.
 
     The Genie algorithm together with the smoothing factor *M > 0*
-    (note that *M ≤ 1* corresponds to the original distance)
     gives an alternative to the HDBSCAN\\* [2]_ algorithm that is able to
-    detect a predefined number of clusters; see [4]_.
-    Hence, it does not depend on DBSCAN's ``eps`` parameter or
-    *HDBSCAN*'s ``min_cluster_size`` one.
+    detect a predefined number of clusters (see [4]_) without depending
+    on DBSCAN\\*'s ``eps`` HDBSCAN\\*'s ``min_cluster_size`` parameters.
 
     If *M > 0*, all MST leaves are left out from the clustering process.
     They may be merged with the nearest clusters at the postprocessing stage,
@@ -735,7 +738,7 @@ class Genie(MSTClusterMixin):
             compute_full_tree=False,
             compute_all_cuts=False,
             postprocess="midliers",
-            quitefastmst_params=dict(),
+            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
         # # # # # # # # # # # #
@@ -1002,7 +1005,7 @@ class GIc(MSTClusterMixin):
             postprocess="midliers",
             add_clusters=0,
             n_features=None,
-            quitefastmst_params=dict(),
+            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False):
         # # # # # # # # # # # #
         super().__init__(

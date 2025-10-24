@@ -47,29 +47,15 @@
 #' of the smallest size is enforced.
 #'
 #' The clustering can also be computed with respect to the
-#' mutual reachability distances (based, e.g., on the Euclidean metric),
+#' \eqn{M}-mutual reachability distance (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
-#' (see Campello et al., 2013).
-#' For the smoothing factor \eqn{M>0},
-#' the mutual reachability distance \eqn{d_M(i,j)} is used instead of the
-#' chosen "raw" distance \eqn{d(i,j)}.  It holds
-#' \eqn{d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))}, where the core distance
-#' \eqn{c_M(i)} is the distance to the \eqn{i}-th point's \eqn{M}-th
-#' nearest neighbour (not including self, unlike in Campello et al., 2013).
-#' This pulls outliers away from each other.
-#'
-#' The Genie algorithm with the smoothing factor \eqn{M>0}
-#' (note that \eqn{M\leq 1} corresponds to the original distance) gives
-#' an alternative to the HDBSCAN* algorithm that is able to detect
-#' a predefined number of clusters and indicate outliers;
-#' see Gagolewski, 2025.
-#' Hence, it does not dependent on DBSCAN's
-#' \code{eps} parameter or HDBSCAN's \code{min_cluster_size} one.
-#'
-#' If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
-#' process; see \code{skip_leaves}.  They may be merged with the nearest
-#' clusters at the postprocessing stage, or left marked as outliers;
-#' see [4]_ for discussion.
+#' (see \code{\link{mst}()} for the definition).
+#' For the smoothing factor \eqn{M>0}, outliers are pulled away from
+#' their neighbours.  This way, the Genie algorithm gives an alternative
+#' to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
+#' a predefined number of clusters and indicate outliers (Gagolewski, 2025)
+#' without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s \code{min_cluster_size}
+#' parameters.
 #'
 #'
 #' @details
@@ -87,15 +73,20 @@
 #'
 #' Once a minimum spanning tree is determined, the Genie algorithm runs in
 #' \eqn{O(n \sqrt{n})} time.  If you want to test different
-#' \code{gini_threshold}s or \code{k}s,  it is best to compute
-#' the MST first explicitly.
+#' \code{gini_threshold}s or \code{k}s, it is best to compute
+#' the MST explicitly beforehand.
 #'
-#' According to the algorithm's original definition,
+#' Due to Genie's original definition,
 #' the resulting partition tree (dendrogram) might violate
 #' the ultrametricity property (merges might occur at levels that
 #' are not increasing w.r.t. a between-cluster distance).
 #' \code{gclust()} automatically corrects departures from
 #' ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
+#'
+#' If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
+#' process; see \code{skip_leaves}.  Afterwards, some of them (midliers)
+#' are merged with the nearest clusters at the postprocessing stage,
+#' and other ones are marked as outliers; see [4]_ for discussion.
 #'
 #'
 #' @param d a numeric matrix (or an object coercible to one,
@@ -112,7 +103,6 @@
 #'     \code{"cosine"}
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
-#' @param ... further arguments passed to \code{\link{mst}()}
 #' @param k the desired number of clusters to detect, \eqn{k=1} with
 #'      \eqn{M>0} acts as an outlier detector
 #' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
@@ -127,6 +117,7 @@
 #'     \eqn{M} nearest neighbours.
 #'     To force a classical k-partition of a data set (one that does not
 #'     distinguish between inliers and outliers), choose \code{"all"}.
+#' @param ... further arguments passed to \code{\link{mst}()}
 #'
 #'
 #' @return
@@ -196,15 +187,19 @@ gclust <- function(d, ...)
 #' @export
 #' @rdname gclust
 #' @method gclust default
-gclust.default <- function(d,
+gclust.default <- function(
+    d,
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
-    verbose=FALSE, ...)
-{
+    verbose=FALSE,
+    ...
+) {
     distance <- match.arg(distance)
+    tree <- mst.default(d, distance=distance, verbose=verbose, ...)
     gclust.mst(
-        mst.default(d, distance=distance, verbose=verbose, ...),
-        gini_threshold=gini_threshold, verbose=verbose
+        tree,
+        gini_threshold=gini_threshold,
+        verbose=verbose
     )
 }
 
@@ -212,10 +207,12 @@ gclust.default <- function(d,
 #' @export
 #' @rdname gclust
 #' @method gclust dist
-gclust.dist <- function(d,
+gclust.dist <- function(
+    d,
     gini_threshold=0.3,
-    verbose=FALSE, ...)
-{
+    verbose=FALSE,
+    ...
+) {
     gclust.mst(
         mst.dist(d, verbose=verbose, ...),
         gini_threshold=gini_threshold, verbose=verbose
@@ -268,12 +265,13 @@ genie.default <- function(
     postprocess=c("midliers", "none", "all"),
     skip_leaves=M>0L,
     verbose=FALSE,
-    ...)
-{
+    ...
+) {
     distance <- match.arg(distance)
     postprocess <- match.arg(postprocess)
+    tree <- mst.default(d, M=M, distance=distance, verbose=verbose, ...)
     genie.mst(
-        mst.default(d, M=M, distance=distance, verbose=verbose, ...),
+        tree,
         k=k,
         gini_threshold=gini_threshold,
         postprocess=postprocess,
@@ -294,8 +292,8 @@ genie.dist <- function(
     postprocess=c("midliers", "none", "all"),
     skip_leaves=M>0L,
     verbose=FALSE,
-    ...)
-{
+    ...
+) {
     postprocess <- match.arg(postprocess)
     genie.mst(
         mst.dist(d, M=M, verbose=verbose, ...),
@@ -311,14 +309,15 @@ genie.dist <- function(
 #' @export
 #' @rdname gclust
 #' @method genie mst
-genie.mst <- function(d,
+genie.mst <- function(
+    d,
     k,
     gini_threshold=0.3,
     postprocess=c("midliers", "none", "all"),
     skip_leaves=FALSE,
     verbose=FALSE,
-    ...)
-{
+    ...
+) {
     gini_threshold <- as.double(gini_threshold)[1]
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     postprocess <- match.arg(postprocess)

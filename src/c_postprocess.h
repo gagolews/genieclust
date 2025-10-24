@@ -37,7 +37,7 @@
  *     edges with tree_ind[i,0] < 0 or tree_ind[i,1] < 0 are ignored.
  *  @param num_edges number of rows in tree_ind (edges)
  *  @param nn_ind c_contiguous matrix of size n*num_neighbours;
- *     nn[i,:] gives the indices of the i-th point's
+ *     nn[i,:] gives the indexes of the i-th point's
  *     nearest neighbours; -1 indicates a "missing value"
  *  @param num_neighbours number of columns in nn
  *  @param M smoothing factor, 1 <= M <= num_neighbours

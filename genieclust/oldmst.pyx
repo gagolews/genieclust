@@ -162,7 +162,7 @@ cpdef tuple mst_from_nn(  # TODO: remove
         For each ``i``, it holds ``mst_ind[i,0] < mst_ind[i,1]``.
 
         If `stop_disconnected` is ``False``, then the weights of the
-        last `c-1` edges are set to infinity and the corresponding indices
+        last `c-1` edges are set to infinity and the corresponding indexes
         are set to -1, where `c` is the number of connected components
         in the resulting minimum spanning forest.
 

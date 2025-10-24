@@ -51,7 +51,7 @@ of clusters to detect).
 enabling it to act as an **outlier detector** or an alternative to
 *HDBSCAN\** (see Campello et al., 2013) that can identify a predefined
 number of clusters or their entire hierarchy.  Notably, it
-doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
+doesn't depend on *DBSCAN*'s somewhat difficult to set `eps` parameter.
 
 The package also features an implementation of:
 

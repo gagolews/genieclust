@@ -13,6 +13,8 @@ mst(d, ...)
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
   verbose = FALSE,
+  mutreach_ties = "dcore_min",
+  mutreach_leaves = "reconnect_dcore_min",
   ...
 )
 
@@ -22,10 +24,6 @@ mst(d, ...)
 \item{d}{either a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
 object of class \code{dist}; see \code{\link[stats]{dist}}}
-
-\item{...}{further arguments passed to or from other methods,
-in particular, to \code{\link[quitefastmst]{mst_euclid}}
-from the \pkg{quitefastmst} package}
 
 \item{distance}{metric used in the case where \code{d} is a matrix; one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -39,6 +37,10 @@ say, \eqn{\leq 20}}
 
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
+
+\item{mutreach_ties, mutreach_leaves, ...}{further arguments passed to
+or from other methods, in particular, to
+\code{\link[quitefastmst]{mst_euclid}} from the \pkg{quitefastmst} package}
 }
 \value{
 Returns a numeric matrix of class \code{mst} with \eqn{n-1} rows and
@@ -54,7 +56,7 @@ The \code{Labels} attribute gives the labels of the input points,
 if available.
 The \code{method} attribute provides the name of the distance function used.
 
-If \eqn{M>0}, the \code{nn.index} attribute gives the indices
+If \eqn{M>0}, the \code{nn.index} attribute gives the indexes
 of the \code{M} nearest neighbours of each point
 and \code{nn.dist} provides the corresponding distances,
 both in the form of an \eqn{n} by \eqn{M} matrix.
@@ -66,7 +68,8 @@ whose weights correspond to the pairwise distances between the points.
 }
 \details{
 (*) Note that if the distances are not unique,
-there might be multiple minimum trees spanning a given graph.
+there might be multiple trees spanning a given graph that meet the
+minimality property.
 
 If \code{d} is a matrix and the use of Euclidean distance is requested
 (the default), then \code{\link[quitefastmst]{mst_euclid}} is called
@@ -87,10 +90,14 @@ is used instead of the chosen "raw" distance \eqn{d(i,j)}.  It holds
 nearest neighbour (not including self, unlike in Campello et al., 2013).
 This pulls outliers away from their neighbours.
 
-Possible ties between mutually reachability distances are resolved
-in such a way that connecting to a neighbour of the smallest
-core distance is preferred.  This leads to MSTs with more leaves and hubs;
-see (Gagolewski, 2015) for discussion.
+If ``quitefastmst`` is used, then possible ties between mutually
+reachability distances are resolved in such a way that connecting
+to a neighbour of the smallest core distance is preferred.
+This leads to MSTs with more leaves and hubs.  Moreover, the leaves are
+then reconnected in such a way that they become incident with vertices
+that have them amongst their *M* nearest neighbours (if possible without
+violating the minimality condition); see (Gagolewski, 2025) and the manual
+of \code{\link[quitefastmst]{mst_euclid}} for discussion.
 }
 \examples{
 library("datasets")

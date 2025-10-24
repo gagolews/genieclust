@@ -31,7 +31,7 @@ struct CDistance {
 
     /*!
      * @param i point index, 0 <= i < n
-     * @param M indices
+     * @param M indexes
      * @param k length of M
      * @return distances from the i-th point to M[0], .., M[k-1],
      *         with ret[M[j]]=d(i, M[j]);

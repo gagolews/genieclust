@@ -57,7 +57,7 @@ protected:
 
 
     Py_ssize_t* mst_i;   /*!< n-1 edges of the MST,
-                          * given by c_contiguous (n-1)*2 indices;
+                          * given by (n-1)*2 indexes in a c_contiguous array;
                           * (-1, -1) denotes a no-edge and will be ignored
                           */
     T* mst_d;            //<! n-1 edge weights, sorted increasingly

@@ -4,8 +4,6 @@
 
 *   Check for NA/NaN/Inf in the input matrices.
 
-*   PyPI build for Python 3.14
-
 *   For M>1 and non-Euclidean distances, the output MST edge weights
     are slightly perturbed because of the applied continuity correction.
     These values should be manually corrected at the postprocessing stage
@@ -20,16 +18,18 @@
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
     backward-incompatible changes have been addressed (see below).
 
-*   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
-    distance has changed.  Unlike in Campello et al.'s 2013 paper,
-    now the core distance is the distance to the *M*-th nearest neighbour,
-    not the *(M-1)*-th one (not including self).
-
 *   [NEW FEATURE]  Outlier detection based on mutual reachability distances
     is no longer marked as experimental.  Note that we now rely on mutual
     reachability distances adjusted for the presence of ties such that
     neighbours with smaller core distances are preferred;
-    see (in preparation: Gagolewski, 2025, TODO) for discussion.
+    moreover, some leaves of the MST are reconnected so that they
+    are adjacent to vertices that have them amongst their *M* nearest
+    neighbours; see (in preparation: Gagolewski, 2025, TODO) for discussion.
+
+*   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
+    distance has changed.  Unlike in Campello et al.'s 2013 paper,
+    now the core distance is the distance to the *M*-th nearest neighbour,
+    not the *(M-1)*-th one (not including self).
 
 *   [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
     was renamed `skip_leaves`.

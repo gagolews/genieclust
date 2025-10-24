@@ -15,6 +15,8 @@ mst(
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
   verbose = FALSE,
+  mutreach_ties = "dcore_min",
+  mutreach_leaves = "reconnect_dcore_min",
   ...
 )
 
@@ -27,14 +29,14 @@ mst(d, M = 0L, verbose = FALSE, ...)
 |  |  |
 |----|----|
 | `d` | either a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist`; see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html) |
-| `...` | further arguments passed to or from other methods, in particular, to [`mst_euclid`](https://quitefastmst.gagolewski.com/rapi/mst_euclid.html) from the <span class="pkg">quitefastmst</span> package |
 | `distance` | metric used in the case where `d` is a matrix; one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"` |
 | `M` | smoothing factor; $M=0$ selects the requested `distance`; otherwise, the corresponding degree-`M` mutual reachability distance is used; `M` should be rather small, say, $\leq 20$ |
 | `verbose` | logical; whether to print diagnostic messages and progress information |
+| `mutreach_ties`, `mutreach_leaves`, `...` | further arguments passed to or from other methods, in particular, to [`mst_euclid`](https://quitefastmst.gagolewski.com/rapi/mst_euclid.html) from the <span class="pkg">quitefastmst</span> package |
 
 ## Details
 
-(\*) Note that if the distances are not unique, there might be multiple minimum trees spanning a given graph.
+(\*) Note that if the distances are not unique, there might be multiple trees spanning a given graph that meet the minimality property.
 
 If `d` is a matrix and the use of Euclidean distance is requested (the default), then [`mst_euclid`](https://quitefastmst.gagolewski.com/rapi/mst_euclid.html) is called to determine the MST. It is quite fast in spaces of low intrinsic dimensionality, even for 10M points.
 
@@ -42,7 +44,7 @@ Otherwise, a much slower generic implementation of the Jarník (Prim/Dijkstra)-l
 
 For the smoothing factor $M>0$, the mutual reachability distance $d_M(i,j)$ (Campello et al., 2013) is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))$, where the core distance $c_M(i)$ is the distance to the $i$-th point\'s $M$-th nearest neighbour (not including self, unlike in Campello et al., 2013). This pulls outliers away from their neighbours.
 
-Possible ties between mutually reachability distances are resolved in such a way that connecting to a neighbour of the smallest core distance is preferred. This leads to MSTs with more leaves and hubs; see (Gagolewski, 2015) for discussion.
+If "quitefastmst" is used, then possible ties between mutually reachability distances are resolved in such a way that connecting to a neighbour of the smallest core distance is preferred. This leads to MSTs with more leaves and hubs. Moreover, the leaves are then reconnected in such a way that they become incident with vertices that have them amongst their \*M\* nearest neighbours (if possible without violating the minimality condition); see (Gagolewski, 2025) and the manual of [`mst_euclid`](https://quitefastmst.gagolewski.com/rapi/mst_euclid.html) for discussion.
 
 ## Value
 
@@ -50,7 +52,7 @@ Returns a numeric matrix of class `mst` with $n-1$ rows and three columns: `from
 
 The `Size` attribute specifies the number of points, $n$. The `Labels` attribute gives the labels of the input points, if available. The `method` attribute provides the name of the distance function used.
 
-If $M>0$, the `nn.index` attribute gives the indices of the `M` nearest neighbours of each point and `nn.dist` provides the corresponding distances, both in the form of an $n$ by $M$ matrix.
+If $M>0$, the `nn.index` attribute gives the indexes of the `M` nearest neighbours of each point and `nn.dist` provides the corresponding distances, both in the form of an $n$ by $M$ matrix.
 
 ## Author(s)
 

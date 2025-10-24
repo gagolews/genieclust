@@ -192,7 +192,7 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
     ----------
 
     pairs : array_like
-        A two-column matrix that gives the pairs of indices
+        A two-column matrix that gives the pairs of indexes
         defining the line segments to draw.
 
     X : array_like

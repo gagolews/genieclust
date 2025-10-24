@@ -4,11 +4,7 @@
 
 A reimplementation of *Genie* - a robust and outlier resistant clustering algorithm by Gagolewski, Bartoszuk, and Cena (2016). The Genie algorithm is based on the minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the Single Linkage method, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see [`gini_index()`](inequality.md)) of the cluster size distribution raises above `gini_threshold`, merging a point group of the smallest size is enforced.
 
-The clustering can also be computed with respect to the mutual reachability distances (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see Campello et al., 2013). For the smoothing factor $M>0$, the mutual reachability distance $d_M(i,j)$ is used instead of the chosen \"raw\" distance $d(i,j)$. It holds $d_M(i,j)=\max(d(i,j), c_M(i), c_M(j))$, where the core distance $c_M(i)$ is the distance to the $i$-th point\'s $M$-th nearest neighbour (not including self, unlike in Campello et al., 2013). This pulls outliers away from each other.
-
-The Genie algorithm with the smoothing factor $M>0$ (note that $M\leq 1$ corresponds to the original distance) gives an alternative to the HDBSCAN\* algorithm that is able to detect a predefined number of clusters and indicate outliers; see Gagolewski, 2025. Hence, it does not dependent on DBSCAN\'s `eps` parameter or HDBSCAN\'s `min_cluster_size` one.
-
-If $M > 0$, all MST leaves are, by default, left out from the clustering process; see `skip_leaves`. They may be merged with the nearest clusters at the postprocessing stage, or left marked as outliers; see \[4\]\_ for discussion.
+The clustering can also be computed with respect to the $M$-mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN\* algorithm (see [`mst()`](mst.md) for the definition). For the smoothing factor $M>0$, outliers are pulled away from their neighbours. This way, the Genie algorithm gives an alternative to the HDBSCAN\* algorithm (Campello et al., 2013) that is able to detect a predefined number of clusters and indicate outliers (Gagolewski, 2025) without depending on DBSCAN\*\'s `eps` or HDBSCAN\*\'s `min_cluster_size` parameters.
 
 ## Usage
 
@@ -89,9 +85,11 @@ As in the case of all the distance-based methods, the standardisation of the inp
 
 If `d` is a numeric matrix or an object of class `dist`, [`mst()`](mst.md) will be called to compute an MST, which generally takes at most $O(n^2)$ time. However, by default, a faster algorithm based on K-d trees is selected automatically for low-dimensional Euclidean spaces; see [`mst_euclid`](https://quitefastmst.gagolewski.com/rapi/mst_euclid.html) from the <span class="pkg">quitefastmst</span> package.
 
-Once a minimum spanning tree is determined, the Genie algorithm runs in $O(n \sqrt{n})$ time. If you want to test different `gini_threshold`s or `k`s, it is best to compute the MST first explicitly.
+Once a minimum spanning tree is determined, the Genie algorithm runs in $O(n \sqrt{n})$ time. If you want to test different `gini_threshold`s or `k`s, it is best to compute the MST explicitly beforehand.
 
-According to the algorithm\'s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). `gclust()` automatically corrects departures from ultrametricity by applying `height = rev(cummin(rev(height)))`.
+Due to Genie\'s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). `gclust()` automatically corrects departures from ultrametricity by applying `height = rev(cummin(rev(height)))`.
+
+If $M > 0$, all MST leaves are, by default, left out from the clustering process; see `skip_leaves`. Afterwards, some of them (midliers) are merged with the nearest clusters at the postprocessing stage, and other ones are marked as outliers; see \[4\]\_ for discussion.
 
 ## Value
 

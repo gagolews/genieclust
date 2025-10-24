@@ -121,12 +121,12 @@ IntegerVector dot_genie(
     if (k < 1 || k > n) stop("invalid number of clusters requested, `k`");
 
     CMatrix<Py_ssize_t> mst_i(n-1, 2);
-    std::vector<double>  mst_d(n-1);
+    std::vector<double> mst_d(n-1);
 
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        mst_i(i, 0) = (Py_ssize_t)mst(i, 0)-1;  // 1-based to 0-based indices
-        mst_i(i, 1) = (Py_ssize_t)mst(i, 1)-1;  // 1-based to 0-based indices
+        mst_i(i, 0) = (Py_ssize_t)mst(i, 0) - 1;  // 1-based to 0-based indexes
+        mst_i(i, 1) = (Py_ssize_t)mst(i, 1) - 1;  // 1-based to 0-based indexes
         mst_d[i] = mst(i, 2);
     }
 
@@ -156,7 +156,7 @@ IntegerVector dot_genie(
                 for (Py_ssize_t j=0; j<M; ++j) {
                     GENIECLUST_ASSERT(nn_r(i,j) >= 1);
                     GENIECLUST_ASSERT(nn_r(i,j) <= n);
-                    nn_i(i,j) = (Py_ssize_t)nn_r(i,j)-1; // 0-based indexing
+                    nn_i(i,j) = (Py_ssize_t)nn_r(i,j) - 1;  // 0-based indexes
                 }
             }
 
@@ -175,7 +175,7 @@ IntegerVector dot_genie(
     IntegerVector res(n);
     for (Py_ssize_t i=0; i<n; ++i) {
         if (xres[i] < 0) res[i] = NA_INTEGER;  // outlier/noise point
-        else res[i] = xres[i] + 1;
+        else res[i] = xres[i] + 1;  // 1-based indexes
     }
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
@@ -198,11 +198,11 @@ List dot_gclust(
 
     Py_ssize_t n = mst.nrow()+1;
     CMatrix<Py_ssize_t> mst_i(n-1, 2);
-    std::vector<double>  mst_d(n-1);
+    std::vector<double> mst_d(n-1);
 
     for (Py_ssize_t i=0; i<n-1; ++i) {
-        mst_i(i, 0) = (Py_ssize_t)mst(i, 0)-1; // 1-based to 0-based indices
-        mst_i(i, 1) = (Py_ssize_t)mst(i, 1)-1; // 1-based to 0-based indices
+        mst_i(i, 0) = (Py_ssize_t)mst(i, 0) - 1;  // 1-based to 0-based indexes
+        mst_i(i, 1) = (Py_ssize_t)mst(i, 1) - 1;  // 1-based to 0-based indexes
         mst_d[i] = mst(i, 2);
     }
 
@@ -221,8 +221,8 @@ List dot_gclust(
     Py_ssize_t k = 0;
     for (Py_ssize_t i=0; i<n-1; ++i) {
         if (links[i] >= 0) {
-            links2(k, 0) = mst_i(links[i], 0) + 1;
-            links2(k, 1) = mst_i(links[i], 1) + 1;
+            links2(k, 0) = mst_i(links[i], 0) + 1;  // 1-based indexing
+            links2(k, 1) = mst_i(links[i], 1) + 1;  // 1-based indexing
             height(k) = mst_d[ links[i] ];
             ++k;
         }
