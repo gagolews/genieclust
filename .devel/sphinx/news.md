@@ -40,6 +40,10 @@
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
 
+*   [Python] [NEW FEATURE]  `plots.plot_scatter` has new arguments:
+    `markers` and `colours`.  The module globals `mrk` and `col` were
+    renamed accordingly.
+
 
 ## 1.2.0 (2025-07-24)
 

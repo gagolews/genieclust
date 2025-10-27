@@ -29,7 +29,7 @@ at the [**hdbscan**](https://hdbscan.readthedocs.io)
 {cite}`hdbscanpkg` package's project site:
 
 ```{python noise-load}
-dataset = "hdbscan"
+dataset = "chameleon_t4_8k"
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
 labels_true = np.loadtxt("%s.labels0.gz" % dataset, dtype=np.intp) - 1
 n_clusters = len(np.unique(labels_true[labels_true>=0]))
@@ -42,7 +42,7 @@ The light grey markers corresponding to the label `-1` designate points
 that can be considered outliers.
 
 ```{python noise-scatter,results="hide",fig.cap="Reference labels"}
-genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5)
+genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5, markers="o")
 plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
 plt.axis("equal")
 plt.show()
@@ -82,12 +82,12 @@ Here are the effects of playing with the $M$ parameter
 (we keep the default `gini_threshold`):
 
 ```{python noise-Genie1,results="hide",fig.cap="Labels predicted by Genie with outlier detection",fig.height=5.9375}
-Ms = [10, 25, 50, 100]
+Ms = [5, 50]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
-    plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
+    plt.subplot(1, 2, i+1)
+    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(gini_threshold=%g, M=%d)"%(g.gini_threshold, g.M))
     plt.axis("equal")
 plt.show()
@@ -123,12 +123,12 @@ granularity.  As *Genie* is a hierarchical algorithm, the partitions are properl
 
 
 ```{python noise-Genie3,results="hide",fig.cap="Labels predicted by Genie when outliers were removed from the dataset – different number of clusters requested",fig.height=5.9375}
-ncs = [4, 5, 6, 7]
+ncs = [3, 6, 8, 10]
 for i in range(len(ncs)):
-    g = genieclust.Genie(n_clusters=ncs[i], M=100)
+    g = genieclust.Genie(n_clusters=ncs[i], M=50)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
+    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(n_clusters=%d)"%(g.n_clusters))
     plt.axis("equal")
 plt.show()
@@ -149,7 +149,7 @@ import hdbscan
 ```{python noise-HDBSCAN1,results="hide",fig.cap="Labels predicted by HDBSCAN\\*."}
 h = hdbscan.HDBSCAN()
 labels_hdbscan = h.fit_predict(X)
-genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5)
+genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
 plt.title("(min_cluster_size=%d, min_samples=%d)" % (
     h.min_cluster_size, h.min_samples or h.min_cluster_size))
 plt.axis("equal")
@@ -164,14 +164,14 @@ to the reference one:
 
 
 ```{python noise-HDBSCAN2,results="hide",fig.cap="Labels predicted by HDBSCAN\\* – different settings",fig.height=5.9375}
-mcss = [5, 10, 25]
-mss = [5, 10]
+mcss = [5, 10, 50]
+mss = [5, 50]
 for i in range(len(mcss)):
     for j in range(len(mss)):
         h = hdbscan.HDBSCAN(min_cluster_size=mcss[i], min_samples=mss[j])
         labels_hdbscan = h.fit_predict(X)
         plt.subplot(3, 2, i*len(mss)+j+1)
-        genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5)
+        genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
         plt.title("(min_cluster_size=%d, min_samples=%d)" % (
             h.min_cluster_size, h.min_samples or h.min_cluster_size))
         plt.axis("equal")

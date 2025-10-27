@@ -29,13 +29,13 @@ import numpy as np
 # Using the (new in v4.0.0) default R palette - more accessible
 
 # module globals:
-col = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5C710"] + \
+colors = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5C710"] + \
     [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab10"].colors]  + \
     [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20"].colors]  + \
     [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20b"].colors] + \
     [matplotlib.colors.to_hex(c) for c in plt.colormaps["tab20c"].colors]
 
-mrk = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
+markers = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
 
 
@@ -63,6 +63,8 @@ def _get_xy(X, y):
 
 def plot_scatter(X, y=None, labels=None,
         axis=None, title=None, xlabel=None, ylabel=None, xlim=None, ylim=None,
+        colors=colors,
+        markers=markers,
         **kwargs
     ):
     """
@@ -87,6 +89,12 @@ def plot_scatter(X, y=None, labels=None,
     axis, title, xlabel, ylabel, xlim, ylim : None or object
         If not `None`, values passed to `matplotlib.pyplot.axis`,
         `matplotlib.pyplot.title`, etc.
+
+    colors : list
+        list of colours corresponding to different labels
+
+    markers : list
+        list of point markers corresponding to different labels
 
     **kwargs : Collection properties
         Further arguments to `matplotlib.pyplot.scatter`.
@@ -154,12 +162,15 @@ def plot_scatter(X, y=None, labels=None,
     if labels.ndim != 1 or X.shape[0] != labels.shape[0]:
         raise ValueError("Incorrect shape of `labels`.")
 
+    colors = list(colors)
+    markers = list(markers)
+
     for i in np.unique(labels):  # 0 = black, 1 = red, etc.
         plt.scatter(
             X[labels == i, 0],
             X[labels == i, 1],
-            c=col[(i) % len(col)],
-            marker=mrk[(i) % len(mrk)],
+            c=colors[(i) % len(colors)],
+            marker=markers[(i) % len(markers)],
             **kwargs
         )
 
