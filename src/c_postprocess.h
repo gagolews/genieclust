@@ -67,7 +67,7 @@ void Cmerge_midliers(
         if (u>=n || v>=n)
             throw std::domain_error("all elements must be <= n");
         if (c[u] < 0 && c[v] < 0)
-            throw std::domain_error("!(c[u] < 0 && c[v] < 0)");
+            continue; // throw std::domain_error("!(c[u] < 0 && c[v] < 0)");
 
         if (c[u] >= 0 && c[v] >= 0)
             continue;
