@@ -74,7 +74,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         thanks to the `quitefastmst <https://quitefastmst.gagolewski.com/>`__
         package.
 
-
     postprocess : {``"midliers"``, ``"none"``, ``"all"``}
         Controls the treatment of outliers after the clusters once identified.
 
@@ -584,6 +583,9 @@ class Genie(MSTClusterMixin):
 
         If ``True``, then the `labels_` attribute will be a matrix; see below.
 
+    preprocess : TODO
+        TODO
+
     postprocess : {``"midliers"``, ``"none"``, ``"all"``}
         Controls the treatment of outliers once the clusters are
         identified; see :any:`genieclust.MSTClusterMixin` for more details.
@@ -737,6 +739,7 @@ class Genie(MSTClusterMixin):
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
+            preprocess="auto",
             postprocess="midliers",
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
@@ -753,9 +756,9 @@ class Genie(MSTClusterMixin):
 
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
-        self.gini_threshold = gini_threshold
+        self.gini_threshold      = gini_threshold
+        self.preprocess          = preprocess
         self._check_params()
-
 
 
 
@@ -765,6 +768,11 @@ class Genie(MSTClusterMixin):
         cur_state["gini_threshold"] = float(self.gini_threshold)
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("`gini_threshold` not in [0,1].")
+
+        _preprocess_options = ("auto", "none", "leaves")  # TODO
+        cur_state["preprocess"] = str(self.preprocess).lower()
+        if cur_state["preprocess"] not in _preprocess_options:
+            raise ValueError("`preprocess` should be one of %s" % repr(_preprocess_options))
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
@@ -815,6 +823,12 @@ class Genie(MSTClusterMixin):
         if cur_state["n_clusters"] >= self.n_samples_:
             raise ValueError("n_clusters must be < n_samples_")
 
+        if cur_state["preprocess"] == "auto":
+            if cur_state["M"] > 0:
+                cur_state["preprocess"] = "leaves"
+            else:
+                cur_state["preprocess"] = "none"
+
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
@@ -824,7 +838,7 @@ class Genie(MSTClusterMixin):
             self._tree_e,
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            skip_leaves=(cur_state["M"] > 0),
+            skip_leaves=(cur_state["preprocess"] == "leaves"),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"]
         )
@@ -906,6 +920,9 @@ class GIc(MSTClusterMixin):
 
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, *metric* of ``"precomputed"`` needs this to be set manually.
+
+    preprocess : TODO
+        TODO
 
     postprocess : {``"midliers"``, ``"none"``, ``"all"``}
         Controls the treatment of outliers after the clusters are
@@ -1002,6 +1019,7 @@ class GIc(MSTClusterMixin):
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
+            preprocess="auto",
             postprocess="midliers",
             add_clusters=0,
             n_features=None,
@@ -1022,6 +1040,7 @@ class GIc(MSTClusterMixin):
         self.gini_thresholds     = gini_thresholds
         self.n_features          = n_features
         self.add_clusters        = add_clusters
+        self.preprocess          = preprocess
 
         self._check_params()
 
@@ -1048,6 +1067,11 @@ class GIc(MSTClusterMixin):
                           "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
+
+        _preprocess_options = ("auto", "none", "leaves")  # TODO
+        cur_state["preprocess"] = str(self.preprocess).lower()
+        if cur_state["preprocess"] not in _preprocess_options:
+            raise ValueError("`preprocess` should be one of %s" % repr(_preprocess_options))
 
         return cur_state
 
@@ -1093,6 +1117,12 @@ class GIc(MSTClusterMixin):
             # this shouldn't happen in normal use
             raise ValueError("Please set the `n_features` attribute manually.")
 
+        if cur_state["preprocess"] == "auto":
+            if cur_state["M"] > 0:
+                cur_state["preprocess"] = "leaves"
+            else:
+                cur_state["preprocess"] = "none"
+
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with GIc.", file=sys.stderr)
 
@@ -1104,7 +1134,7 @@ class GIc(MSTClusterMixin):
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
-            skip_leaves=(cur_state["M"] > 0),
+            skip_leaves=(cur_state["preprocess"] == "leaves"),
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"])
 

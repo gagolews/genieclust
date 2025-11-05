@@ -21,7 +21,7 @@ genieclust Python Package
 # ############################################################################ #
 
 # version string, e.g., "1.0.0.9001" or "1.1.1"
-__version__ = "1.2.0.9002"
+__version__ = "1.2.0.9003"
 
 
 from . import plots

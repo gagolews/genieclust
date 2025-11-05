@@ -18,7 +18,7 @@
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
     backward-incompatible changes have been addressed (see below).
 
-*   [NEW FEATURE]  Outlier detection based on mutual reachability distances
+*   ???? TODO: [NEW FEATURE]  Outlier detection based on mutual reachability distances
     is no longer marked as experimental.  Note that we now rely on mutual
     reachability distances adjusted for the presence of ties such that
     neighbours with smaller core distances are preferred;
@@ -31,10 +31,12 @@
     now the core distance is the distance to the *M*-th nearest neighbour,
     not the *(M-1)*-th one (not including self).
 
-*   [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
+*   ???? TODO `preprocess`
+
+*   ???? TODO [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
     was renamed `skip_leaves`.
 
-*   [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
+*   ???? TODO [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
     `"midliers"`, `"none"`, and `"all"`.
 
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
