@@ -147,7 +147,7 @@ setuptools.setup(
     license="GNU Affero General Public License v3",
     install_requires=[
         "Cython",  # not: cython
-        "numpy",
+        "numpy>=2.0.0",
         "matplotlib",
         "scikit-learn",
         "quitefastmst>=0.9.1",

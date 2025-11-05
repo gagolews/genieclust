@@ -74,20 +74,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         thanks to the `quitefastmst <https://quitefastmst.gagolewski.com/>`__
         package.
 
-    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
-        Controls the treatment of outliers after the clusters once identified.
-
-        In effect only if *M > 0*. Each leaf in the spanning tree
-        is omitted from the clustering process.  We call it a *midlier*
-        if it is amongst its adjacent vertex's `M` nearest neighbours.
-        By default, only midliers are merged with their nearest
-        clusters, and the remaining leaves are considered outliers.
-
-        To force a classical `n_clusters`-partition of a data set (one that
-        marks no points as outliers), choose ``"all"``.
-
-        Furthermore, ``"none"`` leaves all leaves marked as outliers.
-
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
         if ``metric`` is ``"l2"``
@@ -123,11 +109,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     that have them amongst their *M* nearest neighbours (if possible without
     violating the minimality condition); see [3]_ for discussion.
 
-    For *M > 0*, the underlying clustering algorithm by default
-    leaves out all MST leaves from the clustering process.  Afterwards,
-    some of them (midliers) are merged with the nearest clusters at the
-    postprocessing stage, and other ones are marked as outliers.
-
 
     :Environment variables:
         OMP_NUM_THREADS
@@ -143,8 +124,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
         Normally an integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
-        If *M > 0*, the MST leaves are treated as outliers and are
-        labelled ``-1`` (unless taken care of at the postprocessing stage).
+        Outliers may be labelled ``-1`` (depends on the underlying algorithm).
 
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
@@ -188,7 +168,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
             n_clusters=2,
             M=0,
             metric="l2",
-            postprocess="midliers",
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
@@ -198,7 +177,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         self.n_features          = None  # can be overwritten by GIc
         self.M                   = M
         self.metric              = metric
-        self.postprocess         = postprocess
         self.quitefastmst_params = quitefastmst_params
         self.verbose             = verbose
 
@@ -223,65 +201,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         self._last_state         = None
 
 
-
-    def _postprocess_outputs(self, res, cur_state):
-        """
-        (internal) Updates `self.labels_`
-        """
-        if cur_state["verbose"]:
-            print("[genieclust] Postprocessing outputs.", file=sys.stderr)
-
-        self.labels_     = res["labels"]
-        self._links_     = res["links"]
-        self._iters_     = res["iters"]
-
-        if res["n_clusters"] != cur_state["n_clusters"]:
-            warnings.warn("The number of clusters detected (%d) is "
-                          "different from the requested one (%d)." % (
-                            res["n_clusters"],
-                            cur_state["n_clusters"]))
-        self.n_clusters_ = res["n_clusters"]
-
-        if self.labels_ is not None:
-            reshaped = False
-            if self.labels_.ndim == 1:
-                reshaped = True
-                # promote it to a matrix with 1 row
-                self.labels_.shape = (1, self.labels_.shape[0])
-                start_partition = 0
-            else:
-                # duplicate the 1st row (create the "0"-partition that will
-                # not be postprocessed):
-                self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-                start_partition = 1  # do not postprocess the "0"-partition
-
-            #self._is_noise    = (self.labels_[0, :] < 0)
-
-            # postprocess labels, if requested to do so
-            if cur_state["M"] < 1:
-                pass
-            elif cur_state["postprocess"] == "none":
-                pass
-            elif cur_state["postprocess"] == "midliers":
-                assert self._nn_e is not None
-                assert self._nn_e.shape[1] >= cur_state["M"]
-                for i in range(start_partition, self.labels_.shape[0]):
-                    self.labels_[i, :] = internal.merge_midliers(
-                        self._tree_e, self.labels_[i, :],
-                        self._nn_e, cur_state["M"]
-                    )
-            elif cur_state["postprocess"] == "all":
-                for i in range(start_partition, self.labels_.shape[0]):
-                    self.labels_[i, :] = internal.merge_all(
-                        self._tree_e, self.labels_[i, :]
-                    )
-
-        if reshaped:
-            self.labels_.shape = (self.labels_.shape[1], )
-
-        return cur_state
-
-
     def _check_params(self, cur_state=None):
         if cur_state is None:
             cur_state = dict()
@@ -298,10 +217,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         if cur_state["n_clusters"] < 0:
             raise ValueError("n_clusters must be >= 0")
 
-        _postprocess_options = ("midliers", "none", "all")
-        cur_state["postprocess"] = str(self.postprocess).lower()
-        if cur_state["postprocess"] not in _postprocess_options:
-            raise ValueError("`postprocess` should be one of %s" % repr(_postprocess_options))
+        # cur_state["preprocess"] = str(self.preprocess).lower()  # see _postprocess_outputs
 
         cur_state["metric"] = str(self.metric).lower()
         if cur_state["metric"] in ["euclidean", "lp:p=2"]:
@@ -511,7 +427,6 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         ensure the solution is unique (note that this generally applies
         to other distance-based clustering algorithms as well).
 
-
         For the clustering result, refer to the `labels_` and `n_clusters_`
         attributes.
         """
@@ -521,6 +436,167 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
 
 
+###############################################################################
+###############################################################################
+###############################################################################
+
+
+class MSTClusterMixinWithProcessors(MSTClusterMixin):
+    """
+    TODO
+
+    TODO For *M > 0*, the underlying clustering algorithm by default
+    leaves out all MST leaves from the clustering process.  Afterwards,
+    some of them (midliers) are merged with the nearest clusters at the
+    postprocessing stage, and other ones are marked as outliers.
+
+    Parameters
+    ----------
+
+    n_clusters
+        See :any:`genieclust.MSTClusterMixin`.
+
+    M
+        See :any:`genieclust.MSTClusterMixin`.
+
+    metric
+        See :any:`genieclust.MSTClusterMixin`.
+
+    quitefastmst_params
+        See :any:`genieclust.MSTClusterMixin`.
+
+    verbose
+        See :any:`genieclust.MSTClusterMixin`.
+
+    preprocess : TODO
+        TODO
+
+    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
+        Controls the treatment of outliers after the clusters once identified.
+
+        In effect only if *M > 0*. Each leaf in the spanning tree
+        is omitted from the clustering process.  We call it a *midlier*
+        if it is amongst its adjacent vertex's `M` nearest neighbours.
+        By default, only midliers are merged with their nearest
+        clusters, and the remaining leaves are considered outliers.
+
+        To force a classical `n_clusters`-partition of a data set (one that
+        marks no points as outliers), choose ``"all"``.
+
+        Furthermore, ``"none"`` leaves all leaves marked as outliers.
+
+
+    Attributes
+    ----------
+
+    See :any:`genieclust.MSTClusterMixin`.
+    """
+
+    def __init__(
+            self,
+            *,
+            n_clusters=2,
+            M=0,
+            metric="l2",
+            preprocess="none",
+            postprocess="none",
+            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
+            verbose=False
+        ):
+        # # # # # # # # # # # #
+        super().__init__(
+            n_clusters=n_clusters,
+            M=M,
+            metric=metric,
+            quitefastmst_params=quitefastmst_params,
+            verbose=verbose
+        )
+
+        self.preprocess          = preprocess
+        self.postprocess         = postprocess
+
+
+    def _check_params(self, cur_state=None):
+        cur_state = super()._check_params(cur_state)
+
+        _preprocess_options = ("auto", "none", "leaves")  # TODO
+        cur_state["preprocess"] = str(self.preprocess).lower()
+        if cur_state["preprocess"] not in _preprocess_options:
+            raise ValueError("`preprocess` should be one of %s" % repr(_preprocess_options))
+
+        _postprocess_options = ("midliers", "none", "all")
+        cur_state["postprocess"] = str(self.postprocess).lower()
+        if cur_state["postprocess"] not in _postprocess_options:
+            raise ValueError("`postprocess` should be one of %s" % repr(_postprocess_options))
+
+        if cur_state["preprocess"] == "auto":
+            if cur_state["M"] > 0:
+                cur_state["preprocess"] = "leaves"
+            else:
+                cur_state["preprocess"] = "none"
+
+        return cur_state
+
+
+    def _postprocess_outputs(self, res, cur_state):
+        """
+        (internal) Updates `self.labels_`
+        """
+        if cur_state["verbose"]:
+            print("[genieclust] Postprocessing outputs.", file=sys.stderr)
+
+        self.labels_     = res["labels"]
+        self._links_     = res["links"]
+        self._iters_     = res["iters"]
+
+        if res["n_clusters"] != cur_state["n_clusters"]:
+            warnings.warn("The number of clusters detected (%d) is "
+                          "different from the requested one (%d)." % (
+                            res["n_clusters"],
+                            cur_state["n_clusters"]))
+        self.n_clusters_ = res["n_clusters"]
+
+        if self.labels_ is not None:
+            reshaped = False
+            if self.labels_.ndim == 1:
+                reshaped = True
+                # promote it to a matrix with 1 row
+                self.labels_.shape = (1, self.labels_.shape[0])
+                start_partition = 0
+            else:
+                # duplicate the 1st row (create the "0"-partition that will
+                # not be postprocessed):
+                self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
+                start_partition = 1  # do not postprocess the "0"-partition
+
+            #self._is_noise    = (self.labels_[0, :] < 0)
+
+            # postprocess labels, if requested to do so
+
+            if cur_state["preprocess"] != "leaves":
+                # do nothing
+                pass
+            elif cur_state["postprocess"] == "midliers":
+                assert self._nn_e is not None
+                assert self._nn_e.shape[1] >= cur_state["M"]
+                for i in range(start_partition, self.labels_.shape[0]):
+                    self.labels_[i, :] = internal.merge_midliers(
+                        self._tree_e, self.labels_[i, :],
+                        self._nn_e, cur_state["M"]
+                    )
+            elif cur_state["postprocess"] == "all":
+                for i in range(start_partition, self.labels_.shape[0]):
+                    self.labels_[i, :] = internal.merge_all(
+                        self._tree_e, self.labels_[i, :]
+                    )
+            # elif cur_state["postprocess"] == "none":
+            #     pass
+
+        if reshaped:
+            self.labels_.shape = (self.labels_.shape[1], )
+
+        return cur_state
+
 
 ###############################################################################
 ###############################################################################
@@ -528,7 +604,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
 
 
-class Genie(MSTClusterMixin):
+class Genie(MSTClusterMixinWithProcessors):
     """
     Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
@@ -583,12 +659,11 @@ class Genie(MSTClusterMixin):
 
         If ``True``, then the `labels_` attribute will be a matrix; see below.
 
-    preprocess : TODO
-        TODO
+    preprocess : str
+        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
 
-    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
-        Controls the treatment of outliers once the clusters are
-        identified; see :any:`genieclust.MSTClusterMixin` for more details.
+    postprocess : str
+        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -693,9 +768,9 @@ class Genie(MSTClusterMixin):
     detect a predefined number of clusters (see [4]_) without depending
     on DBSCAN\\*'s ``eps`` HDBSCAN\\*'s ``min_cluster_size`` parameters.
 
-    If *M > 0*, all MST leaves are left out from the clustering process.
-    They may be merged with the nearest clusters at the postprocessing stage,
-    or left marked as outliers; see [4]_ for discussion.
+    If *M > 0*, all MST leaves are by default left out from the clustering
+    process. They may be merged with the nearest clusters at the postprocessing
+    stage, or left marked as outliers; see [4]_ for discussion.
 
 
     :Environment variables:
@@ -749,6 +824,7 @@ class Genie(MSTClusterMixin):
             n_clusters=n_clusters,
             M=M,
             metric=metric,
+            preprocess=preprocess,
             postprocess=postprocess,
             quitefastmst_params=quitefastmst_params,
             verbose=verbose
@@ -757,7 +833,6 @@ class Genie(MSTClusterMixin):
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.gini_threshold      = gini_threshold
-        self.preprocess          = preprocess
         self._check_params()
 
 
@@ -768,11 +843,6 @@ class Genie(MSTClusterMixin):
         cur_state["gini_threshold"] = float(self.gini_threshold)
         if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
             raise ValueError("`gini_threshold` not in [0,1].")
-
-        _preprocess_options = ("auto", "none", "leaves")  # TODO
-        cur_state["preprocess"] = str(self.preprocess).lower()
-        if cur_state["preprocess"] not in _preprocess_options:
-            raise ValueError("`preprocess` should be one of %s" % repr(_preprocess_options))
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
         if cur_state["compute_full_tree"] and \
@@ -823,12 +893,6 @@ class Genie(MSTClusterMixin):
         if cur_state["n_clusters"] >= self.n_samples_:
             raise ValueError("n_clusters must be < n_samples_")
 
-        if cur_state["preprocess"] == "auto":
-            if cur_state["M"] > 0:
-                cur_state["preprocess"] = "leaves"
-            else:
-                cur_state["preprocess"] = "none"
-
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
@@ -869,7 +933,7 @@ class Genie(MSTClusterMixin):
 
 
 
-class GIc(MSTClusterMixin):
+class GIc(MSTClusterMixinWithProcessors):
     """
     GIc (Genie+Information Criterion) clustering algorithm
 
@@ -921,12 +985,11 @@ class GIc(MSTClusterMixin):
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, *metric* of ``"precomputed"`` needs this to be set manually.
 
-    preprocess : TODO
-        TODO
+    preprocess : str
+        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
 
-    postprocess : {``"midliers"``, ``"none"``, ``"all"``}
-        Controls the treatment of outliers after the clusters are
-        identified; see :any:`genieclust.MSTClusterMixin` for more details.
+    postprocess : str
+        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -1030,6 +1093,7 @@ class GIc(MSTClusterMixin):
             n_clusters=n_clusters,
             M=M,
             metric=metric,
+            preprocess=preprocess,
             postprocess=postprocess,
             quitefastmst_params=quitefastmst_params,
             verbose=verbose
@@ -1040,7 +1104,6 @@ class GIc(MSTClusterMixin):
         self.gini_thresholds     = gini_thresholds
         self.n_features          = n_features
         self.add_clusters        = add_clusters
-        self.preprocess          = preprocess
 
         self._check_params()
 
@@ -1067,11 +1130,6 @@ class GIc(MSTClusterMixin):
                           "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
-
-        _preprocess_options = ("auto", "none", "leaves")  # TODO
-        cur_state["preprocess"] = str(self.preprocess).lower()
-        if cur_state["preprocess"] not in _preprocess_options:
-            raise ValueError("`preprocess` should be one of %s" % repr(_preprocess_options))
 
         return cur_state
 
@@ -1116,12 +1174,6 @@ class GIc(MSTClusterMixin):
         if cur_state["n_features"] < 1:  # _get_mst sets this
             # this shouldn't happen in normal use
             raise ValueError("Please set the `n_features` attribute manually.")
-
-        if cur_state["preprocess"] == "auto":
-            if cur_state["M"] > 0:
-                cur_state["preprocess"] = "leaves"
-            else:
-                cur_state["preprocess"] = "none"
 
         if cur_state["verbose"]:
             print("[genieclust] Determining clusters with GIc.", file=sys.stderr)
