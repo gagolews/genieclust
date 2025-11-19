@@ -870,16 +870,14 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
 
 
 ################################################################################
-# Noisy k-partition and other post-processing routines
+# Auxiliary graph processing routines
 ################################################################################
 
 
-cdef extern from "../src/c_preprocess.h":
+cdef extern from "../src/c_graph_process.h":
     cdef void Cget_graph_node_degrees(Py_ssize_t* tree_ind, Py_ssize_t m,
             Py_ssize_t n, Py_ssize_t* deg)
 
-
-cdef extern from "../src/c_postprocess.h":
     void Cmerge_midliers(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         const Py_ssize_t* nn_ind, Py_ssize_t num_neighbours, Py_ssize_t M,
         Py_ssize_t* c, Py_ssize_t n)
@@ -887,7 +885,49 @@ cdef extern from "../src/c_postprocess.h":
     void Cmerge_all(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         Py_ssize_t* c, Py_ssize_t n)
 
+    void Ctranslate_skipped_indexes[T](Py_ssize_t* ind, Py_ssize_t m,
+        T* skip, Py_ssize_t n)
 
+
+cpdef np.ndarray[Py_ssize_t] translate_skipped_indexes(
+        Py_ssize_t[::1] ind,
+        bool[::1] skip
+    ):
+    """
+    genieclust.internal.translate_skipped_indexes(ind, skip)
+
+    If skip=[False, True, False, False, True, False, False],
+    then indexes are mapped in such a way that:
+    0 -> 0,
+    1 -> 2,
+    2 -> 3,
+    3 -> 5,
+    4 -> 6.
+
+
+    Parameters
+    ----------
+
+    ind : c_contiguous array of indexes
+        Indexes to translate
+    skip : Boolean array
+        Indicates whether an element was skipped or not.
+
+
+    Returns
+    -------
+
+    out : ndarray
+        Array of length ``len(ind)``: translated indexes
+    """
+    cdef Py_ssize_t n = skip.shape[0]
+    cdef Py_ssize_t m = ind.shape[0]
+
+    cdef np.ndarray[Py_ssize_t] ind2 = np.array(ind, dtype=np.intp)
+
+    Ctranslate_skipped_indexes(&ind2[0], m, &skip[0], n)
+
+    return ind2
 
 
 cpdef np.ndarray[Py_ssize_t] merge_midliers(

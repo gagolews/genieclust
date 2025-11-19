@@ -63,7 +63,7 @@ ctypedef fused floatT:
 
 
 cdef extern from "../src/c_argfuns.h":
-    void Cargsort[T](Py_ssize_t* ret, T* x, Py_ssize_t n, bint stable)
+    # void Cargsort[T](Py_ssize_t* ret, T* x, Py_ssize_t n, bint stable)
     Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)
 
 

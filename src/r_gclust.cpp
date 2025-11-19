@@ -17,7 +17,7 @@
 #include "c_common.h"
 #include "c_matrix.h"
 #include "c_genie.h"
-#include "c_postprocess.h"
+#include "c_graph_process.h"
 #include <cmath>
 
 using namespace Rcpp;

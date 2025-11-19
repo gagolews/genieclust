@@ -1,4 +1,4 @@
-/*  Noisy k-partition post-processing
+/*  Graph pre/post-processing and other routines
  *
  *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
  *
@@ -14,11 +14,98 @@
  */
 
 
-#ifndef __c_postprocess_h
-#define __c_postprocess_h
+#ifndef __c_graph_process_h
+#define __c_graph_process_h
 
-#include "c_common.h"
+#include <stdexcept>
 #include <algorithm>
+#include "c_common.h"
+#include "c_argfuns.h"
+
+
+/*! Translate indexes based on a skip array.
+ *
+ * If skip=[False, True, False, False, True, False, False],
+ * then indexes are mapped in such a way that:
+ * 0 -> 0,
+ * 1 -> 2,
+ * 2 -> 3,
+ * 3 -> 5,
+ * 4 -> 6
+ *
+ * @param ind [in/out] Array of indexes to translate
+ * @param m size of ind
+ * @param skip Boolean array
+ * @param n size of skip
+ */
+template<class T> void Ctranslate_skipped_indexes(
+    Py_ssize_t* ind, Py_ssize_t m,
+    T* skip, Py_ssize_t n
+) {
+    std::vector<Py_ssize_t> o(m);
+    Cargsort(o.data(), ind, m, false);
+
+    Py_ssize_t j = 0;
+    Py_ssize_t k = 0;
+    for (Py_ssize_t i=0; i<n; ++i) {
+        if (skip[i]) continue;
+
+        if (ind[o[k]] == j) {
+            ind[o[k]] = i;
+            k++;
+
+            if (k == m) return;
+            GENIECLUST_ASSERT(o[k] != j);
+        }
+
+        j++;
+    }
+
+    GENIECLUST_ASSERT(false);
+}
+
+
+/*! Compute the degree of each vertex in an undirected graph
+ *  over a vertex set {0,...,n-1}.
+ *
+ * @param ind c_contiguous matrix of size m*2,
+ *     where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n.
+ *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored.
+ * @param m number of edges (rows in ind)
+ * @param n number of vertices
+ * @param deg [out] array of size n, where
+ *     deg[i] will give the degree of the i-th vertex.
+ */
+void Cget_graph_node_degrees(
+    const Py_ssize_t* ind,
+    const Py_ssize_t m,
+    const Py_ssize_t n,
+    Py_ssize_t* deg /*out*/
+) {
+    for (Py_ssize_t i=0; i<n; ++i)
+        deg[i] = 0;
+
+    for (Py_ssize_t i=0; i<m; ++i) {
+        Py_ssize_t u = ind[2*i+0];
+        Py_ssize_t v = ind[2*i+1];
+
+        if (u < 0) {
+            GENIECLUST_ASSERT(v < 0);
+            continue; // represents a no-edge -> ignore
+        }
+        GENIECLUST_ASSERT(v >= 0);
+
+        if (u >= n || v >= n)
+            throw std::domain_error("All elements must be < n");
+        if (u == v)
+            throw std::domain_error("Self-loops are not allowed");
+
+        deg[u]++;
+        deg[v]++;
+    }
+}
+
+
 
 
 
