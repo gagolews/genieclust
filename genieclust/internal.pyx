@@ -1122,7 +1122,7 @@ cdef extern from "../src/c_genie.h":
 
     cdef cppclass CGenie[T]:
         CGenie() except +
-        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
+        CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool* skip_nodes) except +
         void compute(Py_ssize_t n_clusters, double gini_threshold) except +
         Py_ssize_t get_max_n_clusters()
         Py_ssize_t get_links(Py_ssize_t* res)
@@ -1134,11 +1134,11 @@ cdef extern from "../src/c_genie.h":
 cpdef dict genie_from_mst(
         floatT[::1] mst_d,
         Py_ssize_t[:,::1] mst_i,
+        bool[::1] skip_nodes,
         Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
-        bint skip_leaves=False,
         bint compute_full_tree=True,
-        bint compute_all_cuts=False
+        bint compute_all_cuts=False,
     ):
     """The Genie Clustering Algorithm (with extensions)
 
@@ -1152,16 +1152,13 @@ cpdef dict genie_from_mst(
     more details.
 
     This is a new implementation of the original algorithm,
-    which runs in O(n sqrt(n))-time. Additionally, MST leaves can be
-    omitted from the clustering process and marked as outliers
-    (if `skip_leaves==True`). This is useful when the Genie algorithm
-    is applied on MSTs with respect to mutual reachability distances.
+    which runs in O(n sqrt(n))-time. Additionally, some nodes can be
+    omitted from the clustering process (e.g., outliers).
 
-    The input tree can actually be any spanning tree.
+    Any spanning tree can actually be fed as input.
     Moreover, it does not even have to be a connected graph.
 
-    gini_threshold==1.0 and skip_leaves==False, gives the single linkage
-    algorithm.
+    gini_threshold==1.0 gives the single linkage algorithm.
 
 
     Parameters
@@ -1176,14 +1173,13 @@ cpdef dict genie_from_mst(
         is determined.
     gini_threshold : float
         The threshold for the Genie correction
-    skip_leaves : bool
-        Mark leaves as outliers.
-        Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the entire merge sequence or stop early?
     compute_all_cuts : bool
         Compute the n_clusters and all the more coarse-grained ones?
         Implies `compute_full_tree`.
+    skip_nodes : boolean array of length n or 0
+        indicates which nodes should be omitted from the clustering process
 
 
     Returns
@@ -1196,7 +1192,7 @@ cpdef dict genie_from_mst(
             If compute_all_cuts==False, this gives the predicted labels,
             representing an n_clusters-partition of X.
             labels[i] gives the cluster ID of the i-th input point.
-            If skip_leaves==True, then label -1 denotes an outlier.
+            Label -1 denotes a skipped point.
 
             If compute_all_cuts==True, then
             labels[i,:] gives the (i+1)-partition, i=0,...,n_clusters-1.
@@ -1231,8 +1227,16 @@ cpdef dict genie_from_mst(
 
     # _openmp_set_num_threads()
 
+    cdef bool* skip_nodes_ptr = NULL
+    if skip_nodes.shape[0] == 0:
+        pass
+    elif skip_nodes.shape[0] == n:
+        skip_nodes_ptr = &skip_nodes[0]
+    else:
+        raise ValueError("skip_nodes should be either of size 0 or n")
+
     cdef CGenie[floatT] g
-    g = CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
+    g = CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_nodes_ptr)
 
     if compute_all_cuts:
         compute_full_tree = True
@@ -1254,10 +1258,12 @@ cpdef dict genie_from_mst(
             g.get_labels(n_clusters_, &tmp_labels_1[0])
             labels_ = tmp_labels_1
 
-    return dict(labels=labels_,
-                n_clusters=n_clusters_,
-                links=links_,
-                iters=iters_)
+    return dict(
+        labels=labels_,
+        n_clusters=n_clusters_,
+        links=links_,
+        iters=iters_
+    )
 
 
 
@@ -1271,7 +1277,7 @@ cdef extern from "../src/c_genie.h":
 
     cdef cppclass CGIc[T]:
         CGIc() except +
-        CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bint skip_leaves) except +
+        CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool* skip_nodes) except +
         void compute(Py_ssize_t n_clusters, Py_ssize_t add_clusters,
             double n_features, double* gini_thresholds, Py_ssize_t n_thresholds)  except +
         Py_ssize_t get_max_n_clusters()
@@ -1285,12 +1291,13 @@ cpdef dict gic_from_mst(
         floatT[::1] mst_d,
         Py_ssize_t[:,::1] mst_i,
         double n_features,
+        #bool[::1] skip_nodes  TODO
         Py_ssize_t n_clusters=1,
         Py_ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
-        bint skip_leaves=False,
         bint compute_full_tree=True,
-        bint compute_all_cuts=False):
+        bint compute_all_cuts=False
+    ):
     """GIc (Genie+Information Criterion) Information-Theoretic
     Hierarchical Clustering Algorithm
 
@@ -1331,7 +1338,7 @@ cpdef dict gic_from_mst(
     ----------
 
     mst_d, mst_i : ndarray
-        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        Minimal spanning tree defined by a pair (mst_i, mst_d);
         see genieclust.mst.
     n_features : double
         number of features in the data set
@@ -1352,9 +1359,6 @@ cpdef dict gic_from_mst(
         (singletons), which we call Agglomerative-IC (ICA).
         If gini_thresholds is of length 1 and add_clusters==0,
         then the procedure is equivalent to the classical Genie algorithm.
-    skip_leaves : bool
-        Mark leaves as outliers.
-        Prevents forming singleton-clusters.
     compute_full_tree : bool
         Compute the entire merge sequence or stop early?
         Implies compute_full_tree.
@@ -1368,9 +1372,7 @@ cpdef dict gic_from_mst(
     res : dict, with the following elements:
         labels : ndarray, shape (n,) or None
             Predicted labels, representing an n_clusters-partition of X.
-            labels[i] gives the cluster id of the i-th input point.
-            If skip_leaves==True, then label -1 denotes an outlier.
-            Is None if n_clusters==0.
+            labels[i] gives the cluster ID of the i-th input point.
 
         links : ndarray, shape (n-1,)
             links[i] gives the MST edge merged at the i-th iteration
@@ -1403,7 +1405,8 @@ cpdef dict gic_from_mst(
     # _openmp_set_num_threads()
 
     cdef CGIc[floatT] g
-    g = CGIc[floatT](&mst_d[0], &mst_i[0,0], n, skip_leaves)
+    g = CGIc[floatT](&mst_d[0], &mst_i[0,0], n, NULL)
+    # TODO: skip_nodes has not been tested yet!
 
     if compute_all_cuts:
         compute_full_tree = True
@@ -1428,7 +1431,9 @@ cpdef dict gic_from_mst(
             g.get_labels(n_clusters_, &tmp_labels_1[0])
             labels_ = tmp_labels_1
 
-    return dict(labels=labels_,
-                n_clusters=n_clusters_,
-                links=links_,
-                iters=iters_)
+    return dict(
+        labels=labels_,
+        n_clusters=n_clusters_,
+        links=links_,
+        iters=iters_
+    )

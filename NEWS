@@ -18,7 +18,24 @@
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
     backward-incompatible changes have been addressed (see below).
 
-*   ???? TODO: [NEW FEATURE]  Outlier detection based on mutual reachability distances
+*   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
+    distance has changed.  Unlike in Campello et al.'s 2013 paper,
+    now the core distance is the distance to the *M*-th nearest neighbour,
+    not the *(M-1)*-th one (not including self).
+
+*   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether a node
+    is a leaf of a minimum spanning tree w.r.t. some mutual reachability
+    distance turned out to be subpar in a more detailed empirical analysis,
+    especially for smaller smoothing factors.  Note that in the previous
+    versions of the package, this merely used to an experimental feature;
+    Hence, `detect_noise` in `genie.default` and `skip_leaves` elsewhere
+    is no longer available.
+
+*   [NEW FEATURE]  The Genie algorithm was updated so that now arbitrary
+    nodes can be skipped from the clustering process.  This allows for
+    ignoring points marked as outliers at the data preprocessing stage.
+
+*   ???? TODO: [NEW FEATURE]  A new outlier detection based on mutual reachability distances
     is no longer marked as experimental.  Note that we now rely on mutual
     reachability distances adjusted for the presence of ties such that
     neighbours with smaller core distances are preferred;
@@ -26,15 +43,7 @@
     are adjacent to vertices that have them amongst their *M* nearest
     neighbours; see (in preparation: Gagolewski, 2025, TODO) for discussion.
 
-*   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
-    distance has changed.  Unlike in Campello et al.'s 2013 paper,
-    now the core distance is the distance to the *M*-th nearest neighbour,
-    not the *(M-1)*-th one (not including self).
-
 *   ???? TODO `preprocess`
-
-*   ???? TODO [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
-    was renamed `skip_leaves`.
 
 *   ???? TODO [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
     `"midliers"`, `"none"`, and `"all"`.

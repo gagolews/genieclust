@@ -42,6 +42,8 @@ template<class T> void Ctranslate_skipped_indexes(
     Py_ssize_t* ind, Py_ssize_t m,
     T* skip, Py_ssize_t n
 ) {
+    if (m <= 0) return;
+
     std::vector<Py_ssize_t> o(m);
     Cargsort(o.data(), ind, m, false);
 

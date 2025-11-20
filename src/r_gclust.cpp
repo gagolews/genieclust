@@ -107,8 +107,8 @@ IntegerVector dot_genie(
     NumericMatrix mst,
     int k,
     double gini_threshold,
-    String postprocess,
-    bool skip_leaves,
+    String preprocess,  // TODO
+    String postprocess, // TODO
     bool verbose
 ) {
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");
@@ -130,7 +130,9 @@ IntegerVector dot_genie(
         mst_d[i] = mst(i, 2);
     }
 
-    CGenie<double> g(mst_d.data(), mst_i.data(), n, skip_leaves);
+    // TODO skip_nodes
+
+    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, skip_leaves*/);
     g.compute(k, gini_threshold);
 
 
@@ -142,35 +144,35 @@ IntegerVector dot_genie(
     if (k_detected != k)
         Rf_warning("The number of clusters detected is different from the requested one, possibly due to the presence of outliers.");
 
-    if (skip_leaves) {
-        if (postprocess == "midliers") {
-            if (Rf_isNull(mst.attr("nn.index")))
-                stop("`nn.index` attribute of the MST not set; unable to proceed with this postprocessing action");
-
-            NumericMatrix nn_r = mst.attr("nn.index");
-            GENIECLUST_ASSERT(nn_r.nrow() == n);
-            Py_ssize_t M = nn_r.ncol();
-            GENIECLUST_ASSERT(M < n);
-            CMatrix<Py_ssize_t> nn_i(n, M);
-            for (Py_ssize_t i=0; i<n; ++i) {
-                for (Py_ssize_t j=0; j<M; ++j) {
-                    GENIECLUST_ASSERT(nn_r(i,j) >= 1);
-                    GENIECLUST_ASSERT(nn_r(i,j) <= n);
-                    nn_i(i,j) = (Py_ssize_t)nn_r(i,j) - 1;  // 0-based indexes
-                }
-            }
-
-            Cmerge_midliers(mst_i.data(), n-1, nn_i.data(), M, M, xres.data(), n);
-        }
-        else if (postprocess == "all") {
-            Cmerge_all(mst_i.data(), n-1, xres.data(), n);
-        }
-        else if (postprocess == "none") {
-            ;  // pass
-        }
-        else
-            stop("invalid `postprocess`");
-    }
+    // if (skip_leaves) {
+    //     if (postprocess == "midliers") {
+    //         if (Rf_isNull(mst.attr("nn.index")))
+    //             stop("`nn.index` attribute of the MST not set; unable to proceed with this postprocessing action");
+    //
+    //         NumericMatrix nn_r = mst.attr("nn.index");
+    //         GENIECLUST_ASSERT(nn_r.nrow() == n);
+    //         Py_ssize_t M = nn_r.ncol();
+    //         GENIECLUST_ASSERT(M < n);
+    //         CMatrix<Py_ssize_t> nn_i(n, M);
+    //         for (Py_ssize_t i=0; i<n; ++i) {
+    //             for (Py_ssize_t j=0; j<M; ++j) {
+    //                 GENIECLUST_ASSERT(nn_r(i,j) >= 1);
+    //                 GENIECLUST_ASSERT(nn_r(i,j) <= n);
+    //                 nn_i(i,j) = (Py_ssize_t)nn_r(i,j) - 1;  // 0-based indexes
+    //             }
+    //         }
+    //
+    //         Cmerge_midliers(mst_i.data(), n-1, nn_i.data(), M, M, xres.data(), n);
+    //     }
+    //     else if (postprocess == "all") {
+    //         Cmerge_all(mst_i.data(), n-1, xres.data(), n);
+    //     }
+    //     else if (postprocess == "none") {
+    //         ;  // pass
+    //     }
+    //     else
+    //         stop("invalid `postprocess`");
+    // }
 
     IntegerVector res(n);
     for (Py_ssize_t i=0; i<n; ++i) {
@@ -206,7 +208,7 @@ List dot_gclust(
         mst_d[i] = mst(i, 2);
     }
 
-    CGenie<double> g(mst_d.data(), mst_i.data(), n/*, skip_leaves=M>1*/);
+    CGenie<double> g(mst_d.data(), mst_i.data(), n);
     g.compute(1, gini_threshold);
 
 
@@ -223,7 +225,7 @@ List dot_gclust(
         if (links[i] >= 0) {
             links2(k, 0) = mst_i(links[i], 0) + 1;  // 1-based indexing
             links2(k, 1) = mst_i(links[i], 1) + 1;  // 1-based indexing
-            height(k) = mst_d[ links[i] ];
+            height(k)    = mst_d[ links[i] ];
             ++k;
         }
     }

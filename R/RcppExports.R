@@ -379,8 +379,8 @@ wcnn_index <- function(X, y, M = 25L) {
     .Call(`_genieclust_wcnn_index`, X, y, M)
 }
 
-.genie <- function(mst, k, gini_threshold, postprocess, skip_leaves, verbose) {
-    .Call(`_genieclust_dot_genie`, mst, k, gini_threshold, postprocess, skip_leaves, verbose)
+.genie <- function(mst, k, gini_threshold, preprocess, postprocess, verbose) {
+    .Call(`_genieclust_dot_genie`, mst, k, gini_threshold, preprocess, postprocess, verbose)
 }
 
 .gclust <- function(mst, gini_threshold, verbose) {

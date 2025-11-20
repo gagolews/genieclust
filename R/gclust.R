@@ -76,14 +76,13 @@
 #' \code{gini_threshold}s or \code{k}s, it is best to compute
 #' the MST explicitly beforehand.
 #'
-#' Due to Genie's original definition,
-#' the resulting partition tree (dendrogram) might violate
-#' the ultrametricity property (merges might occur at levels that
+#' Due to Genie's original definition, the resulting partition tree (dendrogram)
+#' might violate the ultrametricity property (merges might occur at levels that
 #' are not increasing w.r.t. a between-cluster distance).
 #' \code{gclust()} automatically corrects departures from
 #' ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 #'
-#' If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
+#' TODO If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
 #' process; see \code{skip_leaves}.  Afterwards, some of them (midliers)
 #' are merged with the nearest clusters at the postprocessing stage,
 #' and other ones are marked as outliers; see [4]_ for discussion.
@@ -107,10 +106,8 @@
 #'      \eqn{M>0} acts as an outlier detector
 #' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used
-#' @param skip_leaves whether the minimum spanning tree's leaves
-#'     should be omitted from clustering and marked as outliers;
-#'     defaults to \code{TRUE} if \eqn{M>0} for compatibility with HDBSCAN*
-#' @param postprocess \code{"midliers"} (default), \code{"none"}
+#' @param preprocess TODO
+#' @param postprocess TODO \code{"midliers"} (default), \code{"none"}
 #'     or \code{"all"}; in effect only if \eqn{M > 0}.
 #'     By default, only midliers are merged with their adjacent neighbours
 #'     in the tree, i.e., leaves that are amongst their adjacent nodes'
@@ -127,9 +124,9 @@
 #'
 #' \code{genie()} returns a \code{k}-partition, i.e., a vector whose
 #' \eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
-#' between 1 and \code{k}.  If \code{skip_leaves} is \code{TRUE}
-#' and \code{postprocess} is not \code{"all"},
-#' missing values (\code{NA}) denote outliers.
+#' between 1 and \code{k}.
+#' TODO If \code{skip_leaves} is \code{TRUE} and \code{postprocess}
+#' is not \code{"all"}, missing values (\code{NA}) denote outliers.
 #'
 #'
 #' @seealso
@@ -262,20 +259,21 @@ genie.default <- function(
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=0L,
-    postprocess=c("midliers", "none", "all"),
-    skip_leaves=M>0L,
+    preprocess=c("none"),  # TODO
+    postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
     distance <- match.arg(distance)
+    preprocess  <- match.arg(preprocess)
     postprocess <- match.arg(postprocess)
     tree <- mst.default(d, M=M, distance=distance, verbose=verbose, ...)
     genie.mst(
         tree,
         k=k,
         gini_threshold=gini_threshold,
+        preprocess=preprocess,
         postprocess=postprocess,
-        skip_leaves=skip_leaves,
         verbose=verbose
     )
 }
@@ -289,18 +287,19 @@ genie.dist <- function(
     k,
     gini_threshold=0.3,
     M=0L,
-    postprocess=c("midliers", "none", "all"),
-    skip_leaves=M>0L,
+    preprocess=c("none"),  # TODO
+    postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
+    preprocess  <- match.arg(preprocess)
     postprocess <- match.arg(postprocess)
     genie.mst(
         mst.dist(d, M=M, verbose=verbose, ...),
         k=k,
         gini_threshold=gini_threshold,
+        preprocess=preprocess,
         postprocess=postprocess,
-        skip_leaves=skip_leaves,
         verbose=verbose
     )
 }
@@ -313,19 +312,27 @@ genie.mst <- function(
     d,
     k,
     gini_threshold=0.3,
-    postprocess=c("midliers", "none", "all"),
-    skip_leaves=FALSE,
+    preprocess=c("none"),  # TODO
+    postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
     gini_threshold <- as.double(gini_threshold)[1]
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
+
+    preprocess  <- match.arg(preprocess)
     postprocess <- match.arg(postprocess)
     verbose <- !identical(verbose, FALSE)
-    skip_leaves <- !identical(skip_leaves, FALSE)
 
     structure(
-        .genie(d, k, gini_threshold, postprocess, skip_leaves, verbose),
+        .genie(
+            d,
+            k=k,
+            gini_threshold=gini_threshold,
+            preprocess=preprocess,
+            postprocess=postprocess,
+            verbose=verbose
+        ),
         names=attr(d, "Labels")
     )
 }

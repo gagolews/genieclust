@@ -70,7 +70,7 @@ def test_gic():
 
             t01 = time.time()
             _gic = genieclust.GIc(
-                n_clusters=K, gini_thresholds=g, M=10)
+                n_clusters=K, gini_thresholds=g)
             labels_gic = _gic.fit_predict(X)
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
@@ -128,14 +128,14 @@ def test_gic_precomputed():
         K = 20
         g = np.arange(1, 8)/10
         res1 = genieclust.GIc(K, gini_thresholds=g, metric="precomputed",
-            compute_all_cuts=True, M=5, verbose=True)
+            compute_all_cuts=True, verbose=True)
         res1.n_features = X.shape[1]
         res1 = res1.fit_predict(D)
         assert res1.shape[1] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
         for k in range(1, res1.shape[0]):
             res2 = genieclust.GIc(k, gini_thresholds=g, add_clusters=K-k,
-                M=5, metric="precomputed", n_features=X.shape[1])
+                metric="precomputed", n_features=X.shape[1])
             res2 = res2.fit_predict(D)
             assert np.all(res2 == res1[k,:])
 

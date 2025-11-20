@@ -41,7 +41,7 @@ protected:
     struct CGenieResult {
 
         CGiniDisjointSets ds; /*!< ds at the last iteration, it;
-                               * use denoise_index to obtain the final partition
+                               * use unskip_index to obtain the final partition
                                */
         std::vector<Py_ssize_t> links; //<! links[..] = index of merged mst_i
         Py_ssize_t it;                 //<! number of merges performed
@@ -49,8 +49,8 @@ protected:
 
         CGenieResult() { }
 
-        CGenieResult(Py_ssize_t n, Py_ssize_t noise_count, Py_ssize_t n_clusters):
-            ds(n-noise_count), links(n-1, -1), it(0), n_clusters(n_clusters) { }
+        CGenieResult(Py_ssize_t n, Py_ssize_t skip_count, Py_ssize_t n_clusters):
+            ds(n-skip_count), links(n-1, -1), it(0), n_clusters(n_clusters) { }
 
     };
 
@@ -60,15 +60,16 @@ protected:
                           * given by (n-1)*2 indexes in a c_contiguous array;
                           * (-1, -1) denotes a no-edge and will be ignored
                           */
-    T* mst_d;            //<! n-1 edge weights, sorted increasingly
-    Py_ssize_t n;        //<! number of points
-    bool skip_leaves;    //<! omit leaves and mark them as noise points/outliers?
+    T* mst_d;                //<! n-1 edge weights, sorted increasingly
+    Py_ssize_t n;            //<! number of points
 
-    std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
+    //bool skip_leaves;      //<! omit leaves and mark them as noise points/outliers?
+    //std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
 
-    Py_ssize_t noise_count; //<! now many noise points/outliers are there (leaves if skip_leaves is true)
-    std::vector<Py_ssize_t> denoise_index; //<! which noise point is it?
-    std::vector<Py_ssize_t> denoise_index_rev; //!< reverse look-up for denoise_index
+    const bool* skip_nodes;  //<! array of size n or NULL - nodes to be skipped (e.g., outliers)
+    Py_ssize_t skip_count; //<! now many skipped nodes are there?
+    std::vector<Py_ssize_t> unskip_index; //<! which noise point is it?
+    std::vector<Py_ssize_t> unskip_index_rev; //!< reverse look-up for unskip_index
 
     CCountDisjointSets forest_components;
 
@@ -78,9 +79,9 @@ protected:
 
     /*! When the Genie correction is on, some MST edges will be chosen
      * in a non-consecutive order. An array-based skiplist will speed up
-     * searching within the to-be-consumed edges. Also, if there are
-     * noise points, then the skiplist allows the algorithm
-     * to naturally ignore edges that connect the leaves. */
+     * searching within the to-be-consumed edges. Also, if some points are
+     * have the skip_nodes flag on (e.g., outliers), then the skiplist allows
+     * the algorithm naturally ignore edges incident on them. */
     void mst_skiplist_init(CIntDict<Py_ssize_t>* mst_skiplist)
     {
         // start with a list that skips all edges that lead to noise points
@@ -93,21 +94,25 @@ protected:
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
-            if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
-                (*mst_skiplist)[i] = i; /*only the key is important, not the value*/
+
+            if (!this->skip_nodes || (!this->skip_nodes[i1] && !this->skip_nodes[i2]))
+            // if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1))
+            {
+                (*mst_skiplist)[i] = i;  /*only the key is important, not the value*/
             }
         }
     }
+
 
     /** internal, used by get_labels(n_clusters, res) */
     Py_ssize_t get_labels(CGiniDisjointSets* ds, Py_ssize_t* res) {
         std::vector<Py_ssize_t> res_cluster_id(n, -1);
         Py_ssize_t c = 0;
         for (Py_ssize_t i=0; i<n; ++i) {
-            if (this->denoise_index_rev[i] >= 0) {
+            if (this->unskip_index_rev[i] >= 0) {
                 // a non-noise point
-                Py_ssize_t j = this->denoise_index[
-                                ds->find(this->denoise_index_rev[i])
+                Py_ssize_t j = this->unskip_index[
+                                ds->find(this->unskip_index_rev[i])
                             ];
                 if (res_cluster_id[j] < 0) {
                     // new cluster
@@ -128,13 +133,13 @@ protected:
 
 
 public:
-    CGenieBase(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves)
-        : deg(n), denoise_index(n), denoise_index_rev(n)
+    CGenieBase(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, const bool* skip_nodes)
+        : unskip_index(n), unskip_index_rev(n)
     {
         this->mst_d = mst_d;
         this->mst_i = mst_i;
         this->n = n;
-        this->skip_leaves = skip_leaves;
+        this->skip_nodes = skip_nodes;
 
         // Py_ssize_t missing_mst_edges = 0;
         for (Py_ssize_t i=0; i<n-1; ++i) {
@@ -147,37 +152,36 @@ public:
             }
         }
 
-        // set up this->deg:
-        Cget_graph_node_degrees(mst_i, n-1, n, this->deg.data());
+        // this->skip_leaves = skip_leaves;
+        // Cget_graph_node_degrees(mst_i, n-1, n, this->deg.data());
 
-        // Create the non-noise points' translation table (for GiniDisjointSets)
-        // and count the number of noise points
-        if (skip_leaves) {
-            noise_count = 0;
+        // Create the non-skip points' translation table (for GiniDisjointSets)
+        // and count the number of skipped points
+        if (skip_nodes) {
+            this->skip_count = 0;
             Py_ssize_t j = 0;
             for (Py_ssize_t i=0; i<n; ++i) {
-                if (deg[i] == 1) { // a leaf
-                    ++noise_count;
-                    denoise_index_rev[i] = -1;
+                if (skip_nodes[i]) {
+                    ++this->skip_count;
+                    unskip_index_rev[i] = -1;
                 }
-                else {             // a non-leaf
-                    denoise_index[j] = i;
-                    denoise_index_rev[i] = j;
+                else {
+                    unskip_index[j] = i;
+                    unskip_index_rev[i] = j;
                     ++j;
                 }
             }
-            GENIECLUST_ASSERT(noise_count >= 2);
-            GENIECLUST_ASSERT(j + noise_count == n);
+            GENIECLUST_ASSERT(j + skip_count == n);
         }
         else {  // there are no noise points
-            this->noise_count = 0;
+            this->skip_count = 0;
             for (Py_ssize_t i=0; i<n; ++i) {
-                denoise_index[i]     = i; // identity
-                denoise_index_rev[i] = i;
+                unskip_index[i]     = i; // identity
+                unskip_index_rev[i] = i;
             }
         }
 
-        forest_components = CCountDisjointSets(this->n - this->noise_count);
+        forest_components = CCountDisjointSets(this->n - this->skip_count);
         for (Py_ssize_t i=0; i<this->n-1; ++i) {
             Py_ssize_t i1 = this->mst_i[i*2+0];
             Py_ssize_t i2 = this->mst_i[i*2+1];
@@ -186,23 +190,25 @@ public:
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
-            if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1)) {
-                forest_components.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+            //if (!this->skip_leaves || (this->deg[i1]>1 && this->deg[i2]>1))
+            if (!this->skip_nodes || (!this->skip_nodes[i1] && !this->skip_nodes[i2]))
+            {
+                forest_components.merge(this->unskip_index_rev[i1], this->unskip_index_rev[i2]);
             }
         }
     }
 
 
-    /*! There can be at most n-noise_count singleton clusters
+    /*! There can be at most n-skip_count singleton clusters
      *  in the hierarchy. */
     Py_ssize_t get_max_n_clusters() const {
-        return this->n - this->noise_count;
+        return this->n - this->skip_count;
     }
 
 
     /*! Propagate res with clustering results.
      *
-     * Noise points get cluster id of -1.
+     * Skipped points get cluster ID of -1.
      *
      * @param n_clusters maximal number of clusters to find
      * @param res [out] c_contiguous array of length n
@@ -227,7 +233,7 @@ public:
                 Py_ssize_t i2 = this->mst_i[2*j+1];
                 GENIECLUST_ASSERT(i1 >= 0)
                 GENIECLUST_ASSERT(i2 >= 0)
-                ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+                ds.merge(this->unskip_index_rev[i1], this->unskip_index_rev[i2]);
             }
             return this->get_labels(&ds, res);
         }
@@ -237,16 +243,16 @@ public:
     /*! Propagate res with clustering results -
      *  all partitions from cardinality n_clusters to 1.
      *
-     * Noise points get cluster id of -1.
+     *  Skipped points get cluster ID of -1.
      *
-     * @param n_clusters maximal number of clusters to find
-     * @param res [out] c_contiguous matrix of shape (n_clusters+1, n)
+     *  @param n_clusters maximal number of clusters to find
+     *  @param res [out] c_contiguous matrix of shape (n_clusters+1, n)
      */
     void get_labels_matrix(Py_ssize_t n_clusters, Py_ssize_t* res) {
         if (this->get_max_n_clusters() < n_clusters) {
             // there is nothing to do, no merge needed.
             throw std::runtime_error("The requested number of clusters \
-                is too large with this many detected noise points");
+                is too large due to a high number of skipped points.");
         }
 
         if (this->results.ds.get_n() <= 0)
@@ -270,7 +276,7 @@ public:
                 Py_ssize_t i1 = this->mst_i[2*j+0];
                 Py_ssize_t i2 = this->mst_i[2*j+1];
                 GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
-                ds.merge(this->denoise_index_rev[i1], this->denoise_index_rev[i2]);
+                ds.merge(this->unskip_index_rev[i1], this->unskip_index_rev[i2]);
             }
             if (it >= this->get_max_n_clusters() - n_clusters - 1) {
                 cur_cluster--;
@@ -285,7 +291,7 @@ public:
     /*! Propagate res with clustering results -
      *  based on the current this->results.links.
      *
-     * If there are noise points, not all elements in res will be set.
+     * If there are skipped points, the rightmost elements will be set to -1.
      *
      * @param res [out] c_contiguous array of length n-1,
      * res[i] gives the index of the MST edge merged at the i-th iteration.
@@ -307,19 +313,6 @@ public:
         return this->results.it;
     }
 
-
-    /* Set res[i] to true if skip_leaves is true and
-     * the i-th point is an outlier,
-     * i.e., a leaf of the spanning tree.
-     *
-     * @param res [out] array of length n
-     *
-    void get_is_outlier(int* res) const {
-        for (Py_ssize_t i=0; i<n; ++i) {
-            res[i] = (this->skip_leaves && this->deg[i] <= 1);
-        }
-    }*/
-
 };
 
 
@@ -327,10 +320,10 @@ public:
 /*!  The Genie Hierarchical Clustering Algorithm
  *
  *   The Genie algorithm (Gagolewski et al., 2016) links two clusters
- *   in such a way that a chosen economic inequality measure
- *   (here, the Gini index) of the cluster sizes does not go too far above
- *   a given threshold. The method outperforms many other clustering algorithms
- *   in terms of the clustering quality on many benchmark datasets
+ *   in such a way that the Gini inequality index of the cluster sizes
+ *   does not go too far above a given threshold. Oftentimes, the method
+ *   outperforms many other clustering algorithms
+ *   in terms of the clustering quality on quite a few benchmark datasets
  *   whilst retaining the speed of the single linkage algorithm.
  *
  *   This is a re-implementation of the original (Gagolewski et al., 2016)
@@ -340,9 +333,10 @@ public:
  *   of a spanning tree/, this implementation requires amortised
  *   O(n sqrt(n))-time only.
  *
- *   2. The leaves of the MST can be marked as noise points/outliers
- *   (if `skip_leaves==True`).  This is useful, if the Genie algorithm is
- *   applied on the MST with respect to a mutual reachability distance.
+ *   2. Some nodes of the MST can be marked as skippable.
+ *   This is useful, if the Genie algorithm is
+ *   applied on the MST with respect to a mutual reachability distance
+ *   and certain points are marked as outliers.
  *
  *   3. The MST does not need to be connected -
  *   each connected component will never be merged with another one.
@@ -402,7 +396,6 @@ protected:
             Py_ssize_t i1;
             Py_ssize_t i2;
 
-
             if (ds->get_gini() > gini_threshold) {
                 // the Genie correction for inequality of cluster sizes
                 Py_ssize_t m = ds->get_smallest_count();
@@ -419,8 +412,8 @@ protected:
 
                 // find the MST edge connecting a cluster of the smallest size
                 // with another one
-                while (ds->get_count(this->denoise_index_rev[this->mst_i[2*lastidx+0]]) != m
-                    && ds->get_count(this->denoise_index_rev[this->mst_i[2*lastidx+1]]) != m)
+                while (ds->get_count(this->unskip_index_rev[this->mst_i[2*lastidx+0]]) != m
+                    && ds->get_count(this->unskip_index_rev[this->mst_i[2*lastidx+1]]) != m)
                 {
                     lastidx = mst_skiplist->get_key_next(lastidx);
                     GENIECLUST_ASSERT(lastidx >= 0 && lastidx < this->n - 1);
@@ -446,8 +439,8 @@ protected:
             }
 
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
-            Py_ssize_t i1r = this->denoise_index_rev[i1];
-            Py_ssize_t i2r = this->denoise_index_rev[i2];
+            Py_ssize_t i1r = this->unskip_index_rev[i1];
+            Py_ssize_t i2r = this->unskip_index_rev[i2];
             bool forget = this->forest_components.get_k() > 1 &&
                 this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
                 this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
@@ -513,8 +506,8 @@ protected:
             while (1) {
                 Py_ssize_t i1 = this->mst_i[2*last_idx+0];
                 Py_ssize_t i2 = this->mst_i[2*last_idx+1];
-                Py_ssize_t i1r = this->denoise_index_rev[i1];
-                Py_ssize_t i2r = this->denoise_index_rev[i2];
+                Py_ssize_t i1r = this->unskip_index_rev[i1];
+                Py_ssize_t i2r = this->unskip_index_rev[i2];
                 bool forget = this->forest_components.get_k() > 1 &&
                     this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
                     this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
@@ -538,8 +531,8 @@ protected:
 
             Py_ssize_t i1 = this->mst_i[2*best_idx+0];
             Py_ssize_t i2 = this->mst_i[2*best_idx+1];
-            Py_ssize_t i1r = this->denoise_index_rev[i1];
-            Py_ssize_t i2r = this->denoise_index_rev[i2];
+            Py_ssize_t i1r = this->unskip_index_rev[i1];
+            Py_ssize_t i2r = this->unskip_index_rev[i2];
             bool forget = this->forest_components.get_k() > 1 &&
                 this->forest_components.find(i1r) == this->forest_components.find(i2r) &&
                 this->forest_components.get_count(i1r) == ds->get_count(i1r) + ds->get_count(i2r);
@@ -563,13 +556,13 @@ protected:
 
 
 public:
-    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false)
-        : CGenieBase<T>(mst_d, mst_i, n, skip_leaves)
+    CGenie(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, const bool* skip_nodes=nullptr)
+        : CGenieBase<T>(mst_d, mst_i, n, skip_nodes)
     {
         ;
     }
 
-    CGenie() : CGenie(NULL, NULL, 0, false) { }
+    CGenie() : CGenie(NULL, NULL, 0, NULL) { }
 
 
     /*! Run the Genie algorithm
@@ -585,7 +578,7 @@ public:
             throw std::domain_error("n_clusters must be >= 1");
 
         this->results = typename CGenieBase<T>::CGenieResult(this->n,
-            this->noise_count, n_clusters);
+            this->skip_count, n_clusters);
 
         CIntDict<Py_ssize_t> mst_skiplist(this->n - 1);
         this->mst_skiplist_init(&mst_skiplist);
@@ -664,7 +657,8 @@ protected:
                 Py_ssize_t i2 = this->mst_i[2*i+1];
                 if (i1 < 0 || i2 < 0)
                     continue; // a no-edge -> ignore
-                if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
+                //if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
+                if (!this->skip_nodes || (!this->skip_nodes[i1] && !this->skip_nodes[i2]))
                     unused_edges.push_back(i);
             }
             unused_edges.push_back(this->n - 1);  // sentinel
@@ -708,14 +702,14 @@ protected:
     }
 
 public:
-    CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, bool skip_leaves=false)
-        : CGenie<T>(mst_d, mst_i, n, skip_leaves)
+    CGIc(T* mst_d, Py_ssize_t* mst_i, Py_ssize_t n, const bool* skip_nodes=nullptr)
+        : CGenie<T>(mst_d, mst_i, n, skip_nodes)
     {
         if (this->forest_components.get_k() > 1)
             throw std::domain_error("MST is not connected; this is not (yet) supported");
     }
 
-    CGIc() : CGIc(NULL, NULL, 0, false) { }
+    CGIc() : CGIc(NULL, NULL, 0, NULL) { }
 
 
 
@@ -750,7 +744,7 @@ public:
 
 
         this->results = typename CGenieBase<T>::CGenieResult(this->n,
-            this->noise_count, n_clusters);
+            this->skip_count, n_clusters);
 
         // Step 1. Merge all used edges (used by all the Genies)
         // There are of course many possible merge orders that we could consider
@@ -776,11 +770,13 @@ public:
             if (i1 < 0 || i2 < 0)
                 continue; // a no-edge -> ignore
 
-            if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1)) {
+            //if (!this->skip_leaves || (this->deg[i1] > 1 && this->deg[i2] > 1))
+            if (!this->skip_nodes || (!this->skip_nodes[i1] && !this->skip_nodes[i2]))
+            {
                 GENIECLUST_ASSERT(this->results.it < this->n-1);
                 this->results.links[this->results.it++] = i;
-                i1 = this->results.ds.find(this->denoise_index_rev[i1]);
-                i2 = this->results.ds.find(this->denoise_index_rev[i2]);
+                i1 = this->results.ds.find(this->unskip_index_rev[i1]);
+                i2 = this->results.ds.find(this->unskip_index_rev[i2]);
                 if (i1 > i2) std::swap(i1, i2);
                 this->results.ds.merge(i1, i2);
                 // new parent node is i1
@@ -812,8 +808,8 @@ public:
                 Py_ssize_t i1 = this->mst_i[2*i+0];
                 Py_ssize_t i2 = this->mst_i[2*i+1];
                 GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
-                i1 = this->results.ds.find(this->denoise_index_rev[i1]);
-                i2 = this->results.ds.find(this->denoise_index_rev[i2]);
+                i1 = this->results.ds.find(this->unskip_index_rev[i1]);
+                i2 = this->results.ds.find(this->unskip_index_rev[i2]);
                 if (i1 > i2) std::swap(i1, i2);
                 GENIECLUST_ASSERT(i1 != i2);
 
@@ -852,8 +848,8 @@ public:
             Py_ssize_t i1 = this->mst_i[2*i+0];
             Py_ssize_t i2 = this->mst_i[2*i+1];
             GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
-            i1 = this->results.ds.find(this->denoise_index_rev[i1]);
-            i2 = this->results.ds.find(this->denoise_index_rev[i2]);
+            i1 = this->results.ds.find(this->unskip_index_rev[i1]);
+            i2 = this->results.ds.find(this->unskip_index_rev[i2]);
             if (i1 > i2) std::swap(i1, i2);
 
             this->results.ds.merge(i1, i2);

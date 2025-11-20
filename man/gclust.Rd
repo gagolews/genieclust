@@ -33,8 +33,8 @@ genie(d, ...)
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
+  preprocess = c("none"),
   postprocess = c("midliers", "none", "all"),
-  skip_leaves = M > 0L,
   verbose = FALSE,
   ...
 )
@@ -44,8 +44,8 @@ genie(d, ...)
   k,
   gini_threshold = 0.3,
   M = 0L,
+  preprocess = c("none"),
   postprocess = c("midliers", "none", "all"),
-  skip_leaves = M > 0L,
   verbose = FALSE,
   ...
 )
@@ -54,8 +54,8 @@ genie(d, ...)
   d,
   k,
   gini_threshold = 0.3,
+  preprocess = c("none"),
   postprocess = c("midliers", "none", "all"),
-  skip_leaves = FALSE,
   verbose = FALSE,
   ...
 )
@@ -87,17 +87,15 @@ and progress information}
 \item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 otherwise, the mutual reachability distance is used}
 
-\item{postprocess}{\code{"midliers"} (default), \code{"none"}
+\item{preprocess}{TODO}
+
+\item{postprocess}{TODO \code{"midliers"} (default), \code{"none"}
 or \code{"all"}; in effect only if \eqn{M > 0}.
 By default, only midliers are merged with their adjacent neighbours
 in the tree, i.e., leaves that are amongst their adjacent nodes'
 \eqn{M} nearest neighbours.
 To force a classical k-partition of a data set (one that does not
 distinguish between inliers and outliers), choose \code{"all"}.}
-
-\item{skip_leaves}{whether the minimum spanning tree's leaves
-should be omitted from clustering and marked as outliers;
-defaults to \code{TRUE} if \eqn{M>0} for compatibility with HDBSCAN*}
 }
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it
@@ -106,9 +104,9 @@ Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
 
 \code{genie()} returns a \code{k}-partition, i.e., a vector whose
 \eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
-between 1 and \code{k}.  If \code{skip_leaves} is \code{TRUE}
-and \code{postprocess} is not \code{"all"},
-missing values (\code{NA}) denote outliers.
+between 1 and \code{k}.
+TODO If \code{skip_leaves} is \code{TRUE} and \code{postprocess}
+is not \code{"all"}, missing values (\code{NA}) denote outliers.
 }
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
@@ -151,14 +149,13 @@ Once a minimum spanning tree is determined, the Genie algorithm runs in
 \code{gini_threshold}s or \code{k}s, it is best to compute
 the MST explicitly beforehand.
 
-Due to Genie's original definition,
-the resulting partition tree (dendrogram) might violate
-the ultrametricity property (merges might occur at levels that
+Due to Genie's original definition, the resulting partition tree (dendrogram)
+might violate the ultrametricity property (merges might occur at levels that
 are not increasing w.r.t. a between-cluster distance).
 \code{gclust()} automatically corrects departures from
 ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 
-If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
+TODO If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
 process; see \code{skip_leaves}.  Afterwards, some of them (midliers)
 are merged with the nearest clusters at the postprocessing stage,
 and other ones are marked as outliers; see [4]_ for discussion.

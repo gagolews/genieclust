@@ -274,18 +274,18 @@ BEGIN_RCPP
 END_RCPP
 }
 // dot_genie
-IntegerVector dot_genie(NumericMatrix mst, int k, double gini_threshold, String postprocess, bool skip_leaves, bool verbose);
-RcppExport SEXP _genieclust_dot_genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP postprocessSEXP, SEXP skip_leavesSEXP, SEXP verboseSEXP) {
+IntegerVector dot_genie(NumericMatrix mst, int k, double gini_threshold, String preprocess, String postprocess, bool verbose);
+RcppExport SEXP _genieclust_dot_genie(SEXP mstSEXP, SEXP kSEXP, SEXP gini_thresholdSEXP, SEXP preprocessSEXP, SEXP postprocessSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericMatrix >::type mst(mstSEXP);
     Rcpp::traits::input_parameter< int >::type k(kSEXP);
     Rcpp::traits::input_parameter< double >::type gini_threshold(gini_thresholdSEXP);
+    Rcpp::traits::input_parameter< String >::type preprocess(preprocessSEXP);
     Rcpp::traits::input_parameter< String >::type postprocess(postprocessSEXP);
-    Rcpp::traits::input_parameter< bool >::type skip_leaves(skip_leavesSEXP);
     Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(dot_genie(mst, k, gini_threshold, postprocess, skip_leaves, verbose));
+    rcpp_result_gen = Rcpp::wrap(dot_genie(mst, k, gini_threshold, preprocess, postprocess, verbose));
     return rcpp_result_gen;
 END_RCPP
 }

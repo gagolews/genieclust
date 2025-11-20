@@ -106,8 +106,8 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
     to a neighbour of the smallest core distance is preferred.
     This leads to MSTs with more leaves and hubs.  Moreover, the leaves are
     then reconnected in such a way that they become incident with vertices
-    that have them amongst their *M* nearest neighbours (if possible without
-    violating the minimality condition); see [3]_ for discussion.
+    that have them amongst their *M* nearest neighbours (if this is possible
+    without violating the minimality condition); see [3]_ for discussion.
 
 
     :Environment variables:
@@ -450,6 +450,7 @@ class MSTClusterMixinWithProcessors(MSTClusterMixin):
     some of them (midliers) are merged with the nearest clusters at the
     postprocessing stage, and other ones are marked as outliers.
 
+
     Parameters
     ----------
 
@@ -474,7 +475,7 @@ class MSTClusterMixinWithProcessors(MSTClusterMixin):
     postprocess : {``"midliers"``, ``"none"``, ``"all"``}
         Controls the treatment of outliers after the clusters once identified.
 
-        In effect only if *M > 0*. Each leaf in the spanning tree
+        TODO In effect only if *M > 0*. Each leaf in the spanning tree
         is omitted from the clustering process.  We call it a *midlier*
         if it is amongst its adjacent vertex's `M` nearest neighbours.
         By default, only midliers are merged with their nearest
@@ -768,7 +769,7 @@ class Genie(MSTClusterMixinWithProcessors):
     detect a predefined number of clusters (see [4]_) without depending
     on DBSCAN\\*'s ``eps`` HDBSCAN\\*'s ``min_cluster_size`` parameters.
 
-    If *M > 0*, all MST leaves are by default left out from the clustering
+    TODO If *M > 0*, all MST leaves are by default left out from the clustering
     process. They may be merged with the nearest clusters at the postprocessing
     stage, or left marked as outliers; see [4]_ for discussion.
 
@@ -900,9 +901,10 @@ class Genie(MSTClusterMixinWithProcessors):
         res = internal.genie_from_mst(
             self._tree_w,
             self._tree_e,
+            skip_nodes=np.zeros(0, dtype=bool),  # TODO
             n_clusters=cur_state["n_clusters"],
             gini_threshold=cur_state["gini_threshold"],
-            skip_leaves=(cur_state["preprocess"] == "leaves"),
+            #skip_leaves=(cur_state["preprocess"] == "leaves"),  TODO
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"]
         )
@@ -933,7 +935,7 @@ class Genie(MSTClusterMixinWithProcessors):
 
 
 
-class GIc(MSTClusterMixinWithProcessors):
+class GIc(MSTClusterMixin):
     """
     GIc (Genie+Information Criterion) clustering algorithm
 
@@ -952,10 +954,6 @@ class GIc(MSTClusterMixinWithProcessors):
         agglomerative way, starting from the intersection of the clusterings
         returned by ``Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i])``,
         for all ``i`` from ``0`` to ``len(gini_thresholds)-1``.
-
-    M : int
-        The smoothing factor for the mutual reachability distance; see
-        :any:`genieclust.Genie` for more details.
 
     metric : str
         The metric used to compute the linkage; see :any:`genieclust.Genie`
@@ -984,12 +982,6 @@ class GIc(MSTClusterMixinWithProcessors):
 
         If ``None``, it will be set based on the shape of the input matrix.
         Yet, *metric* of ``"precomputed"`` needs this to be set manually.
-
-    preprocess : str
-        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
-
-    postprocess : str
-        See :any:`genieclust.MSTClusterMixinWithProcessors` for more details.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -1078,12 +1070,9 @@ class GIc(MSTClusterMixinWithProcessors):
             n_clusters=2,
             *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
-            M=0,
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
-            preprocess="auto",
-            postprocess="midliers",
             add_clusters=0,
             n_features=None,
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
@@ -1091,10 +1080,8 @@ class GIc(MSTClusterMixinWithProcessors):
         # # # # # # # # # # # #
         super().__init__(
             n_clusters=n_clusters,
-            M=M,
+            M=0,
             metric=metric,
-            preprocess=preprocess,
-            postprocess=postprocess,
             quitefastmst_params=quitefastmst_params,
             verbose=verbose
         )
@@ -1186,18 +1173,46 @@ class GIc(MSTClusterMixinWithProcessors):
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
             gini_thresholds=cur_state["gini_thresholds"],
-            skip_leaves=(cur_state["preprocess"] == "leaves"),
             compute_full_tree=cur_state["compute_full_tree"],
-            compute_all_cuts=cur_state["compute_all_cuts"])
+            compute_all_cuts=cur_state["compute_all_cuts"]
+        )
 
-        cur_state = self._postprocess_outputs(res, cur_state)
+        self.labels_     = res["labels"]
+        self._links_     = res["links"]
+        self._iters_     = res["iters"]
+
+        if res["n_clusters"] != cur_state["n_clusters"]:
+            warnings.warn("The number of clusters detected (%d) is "
+                          "different from the requested one (%d)." % (
+                            res["n_clusters"],
+                            cur_state["n_clusters"]))
+
+        if self.labels_ is not None:
+            reshaped = False
+            if self.labels_.ndim == 1:
+                reshaped = True
+                # promote it to a matrix with 1 row
+                self.labels_.shape = (1, self.labels_.shape[0])
+                start_partition = 0
+            else:
+                # duplicate the 1st row (create the "0"-partition that will
+                # not be postprocessed):
+                self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
+                start_partition = 1  # do not postprocess the "0"-partition
+
+        self.n_clusters_ = res["n_clusters"]
+
+
+        if reshaped:
+            self.labels_.shape = (self.labels_.shape[1], )
 
         if cur_state["compute_full_tree"]:
             assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,
-                self._tree_e)
+                self._tree_e
+            )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
