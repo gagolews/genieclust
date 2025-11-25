@@ -878,6 +878,12 @@ cdef extern from "../src/c_graph_process.h":
     cdef void Cget_graph_node_degrees(Py_ssize_t* tree_ind, Py_ssize_t m,
             Py_ssize_t n, Py_ssize_t* deg)
 
+    void Ctranslate_skipped_indexes(Py_ssize_t* ind, Py_ssize_t m,
+        const bool* skip, Py_ssize_t n)
+
+    void Cimpute_missing_labels(const Py_ssize_t* tree_ind, Py_ssize_t m,
+        Py_ssize_t* c, Py_ssize_t n, const bool* skip_edges)
+
     void Cmerge_midliers(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         const Py_ssize_t* nn_ind, Py_ssize_t num_neighbours, Py_ssize_t M,
         Py_ssize_t* c, Py_ssize_t n)
@@ -885,8 +891,52 @@ cdef extern from "../src/c_graph_process.h":
     void Cmerge_all(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         Py_ssize_t* c, Py_ssize_t n)
 
-    void Ctranslate_skipped_indexes[T](Py_ssize_t* ind, Py_ssize_t m,
-        T* skip, Py_ssize_t n)
+
+cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
+        Py_ssize_t[:,::1] mst_i,
+        Py_ssize_t[::1] c,
+        bool[::1] skip_edges
+    ):
+    """
+    genieclust.internal.impute_missing_labels(mst_i, c, skip_edges)
+
+    Imputes all missing labels down below the tree branches.
+
+
+    Parameters
+    ----------
+
+    mst_i : c_contiguous array of shape (m, 2)
+        m undirected edges of the spanning tree/forest
+    c : c_contiguous array of shape (n,)
+        c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
+        the i-th object.  Class -1 represents the missing values to be imputed.
+    skip_edges : c_contiguous array, length m or 0
+        skip_edges[i] == True marks the i-th edge as non-existent (ignorable)
+
+    Returns
+    -------
+
+    c : ndarray, shape (n,)
+        A new integer vector c with c[i] denoting the cluster
+        ID (in {0, ..., k-1}) of the i-th object.
+    """
+    cdef Py_ssize_t n = c.shape[0]
+    cdef Py_ssize_t m = mst_i.shape[0]
+
+    cdef bool* skip_edges_ptr = NULL
+    if skip_edges.shape[0] == 0:
+        pass
+    elif skip_edges.shape[0] == m:
+        skip_edges_ptr = &skip_edges[0]
+    else:
+        raise ValueError("skip_edges should be either of size 0 or m")
+
+    cdef np.ndarray[Py_ssize_t] c2 = np.array(c, dtype=np.intp)
+
+    Cimpute_missing_labels(&mst_i[0,0], m, &c2[0], n, skip_edges_ptr)
+
+    return c2
 
 
 cpdef np.ndarray[Py_ssize_t] translate_skipped_indexes(
@@ -949,12 +999,12 @@ cpdef np.ndarray[Py_ssize_t] merge_midliers(
     Parameters
     ----------
 
-    mst_i : c_contiguous array
-        See genieclust.mst.mst_from_distance()
-    c : c_contiguous array of shape (n_samples,)
+    mst_i : c_contiguous array of shape (m, 2)
+        m undirected edges of the spanning tree
+    c : c_contiguous array of shape (n,)
         c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
-        the i-th object.  Class -1 represents the leaves of the spanning tree.
-    nn_i : c_contiguous matrix of shape (n_samples,n_neighbors)
+        the i-th object.  Class -1 represents the missing values to be imputed.
+    nn_i : c_contiguous matrix of shape (n,n_neighbors)
         nn_ind[i,:] gives the indexes of the i-th point's
         nearest neighbours; -1 indicates a "missing value"
     M : int
@@ -964,7 +1014,7 @@ cpdef np.ndarray[Py_ssize_t] merge_midliers(
     Returns
     -------
 
-    c : ndarray, shape (n_samples,)
+    c : ndarray, shape (n,)
         A new integer vector c with c[i] denoting the cluster
         ID (in {-1, 0, ..., k-1}) of the i-th object.
     """
@@ -995,17 +1045,17 @@ cpdef np.ndarray[Py_ssize_t] merge_all(
     Parameters
     ----------
 
-    mst_i : c_contiguous array
-        See genieclust.mst.mst_from_distance()
-    c : c_contiguous array of shape (n_samples,)
+    mst_i : c_contiguous array of shape (m, 2)
+        m undirected edges of the spanning tree
+    c : c_contiguous array of shape (n,)
         c[i] gives the cluster ID (in {-1, 0, 1, ..., k-1} for some k) of
-        the i-th object.  Class -1 represents the leaves of the spanning tree.
+        the i-th object.  Class -1 represents the missing values to be imputed.
 
 
     Returns
     -------
 
-    c : ndarray, shape (n_samples,)
+    c : ndarray, shape (n,)
         A new integer vector c with c[i] denoting the cluster
         ID (in {0, ..., k-1}) of the i-th object.
     """
@@ -1034,7 +1084,8 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
         see return value of genieclust.internal.genie_from_mst.
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
-        see genieclust.mst.
+        with mst_i giving the edges (n-1,2) and mst_d providing the
+        corresponding edge weights.
 
 
     Returns
@@ -1056,7 +1107,7 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
     cdef CGiniDisjointSets ds = CGiniDisjointSets(n)
 
     cdef np.ndarray[Py_ssize_t,ndim=2] children_  = np.empty((n-1, 2), dtype=np.intp)
-    cdef np.ndarray[floatT]         distances_ = np.empty(n-1,
+    cdef np.ndarray[floatT]            distances_ = np.empty(n-1,
         dtype=np.float32 if floatT is float else np.float64)
     cdef np.ndarray[Py_ssize_t]        counts_    = np.empty(n-1, dtype=np.intp)
     cdef np.ndarray[Py_ssize_t]        used       = np.zeros(n-1, dtype=np.intp)
@@ -1166,7 +1217,8 @@ cpdef dict genie_from_mst(
 
     mst_d, mst_i : ndarray
         A spanning tree defined by a pair (mst_i, mst_d),
-        see genieclust.mst.
+        with mst_i giving the edges (n-1,2) and mst_d providing the
+        corresponding edge weights.
     n_clusters : int
         Number of clusters the dataset is split into.
         If `compute_full_tree` is False, then only partial cluster hierarchy
@@ -1338,8 +1390,9 @@ cpdef dict gic_from_mst(
     ----------
 
     mst_d, mst_i : ndarray
-        Minimal spanning tree defined by a pair (mst_i, mst_d);
-        see genieclust.mst.
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        with mst_i giving the edges (n-1,2) and mst_d providing the
+        corresponding edge weights.
     n_features : double
         number of features in the data set
         [can be fractional if you know what you're doing]
