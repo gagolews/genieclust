@@ -47,7 +47,7 @@ def test_warnerr(metric='euclidean'):
     with pytest.raises(Exception): genieclust.GIc(gini_thresholds=[-1e-12]).fit(X)
     with pytest.raises(Exception): genieclust.GIc(metric="precomputed").fit(scipy.spatial.distance.pdist(X))
 
-    with pytest.warns(Warning): genieclust.Genie(M=1, compute_full_tree=True).fit(X)
+    # with pytest.warns(Warning): genieclust.Genie(M=1, compute_full_tree=True).fit(X)
 
     # if mlpack is None:
     #     with pytest.raises(Exception): genieclust.Genie(mlpack_enabled=True).fit(X)

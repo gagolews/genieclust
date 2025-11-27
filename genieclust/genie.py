@@ -209,7 +209,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
         if cur_state["M"] < 0:
             raise ValueError("`M` must be >= 0.")
 
-        cur_state["exact"]             = True  # bool(self.exact)
+        # cur_state["exact"]             = True  # bool(self.exact)
 
         cur_state["verbose"]           = bool(self.verbose)
 
@@ -245,7 +245,7 @@ class MSTClusterMixin(BaseEstimator, ClusterMixin):
 
         _metric_exact_options = (
             "l2", "l1", "cosinesimil", "precomputed")
-        if cur_state["exact"] and cur_state["metric"] not in _metric_exact_options:
+        if cur_state["metric"] not in _metric_exact_options:
             raise ValueError("`metric` should be one of %s" % repr(_metric_exact_options))
 
         # this is more like an inherent dimensionality for GIc
@@ -650,9 +650,8 @@ class Genie(MSTClusterMixinWithProcessors):
     compute_full_tree : bool
         Whether to determine the entire cluster hierarchy and the linkage matrix.
 
-        Only available if *M = 0*. Enables plotting dendrograms or cutting
-        the cluster hierarchy at an arbitrary level; see the
-        `children_`, `distances_`, `counts_` attributes.
+        Enables plotting dendrograms or cutting the cluster hierarchy at an
+        arbitrary level; see the `children_`, `distances_`, `counts_` attributes.
 
     compute_all_cuts : bool
         Whether to compute the requested `n_clusters`-partition and all
@@ -722,10 +721,10 @@ class Genie(MSTClusterMixinWithProcessors):
         the distance between two clusters merged in each iteration,
         see the description of ``Z[:,2]`` in ``scipy.cluster.hierarchy.linkage``.
 
-        As the original Genie algorithm does not guarantee that distances
+        The original Genie algorithm does not guarantee that distances
         are ordered increasingly (there are other hierarchical clustering
-        linkages that violate the ultrametricity property too), Genie
-        automatically applies the following correction:
+        linkages that violate the ultrametricity property too).
+        Thus, we automatically apply the following correction:
 
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
 
@@ -846,11 +845,6 @@ class Genie(MSTClusterMixinWithProcessors):
             raise ValueError("`gini_threshold` not in [0,1].")
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
-        if cur_state["compute_full_tree"] and \
-                not (cur_state["M"] == 0 and cur_state["exact"]):
-            cur_state["compute_full_tree"] = False
-            warnings.warn("`compute_full_tree` is only available when `M` = 0 "
-                          "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
 
@@ -912,11 +906,12 @@ class Genie(MSTClusterMixinWithProcessors):
         cur_state = self._postprocess_outputs(res, cur_state)
 
         if cur_state["compute_full_tree"]:
-            assert cur_state["exact"] and cur_state["M"] == 0
+            # assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,
-                self._tree_e)
+                self._tree_e
+            )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
@@ -1110,11 +1105,6 @@ class GIc(MSTClusterMixin):
                                  "must be in [0,1].")
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
-        if cur_state["compute_full_tree"] and \
-                not (cur_state["M"] == 0 and cur_state["exact"]):
-            cur_state["compute_full_tree"] = False
-            warnings.warn("`compute_full_tree` is only available when `M` = 0 "
-                          "and `exact` is True")
 
         cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
 
@@ -1207,7 +1197,7 @@ class GIc(MSTClusterMixin):
             self.labels_.shape = (self.labels_.shape[1], )
 
         if cur_state["compute_full_tree"]:
-            assert cur_state["exact"] and cur_state["M"] == 0
+            # assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,

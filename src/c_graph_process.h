@@ -57,7 +57,6 @@ void Ctranslate_skipped_indexes(
             k++;
 
             if (k == m) return;
-            GENIECLUST_ASSERT(o[k] != j);
         }
 
         j++;
@@ -179,7 +178,7 @@ void Cget_graph_node_inclists(
 
 /** See Cimpute_missing_labels below.
  */
-class MissingLabelsImputer
+class CMissingLabelsImputer
 {
 private:
     const Py_ssize_t* mst_i;
@@ -211,7 +210,7 @@ private:
 
 
 public:
-    MissingLabelsImputer(
+    CMissingLabelsImputer(
         const Py_ssize_t* mst_i,
         Py_ssize_t m,
         Py_ssize_t* c,
@@ -272,7 +271,7 @@ void Cimpute_missing_labels(
     Py_ssize_t n,
     const bool* skip_edges=NULL
 ) {
-    MissingLabelsImputer imp(mst_i, m, c, n, skip_edges);
+    CMissingLabelsImputer imp(mst_i, m, c, n, skip_edges);
     imp.impute();  // modifies c
 }
 
