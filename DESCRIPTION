@@ -42,5 +42,5 @@ Suggests:
     datasets,
 LinkingTo: Rcpp
 Encoding: UTF-8
-SystemRequirements: OpenMP, C++17
+SystemRequirements: OpenMP
 RoxygenNote: 7.3.2

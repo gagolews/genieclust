@@ -174,6 +174,8 @@ void Cget_graph_node_inclists(
 
 
 
+/* ************************************************************************** */
+
 
 
 /** See Cimpute_missing_labels below.
@@ -182,9 +184,9 @@ class CMissingLabelsImputer
 {
 private:
     const Py_ssize_t* mst_i;
-    Py_ssize_t m;
+    const Py_ssize_t m;
     Py_ssize_t* c;
-    Py_ssize_t n;
+    const Py_ssize_t n;
     const bool* skip_edges;
 
     std::vector<Py_ssize_t> deg;
@@ -226,19 +228,20 @@ public:
         );
     }
 
+
     void impute()
     {
         for (Py_ssize_t v=0; v<n; ++v) {
             if (c[v] < 0) continue;
 
-            for (Py_ssize_t* e = inc[v]; e != inc[v+1]; ++e) {
-                if (skip_edges && skip_edges[*e]) continue;
+            for (Py_ssize_t* pe = inc[v]; pe != inc[v+1]; ++pe) {
+                if (skip_edges && skip_edges[*pe]) continue;
 
-                Py_ssize_t iv = (Py_ssize_t)(mst_i[2*(*e)+1]==v);
-                Py_ssize_t w = mst_i[2*(*e)+(1-iv)];
+                Py_ssize_t iv = (Py_ssize_t)(mst_i[2*(*pe)+1]==v);
+                Py_ssize_t w = mst_i[2*(*pe)+(1-iv)];
 
                 if (c[w] < 0) {  // descend into this branch to impute missing values
-                    visit(v, *e);
+                    visit(v, *pe);
                 }
             }
         }
@@ -249,20 +252,20 @@ public:
 
 
 
-/*! Impute missing labels in all tree branches
- *
+/*! Impute missing labels in all tree branches.
+ *  All nodes in branches with class ID of -1 will be assigned their parent node's class.
  *
  *  @param mst_i c_contiguous matrix of size m*2,
  *     where {mst_i[k,0], mst_i[k,1]} specifies the k-th (undirected) edge
  *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
  *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
- *  @param m number of rows in ind (edges)
+ *  @param m number of rows in mst_i (edges)
  *  @param c [in/out] c_contiguous vector of length n, where
  *      c[i] denotes the cluster ID (in {-1, 0, 1, ..., k-1} for some k)
  *      of the i-th object, i=0,...,n-1.  Class -1 represents missing values
  *      to be imputed
  *  @param n length of c and the number of vertices in the spanning tree
- *  @param skip_edges array of length m or NULL; indicates the edges to skip
+ *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
  */
 void Cimpute_missing_labels(
     const Py_ssize_t* mst_i,
@@ -272,9 +275,198 @@ void Cimpute_missing_labels(
     const bool* skip_edges=NULL
 ) {
     CMissingLabelsImputer imp(mst_i, m, c, n, skip_edges);
-    imp.impute();  // modifies c
+    imp.impute();  // modifies c in place
 }
 
+
+/* ************************************************************************** */
+
+
+
+/** See Ctrim_branches below.
+ */
+template <class FLOAT> class CBranchTrimmer
+{
+private:
+    const FLOAT* mst_d;
+    const Py_ssize_t* mst_i;
+    const Py_ssize_t m;
+    Py_ssize_t* c;
+    const Py_ssize_t n;
+    const FLOAT min_d;
+    const Py_ssize_t max_size;
+    const bool* skip_edges;
+
+
+    std::vector<Py_ssize_t> deg;
+    std::vector<Py_ssize_t> _incdata;
+    std::vector<Py_ssize_t*> inc;
+
+    std::vector<Py_ssize_t> size;
+
+    Py_ssize_t clk;   // the number of connected components
+    std::vector<Py_ssize_t> clsize;
+
+
+    Py_ssize_t visit_get_sizes(Py_ssize_t v, Py_ssize_t e)
+    {
+        if (skip_edges && skip_edges[e]) return 0;
+
+        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
+        Py_ssize_t w = mst_i[2*e+(1-iv)];
+
+        GENIECLUST_ASSERT(e >= 0 && e < m);
+        GENIECLUST_ASSERT(v >= 0 && v < n);
+        GENIECLUST_ASSERT(w >= 0 && w < n);
+        GENIECLUST_ASSERT(c[w] < 0);
+
+        Py_ssize_t this_size = 1;
+        c[w] = c[v];
+
+        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
+            if (*e2 != e) this_size += visit_get_sizes(w, *e2);
+        }
+
+        size[2*e + (1-iv)] = this_size;
+        size[2*e + iv] = -1;
+
+        return this_size;
+    }
+
+
+    void visit_mark(Py_ssize_t v, Py_ssize_t e)
+    {
+        if (skip_edges && skip_edges[e]) return;
+
+        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
+        Py_ssize_t w = mst_i[2*e+(1-iv)];
+
+        if (c[w] < 0) return;  // already visited
+
+        c[w] = -1;
+
+        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
+            if (*e2 != e) visit_mark(w, *e2);
+        }
+    }
+
+public:
+    CBranchTrimmer(
+        const FLOAT* mst_d,
+        const Py_ssize_t* mst_i,
+        Py_ssize_t m,
+        Py_ssize_t* c,
+        Py_ssize_t n,
+        FLOAT min_d,
+        Py_ssize_t max_size,
+        const bool* skip_edges=NULL
+    ) : mst_d(mst_d), mst_i(mst_i), m(m), c(c), n(n),
+        min_d(min_d), max_size(max_size), //skip_edges(skip_edges),
+        deg(n), _incdata(2*m), inc(n+1), size(2*m, -1)
+    {
+        GENIECLUST_ASSERT(m == n-1);
+
+        Cget_graph_node_degrees(mst_i, m, n, /*out:*/deg.data());
+        Cget_graph_node_inclists(
+            mst_i, m, n, deg.data(),
+            /*out:*/_incdata.data(), /*out:*/inc.data()
+        );
+
+        // the number of connected components:
+        clk = 1;
+        if (skip_edges) {
+            for (Py_ssize_t e = 0; e < m; ++e)
+                if (skip_edges[e]) clk++;
+        }
+        clsize.resize(clk);
+    }
+
+
+    void trim()
+    {
+        for (Py_ssize_t v=0; v<n; ++v) c[v] = -1;
+        for (Py_ssize_t i=0; i<clk; ++i) clsize[i] = 0;
+
+        Py_ssize_t lastc = 0;
+        for (Py_ssize_t v=0; v<n; ++v) {
+            if (c[v] >= 0) continue;
+
+            c[v] = lastc;
+            Py_ssize_t this_size = 1;
+
+            for (Py_ssize_t* pe = inc[v]; pe != inc[v+1]; pe++) {
+                if (skip_edges && skip_edges[*pe]) continue;
+                this_size += visit_get_sizes(v, *pe);
+            }
+            clsize[lastc] = this_size;
+
+
+            lastc++;
+            if (lastc == clk) break;
+        }
+
+        GENIECLUST_ASSERT(lastc == clk);
+        GENIECLUST_ASSERT(clk > 1 || clsize[0] == n);
+
+        for (Py_ssize_t e=0; e<m; ++e) {
+            if (skip_edges && skip_edges[e]) continue;
+            GENIECLUST_ASSERT(size[2*e+0] > 0 || size[2*e+1] > 0);
+            GENIECLUST_ASSERT(clsize[mst_i[2*e+0]] == clsize[mst_i[2*e+1]]);
+            if (size[2*e+0] > 0)
+                size[2*e+1] = clsize[mst_i[2*e+0]] - size[2*e+0];
+            else
+                size[2*e+0] = clsize[mst_i[2*e+1]] - size[2*e+1];
+        }
+
+
+        for (Py_ssize_t e = 0; e < m; ++e) {
+            if (skip_edges && skip_edges[e]) continue;
+            if (mst_d[e] < min_d) continue;
+
+            Py_ssize_t iv = (size[2*e+0]>=size[2*e+1])?0:1;
+            Py_ssize_t v = mst_i[2*e+iv];
+            if (c[v] < 0) continue;
+            if (size[2*e+(1-iv)] > max_size) continue;
+            visit_mark(v, e);
+        }
+    }
+
+};
+
+
+/*! Trim tree branches of size <= max_size and
+ *
+ *
+ *  @param mst_d m edge weights
+ *  @param mst_i c_contiguous matrix of size m*2,
+ *     where {mst_i[k,0], mst_i[k,1]} specifies the k-th (undirected) edge
+ *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
+ *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
+ *  @param m number of rows in mst_i (edges)
+ *  @param c [out] vector of length n; c[i] == -1 marks a trimmed-out point,
+ *     whereas c[i] >= 0 denotes a retained one
+ *  @param n length of c and the number of vertices in the spanning tree, n == m+1
+ *  @param min_d minimal edge weight to be considered trimmable
+ *  @param max_size maximal allowable size of a branch to cut
+ *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
+ */
+template <class FLOAT>
+void Ctrim_branches(
+    const FLOAT* mst_d,
+    const Py_ssize_t* mst_i,
+    Py_ssize_t m,
+    Py_ssize_t* c,
+    Py_ssize_t n,
+    FLOAT min_d,
+    Py_ssize_t max_size,
+    const bool* skip_edges=NULL
+) {
+    CBranchTrimmer tr(mst_d, mst_i, m, c, n, min_d, max_size, skip_edges);
+    tr.trim();  // modifies c in place
+}
+
+
+/* ************************************************************************** */
 
 
 /*! DEPRECATED Merge all midliers with their nearest clusters

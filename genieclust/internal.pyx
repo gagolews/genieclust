@@ -875,21 +875,37 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
 
 
 cdef extern from "../src/c_graph_process.h":
-    cdef void Cget_graph_node_degrees(Py_ssize_t* tree_ind, Py_ssize_t m,
-            Py_ssize_t n, Py_ssize_t* deg)
+    void Cget_graph_node_degrees(
+        Py_ssize_t* tree_ind, Py_ssize_t m,
+        Py_ssize_t n, Py_ssize_t* deg
+    )
 
-    void Ctranslate_skipped_indexes(Py_ssize_t* ind, Py_ssize_t m,
-        const bool* skip, Py_ssize_t n)
+    void Ctranslate_skipped_indexes(
+        Py_ssize_t* ind, Py_ssize_t m,
+        const bool* skip, Py_ssize_t n
+    )
 
-    void Cimpute_missing_labels(const Py_ssize_t* tree_ind, Py_ssize_t m,
-        Py_ssize_t* c, Py_ssize_t n, const bool* skip_edges)
+    void Cimpute_missing_labels(
+        const Py_ssize_t* tree_ind, Py_ssize_t m,
+        Py_ssize_t* c, Py_ssize_t n, const bool* skip_edges
+    )
 
-    void Cmerge_midliers(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
+    void Ctrim_branches[floatT](
+        const floatT* tree_dist, const Py_ssize_t* tree_ind, Py_ssize_t m,
+        Py_ssize_t* c, Py_ssize_t n, floatT min_d, Py_ssize_t max_size,
+        const bool* skip_edges
+    )
+
+    void Cmerge_midliers(
+        const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
         const Py_ssize_t* nn_ind, Py_ssize_t num_neighbours, Py_ssize_t M,
-        Py_ssize_t* c, Py_ssize_t n)
+        Py_ssize_t* c, Py_ssize_t n
+    )
 
-    void Cmerge_all(const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
-        Py_ssize_t* c, Py_ssize_t n)
+    void Cmerge_all(
+        const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
+        Py_ssize_t* c, Py_ssize_t n
+    )
 
 
 cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
@@ -901,6 +917,7 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
     genieclust.internal.impute_missing_labels(mst_i, c, skip_edges)
 
     Imputes all missing labels down below the tree branches.
+    All nodes in branches with class ID of -1 will be assigned their parent node's class.
 
 
     Parameters
@@ -937,6 +954,58 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
     Cimpute_missing_labels(&mst_i[0,0], m, &c2[0], n, skip_edges_ptr)
 
     return c2
+
+
+cpdef np.ndarray[Py_ssize_t] trim_branches(
+        floatT[::1] mst_d,
+        Py_ssize_t[:,::1] mst_i,
+        floatT min_d,
+        Py_ssize_t max_size,
+        bool[::1] skip_edges
+    ):
+    """
+    genieclust.internal.trim_branches(mst_d, mst_i, min_d, max_size)
+
+    Mark points in certain ("long and small") tree branches.
+
+
+    Parameters
+    ----------
+
+    mst_d, mst_i : ndarray
+        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        with mst_i of shape (n-1,2) giving the edges and mst_d providing the
+        corresponding edge weights.
+    min_d
+        Minimal weight of an edge to consider for trimming.
+    max_size
+        Maximal size of a tree branch to consider for trimming
+    skip_edges : c_contiguous array, length m or 0
+        skip_edges[i] == True marks the i-th edge as non-existent (ignorable)
+
+    Returns
+    -------
+
+    c : ndarray, shape (n,)
+        A new integer vector c with c[i]==-1 denoting a trimmed-out point
+        and c[i]==0 indicating a left-out one.
+    """
+    cdef Py_ssize_t m = mst_i.shape[0]
+    cdef Py_ssize_t n = m+1
+
+    cdef bool* skip_edges_ptr = NULL
+    if skip_edges.shape[0] == 0:
+        pass
+    elif skip_edges.shape[0] == m:
+        skip_edges_ptr = &skip_edges[0]
+    else:
+        raise ValueError("skip_edges should be either of size 0 or m")
+
+    cdef np.ndarray[Py_ssize_t] c = np.empty(n, dtype=np.intp)
+
+    Ctrim_branches(&mst_d[0], &mst_i[0,0], m, &c[0], n, min_d, max_size, skip_edges_ptr)
+
+    return c
 
 
 cpdef np.ndarray[Py_ssize_t] translate_skipped_indexes(
@@ -1084,7 +1153,7 @@ cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
         see return value of genieclust.internal.genie_from_mst.
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
-        with mst_i giving the edges (n-1,2) and mst_d providing the
+        with mst_i of shape (n-1,2) giving the edges and mst_d providing the
         corresponding edge weights.
 
 
