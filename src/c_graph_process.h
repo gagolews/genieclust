@@ -297,7 +297,6 @@ private:
     const Py_ssize_t max_size;
     const bool* skip_edges;
 
-
     std::vector<Py_ssize_t> deg;
     std::vector<Py_ssize_t> _incdata;
     std::vector<Py_ssize_t*> inc;
@@ -350,6 +349,7 @@ private:
         }
     }
 
+
 public:
     CBranchTrimmer(
         const FLOAT* mst_d,
@@ -361,7 +361,7 @@ public:
         Py_ssize_t max_size,
         const bool* skip_edges=NULL
     ) : mst_d(mst_d), mst_i(mst_i), m(m), c(c), n(n),
-        min_d(min_d), max_size(max_size), //skip_edges(skip_edges),
+        min_d(min_d), max_size(max_size), skip_edges(skip_edges),
         deg(n), _incdata(2*m), inc(n+1), size(2*m, -1)
     {
         GENIECLUST_ASSERT(m == n-1);
@@ -400,7 +400,6 @@ public:
             }
             clsize[lastc] = this_size;
 
-
             lastc++;
             if (lastc == clk) break;
         }
@@ -411,11 +410,11 @@ public:
         for (Py_ssize_t e=0; e<m; ++e) {
             if (skip_edges && skip_edges[e]) continue;
             GENIECLUST_ASSERT(size[2*e+0] > 0 || size[2*e+1] > 0);
-            GENIECLUST_ASSERT(clsize[mst_i[2*e+0]] == clsize[mst_i[2*e+1]]);
+            GENIECLUST_ASSERT(clsize[c[mst_i[2*e+0]]] == clsize[c[mst_i[2*e+1]]]);
             if (size[2*e+0] > 0)
-                size[2*e+1] = clsize[mst_i[2*e+0]] - size[2*e+0];
+                size[2*e+1] = clsize[c[mst_i[2*e+0]]] - size[2*e+0];
             else
-                size[2*e+0] = clsize[mst_i[2*e+1]] - size[2*e+1];
+                size[2*e+0] = clsize[c[mst_i[2*e+1]]] - size[2*e+1];
         }
 
 
