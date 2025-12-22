@@ -917,7 +917,8 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
     genieclust.internal.impute_missing_labels(mst_i, c, skip_edges)
 
     Imputes all missing labels down below the tree branches.
-    All nodes in branches with class ID of -1 will be assigned their parent node's class.
+    All nodes in branches with class ID of -1 will be assigned
+    their parent node's class.
 
 
     Parameters
@@ -988,7 +989,7 @@ cpdef np.ndarray[Py_ssize_t] trim_branches(
 
     c : ndarray, shape (n,)
         A new integer vector c with c[i]==-1 denoting a trimmed-out point
-        and c[i]==0 indicating a left-out one.
+        and c[i]>=0 indicating a left-out one.
     """
     cdef Py_ssize_t m = mst_i.shape[0]
     cdef Py_ssize_t n = m+1
