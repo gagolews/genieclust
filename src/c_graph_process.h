@@ -69,11 +69,9 @@ void Ctranslate_skipped_indexes(
 /*! Compute the degree of each vertex in an undirected graph
  *  over a vertex set {0,...,n-1}.
  *
- *  NOTE: We have the same function in genieclust+lumbermark
  *
  * @param ind c_contiguous matrix of size m*2,
- *     where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n.
- *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored
+ *     where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n
  * @param m number of edges (rows in ind)
  * @param n number of vertices
  * @param deg [out] array of size n, where
@@ -92,15 +90,11 @@ void Cget_graph_node_degrees(
         Py_ssize_t u = ind[2*i+0];
         Py_ssize_t v = ind[2*i+1];
 
-        if (u < 0) {
-            GENIECLUST_ASSERT(v < 0);
-            continue; // represents a no-edge -> ignore
-        }
-        GENIECLUST_ASSERT(v >= 0);
-
-        if (u >= n || v >= n)
+        if (u < 0 || v < 0)
+            throw std::domain_error("All elements must be >= 0");
+        else if (u >= n || v >= n)
             throw std::domain_error("All elements must be < n");
-        if (u == v)
+        else if (u == v)
             throw std::domain_error("Self-loops are not allowed");
 
         deg[u]++;
@@ -112,64 +106,55 @@ void Cget_graph_node_degrees(
 /*! Compute the incidence list of each vertex in an undirected graph
  *  over a vertex set {0,...,n-1}.
  *
- *  NOTE: We have the same function in genieclust+lumbermark
- *
- * @param ind c_contiguous matrix of size m*2,
- *     where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n.
- *     Edges with ind[i,0] < 0 or ind[i,1] < 0 are purposely ignored
- * @param m number of edges (rows in ind)
- * @param n number of vertices
- * @param deg array of size n, where deg[i] gives the degree of the i-th vertex
- * @param data [out] a data buffer of length 2*m, provides data for adj
- * @param adj [out] an array of length n+1, where adj[i] will be an array
- *     of length deg[i] giving the edges incident on the i-th vertex;
- *     adj[n] is a sentinel element
+ *  @param ind c_contiguous matrix of size m*2,
+ *      where {ind[i,0], ind[i,1]} is the i-th edge with ind[i,j] < n
+ *  @param m number of edges (rows in ind)
+ *  @param n number of vertices
+ *  @param cumdeg [out] array of size n+1, where cumdeg[i+1] the sum of the first i vertex degrees
+ *  @param inc [out] array of size 2*m; inc[cumdeg[i]]..inc[cumdeg[i+1]-1] gives the edges incident on the i-th vertex
  */
 void Cget_graph_node_inclists(
     const Py_ssize_t* ind,
     const Py_ssize_t m,
     const Py_ssize_t n,
-    const Py_ssize_t* deg,
-    Py_ssize_t* data,
-    Py_ssize_t** inc
+    Py_ssize_t* cumdeg,
+    Py_ssize_t* inc
 ) {
-    Py_ssize_t cumdeg = 0;
-    inc[0] = data;
-    for (Py_ssize_t i=0; i<n; ++i) {
-        inc[i+1] = data+cumdeg;
-        cumdeg += deg[i];
+    cumdeg[0] = 0;
+    Cget_graph_node_degrees(ind, m, n, cumdeg+1);
+
+    Py_ssize_t cd = 0;
+    for (Py_ssize_t i=1; i<n+1; ++i) {
+        Py_ssize_t this_deg = cumdeg[i];
+        cumdeg[i] = cd;
+        cd += this_deg;
+    }
+    // that's not it yet; cumdeg is adjusted below
+
+
+    for (Py_ssize_t e=0; e<m; ++e) {
+        Py_ssize_t u = ind[2*e+0];
+        Py_ssize_t v = ind[2*e+1];
+
+        *(inc+cumdeg[u+1]) = e;
+        ++(cumdeg[u+1]);
+
+        *(inc+cumdeg[v+1]) = e;
+        ++(cumdeg[v+1]);
     }
 
-    GENIECLUST_ASSERT(cumdeg <= 2*m);
+    GENIECLUST_ASSERT(cumdeg[0] == 0);
+    GENIECLUST_ASSERT(cumdeg[n] == 2*m);
 
-    for (Py_ssize_t i=0; i<m; ++i) {
-        Py_ssize_t u = ind[2*i+0];
-        Py_ssize_t v = ind[2*i+1];
-        if (u < 0 || v < 0)
-            continue; // represents a no-edge -> ignore
 
-#ifdef DEBUG
-        if (u >= n || v >= n)
-            throw std::domain_error("All elements must be < n");
-        if (u == v)
-            throw std::domain_error("Self-loops are not allowed");
-#endif
-
-        *(inc[u+1]) = i;
-        ++(inc[u+1]);
-
-        *(inc[v+1]) = i;
-        ++(inc[v+1]);
-    }
-
-#ifdef DEBUG
-    cumdeg = 0;
-    inc[0] = data;
-    for (Py_ssize_t i=0; i<n; ++i) {
-        GENIECLUST_ASSERT(inc[i] == data+cumdeg);
-        cumdeg += deg[i];
-    }
-#endif
+// #ifdef DEBUG
+//     cumdeg = 0;
+//     inc[0] = data;
+//     for (Py_ssize_t i=0; i<n; ++i) {
+//         GENIECLUST_ASSERT(inc[i] == data+cumdeg);
+//         cumdeg += deg[i];
+//     }
+// #endif
 }
 
 
@@ -184,14 +169,12 @@ class CMissingLabelsImputer
 {
 private:
     const Py_ssize_t* mst_i;
+    const Py_ssize_t* cumdeg;
+    const Py_ssize_t* inc;
     const Py_ssize_t m;
     Py_ssize_t* c;
     const Py_ssize_t n;
     const bool* skip_edges;
-
-    std::vector<Py_ssize_t> deg;
-    std::vector<Py_ssize_t> _incdata;
-    std::vector<Py_ssize_t*> inc;
 
     void visit(Py_ssize_t v, Py_ssize_t e)
     {
@@ -205,8 +188,8 @@ private:
 
         c[w] = c[v];
 
-        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
-            if (*e2 != e) visit(w, *e2);
+        for (const Py_ssize_t* pe = inc+cumdeg[w]; pe != inc+cumdeg[w+1]; pe++) {
+            if (*pe != e) visit(w, *pe);
         }
     }
 
@@ -214,18 +197,16 @@ private:
 public:
     CMissingLabelsImputer(
         const Py_ssize_t* mst_i,
+        const Py_ssize_t* cumdeg,
+        const Py_ssize_t* inc,
         Py_ssize_t m,
         Py_ssize_t* c,
         Py_ssize_t n,
         const bool* skip_edges
-    ) : mst_i(mst_i), m(m), c(c), n(n), skip_edges(skip_edges),
-        deg(n), _incdata(2*m), inc(n+1)
+    ) : mst_i(mst_i), cumdeg(cumdeg), inc(inc),
+        m(m), c(c), n(n), skip_edges(skip_edges)
     {
-        Cget_graph_node_degrees(mst_i, m, n, /*out:*/deg.data());
-        Cget_graph_node_inclists(
-            mst_i, m, n, deg.data(),
-            /*out:*/_incdata.data(), /*out:*/inc.data()
-        );
+        ;
     }
 
 
@@ -234,7 +215,7 @@ public:
         for (Py_ssize_t v=0; v<n; ++v) {
             if (c[v] < 0) continue;
 
-            for (Py_ssize_t* pe = inc[v]; pe != inc[v+1]; ++pe) {
+            for (const Py_ssize_t* pe = inc+cumdeg[v]; pe != inc+cumdeg[v+1]; pe++) {
                 if (skip_edges && skip_edges[*pe]) continue;
 
                 Py_ssize_t iv = (Py_ssize_t)(mst_i[2*(*pe)+1]==v);
@@ -266,15 +247,33 @@ public:
  *      to be imputed
  *  @param n length of c and the number of vertices in the spanning tree
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
+ *  @param cumdeg an array of length n+1 or NULL; see Cget_graph_node_inclists
+ *  @param inc an array of length 2*m or NULL; see Cget_graph_node_inclists
  */
 void Cimpute_missing_labels(
     const Py_ssize_t* mst_i,
     Py_ssize_t m,
     Py_ssize_t* c,
     Py_ssize_t n,
-    const bool* skip_edges=NULL
+    const bool* skip_edges=NULL,
+    const Py_ssize_t* cumdeg=NULL,
+    const Py_ssize_t* inc=NULL
 ) {
-    CMissingLabelsImputer imp(mst_i, m, c, n, skip_edges);
+    std::vector<Py_ssize_t> _cumdeg;
+    std::vector<Py_ssize_t> _inc;
+    if (!cumdeg) {
+        GENIECLUST_ASSERT(!inc);
+        _cumdeg.resize(n+1);
+        _inc.resize(2*m);
+        Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
+        cumdeg = _cumdeg.data();
+        inc = _inc.data();
+    }
+    else {
+        GENIECLUST_ASSERT(inc);
+    }
+
+    CMissingLabelsImputer imp(mst_i, cumdeg, inc, m, c, n, skip_edges);
     imp.impute();  // modifies c in place
 }
 
@@ -283,13 +282,15 @@ void Cimpute_missing_labels(
 
 
 
-/** See Ctrim_branches below.
+/** See Ctrim_branches below.  [DEPRECATED]
  */
 template <class FLOAT> class CBranchTrimmer
 {
 private:
     const FLOAT* mst_d;
     const Py_ssize_t* mst_i;
+    const Py_ssize_t* cumdeg;
+    const Py_ssize_t* inc;
     const Py_ssize_t m;
     Py_ssize_t* c;
     const Py_ssize_t n;
@@ -297,9 +298,6 @@ private:
     const Py_ssize_t max_size;
     const bool* skip_edges;
 
-    std::vector<Py_ssize_t> deg;
-    std::vector<Py_ssize_t> _incdata;
-    std::vector<Py_ssize_t*> inc;
 
     std::vector<Py_ssize_t> size;
 
@@ -322,8 +320,8 @@ private:
         Py_ssize_t this_size = 1;
         c[w] = c[v];
 
-        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
-            if (*e2 != e) this_size += visit_get_sizes(w, *e2);
+        for (const Py_ssize_t* pe = inc+cumdeg[w]; pe != inc+cumdeg[w+1]; pe++) {
+            if (*pe != e) this_size += visit_get_sizes(w, *pe);
         }
 
         size[2*e + (1-iv)] = this_size;
@@ -344,8 +342,8 @@ private:
 
         c[w] = -1;
 
-        for (Py_ssize_t* e2 = inc[w]; e2 != inc[w+1]; e2++) {
-            if (*e2 != e) visit_mark(w, *e2);
+        for (const Py_ssize_t* pe = inc+cumdeg[w]; pe != inc+cumdeg[w+1]; pe++) {
+            if (*pe != e) visit_mark(w, *pe);
         }
     }
 
@@ -354,23 +352,20 @@ public:
     CBranchTrimmer(
         const FLOAT* mst_d,
         const Py_ssize_t* mst_i,
+        const Py_ssize_t* cumdeg,
+        const Py_ssize_t* inc,
         Py_ssize_t m,
         Py_ssize_t* c,
         Py_ssize_t n,
         FLOAT min_d,
         Py_ssize_t max_size,
         const bool* skip_edges=NULL
-    ) : mst_d(mst_d), mst_i(mst_i), m(m), c(c), n(n),
+    ) : mst_d(mst_d), mst_i(mst_i), cumdeg(cumdeg), inc(inc),
+        m(m), c(c), n(n),
         min_d(min_d), max_size(max_size), skip_edges(skip_edges),
-        deg(n), _incdata(2*m), inc(n+1), size(2*m, -1)
+        size(2*m, -1)
     {
         GENIECLUST_ASSERT(m == n-1);
-
-        Cget_graph_node_degrees(mst_i, m, n, /*out:*/deg.data());
-        Cget_graph_node_inclists(
-            mst_i, m, n, deg.data(),
-            /*out:*/_incdata.data(), /*out:*/inc.data()
-        );
 
         // the number of connected components:
         clk = 1;
@@ -394,7 +389,7 @@ public:
             c[v] = lastc;
             Py_ssize_t this_size = 1;
 
-            for (Py_ssize_t* pe = inc[v]; pe != inc[v+1]; pe++) {
+            for (const Py_ssize_t* pe = inc+cumdeg[v]; pe != inc+cumdeg[v+1]; pe++) {
                 if (skip_edges && skip_edges[*pe]) continue;
                 this_size += visit_get_sizes(v, *pe);
             }
@@ -418,9 +413,9 @@ public:
         }
 
 
-        for (Py_ssize_t e = 0; e < m; ++e) {
+        for (Py_ssize_t e=0; e<m; ++e) {
             if (skip_edges && skip_edges[e]) continue;
-            if (mst_d[e] < min_d) continue;
+            if (mst_d[e] <= min_d) continue;
 
             Py_ssize_t iv = (size[2*e+0]>=size[2*e+1])?0:1;
             Py_ssize_t v = mst_i[2*e+iv];
@@ -433,7 +428,7 @@ public:
 };
 
 
-/*! Trim tree branches of size <= max_size and
+/*! Trim tree branches of size <= max_size connected by an edge > min_d  [DEPRECATED]
  *
  *
  *  @param mst_d m edge weights
@@ -448,6 +443,8 @@ public:
  *  @param min_d minimal edge weight to be considered trimmable
  *  @param max_size maximal allowable size of a branch to cut
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
+ *  @param cumdeg an array of length n+1 or NULL; see Cget_graph_node_inclists
+ *  @param inc an array of length 2*m or NULL; see Cget_graph_node_inclists
  */
 template <class FLOAT>
 void Ctrim_branches(
@@ -458,9 +455,25 @@ void Ctrim_branches(
     Py_ssize_t n,
     FLOAT min_d,
     Py_ssize_t max_size,
-    const bool* skip_edges=NULL
+    const bool* skip_edges=NULL,
+    const Py_ssize_t* cumdeg=NULL,
+    const Py_ssize_t* inc=NULL
 ) {
-    CBranchTrimmer tr(mst_d, mst_i, m, c, n, min_d, max_size, skip_edges);
+    std::vector<Py_ssize_t> _cumdeg;
+    std::vector<Py_ssize_t> _inc;
+    if (!cumdeg) {
+        GENIECLUST_ASSERT(!inc);
+        _cumdeg.resize(n+1);
+        _inc.resize(2*m);
+        Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
+        cumdeg = _cumdeg.data();
+        inc = _inc.data();
+    }
+    else {
+        GENIECLUST_ASSERT(inc);
+    }
+
+    CBranchTrimmer tr(mst_d, mst_i, cumdeg, inc, m, c, n, min_d, max_size, skip_edges);
     tr.trim();  // modifies c in place
 }
 
@@ -468,7 +481,7 @@ void Ctrim_branches(
 /* ************************************************************************** */
 
 
-/*! DEPRECATED Merge all midliers with their nearest clusters
+/*! Merge all midliers with their nearest clusters  [DEPRECATED]
  *
  *  The i-th node is a midlier if it is a leaf in the spanning tree
  *  (and hence it meets c[i] < 0) which is amongst the
@@ -539,7 +552,7 @@ void Cmerge_midliers(
 }
 
 
-/*! DEPRECATED Merge all outliers and midliers with their nearest clusters
+/*! Merge all outliers and midliers with their nearest clusters  [DEPRECATED]
  *
  *  For each leaf in the MST, i (and hence a vertex which meets c[i] < 0),
  *  this procedure allocates c[i] to its its closest cluster, c[j],

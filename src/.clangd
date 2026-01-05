@@ -1,2 +1,2 @@
 CompileFlags:
-    Add: [-xc++, -Wall, -Wpedantic, -Wextra -std=c++17, -I/usr/lib64/R/include, -I/home/gagolews/R/x86_64-suse-linux-gnu-library/4.4/Rcpp/include, -fopenmp, -DGENIECLUST_R]
+    Add: [-xc++, -Wall, -Wpedantic, -Wextra -std=c++17, -I/usr/lib64/R/include, -I/home/gagolews/R/x86_64-suse-linux-gnu-library/4.5/Rcpp/include, -fopenmp, -DGENIECLUST_R]
