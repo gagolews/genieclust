@@ -77,7 +77,7 @@ void Ctranslate_skipped_indexes(
  * @param deg [out] array of size n, where
  *     deg[i] will give the degree of the i-th vertex.
  */
-void Cget_graph_node_degrees(
+void Cgraph_get_node_degrees(
     const Py_ssize_t* ind,
     const Py_ssize_t m,
     const Py_ssize_t n,
@@ -113,7 +113,7 @@ void Cget_graph_node_degrees(
  *  @param cumdeg [out] array of size n+1, where cumdeg[i+1] the sum of the first i vertex degrees
  *  @param inc [out] array of size 2*m; inc[cumdeg[i]]..inc[cumdeg[i+1]-1] gives the edges incident on the i-th vertex
  */
-void Cget_graph_node_inclists(
+void Cgraph_get_node_inclists(
     const Py_ssize_t* ind,
     const Py_ssize_t m,
     const Py_ssize_t n,
@@ -121,7 +121,7 @@ void Cget_graph_node_inclists(
     Py_ssize_t* inc
 ) {
     cumdeg[0] = 0;
-    Cget_graph_node_degrees(ind, m, n, cumdeg+1);
+    Cgraph_get_node_degrees(ind, m, n, cumdeg+1);
 
     Py_ssize_t cd = 0;
     for (Py_ssize_t i=1; i<n+1; ++i) {
@@ -196,7 +196,7 @@ public:
             GENIECLUST_ASSERT(!inc);
             _cumdeg.resize(n+1);
             _inc.resize(2*m);
-            Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
+            Cgraph_get_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
             this->cumdeg = _cumdeg.data();
             this->inc = _inc.data();
         }
@@ -209,9 +209,19 @@ public:
 };
 
 
-/** See Cimpute_missing_labels below.
+
+
+/* ************************************************************************** */
+
+
+
+/* ************************************************************************** */
+
+
+
+/** See Cmst_get_cluster_sizes below.
  */
-class CMissingLabelsImputer : public CMSTProcessorBase
+class CMSTClusterSizeGetter : public CMSTProcessorBase
 {
 private:
 
@@ -234,7 +244,7 @@ private:
 
 
 public:
-    CMissingLabelsImputer(
+    CMSTClusterSizeGetter(
         const Py_ssize_t* mst_i,
         Py_ssize_t m,
         Py_ssize_t n,
@@ -273,6 +283,105 @@ public:
 
 
 
+/*! Label connected components in a spanning forest (where skip_edges
+ *  designate the edges omitted from the tree) and fetch their sizes
+ *
+ *  @param mst_i c_contiguous matrix of size m*2,
+ *     where {mst_i[k,0], mst_i[k,1]} specifies the k-th (undirected) edge
+ *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
+ *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
+ *  @param m number of rows in mst_i (edges)
+ *  @param n length of c and the number of vertices in the spanning tree
+ *  @param c [in/out] c_contiguous vector of length n, where
+ *      c[i] denotes the cluster ID (in {-1, 0, 1, ..., k-1} for some k)
+ *      of the i-th object, i=0,...,n-1.  Class -1 represents missing values
+ *      to be imputed
+ *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
+ *  @param cumdeg an array of length n+1 or NULL; see Cgraph_get_node_inclists
+ *  @param inc an array of length 2*m or NULL; see Cgraph_get_node_inclists
+ */
+void Cmst_get_cluster_sizes(
+    const Py_ssize_t* mst_i,
+    Py_ssize_t m,
+    Py_ssize_t n,
+    Py_ssize_t* c,
+    const Py_ssize_t* cumdeg=NULL,
+    const Py_ssize_t* inc=NULL,
+    const bool* skip_edges=NULL
+) {
+    CMSTClusterSizeGetter get(mst_i, m, n, c, cumdeg, inc, skip_edges);
+    get.process();  // modifies c in place
+}
+
+
+/* ************************************************************************** */
+
+
+
+
+/** See Cmst_impute_missing_labels below.
+ */
+class CMSTMissingLabelsImputer : public CMSTProcessorBase
+{
+private:
+
+    void visit(Py_ssize_t v, Py_ssize_t e)
+    {
+        if (skip_edges && skip_edges[e]) return;
+
+        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
+        Py_ssize_t w = mst_i[2*e+(1-iv)];
+
+        GENIECLUST_ASSERT(c[v] >= 0);
+        GENIECLUST_ASSERT(c[w] < 0);
+
+        c[w] = c[v];
+
+        for (const Py_ssize_t* pe = inc+cumdeg[w]; pe != inc+cumdeg[w+1]; pe++) {
+            if (*pe != e) visit(w, *pe);
+        }
+    }
+
+
+public:
+    CMSTMissingLabelsImputer(
+        const Py_ssize_t* mst_i,
+        Py_ssize_t m,
+        Py_ssize_t n,
+        Py_ssize_t* c=nullptr,
+        const Py_ssize_t* cumdeg=nullptr,
+        const Py_ssize_t* inc=nullptr,
+        const bool* skip_edges=nullptr
+    ) : CMSTProcessorBase(mst_i, m, n, c, cumdeg, inc, skip_edges)
+    {
+        GENIECLUST_ASSERT(this->c);
+        GENIECLUST_ASSERT(this->cumdeg);
+        GENIECLUST_ASSERT(this->inc);
+    }
+
+
+    virtual void process()
+    {
+        for (Py_ssize_t v=0; v<n; ++v) {
+            if (c[v] < 0) continue;
+
+            for (const Py_ssize_t* pe = inc+cumdeg[v]; pe != inc+cumdeg[v+1]; pe++) {
+                if (skip_edges && skip_edges[*pe]) continue;
+
+                Py_ssize_t iv = (Py_ssize_t)(mst_i[2*(*pe)+1]==v);
+                Py_ssize_t w = mst_i[2*(*pe)+(1-iv)];
+
+                if (c[w] < 0) {  // descend into this branch to impute missing values
+                    visit(v, *pe);
+                }
+            }
+        }
+    }
+
+};
+
+
+
 /*! Impute missing labels in all tree branches.
  *  All nodes in branches with class ID of -1 will be assigned their parent node's class.
  *
@@ -287,10 +396,10 @@ public:
  *      of the i-th object, i=0,...,n-1.  Class -1 represents missing values
  *      to be imputed
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
- *  @param cumdeg an array of length n+1 or NULL; see Cget_graph_node_inclists
- *  @param inc an array of length 2*m or NULL; see Cget_graph_node_inclists
+ *  @param cumdeg an array of length n+1 or NULL; see Cgraph_get_node_inclists
+ *  @param inc an array of length 2*m or NULL; see Cgraph_get_node_inclists
  */
-void Cimpute_missing_labels(
+void Cmst_impute_missing_labels(
     const Py_ssize_t* mst_i,
     Py_ssize_t m,
     Py_ssize_t n,
@@ -299,7 +408,7 @@ void Cimpute_missing_labels(
     const Py_ssize_t* inc=NULL,
     const bool* skip_edges=NULL
 ) {
-    CMissingLabelsImputer imp(mst_i, m, n, c, cumdeg, inc, skip_edges);
+    CMSTMissingLabelsImputer imp(mst_i, m, n, c, cumdeg, inc, skip_edges);
     imp.process();  // modifies c in place
 }
 
@@ -308,9 +417,9 @@ void Cimpute_missing_labels(
 
 
 
-/** See Ctrim_branches below.  [DEPRECATED]
+/** See Cmst_trim_branches below.  [DEPRECATED]
  */
-template <class FLOAT> class CBranchTrimmer : public CMSTProcessorBase
+template <class FLOAT> class CMSTBranchTrimmer : public CMSTProcessorBase
 {
 private:
     const FLOAT* mst_d;
@@ -368,7 +477,7 @@ private:
 
 
 public:
-    CBranchTrimmer(
+    CMSTBranchTrimmer(
         const FLOAT* mst_d,
         FLOAT min_d,
         Py_ssize_t max_size,
@@ -466,11 +575,11 @@ public:
  *  @param min_d minimal edge weight to be considered trimmable
  *  @param max_size maximal allowable size of a branch to cut
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
- *  @param cumdeg an array of length n+1 or NULL; see Cget_graph_node_inclists
- *  @param inc an array of length 2*m or NULL; see Cget_graph_node_inclists
+ *  @param cumdeg an array of length n+1 or NULL; see Cgraph_get_node_inclists
+ *  @param inc an array of length 2*m or NULL; see Cgraph_get_node_inclists
  */
 template <class FLOAT>
-void Ctrim_branches(
+void Cmst_trim_branches(
     const FLOAT* mst_d,
     FLOAT min_d,
     Py_ssize_t max_size,
@@ -482,7 +591,7 @@ void Ctrim_branches(
     const Py_ssize_t* inc=NULL,
     const bool* skip_edges=NULL
 ) {
-    CBranchTrimmer tr(mst_d, min_d, max_size, mst_i, m, n, c, cumdeg, inc, skip_edges);
+    CMSTBranchTrimmer tr(mst_d, min_d, max_size, mst_i, m, n, c, cumdeg, inc, skip_edges);
     tr.process();  // modifies c in place
 }
 

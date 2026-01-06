@@ -842,11 +842,11 @@ cpdef tuple nn_list_to_matrix(
 
 
 cdef extern from "../src/c_graph_process.h":
-    void Cget_graph_node_degrees(
+    void Cgraph_get_node_degrees(
         const Py_ssize_t* graph_i, Py_ssize_t m, Py_ssize_t n, Py_ssize_t* deg
     )
 
-    void Cget_graph_node_inclists(
+    void Cgraph_get_node_inclists(
         const Py_ssize_t* graph_i,
         Py_ssize_t m,
         Py_ssize_t n,
@@ -858,14 +858,14 @@ cdef extern from "../src/c_graph_process.h":
         Py_ssize_t* ind, Py_ssize_t m, const bool* skip, Py_ssize_t n
     )
 
-    void Cimpute_missing_labels(
+    void Cmst_impute_missing_labels(
         const Py_ssize_t* mst_i, Py_ssize_t m, Py_ssize_t n,
         Py_ssize_t* c, const Py_ssize_t* cumdeg,
         const Py_ssize_t* inc, const bool* skip_edges
 
     )
 
-    void Ctrim_branches[floatT](  # [DEPRECATED]
+    void Cmst_trim_branches[floatT](  # [DEPRECATED]
         const floatT* mst_d, floatT min_d, Py_ssize_t max_size,
         const Py_ssize_t* mst_i, Py_ssize_t m, Py_ssize_t n,
         Py_ssize_t* c, const Py_ssize_t* cumdeg, const Py_ssize_t* inc,
@@ -915,7 +915,7 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] graph_i, P
     cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cget_graph_node_degrees(&graph_i[0,0], m, n, &deg[0])
+    Cgraph_get_node_degrees(&graph_i[0,0], m, n, &deg[0])
 
     return deg
 
@@ -956,7 +956,7 @@ cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] graph_i, Py_ssize_t n):
     cdef np.ndarray[Py_ssize_t] inc = np.empty(2*m, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cget_graph_node_inclists(&graph_i[0,0], m, n, &cumdeg[0], &inc[0])
+    Cgraph_get_node_inclists(&graph_i[0,0], m, n, &cumdeg[0], &inc[0])
 
     return cumdeg, inc
 
@@ -1008,7 +1008,7 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
 
     cdef np.ndarray[Py_ssize_t] c2 = np.array(c, dtype=np.intp)
 
-    Cimpute_missing_labels(&mst_i[0,0], m, n, &c2[0], NULL, NULL, skip_edges_ptr)
+    Cmst_impute_missing_labels(&mst_i[0,0], m, n, &c2[0], NULL, NULL, skip_edges_ptr)
 
     return c2
 
@@ -1065,7 +1065,7 @@ cpdef np.ndarray[Py_ssize_t] trim_branches(
 
     cdef np.ndarray[Py_ssize_t] c = np.empty(n, dtype=np.intp)
 
-    Ctrim_branches(&mst_d[0], min_d, max_size, &mst_i[0,0], m, n, &c[0], NULL, NULL, skip_edges_ptr)
+    Cmst_trim_branches(&mst_d[0], min_d, max_size, &mst_i[0,0], m, n, &c[0], NULL, NULL, skip_edges_ptr)
 
     return c
 
@@ -1078,7 +1078,7 @@ cpdef np.ndarray[Py_ssize_t] translate_skipped_indexes(
     genieclust.internal.translate_skipped_indexes(ind, skip)
 
     If skip=[False, True, False, False, True, False, False],
-    then indexes are mapped in such a way that:
+    then indexes in ind are mapped in such a way that:
     0 -> 0,
     1 -> 2,
     2 -> 3,
@@ -1092,7 +1092,7 @@ cpdef np.ndarray[Py_ssize_t] translate_skipped_indexes(
     ind : c_contiguous array of indexes
         Indexes to translate
     skip : Boolean array
-        Indicates whether an element was skipped or not.
+        Indicates whether an index was skipped or not
 
 
     Returns
