@@ -843,12 +843,11 @@ cpdef tuple nn_list_to_matrix(
 
 cdef extern from "../src/c_graph_process.h":
     void Cget_graph_node_degrees(
-        const Py_ssize_t* tree_ind, Py_ssize_t m,
-        Py_ssize_t n, Py_ssize_t* deg
+        const Py_ssize_t* graph_i, Py_ssize_t m, Py_ssize_t n, Py_ssize_t* deg
     )
 
     void Cget_graph_node_inclists(
-        const Py_ssize_t* tree_ind,
+        const Py_ssize_t* graph_i,
         Py_ssize_t m,
         Py_ssize_t n,
         Py_ssize_t* cumdeg,
@@ -856,41 +855,39 @@ cdef extern from "../src/c_graph_process.h":
     )
 
     void Ctranslate_skipped_indexes(
-        Py_ssize_t* ind, Py_ssize_t m,
-        const bool* skip, Py_ssize_t n
+        Py_ssize_t* ind, Py_ssize_t m, const bool* skip, Py_ssize_t n
     )
 
     void Cimpute_missing_labels(
-        const Py_ssize_t* tree_ind, Py_ssize_t m,
-        Py_ssize_t* c, Py_ssize_t n, const bool* skip_edges,
-        const Py_ssize_t* cumdeg,
-        const Py_ssize_t* inc
+        const Py_ssize_t* mst_i, Py_ssize_t m, Py_ssize_t n,
+        Py_ssize_t* c, const Py_ssize_t* cumdeg,
+        const Py_ssize_t* inc, const bool* skip_edges
+
     )
 
     void Ctrim_branches[floatT](  # [DEPRECATED]
-        const floatT* tree_dist, const Py_ssize_t* tree_ind, Py_ssize_t m,
-        Py_ssize_t* c, Py_ssize_t n, floatT min_d, Py_ssize_t max_size,
-        const bool* skip_edges,
-        const Py_ssize_t* cumdeg,
-        const Py_ssize_t* inc
+        const floatT* mst_d, floatT min_d, Py_ssize_t max_size,
+        const Py_ssize_t* mst_i, Py_ssize_t m, Py_ssize_t n,
+        Py_ssize_t* c, const Py_ssize_t* cumdeg, const Py_ssize_t* inc,
+        const bool* skip_edges
     )
 
     void Cmerge_midliers(  # [DEPRECATED]
-        const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
-        const Py_ssize_t* nn_ind, Py_ssize_t num_neighbours, Py_ssize_t M,
+        const Py_ssize_t* mst_i, Py_ssize_t num_edges,
+        const Py_ssize_t* nn_i, Py_ssize_t num_neighbours, Py_ssize_t M,
         Py_ssize_t* c, Py_ssize_t n
     )
 
     void Cmerge_all(  # [DEPRECATED]
-        const Py_ssize_t* tree_ind, Py_ssize_t num_edges,
+        const Py_ssize_t* mst_i, Py_ssize_t num_edges,
         Py_ssize_t* c, Py_ssize_t n
     )
 
 
 
-cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ssize_t n):
+cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] graph_i, Py_ssize_t n):
     """
-    genieclust.internal.get_graph_node_degrees(ind, n)
+    genieclust.internal.get_graph_node_degrees(graph_i, n)
 
     Get the degrees of all nodes in an undirected simple graph over
     a vertex set {0,...,n-1} specified via an adjacency list.
@@ -899,8 +896,8 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
     Parameters
     ----------
 
-    ind : ndarray, shape (m,2)
-        A two-column matrix such that {ind[i,0], ind[i,1]} represents
+    graph_i : ndarray, shape (m,2)
+        A two-column matrix such that {graph_i[i,0], graph_i[i,1]} represents
         one of m undirected edges
     n : int
         Number of vertices
@@ -913,19 +910,19 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] ind, Py_ss
         An integer array of length n; deg[i] denotes the degree of
         the i-th vertex. For instance, deg[i]==1 marks a leaf node.
     """
-    if ind.shape[1] != 2: raise ValueError("ind must have two columns")
-    cdef Py_ssize_t m = ind.shape[0]
+    if graph_i.shape[1] != 2: raise ValueError("graph_i must have two columns")
+    cdef Py_ssize_t m = graph_i.shape[0]
     cdef np.ndarray[Py_ssize_t] deg = np.empty(n, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cget_graph_node_degrees(&ind[0,0], m, n, &deg[0])
+    Cget_graph_node_degrees(&graph_i[0,0], m, n, &deg[0])
 
     return deg
 
 
-cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] ind, Py_ssize_t n):
+cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] graph_i, Py_ssize_t n):
     """
-    genieclust.internal.get_graph_node_inclists(ind, n)
+    genieclust.internal.get_graph_node_inclists(graph_i, n)
 
     Compute the incidence list of an undirected simple graph over
     a vertex set {0,...,n-1} specified via an adjacency list.
@@ -935,8 +932,8 @@ cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] ind, Py_ssize_t n):
     Parameters
     ----------
 
-    ind : ndarray, shape (m,2)
-        A two-column matrix such that {ind[i,0], ind[i,1]} represents
+    graph_i : ndarray, shape (m,2)
+        A two-column matrix such that {graph_i[i,0], graph_i[i,1]} represents
         one of m undirected edges
     n : int
         Number of vertices
@@ -953,13 +950,13 @@ cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] ind, Py_ssize_t n):
         An integer array of length `2*m`, where `inc[cumdeg[i]]`, ...,
         `inc[cumdeg[i+1]-1]` give the edges incident on the `i`-th vertex
     """
-    if ind.shape[1] != 2: raise ValueError("ind must have two columns")
-    cdef Py_ssize_t m = ind.shape[0]
+    if graph_i.shape[1] != 2: raise ValueError("graph_i must have two columns")
+    cdef Py_ssize_t m = graph_i.shape[0]
     cdef np.ndarray[Py_ssize_t] cumdeg = np.empty(n+1, dtype=np.intp)
     cdef np.ndarray[Py_ssize_t] inc = np.empty(2*m, dtype=np.intp)
 
     # _openmp_set_num_threads()
-    Cget_graph_node_inclists(&ind[0,0], m, n, &cumdeg[0], &inc[0])
+    Cget_graph_node_inclists(&graph_i[0,0], m, n, &cumdeg[0], &inc[0])
 
     return cumdeg, inc
 
@@ -1011,7 +1008,7 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
 
     cdef np.ndarray[Py_ssize_t] c2 = np.array(c, dtype=np.intp)
 
-    Cimpute_missing_labels(&mst_i[0,0], m, &c2[0], n, skip_edges_ptr, NULL, NULL)
+    Cimpute_missing_labels(&mst_i[0,0], m, n, &c2[0], NULL, NULL, skip_edges_ptr)
 
     return c2
 
@@ -1068,7 +1065,7 @@ cpdef np.ndarray[Py_ssize_t] trim_branches(
 
     cdef np.ndarray[Py_ssize_t] c = np.empty(n, dtype=np.intp)
 
-    Ctrim_branches(&mst_d[0], &mst_i[0,0], m, &c[0], n, min_d, max_size, skip_edges_ptr, NULL, NULL)
+    Ctrim_branches(&mst_d[0], min_d, max_size, &mst_i[0,0], m, n, &c[0], NULL, NULL, skip_edges_ptr)
 
     return c
 
@@ -1208,9 +1205,11 @@ cpdef np.ndarray[Py_ssize_t] merge_all(
     return cl2
 
 
-cpdef dict get_linkage_matrix(Py_ssize_t[::1] links,
-                              floatT[::1] mst_d,
-                              Py_ssize_t[:,::1] mst_i):
+cpdef dict get_linkage_matrix(
+        Py_ssize_t[::1] links,
+        floatT[::1] mst_d,
+        Py_ssize_t[:,::1] mst_i
+    ):
     """
     genieclust.internal.get_linkage_matrix(links, mst_d, mst_i)
 

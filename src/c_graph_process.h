@@ -33,9 +33,9 @@
  * 3 -> 5,
  * 4 -> 6
  *
- * @param ind [in/out] Array of indexes to translate (does not have to be sorted)
+ * @param ind [in/out] Array of m indexes to translate (does not have to be sorted)
  * @param m size of ind
- * @param skip Boolean array
+ * @param skip Boolean array of size n
  * @param n size of skip
  */
 void Ctranslate_skipped_indexes(
@@ -162,19 +162,58 @@ void Cget_graph_node_inclists(
 /* ************************************************************************** */
 
 
+class CMSTProcessorBase
+{
+protected:
+    const Py_ssize_t* mst_i;  // size m*2, elements in [0,n)
+    const Py_ssize_t m;  // preferably == n-1; number of edges in mst_i
+    const Py_ssize_t n;  // number of vertices
+
+    Py_ssize_t* c;  // nullable or length n
+    const Py_ssize_t* cumdeg;  // nullable or length n+1
+    const Py_ssize_t* inc;  // nullable or length 2*m
+    const bool* skip_edges;  // nullable or length m
+
+    std::vector<Py_ssize_t> _cumdeg;  // data buffer for cumdeg (optional)
+    std::vector<Py_ssize_t> _inc;     // data buffer for inc (optional)
+
+
+public:
+
+    CMSTProcessorBase(
+        const Py_ssize_t* mst_i,
+        const Py_ssize_t m,
+        const Py_ssize_t n,
+        Py_ssize_t* c=nullptr,
+        const Py_ssize_t* cumdeg=nullptr,
+        const Py_ssize_t* inc=nullptr,
+        const bool* skip_edges=nullptr
+    ) :
+        mst_i(mst_i), m(m), n(n), c(c),
+        cumdeg(cumdeg), inc(inc), skip_edges(skip_edges)
+    {
+        if (!cumdeg) {
+            GENIECLUST_ASSERT(!inc);
+            _cumdeg.resize(n+1);
+            _inc.resize(2*m);
+            Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
+            this->cumdeg = _cumdeg.data();
+            this->inc = _inc.data();
+        }
+        else {
+            GENIECLUST_ASSERT(inc);
+        }
+    }
+
+    virtual void process() = 0;
+};
+
 
 /** See Cimpute_missing_labels below.
  */
-class CMissingLabelsImputer
+class CMissingLabelsImputer : public CMSTProcessorBase
 {
 private:
-    const Py_ssize_t* mst_i;
-    const Py_ssize_t* cumdeg;
-    const Py_ssize_t* inc;
-    const Py_ssize_t m;
-    Py_ssize_t* c;
-    const Py_ssize_t n;
-    const bool* skip_edges;
 
     void visit(Py_ssize_t v, Py_ssize_t e)
     {
@@ -197,20 +236,21 @@ private:
 public:
     CMissingLabelsImputer(
         const Py_ssize_t* mst_i,
-        const Py_ssize_t* cumdeg,
-        const Py_ssize_t* inc,
         Py_ssize_t m,
-        Py_ssize_t* c,
         Py_ssize_t n,
-        const bool* skip_edges
-    ) : mst_i(mst_i), cumdeg(cumdeg), inc(inc),
-        m(m), c(c), n(n), skip_edges(skip_edges)
+        Py_ssize_t* c=nullptr,
+        const Py_ssize_t* cumdeg=nullptr,
+        const Py_ssize_t* inc=nullptr,
+        const bool* skip_edges=nullptr
+    ) : CMSTProcessorBase(mst_i, m, n, c, cumdeg, inc, skip_edges)
     {
-        ;
+        GENIECLUST_ASSERT(this->c);
+        GENIECLUST_ASSERT(this->cumdeg);
+        GENIECLUST_ASSERT(this->inc);
     }
 
 
-    void impute()
+    virtual void process()
     {
         for (Py_ssize_t v=0; v<n; ++v) {
             if (c[v] < 0) continue;
@@ -241,11 +281,11 @@ public:
  *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
  *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
  *  @param m number of rows in mst_i (edges)
+ *  @param n length of c and the number of vertices in the spanning tree
  *  @param c [in/out] c_contiguous vector of length n, where
  *      c[i] denotes the cluster ID (in {-1, 0, 1, ..., k-1} for some k)
  *      of the i-th object, i=0,...,n-1.  Class -1 represents missing values
  *      to be imputed
- *  @param n length of c and the number of vertices in the spanning tree
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
  *  @param cumdeg an array of length n+1 or NULL; see Cget_graph_node_inclists
  *  @param inc an array of length 2*m or NULL; see Cget_graph_node_inclists
@@ -253,28 +293,14 @@ public:
 void Cimpute_missing_labels(
     const Py_ssize_t* mst_i,
     Py_ssize_t m,
-    Py_ssize_t* c,
     Py_ssize_t n,
-    const bool* skip_edges=NULL,
+    Py_ssize_t* c,
     const Py_ssize_t* cumdeg=NULL,
-    const Py_ssize_t* inc=NULL
+    const Py_ssize_t* inc=NULL,
+    const bool* skip_edges=NULL
 ) {
-    std::vector<Py_ssize_t> _cumdeg;
-    std::vector<Py_ssize_t> _inc;
-    if (!cumdeg) {
-        GENIECLUST_ASSERT(!inc);
-        _cumdeg.resize(n+1);
-        _inc.resize(2*m);
-        Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
-        cumdeg = _cumdeg.data();
-        inc = _inc.data();
-    }
-    else {
-        GENIECLUST_ASSERT(inc);
-    }
-
-    CMissingLabelsImputer imp(mst_i, cumdeg, inc, m, c, n, skip_edges);
-    imp.impute();  // modifies c in place
+    CMissingLabelsImputer imp(mst_i, m, n, c, cumdeg, inc, skip_edges);
+    imp.process();  // modifies c in place
 }
 
 
@@ -284,19 +310,12 @@ void Cimpute_missing_labels(
 
 /** See Ctrim_branches below.  [DEPRECATED]
  */
-template <class FLOAT> class CBranchTrimmer
+template <class FLOAT> class CBranchTrimmer : public CMSTProcessorBase
 {
 private:
     const FLOAT* mst_d;
-    const Py_ssize_t* mst_i;
-    const Py_ssize_t* cumdeg;
-    const Py_ssize_t* inc;
-    const Py_ssize_t m;
-    Py_ssize_t* c;
-    const Py_ssize_t n;
     const FLOAT min_d;
     const Py_ssize_t max_size;
-    const bool* skip_edges;
 
 
     std::vector<Py_ssize_t> size;
@@ -351,20 +370,24 @@ private:
 public:
     CBranchTrimmer(
         const FLOAT* mst_d,
-        const Py_ssize_t* mst_i,
-        const Py_ssize_t* cumdeg,
-        const Py_ssize_t* inc,
-        Py_ssize_t m,
-        Py_ssize_t* c,
-        Py_ssize_t n,
         FLOAT min_d,
         Py_ssize_t max_size,
-        const bool* skip_edges=NULL
-    ) : mst_d(mst_d), mst_i(mst_i), cumdeg(cumdeg), inc(inc),
-        m(m), c(c), n(n),
-        min_d(min_d), max_size(max_size), skip_edges(skip_edges),
+        const Py_ssize_t* mst_i,
+        Py_ssize_t m,
+        Py_ssize_t n,
+        Py_ssize_t* c,
+        const Py_ssize_t* cumdeg=nullptr,
+        const Py_ssize_t* inc=nullptr,
+        const bool* skip_edges=nullptr
+    ) :
+        CMSTProcessorBase(mst_i, m, n, c, cumdeg, inc, skip_edges),
+        mst_d(mst_d), min_d(min_d), max_size(max_size),
         size(2*m, -1)
     {
+        GENIECLUST_ASSERT(this->c);
+        GENIECLUST_ASSERT(this->cumdeg);
+        GENIECLUST_ASSERT(this->inc);
+
         GENIECLUST_ASSERT(m == n-1);
 
         // the number of connected components:
@@ -377,7 +400,7 @@ public:
     }
 
 
-    void trim()
+    virtual void process()
     {
         for (Py_ssize_t v=0; v<n; ++v) c[v] = -1;
         for (Py_ssize_t i=0; i<clk; ++i) clsize[i] = 0;
@@ -449,32 +472,18 @@ public:
 template <class FLOAT>
 void Ctrim_branches(
     const FLOAT* mst_d,
-    const Py_ssize_t* mst_i,
-    Py_ssize_t m,
-    Py_ssize_t* c,
-    Py_ssize_t n,
     FLOAT min_d,
     Py_ssize_t max_size,
-    const bool* skip_edges=NULL,
+    const Py_ssize_t* mst_i,
+    Py_ssize_t m,
+    Py_ssize_t n,
+    Py_ssize_t* c,
     const Py_ssize_t* cumdeg=NULL,
-    const Py_ssize_t* inc=NULL
+    const Py_ssize_t* inc=NULL,
+    const bool* skip_edges=NULL
 ) {
-    std::vector<Py_ssize_t> _cumdeg;
-    std::vector<Py_ssize_t> _inc;
-    if (!cumdeg) {
-        GENIECLUST_ASSERT(!inc);
-        _cumdeg.resize(n+1);
-        _inc.resize(2*m);
-        Cget_graph_node_inclists(mst_i, m, n, _cumdeg.data(), _inc.data());
-        cumdeg = _cumdeg.data();
-        inc = _inc.data();
-    }
-    else {
-        GENIECLUST_ASSERT(inc);
-    }
-
-    CBranchTrimmer tr(mst_d, mst_i, cumdeg, inc, m, c, n, min_d, max_size, skip_edges);
-    tr.trim();  // modifies c in place
+    CBranchTrimmer tr(mst_d, min_d, max_size, mst_i, m, n, c, cumdeg, inc, skip_edges);
+    tr.process();  // modifies c in place
 }
 
 
@@ -490,12 +499,12 @@ void Ctrim_branches(
  *  This procedure allocates c[i] to its its closest cluster, c[j].
  *
  *
- *  @param tree_ind c_contiguous matrix of size num_edges*2,
- *     where {tree_ind[k,0], tree_ind[k,1]} specifies the k-th (undirected) edge
- *     in the spanning tree (or forest); 0 <= tree_ind[i,j] < n;
- *     edges with tree_ind[i,0] < 0 or tree_ind[i,1] < 0 are ignored.
- *  @param num_edges number of rows in tree_ind (edges)
- *  @param nn_ind c_contiguous matrix of size n*num_neighbours;
+ *  @param mst_i c_contiguous matrix of size num_edges*2,
+ *     where {mst_i[k,0], mst_i[k,1]} specifies the k-th (undirected) edge
+ *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
+ *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
+ *  @param num_edges number of rows in mst_i (edges)
+ *  @param nn_i c_contiguous matrix of size n*num_neighbours;
  *     nn[i,:] gives the indexes of the i-th point's
  *     nearest neighbours; -1 indicates a "missing value"
  *  @param num_neighbours number of columns in nn
@@ -507,9 +516,9 @@ void Ctrim_branches(
  *  @param n length of c and the number of vertices in the spanning tree
  */
 void Cmerge_midliers(
-    const Py_ssize_t* tree_ind,
+    const Py_ssize_t* mst_i,
     Py_ssize_t num_edges,
-    const Py_ssize_t* nn_ind,
+    const Py_ssize_t* nn_i,
     Py_ssize_t num_neighbours,
     Py_ssize_t M,
     Py_ssize_t* c,
@@ -519,8 +528,8 @@ void Cmerge_midliers(
         throw std::domain_error("incorrect smoothing factor M");
 
     for (Py_ssize_t i=0; i<num_edges; ++i) {
-        Py_ssize_t u = tree_ind[2*i+0];
-        Py_ssize_t v = tree_ind[2*i+1];
+        Py_ssize_t u = mst_i[2*i+0];
+        Py_ssize_t v = mst_i[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
@@ -542,7 +551,7 @@ void Cmerge_midliers(
         //c[u] = -1; // it's negative anyway
         for (Py_ssize_t j=0; j<M; ++j) {
             // -1s are ignored (they should be at the end of the array btw)
-            if (nn_ind[v*num_neighbours+j] == u) {
+            if (nn_i[v*num_neighbours+j] == u) {
                 // yes, it's a midlier point
                 c[u] = c[v];
                 break;
@@ -559,10 +568,10 @@ void Cmerge_midliers(
  *  where j is the vertex adjacent to i.
  *
  *
- *  @param tree_ind c_contiguous matrix of size m*2,
- *     where {tree_ind[k,0], tree_ind[k,1]} specifies the k-th (undirected) edge
- *     in the spanning tree (or forest); 0 <= tree_ind[i,j] < n;
- *     edges with tree_ind[i,0] < 0 or tree_ind[i,1] < 0 are ignored.
+ *  @param mst_i c_contiguous matrix of size m*2,
+ *     where {mst_i[k,0], mst_i[k,1]} specifies the k-th (undirected) edge
+ *     in the spanning tree (or forest); 0 <= mst_i[i,j] < n;
+ *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
  *  @param m number of rows in ind (edges)
  *  @param c [in/out] c_contiguous vector of length n, where
  *      c[i] denotes the cluster ID (in {-1, 0, 1, ..., k-1} for some k)
@@ -571,14 +580,14 @@ void Cmerge_midliers(
  *  @param n length of c and the number of vertices in the spanning tree
  */
 void Cmerge_all(
-    const Py_ssize_t* tree_ind,
+    const Py_ssize_t* mst_i,
     Py_ssize_t m,
     Py_ssize_t* c,
     Py_ssize_t n
 ) {
     for (Py_ssize_t i=0; i<m; ++i) {
-        Py_ssize_t u = tree_ind[2*i+0];
-        Py_ssize_t v = tree_ind[2*i+1];
+        Py_ssize_t u = mst_i[2*i+0];
+        Py_ssize_t v = mst_i[2*i+1];
         if (u<0 || v<0)
             continue; // represents a no-edge -> ignore
         if (u>=n || v>=n)
