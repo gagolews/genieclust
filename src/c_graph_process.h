@@ -66,6 +66,17 @@ void Ctranslate_skipped_indexes(
 }
 
 
+/** Count the number of non-zero elements in a Boolean array x of length n
+ */
+Py_ssize_t Csum_bool(const bool* x, Py_ssize_t n)
+{
+    Py_ssize_t s = 0;
+    for (Py_ssize_t i=0; i<n; ++i)
+        if (x[i]) s++;
+    return s;
+}
+
+
 /*! Compute the degree of each vertex in an undirected graph
  *  over a vertex set {0,...,n-1}.
  *
@@ -225,21 +236,35 @@ class CMSTClusterSizeGetter : public CMSTProcessorBase
 {
 private:
 
-    void visit(Py_ssize_t v, Py_ssize_t e)
+    Py_ssize_t max_k;
+    Py_ssize_t* s;  // NULL or of size max_k >= k, where k is the number of clusters
+    Py_ssize_t k;   // the number of connected components identified
+
+
+    Py_ssize_t visit(Py_ssize_t v, Py_ssize_t e)
     {
-        if (skip_edges && skip_edges[e]) return;
+        Py_ssize_t w;
 
-        Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
-        Py_ssize_t w = mst_i[2*e+(1-iv)];
+        if (e < 0) {
+            w = v;
+        }
+        else if (skip_edges && skip_edges[e])
+            return 0;
+        else {
+            Py_ssize_t iv = (Py_ssize_t)(mst_i[2*e+1]==v);
+            w = mst_i[2*e+(1-iv)];
+        }
 
-        GENIECLUST_ASSERT(c[v] >= 0);
         GENIECLUST_ASSERT(c[w] < 0);
+        c[w] = k;
 
-        c[w] = c[v];
+        Py_ssize_t curs = 1;
 
         for (const Py_ssize_t* pe = inc+cumdeg[w]; pe != inc+cumdeg[w+1]; pe++) {
-            if (*pe != e) visit(w, *pe);
+            if (*pe != e) curs += visit(w, *pe);
         }
+
+        return curs;
     }
 
 
@@ -248,11 +273,13 @@ public:
         const Py_ssize_t* mst_i,
         Py_ssize_t m,
         Py_ssize_t n,
-        Py_ssize_t* c=nullptr,
+        Py_ssize_t* c,
+        Py_ssize_t max_k,
+        Py_ssize_t* s=nullptr,
         const Py_ssize_t* cumdeg=nullptr,
         const Py_ssize_t* inc=nullptr,
         const bool* skip_edges=nullptr
-    ) : CMSTProcessorBase(mst_i, m, n, c, cumdeg, inc, skip_edges)
+    ) : CMSTProcessorBase(mst_i, m, n, c, cumdeg, inc, skip_edges), max_k(max_k), s(s), k(-1)
     {
         GENIECLUST_ASSERT(this->c);
         GENIECLUST_ASSERT(this->cumdeg);
@@ -262,19 +289,21 @@ public:
 
     virtual void process()
     {
+        for (Py_ssize_t v=0; v<n; ++v) c[v] = -1;
+        //for (Py_ssize_t i=0; i<k; ++i) s[i] = 0;
+
+        k = 0;
         for (Py_ssize_t v=0; v<n; ++v) {
-            if (c[v] < 0) continue;
+            if (c[v] >= 0) continue;  // already visited -> skip
 
-            for (const Py_ssize_t* pe = inc+cumdeg[v]; pe != inc+cumdeg[v+1]; pe++) {
-                if (skip_edges && skip_edges[*pe]) continue;
-
-                Py_ssize_t iv = (Py_ssize_t)(mst_i[2*(*pe)+1]==v);
-                Py_ssize_t w = mst_i[2*(*pe)+(1-iv)];
-
-                if (c[w] < 0) {  // descend into this branch to impute missing values
-                    visit(v, *pe);
-                }
+            if (s) {
+                GENIECLUST_ASSERT(k<max_k);
+                s[k] = visit(v, -1);
             }
+            else
+                visit(v, -1);
+
+            k++;
         }
     }
 
@@ -292,10 +321,15 @@ public:
  *     edges with mst_i[i,0] < 0 or mst_i[i,1] < 0 are ignored.
  *  @param m number of rows in mst_i (edges)
  *  @param n length of c and the number of vertices in the spanning tree
- *  @param c [in/out] c_contiguous vector of length n, where
- *      c[i] denotes the cluster ID (in {-1, 0, 1, ..., k-1} for some k)
- *      of the i-th object, i=0,...,n-1.  Class -1 represents missing values
- *      to be imputed
+ *  @param c [out] array of length n, where
+ *      c[i] denotes the cluster ID (in {0, 1, ..., k-1} for some k)
+ *      of the i-th object, i=0,...,n-1
+ *  @param max_k the actual size of s (a safeguard)
+ *  @param s [out] array of length max_k >= k, where k is the number of connected
+ *      components in the forest; s[i] gives the size of the i-th cluster;
+ *      pass NULL to get only the cluster labels;
+ *      obviously, k<=n; e.g., if m==n-1, then k=sum(skip_edges)+1;
+ *      if the size of s is > k, then the trailing elements will be left unset
  *  @param skip_edges Boolean array of length m or NULL; indicates the edges to skip
  *  @param cumdeg an array of length n+1 or NULL; see Cgraph_get_node_inclists
  *  @param inc an array of length 2*m or NULL; see Cgraph_get_node_inclists
@@ -305,11 +339,13 @@ void Cmst_get_cluster_sizes(
     Py_ssize_t m,
     Py_ssize_t n,
     Py_ssize_t* c,
-    const Py_ssize_t* cumdeg=NULL,
-    const Py_ssize_t* inc=NULL,
-    const bool* skip_edges=NULL
+    Py_ssize_t max_k=0,
+    Py_ssize_t* s=nullptr,
+    const Py_ssize_t* cumdeg=nullptr,
+    const Py_ssize_t* inc=nullptr,
+    const bool* skip_edges=nullptr
 ) {
-    CMSTClusterSizeGetter get(mst_i, m, n, c, cumdeg, inc, skip_edges);
+    CMSTClusterSizeGetter get(mst_i, m, n, c, max_k, s, cumdeg, inc, skip_edges);
     get.process();  // modifies c in place
 }
 
@@ -348,7 +384,7 @@ public:
         const Py_ssize_t* mst_i,
         Py_ssize_t m,
         Py_ssize_t n,
-        Py_ssize_t* c=nullptr,
+        Py_ssize_t* c,
         const Py_ssize_t* cumdeg=nullptr,
         const Py_ssize_t* inc=nullptr,
         const bool* skip_edges=nullptr
@@ -404,9 +440,9 @@ void Cmst_impute_missing_labels(
     Py_ssize_t m,
     Py_ssize_t n,
     Py_ssize_t* c,
-    const Py_ssize_t* cumdeg=NULL,
-    const Py_ssize_t* inc=NULL,
-    const bool* skip_edges=NULL
+    const Py_ssize_t* cumdeg=nullptr,
+    const Py_ssize_t* inc=nullptr,
+    const bool* skip_edges=nullptr
 ) {
     CMSTMissingLabelsImputer imp(mst_i, m, n, c, cumdeg, inc, skip_edges);
     imp.process();  // modifies c in place
@@ -587,9 +623,9 @@ void Cmst_trim_branches(
     Py_ssize_t m,
     Py_ssize_t n,
     Py_ssize_t* c,
-    const Py_ssize_t* cumdeg=NULL,
-    const Py_ssize_t* inc=NULL,
-    const bool* skip_edges=NULL
+    const Py_ssize_t* cumdeg=nullptr,
+    const Py_ssize_t* inc=nullptr,
+    const bool* skip_edges=nullptr
 ) {
     CMSTBranchTrimmer tr(mst_d, min_d, max_size, mst_i, m, n, c, cumdeg, inc, skip_edges);
     tr.process();  // modifies c in place

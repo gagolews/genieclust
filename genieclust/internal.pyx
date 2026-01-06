@@ -842,6 +842,12 @@ cpdef tuple nn_list_to_matrix(
 
 
 cdef extern from "../src/c_graph_process.h":
+    void Ctranslate_skipped_indexes(
+        Py_ssize_t* ind, Py_ssize_t m, const bool* skip, Py_ssize_t n
+    )
+
+    Py_ssize_t Csum_bool(const bool* x, Py_ssize_t n)
+
     void Cgraph_get_node_degrees(
         const Py_ssize_t* graph_i, Py_ssize_t m, Py_ssize_t n, Py_ssize_t* deg
     )
@@ -854,8 +860,16 @@ cdef extern from "../src/c_graph_process.h":
         Py_ssize_t* inc
     )
 
-    void Ctranslate_skipped_indexes(
-        Py_ssize_t* ind, Py_ssize_t m, const bool* skip, Py_ssize_t n
+    void Cmst_get_cluster_sizes(
+        const Py_ssize_t* mst_i,
+        Py_ssize_t m,
+        Py_ssize_t n,
+        Py_ssize_t* c,
+        Py_ssize_t max_k,
+        Py_ssize_t* s,
+        const Py_ssize_t* cumdeg,
+        const Py_ssize_t* inc,
+        const bool* skip_edges
     )
 
     void Cmst_impute_missing_labels(
@@ -918,6 +932,7 @@ cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] graph_i, P
     Cgraph_get_node_degrees(&graph_i[0,0], m, n, &deg[0])
 
     return deg
+
 
 
 cpdef tuple get_graph_node_inclists(Py_ssize_t[:,::1] graph_i, Py_ssize_t n):
@@ -990,8 +1005,8 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
     -------
 
     c : ndarray, shape (n,)
-        A new integer vector c with c[i] denoting the cluster
-        ID (in {0, ..., k-1}) of the i-th object.
+        a new integer vector c with c[i] denoting the cluster
+        ID (in {0, ..., k-1}) of the i-th node
     """
     cdef Py_ssize_t n = c.shape[0]
     cdef Py_ssize_t m = mst_i.shape[0]
@@ -1011,6 +1026,58 @@ cpdef np.ndarray[Py_ssize_t] impute_missing_labels(
     Cmst_impute_missing_labels(&mst_i[0,0], m, n, &c2[0], NULL, NULL, skip_edges_ptr)
 
     return c2
+
+
+cpdef tuple get_cluster_sizes(
+        Py_ssize_t[:,::1] mst_i,
+        bool[::1] skip_edges
+    ):
+    """
+    genieclust.internal.get_cluster_sizes(mst_i, skip_edges)
+
+    Labels connected components in a spanning forest and returns their sizes.
+
+
+    Parameters
+    ----------
+
+    mst_i : c_contiguous array of shape (n-1, 2)
+        n-1 undirected edges of the spanning tree
+    skip_edges : c_contiguous array, length n-1 or 0
+        skip_edges[i] == True marks the i-th edge as non-existent (ignorable)
+
+
+    Returns
+    -------
+
+    c : ndarray, shape (n,)
+        an integer vector with c[i] denoting the cluster ID (in {0, ..., k-1})
+        of the i-th node
+    s : ndarray, shape (k,)
+        an integer vector with s[i] denoting the size of the i-th cluster
+    """
+    cdef Py_ssize_t m = mst_i.shape[0]
+    cdef Py_ssize_t n = m+1
+
+    if mst_i.shape[1] != 2: raise ValueError("mst_i must have two columns")
+
+    cdef Py_ssize_t k = 1
+    cdef bool* skip_edges_ptr = NULL
+    if skip_edges.shape[0] == 0:
+        pass
+    elif skip_edges.shape[0] == m:
+        skip_edges_ptr = &skip_edges[0]
+        k += Csum_bool(skip_edges_ptr, m)
+    else:
+        raise ValueError("skip_edges should be either of size 0 or n-1")
+
+    cdef np.ndarray[Py_ssize_t] c = np.empty(n, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] s = np.zeros(k, dtype=np.intp)
+
+
+    Cmst_get_cluster_sizes(&mst_i[0,0], m, n, &c[0], k, &s[0], NULL, NULL, skip_edges_ptr)
+
+    return c, s
 
 
 cpdef np.ndarray[Py_ssize_t] trim_branches(
@@ -1035,9 +1102,9 @@ cpdef np.ndarray[Py_ssize_t] trim_branches(
     mst_d, mst_i : ndarray
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         with mst_i of shape (n-1,2) giving the edges and mst_d providing the
-        corresponding edge weights.
+        corresponding edge weights
     min_d
-        Minimal weight of an edge to consider for trimming.
+        Minimal weight of an edge to consider for trimming
     max_size
         Maximal size of a tree branch to consider for trimming
     skip_edges : c_contiguous array, length m or 0
@@ -1048,7 +1115,7 @@ cpdef np.ndarray[Py_ssize_t] trim_branches(
 
     c : ndarray, shape (n,)
         A new integer vector c with c[i]==-1 denoting a trimmed-out point
-        and c[i]>=0 indicating a left-out one.
+        and c[i]>=0 indicating a left-out one
     """
     cdef Py_ssize_t m = mst_i.shape[0]
     cdef Py_ssize_t n = m+1
@@ -1149,7 +1216,7 @@ cpdef np.ndarray[Py_ssize_t] merge_midliers(
 
     c : ndarray, shape (n,)
         A new integer vector c with c[i] denoting the cluster
-        ID (in {-1, 0, ..., k-1}) of the i-th object.
+        ID (in {-1, 0, ..., k-1}) of the i-th object
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
@@ -1191,8 +1258,8 @@ cpdef np.ndarray[Py_ssize_t] merge_all(
     -------
 
     c : ndarray, shape (n,)
-        A new integer vector c with c[i] denoting the cluster
-        ID (in {0, ..., k-1}) of the i-th object.
+        a new integer vector c with c[i] denoting the cluster
+        ID (in {0, ..., k-1}) of the i-th object
     """
     cdef np.ndarray[Py_ssize_t] cl2 = np.array(c, dtype=np.intp)
 
@@ -1220,7 +1287,7 @@ cpdef dict get_linkage_matrix(
     links : ndarray
         see return value of genieclust.internal.genie_from_mst.
     mst_d, mst_i : ndarray
-        Minimal spanning tree defined by a pair (mst_i, mst_d),
+        minimal spanning tree defined by a pair (mst_i, mst_d),
         with mst_i of shape (n-1,2) giving the edges and mst_d providing the
         corresponding edge weights.
 
@@ -1229,9 +1296,9 @@ cpdef dict get_linkage_matrix(
     -------
 
     Z : dict
-        A dictionary with 3 keys: children, distances, counts,
+        a dictionary with 3 keys: children, distances, counts,
         see the description of Z[:,:2], Z[:,2] and Z[:,3], respectively,
-        in scipy.cluster.hierarchy.linkage.
+        in scipy.cluster.hierarchy.linkage
     """
     cdef Py_ssize_t n = mst_i.shape[0]+1
     cdef Py_ssize_t i, i1, i2, par, w, num_unused, j
