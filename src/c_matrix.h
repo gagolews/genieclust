@@ -1,6 +1,6 @@
 /*  Lightweight matrix class - KISS
  *
- *  Copyleft (C) 2018-2025, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2018-2026, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License

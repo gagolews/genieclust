@@ -1,7 +1,7 @@
 /*  The "old" (<= 2025) functions to compute minimum spanning trees
  *  w.r.t. different distances (slower but more universal).
  *
- *  Copyleft (C) 2025-2025, Marek Gagolewski <https://www.gagolewski.com>
+ *  Copyleft (C) 2020-2026, Marek Gagolewski <https://www.gagolewski.com>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License

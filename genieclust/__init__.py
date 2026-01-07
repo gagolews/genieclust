@@ -5,7 +5,7 @@ genieclust Python Package
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2026, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #

@@ -1,4 +1,4 @@
-# Copyright (c) 2013-2025, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (c) 2020-2026, Marek Gagolewski <https://www.gagolewski.com>
 
 FILES_RMD = \
 	basics.Rmd              \

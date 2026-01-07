@@ -12,7 +12,7 @@ Internal functions and classes
 
 # ############################################################################ #
 #                                                                              #
-#   Copyleft (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>      #
+#   Copyleft (C) 2020-2026, Marek Gagolewski <https://www.gagolewski.com>      #
 #                                                                              #
 #                                                                              #
 #   This program is free software: you can redistribute it and/or modify       #
@@ -299,12 +299,10 @@ cdef class DisjointSets:
 
 
 
-
-
-
 cdef class GiniDisjointSets():
     """
     Disjoint sets (Union-Find) over `{0,1,...,n-1}` with extras.
+
 
     Parameters
     ----------
@@ -321,11 +319,6 @@ cdef class GiniDisjointSets():
     :math:`G(x_1,\dots,x_k) = \\frac{\\sum_{i=1}^{n-1} \\sum_{j=i+1}^n |x_i-x_j|}{(n-1) \\sum_{i=1}^n x_i}`\ ,
     where :math:`x_i` is the number of elements in the `i`-th subset in
     the current partition.
-
-    For a use case, see: Gagolewski, M., Bartoszuk, M., Cena, A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    *Information Sciences* **363**, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
-
     """
     cdef CGiniDisjointSets ds
 
@@ -432,7 +425,6 @@ cdef class GiniDisjointSets():
         Merges the sets containing given `x` and `y`
 
 
-
         Parameters
         ----------
 
@@ -498,7 +490,7 @@ cdef class GiniDisjointSets():
         Returns
         -------
 
-        ndarray, shape (n,)
+        ndarray, shape (n,) :
             A list ``m`` such that ``m[x]`` denotes the normalised parent ID
             of `x`. The resulting values are in `{0,1,...,k-1}`,
             where `k` is the current number of subsets in the partition.
@@ -521,11 +513,10 @@ cdef class GiniDisjointSets():
         Returns a list of lists representing the current partition
 
 
-
         Returns
         -------
 
-        list of lists
+        list of lists :
             A list of length `k`, where `k` is the current number
             of sets in the partition. Each list element is a list
             with values in `{0,...,n-1}`.
@@ -554,6 +545,7 @@ cdef class GiniDisjointSets():
     def get_counts(self):
         """
         Generates an array of subsets' sizes
+
 
         Notes
         -----
@@ -784,7 +776,7 @@ cpdef tuple nn_list_to_matrix(
     Returns
     -------
 
-    tuple like ``(nn_dist, nn_ind)``
+    tuple like ``(nn_dist, nn_ind)`` :
         See `genieclust.internal.mst_from_nn`.
         Unused elements (last items in each row)
         will be filled with ``INFINITY`` and `-1`, respectively.
@@ -841,7 +833,16 @@ cpdef tuple nn_list_to_matrix(
 ################################################################################
 
 
+cdef extern from "../src/c_kneedle.h":
+
+    Py_ssize_t Ckneedle_increasing[floatT](
+        const floatT* x, Py_ssize_t n, bool convex, floatT dt
+    )
+
+
+
 cdef extern from "../src/c_graph_process.h":
+
     void Ctranslate_skipped_indexes(
         Py_ssize_t* ind, Py_ssize_t m, const bool* skip, Py_ssize_t n
     )
@@ -897,6 +898,51 @@ cdef extern from "../src/c_graph_process.h":
         Py_ssize_t* c, Py_ssize_t n
     )
 
+
+
+
+cpdef Py_ssize_t kneedle_increasing(
+        floatT[::1] x, bool convex=True, floatT dt=0.01
+    ):
+    """
+    genieclust.internal.kneedle_increasing(x, convex=True, dt=0.01)
+
+    Finds the most significant knee/elbow using the Kneedle method
+    with exponential smoothing.
+
+
+    Parameters
+    ----------
+
+    x : ndarray
+        data vector (increasing)
+    convex : bool
+        whether the data in `x` are convex-ish (elbow detection) or not (knee)
+    dt : float
+        controls the smoothing parameter :math:`\\alpha = 1-\\exp(-dt)`
+        of the exponential moving average
+
+
+    Returns
+    -------
+
+    index : integer
+        An integer array of length n; deg[i] denotes the degree of
+        the i-th vertex. For instance, deg[i]==1 marks a leaf node.
+
+
+    References
+    ----------
+
+    .. [1]
+        V. Satopaa, J. Albrecht, D. Irwin, B. Raghavan, *Finding a “Kneedle”
+        in a haystack: Detecting knee points in system behavior*,
+        In: *31st Intl. Conf. Distributed Computing Systems Workshops*,
+        2011, pp. 166-171, DOI: 10.1109/ICDCSW.2011.20
+
+    """
+    cdef Py_ssize_t n = x.shape[0]
+    return Ckneedle_increasing(&x[0], n, convex, dt)
 
 
 cpdef np.ndarray[Py_ssize_t] get_graph_node_degrees(Py_ssize_t[:,::1] graph_i, Py_ssize_t n):
@@ -1401,10 +1447,6 @@ cpdef dict genie_from_mst(
 
     Determines a dataset's partition based on a precomputed MST.
 
-    Gagolewski, M., Bartoszuk, M., Cena, A.,
-    Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
-    Information Sciences 363, 2016, pp. 8-23. doi:10.1016/j.ins.2016.05.003
-
     Refer to the online manual at <https://genieclust.gagolewski.com/> for
     more details.
 
@@ -1465,6 +1507,14 @@ cpdef dict genie_from_mst(
         n_clusters : integer
             actual number of clusters found, 0 if `labels` is None
 
+
+    References
+    ----------
+
+    .. [1]
+        Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and
+        outlier-resistant hierarchical clustering algorithm,
+        Information Sciences 363, 2016, pp. 8-23. DOI:10.1016/j.ins.2016.05.003
     """
     cdef Py_ssize_t n = mst_i.shape[0]+1
 
@@ -1575,20 +1625,20 @@ cpdef dict gic_from_mst(
 
 
     References
-    ==========
+    ----------
 
     .. [1]
         Cena, A., *Adaptive hierarchical clustering algorithms based on
         data aggregation methods*, PhD Thesis, Systems Research Institute,
-        Polish Academy of Sciences 2018.
+        Polish Academy of Sciences, 2018.
 
     .. [2]
         Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
         Clustering using Minimum Spanning Trees, *DAGM-OAGM* 2012.
 
     .. [3]
-        Gagolewski, M., Bartoszuk M., Cena, A.,
-        Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
+        Gagolewski, M., Bartoszuk M., Cena, A., Genie: A new, fast,
+        and outlier-resistant hierarchical clustering algorithm,
         *Information Sciences* 363, 2016, 8-23. DOI:10.1016/j.ins.2016.05.003
 
 

@@ -1,4 +1,4 @@
-# Copyright (C) 2020-2025, Marek Gagolewski <https://www.gagolewski.com>
+# Copyright (C) 2020-2026, Marek Gagolewski <https://www.gagolewski.com>
 
 # Moves #> comments inside Markdown *highlighted* code blocks outside
 
