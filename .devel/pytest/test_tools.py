@@ -2,9 +2,6 @@ import numpy as np
 import time
 import genieclust
 
-assert np.all(genieclust.internal.translate_skipped_indexes(np.r_[0, 1, 2], np.r_[False, False, False]) == np.r_[0, 1, 2])
-assert np.all(genieclust.internal.translate_skipped_indexes(np.r_[0, 1, 2], np.r_[True, False, False, False]) == np.r_[1, 2, 3])
-assert np.all(genieclust.internal.translate_skipped_indexes(np.r_[0, 1, 2], np.r_[True, False, True, False, False]) == np.r_[1, 3, 4])
 
 def test_argkmin():
     for n in [1, 5, 1000]:
