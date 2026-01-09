@@ -23,8 +23,8 @@
     now the core distance is the distance to the *M*-th nearest neighbour,
     not the *(M-1)*-th one (not including self).
 
-*   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether a node
-    is a leaf of a minimum spanning tree w.r.t. some mutual reachability
+*   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
+    a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
     distance turned out to be subpar in a more detailed empirical analysis,
     especially for smaller smoothing factors.  Note that in the previous
     versions of the package, this merely used to an experimental feature;
@@ -42,6 +42,8 @@
     moreover, some leaves of the MST are reconnected so that they
     are adjacent to vertices that have them amongst their *M* nearest
     neighbours; see (in preparation: Gagolewski, 2025, TODO) for discussion.
+
+*   ??? #92 NPA, NCA...
 
 *   ???? TODO `preprocess`
 
