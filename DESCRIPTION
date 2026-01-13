@@ -1,8 +1,8 @@
 Package: genieclust
 Type: Package
 Title: Fast and Robust Hierarchical Clustering with Outlier Detection
-Version: 1.2.0.9003
-Date: 2025-11-26
+Version: 1.2.0.9004
+Date: 2026-01-13
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -37,7 +37,7 @@ Imports:
     Rcpp,
     stats,
     utils,
-    quitefastmst (>= 0.9.1)
+    deadwood
 Suggests:
     datasets,
 LinkingTo: Rcpp

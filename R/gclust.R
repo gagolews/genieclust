@@ -106,17 +106,9 @@
 #'      \eqn{M>0} acts as an outlier detector
 #' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used
-#' @param preprocess TODO
-#' @param postprocess TODO \code{"midliers"} (default), \code{"none"}
-#'     or \code{"all"}; in effect only if \eqn{M > 0}.
-#'     By default, only midliers are merged with their adjacent neighbours
-#'     in the tree, i.e., leaves that are amongst their adjacent nodes'
-#'     \eqn{M} nearest neighbours.
-#'     To force a classical k-partition of a data set (one that does not
-#'     distinguish between inliers and outliers), choose \code{"all"}.
 #' @param ... further arguments passed to \code{\link{mst}()}
 #'
-#'
+'
 #' @return
 #' \code{gclust()} computes the entire clustering hierarchy; it
 #' returns a list of class \code{hclust}; see \code{\link[stats]{hclust}}.
@@ -259,21 +251,21 @@ genie.default <- function(
     gini_threshold=0.3,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=0L,
-    preprocess=c("none"),  # TODO
-    postprocess=c("midliers", "none", "all"),  # TODO
+    #preprocess=c("none"),  # TODO
+    #postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
     distance <- match.arg(distance)
-    preprocess  <- match.arg(preprocess)
-    postprocess <- match.arg(postprocess)
+    #preprocess  <- match.arg(preprocess)
+    #postprocess <- match.arg(postprocess)
     tree <- mst.default(d, M=M, distance=distance, verbose=verbose, ...)
     genie.mst(
         tree,
         k=k,
         gini_threshold=gini_threshold,
-        preprocess=preprocess,
-        postprocess=postprocess,
+        #preprocess=preprocess,
+        #postprocess=postprocess,
         verbose=verbose
     )
 }
@@ -287,19 +279,19 @@ genie.dist <- function(
     k,
     gini_threshold=0.3,
     M=0L,
-    preprocess=c("none"),  # TODO
-    postprocess=c("midliers", "none", "all"),  # TODO
+    #preprocess=c("none"),  # TODO
+    #postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
-    preprocess  <- match.arg(preprocess)
-    postprocess <- match.arg(postprocess)
+    #preprocess  <- match.arg(preprocess)
+    #postprocess <- match.arg(postprocess)
     genie.mst(
         mst.dist(d, M=M, verbose=verbose, ...),
         k=k,
         gini_threshold=gini_threshold,
-        preprocess=preprocess,
-        postprocess=postprocess,
+        #preprocess=preprocess,
+        #postprocess=postprocess,
         verbose=verbose
     )
 }
@@ -312,16 +304,16 @@ genie.mst <- function(
     d,
     k,
     gini_threshold=0.3,
-    preprocess=c("none"),  # TODO
-    postprocess=c("midliers", "none", "all"),  # TODO
+    #preprocess=c("none"),  # TODO
+    #postprocess=c("midliers", "none", "all"),  # TODO
     verbose=FALSE,
     ...
 ) {
     gini_threshold <- as.double(gini_threshold)[1]
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
 
-    preprocess  <- match.arg(preprocess)
-    postprocess <- match.arg(postprocess)
+    #preprocess  <- match.arg(preprocess)
+    #postprocess <- match.arg(postprocess)
     verbose <- !identical(verbose, FALSE)
 
     structure(
@@ -329,8 +321,8 @@ genie.mst <- function(
             d,
             k=k,
             gini_threshold=gini_threshold,
-            preprocess=preprocess,
-            postprocess=postprocess,
+            #preprocess=preprocess,
+            #postprocess=postprocess,
             verbose=verbose
         ),
         names=attr(d, "Labels")

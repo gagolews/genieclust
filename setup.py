@@ -36,9 +36,6 @@ cython_modules = {
     "genieclust.internal": [
         os.path.join("genieclust", "internal.pyx")
     ],
-    "genieclust.oldmst": [
-        os.path.join("genieclust", "oldmst.pyx")
-    ],
     "genieclust.compare_partitions": [
         os.path.join("genieclust", "compare_partitions.pyx")
     ],
@@ -146,11 +143,11 @@ setuptools.setup(
     maintainer="Marek Gagolewski",
     license="GNU Affero General Public License v3",
     install_requires=[
-        "Cython",  # not: cython
         "numpy>=2.0.0",
+        "Cython",  # not: cython
         "matplotlib",
         "scikit-learn",
-        "quitefastmst>=0.9.1",
+        "deadwood>=0.9.0",
     ],
     python_requires=">=3.9",
     download_url="https://github.com/gagolews/genieclust",

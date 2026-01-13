@@ -129,7 +129,6 @@ Py_ssize_t Cargkmin(const T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf=NULL
         idx[j] = i;
     }
 
-
     Py_ssize_t ret = idx[k-1];
 
     if (!buf) delete [] idx;

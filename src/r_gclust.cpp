@@ -107,8 +107,8 @@ IntegerVector dot_genie(
     NumericMatrix mst,
     int k,
     double gini_threshold,
-    String preprocess,  // TODO
-    String postprocess, // TODO
+    //String preprocess,  // TODO
+    //String postprocess, // TODO
     bool verbose
 ) {
     if (verbose) GENIECLUST_PRINT("[genieclust] Determining clusters.\n");

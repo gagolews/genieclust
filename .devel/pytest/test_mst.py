@@ -4,6 +4,7 @@ import scipy.spatial.distance
 import time
 import gc
 import genieclust
+import deadwood
 import quitefastmst
 
 import os
@@ -25,13 +26,13 @@ def mst_check(X, metric='euclidean', **kwargs):
 
     t0 = time.time()
     dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
-    mst_d1, mst_i1 = genieclust.oldmst.mst_from_complete(dist_complete.reshape(dist_complete.shape[0],-1))
+    mst_d1, mst_i1 = deadwood.oldmst.mst_from_complete(dist_complete.reshape(dist_complete.shape[0],-1))
     print("    precomputed-vector %10.3fs" % (time.time()-t0,))
 
     t0 = time.time()
     dist_complete = scipy.spatial.distance.pdist(X, metric=metric)
     dist_complete = scipy.spatial.distance.squareform(dist_complete)
-    mst_d, mst_i = genieclust.oldmst.mst_from_complete(dist_complete)
+    mst_d, mst_i = deadwood.oldmst.mst_from_complete(dist_complete)
     print("    precomputed-matrix %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d1.sum())
@@ -40,7 +41,7 @@ def mst_check(X, metric='euclidean', **kwargs):
 
 
     t0 = time.time()
-    mst_d2, mst_i2 = genieclust.oldmst.mst_from_distance(X, metric=metric)
+    mst_d2, mst_i2 = deadwood.oldmst.mst_from_distance(X, metric=metric)
     print("    from_distance    %10.3fs" % (time.time()-t0,))
 
     assert np.allclose(mst_d.sum(), mst_d2.sum())
@@ -72,15 +73,16 @@ def mst_mutreach_check(X, metric='euclidean'):
     D = scipy.spatial.distance.squareform(D)
 
     for M in [1, 2, 3, 5]:
-        d_core     = genieclust.internal._core_distance(D, M)
+        d_core     = D[:,M-1].copy() #genieclust.internal._core_distance(D, M)
 
         t0 = time.time()
-        d_mutreach = genieclust.internal._mutual_reachability_distance(D, d_core)
-        mst_d, mst_i = genieclust.oldmst.mst_from_complete(d_mutreach)
+        #d_mutreach = genieclust.internal._mutual_reachability_distance(D, d_core)
+        d_mutreach = np.maximum(np.maximum(D, d_core.reshape(-1,1)), d_core.reshape(1,-1))
+        mst_d, mst_i = deadwood.oldmst.mst_from_complete(d_mutreach)
         print("    mutreach1-D(%d) %10.3fs" % (M, time.time()-t0,))
 
         t0 = time.time()
-        mst_d2, mst_i2 = genieclust.oldmst.mst_from_distance(X, metric=metric, d_core=d_core)
+        mst_d2, mst_i2 = deadwood.oldmst.mst_from_distance(X, metric=metric, d_core=d_core)
         print("    mutreach2(%d)   %10.3fs" % (M, time.time()-t0,))
 
         assert np.allclose(mst_d.sum(), mst_d2.sum())

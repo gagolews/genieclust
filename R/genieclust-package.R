@@ -28,8 +28,6 @@
 #' @importFrom Rcpp evalCpp
 #' @importFrom stats hclust
 #' @importFrom stats cutree
-#' @importFrom quitefastmst knn_euclid
-#' @importFrom quitefastmst mst_euclid
 #' @importFrom stats dist
 #' @importFrom utils capture.output
 #' @keywords internal

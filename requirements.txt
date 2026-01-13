@@ -2,4 +2,4 @@ Cython
 numpy
 matplotlib
 scikit-learn
-quitefastmst
+deadwood

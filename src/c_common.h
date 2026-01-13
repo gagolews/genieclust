@@ -140,8 +140,6 @@ inline T max3(const T a, const T b, const T c)
 #define IS_PLUS_INFINITY(x)  ((x) > 0.0 && !std::isfinite(x))
 #define IS_MINUS_INFINITY(x) ((x) < 0.0 && !std::isfinite(x))
 
-
-
 #ifdef OPENMP_DISABLED
     #define OPENMP_IS_ENABLED 0
     #ifdef _OPENMP
@@ -155,31 +153,5 @@ inline T max3(const T a, const T b, const T c)
         #define OPENMP_IS_ENABLED 0
     #endif
 #endif
-
-
-inline int Comp_set_num_threads(int n_threads)
-{
-    //GENIECLUST_PRINT("Comp_set_num_threads(%d), omp_get_max_threads()==%d\n",
-    //   n_threads, omp_get_max_threads());
-    if (n_threads <= 0) return n_threads;
-
-#if OPENMP_IS_ENABLED
-    int oldval = omp_get_max_threads();   // confusing name...
-    omp_set_num_threads(n_threads);
-    return oldval;
-#else
-    return 1;
-#endif
-}
-
-inline int Comp_get_max_threads()
-{
-#if OPENMP_IS_ENABLED
-    return omp_get_max_threads();
-#else
-    return 1;
-#endif
-}
-
 
 #endif

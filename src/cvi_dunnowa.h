@@ -226,8 +226,6 @@ public:
         }
         pq = std::vector<FLOAT_T>(3*delta);
 
-
-
         Cargsort(order.data(), dist.data(), n*M);
     }
 

@@ -65,6 +65,7 @@ ctypedef fused floatT:
 cdef extern from "../src/c_argfuns.h":
     # void Cargsort[T](Py_ssize_t* ret, T* x, Py_ssize_t n, bint stable)
     Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)
+    # Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)  TODO
 
 
 
@@ -90,7 +91,6 @@ cpdef np.ndarray[Py_ssize_t] cummin(T[:] x):
     ndarray
         A vector of length *n* whose ``i``-th element
         is equal to ``min(x[:i])``.
-
 
 
     See Also
@@ -139,7 +139,6 @@ cpdef np.ndarray[Py_ssize_t] cummax(T[:] x):
     ndarray
         A vector of length *n* whose ``i``-th element
         is equal to ``max(x[:i])``.
-
 
 
     See Also
@@ -214,6 +213,8 @@ cpdef Py_ssize_t argkmin(np.ndarray[T] x, int k):
     """
     x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
     cdef Py_ssize_t n = x.shape[0]
+    # TODO: allow returning the k indexes
+    # TODO: argkmax
     return Cargkmin(&x[0], n, k, <Py_ssize_t*>0)
 
 

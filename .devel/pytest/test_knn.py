@@ -6,6 +6,7 @@ import gc
 import genieclust
 import quitefastmst
 import scipy.spatial
+import deadwood
 
 import os
 if os.path.exists(".devel/benchmark_data"):
@@ -18,7 +19,7 @@ else:
 
 def knn_oldmst(X, k, Y, metric):
     if Y is not None: return None
-    return genieclust.oldmst.knn_from_distance(X, k=k, metric=metric)
+    return deadwood.oldmst.knn_from_distance(X, k=k, metric=metric)
 
 def knn_ref(X, k, Y, metric):
     if Y is None:  # doesn't work correctly otherwise... omits self
