@@ -73,7 +73,9 @@ def mst_mutreach_check(X, metric='euclidean'):
     D = scipy.spatial.distance.squareform(D)
 
     for M in [1, 2, 3, 5]:
-        d_core     = D[:,M-1].copy() #genieclust.internal._core_distance(D, M)
+        d_core     = D[np.arange(n), np.argsort(D, axis=1)[:, M]]
+
+
 
         t0 = time.time()
         #d_mutreach = genieclust.internal._mutual_reachability_distance(D, d_core)
