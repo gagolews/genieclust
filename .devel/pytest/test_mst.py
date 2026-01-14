@@ -75,8 +75,6 @@ def mst_mutreach_check(X, metric='euclidean'):
     for M in [1, 2, 3, 5]:
         d_core     = D[np.arange(n), np.argsort(D, axis=1)[:, M]]
 
-
-
         t0 = time.time()
         #d_mutreach = genieclust.internal._mutual_reachability_distance(D, d_core)
         d_mutreach = np.maximum(np.maximum(D, d_core.reshape(-1,1)), d_core.reshape(1,-1))

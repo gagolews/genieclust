@@ -34,7 +34,7 @@ from . import internal
 
 
 
-class Genie(deadwood.MSTClusterMixin):
+class Genie(deadwood.MSTClusterer):
     """
     Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection
 
@@ -252,16 +252,20 @@ class Genie(deadwood.MSTClusterMixin):
         self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.gini_threshold      = gini_threshold
-        self._check_params()
 
+        self.children_           = None
+        self.distances_          = None
+        self.counts_             = None
+        self._links_             = None
+        self._iters_             = None
 
 
     def _check_params(self, cur_state=None):
         cur_state = super()._check_params(cur_state)
 
-        cur_state["gini_threshold"] = float(self.gini_threshold)
-        if not (0.0 <= cur_state["gini_threshold"] <= 1.0):
-            raise ValueError("`gini_threshold` not in [0,1].")
+        self.gini_threshold = float(self.gini_threshold)
+        if not (0.0 <= self.gini_threshold <= 1.0):
+            raise ValueError("gini_threshold not in [0,1].")
 
         cur_state["compute_full_tree"] = bool(self.compute_full_tree)
 
@@ -313,10 +317,10 @@ class Genie(deadwood.MSTClusterMixin):
         # apply the Genie algorithm:
         res = internal.genie_from_mst(
             self._tree_w,
-            self._tree_e,
+            self._tree_i,
             skip_nodes=np.zeros(0, dtype=bool),  # TODO
             n_clusters=cur_state["n_clusters"],
-            gini_threshold=cur_state["gini_threshold"],
+            gini_threshold=self.gini_threshold,
             #skip_leaves=(cur_state["preprocess"] == "leaves"),  TODO
             compute_full_tree=cur_state["compute_full_tree"],
             compute_all_cuts=cur_state["compute_all_cuts"]
@@ -362,7 +366,7 @@ class Genie(deadwood.MSTClusterMixin):
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,
-                self._tree_e
+                self._tree_i
             )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
@@ -382,7 +386,7 @@ class Genie(deadwood.MSTClusterMixin):
 
 
 
-class GIc(deadwood.MSTClusterMixin):
+class GIc(deadwood.MSTClusterer):
     """
     GIc (Genie+Information Criterion) clustering algorithm
 
@@ -523,8 +527,8 @@ class GIc(deadwood.MSTClusterMixin):
             add_clusters=0,
             n_features=None,
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
-            verbose=False):
-        # # # # # # # # # # # #
+            verbose=False
+        ):
         super().__init__(
             n_clusters=n_clusters,
             M=0,
@@ -539,8 +543,11 @@ class GIc(deadwood.MSTClusterMixin):
         self.n_features          = n_features
         self.add_clusters        = add_clusters
 
-        self._check_params()
-
+        self.children_           = None
+        self.distances_          = None
+        self.counts_             = None
+        self._links_             = None
+        self._iters_             = None
 
 
     def _check_params(self, cur_state=None):
@@ -600,7 +607,14 @@ class GIc(deadwood.MSTClusterMixin):
 
         cur_state = self._get_mst(X, cur_state)
 
-        if cur_state["n_features"] < 1:  # _get_mst sets this
+        # this is more like an inherent dimensionality for GIc
+        cur_state["n_features"] = self.n_features   # users can set this manually
+        if cur_state["n_features"] is not None:     # only GIc needs this
+            cur_state["n_features"] = max(1.0, self.n_features_))
+        else:
+            cur_state["n_features"] = -1.0
+
+        if cur_state["n_features"] < 1.0:
             # this shouldn't happen in normal use
             raise ValueError("Please set the `n_features` attribute manually.")
 
@@ -610,7 +624,7 @@ class GIc(deadwood.MSTClusterMixin):
         # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(
             self._tree_w,
-            self._tree_e,
+            self._tree_i,
             n_features=cur_state["n_features"],
             n_clusters=cur_state["n_clusters"],
             add_clusters=cur_state["add_clusters"],
@@ -657,7 +671,7 @@ class GIc(deadwood.MSTClusterMixin):
             Z = internal.get_linkage_matrix(
                 self._links_,
                 self._tree_w,
-                self._tree_e
+                self._tree_i
             )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
