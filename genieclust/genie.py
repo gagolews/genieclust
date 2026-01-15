@@ -45,9 +45,6 @@ class Genie(deadwood.MSTClusterer):
     n_clusters : int
         The number of clusters to detect.
 
-        If *M > 0* and *postprocess* is not ``"all"``, setting
-        *n_clusters = 1* makes the algorithm behave as an outlier detector.
-
     gini_threshold : float in [0,1]
         The threshold for the Genie correction.
 
@@ -59,13 +56,13 @@ class Genie(deadwood.MSTClusterer):
 
         Empirically, the algorithm tends to be *stable* with respect to small
         changes to the threshold, as they usually do not affect the output
-        clustering. Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth
+        clustering.  Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth
         giving a try.
 
     M : int
         The smoothing factor for the mutual reachability distance [2]_.
         *M ≤ 1* indicates the original distance as given by
-        the *metric* parameter; see :any:`deadwood.MSTClusterMixin`
+        the *metric* parameter; see :any:`deadwood.MSTBase`
         for more details.
 
         *M = 0* gives the original Genie algorithm [1]_
@@ -168,7 +165,7 @@ class Genie(deadwood.MSTClusterer):
 
     Genie is based on the minimum spanning tree (MST) of the
     pairwise distance graph of a given point set (refer to
-    :any:`deadwood.MSTClusterMixin` and [3]_ for more details).
+    :any:`deadwood.MSTBase` and [3]_ for more details).
     Just like the single linkage, it consumes the edges
     of the MST in increasing order of weights. However, it prevents
     the formation of clusters of highly imbalanced sizes; once the Gini index
@@ -186,11 +183,6 @@ class Genie(deadwood.MSTClusterer):
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
 
-    The Genie algorithm together with the smoothing factor *M > 0*
-    gives an alternative to the HDBSCAN\\* [2]_ algorithm that is able to
-    detect a predefined number of clusters (see [4]_) without depending
-    on DBSCAN\\*'s ``eps`` HDBSCAN\\*'s ``min_cluster_size`` parameters.
-
 
     :Environment variables:
         OMP_NUM_THREADS
@@ -202,26 +194,22 @@ class Genie(deadwood.MSTClusterer):
     ----------
 
     .. [1]
-        Gagolewski M., Bartoszuk M., Cena A.,
+        M. Gagolewski, M. Bartoszuk, A. Cena,
         Genie: A new, fast, and outlier-resistant hierarchical
         clustering algorithm, *Information Sciences* 363, 2016, 8-23.
-        doi:10.1016/j.ins.2016.05.003.
+        https://doi.org/10.1016/j.ins.2016.05.003
 
     .. [2]
-        Campello R.J.G.B., Moulavi D., Sander J.,
+        R.J.G.B. Campello, D. Moulavi, J. Sander,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
-        doi:10.1007/978-3-642-37456-2_14.
+        https://doi.org/10.1007/978-3-642-37456-2_14
 
     .. [3]
-        Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
-        doi:10.1007/s00357-024-09483-1.
-
-    .. [4]
-        Gagolewski M., TODO, 2025
-
+        https://doi.org/10.1007/s00357-024-09483-1
     """
 
     def __init__(
@@ -233,8 +221,6 @@ class Genie(deadwood.MSTClusterer):
             metric="l2",
             compute_full_tree=False,
             compute_all_cuts=False,
-            #preprocess="auto",
-            #postprocess="midliers",
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
@@ -243,8 +229,6 @@ class Genie(deadwood.MSTClusterer):
             n_clusters=n_clusters,
             M=M,
             metric=metric,
-            #preprocess=preprocess,
-            #postprocess=postprocess,
             quitefastmst_params=quitefastmst_params,
             verbose=verbose
         )
@@ -261,17 +245,16 @@ class Genie(deadwood.MSTClusterer):
 
 
     def _check_params(self, cur_state=None):
-        cur_state = super()._check_params(cur_state)
+        super()._check_params()
 
         self.gini_threshold = float(self.gini_threshold)
         if not (0.0 <= self.gini_threshold <= 1.0):
             raise ValueError("gini_threshold not in [0,1].")
 
-        cur_state["compute_full_tree"] = bool(self.compute_full_tree)
+        self.compute_full_tree = bool(self.compute_full_tree)
 
-        cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
+        self.compute_all_cuts  = bool(self.compute_all_cuts)
 
-        return cur_state
 
 
     def fit(self, X, y=None):
@@ -283,9 +266,9 @@ class Genie(deadwood.MSTClusterer):
         ----------
 
         X : object
-            Typically a matrix with ``n_samples`` rows and ``n_features``
-            columns; see :any:`deadwood.MSTClusterMixin.fit_predict` for more
-            details.
+            Typically a matrix or a data frame with ``n_samples`` rows
+            and ``n_features`` columns;
+            see :any:`deadwood.MSTBase.fit_predict` for more details.
 
         y : None
             Ignored.
@@ -304,26 +287,28 @@ class Genie(deadwood.MSTClusterer):
         Refer to the `labels_` and `n_clusters_` attributes for the result.
 
         """
-        cur_state = self._check_params()  # re-check, they might have changed
+        self.labels_     = None
+        self.n_clusters_ = None
 
-        cur_state = self._get_mst(X, cur_state)
+        self._check_params()  # re-check, they might have changed
+        self._get_mst(X)  # sets n_samples_, n_features_, _tree_w, _tree_i, _d_core, etc.
 
-        if cur_state["n_clusters"] >= self.n_samples_:
-            raise ValueError("n_clusters must be < n_samples_")
+        if not (1 <= self.n_clusters < self.n_samples_):
+            raise ValueError("n_clusters must be between 1 and n_samples_-1")
 
-        if cur_state["verbose"]:
+        if self.verbose:
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
         # apply the Genie algorithm:
         res = internal.genie_from_mst(
-            self._tree_w,
-            self._tree_i,
+            self._tree_w_,
+            self._tree_i_,
             skip_nodes=np.zeros(0, dtype=bool),  # TODO
-            n_clusters=cur_state["n_clusters"],
+            n_clusters=self.n_clusters,
             gini_threshold=self.gini_threshold,
             #skip_leaves=(cur_state["preprocess"] == "leaves"),  TODO
-            compute_full_tree=cur_state["compute_full_tree"],
-            compute_all_cuts=cur_state["compute_all_cuts"]
+            compute_full_tree=self.compute_full_tree,
+            compute_all_cuts=self.compute_all_cuts
         )
 
         ########################################################
@@ -334,11 +319,11 @@ class Genie(deadwood.MSTClusterer):
         self._links_     = res["links"]
         self._iters_     = res["iters"]
 
-        if res["n_clusters"] != cur_state["n_clusters"]:
+        if res["n_clusters"] != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
                           "different from the requested one (%d)." % (
                             res["n_clusters"],
-                            cur_state["n_clusters"]))
+                            self.n_clusters))
 
         if self.labels_ is not None:
             reshaped = False
@@ -361,18 +346,18 @@ class Genie(deadwood.MSTClusterer):
 
         ########################################################
 
-        if cur_state["compute_full_tree"]:
+        if self.compute_full_tree:
             # assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
-                self._tree_w,
-                self._tree_i
+                self._tree_w_,
+                self._tree_i_
             )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
 
-        if cur_state["verbose"]:
+        if self.verbose:
             print("[genieclust] Done.", file=sys.stderr)
 
         return self
@@ -495,25 +480,25 @@ class GIc(deadwood.MSTClusterer):
     ----------
 
     .. [1]
-        Cena, A., *Adaptive hierarchical clustering algorithms based on
+        A. Cena, *Adaptive hierarchical clustering algorithms based on
         data aggregation methods*, PhD Thesis, Systems Research Institute,
-        Polish Academy of Sciences 2018.
+        Polish Academy of Sciences 2018
 
     .. [2]
-        Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
-        Clustering using Minimum Spanning Trees, *DAGM-OAGM*, 2012.
+        A. Mueller, S. Nowozin, C.H. Lampert, Information Theoretic
+        Clustering using Minimum Spanning Trees, *DAGM-OAGM*, 2012
 
     .. [3]
-        Gagolewski, M., Bartoszuk, M., Cena, A.,
+        M. Gagolewski, M. Bartoszuk, A. Cena,
         Genie: A new, fast, and outlier-resistant hierarchical clustering
         algorithm, *Information Sciences* 363, 2016, 8-23.
-        doi:10.1016/j.ins.2016.05.003.ing
+        https://doi.org/10.1016/j.ins.2016.05.003
 
     .. [4]
-        Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
-        doi:10.1007/s00357-024-09483-1.
+        https://doi.org/10.1007/s00357-024-09483-1
 
     """
     def __init__(
@@ -551,23 +536,21 @@ class GIc(deadwood.MSTClusterer):
 
 
     def _check_params(self, cur_state=None):
-        cur_state = super()._check_params(cur_state)
+        super()._check_params()
 
-        cur_state["add_clusters"] = int(self.add_clusters)
-        if cur_state["add_clusters"] < 0:
-            raise ValueError("`add_clusters` must be non-negative.")
+        self.add_clusters = int(self.add_clusters)
+        if self.add_clusters < 0:
+            raise ValueError("add_clusters must be non-negative.")
 
-        cur_state["gini_thresholds"] = np.array(self.gini_thresholds)
-        for g in cur_state["gini_thresholds"]:
+        self.gini_thresholds = np.array(self.gini_thresholds)
+        for g in self.gini_thresholds:
             if not (0.0 <= g <= 1.0):
-                raise ValueError("All elements in `gini_thresholds` "
-                                 "must be in [0,1].")
+                raise ValueError("All gini_thresholds must be in [0,1].")
 
-        cur_state["compute_full_tree"] = bool(self.compute_full_tree)
+        self.compute_full_tree = bool(self.compute_full_tree)
 
-        cur_state["compute_all_cuts"]  = bool(self.compute_all_cuts)
+        self.compute_all_cuts  = bool(self.compute_all_cuts)
 
-        return cur_state
 
 
     def fit(self, X, y=None):
@@ -579,9 +562,9 @@ class GIc(deadwood.MSTClusterer):
         ----------
 
         X : object
-            Typically a matrix with ``n_samples`` rows and ``n_features``
-            columns; see :any:`deadwood.MSTClusterMixin.fit_predict` for more
-            details.
+            Typically a matrix or a data frame with ``n_samples`` rows
+            and ``n_features`` columns;
+            see :any:`deadwood.MSTBase.fit_predict` for more details.
 
         y : None
             Ignored.
@@ -603,34 +586,33 @@ class GIc(deadwood.MSTClusterer):
         parameter must be set explicitly.
 
         """
-        cur_state = self._check_params()  # re-check, they might have changed
+        self.labels_     = None
+        self.n_clusters_ = None
 
-        cur_state = self._get_mst(X, cur_state)
+        self._check_params()  # re-check, they might have changed
+        self._get_mst(X)  # sets n_samples_, n_features_, _tree_w, _tree_i, _d_core, etc.
 
-        # this is more like an inherent dimensionality for GIc
-        cur_state["n_features"] = self.n_features   # users can set this manually
-        if cur_state["n_features"] is not None:     # only GIc needs this
-            cur_state["n_features"] = max(1.0, self.n_features_))
+        if self.n_features is not None:
+            # "inherent dimensionality" as set by the user
+            n_features = max(1.0, float(self.n_features))
+        elif self.n_features_ is not None:
+            n_features = self.n_features_
         else:
-            cur_state["n_features"] = -1.0
+            raise ValueError("Please set the n_features attribute manually.")
 
-        if cur_state["n_features"] < 1.0:
-            # this shouldn't happen in normal use
-            raise ValueError("Please set the `n_features` attribute manually.")
-
-        if cur_state["verbose"]:
+        if self.verbose:
             print("[genieclust] Determining clusters with GIc.", file=sys.stderr)
 
         # apply the Genie+Ic algorithm:
         res = internal.gic_from_mst(
-            self._tree_w,
-            self._tree_i,
-            n_features=cur_state["n_features"],
-            n_clusters=cur_state["n_clusters"],
-            add_clusters=cur_state["add_clusters"],
-            gini_thresholds=cur_state["gini_thresholds"],
-            compute_full_tree=cur_state["compute_full_tree"],
-            compute_all_cuts=cur_state["compute_all_cuts"]
+            self._tree_w_,
+            self._tree_i_,
+            n_features=n_features,
+            n_clusters=self.n_clusters,
+            add_clusters=self.add_clusters,
+            gini_thresholds=self.gini_thresholds,
+            compute_full_tree=self.compute_full_tree,
+            compute_all_cuts=self.compute_all_cuts
         )
 
         ########################################################
@@ -639,11 +621,11 @@ class GIc(deadwood.MSTClusterer):
         self._links_     = res["links"]
         self._iters_     = res["iters"]
 
-        if res["n_clusters"] != cur_state["n_clusters"]:
+        if res["n_clusters"] != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
                           "different from the requested one (%d)." % (
                             res["n_clusters"],
-                            cur_state["n_clusters"]))
+                            self.n_clusters))
 
         if self.labels_ is not None:
             reshaped = False
@@ -666,18 +648,18 @@ class GIc(deadwood.MSTClusterer):
 
         ########################################################
 
-        if cur_state["compute_full_tree"]:
+        if self.compute_full_tree:
             # assert cur_state["exact"] and cur_state["M"] == 0
             Z = internal.get_linkage_matrix(
                 self._links_,
-                self._tree_w,
-                self._tree_i
+                self._tree_w_,
+                self._tree_i_
             )
             self.children_    = Z["children"]
             self.distances_   = Z["distances"]
             self.counts_      = Z["counts"]
 
-        if cur_state["verbose"]:
+        if self.verbose:
             print("[genieclust] Done.", file=sys.stderr)
 
         return self
