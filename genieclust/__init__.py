@@ -21,13 +21,12 @@ genieclust Python Package
 # ############################################################################ #
 
 # version string, e.g., "1.0.0.9001" or "1.1.1"
-__version__ = "1.2.0.9003"
+__version__ = "1.2.0.9004"
 
 
-from . import plots
-from . import inequality
-from . import tools
-from . import compare_partitions
-from . import cluster_validity
 from . import internal
+from . import cluster_validity
+from . import compare_partitions
+from . import inequality
+from . import plots
 from .genie import Genie, GIc

@@ -45,9 +45,6 @@ cython_modules = {
     "genieclust.inequality": [
         os.path.join("genieclust", "inequality.pyx")
     ],
-    "genieclust.tools": [
-        os.path.join("genieclust", "tools.pyx")
-    ]
 }
 
 

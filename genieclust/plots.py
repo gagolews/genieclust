@@ -44,7 +44,7 @@ def _get_xy(X, y):
     X = np.array(X)
     if X.ndim == 2:
         if not X.shape[1] == 2:
-            raise ValueError("`X` must have 2 columns.")
+            raise ValueError("`X` must have two columns.")
         if y is not None:
             raise ValueError("If `X` is a matrix, `y` should not be given.")
     elif X.ndim == 1:
@@ -75,9 +75,9 @@ def plot_scatter(X, y=None, labels=None,
     ----------
 
     X : array_like
-        Either a two-column matrix that gives the *x* and *y* coordinates of the points
-        or a vector of length *n*. In the latter case, `y` must be a
-        vector of length *n* as well.
+        Either a two-column matrix that gives the *x* and *y* coordinates
+        of the points or a vector of length *n*. In the latter case, `y`
+        must be a vector of length *n* as well.
 
     y : None or array_like
         The *y* coordinates of the *n* points in the case where `X` is a vector.
@@ -145,7 +145,7 @@ def plot_scatter(X, y=None, labels=None,
         ...         i, 0, i, horizontalalignment="center")    # doctest: +SKIP
         ...     plt.plot(                                     # doctest: +SKIP
         ...         i, 1, marker=mrk_recycled[i],             # doctest: +SKIP
-        ...         color=genieclust.plots.colors[i],            # doctest: +SKIP
+        ...         color=genieclust.plots.colors[i],         # doctest: +SKIP
         ...         markersize=25)                            # doctest: +SKIP
         >>> plt.title("Plotting styles for labels=0,1,...,9") # doctest: +SKIP
         >>> plt.ylim(-3,4)                                    # doctest: +SKIP
@@ -207,9 +207,9 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
         defining the line segments to draw.
 
     X : array_like
-        Either a two-column matrix that gives the *x* and *y* coordinates of the points
-        or a vector of length *n*. In the latter case, `y` must be a
-        vector of length *n* as well.
+        Either a two-column matrix that gives the *x* and *y* coordinates
+        of the points or a vector of length *n*. In the latter case,
+        `y` must be a vector of length *n* as well.
 
     y : None or array_like
         The *y* coordinates of the *n* points in the case where `X` is a vector.
@@ -268,7 +268,7 @@ def plot_segments(pairs, X, y=None, style="k-", **kwargs):
 
     pairs = np.array(pairs)
     if pairs.ndim != 2 or pairs.shape[1] != 2:
-        raise ValueError("`pairs` must be a matrix with 2 columns.")
+        raise ValueError("`pairs` must be a matrix with two columns.")
 
     xcoords = np.insert(X[pairs.ravel(), 0].reshape(-1, 2), 2, None, 1).ravel()
     ycoords = np.insert(X[pairs.ravel(), 1].reshape(-1, 2), 2, None, 1).ravel()

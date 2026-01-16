@@ -42,10 +42,6 @@ from libcpp.vector cimport vector
 from libc.math cimport INFINITY
 from libcpp.vector cimport vector
 
-cdef extern from "../src/c_argfuns.h":
-    Py_ssize_t Cargkmin[T](T* x, Py_ssize_t n, Py_ssize_t k, Py_ssize_t* buf)
-
-
 
 ctypedef fused T:
     int
@@ -580,12 +576,12 @@ cdef extern from "../src/c_graph_process.h":
         const Py_ssize_t* mst_i, Py_ssize_t num_edges,
         const Py_ssize_t* nn_i, Py_ssize_t num_neighbours, Py_ssize_t M,
         Py_ssize_t* c, Py_ssize_t n
-    )
+    ) except+
 
     void Cmerge_all(  # [DEPRECATED]
         const Py_ssize_t* mst_i, Py_ssize_t num_edges,
         Py_ssize_t* c, Py_ssize_t n
-    )
+    ) except+
 
 
 

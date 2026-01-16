@@ -20,7 +20,7 @@
 #define __CVI_DUNNOWA_H
 
 #include "cvi.h"
-#include "c_argfuns.h"
+
 
 #define OWA_ERROR 0
 #define OWA_MEAN 1
@@ -31,6 +31,62 @@
 #define OWA_SMIN_LIMIT 199999
 #define OWA_SMAX_START 200000
 #define OWA_SMAX_LIMIT 299999
+
+
+#define REC_SQRT_2_PI 0.3989422804014326779399460599343818684758586311649346576659258296
+
+
+FLOAT_T dnorm(FLOAT_T x, FLOAT_T m, FLOAT_T s) {
+    return REC_SQRT_2_PI*exp(-0.5*square((x-m)/s))/s;
+}
+
+
+/*! Comparer for argsort().
+ *
+ *  Ensures the resulting permutation is stable.
+ */
+template<class T>
+struct __argsort_comparer
+{
+    const T* x;
+
+    __argsort_comparer(const T* x) { this->x = x; }
+
+    inline bool operator()(const Py_ssize_t i, const Py_ssize_t j) const {
+        return this->x[i] <  this->x[j] ||
+              (this->x[i] == this->x[j] && i < j);
+    }
+};
+
+
+/*! Finds an(*) ordering permutation w.r.t. \lt.
+ *
+ *  Both ret and x should be of the same length n;
+ *  ret will be overwritten.
+ *
+ *  (*) or THE stable one, if stable=true, which is the default.
+ *
+ *  We call permutation o stable, whenever i < j and x[i]==x[j]
+ *  implies that o[i] < o[j].
+ *
+ *  @param ret return array
+ *  @param x array to order
+ *  @param n size of ret and x
+ *  @param stable use a stable sorting algorithm? (slower)
+ */
+template<class T>
+void Cargsort(Py_ssize_t* ret, const T* x, Py_ssize_t n, bool stable=true)
+{
+    if (n <= 0) throw std::domain_error("n <= 0");
+
+    for (Py_ssize_t i=0; i<n; ++i)
+        ret[i] = i;
+
+    if (stable)
+        std::stable_sort(ret, ret+n, __argsort_comparer<T>(x));
+    else
+        std::sort(ret, ret+n, __argsort_comparer<T>(x));
+}
 
 
 int DuNNOWA_get_OWA(std::string owa_name)
@@ -55,11 +111,6 @@ int DuNNOWA_get_OWA(std::string owa_name)
 }
 
 
-#define REC_SQRT_2_PI 0.3989422804014326779399460599343818684758586311649346576659258296
-
-FLOAT_T dnorm(FLOAT_T x, FLOAT_T m, FLOAT_T s) {
-    return REC_SQRT_2_PI*exp(-0.5*square((x-m)/s))/s;
-}
 
 
 /** OWA-based Dunn-like Indices Based on Near Neighbours
