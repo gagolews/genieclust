@@ -4,38 +4,47 @@
 
 *   Check for NA/NaN/Inf in the input matrices.
 
-*   For M>1 and non-Euclidean distances, the output MST edge weights
-    are slightly perturbed because of the applied continuity correction.
-    These values should be manually corrected at the postprocessing stage
-    after/in a call to `Cmst_from_complete`.
-
-*   For M>1, add an option to "preprocess" that marks nodes incident to
-    cut edges as midliers/outliers.
-
 
 ## (under development), to-be 1.3.0
 
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
     backward-incompatible changes have been addressed (see below).
 
-*   [NEW FEATURE]  Outlier detection based on mutual reachability distances
-    is no longer marked as experimental.  Note that we now rely on mutual
-    reachability distances adjusted for the presence of ties such that
-    neighbours with smaller core distances are preferred;
-    moreover, some leaves of the MST are reconnected so that they
-    are adjacent to vertices that have them amongst their *M* nearest
-    neighbours; see (in preparation: Gagolewski, 2025, TODO) for discussion.
+*   `deadwood` version >= 0.9.1 is now required.  The code was heavily
+    refactored; common MST-related functions and classes were moved therein.
+
+*   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
+
+*   [BACKWARD INCOMPATIBILITY]  Deprecated functions such as `mst_from_nn`
+    have been removed.
+
+*   [BACKWARD INCOMPATIBILITY]  The functions from the `tools` submodule
+    have been moved to the `deadwood` package.
 
 *   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
     distance has changed.  Unlike in Campello et al.'s 2013 paper,
     now the core distance is the distance to the *M*-th nearest neighbour,
     not the *(M-1)*-th one (not including self).
 
-*   [BACKWARD INCOMPATIBILITY]  `detect_noise` in `genie.default`
-    was renamed `skip_leaves`.
+*   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
+    a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
+    distance turned out to be subpar in a more detailed empirical analysis,
+    especially for smaller smoothing factors.  Note that in the previous
+    versions of the package, this merely used to an experimental feature;
+    Hence, `detect_noise` in `genie.default` and `skip_leaves` elsewhere
+    is no longer available.
 
-*   [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
+*   [NEW FEATURE]  The Genie algorithm was updated so that now arbitrary
+    nodes can be skipped from the clustering process.  This allows for
+    ignoring points marked as outliers at the data preprocessing stage.
+
+*   ??? #92 NPA, NCA...
+
+*   ???? TODO `preprocess`
+
+*   ???? TODO [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
     `"midliers"`, `"none"`, and `"all"`.
+    New outlier detection....
 
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
@@ -57,8 +66,8 @@
     with `nmslib` is no longer supported directly; unfortunately, the package
     has not been updated for a while.
 
-*   [Python] `MSTClusterMixin(BaseEstimator, ClusterMixin)`: A base class for
-    Genie, GIc, and other MST-based clustering algorithms.
+*   [Python] `MSTClusterMixin`: A base class for Genie, GIc, and other MST-based
+    clustering algorithms.  [later moved to `deadwood`]
 
 *   [BACKWARD INCOMPATIBILITY] [Python] `Genie` and `GIc`: `affinity` was
     renamed `metric`.

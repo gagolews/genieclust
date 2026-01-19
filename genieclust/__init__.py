@@ -24,7 +24,7 @@ genieclust Python Package
 __version__ = "1.2.0.9004"
 
 
-from . import internal
+from . import core
 from . import cluster_validity
 from . import compare_partitions
 from . import inequality

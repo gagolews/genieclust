@@ -1,2 +1,12 @@
 PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) -DGENIECLUST_R -Isrc/ -I../src/
+
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS)
+
+SOURCES = \
+    RcppComparePartitions.cpp \
+    RcppCVI.cpp               \
+    RcppExports.cpp           \
+    RcppGenie.cpp             \
+    RcppInequality.cpp
+
+OBJECTS = $(SOURCES:.cpp=.o)

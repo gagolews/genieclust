@@ -33,17 +33,17 @@ import re
 
 
 cython_modules = {
-    "genieclust.internal": [
-        os.path.join("genieclust", "internal.pyx")
+    "genieclust.core": [
+        os.path.join("src", "py_core.pyx")
     ],
     "genieclust.compare_partitions": [
-        os.path.join("genieclust", "compare_partitions.pyx")
+        os.path.join("src", "py_compare_partitions.pyx")
     ],
     "genieclust.cluster_validity": [
-        os.path.join("genieclust", "cluster_validity.pyx")
+        os.path.join("src", "py_cluster_validity.pyx")
     ],
     "genieclust.inequality": [
-        os.path.join("genieclust", "inequality.pyx")
+        os.path.join("src", "py_inequality.pyx")
     ],
 }
 
@@ -51,7 +51,7 @@ cython_modules = {
 class genieclust_sdist(sdist):
     def run(self):
         for pyx_files in cython_modules.values():
-            cythonize(pyx_files, include_path=["genieclust/", "src/", "../src/"])
+            cythonize(pyx_files, include_path=["src/", "../src/"])
         sdist.run(self)
 
 

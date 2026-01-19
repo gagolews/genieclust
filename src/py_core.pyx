@@ -7,9 +7,7 @@
 
 
 """
-Internal functions and classes
-
-TODO: ? rename internal -> core ?
+Auxiliary functions and classes
 """
 
 # ############################################################################ #
@@ -593,7 +591,7 @@ cpdef np.ndarray[Py_ssize_t] merge_midliers(
         Py_ssize_t M
     ):
     """
-    genieclust.internal.merge_midliers(mst_i, c, nn_i, M)
+    genieclust.core.merge_midliers(mst_i, c, nn_i, M)
 
     [DEPRECATED]
 
@@ -643,7 +641,7 @@ cpdef np.ndarray[Py_ssize_t] merge_all(
         Py_ssize_t[::1] c
     ):
     """
-    genieclust.internal.merge_all(mst_i, c)
+    genieclust.core.merge_all(mst_i, c)
 
     [DEPRECATED]
 
@@ -686,14 +684,15 @@ cpdef dict get_linkage_matrix(
         Py_ssize_t[:,::1] mst_i
     ):
     """
-    genieclust.internal.get_linkage_matrix(links, mst_d, mst_i)
+    genieclust.core.get_linkage_matrix(links, mst_d, mst_i)
 
 
     Parameters
     ----------
 
     links : ndarray
-        see return value of genieclust.internal.genie_from_mst.
+        see return value of genieclust.core.genie_from_mst.
+
     mst_d, mst_i : ndarray
         minimal spanning tree defined by a pair (mst_i, mst_d),
         with mst_i of shape (n-1,2) giving the edges and mst_d providing the

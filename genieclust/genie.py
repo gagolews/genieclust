@@ -26,7 +26,7 @@ import math
 import numpy as np
 import warnings
 import deadwood
-from . import internal
+from . import core
 
 ###############################################################################
 ###############################################################################
@@ -70,7 +70,7 @@ class Genie(deadwood.MSTClusterer):
 
     metric : str
         The metric used to compute the linkage; see
-        :any:`deadwood.MSTClusterMixin` for more details.
+        :any:`deadwood.MSTBase` for more details.
         Defaults to ``"l2"``, i.e., the Euclidean distance.
 
     compute_full_tree : bool
@@ -300,7 +300,7 @@ class Genie(deadwood.MSTClusterer):
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
         # apply the Genie algorithm:
-        res = internal.genie_from_mst(
+        res = core.genie_from_mst(
             self._tree_w_,
             self._tree_i_,
             skip_nodes=np.zeros(0, dtype=bool),  # TODO
@@ -348,7 +348,7 @@ class Genie(deadwood.MSTClusterer):
 
         if self.compute_full_tree:
             # assert cur_state["exact"] and cur_state["M"] == 0
-            Z = internal.get_linkage_matrix(
+            Z = core.get_linkage_matrix(
                 self._links_,
                 self._tree_w_,
                 self._tree_i_
@@ -453,7 +453,7 @@ class GIc(deadwood.MSTClusterer):
 
     GIc computes an *n_clusters*-partition based on a pre-computed minimum
     spanning tree (MST) of the pairwise distance graph of a given point set
-    (refer to :any:`deadwood.MSTClusterMixin` and [4]_ for more details).
+    (refer to :any:`deadwood.MSTBase` and [4]_ for more details).
     Clusters are merged so as to maximise (heuristically)
     the information criterion discussed in [2]_.
 
@@ -604,7 +604,7 @@ class GIc(deadwood.MSTClusterer):
             print("[genieclust] Determining clusters with GIc.", file=sys.stderr)
 
         # apply the Genie+Ic algorithm:
-        res = internal.gic_from_mst(
+        res = core.gic_from_mst(
             self._tree_w_,
             self._tree_i_,
             n_features=n_features,
@@ -650,7 +650,7 @@ class GIc(deadwood.MSTClusterer):
 
         if self.compute_full_tree:
             # assert cur_state["exact"] and cur_state["M"] == 0
-            Z = internal.get_linkage_matrix(
+            Z = core.get_linkage_matrix(
                 self._links_,
                 self._tree_w_,
                 self._tree_i_

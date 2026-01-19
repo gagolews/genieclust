@@ -33,40 +33,21 @@ genie(d, ...)
   gini_threshold = 0.3,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
-  preprocess = c("none"),
-  postprocess = c("midliers", "none", "all"),
   verbose = FALSE,
   ...
 )
 
-\method{genie}{dist}(
-  d,
-  k,
-  gini_threshold = 0.3,
-  M = 0L,
-  preprocess = c("none"),
-  postprocess = c("midliers", "none", "all"),
-  verbose = FALSE,
-  ...
-)
+\method{genie}{dist}(d, k, gini_threshold = 0.3, M = 0L, verbose = FALSE, ...)
 
-\method{genie}{mst}(
-  d,
-  k,
-  gini_threshold = 0.3,
-  preprocess = c("none"),
-  postprocess = c("midliers", "none", "all"),
-  verbose = FALSE,
-  ...
-)
+\method{genie}{mst}(d, k, gini_threshold = 0.3, verbose = FALSE, ...)
 }
 \arguments{
 \item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
 object of class \code{dist} (see \code{\link[stats]{dist}}),
-or an object of class \code{mst} (\code{\link{mst}})}
+or an object of class \code{mst} (\code{\link[deadwood]{mst}})}
 
-\item{...}{further arguments passed to \code{\link{mst}()}}
+\item{...}{further arguments passed to \code{\link[deadwood]{mst}()}}
 
 \item{gini_threshold}{threshold for the Genie correction, i.e.,
 the Gini index of the cluster size distribution;
@@ -86,16 +67,6 @@ and progress information}
 
 \item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 otherwise, the mutual reachability distance is used}
-
-\item{preprocess}{TODO}
-
-\item{postprocess}{TODO \code{"midliers"} (default), \code{"none"}
-or \code{"all"}; in effect only if \eqn{M > 0}.
-By default, only midliers are merged with their adjacent neighbours
-in the tree, i.e., leaves that are amongst their adjacent nodes'
-\eqn{M} nearest neighbours.
-To force a classical k-partition of a data set (one that does not
-distinguish between inliers and outliers), choose \code{"all"}.}
 }
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it
@@ -105,8 +76,6 @@ Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
 \code{genie()} returns a \code{k}-partition, i.e., a vector whose
 \eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
 between 1 and \code{k}.
-TODO If \code{skip_leaves} is \code{TRUE} and \code{postprocess}
-is not \code{"all"}, missing values (\code{NA}) denote outliers.
 }
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
@@ -123,7 +92,7 @@ of the smallest size is enforced.
 The clustering can also be computed with respect to the
 \eqn{M}-mutual reachability distance (based, e.g., on the Euclidean metric),
 which is used in the definition of the HDBSCAN* algorithm
-(see \code{\link{mst}()} for the definition).
+(see \code{\link[deadwood]{mst}()} for the definition).
 For the smoothing factor \eqn{M>0}, outliers are pulled away from
 their neighbours.  This way, the Genie algorithm gives an alternative
 to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
@@ -138,7 +107,7 @@ Oftentimes, applying some more sophisticated feature engineering techniques
 (e.g., dimensionality reduction) might lead to more meaningful results.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
-\code{\link{mst}()} will be called to compute an MST, which generally
+\code{\link[deadwood]{mst}()} will be called to compute an MST, which generally
 takes at most \eqn{O(n^2)} time. However, by default, a faster algorithm
 based on K-d trees is selected automatically for low-dimensional Euclidean
 spaces; see \code{\link[quitefastmst]{mst_euclid}} from
@@ -154,11 +123,6 @@ might violate the ultrametricity property (merges might occur at levels that
 are not increasing w.r.t. a between-cluster distance).
 \code{gclust()} automatically corrects departures from
 ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
-
-TODO If \eqn{M > 0}, all MST leaves are, by default, left out from the clustering
-process; see \code{skip_leaves}.  Afterwards, some of them (midliers)
-are merged with the nearest clusters at the postprocessing stage,
-and other ones are marked as outliers; see [4]_ for discussion.
 }
 \examples{
 library("datasets")
@@ -201,7 +165,7 @@ The official online manual of \pkg{genieclust} at \url{https://genieclust.gagole
 
 Gagolewski, M., \pkg{genieclust}: Fast and robust hierarchical clustering, \emph{SoftwareX} 15:100722, 2021, \doi{10.1016/j.softx.2021.100722}
 
-\code{\link{mst}()} for the minimum spanning tree routines
+\code{\link[deadwood]{mst}()} for the minimum spanning tree routines
 
 \code{\link{normalized_clustering_accuracy}()} (amongst others) for external
 cluster validity measures

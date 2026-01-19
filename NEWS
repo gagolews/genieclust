@@ -13,6 +13,8 @@
 *   `deadwood` version >= 0.9.1 is now required.  The code was heavily
     refactored; common MST-related functions and classes were moved therein.
 
+*   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
+
 *   [BACKWARD INCOMPATIBILITY]  Deprecated functions such as `mst_from_nn`
     have been removed.
 
@@ -64,8 +66,8 @@
     with `nmslib` is no longer supported directly; unfortunately, the package
     has not been updated for a while.
 
-*   [Python] `MSTClusterMixin(BaseEstimator, ClusterMixin)`: A base class for
-    Genie, GIc, and other MST-based clustering algorithms.
+*   [Python] `MSTClusterMixin`: A base class for Genie, GIc, and other MST-based
+    clustering algorithms.  [later moved to `deadwood`]
 
 *   [BACKWARD INCOMPATIBILITY] [Python] `Genie` and `GIc`: `affinity` was
     renamed `metric`.

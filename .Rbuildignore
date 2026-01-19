@@ -14,6 +14,7 @@
 ^dist
 ^docs
 ^src/\.clangd$
+^src/py_.*
 ^genieclust
 ^pytest
 ^README.md$

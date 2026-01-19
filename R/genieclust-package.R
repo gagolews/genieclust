@@ -30,5 +30,6 @@
 #' @importFrom stats cutree
 #' @importFrom stats dist
 #' @importFrom utils capture.output
+#' @importFrom deadwood mst
 #' @keywords internal
 "_PACKAGE"

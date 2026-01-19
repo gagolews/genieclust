@@ -4,8 +4,12 @@ library("genieclust")
 verbose <- FALSE
 #set.seed(123)
 n <- 1000
-d <- rpois(1, 10)+2
-X <- matrix(rnorm(n*d), nrow=n)
+d <- 2
+X <- rbind(
+    matrix(rnorm(n*d, -5), nrow=n),
+    matrix(rnorm(n*d, 5), nrow=n)
+)
+y_true <- rep(c(1, 2), c(n, n))
 
 #cat(sprintf("n=%d, d=%d\n", n, d))
 
@@ -17,6 +21,7 @@ for (g in c(0.1, 0.3, 0.5, 0.7, 1.0)) {
         h1 <- gclust(X, gini_threshold=g, distance=distance)
         h4 <- gclust(dist(X, method=distance), gini_threshold=g)
         expect_equal(adjusted_rand_score(cutree(h1, 3), cutree(h4, 3)), 1.0)
+        expect_equal(adjusted_rand_score(cutree(h1, 2), y_true), 1.0)
 
         c3 <- genie(dist(X, method=distance), 3, gini_threshold=g)
         expect_equal(adjusted_rand_score(cutree(h1, 3), c3), 1.0)
@@ -38,22 +43,12 @@ for (M in c(0, 1, 5)) {
     for (g in c(0.1, 0.3, 0.5, 0.7, 1.0)) {
         for (distance in c("euclidean", "manhattan")) {
 
-            # TODO: which tests? MST wrt mutreach is ambiguous...
+            c3a <- genie(dist(X, method=distance), 2, gini_threshold=g, M=M)
+            c3b <- genie(X, 2, gini_threshold=g, M=M, distance=distance)
 
-            c3a <- genie(dist(X, method=distance), 3, gini_threshold=g, M=M)
-            c3b <- genie(X, 3, gini_threshold=g, M=M, distance=distance)
-#             expect_equal(is.na(c3a), is.na(c3b))
-#             expect_equal(adjusted_rand_score(na.omit(c3a), na.omit(c3b)), 1.0)
+            expect_equal(adjusted_rand_score(c3a, y_true), 1.0)
+            expect_equal(adjusted_rand_score(c3b, y_true), 1.0)
 
-            c3a <- genie(dist(X, method=distance), 3, gini_threshold=g, M=M, postprocess="all")
-            c3b <- genie(X, 3, gini_threshold=g, M=M, distance=distance, postprocess="all")
-#             expect_equal(is.na(c3a), is.na(c3b))
-#             expect_equal(adjusted_rand_score(na.omit(c3a), na.omit(c3b)), 1.0)
-
-            c3a <- genie(dist(X, method=distance), 3, gini_threshold=g, M=M, postprocess="none")
-            c3b <- genie(X, 3, gini_threshold=g, M=M, distance=distance, postprocess="none")
-#             expect_equal(is.na(c3a), is.na(c3b))
-#             expect_equal(adjusted_rand_score(na.omit(c3a), na.omit(c3b)), 1.0)
         }
     }
 }

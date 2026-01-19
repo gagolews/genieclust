@@ -20,7 +20,6 @@
 using namespace Rcpp;
 
 
-
 /** Extract or compute the contingency matrix based on given arguments
  *
  *  @param x vector or contingency table (matrix)
