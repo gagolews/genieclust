@@ -73,12 +73,6 @@ class Genie(deadwood.MSTClusterer):
         :any:`deadwood.MSTBase` for more details.
         Defaults to ``"l2"``, i.e., the Euclidean distance.
 
-    compute_full_tree : bool
-        Whether to determine the entire cluster hierarchy and the linkage matrix.
-
-        Enables plotting dendrograms or cutting the cluster hierarchy at an
-        arbitrary level; see the `children_`, `distances_`, `counts_` attributes.
-
     compute_all_cuts : bool
         Whether to compute the requested `n_clusters`-partition and all
         the coarser-grained ones.
@@ -106,7 +100,7 @@ class Genie(deadwood.MSTClusterer):
         If *M > 0*, outliers are labelled ``-1`` (unless taken care
         of at the postprocessing stage).
 
-        Otherwise, i.e., if `compute_all_cuts` is ``True``,
+        TODO Otherwise, i.e., if `compute_all_cuts` is ``True``,
         all partitions of cardinality down to `n_clusters`
         are determined; ``labels_[j,i]`` denotes the cluster ID of the i-th
         point in a j-partition.  We assume that both the 0- and 1- partition
@@ -129,17 +123,16 @@ class Genie(deadwood.MSTClusterer):
         If the information is not available, it will be set to ``-1``.
 
     children_ : None or ndarray
-        If `compute_full_tree` is ``True``, this is a matrix whose
-        i-th row provides the information on the clusters merged in
-        the i-th iteration. See the description of ``Z[:,0]`` and ``Z[:,1]``
+        A matrix whose i-th row provides the information on the clusters merged
+        in the i-th iteration. See the description of ``Z[:,0]`` and ``Z[:,1]``
         in ``scipy.cluster.hierarchy.linkage``. Together with `distances_` and
         `counts_`, this constitutes the linkage matrix that can be used for
         plotting the dendrogram.
 
     distances_ : None or ndarray
-        If `compute_full_tree` is ``True``, this is a vector that gives
-        the distance between two clusters merged in each iteration,
-        see the description of ``Z[:,2]`` in ``scipy.cluster.hierarchy.linkage``.
+        A vector giving the distances between two clusters merged in each
+        iteration, see the description of ``Z[:,2]`` in
+        ``scipy.cluster.hierarchy.linkage``.
 
         The original Genie algorithm does not guarantee that distances
         are ordered increasingly (there are other hierarchical clustering
@@ -149,9 +142,9 @@ class Genie(deadwood.MSTClusterer):
         ``distances_ = genieclust.tools.cummin(distances_[::-1])[::-1]``.
 
     counts_ : None or ndarray
-        If `compute_full_tree` is ``True``, this is a vector giving
-        the number of elements in a cluster created in each iteration.
-        See the description of ``Z[:,3]`` in ``scipy.cluster.hierarchy.linkage``.
+        A vector giving the number of elements in a cluster created in each
+        iteration. See the description of ``Z[:,3]`` in
+        ``scipy.cluster.hierarchy.linkage``.
 
 
 
@@ -219,7 +212,6 @@ class Genie(deadwood.MSTClusterer):
             gini_threshold=0.3,
             M=0,
             metric="l2",
-            compute_full_tree=False,
             compute_all_cuts=False,
             quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
@@ -233,7 +225,6 @@ class Genie(deadwood.MSTClusterer):
             verbose=verbose
         )
 
-        self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.gini_threshold      = gini_threshold
 
@@ -250,8 +241,6 @@ class Genie(deadwood.MSTClusterer):
         self.gini_threshold = float(self.gini_threshold)
         if not (0.0 <= self.gini_threshold <= 1.0):
             raise ValueError("gini_threshold not in [0,1].")
-
-        self.compute_full_tree = bool(self.compute_full_tree)
 
         self.compute_all_cuts  = bool(self.compute_all_cuts)
 
@@ -303,65 +292,55 @@ class Genie(deadwood.MSTClusterer):
         res = core.genie_from_mst(
             self._tree_w_,
             self._tree_i_,
-            skip_nodes=np.zeros(0, dtype=bool),  # TODO
             n_clusters=self.n_clusters,
             gini_threshold=self.gini_threshold,
-            #skip_leaves=(cur_state["preprocess"] == "leaves"),  TODO
-            compute_full_tree=self.compute_full_tree,
             compute_all_cuts=self.compute_all_cuts
         )
 
         ########################################################
 
-        #cur_state = self._postprocess_outputs(res, cur_state)
+        self._links_ = res["links"]
+        Z = core.get_linkage_matrix(
+            self._links_,
+            self._tree_w_,
+            self._tree_i_
+        )
+        self.children_    = Z["children"]
+        self.distances_   = Z["distances"]
+        self.counts_      = Z["counts"]
 
-        self.labels_     = res["labels"]
-        self._links_     = res["links"]
-        self._iters_     = res["iters"]
+        self._iters_      = res["iters"]
+        self.n_clusters_  = res["n_clusters"]
 
-        if res["n_clusters"] != self.n_clusters:
+        if self.n_clusters_ != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
                           "different from the requested one (%d)." % (
-                            res["n_clusters"],
+                            self.n_clusters_,
                             self.n_clusters))
 
+        self.labels_     = res["labels"]
         if self.labels_ is not None:
             reshaped = False
             if self.labels_.ndim == 1:
                 reshaped = True
                 # promote it to a matrix with 1 row
                 self.labels_.shape = (1, self.labels_.shape[0])
-                start_partition = 0
+                #start_partition = 0
             else:
                 # duplicate the 1st row (create the "0"-partition that will
                 # not be postprocessed):
                 self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-                start_partition = 1  # do not postprocess the "0"-partition
-
-        self.n_clusters_ = res["n_clusters"]
-
+                #start_partition = 1  # do not postprocess the "0"-partition
 
         if reshaped:
             self.labels_.shape = (self.labels_.shape[1], )
 
         ########################################################
 
-        if self.compute_full_tree:
-            # assert cur_state["exact"] and cur_state["M"] == 0
-            Z = core.get_linkage_matrix(
-                self._links_,
-                self._tree_w_,
-                self._tree_i_
-            )
-            self.children_    = Z["children"]
-            self.distances_   = Z["distances"]
-            self.counts_      = Z["counts"]
-
         if self.verbose:
             print("[genieclust] Done.", file=sys.stderr)
 
         return self
-
 
 
 
@@ -394,10 +373,6 @@ class GIc(deadwood.MSTClusterer):
     metric : str
         The metric used to compute the linkage; see :any:`genieclust.Genie`
         for more details.
-
-    compute_full_tree : bool
-        Whether to determine the entire cluster hierarchy and the linkage
-        matrix; see :any:`genieclust.Genie` for more details.
 
     compute_all_cuts : bool
         Whether to compute the requested *n_clusters*-partition and all
@@ -434,14 +409,12 @@ class GIc(deadwood.MSTClusterer):
     See :any:`genieclust.Genie`.
 
 
-
     See also
     --------
 
     genieclust.Genie
 
     quitefastmst.mst_euclid
-
 
 
     Notes
@@ -507,7 +480,6 @@ class GIc(deadwood.MSTClusterer):
             *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             metric="l2",
-            compute_full_tree=False,
             compute_all_cuts=False,
             add_clusters=0,
             n_features=None,
@@ -522,7 +494,6 @@ class GIc(deadwood.MSTClusterer):
             verbose=verbose
         )
 
-        self.compute_full_tree   = compute_full_tree
         self.compute_all_cuts    = compute_all_cuts
         self.gini_thresholds     = gini_thresholds
         self.n_features          = n_features
@@ -546,8 +517,6 @@ class GIc(deadwood.MSTClusterer):
         for g in self.gini_thresholds:
             if not (0.0 <= g <= 1.0):
                 raise ValueError("All gini_thresholds must be in [0,1].")
-
-        self.compute_full_tree = bool(self.compute_full_tree)
 
         self.compute_all_cuts  = bool(self.compute_all_cuts)
 
@@ -611,53 +580,48 @@ class GIc(deadwood.MSTClusterer):
             n_clusters=self.n_clusters,
             add_clusters=self.add_clusters,
             gini_thresholds=self.gini_thresholds,
-            compute_full_tree=self.compute_full_tree,
             compute_all_cuts=self.compute_all_cuts
         )
 
         ########################################################
 
-        self.labels_     = res["labels"]
-        self._links_     = res["links"]
-        self._iters_     = res["iters"]
+        self._links_ = res["links"]
+        Z = core.get_linkage_matrix(
+            self._links_,
+            self._tree_w_,
+            self._tree_i_
+        )
+        self.children_    = Z["children"]
+        self.distances_   = Z["distances"]
+        self.counts_      = Z["counts"]
 
-        if res["n_clusters"] != self.n_clusters:
+        self._iters_      = res["iters"]
+        self.n_clusters_  = res["n_clusters"]
+
+        if self.n_clusters_ != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
                           "different from the requested one (%d)." % (
-                            res["n_clusters"],
+                            self.n_clusters_,
                             self.n_clusters))
 
+        self.labels_     = res["labels"]
         if self.labels_ is not None:
             reshaped = False
             if self.labels_.ndim == 1:
                 reshaped = True
                 # promote it to a matrix with 1 row
                 self.labels_.shape = (1, self.labels_.shape[0])
-                start_partition = 0
+                #start_partition = 0
             else:
                 # duplicate the 1st row (create the "0"-partition that will
                 # not be postprocessed):
                 self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-                start_partition = 1  # do not postprocess the "0"-partition
-
-        self.n_clusters_ = res["n_clusters"]
-
+                #start_partition = 1  # do not postprocess the "0"-partition
 
         if reshaped:
             self.labels_.shape = (self.labels_.shape[1], )
 
         ########################################################
-
-        if self.compute_full_tree:
-            # assert cur_state["exact"] and cur_state["M"] == 0
-            Z = core.get_linkage_matrix(
-                self._links_,
-                self._tree_w_,
-                self._tree_i_
-            )
-            self.children_    = Z["children"]
-            self.distances_   = Z["distances"]
-            self.counts_      = Z["counts"]
 
         if self.verbose:
             print("[genieclust] Done.", file=sys.stderr)

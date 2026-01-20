@@ -41,7 +41,7 @@ def test_gic():
             gc.collect()
 
             t01 = time.time()
-            _gic = genieclust.GIc(n_clusters=K, gini_thresholds=g, compute_full_tree=True)
+            _gic = genieclust.GIc(n_clusters=K, gini_thresholds=g)
             labels_gic = _gic.fit_predict(X)
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")
@@ -59,8 +59,7 @@ def test_gic():
             gc.collect()
 
             t01 = time.time()
-            _gic = genieclust.GIc(
-                n_clusters=K, gini_thresholds=g, compute_full_tree=True)
+            _gic = genieclust.GIc(n_clusters=K, gini_thresholds=g)
             labels_gic = _gic.fit_predict(X)
             t11 = time.time()
             print("t_py=%.3f" % (t11-t01), end="\t")

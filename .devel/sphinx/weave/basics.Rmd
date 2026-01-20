@@ -228,7 +228,7 @@ Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
 
 ```{python basics-dendrogram-1,fig.cap="Example dendrogram",results="hide"}
 import scipy.cluster.hierarchy
-g = genieclust.Genie(compute_full_tree=True)
+g = genieclust.Genie()
 g.fit(X)
 linkage_matrix = np.column_stack([g.children_, g.distances_, g.counts_])
 scipy.cluster.hierarchy.dendrogram(linkage_matrix,

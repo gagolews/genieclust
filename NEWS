@@ -34,6 +34,8 @@
     Hence, `detect_noise` in `genie.default` and `skip_leaves` elsewhere
     is no longer available.
 
+*   [BACKWARD INCOMPATIBILITY]  `compute_full_tree` is now always True.
+
 *   [NEW FEATURE]  The Genie algorithm was updated so that now arbitrary
     nodes can be skipped from the clustering process.  This allows for
     ignoring points marked as outliers at the data preprocessing stage.

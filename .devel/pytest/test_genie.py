@@ -29,11 +29,6 @@ elif os.path.exists("benchmark_data"):
 else:
     path = "../benchmark_data"
 
-# TODO test  -1 <= labels < n_clusters
-
-# TODO: compute_full_tree and test cutree
-
-
 def __test_genie(metric='euclidean'):
     np_cv_rules = default_converter + numpy2ri.converter
     with np_cv_rules.context():
@@ -74,8 +69,7 @@ def __test_genie(metric='euclidean'):
                 print("%-20s g=%.2f n=%5d d=%2d"%(dataset,g,X.shape[0],X.shape[1]), end="\t")
 
                 t01 = time.time()
-                _res1 = genieclust.Genie(
-                    K, gini_threshold=g, metric=metric, compute_full_tree=True)
+                _res1 = genieclust.Genie(K, gini_threshold=g, metric=metric)
                 res1 = _res1.fit_predict(X)+1
                 t11 = time.time()
                 print("t_py=%.3f" % (t11-t01), end="\t")
@@ -155,9 +149,7 @@ def test_genie_precomputed():
             #     assert ari>1.0-1e-12
             #     assert np.all(np.diff(_res2.distances_)>= 0.0)
 
-            _res2 = genieclust.Genie(
-                K, gini_threshold=g,
-                metric="euclidean", compute_full_tree=True)
+            _res2 = genieclust.Genie(K, gini_threshold=g, metric="euclidean")
             res2 = _res2.fit_predict(X)+1
             ari = genieclust.compare_partitions.adjusted_rand_score(res1, res2)
             print("ARI=%.3f" % ari, end="\t")

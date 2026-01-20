@@ -27,9 +27,9 @@
 #include "c_graph_process.h"
 
 
-
-
-/*!  Base class for CGenie and CGIc
+/*! Base class for CGenie and CGIc
+ *
+ *  TODO: remove skip_nodes
  */
 template <class T>
 class CGenieBase {
@@ -43,7 +43,7 @@ protected:
         CGiniDisjointSets ds; /*!< ds at the last iteration, it;
                                * use unskip_index to obtain the final partition
                                */
-        std::vector<Py_ssize_t> links; //<! links[..] = index of merged mst_i
+        std::vector<Py_ssize_t> links; //<! links[..] = index of merged mst_i (cut edges)
         Py_ssize_t it;                 //<! number of merges performed
         Py_ssize_t n_clusters;         //<! maximal number of clusters requested
 
@@ -55,11 +55,10 @@ protected:
     };
 
 
-
-    Py_ssize_t* mst_i;   /*!< n-1 edges of the MST,
-                          * given by (n-1)*2 indexes in a c_contiguous array;
-                          * (-1, -1) denotes a no-edge and will be ignored
-                          */
+    Py_ssize_t* mst_i;      /*!< n-1 edges of the MST,
+                             * given by (n-1)*2 indexes in a c_contiguous array;
+                             * (-1, -1) denotes a no-edge and will be ignored
+                             */
     T* mst_d;                //<! n-1 edge weights, sorted increasingly
     Py_ssize_t n;            //<! number of points
 
@@ -67,7 +66,7 @@ protected:
     //std::vector<Py_ssize_t> deg; //<! deg[i] denotes the degree of the i-th vertex
 
     const bool* skip_nodes;  //<! array of size n or NULL - nodes to be skipped (e.g., outliers)
-    Py_ssize_t skip_count; //<! now many skipped nodes are there?
+    Py_ssize_t skip_count;   //<! now many skipped nodes are there?
     std::vector<Py_ssize_t> unskip_index; //<! which noise point is it?
     std::vector<Py_ssize_t> unskip_index_rev; //!< reverse look-up for unskip_index
 
@@ -228,7 +227,7 @@ public:
             CGiniDisjointSets ds(this->get_max_n_clusters());
             for (Py_ssize_t it=0; it<this->get_max_n_clusters() - n_clusters; ++it) {
                 Py_ssize_t j = (this->results.links[it]);
-                if (j < 0) break; // remaining are no-edges
+                if (j < 0) break;  // remaining are no-edges
                 Py_ssize_t i1 = this->mst_i[2*j+0];
                 Py_ssize_t i2 = this->mst_i[2*j+1];
                 GENIECLUST_ASSERT(i1 >= 0)
@@ -272,7 +271,7 @@ public:
         }
         for (Py_ssize_t it=0; it<this->get_max_n_clusters() - 1; ++it) {
             Py_ssize_t j = (this->results.links[it]);
-            if (j >= 0) { // might not be true if forest_components.get_k() > 1
+            if (j >= 0) {  // might not be true if forest_components.get_k() > 1
                 Py_ssize_t i1 = this->mst_i[2*j+0];
                 Py_ssize_t i2 = this->mst_i[2*j+1];
                 GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
@@ -289,7 +288,7 @@ public:
 
 
     /*! Propagate res with clustering results -
-     *  based on the current this->results.links.
+     *  based on the current this->results.links (cut edges).
      *
      * If there are skipped points, the rightmost elements will be set to -1.
      *

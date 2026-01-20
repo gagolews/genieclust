@@ -797,10 +797,9 @@ cdef extern from "../src/c_genie.h":
 cpdef dict genie_from_mst(
         floatT[::1] mst_d,
         Py_ssize_t[:,::1] mst_i,
-        bool[::1] skip_nodes,
+        #bool[::1] skip_nodes,  TODO
         Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
-        bint compute_full_tree=True,
         bint compute_all_cuts=False,
     ):
     """The Genie Clustering Algorithm (with extensions)
@@ -827,19 +826,15 @@ cpdef dict genie_from_mst(
         A spanning tree defined by a pair (mst_i, mst_d),
         with mst_i giving the edges (n-1,2) and mst_d providing the
         corresponding edge weights.
+
     n_clusters : int
         Number of clusters the dataset is split into.
-        If `compute_full_tree` is False, then only partial cluster hierarchy
-        is determined.
+
     gini_threshold : float
         The threshold for the Genie correction
-    compute_full_tree : bool
-        Compute the entire merge sequence or stop early?
+
     compute_all_cuts : bool
-        Compute the n_clusters and all the more coarse-grained ones?
-        Implies `compute_full_tree`.
-    skip_nodes : boolean array of length n or 0
-        indicates which nodes should be omitted from the clustering process
+        Determine n_clusters and all the more coarse-grained ones?
 
 
     Returns
@@ -896,21 +891,19 @@ cpdef dict genie_from_mst(
 
     # _openmp_set_num_threads()
 
-    cdef bool* skip_nodes_ptr = NULL
-    if skip_nodes.shape[0] == 0:
-        pass
-    elif skip_nodes.shape[0] == n:
-        skip_nodes_ptr = &skip_nodes[0]
-    else:
-        raise ValueError("skip_nodes should be either of size 0 or n")
+    # cdef bool* skip_nodes_ptr = NULL
+    # if skip_nodes.shape[0] == 0:
+    #     pass
+    # elif skip_nodes.shape[0] == n:
+    #     skip_nodes_ptr = &skip_nodes[0]
+    # else:
+    #     raise ValueError("skip_nodes should be either of size 0 or n")
 
     cdef CGenie[floatT] g
-    g = CGenie[floatT](&mst_d[0], &mst_i[0,0], n, skip_nodes_ptr)
+    g = CGenie[floatT](&mst_d[0], &mst_i[0,0], n, NULL)
 
-    if compute_all_cuts:
-        compute_full_tree = True
-
-    g.compute(1 if compute_full_tree else n_clusters, gini_threshold)
+    # g.compute(1 if compute_full_tree else n_clusters, gini_threshold)
+    g.compute(1, gini_threshold)
 
     iters_ = g.get_links(&links_[0])
 
@@ -964,7 +957,6 @@ cpdef dict gic_from_mst(
         Py_ssize_t n_clusters=1,
         Py_ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
-        bint compute_full_tree=True,
         bint compute_all_cuts=False
     ):
     """GIc (Genie+Information Criterion) Information-Theoretic
@@ -1010,15 +1002,17 @@ cpdef dict gic_from_mst(
         Minimal spanning tree defined by a pair (mst_i, mst_d),
         with mst_i giving the edges (n-1,2) and mst_d providing the
         corresponding edge weights.
+
     n_features : double
         number of features in the data set
         [can be fractional if you know what you're doing]
+
     n_clusters : int
         Number of clusters the dataset is split into.
-        If `compute_full_tree` is False, then only partial cluster hierarchy
-        is determined.
+
     add_clusters: int, default=0
         Number of additional clusters to work with internally.
+
     gini_thresholds : ndarray or None for the default
         Gini index thresholds to use when computing the initial
         partition. Multiple runs of the Genie algorithm with different
@@ -1029,11 +1023,9 @@ cpdef dict gic_from_mst(
         (singletons), which we call Agglomerative-IC (ICA).
         If gini_thresholds is of length 1 and add_clusters==0,
         then the procedure is equivalent to the classical Genie algorithm.
-    compute_full_tree : bool
-        Compute the entire merge sequence or stop early?
-        Implies compute_full_tree.
+
     compute_all_cuts : bool
-        Compute the n_clusters and all the more coarse-grained ones?
+        Determine n_clusters and all the more coarse-grained ones?
 
 
     Returns
@@ -1079,13 +1071,13 @@ cpdef dict gic_from_mst(
     g = CGIc[floatT](&mst_d[0], &mst_i[0,0], n, NULL)
     # TODO: skip_nodes has not been tested yet!
 
-    if compute_all_cuts:
-        compute_full_tree = True
-
-    g.compute(1 if compute_full_tree else n_clusters,
-                n_clusters-1+add_clusters if compute_full_tree else add_clusters,
-                n_features,
-            &gini_thresholds[0], gini_thresholds.shape[0])
+    g.compute(
+        1,  # if compute_full_tree else n_clusters,
+        n_clusters-1+add_clusters,  # if compute_full_tree else add_clusters,
+        n_features,
+        &gini_thresholds[0],
+        gini_thresholds.shape[0]
+    )
 
     iters_ = g.get_links(&links_[0])
 
