@@ -278,6 +278,7 @@ class Genie(deadwood.MSTClusterer):
         """
         self.labels_     = None
         self.n_clusters_ = None
+        self._cut_edges_ = None
 
         self._check_params()  # re-check, they might have changed
         self._get_mst(X)  # sets n_samples_, n_features_, _tree_w, _tree_i, _d_core, etc.
@@ -311,6 +312,7 @@ class Genie(deadwood.MSTClusterer):
 
         self._iters_      = res["iters"]
         self.n_clusters_  = res["n_clusters"]
+        self._cut_edges_  = self._links_[self._links_ >= 0][:-self.n_clusters_:-1].copy()
 
         if self.n_clusters_ != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
@@ -319,21 +321,12 @@ class Genie(deadwood.MSTClusterer):
                             self.n_clusters))
 
         self.labels_     = res["labels"]
-        if self.labels_ is not None:
-            reshaped = False
-            if self.labels_.ndim == 1:
-                reshaped = True
-                # promote it to a matrix with 1 row
-                self.labels_.shape = (1, self.labels_.shape[0])
-                #start_partition = 0
-            else:
-                # duplicate the 1st row (create the "0"-partition that will
-                # not be postprocessed):
-                self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-                #start_partition = 1  # do not postprocess the "0"-partition
-
-        if reshaped:
-            self.labels_.shape = (self.labels_.shape[1], )
+        if self.labels_ is not None and self.labels_.ndim > 1:
+            # TODO: update
+            # duplicate the 1st row (create the "0"-partition that will
+            # not be postprocessed):
+            self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
+            #start_partition = 1  # do not postprocess the "0"-partition
 
         ########################################################
 
@@ -597,6 +590,7 @@ class GIc(deadwood.MSTClusterer):
 
         self._iters_      = res["iters"]
         self.n_clusters_  = res["n_clusters"]
+        self._cut_edges_  = self._links_[self._links_ >= 0][:-self.n_clusters_:-1].copy()
 
         if self.n_clusters_ != self.n_clusters:
             warnings.warn("The number of clusters detected (%d) is "
@@ -605,21 +599,12 @@ class GIc(deadwood.MSTClusterer):
                             self.n_clusters))
 
         self.labels_     = res["labels"]
-        if self.labels_ is not None:
-            reshaped = False
-            if self.labels_.ndim == 1:
-                reshaped = True
-                # promote it to a matrix with 1 row
-                self.labels_.shape = (1, self.labels_.shape[0])
-                #start_partition = 0
-            else:
-                # duplicate the 1st row (create the "0"-partition that will
-                # not be postprocessed):
-                self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-                #start_partition = 1  # do not postprocess the "0"-partition
-
-        if reshaped:
-            self.labels_.shape = (self.labels_.shape[1], )
+        if self.labels_ is not None and self.labels_.ndim > 1:
+            # TODO: update
+            # duplicate the 1st row (create the "0"-partition that will
+            # not be postprocessed):
+            self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
+            #start_partition = 1  # do not postprocess the "0"-partition
 
         ########################################################
 
