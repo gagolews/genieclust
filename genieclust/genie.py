@@ -281,7 +281,7 @@ class Genie(deadwood.MSTClusterer):
         self._cut_edges_ = None
 
         self._check_params()  # re-check, they might have changed
-        self._get_mst(X)  # sets n_samples_, n_features_, _tree_w, _tree_i, _d_core, etc.
+        self._get_mst(X)  # sets n_samples_, n_features_, _tree_d, _tree_i, _d_core, etc.
 
         if not (1 <= self.n_clusters < self.n_samples_):
             raise ValueError("n_clusters must be between 1 and n_samples_-1")
@@ -291,7 +291,7 @@ class Genie(deadwood.MSTClusterer):
 
         # apply the Genie algorithm:
         res = core.genie_from_mst(
-            self._tree_w_,
+            self._tree_d_,
             self._tree_i_,
             n_clusters=self.n_clusters,
             gini_threshold=self.gini_threshold,
@@ -303,7 +303,7 @@ class Genie(deadwood.MSTClusterer):
         self._links_ = res["links"]
         Z = core.get_linkage_matrix(
             self._links_,
-            self._tree_w_,
+            self._tree_d_,
             self._tree_i_
         )
         self.children_    = Z["children"]
@@ -358,9 +358,9 @@ class GIc(deadwood.MSTClusterer):
     gini_thresholds : array_like
         A list of Gini's index thresholds between 0 and 1.
 
-        The GIc algorithm optimises the information criterion in an
-        agglomerative way, starting from the intersection of the clusterings
-        returned by ``Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i])``,
+        The GIc algorithm optimises the information criterion agglomeratively,
+        starting from the intersection of the clusterings returned by
+        ``Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i])``,
         for all ``i`` from ``0`` to ``len(gini_thresholds)-1``.
 
     metric : str
@@ -414,8 +414,8 @@ class GIc(deadwood.MSTClusterer):
     -----
 
     GIc (Genie+Information Criterion) is an Information-Theoretic
-    Clustering Algorithm. It was proposed by Anna Cena in [1]_. It was inspired
-    by Mueller's (et al.) ITM [2]_ and Genie [3]_.
+    Clustering Algorithm.  It was proposed by Anna Cena in [1]_.
+    GIc was inspired by ITM [2]_ and Genie [3]_.
 
     GIc computes an *n_clusters*-partition based on a pre-computed minimum
     spanning tree (MST) of the pairwise distance graph of a given point set
@@ -552,7 +552,7 @@ class GIc(deadwood.MSTClusterer):
         self.n_clusters_ = None
 
         self._check_params()  # re-check, they might have changed
-        self._get_mst(X)  # sets n_samples_, n_features_, _tree_w, _tree_i, _d_core, etc.
+        self._get_mst(X)  # sets n_samples_, n_features_, _tree_d, _tree_i, _d_core, etc.
 
         if self.n_features is not None:
             # "inherent dimensionality" as set by the user
@@ -567,7 +567,7 @@ class GIc(deadwood.MSTClusterer):
 
         # apply the Genie+Ic algorithm:
         res = core.gic_from_mst(
-            self._tree_w_,
+            self._tree_d_,
             self._tree_i_,
             n_features=n_features,
             n_clusters=self.n_clusters,
@@ -581,7 +581,7 @@ class GIc(deadwood.MSTClusterer):
         self._links_ = res["links"]
         Z = core.get_linkage_matrix(
             self._links_,
-            self._tree_w_,
+            self._tree_d_,
             self._tree_i_
         )
         self.children_    = Z["children"]
