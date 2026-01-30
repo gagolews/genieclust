@@ -38,7 +38,6 @@ colors = ["#000000", "#DF536B", "#61D04F", "#2297E6", "#28E2E5", "#CD0BBC", "#F5
 markers = ["o", "^", "+", "x", "D", "v", "s", "*", "<", ">", "2"]
 
 
-
 def _get_xy(X, y):
     # auxiliary function
     X = np.array(X)
@@ -61,8 +60,14 @@ def _get_xy(X, y):
     return X
 
 
-def plot_scatter(X, y=None, labels=None,
-        axis=None, title=None, xlabel=None, ylabel=None, xlim=None, ylim=None,
+def plot_scatter(
+        X,
+        y=None,
+        labels=None,
+        axis=None,
+        title=None, xlabel=None, ylabel=None,
+        xlim=None, ylim=None,
+        asp=None,
         colors=colors,
         markers=markers,
         **kwargs
@@ -89,6 +94,9 @@ def plot_scatter(X, y=None, labels=None,
     axis, title, xlabel, ylabel, xlim, ylim : None or object
         If not `None`, values passed to `matplotlib.pyplot.axis`,
         `matplotlib.pyplot.title`, etc.
+
+    asp : None or object
+        See `matplotlib.axes.Axes.set_aspect`.
 
     colors : list
         list of colours corresponding to different labels
@@ -192,6 +200,10 @@ def plot_scatter(X, y=None, labels=None,
     if ylim is not None:
         plt.ylim(ylim)
 
+    if asp is not None:
+        plt.gca().set_aspect(asp)
+
+    pass
 
 
 def plot_segments(pairs, X, y=None, style="k-", **kwargs):

@@ -43,16 +43,16 @@
 #' raises above \code{gini_threshold}, merging a point group
 #' of the smallest size is enforced.
 #'
-#' The clustering can also be computed with respect to the
+#' A clustering can also be computed with respect to the
 #' \eqn{M}-mutual reachability distance (based, e.g., on the Euclidean metric),
 #' which is used in the definition of the HDBSCAN* algorithm
 #' (see \code{\link[deadwood]{mst}()} for the definition).
 #' For the smoothing factor \eqn{M>0}, outliers are pulled away from
 #' their neighbours.  This way, the Genie algorithm gives an alternative
 #' to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
-#' a predefined number of clusters and indicate outliers (Gagolewski, 2025)
-#' without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s \code{min_cluster_size}
-#' parameters.
+#' a predefined number of clusters and indicate outliers (Gagolewski, 2026)
+#' without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s
+#' \code{min_cluster_size} parameters.
 #'
 #'
 #' @details
@@ -133,7 +133,12 @@
 #' \emph{Journal of Classification} 42, 2025, 90-112,
 #' \doi{10.1007/s00357-024-09483-1}
 #'
-#' Gagolewski M., TODO, 2025
+#' Gagolewski M., genieclust: Fast and robust hierarchical clustering,
+#' \emph{SoftwareX} 15, 2021, 100722, \doi{10.1016/j.softx.2021.100722}
+#'
+#' Gagolewski M., deadwood, in preparation, 2026
+#'
+#' Gagolewski M., quitefastmst, in preparation, 2026
 #'
 #'
 #' @examples
@@ -203,8 +208,9 @@ gclust.dist <- function(
 gclust.mst <- function(
     d,
     gini_threshold=0.3,
-    verbose=FALSE, ...)
-{
+    verbose=FALSE,
+    ...
+) {
     gini_threshold <- as.double(gini_threshold)[1]
     stopifnot(gini_threshold >= 0.0, gini_threshold <= 1.0)
     verbose <- !identical(verbose, FALSE)

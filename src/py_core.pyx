@@ -797,7 +797,6 @@ cdef extern from "../src/c_genie.h":
 cpdef dict genie_from_mst(
         floatT[::1] mst_d,
         Py_ssize_t[:,::1] mst_i,
-        #bool[::1] skip_nodes,  TODO
         Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
         bint compute_all_cuts=False,
@@ -891,6 +890,8 @@ cpdef dict genie_from_mst(
 
     # _openmp_set_num_threads()
 
+    # TODO: remove skip_nodes:: this can be achieved more easily
+    # using skip/unskip_index...
     # cdef bool* skip_nodes_ptr = NULL
     # if skip_nodes.shape[0] == 0:
     #     pass

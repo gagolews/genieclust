@@ -29,7 +29,8 @@
 
 /*! Base class for CGenie and CGIc
  *
- *  TODO: remove skip_nodes
+ *  TODO: remove skip_nodes - skipping nodes can be implemented
+ *  at the preprocessing stage; makes the code easier to maintain
  */
 template <class T>
 class CGenieBase {

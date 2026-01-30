@@ -10,7 +10,7 @@
 *   `quitefastmst` version >= 0.9.1 is now required; the introduced
     backward-incompatible changes have been addressed (see below).
 
-*   `deadwood` version >= 0.9.1 is now required.  The code was heavily
+*   `deadwood` version >= 0.9.1 is now required.  `genieclust` was heavily
     refactored; common MST-related functions and classes were moved therein.
 
 *   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
@@ -20,6 +20,9 @@
 
 *   [BACKWARD INCOMPATIBILITY]  The functions from the `tools` submodule
     have been moved to the `deadwood` package.
+
+*   [BACKWARD INCOMPATIBILITY]  The functions from the `plots` submodule
+    have been moved to the `deadwood` package.  TODO @TODO............................
 
 *   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
     distance has changed.  Unlike in Campello et al.'s 2013 paper,
@@ -32,21 +35,17 @@
     especially for smaller smoothing factors.  Note that in the previous
     versions of the package, this merely used to an experimental feature;
     Hence, `detect_noise` in `genie.default` and `skip_leaves` elsewhere
-    is no longer available.
+    is no longer available.  Instead, use `deadwood.Deadwood` now.
 
 *   [BACKWARD INCOMPATIBILITY]  `compute_full_tree` is now always True.
 
-*   [NEW FEATURE]  The Genie algorithm was updated so that now arbitrary
-    nodes can be skipped from the clustering process.  This allows for
-    ignoring points marked as outliers at the data preprocessing stage.
-
 *   ??? #92 NPA, NCA...
 
-*   ???? TODO `preprocess`
+*   ???? TODO `preprocess` TODO remove
 
 *   ???? TODO [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
     `"midliers"`, `"none"`, and `"all"`.
-    New outlier detection....
+    New outlier detection....TODO remove
 
 *   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
