@@ -16,12 +16,13 @@ gclust(d, ...)
 \method{gclust}{default}(
   d,
   gini_threshold = 0.3,
+  M = 0L,
   distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   verbose = FALSE,
   ...
 )
 
-\method{gclust}{dist}(d, gini_threshold = 0.3, verbose = FALSE, ...)
+\method{gclust}{dist}(d, gini_threshold = 0.3, M = 0L, verbose = FALSE, ...)
 
 \method{gclust}{mst}(d, gini_threshold = 0.3, verbose = FALSE, ...)
 
@@ -31,8 +32,8 @@ genie(d, ...)
   d,
   k,
   gini_threshold = 0.3,
-  distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   M = 0L,
+  distance = c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
   verbose = FALSE,
   ...
 )
@@ -45,7 +46,7 @@ genie(d, ...)
 \item{d}{a numeric matrix (or an object coercible to one,
 e.g., a data frame with numeric-like columns) or an
 object of class \code{dist} (see \code{\link[stats]{dist}}),
-or an object of class \code{mst} (\code{\link[deadwood]{mst}})}
+or an object of class \code{mst} (see \code{\link[deadwood]{mst}})}
 
 \item{...}{further arguments passed to \code{\link[deadwood]{mst}()}}
 
@@ -53,6 +54,9 @@ or an object of class \code{mst} (\code{\link[deadwood]{mst}})}
 the Gini index of the cluster size distribution;
 threshold of 1.0 leads to the single linkage algorithm;
 low thresholds highly penalise the formation of small clusters}
+
+\item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
+otherwise, the mutual reachability distance is used}
 
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -62,11 +66,7 @@ low thresholds highly penalise the formation of small clusters}
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
 
-\item{k}{the desired number of clusters to detect, \eqn{k=1} with
-\eqn{M>0} acts as an outlier detector}
-
-\item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
-otherwise, the mutual reachability distance is used}
+\item{k}{the desired number of clusters to detect}
 }
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it
@@ -98,13 +98,15 @@ their neighbours.  This way, the Genie algorithm gives an alternative
 to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
 a predefined number of clusters and indicate outliers (Gagolewski, 2026)
 without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s
-\code{min_cluster_size} parameters.
+\code{min_cluster_size} parameters.  Also make sure to check out
+the Lumbermark method that is also based on MSTs.
 }
 \details{
-As in the case of all the distance-based methods,
-the standardisation of the input features is definitely worth giving a try.
-Oftentimes, applying some more sophisticated feature engineering techniques
-(e.g., dimensionality reduction) might lead to more meaningful results.
+As in the case of all the distance-based methods (including
+k-nearest neighbours and DBSCAN),  the standardisation of the input features
+is definitely worth giving a try.  Oftentimes, applying feature selection
+and engineering techniques (e.g., dimensionality reduction) might lead
+to more meaningful results.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
 \code{\link[deadwood]{mst}()} will be called to compute an MST, which generally

@@ -21,9 +21,6 @@
 *   [BACKWARD INCOMPATIBILITY]  The functions from the `tools` submodule
     have been moved to the `deadwood` package.
 
-*   [BACKWARD INCOMPATIBILITY]  The functions from the `plots` submodule
-    have been moved to the `deadwood` package.  TODO @TODO............................
-
 *   [BACKWARD INCOMPATIBILITY]  The definition of the mutual reachability
     distance has changed.  Unlike in Campello et al.'s 2013 paper,
     now the core distance is the distance to the *M*-th nearest neighbour,

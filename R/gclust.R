@@ -52,14 +52,16 @@
 #' to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
 #' a predefined number of clusters and indicate outliers (Gagolewski, 2026)
 #' without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s
-#' \code{min_cluster_size} parameters.
+#' \code{min_cluster_size} parameters.  Also make sure to check out
+#' the Lumbermark method that is also based on MSTs.
 #'
 #'
 #' @details
-#' As in the case of all the distance-based methods,
-#' the standardisation of the input features is definitely worth giving a try.
-#' Oftentimes, applying some more sophisticated feature engineering techniques
-#' (e.g., dimensionality reduction) might lead to more meaningful results.
+#' As in the case of all the distance-based methods (including
+#' k-nearest neighbours and DBSCAN),  the standardisation of the input features
+#' is definitely worth giving a try.  Oftentimes, applying feature selection
+#' and engineering techniques (e.g., dimensionality reduction) might lead
+#' to more meaningful results.
 #'
 #' If \code{d} is a numeric matrix or an object of class \code{dist},
 #' \code{\link[deadwood]{mst}()} will be called to compute an MST, which generally
@@ -83,21 +85,26 @@
 #' @param d a numeric matrix (or an object coercible to one,
 #'     e.g., a data frame with numeric-like columns) or an
 #'     object of class \code{dist} (see \code{\link[stats]{dist}}),
-#'     or an object of class \code{mst} (\code{\link[deadwood]{mst}})
+#'     or an object of class \code{mst} (see \code{\link[deadwood]{mst}})
+#'
 #' @param gini_threshold threshold for the Genie correction, i.e.,
 #'     the Gini index of the cluster size distribution;
 #'     threshold of 1.0 leads to the single linkage algorithm;
 #'     low thresholds highly penalise the formation of small clusters
+#'
 #' @param distance metric used to compute the linkage, one of:
 #'     \code{"euclidean"} (synonym: \code{"l2"}),
 #'     \code{"manhattan"} (a.k.a. \code{"l1"} and \code{"cityblock"}),
 #'     \code{"cosine"}
+#'
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
-#' @param k the desired number of clusters to detect, \eqn{k=1} with
-#'      \eqn{M>0} acts as an outlier detector
+#'
+#' @param k the desired number of clusters to detect
+#'
 #' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
 #'     otherwise, the mutual reachability distance is used
+#'
 #' @param ... further arguments passed to \code{\link[deadwood]{mst}()}
 #'
 #' @return
@@ -172,12 +179,13 @@ gclust <- function(d, ...)
 gclust.default <- function(
     d,
     gini_threshold=0.3,
+    M=0L,
     distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     verbose=FALSE,
     ...
 ) {
     distance <- match.arg(distance)
-    tree <- mst(d, distance=distance, verbose=verbose, ...)
+    tree <- mst(d, M=M, distance=distance, verbose=verbose, ...)
     gclust.mst(
         tree,
         gini_threshold=gini_threshold,
@@ -192,11 +200,12 @@ gclust.default <- function(
 gclust.dist <- function(
     d,
     gini_threshold=0.3,
+    M=0L,
     verbose=FALSE,
     ...
 ) {
     gclust.mst(
-        mst(d, verbose=verbose, ...),
+        mst(d, M=M, verbose=verbose, ...),
         gini_threshold=gini_threshold, verbose=verbose
     )
 }
@@ -243,8 +252,8 @@ genie.default <- function(
     d,
     k,
     gini_threshold=0.3,
-    distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     M=0L,
+    distance=c("euclidean", "l2", "manhattan", "cityblock", "l1", "cosine"),
     verbose=FALSE,
     ...
 ) {
