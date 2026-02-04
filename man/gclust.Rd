@@ -113,10 +113,10 @@ the Lumbermark method that is also based on MSTs.
 }
 \details{
 As in the case of all the distance-based methods (including
-k-nearest neighbours, k-means, and DBSCAN),  the standardisation of the input features
-is definitely worth giving a try.  Oftentimes, applying feature selection
-and engineering techniques (e.g., dimensionality reduction) might lead
-to more meaningful results.
+k-nearest neighbours, k-means, and DBSCAN),  the standardisation of the
+input features is definitely worth giving a try.  Oftentimes, applying
+feature selection and engineering techniques (e.g., dimensionality reduction)
+might lead to more meaningful results.
 
 If \code{d} is a numeric matrix or an object of class \code{dist},
 \code{\link[deadwood]{mst}()} will be called to compute an MST, which generally
@@ -139,7 +139,7 @@ ultrametricity by applying \code{height = rev(cummin(rev(height)))}.
 \examples{
 library("datasets")
 data("iris")
-X <- jitter(as.matrix(iris[2:3]))
+X <- jitter(as.matrix(iris[3:4]))
 h <- gclust(X)
 y_pred <- cutree(h, 3)
 y_test <- as.integer(iris[,5])
@@ -147,11 +147,12 @@ plot(X, col=y_pred, pch=y_test, asp=1, las=1)
 adjusted_rand_score(y_test, y_pred)
 normalized_clustering_accuracy(y_test, y_pred)
 
-y_pred2 <- genie(X, 3, M=5)  # the 5-mutual reachability distance
-plot(X[,1], X[,2], col=y_pred2, pch=y_test, asp=1, las=1)
-is_outlier <- is.na(y_pred2)
-points(X[is_outlier, ], col="gray", pch=10)
-normalized_clustering_accuracy(y_test[!is_outlier], y_pred2[!is_outlier])
+# detect 3 clusters and find outliers with Deadwood
+library("deadwood")
+y_pred2 <- genie(X, k=3, M=5)  # the 5-mutual reachability distance
+plot(X, col=y_pred2, asp=1, las=1)
+is_outlier <- deadwood(y_pred2)
+points(X[!is_outlier, ], col=y_pred2[!is_outlier], pch=16)
 
 }
 \references{
