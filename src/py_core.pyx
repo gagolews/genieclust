@@ -843,7 +843,7 @@ cpdef dict genie_from_mst(
         labels : ndarray, shape (n,) or (n_clusters, n) or None
             Is None if n_clusters==0.
 
-            If compute_all_cuts==False, this gives the predicted labels,
+            If compute_all_cuts==False, we get the predicted labels,
             representing an n_clusters-partition of X.
             labels[i] gives the cluster ID of the i-th input point.
             Label -1 denotes a skipped point.

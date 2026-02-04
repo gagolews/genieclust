@@ -139,8 +139,8 @@ IntegerVector dot_genie(
     std::vector<Py_ssize_t> xres(n);
     Py_ssize_t k_detected = g.get_labels(k, xres.data());
 
-    if (k_detected != k)
-        Rf_warning("The number of clusters detected is different from the requested one, possibly due to the presence of outliers.");
+    if (k_detected != k)  // TODO: remove
+        stop("The number of clusters detected is different from the requested one, possibly due to the presence of outliers.");
 
     // if (skip_leaves) {
     //     if (postprocess == "midliers") {
@@ -172,11 +172,27 @@ IntegerVector dot_genie(
     //         stop("invalid `postprocess`");
     // }
 
+    // k_detected TODO cut_edges....
     IntegerVector res(n);
     for (Py_ssize_t i=0; i<n; ++i) {
-        if (xres[i] < 0) res[i] = NA_INTEGER;  // outlier/noise point
+        GENIECLUST_ASSERT(xres[i] >= 0);
+        if (xres[i] < 0) res[i] = NA_INTEGER;  // outlier/noise point TODO: remove
         else res[i] = xres[i] + 1;  // 1-based indexes
     }
+
+    NumericVector cut_edges(k_detected-1);
+    Py_ssize_t e=0;
+    for (Py_ssize_t i=0; i<n-1; ++i) {
+        if (xres[mst_i(i, 0)] != xres[mst_i(i, 1)]) {
+            cut_edges[e++] = i+1;  // 1-based
+            if (e == k_detected-1) break;
+        }
+    }
+    GENIECLUST_ASSERT(e == k_detected-1);
+    res.attr("cut_edges") = cut_edges;
+
+    //std::vector<Py_ssize_t> links(n-1);
+    //g.get_links(links.data());
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
 
@@ -210,39 +226,47 @@ List dot_gclust(
     g.compute(1, gini_threshold);
 
 
-    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing the outputs.\n");
+    if (verbose) GENIECLUST_PRINT("[genieclust] Postprocessing outputs.\n");
 
     std::vector<Py_ssize_t> links(n-1);
     g.get_links(links.data());
 
-
-    NumericMatrix links2(n-1, 2);
+    NumericVector linksr(n-1, NA_REAL);
+    NumericMatrix mst_i_reordered(n-1, 2);
     NumericVector height(n-1, NA_REAL);
     Py_ssize_t k = 0;
     for (Py_ssize_t i=0; i<n-1; ++i) {
         if (links[i] >= 0) {
-            links2(k, 0) = mst_i(links[i], 0) + 1;  // 1-based indexing
-            links2(k, 1) = mst_i(links[i], 1) + 1;  // 1-based indexing
-            height(k)    = mst_d[ links[i] ];
+            linksr(k) = links[i] + 1;  // 1-based indexing
+            mst_i_reordered(k, 0) = mst_i(links[i], 0) + 1;  // 1-based indexing
+            mst_i_reordered(k, 1) = mst_i(links[i], 1) + 1;  // 1-based indexing
+            height(k) = mst_d[ links[i] ];
             ++k;
         }
     }
+    GENIECLUST_ASSERT(k == n-1); // TODO
     for (; k<n-1; ++k) {
-        links2(k, 0) = links2(k, 1) = NA_REAL;
+        mst_i_reordered(k, 0) = mst_i_reordered(k, 1) = NA_REAL;
     }
 
 
     NumericMatrix merge(n-1, 2);
-    internal_generate_merge(n, links2, merge);
+    internal_generate_merge(n, mst_i_reordered, merge);
 
     NumericVector order(n, NA_REAL);
     internal_generate_order(n, merge, order);
 
     if (verbose) GENIECLUST_PRINT("[genieclust] Done.\n");
 
-    return List::create(
+    List res = List::create(
         _["merge"]  = merge,
         _["height"] = height,
         _["order"]  = order
     );
+
+    // res.attr("class") =; ...;  // R level
+    // res.attr("mst") = ...;  // R level
+    res.attr("links") = linksr;
+
+    return res;
 }

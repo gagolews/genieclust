@@ -71,16 +71,21 @@ and progress information}
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it
 returns a list of class \code{hclust}; see \code{\link[stats]{hclust}}.
-Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
+Use \code{\link[stats]{cutree}} to obtain an arbitrary \eqn{k}-partition.
 
 \code{genie()} returns an object of class \code{mstclust}, which defines
-a \code{k}-partition, i.e., a vector whose \eqn{i}-th element denotes
+a \eqn{k}-partition, i.e., a vector whose \eqn{i}-th element denotes
 the \eqn{i}-th input point's cluster label
-between 1 and \code{k}.
+between 1 and \eqn{k}.
 
 In both cases, the \code{mst} attribute gives the computed minimum
 spanning tree which can be reused in further calls to the functions
 from \pkg{genieclust}, \pkg{lumbermark}, and \pkg{deadwood}.
+For \code{genie()}, the \code{cut_edges} attribute gives the \eqn{k-1}
+indexes of the MST edges whose omission leads to the requested
+\eqn{k}-partition (connected components of the resulting spanning forest).
+In \code{gclust()}, these are exactly the last \eqn{k-1} indexes in the
+\code{links} attribute (but sorted).
 }
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
@@ -122,7 +127,7 @@ the \pkg{quitefastmst} package.
 
 Once a minimum spanning tree is determined, the Genie algorithm runs in
 \eqn{O(n \sqrt{n})} time.  If you want to test different
-\code{gini_threshold}s or \code{k}s, it is best to compute
+\code{gini_threshold}s or \eqn{k}s, it is best to compute
 the MST explicitly beforehand.
 
 Due to Genie's original definition, the resulting partition tree (dendrogram)

@@ -297,6 +297,10 @@ class Genie(deadwood.MSTClusterer):
         if self.verbose:
             print("[genieclust] Determining clusters with Genie.", file=sys.stderr)
 
+        # NOTE: if only n_clusters has changed since the last call,
+        # NOTE: then we can simply fetch the requested partition via
+        # NOTE: Cmst_cluster_sizes
+
         # apply the Genie algorithm:
         res = core.genie_from_mst(
             self._tree_d_,
