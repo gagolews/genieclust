@@ -159,3 +159,9 @@ The out-of-the-box Genie algorithm not only generates the most
 meaningful partitions but also is the fastest.
 Of course, no algorithm is ideal in all the possible scenarios,
 but Genie is definitely worth a try in your next data mining challenge.
+
+As in the case of all the distance-based methods (including k-nearest
+neighbours, k-means, and DBSCAN), the standardisation of the input
+features is definitely worth giving a try.  Oftentimes, applying
+feature selection and engineering techniques (e.g., dimensionality
+reduction) might lead to more meaningful results.

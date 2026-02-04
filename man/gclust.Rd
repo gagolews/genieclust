@@ -73,9 +73,14 @@ and progress information}
 returns a list of class \code{hclust}; see \code{\link[stats]{hclust}}.
 Use \code{\link[stats]{cutree}} to obtain an arbitrary \code{k}-partition.
 
-\code{genie()} returns a \code{k}-partition, i.e., a vector whose
-\eqn{i}-th element denotes the \eqn{i}-th input point's cluster label
+\code{genie()} returns an object of class \code{mstclust}, which defines
+a \code{k}-partition, i.e., a vector whose \eqn{i}-th element denotes
+the \eqn{i}-th input point's cluster label
 between 1 and \code{k}.
+
+In both cases, the \code{mst} attribute gives the computed minimum
+spanning tree which can be reused in further calls to the functions
+from \pkg{genieclust}, \pkg{lumbermark}, and \pkg{deadwood}.
 }
 \description{
 A reimplementation of \emph{Genie} - a robust and outlier resistant
@@ -103,7 +108,7 @@ the Lumbermark method that is also based on MSTs.
 }
 \details{
 As in the case of all the distance-based methods (including
-k-nearest neighbours and DBSCAN),  the standardisation of the input features
+k-nearest neighbours, k-means, and DBSCAN),  the standardisation of the input features
 is definitely worth giving a try.  Oftentimes, applying feature selection
 and engineering techniques (e.g., dimensionality reduction) might lead
 to more meaningful results.
@@ -145,27 +150,27 @@ normalized_clustering_accuracy(y_test[!is_outlier], y_pred2[!is_outlier])
 
 }
 \references{
-Gagolewski M., Bartoszuk M., Cena A.,
+M. Gagolewski, M. Bartoszuk, A. Cena,
 Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm,
 \emph{Information Sciences} 363, 2016, 8-23,
 \doi{10.1016/j.ins.2016.05.003}
 
-Campello R.J.G.B., Moulavi D., Sander J.,
+R.J.G.B. Campello, D. Moulavi, J. Sander,
 Density-based clustering based on hierarchical density estimates,
 \emph{Lecture Notes in Computer Science} 7819, 2013, 160-172,
 \doi{10.1007/978-3-642-37456-2_14}
 
-Gagolewski M., Cena A., Bartoszuk M., Brzozowski L.,
+M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
 Clustering with minimum spanning trees: How good can it be?,
 \emph{Journal of Classification} 42, 2025, 90-112,
 \doi{10.1007/s00357-024-09483-1}
 
-Gagolewski M., genieclust: Fast and robust hierarchical clustering,
+M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
 \emph{SoftwareX} 15, 2021, 100722, \doi{10.1016/j.softx.2021.100722}
 
-Gagolewski M., deadwood, in preparation, 2026
+M. Gagolewski, deadwood, in preparation, 2026
 
-Gagolewski M., quitefastmst, in preparation, 2026
+M. Gagolewski, quitefastmst, in preparation, 2026
 }
 \seealso{
 The official online manual of \pkg{genieclust} at \url{https://genieclust.gagolewski.com/}

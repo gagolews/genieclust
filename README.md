@@ -1,7 +1,7 @@
 <a href="https://genieclust.gagolewski.com/"><img src="https://www.gagolewski.com/_static/img/genieclust.png" align="right" height="128" width="128" /></a>
 # [**genieclust**](https://genieclust.gagolewski.com/) Package for R and Python
 
-### *Genie*: Fast and Robust Hierarchical Clustering with Outlier Detection
+### *Genie*: Fast and Robust Hierarchical Clustering
 
 <!--
 ![genieclust for Python](https://github.com/gagolews/genieclust/workflows/genieclust%20for%20Python/badge.svg)
@@ -20,7 +20,7 @@ as specified below. Thank you.
 
 ## About
 
-*Genie* is a robust and outlier-resistant hierarchical clustering algorithm
+*Genie* is a robust hierarchical clustering algorithm
 (see Gagolewski, Bartoszuk, Cena, 2016). Its original implementation was
 included in the R package [**genie**](https://CRAN.R-project.org/package=genie).
 This is its faster and more capable variant.
@@ -39,26 +39,38 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try.
 
-*Genie* is based on minimal spanning trees of pairwise distance graphs.
-Thus, it can also be pretty **fast**: thanks to
-[**quitefastmst**](https://quitefastmst.gagolewski.com/),
+As in the case of all the distance-based methods (including k-nearest
+neighbours, k-means, and DBSCAN), the standardisation of the input
+features is definitely worth giving a try.  Oftentimes, applying
+feature selection and engineering techniques (e.g., dimensionality
+reduction) might lead to more meaningful results.
+
+*Genie* is based on Euclidean minimal spanning trees. Thus, it can also be
+pretty **fast**: thanks to [**quitefastmst**](https://quitefastmst.gagolewski.com/),
 determining the entire cluster hierarchy for datasets containing millions
 of points can be completed in minutes. Therefore, it is well suited to solving
 **extreme clustering tasks** (involving large datasets with a high number
 of clusters to detect).
 
-**genieclust** allows clustering with respect to mutual reachability distances,
-enabling it to act as an **outlier detector** or an alternative to
-*HDBSCAN\** (see Campello et al., 2013) that can identify a predefined
-number of clusters or their entire hierarchy.  Notably, it
+**genieclust** also allows clustering with respect to mutual reachability distances,
+enabling it to act as an alternative to *HDBSCAN\** (Campello et al., 2013)
+that can identify any number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult to set `eps` parameter.
+
+When combined with the [**deadwood**](https://deadwood.gagolewski.com)
+package, it can act as an outlier detector.
+
+
+## Other Package Features
 
 The package also features an implementation of:
 
-* economic inequality indices (the Gini, Bonferroni, or de Vergottini index),
+* inequality measures (the Gini, Bonferroni, or de Vergottini index),
+
 * external cluster validity measures (e.g., the normalised clustering accuracy
     and partition similarity indices such as the adjusted Rand, Fowlkes-Mallows,
     or mutual information scores),
+
 * internal cluster validity indices (e.g., the Calinski-Harabasz,
     Davies-Bouldin, Ball-Hall, Silhouette, or generalised Dunn indices).
 
@@ -129,8 +141,9 @@ The package requires Python 3.9+ with
 **numpy**,
 **scikit-learn**,
 **matplotlib**,
-and
 [**quitefastmst**](https://quitefastmst.gagolewski.com/).
+and
+[**deadwood**](https://deadwood.gagolewski.com/).
 
 
 ### R Version

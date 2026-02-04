@@ -6,7 +6,7 @@ This section needs to be extended.
 
 
 
-Time to perform cluster analysis of a dataset consisting of
+Time to perform a cluster analysis of a dataset consisting of
 1M points in $\mathbb{R}^2$:
 
 ```{python}

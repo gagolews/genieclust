@@ -19,7 +19,7 @@
 
 
 
-#' @title The Genie Hierarchical Clustering Algorithm (with Extras)
+#' @title Genie: Fast and Robust Hierarchical Clustering
 #'
 #' @description
 #' See \code{\link{genie}()} for more details.

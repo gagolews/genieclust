@@ -1,4 +1,4 @@
-# *genieclust*: Fast and Robust Hierarchical Clustering with Outlier Detection
+# Genie: Fast and Robust Hierarchical Clustering
 
 ::::{image} _static/img/genie_toy_example.png
 :class: img-right-align-always
@@ -12,7 +12,7 @@
 ::::
 
 The *genieclust* package {cite}`genieclust` for Python and R implements
-a robust and outlier-resistant hierarchical clustering algorithm called *Genie* {cite}`genieins`.
+a robust hierarchical clustering algorithm called *Genie* {cite}`genieins`.
 
 The idea behind *Genie* is beautifully simple. First, make each individual
 point the only member of its own cluster. Then, keep merging pairs
@@ -28,7 +28,13 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try.
 
-*Genie* is based on minimal spanning trees {cite}`cvimst` of pairwise distance graphs.
+As in the case of all the distance-based methods (including k-nearest
+neighbours, k-means, and DBSCAN), the standardisation of the input
+features is definitely worth giving a try.  Oftentimes, applying
+feature selection and engineering techniques (e.g., dimensionality
+reduction) might lead to more meaningful results.
+
+*Genie* is based on Euclidean minimal spanning trees {cite}`cvimst`.
 Thus, it can also be pretty **fast**: thanks to
 [**quitefastmst**](https://quitefastmst.gagolewski.com/),
 determining the entire cluster hierarchy for datasets containing millions of points
@@ -37,11 +43,13 @@ can be completed in minutes. Therefore, it is well suited to solving
 of clusters to detect).
 
 **genieclust** allows clustering with respect to mutual reachability distances,
-enabling it to act as an **outlier detector** or an alternative
-to *HDBSCAN\**  {cite}`hdbscan` that can identify a predefined
-number of clusters or their entire hierarchy.  Notably, it
+enabling it to act as an alternative to *HDBSCAN\**  {cite}`hdbscan` that can
+identify any number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
+
+When combined with the [**deadwood**](https://deadwood.gagolewski.com)
+package, it can act as an outlier detector.
 
 
 
@@ -115,7 +123,7 @@ The package also features an implementation of:
 
 -   internal cluster validity measures {cite}`cvi`:
     the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
-    generalised Dunn indices'
+    generalised Dunn indices;
 
 -   *(Python only)* union-find (disjoint sets) data structures (with
     extensions);

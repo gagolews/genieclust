@@ -36,7 +36,7 @@ from . import core
 
 class Genie(deadwood.MSTClusterer):
     """
-    Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection
+    Genie: Fast and Robust Hierarchical Clustering
 
 
     Parameters
@@ -151,30 +151,38 @@ class Genie(deadwood.MSTClusterer):
     Notes
     -----
 
-    **Genie** is a robust and outlier-resistant hierarchical clustering
-    algorithm [1]_, originally published in the R package ``genie``. This new
-    implementation is, amongst others, much faster and now features optional
-    outlier detection (if *M > 0*).
+    *Genie* is a robust hierarchical clustering algorithm [1]_.
+    Its original implementation was included in the R package ``genie``.
+    This is its faster and more capable variant.
 
-    Genie is based on the minimum spanning tree (MST) of the
-    pairwise distance graph of a given point set (refer to
-    :any:`deadwood.MSTBase` and [3]_ for more details).
-    Just like the single linkage, it consumes the edges
-    of the MST in increasing order of weights. However, it prevents
-    the formation of clusters of highly imbalanced sizes; once the Gini index
-    of the cluster size distribution raises above an assumed threshold,
-    a forced merge of a point group of the smallest size is undertaken.
+    The idea behind *Genie* is beautifully simple. First, make each individual
+    point the only member of its own cluster. Then, keep merging pairs
+    of the closest clusters, one after another. However, to prevent
+    the formation of clusters of highly imbalanced sizes, a point group of
+    the *smallest* size is sometimes combined with its nearest counterpart.
     Its appealing simplicity goes hand in hand with its usability; Genie often
     outperforms other clustering approaches on benchmark data.
 
-    The Genie algorithm itself has :math:`O(n \\sqrt{n})` time
-    and :math:`O(n)` memory complexity provided that a minimum spanning
-    tree of the pairwise distance graph is given.
-    If the Euclidean distance is selected, then
-    ``quitefastmst.mst_euclid`` is used to compute the MST;
-    it is quite fast in low-dimensional spaces.
+    Genie is based on Euclidean minimum spanning trees (MST; refer to
+    :any:`deadwood.MSTBase` and [3]_ for more details).  If the Euclidean
+    distance is selected, then ``quitefastmst.mst_euclid`` is used to compute
+    the MST;  it is quite fast in low-dimensional spaces.
     Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
     :math:`O(n^2)`-time algorithm is called.
+    The Genie algorithm itself has :math:`O(n \\sqrt{n})` time
+    and :math:`O(n)` memory complexity if an MST is already provided.
+
+    As in the case of all the distance-based methods (including k-nearest
+    neighbours, k-means, and DBSCAN), the standardisation of the input
+    features is definitely worth giving a try.  Oftentimes, applying
+    feature selection and engineering techniques (e.g., dimensionality
+    reduction) might lead to more meaningful results.
+
+    `genieclust` also allows clustering with respect to mutual reachability
+    distances, enabling it to act as an alternative to *HDBSCAN\** [2]_
+    that can identify any number of clusters or their entire hierarchy.
+    When combined with the *deadwood* package, it can act as an outlier
+    detector.
 
 
     :Environment variables:

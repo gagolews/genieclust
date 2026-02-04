@@ -61,7 +61,7 @@ plt.show()
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The **genieclust** package's programming
+`gini_threshold` parameter value of 0.3). The **genieclust** package's programming
 interface is [**scikit-learn**](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
@@ -170,9 +170,9 @@ plt.show()
 ```
 
 **Side note.**
-Gray plotting symbols denote noise points.
+Gray plotting symbols denote noise points/outliers.
 In [another section](outliers), we will show that our package is also
-equipped with an anomalous point detector.
+equipped with an anomaly detector.
 
 
 
