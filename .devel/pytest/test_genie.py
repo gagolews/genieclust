@@ -2,6 +2,7 @@ import numpy as np
 import genieclust
 import time
 import gc
+import deadwood
 
 import scipy.spatial.distance
 import numpy as np
@@ -186,9 +187,36 @@ def test_genie_precomputed():
             assert np.all(res2 == res1[k,:])
 
 
+def test_deadwood():
+    np.random.seed(1234)
+    n1, n2 = 1000, 250
+    X = np.vstack((
+        np.random.rand(n1, 2),
+        np.random.rand(n2, 2)+[1.2, 0]
+    ))
+
+    for M in [1, 2, 10, 25]:
+        G = genieclust.Genie(2, gini_threshold=0.5, M=M).fit(X)
+        y = G.labels_
+        #genieclust.plots.plot_scatter(X, labels=y, asp=1, asp=1)
+        #plt.show()
+
+        D = deadwood.Deadwood()
+        o = D.fit_predict(G)
+        print(D.contamination_)
+        #w = o.copy(); w[w>0] = y[w>0]
+        # genieclust.plots.plot_scatter(X, labels=o, asp=1)
+        # plt.show()
+        assert (o[:n1]<0).mean() > 0.1
+        assert (o[n1:]<0).mean() > 0.1
+
 
 if __name__ == "__main__":
+    print("**Basic**")
     test_genie()
+
+    print("**Deadwood**")
+    test_deadwood()
 
     print("**Precomputed**")
     test_genie_precomputed()
