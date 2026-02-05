@@ -61,25 +61,25 @@ cdef extern from "../src/c_compare_partitions.h":
 
     void Ccontingency_table[T](T* Cout, Py_ssize_t xc, Py_ssize_t yc,
         Py_ssize_t xmin, Py_ssize_t ymin,
-        Py_ssize_t* x, Py_ssize_t* y, Py_ssize_t n)
+        Py_ssize_t* x, Py_ssize_t* y, Py_ssize_t n) except+
 
     void Cnormalizing_permutation[T](const T* C, Py_ssize_t xc, Py_ssize_t yc,
-        Py_ssize_t* Iout)
+        Py_ssize_t* Iout) except+
 
-    void Capply_pivoting[T](const T* C, Py_ssize_t xc, Py_ssize_t yc, T* Cout)
+    void Capply_pivoting[T](const T* C, Py_ssize_t xc, Py_ssize_t yc, T* Cout) except+
 
     CComparePartitionsPairsResult Ccompare_partitions_pairs[T](const T* C,
-        Py_ssize_t xc, Py_ssize_t yc)
+        Py_ssize_t xc, Py_ssize_t yc) except+
 
     CComparePartitionsInfoResult Ccompare_partitions_info[T](const T* C,
-        Py_ssize_t xc, Py_ssize_t yc)
+        Py_ssize_t xc, Py_ssize_t yc) except+
 
-    double Ccompare_partitions_npa[T](const T* C, Py_ssize_t xc, Py_ssize_t yc)
+    double Ccompare_partitions_npa[T](const T* C, Py_ssize_t xc, Py_ssize_t yc) except+
 
-    double Ccompare_partitions_nca[T](const T* C, Py_ssize_t xc, Py_ssize_t yc)
+    double Ccompare_partitions_nca[T](const T* C, Py_ssize_t xc, Py_ssize_t yc) except+
 
     CCompareSetMatchingResult Ccompare_partitions_psi[T](const T* C,
-        Py_ssize_t xc, Py_ssize_t yc)
+        Py_ssize_t xc, Py_ssize_t yc) except+
 
 
 cdef np.ndarray _get_confusion_matrix(x, y=None, bint force_double=False):
@@ -529,19 +529,15 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     sum assignment problem; see :func:`normalized_confusion_matrix`).
     It is given by:
     :math:`(\\max_\\sigma \\frac{1}{K} \\sum_{j=1}^K \\frac{c_{\\sigma(j), j}-c_{\\sigma(j),\\cdot}/K}{c_{\\sigma(j),\\cdot}-c_{\\sigma(j),\\cdot}/K})`,
-    where :math:`C` is a confusion matrix with :math:`K` rows and :math:`L`
-    columns, :math:`\\sigma` is a permutation of the set
-    :math:`\\{1,\\dots,\\max(K,L)\\}`, and
-    and :math:`c_{i, \\cdot}=c_{i, 1}+...+c_{i, L}` is the i-th row sum,
-    under the assumption that :math:`c_{i,j}=0` for
-    :math:`i>K` or :math:`j>L` and :math:`0/0=0`.
+    where :math:`C` is a confusion matrix with :math:`K` rows and columns,
+    :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,K\\}`, and
+    and :math:`c_{i, \\cdot}=c_{i, 1}+...+c_{i, K}` is the `i`-th row sum,
+    under the assumption that :math:`0/0=0`.
 
     `normalized_pivoted_accuracy` is defined as
-    :math:`(\\max_\\sigma \\sum_{j=1}^{\\max(K,L)} \\frac{c_{\\sigma(j),j}/n-1/\\max(K,L)}{1-1/\\max(K,L)}`,
-    where :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,\\max(K,L)\\}`,
+    :math:`(\\max_\\sigma \\sum_{j=1}^{K} \\frac{c_{\\sigma(j),j}/n-1/K}{1-1/K}`,
+    where :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,K\\}`,
     and :math:`n` is the sum of all elements in :math:`C`.
-    For non-square matrices, missing rows/columns are assumed
-    to be filled with 0s.
 
     `pair_sets_index` (PSI) was introduced in [3]_.
     The simplified PSI assumes E=1 in the definition of the index,

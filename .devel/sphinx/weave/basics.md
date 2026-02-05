@@ -57,7 +57,7 @@ A scatter plot of the dataset together with the reference labels:
 
 
 ``` python
-genieclust.plots.plot_scatter(X, labels=labels_true, markers="o")
+deadwood.plot_scatter(X, labels=labels_true, markers="o")
 plt.title("%s (n=%d, true n_clusters=%d)" % (dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 ```
@@ -94,7 +94,7 @@ Let's plot the discovered partition:
 
 
 ``` python
-genieclust.plots.plot_scatter(X, labels=labels_genie, markers="o")
+deadwood.plot_scatter(X, labels=labels_genie, markers="o")
 plt.title("Genie (gini_threshold=%g)" % g.gini_threshold)
 plt.axis("equal")
 ```
@@ -143,7 +143,7 @@ Let's apply the k-means algorithm on the same dataset for comparison.
 import sklearn.cluster
 km = sklearn.cluster.KMeans(n_clusters=n_clusters)
 labels_kmeans = km.fit_predict(X)
-genieclust.plots.plot_scatter(X, labels=labels_kmeans, markers="o")
+deadwood.plot_scatter(X, labels=labels_kmeans, markers="o")
 plt.title("k-means")
 plt.axis("equal")
 ```
@@ -203,7 +203,7 @@ for i in range(len(mcs)):
     h = hdbscan.HDBSCAN(min_cluster_size=mcs[i])
     labels_hdbscan = h.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_hdbscan, markers="o")
+    deadwood.plot_scatter(X, labels=labels_hdbscan, markers="o")
     plt.title("HDBSCAN (min_cluster_size=%d)" % h.min_cluster_size)
     plt.axis("equal")
 ```
@@ -244,7 +244,7 @@ for i in range(len(mcs)):
     h = hdbscan.HDBSCAN(min_cluster_size=mcs[i])
     labels_hdbscan = h.fit_predict(X)
     plt.subplot(3, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_hdbscan, markers="o")
+    deadwood.plot_scatter(X, labels=labels_hdbscan, markers="o")
     plt.title("HDBSCAN (min_cluster_size=%d)"%h.min_cluster_size)
     plt.axis("equal")
 ```
@@ -274,7 +274,7 @@ for i in range(len(ncl)):
     g = genieclust.Genie(n_clusters=ncl[i])
     labels_genie = g.fit_predict(X)
     plt.subplot(3, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, markers="o")
     plt.title("Genie (n_clusters=%d)"%(g.n_clusters,))
     plt.axis("equal")
 ```

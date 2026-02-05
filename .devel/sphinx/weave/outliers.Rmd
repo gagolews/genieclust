@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import genieclust
+import deadwood
 ```
 
 ```{python settings,results="hide",echo=FALSE}
@@ -42,7 +43,7 @@ The light grey markers corresponding to the label `-1` designate points
 that can be considered outliers.
 
 ```{python noise-scatter,results="hide",fig.cap="Reference labels"}
-genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5, markers="o")
+deadwood.plot_scatter(X, labels=labels_true, alpha=0.5, markers="o")
 plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
 plt.axis("equal")
 plt.show()
@@ -87,7 +88,7 @@ for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
     plt.subplot(1, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(gini_threshold=%g, M=%d)"%(g.gini_threshold, g.M))
     plt.axis("equal")
 plt.show()
@@ -109,7 +110,7 @@ labels_genie_no_outliers = g2.fit_predict(X[~is_outlier, :])
 # Replace old labels with the new ones:
 labels_genie[~is_outlier] = labels_genie_no_outliers
 # Scatter plot:
-genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5)
+deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5)
 plt.title("(gini_threshold=%g, noise points removed first; M=%d)"%(g2.gini_threshold, g1.M))
 plt.axis("equal")
 plt.show()
@@ -128,7 +129,7 @@ for i in range(len(ncs)):
     g = genieclust.Genie(n_clusters=ncs[i], M=50)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(n_clusters=%d)"%(g.n_clusters))
     plt.axis("equal")
 plt.show()
@@ -149,7 +150,7 @@ import hdbscan
 ```{python noise-HDBSCAN1,results="hide",fig.cap="Labels predicted by HDBSCAN\\*."}
 h = hdbscan.HDBSCAN()
 labels_hdbscan = h.fit_predict(X)
-genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
+deadwood.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
 plt.title("(min_cluster_size=%d, min_samples=%d)" % (
     h.min_cluster_size, h.min_samples or h.min_cluster_size))
 plt.axis("equal")
@@ -171,7 +172,7 @@ for i in range(len(mcss)):
         h = hdbscan.HDBSCAN(min_cluster_size=mcss[i], min_samples=mss[j])
         labels_hdbscan = h.fit_predict(X)
         plt.subplot(3, 2, i*len(mss)+j+1)
-        genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
+        deadwood.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
         plt.title("(min_cluster_size=%d, min_samples=%d)" % (
             h.min_cluster_size, h.min_samples or h.min_cluster_size))
         plt.axis("equal")

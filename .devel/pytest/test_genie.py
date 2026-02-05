@@ -198,14 +198,14 @@ def test_deadwood():
     for M in [1, 2, 10, 25]:
         G = genieclust.Genie(2, gini_threshold=0.5, M=M).fit(X)
         y = G.labels_
-        #genieclust.plots.plot_scatter(X, labels=y, asp=1, asp=1)
+        #deadwood.plot_scatter(X, labels=y, asp=1, asp=1)
         #plt.show()
 
         D = deadwood.Deadwood()
         o = D.fit_predict(G)
         print(D.contamination_)
         #w = o.copy(); w[w>0] = y[w>0]
-        # genieclust.plots.plot_scatter(X, labels=o, asp=1)
+        # deadwood.plot_scatter(X, labels=o, asp=1)
         # plt.show()
         assert (o[:n1]<0).mean() > 0.1
         assert (o[n1:]<0).mean() > 0.1

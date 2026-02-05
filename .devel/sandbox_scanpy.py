@@ -45,7 +45,7 @@ sc.pl.umap(ad, color='louvain')
 
 
 mst = genieclust.internal.mst_from_distance(X_hidim)
-genieclust.plots.plot_segments(mst[1], ad.obsm["X_umap"])
+deadwood.plot_segments(mst[1], ad.obsm["X_umap"])
 
 
 X_hidim_std = (X_hidim-X_hidim.mean(axis=0))/(X_hidim.std(axis=0, ddof=1))
@@ -56,13 +56,13 @@ sc.pl.umap(ad, color='genie_labels_std')
 
 
 mst = genieclust.internal.mst_from_distance(X_hidim_std)
-genieclust.plots.plot_segments(mst[1], ad.obsm["X_umap"])
+deadwood.plot_segments(mst[1], ad.obsm["X_umap"])
 
 
 
 mst = genieclust.internal.mst_from_distance(np.array(X_lodim, copy=True, order='C'))
 #sc.pl.umap(ad, color='genie_labels')
-genieclust.plots.plot_segments(mst[1], ad.obsm["X_umap"])
+deadwood.plot_segments(mst[1], ad.obsm["X_umap"])
 
 
 from sklearn.decomposition import PCA

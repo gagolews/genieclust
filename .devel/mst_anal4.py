@@ -61,9 +61,9 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 #
 # y_pred = l["labels"]+1
 # is_noise = l["is_noise"]
-# genieclust.plots.plot_segments(mst_e, X, alpha=0.2)
-# genieclust.plots.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
-# genieclust.plots.plot_scatter(X, labels=y_pred-1, alpha=0.2)
+# deadwood.plot_segments(mst_e, X, alpha=0.2)
+# deadwood.plot_scatter(X[~is_noise,:], labels=y_pred[~is_noise]-1)
+# deadwood.plot_scatter(X, labels=y_pred-1, alpha=0.2)
 # plt.axis("equal")
 # plt.show()
 # stop()
@@ -185,17 +185,17 @@ for ex in range(n_examples):
 
 
     if is_noise is not None:
-        genieclust.plots.plot_scatter(X[~is_noise,:2], labels=y_pred[~is_noise]-1)
+        deadwood.plot_scatter(X[~is_noise,:2], labels=y_pred[~is_noise]-1)
     else:
-        genieclust.plots.plot_scatter(X[:,:2], labels=y_pred[:]-1)
+        deadwood.plot_scatter(X[:,:2], labels=y_pred[:]-1)
 
-    genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1, alpha=0.2)
+    deadwood.plot_scatter(X[:,:2], labels=y_pred-1, alpha=0.2)
 
     # if tree_e is not None:
-        # genieclust.plots.plot_segments(tree_e, X, alpha=0.2)
+        # deadwood.plot_segments(tree_e, X, alpha=0.2)
 
     # if tree_skiplist is not None:
-        # genieclust.plots.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
+        # deadwood.plot_segments(tree_e[tree_skiplist, :], X, color="yellow", alpha=0.2)
 
     plt.axis("equal")
     plt.xticks([])

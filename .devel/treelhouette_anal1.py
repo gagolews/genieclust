@@ -90,9 +90,9 @@ mst_internodes = L.__dict__.get("_mst_internodes", [])
 #     nn_tick[v] += 1
 # plt.clf()
 # plt.axis("equal")
-# genieclust.plots.plot_scatter(X[:,:2], labels=nn_tick>3)
-# genieclust.plots.plot_segments(mst_e, X)
-# #genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1)
+# deadwood.plot_scatter(X[:,:2], labels=nn_tick>3)
+# deadwood.plot_segments(mst_e, X)
+# #deadwood.plot_scatter(X[:,:2], labels=y_pred-1)
 
 
 plt.rcParams.update({  # further graphical parameters
@@ -112,7 +112,7 @@ plt.subplot(1, 2, 1)
 # nn_threshold = np.mean(nn_w[:, -1])
 # nn_w[:, -1] > nn_threshold
 # y_pred[nn_w[:, -1] > nn_threshold] = 0
-genieclust.plots.plot_scatter(X[:,:2], labels=y_pred-1)
+deadwood.plot_scatter(X[:,:2], labels=y_pred-1)
 plt.axis("equal")
 if mst_draw_edge_labels:
     for i in range(n-1):
@@ -120,16 +120,16 @@ if mst_draw_edge_labels:
             (X[mst_e[i,0],0]+X[mst_e[i,1],0])/2,
             (X[mst_e[i,0],1]+X[mst_e[i,1],1])/2,
             "%d (%d-%d)" % (i, mst_s[i, 0], mst_s[i, 1]),
-            color="gray" if mst_labels[i] == lumbermark.SKIP else genieclust.plots.col[mst_labels[i]-1],
+            color="gray" if mst_labels[i] == lumbermark.SKIP else deadwood.col[mst_labels[i]-1],
             va='top'
         )
 for i in range(n_clusters+1):
-    genieclust.plots.plot_segments(mst_e[mst_labels == i, :], X, color=genieclust.plots.col[i-1],
+    deadwood.plot_segments(mst_e[mst_labels == i, :], X, color=deadwood.col[i-1],
         alpha=0.2, linestyle="-" if i>0 else ":")
-genieclust.plots.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="-", linewidth=3)
-genieclust.plots.plot_segments(mst_e[mst_internodes,:], X, color="orange", linestyle="-", linewidth=3)
+deadwood.plot_segments(mst_e[mst_labels<0,:], X, color="yellow", linestyle="-", linewidth=3)
+deadwood.plot_segments(mst_e[mst_internodes,:], X, color="orange", linestyle="-", linewidth=3)
 if cutting is not None:
-    genieclust.plots.plot_segments(mst_e[[cutting],:], X, color="blue", linestyle="--", alpha=1.0, linewidth=3)
+    deadwood.plot_segments(mst_e[[cutting],:], X, color="blue", linestyle="--", alpha=1.0, linewidth=3)
 
 # treelhouette
 plt.subplot(1, 2, 2)
@@ -154,7 +154,7 @@ b = min_intercluster_distances[l - 1]
 s = np.where(a<b, 1.0 - a/b, b/a - 1.0)
 o1 = np.argsort(s)[::-1]
 o2 = np.argsort(l[o1], kind='stable')
-plt.barh(np.arange(len(s))[::-1]+1, s[o1][o2], height=1.0, color=np.array(genieclust.plots.col)[l[o1]-1][o2])
+plt.barh(np.arange(len(s))[::-1]+1, s[o1][o2], height=1.0, color=np.array(deadwood.col)[l[o1]-1][o2])
 # plt.xlim(-1, 1)
 treelhouette_score = np.mean(s)
 weighted_treelhouette_score = np.mean(mst_examples.aggregate(s, mst_labels[mst_labels>0], np.mean)[0])

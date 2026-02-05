@@ -185,18 +185,15 @@ wcnn_index <- function(X, y, M = 25L) {
 #' sum assignment problem; see \code{\link{normalized_confusion_matrix}}).
 #' The index is given by:
 #' \eqn{\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}},
-#' where \eqn{C} is a confusion matrix with \eqn{K} rows and \eqn{L} columns,
-#' \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}}, and
-#' \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, L}} is the i-th row sum,
-#' under the assumption that \eqn{c_{i,j}=0} for \eqn{i>K} or \eqn{j>L}
-#' and \eqn{0/0=0}.
+#' where \eqn{C} is a confusion matrix with \eqn{K} rows and columns,
+#' \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,K\}}, and
+#' \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, K}} is the i-th row sum,
+#' under the assumption that \eqn{0/0=0}.
 #'
 #' \code{normalized_pivoted_accuracy()} is defined as
-#' \eqn{(\max_\sigma \sum_{j=1}^{\max(K,L)} \frac{c_{\sigma(j),j}/n-1/\max(K,L)}{1-1/\max(K,L)}},
-#' where \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,\max(K,L)\}},
+#' \eqn{(\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}},
+#' where \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,K\}},
 #' and \eqn{n} is the sum of all elements in \eqn{C}.
-#' For non-square matrices, missing rows/columns are assumed
-#' to be filled with 0s.
 #'
 #' \code{pair_sets_index()} (PSI) was introduced by Rezaei and Franti (2016).
 #' The simplified PSI assumes E=1 in the definition of the index,

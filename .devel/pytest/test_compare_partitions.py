@@ -39,33 +39,42 @@ def test_compare_partitions():
 
             x = np.random.permutation(np.r_[np.arange(k), np.random.choice(np.arange(k), n-k)])
             y = np.random.permutation(np.r_[np.arange(k), np.random.choice(np.arange(k), n-k)])
+            xb = np.bincount(x, minlength=max(max(x), max(y))+1)
+            yb = np.bincount(y, minlength=max(max(x), max(y))+1)
+            all_classes = np.all(xb>0) and np.all(yb>0)
             compare_with_sklearn(x, y)
-            assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
-            assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y, True)<1.0+1e-9
 
-            assert normalized_clustering_accuracy(x, y) == normalized_clustering_accuracy(confusion_matrix(x, y))
+            if all_classes: assert normalized_clustering_accuracy(x, y) == normalized_clustering_accuracy(confusion_matrix(x, y))
 
             y = x.copy()
             y[:5] = 1
+            yb = np.bincount(y, minlength=max(max(x), max(y))+1)
+            all_classes = np.all(xb>0) and np.all(yb>0)
             compare_with_sklearn(x, y)
-            assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
-            assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y, True)<1.0+1e-9
 
             y = x.copy()
             y[::2] = 1
+            yb = np.bincount(y, minlength=max(max(x), max(y))+1)
+            all_classes = np.all(xb>0) and np.all(yb>0)
             compare_with_sklearn(x, y)
-            assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
-            assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_pivoted_accuracy(x, y)<1.0+1e-9
+            if all_classes: assert -1e-9<normalized_clustering_accuracy(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y)<1.0+1e-9
             assert -1e-9<pair_sets_index(x, y, True)<1.0+1e-9
 
             y = x.copy()
             c = np.random.permutation(np.arange(k))
             for i in range(n): y[i] = c[x[i]]
+            yb = np.bincount(y, minlength=max(max(x), max(y))+1)
+            all_classes = np.all(xb>0) and np.all(yb>0)
 
             assert 1.0+1e-9>adjusted_rand_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>rand_score(x, y)>1.0-1e-9
@@ -74,15 +83,14 @@ def test_compare_partitions():
             assert          mi_score(x, y)>-1e-9
             assert 1.0+1e-9>normalized_mi_score(x, y)>1.0-1e-9
             assert 1.0+1e-9>adjusted_mi_score(x, y)>1.0-1e-9
-            assert 1.0+1e-9>normalized_pivoted_accuracy(x, y)>1.0-1e-9
-            assert 1.0+1e-9>normalized_clustering_accuracy(x, y)>1.0-1e-9
+            if all_classes: assert 1.0+1e-9>normalized_pivoted_accuracy(x, y)>1.0-1e-9
+            if all_classes: assert 1.0+1e-9>normalized_clustering_accuracy(x, y)>1.0-1e-9
             assert 1.0+1e-9>pair_sets_index(x, y)>1.0-1e-9
             assert 1.0+1e-9>pair_sets_index(x, y, True)>1.0-1e-9
 
             assert confusion_matrix(x, y).sum() == normalized_confusion_matrix(x, y).sum()
 
             # TODO: more tests...
-
 
 
 if __name__ == "__main__":

@@ -6,17 +6,20 @@
 
 *   Bring back support for non-numeric data.
 
+*   Add support for non-square confusion matrices in
+    `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`.
+
 
 ## (under development), to-be 1.3.0
 
 *   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
     a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
-    distance turned out to be subpar in more detailed experiments,
+    distance turned out to be subpar in more detailed analysis,
     especially for smaller smoothing factors.  Note that in the previous
-    versions of the package, this was marked merely as an experimental feature;
-    Hence, `detect_noise` in `genie.default` and `skip_leaves` elsewhere
-    is no longer available.  Instead, use the more powerful
-    [`deadwood`](https://deadwood.gagolewski.com) package now.
+    versions of the package, this feature was deemed experimental;
+    Hence, `detect_noise` in `genie.default` and `skip_leaves`, `preprocess`,
+    and `postprocess` elsewhere are no longer available.  Instead, use the more
+    powerful [`deadwood`](https://deadwood.gagolewski.com) package now.
 
 *   [BACKWARD INCOMPATIBILITY]  `quitefastmst` version >= 0.9.1 is now required;
     the introduced backward-incompatible changes have been addressed.
@@ -27,7 +30,7 @@
 
 *   The new `deadwood` package is now required.  `genieclust` was heavily
     refactored; common MST-related functions and classes as well as functions
-    from the `tools` module were moved therein.
+    from the `tools` and `plots` modules were moved therein.
 
 *   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
 
@@ -36,13 +39,9 @@
 
 *   [BACKWARD INCOMPATIBILITY]  `compute_full_tree` is now always True.
 
-*   ??? #92 NPA, NCA...
-
-*   ???? TODO `preprocess` TODO remove
-
-*   ???? TODO [BACKWARD INCOMPATIBILITY]  `postprocess` can now be one of
-    `"midliers"`, `"none"`, and `"all"`.
-    New outlier detection....TODO remove
+*   [BUGFIX]  #92: Passing a non-square confusion matrix to
+    `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`
+    yields an error as such objects are yet to be supported.
 
 *   [R]  `gclust` and `genie` now return the computed MST via the `mst`
     object attribute.  `genie` returns an object of the class `mstclust`.

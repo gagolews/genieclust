@@ -97,7 +97,7 @@ while True:
 
         n = X.shape[0]
         for i in range(n_neighbors):
-            genieclust.plots.plot_segments(np.c_[np.arange(n), nn_a[:, i]], X, color="gray", linestyle="--", alpha=0.2)
+            deadwood.plot_segments(np.c_[np.arange(n), nn_a[:, i]], X, color="gray", linestyle="--", alpha=0.2)
 
 
     C = (C+C.T)/2
@@ -118,7 +118,7 @@ while True:
     y_pred[y_pred == k] = jm+1
 
     plt.clf()
-    genieclust.plots.plot_scatter(X, labels=y_pred)
+    deadwood.plot_scatter(X, labels=y_pred)
     plt.axis("equal")
     plt.show()
 

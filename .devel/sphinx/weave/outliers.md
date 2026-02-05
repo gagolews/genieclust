@@ -45,7 +45,7 @@ that can be considered outliers.
 
 
 ``` python
-genieclust.plots.plot_scatter(X, labels=labels_true, alpha=0.5, markers="o")
+deadwood.plot_scatter(X, labels=labels_true, alpha=0.5, markers="o")
 plt.title("(n=%d, true n_clusters=%d)" % (X.shape[0], n_clusters))
 plt.axis("equal")
 ```
@@ -95,7 +95,7 @@ for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(gini_threshold=%g, M=%d)"%(g.gini_threshold, g.M))
     plt.axis("equal")
 ```
@@ -123,7 +123,7 @@ for i in range(len(ncs)):
     g = genieclust.Genie(n_clusters=ncs[i], M=100)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    genieclust.plots.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(n_clusters=%d)"%(g.n_clusters))
     plt.axis("equal")
 ```
@@ -157,7 +157,7 @@ labels_hdbscan = h.fit_predict(X)
 ```
 
 ``` python
-genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
+deadwood.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
 plt.title("(min_cluster_size=%d, min_samples=%d)" % (
     h.min_cluster_size, h.min_samples or h.min_cluster_size))
 plt.axis("equal")
@@ -188,7 +188,7 @@ for i in range(len(mcss)):
         h = hdbscan.HDBSCAN(min_cluster_size=mcss[i], min_samples=mss[j])
         labels_hdbscan = h.fit_predict(X)
         plt.subplot(3, 2, i*len(mss)+j+1)
-        genieclust.plots.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
+        deadwood.plot_scatter(X, labels=labels_hdbscan, alpha=0.5, markers="o")
         plt.title("(min_cluster_size=%d, min_samples=%d)" % (
             h.min_cluster_size, h.min_samples or h.min_cluster_size))
         plt.axis("equal")
