@@ -10,7 +10,6 @@ Python Package `genieclust` Reference
     genieclust.core
     genieclust.cluster_validity
     genieclust.inequality
-    genieclust.plots
 
 
 .. toctree::
@@ -22,4 +21,3 @@ Python Package `genieclust` Reference
     pythonapi_core
     pythonapi_cluster_validity
     pythonapi_inequality
-    pythonapi_plots

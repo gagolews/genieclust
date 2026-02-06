@@ -1,4 +1,4 @@
-# Genie: Fast and Robust Hierarchical Clustering
+# *Genie*: Fast and Robust Hierarchical Clustering
 
 ::::{image} _static/img/genie_toy_example.png
 :class: img-right-align-always
@@ -63,7 +63,11 @@ via a call to:
 pip3 install genieclust
 ```
 
+<!-- TODO: for best performance, install quitefastmst from sources -->
+
 from the command line or through your favourite package manager.
+
+
 Note the **scikit-learn**-like {cite}`sklearn_api` API:
 
 ```python
@@ -206,8 +210,11 @@ rapi
 :caption: Other
 :hidden:
 
-Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com/>
 quitefastmst <https://quitefastmst.gagolewski.com/>
+deadwood <https://deadwood.gagolewski.com/>
+lumbermark <https://lumbermark.gagolewski.com/>
+genieclust <https://genieclust.gagolewski.com/>
+Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com/>
 Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 Deep R Programming <https://deepr.gagolewski.com/>
 news

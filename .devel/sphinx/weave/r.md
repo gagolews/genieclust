@@ -14,7 +14,7 @@ install.packages("genieclust")
 ```
 
 
-Below are a few basic examples of how to interact with the package.
+Below are a few basic examples of interacting with the package.
 
 
 ``` r
@@ -52,9 +52,10 @@ head(X)  # preview
 
 
 The API of **genieclust** is compatible with R's workhorse
-for hierarchical clustering, `stats::hclust()`.
-Yet, for efficiency reasons, it is better to feed `genieclust::gclust()`
-with the input matrix directly:
+for hierarchical clustering, `stats::hclust()`, which accepts
+a complete pairwise distance matrix.  Yet, for greater efficiency,
+it is better to feed `genieclust::gclust()` with the input data matrix
+directly:
 
 
 
@@ -64,7 +65,7 @@ h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
 ## 
 ## Call:
-## gclust.mst(d = mst.default(d, distance = distance, verbose = verbose,     ...), gini_threshold = gini_threshold, verbose = verbose)
+## gclust.mst(d = tree, gini_threshold = gini_threshold, verbose = verbose)
 ## 
 ## Cluster method   : Genie(0.3) 
 ## Distance         : euclidean 
@@ -132,8 +133,10 @@ t(aggregate(as.data.frame(X), list(Cluster=y_pred), mean))[-1, ]
 ```
 
 
+## Dendrograms
+
 Dendrogram plotting is also possible.
-For greater readability, we will restrict ourselves to a smaller sample;
+For better readability, we will restrict ourselves to a smaller sample;
 namely, to the 37 members of the [OECD](https://en.wikipedia.org/wiki/OECD):
 
 
@@ -161,20 +164,29 @@ Cluster dendrogram for the OECD countries
 
 
 
-Conclusion:
+## Outlier Detection with Deadwood
 
-* If we are only interested in a specific partition,
+TODO.....
+
+
+If we are only interested in the partition of a specific cardinality,
 calling `genie()` directly will be slightly faster than referring to
 `cutree(gclust(...))`.
 
-* **genieclust** also features partition similarity scores
-(such as the adjusted Rand index) that can be used as
-external cluster validity measures.
+
+
+
+
+
+
+
+## Remarks
+
+**genieclust** also features partition similarity scores
+(such as the adjusted Rand index) and internal cluster validity measures
+(e.g., the Caliński-Harabasz index).
 
 For more details, refer to the package's {any}`documentation <../rapi>`.
-Also, see the Python examples regarding noise point detection,
-benchmarking, timing, etc.
-
-*To learn more about R, check out Marek's open-access textbook*
+To learn more about R, check out Marek's open-access textbook
 [Deep R Programming](https://deepr.gagolewski.com/)
 {cite}`deepr`.

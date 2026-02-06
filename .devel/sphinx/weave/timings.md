@@ -10,7 +10,7 @@ This section needs to be extended.
 
 
 
-Time to perform cluster analysis of a dataset consisting of
+Time to perform a cluster analysis of a dataset consisting of
 1M points in $\mathbb{R}^2$:
 
 
@@ -27,7 +27,7 @@ g = genieclust.Genie(n_clusters=2)
 g.fit(X)
 print("Elapsed time: %.2f secs." % (time.time()-t0))
 ## Genie()
-## Elapsed time: 1.30 secs.
+## Elapsed time: 2.29 secs.
 ```
 
 Note that due to the curse of dimensionality, processing
