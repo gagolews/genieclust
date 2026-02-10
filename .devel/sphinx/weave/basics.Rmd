@@ -1,4 +1,4 @@
-# Basics
+# Basic Usage (Python)
 
 *Genie* {cite}`genieins` is an agglomerative hierarchical clustering
 algorithm. The idea behind *Genie* is beautifully simple. First, it makes each

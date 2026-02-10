@@ -2,7 +2,7 @@
 
 
 
-# Basics
+# Basic Usage (Python)
 
 *Genie* {cite}`genieins` is an agglomerative hierarchical clustering
 algorithm. The idea behind *Genie* is beautifully simple. First, it makes each
@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import genieclust
+import deadwood
 ```
 
 
@@ -72,7 +73,7 @@ Reference labels
 ```
 
 Let us apply the Genie algorithm (with the default/recommended
-`gini_threshold` parameter value). The **genieclust** package's programming
+`gini_threshold` parameter value of 0.3). The **genieclust** package's programming
 interface is [**scikit-learn**](https://scikit-learn.org/)-compatible {cite}`sklearn`.
 In particular, an object of class `Genie` is equipped with the
 `fit` and `fit_predict` methods {cite}`sklearn_api`.
@@ -218,9 +219,9 @@ Labels predicted by HDBSCAN\*
 ```
 
 **Side note.**
-Gray plotting symbols denote noise points.
+Gray plotting symbols denote noise points/outliers.
 In [another section](outliers), we will show that our package is also
-equipped with an anomalous point detector.
+equipped with an anomaly detector.
 
 
 
@@ -296,7 +297,7 @@ Dendrogram plotting is possible with `scipy.cluster.hierarchy`:
 
 ``` python
 import scipy.cluster.hierarchy
-g = genieclust.Genie(compute_full_tree=True)
+g = genieclust.Genie()
 g.fit(X)
 ```
 

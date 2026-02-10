@@ -12,6 +12,8 @@
 
 ## (under development), to-be 1.3.0
 
+*   TODO: ".....`compute_all_cuts` is ``True``......"
+
 *   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
     a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
     distance turned out to be subpar in more detailed analysis,
@@ -19,7 +21,7 @@
     versions of the package, this feature was deemed experimental;
     Hence, `detect_noise` in `genie.default` and `skip_leaves`, `preprocess`,
     and `postprocess` elsewhere are no longer available.  Instead, use the more
-    powerful [`deadwood`](https://deadwood.gagolewski.com) package now.
+    powerful [`deadwood`](https://deadwood.gagolewski.com/) package now.
 
 *   [BACKWARD INCOMPATIBILITY]  `quitefastmst` version >= 0.9.1 is now required;
     the introduced backward-incompatible changes have been addressed.

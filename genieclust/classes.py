@@ -61,17 +61,13 @@ class Genie(deadwood.MSTClusterer):
 
     M : int
         The smoothing factor for the mutual reachability distance [2]_.
-        *M ≤ 1* indicates the original distance as given by
-        the *metric* parameter; see :any:`deadwood.MSTBase`
-        for more details.
+        `M = 0` and `M = 1` select the original distance as given by
+        the `metric` parameter; see :any:`deadwood.MSTBase`
 
-        *M = 0* gives the original Genie algorithm [1]_
-        (with no outlier detection) with respect to the chosen distance.
-
-    metric : str
+    metric : str, default='l2'
         The metric used to compute the linkage; see
         :any:`deadwood.MSTBase` for more details.
-        Defaults to ``"l2"``, i.e., the Euclidean distance.
+        Defaults to the Euclidean distance.
 
     compute_all_cuts : bool
         Whether to compute the requested `n_clusters`-partition and all
@@ -97,8 +93,6 @@ class Genie(deadwood.MSTClusterer):
         If `compute_all_cuts` is ``False`` (the default),
         it is an integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
-        If *M > 0*, outliers are labelled ``-1`` (unless taken care
-        of at the postprocessing stage).
 
         TODO Otherwise, i.e., if `compute_all_cuts` is ``True``,
         all partitions of cardinality down to `n_clusters`
@@ -111,8 +105,6 @@ class Genie(deadwood.MSTClusterer):
 
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
-        It can be different from the requested one if there are too many
-        noise points in the dataset.
 
     n_samples_ : int
         The number of points in the dataset.
@@ -374,7 +366,7 @@ class GIc(deadwood.MSTClusterer):
         ``Genie(n_clusters=n_clusters+add_clusters, gini_threshold=gini_thresholds[i])``,
         for all ``i`` from ``0`` to ``len(gini_thresholds)-1``.
 
-    metric : str
+    metric : str, default='l2'
         The metric used to compute the linkage; see :any:`genieclust.Genie`
         for more details.
 

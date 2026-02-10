@@ -173,7 +173,7 @@ CRAN Entry <https://CRAN.R-project.org/package=genieclust>
 
 ::::{toctree}
 :maxdepth: 2
-:caption: Examples and Tutorials
+:caption: Python API
 :hidden:
 
 weave/basics
@@ -181,7 +181,7 @@ weave/sklearn_toy_example
 weave/benchmarks_ar
 weave/timings
 weave/outliers
-weave/r
+pythonapi
 ::::
 
 <!--
@@ -196,10 +196,10 @@ weave/benchmarks_details
 
 ::::{toctree}
 :maxdepth: 1
-:caption: Reference Manual
+:caption: R API
 :hidden:
 
-pythonapi
+weave/r
 rapi
 ::::
 
@@ -212,7 +212,6 @@ rapi
 quitefastmst <https://quitefastmst.gagolewski.com/>
 deadwood <https://deadwood.gagolewski.com/>
 lumbermark <https://lumbermark.gagolewski.com/>
-genieclust <https://genieclust.gagolewski.com/>
 Clustering Benchmarks <https://clustering-benchmarks.gagolewski.com/>
 Minimalist Data Wrangling in Python <https://datawranglingpy.gagolewski.com/>
 Deep R Programming <https://deepr.gagolewski.com/>

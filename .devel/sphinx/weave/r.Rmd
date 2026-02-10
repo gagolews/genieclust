@@ -1,4 +1,4 @@
-# R Interface Examples
+# Basic Usage (R)
 
 The latest stable release of the R package **genieclust** is available from the
 [CRAN](https://CRAN.R-project.org/package=genieclust) repository.
@@ -32,7 +32,7 @@ head(X)  # preview
 
 The API of **genieclust** is compatible with R's workhorse
 for hierarchical clustering, `stats::hclust()`, which accepts
-a complete pairwise distance matrix.  Yet, for greater efficiency,
+a complete pairwise distance matrix.  Yet, for better performance,
 it is better to feed `genieclust::gclust()` with the input data matrix
 directly:
 
@@ -46,7 +46,7 @@ print(h)
 In order to extract a desired *k*-partition, we can call `stats::cutree()`:
 
 ```{r cutree}
-y_pred <- cutree(h, k=3)
+y_pred <- cutree(h, k=3)  # also: genie(X, 3)
 sample(y_pred, 25)  # preview
 ```
 
