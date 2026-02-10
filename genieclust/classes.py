@@ -172,11 +172,10 @@ class Genie(deadwood.MSTClusterer):
     The Genie algorithm itself has :math:`O(n \\sqrt{n})` time
     and :math:`O(n)` memory complexity if an MST is already provided.
 
-    As in the case of all the distance-based methods (including k-nearest
-    neighbours, k-means, and DBSCAN), the standardisation of the input
-    features is definitely worth giving a try.  Oftentimes, applying
-    feature selection and engineering techniques (e.g., dimensionality
-    reduction) might lead to more meaningful results.
+    As with all distance-based methods (this includes k-means and DBSCAN as
+    well), applying data preprocessing and feature engineering techniques
+    (e.g., feature scaling, feature selection, dimensionality reduction)
+    might lead to more meaningful results.
 
     `genieclust` also allows clustering with respect to mutual reachability
     distances, enabling it to act as an alternative to *HDBSCAN\** [2]_

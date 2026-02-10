@@ -1,10 +1,9 @@
 # Comparing Algorithms on Toy Datasets
 
-There is a nice example at the
-[scikit-learn](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html)
-website that shows the characteristics of different hierarchical
+The *scikit-learn* website [showcases](https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html)
+the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
-on a larger data sample and with the Genie algorithm in the game.
+on a larger data sample and with the Genie algorithm included.
 
 **TL;DR — See the bottom of the page for the resulting figure.**
 
@@ -64,7 +63,7 @@ varied = datasets.make_blobs(n_samples=n_samples,
 
 Then, we run the clustering procedures and plot the results.
 
-```{python clustering,results="hide",fig.cap="Outputs of different clustering algorithms"}
+```{python clustering,results="hide",fig.cap="Outputs of clustering algorithms"}
 # Set up cluster parameters
 plt.figure(figsize=(9 * 1.3 + 2, 14.5))
 plt.subplots_adjust(left=.02, right=.98, bottom=.001, top=.96,
@@ -155,13 +154,12 @@ for i_dataset, (dataset, algo_params) in enumerate(datasets):
 plt.show()
 ```
 
-The out-of-the-box Genie algorithm not only generates the most
-meaningful partitions but also is the fastest.
-Of course, no algorithm is ideal in all the possible scenarios,
-but Genie is definitely worth a try in your next data mining challenge.
+The out-of-the-box Genie algorithm generates quite valid partitions.
+It is also the fastest among the above ones.
+Even though no algorithm is perfect in all the possible scenarios,
+try giving Genie a go in your next data mining challenge.
 
-As in the case of all the distance-based methods (including k-nearest
-neighbours, k-means, and DBSCAN), the standardisation of the input
-features is definitely worth giving a try.  Oftentimes, applying
-feature selection and engineering techniques (e.g., dimensionality
-reduction) might lead to more meaningful results.
+As with all distance-based methods (this includes [k-means and DBSCAN](https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html) as well),
+applying data preprocessing and feature engineering techniques
+(e.g., feature scaling, feature selection, dimensionality reduction)
+might lead to more meaningful results.

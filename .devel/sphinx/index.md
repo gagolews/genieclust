@@ -28,11 +28,10 @@ Of course, there is no, nor will there ever be, a single best
 universal clustering approach for every kind of problem, but Genie
 is definitely worth a try.
 
-As in the case of all the distance-based methods (including k-nearest
-neighbours, k-means, and DBSCAN), the standardisation of the input
-features is definitely worth giving a try.  Oftentimes, applying
-feature selection and engineering techniques (e.g., dimensionality
-reduction) might lead to more meaningful results.
+As with all distance-based methods (this includes k-means and DBSCAN as well),
+applying data preprocessing and feature engineering techniques
+(e.g., feature scaling, feature selection, dimensionality reduction)
+might lead to more meaningful results.
 
 *Genie* is based on Euclidean minimal spanning trees {cite}`cvimst`.
 Thus, it can also be pretty **fast**: thanks to
