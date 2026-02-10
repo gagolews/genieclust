@@ -220,7 +220,7 @@ class Genie(deadwood.MSTClusterer):
             M=0,
             metric="l2",
             compute_all_cuts=False,
-            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
+            quitefastmst_params=None,  # TODO ?dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
         # # # # # # # # # # # #
@@ -487,7 +487,7 @@ class GIc(deadwood.MSTClusterer):
             compute_all_cuts=False,
             add_clusters=0,
             n_features=None,
-            quitefastmst_params=dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
+            quitefastmst_params=None,  # TODO ?dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
         super().__init__(
