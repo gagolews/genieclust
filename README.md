@@ -139,7 +139,6 @@ The package requires Python 3.9+ with
 **cython**,
 **numpy**,
 **scikit-learn**,
-**matplotlib**,
 [**quitefastmst**](https://quitefastmst.gagolewski.com/).
 and
 [**deadwood**](https://deadwood.gagolewski.com/).

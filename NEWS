@@ -14,6 +14,11 @@
 
 *   TODO: ".....`compute_all_cuts` is ``True``......"
 
+*   The new [`deadwood`](https://deadwood.gagolewski.com/)  package is now
+    required.  `genieclust` was heavily refactored; common MST-related functions
+    and classes as well as functions from the `tools` and `plots` modules
+    were moved therein.
+
 *   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
     a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
     distance turned out to be subpar in more detailed analysis,
@@ -21,7 +26,7 @@
     versions of the package, this feature was deemed experimental;
     Hence, `detect_noise` in `genie.default` and `skip_leaves`, `preprocess`,
     and `postprocess` elsewhere are no longer available.  Instead, use the more
-    powerful [`deadwood`](https://deadwood.gagolewski.com/) package now.
+    powerful `deadwood` package now.
 
 *   [BACKWARD INCOMPATIBILITY]  `quitefastmst` version >= 0.9.1 is now required;
     the introduced backward-incompatible changes have been addressed.
@@ -29,10 +34,6 @@
     Unlike in Campello et al.'s 2013 paper, now the core distance is the
     distance to the *M*-th nearest neighbour, not the *(M-1)*-th one
     (not including self).
-
-*   The new `deadwood` package is now required.  `genieclust` was heavily
-    refactored; common MST-related functions and classes as well as functions
-    from the `tools` and `plots` modules were moved therein.
 
 *   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
 
@@ -49,7 +50,7 @@
     object attribute.  `genie` returns an object of the class `mstclust`.
     This makes it operable with `deadwood`.
 
-*   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
+*   [Python] [BUGFIX]  Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
 
 *   [Python] [NEW FEATURE]  `plots.plot_scatter` has new arguments:

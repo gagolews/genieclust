@@ -17,7 +17,7 @@ jobs:
         R_LIBS_SITE: /usr/lib/R/site-library
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
@@ -26,9 +26,9 @@ jobs:
       run: |
         #sudo apt-get update
         #sudo apt-get -y upgrade
-        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 libmlpack-dev r-base-dev python3-dev pandoc libtirpc-dev
+        sudo apt-get -y install libcurl4-openssl-dev python3-rpy2 r-base-dev python3-dev pandoc libtirpc-dev
         sudo mkdir -p /usr/lib/R/site-library
-        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'mlpack', 'quitefastmst'), lib='/usr/lib/R/site-library')"
+        sudo Rscript -e "install.packages(c('genie', 'Rcpp', 'tinytest', 'roxygen2', 'pkgbuild', 'RcppArmadillo', 'RcppEnsmallen', 'quitefastmst', 'deadwood'), lib='/usr/lib/R/site-library')"
         sudo R CMD INSTALL .
         python3 -m venv python-venv
         source python-venv/bin/activate

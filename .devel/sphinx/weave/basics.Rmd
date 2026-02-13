@@ -38,7 +38,7 @@ Let's load an example benchmark set, `jain` {cite}`jain`, which comes
 with the true corresponding partition (as assigned by an expert).
 
 ```{python basics-load}
-# see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
+# see https://github.com/gagolews/genieclust/tree/master/.devel/sphinx/weave
 dataset = "jain"
 # Load an example 2D dataset:
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)

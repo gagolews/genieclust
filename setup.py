@@ -142,7 +142,6 @@ setuptools.setup(
     install_requires=[
         "numpy>=2.0.0",
         "Cython",  # not: cython
-        "matplotlib",
         "scikit-learn",
         "deadwood>=0.9.0",
     ],

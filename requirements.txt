@@ -1,5 +1,4 @@
 Cython
 numpy
-matplotlib
 scikit-learn
 deadwood
