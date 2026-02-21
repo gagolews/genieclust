@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Benchmarks (How Good Is It?)" href="benchmarks_ar.html" /><link rel="prev" title="Basics" href="basics.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Benchmarks (How Good Is It?)" href="benchmarks_ar.html" /><link rel="prev" title="Basic Usage (Python)" href="basics.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/weave/sklearn_toy_example.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c484f746" />
     
     
 
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="r.html">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_root.html">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="r.html">Basic Usage (R)</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rapi/genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">Changelog</a></li>
@@ -304,11 +303,10 @@
         <article role="main">
           <section class="tex2jax_ignore mathjax_ignore" id="comparing-algorithms-on-toy-datasets">
 <h1>Comparing Algorithms on Toy Datasets<a class="headerlink" href="#comparing-algorithms-on-toy-datasets" title="Link to this heading">¶</a></h1>
-<p>There is a nice example at the
-<a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">scikit-learn</a>
-website that shows the characteristics of different hierarchical
+<p>The <em>scikit-learn</em> website <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_linkage_comparison.html">showcases</a>
+the characteristics of different hierarchical
 clustering methods on 2D toy datasets. Below we re-run this illustration
-on a larger data sample and with the Genie algorithm in the game.</p>
+on a larger data sample and with the Genie algorithm included.</p>
 <p><strong>TL;DR — See the bottom of the page for the resulting figure.</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
@@ -439,13 +437,17 @@ on a larger data sample and with the Genie algorithm in the game.</p>
 <figure class="align-default" id="id1">
 <span id="fig-clustering"></span><img alt="../_images/clustering-1.png" src="../_images/clustering-1.png" />
 <figcaption>
-<p><span class="caption-number">Figure 9 </span><span class="caption-text">Outputs of different clustering algorithms</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Figure 9 </span><span class="caption-text">Outputs of clustering algorithms</span><a class="headerlink" href="#id1" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>The out-of-the-box Genie algorithm not only generates the most
-meaningful partitions but also is the fastest.
-Of course, no algorithm is ideal in all the possible scenarios,
-but Genie is definitely worth a try in your next data mining challenge.</p>
+<p>The out-of-the-box Genie algorithm generates quite valid partitions.
+It is also the fastest among the above ones.
+Even though no algorithm is perfect in all the possible scenarios,
+try giving Genie a go in your next data mining challenge.</p>
+<p>As with all distance-based methods (this includes <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/cluster/plot_cluster_comparison.html">k-means and DBSCAN</a> as well),
+applying data preprocessing and feature engineering techniques
+(e.g., feature scaling, feature selection, dimensionality reduction)
+might lead to more meaningful results.</p>
 </section>
 
         </article>
@@ -469,7 +471,7 @@ but Genie is definitely worth a try in your next data mining challenge.</p>
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Basics</div>
+                <div class="title">Basic Usage (Python)</div>
                 
               </div>
             </a>
@@ -479,11 +481,11 @@ but Genie is definitely worth a try in your next data mining challenge.</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -498,7 +500,7 @@ but Genie is definitely worth a try in your next data mining challenge.</p>
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="../_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

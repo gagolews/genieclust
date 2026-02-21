@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.inequality" href="pythonapi_inequality.html" /><link rel="prev" title="genieclust.cluster_validity" href="pythonapi_cluster_validity.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.core" href="pythonapi_core.html" /><link rel="prev" title="genieclust" href="pythonapi_root.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/pythonapi_compare_partitions.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=c484f746" />
     
     
 
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="weave/outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_root.html">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">Basic Usage (R)</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="news.html">Changelog</a></li>
@@ -505,18 +504,14 @@ with cluster ID matching based on the solution to the maximal linear
 sum assignment problem; see <a class="reference internal" href="#genieclust.compare_partitions.normalized_confusion_matrix" title="genieclust.compare_partitions.normalized_confusion_matrix"><code class="xref py py-func docutils literal notranslate"><span class="pre">normalized_confusion_matrix()</span></code></a>).
 It is given by:
 <span class="math notranslate nohighlight">\((\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K})\)</span>,
-where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and <span class="math notranslate nohighlight">\(L\)</span>
-columns, <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set
-<span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>, and
-and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, L}\)</span> is the i-th row sum,
-under the assumption that <span class="math notranslate nohighlight">\(c_{i,j}=0\)</span> for
-<span class="math notranslate nohighlight">\(i&gt;K\)</span> or <span class="math notranslate nohighlight">\(j&gt;L\)</span> and <span class="math notranslate nohighlight">\(0/0=0\)</span>.</p>
+where <span class="math notranslate nohighlight">\(C\)</span> is a confusion matrix with <span class="math notranslate nohighlight">\(K\)</span> rows and columns,
+<span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,K\}\)</span>, and
+and <span class="math notranslate nohighlight">\(c_{i, \cdot}=c_{i, 1}+...+c_{i, K}\)</span> is the <cite>i</cite>-th row sum,
+under the assumption that <span class="math notranslate nohighlight">\(0/0=0\)</span>.</p>
 <p><cite>normalized_pivoted_accuracy</cite> is defined as
-<span class="math notranslate nohighlight">\((\max_\sigma \sum_{j=1}^{\max(K,L)} \frac{c_{\sigma(j),j}/n-1/\max(K,L)}{1-1/\max(K,L)}\)</span>,
-where <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,\max(K,L)\}\)</span>,
-and <span class="math notranslate nohighlight">\(n\)</span> is the sum of all elements in <span class="math notranslate nohighlight">\(C\)</span>.
-For non-square matrices, missing rows/columns are assumed
-to be filled with 0s.</p>
+<span class="math notranslate nohighlight">\((\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}\)</span>,
+where <span class="math notranslate nohighlight">\(\sigma\)</span> is a permutation of the set <span class="math notranslate nohighlight">\(\{1,\dots,K\}\)</span>,
+and <span class="math notranslate nohighlight">\(n\)</span> is the sum of all elements in <span class="math notranslate nohighlight">\(C\)</span>.</p>
 <p><cite>pair_sets_index</cite> (PSI) was introduced in <a class="reference internal" href="#rb28289ab3e3a-3" id="id3">[3]</a>.
 The simplified PSI assumes E=1 in the definition of the index,
 i.e., uses Eq. (20) in <a class="reference internal" href="#rb28289ab3e3a-3" id="id4">[3]</a> instead of Eq. (18).
@@ -540,33 +535,33 @@ and <span class="math notranslate nohighlight">\(\mathrm{NMI}_\mathrm{sum}\)</sp
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id6">2</a>)</span>
 <p>Hubert, L., Arabie, P., Comparing partitions,
-<em>Journal of Classification</em> 2(1), 1985, 193-218.</p>
+<em>Journal of Classification</em> 2(1), 1985, 193-218</p>
 </div>
 <div class="citation" id="rb28289ab3e3a-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski, M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, <em>Journal of Classification</em> 42, 2025, 2-30.
-<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a>.</p>
+cluster validity measure, <em>Journal of Classification</em> 42, 2025, 2-30,
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a></p>
 </div>
 <div class="citation" id="rb28289ab3e3a-3" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id3">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
 <p>Rezaei, M., Franti, P., Set matching measures for external cluster validity,
 <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016,
-2173-2186. <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a>.</p>
+2173-2186, <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a></p>
 </div>
 <div class="citation" id="rb28289ab3e3a-4" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">4</a><span class="fn-bracket">]</span></span>
 <p>Vinh, N.X., Epps, J., Bailey, J.,
 Information theoretic measures for clusterings comparison:
 Variants, properties, normalization and correction for chance,
-<em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854.</p>
+<em>Journal of Machine Learning Research</em> 11, 2010, 2837-2854</p>
 </div>
 <div class="citation" id="rb28289ab3e3a-5" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">5</a><span class="fn-bracket">]</span></span>
 <p>Gagolewski, M., <em>A Framework for Benchmarking Clustering Algorithms</em>,
-<em>SoftwareX</em> 20, 2022, 101270.
-<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a>.</p>
+<em>SoftwareX</em> 20, 2022, 101270,
+<a class="reference external" href="https://clustering-benchmarks.gagolewski.com">https://clustering-benchmarks.gagolewski.com</a></p>
 </div>
 </div>
 <p class="rubric">Examples</p>
@@ -783,9 +778,9 @@ or a vector of labels (if y is not None)</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r65a2fdd5c32a-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">1</a><span class="fn-bracket">]</span></span>
-<p>Gagolewski, M., Normalised clustering accuracy: An asymmetric external
-cluster validity measure, <em>Journal of Classification</em> 42, 2025, 2-30.
-<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a>.</p>
+<p>M. Gagolewski, Normalised clustering accuracy: An asymmetric external
+cluster validity measure, <em>Journal of Classification</em> 42, 2025, 2-30,
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09482-2">https://doi.org/10.1007/s00357-024-09482-2</a></p>
 </div>
 </div>
 </dd></dl>
@@ -999,9 +994,9 @@ i.e.,use Eq. (20) in <a class="reference internal" href="#r9c96f1d3d627-1" id="i
 <div class="citation" id="r9c96f1d3d627-1" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id15">1</a>,<a role="doc-backlink" href="#id16">2</a>)</span>
-<p>Rezaei, M., Franti, P., Set matching measures for external cluster validity,
+<p>M. Rezaei, P. Franti, Set matching measures for external cluster validity,
 <em>IEEE Transactions on Knowledge and Data Mining</em> 28(8), 2016,
-2173-2186. <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a>.</p>
+2173-2186, <a class="reference external" href="https://doi.org/10.1109/TKDE.2016.2551240">https://doi.org/10.1109/TKDE.2016.2551240</a></p>
 </div>
 </div>
 </dd></dl>
@@ -1045,23 +1040,23 @@ or a vector of labels (if y is not None)</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="pythonapi_inequality.html">
+          <a class="next-page" href="pythonapi_core.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">genieclust.inequality</div>
+                <div class="title">genieclust.core</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="pythonapi_cluster_validity.html">
+          <a class="prev-page" href="pythonapi_root.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">genieclust.cluster_validity</div>
+                <div class="title">genieclust</div>
                 
               </div>
             </a>
@@ -1071,11 +1066,11 @@ or a vector of labels (if y is not None)</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -1123,7 +1118,7 @@ or a vector of labels (if y is not None)</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

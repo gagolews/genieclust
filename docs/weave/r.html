@@ -3,17 +3,17 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Python Package genieclust Reference" href="../pythonapi.html" /><link rel="prev" title="Clustering with Noise Point Detection" href="noise.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="R Package genieclust Reference" href="../rapi.html" /><link rel="prev" title="genieclust.inequality" href="../pythonapi_inequality.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/weave/r.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
-        <title>R Interface Examples - Python and R Package genieclust</title>
+        <title>Basic Usage (R) - Python and R Package genieclust</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c484f746" />
     
     
 
@@ -191,7 +191,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basics.html">Basics</a></li>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_root.html">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Basic Usage (R)</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../rapi/genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../rapi/inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">Changelog</a></li>
@@ -296,21 +295,21 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section class="tex2jax_ignore mathjax_ignore" id="r-interface-examples">
-<h1>R Interface Examples<a class="headerlink" href="#r-interface-examples" title="Link to this heading">¶</a></h1>
+          <section class="tex2jax_ignore mathjax_ignore" id="basic-usage-r">
+<h1>Basic Usage (R)<a class="headerlink" href="#basic-usage-r" title="Link to this heading">¶</a></h1>
 <p>The latest stable release of the R package <strong>genieclust</strong> is available from the
 <a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN</a> repository.
-We can install it by calling:</p>
+Install it by calling:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">install.packages</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Below are a few basic examples of how to interact with the package.</p>
+<p>Below are a few basic examples of interacting with the package.</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;genieclust&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -339,15 +338,16 @@ in each country. There are seven categories on the scale <span class="math notra
 </pre></div>
 </div>
 <p>The API of <strong>genieclust</strong> is compatible with R’s workhorse
-for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>.
-Yet, for efficiency reasons, it is better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::gclust()</span></code>
-with the input matrix directly:</p>
+for hierarchical clustering, <code class="docutils literal notranslate"><span class="pre">stats::hclust()</span></code>, which accepts
+a complete pairwise distance matrix.  Yet, for better performance,
+it is better to feed <code class="docutils literal notranslate"><span class="pre">genieclust::gclust()</span></code> with the input data matrix
+directly:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="c1"># faster than gclust(dist(X)):</span>
 <span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="w">  </span><span class="c1"># default: gini_threshold=0.3, distance=&quot;euclidean&quot;</span>
 <span class="nf">print</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
 <span class="c1">## </span>
 <span class="c1">## Call:</span>
-<span class="c1">## gclust.mst(d = mst.default(d, distance = distance, verbose = verbose,     ...), gini_threshold = gini_threshold, verbose = verbose)</span>
+<span class="c1">## gclust.mst(d = tree, gini_threshold = gini_threshold, verbose = verbose)</span>
 <span class="c1">## </span>
 <span class="c1">## Cluster method   : Genie(0.3) </span>
 <span class="c1">## Distance         : euclidean </span>
@@ -355,7 +355,7 @@ with the input matrix directly:</p>
 </pre></div>
 </div>
 <p>In order to extract a desired <em>k</em>-partition, we can call <code class="docutils literal notranslate"><span class="pre">stats::cutree()</span></code>:</p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span>
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">)</span><span class="w">  </span><span class="c1"># also: genie(X, 3)</span>
 <span class="nf">sample</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span><span class="w"> </span><span class="m">25</span><span class="p">)</span><span class="w">  </span><span class="c1"># preview</span>
 <span class="c1">##                Iran            Slovenia             Morocco </span>
 <span class="c1">##                   1                   3                   1 </span>
@@ -377,8 +377,14 @@ with the input matrix directly:</p>
 <span class="c1">##                   2</span>
 </pre></div>
 </div>
-<p>This gives the cluster IDs allocated to each country.
-Let’s depict the obtained partition using the <strong>rworldmap</strong> package:</p>
+<p>This gives the cluster IDs allocated to each country.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If we are only interested in the partition of a specific cardinality,
+calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to
+<code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p>
+</div>
+<p>Let’s depict the obtained partition using the <strong>rworldmap</strong> package:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;rworldmap&quot;</span><span class="p">)</span><span class="w">  </span><span class="c1"># see the package&#39;s manual for details</span>
 <span class="n">mapdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">data.frame</span><span class="p">(</span><span class="n">Country</span><span class="o">=</span><span class="nf">dimnames</span><span class="p">(</span><span class="n">X</span><span class="p">)[[</span><span class="m">1</span><span class="p">]],</span><span class="w"> </span><span class="n">Cluster</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)</span>
 <span class="n">mapdata</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">joinCountryData2Map</span><span class="p">(</span><span class="n">mapdata</span><span class="p">,</span><span class="w"> </span><span class="n">joinCode</span><span class="o">=</span><span class="s">&quot;NAME&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">nameJoinColumn</span><span class="o">=</span><span class="s">&quot;Country&quot;</span><span class="p">)</span>
@@ -390,7 +396,7 @@ Let’s depict the obtained partition using the <strong>rworldmap</strong> packa
 <figure class="align-default" id="id2">
 <span id="fig-ssi-map"></span><img alt="../_images/ssi-map-1.png" src="../_images/ssi-map-1.png" />
 <figcaption>
-<p><span class="caption-number">Figure 16 </span><span class="caption-text">Countries grouped with respect to the SSI categories</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Figure 15 </span><span class="caption-text">Countries grouped with respect to the SSI categories</span><a class="headerlink" href="#id2" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
 <p>We can compute, for instance, the average indicators in each identified group:</p>
@@ -405,8 +411,10 @@ Let’s depict the obtained partition using the <strong>rworldmap</strong> packa
 <span class="c1">## Economy                      5.5127 3.5411 4.2742</span>
 </pre></div>
 </div>
+<section id="dendrograms">
+<h2>Dendrograms<a class="headerlink" href="#dendrograms" title="Link to this heading">¶</a></h2>
 <p>Dendrogram plotting is also possible.
-For greater readability, we will restrict ourselves to a smaller sample;
+For better readability, we will restrict ourselves to a smaller sample;
 namely, to the 37 members of the <a class="reference external" href="https://en.wikipedia.org/wiki/OECD">OECD</a>:</p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">oecd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;Australia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Austria&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Belgium&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Canada&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Chile&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Colombia&quot;</span><span class="p">,</span>
 <span class="s">&quot;Czech Republic&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Denmark&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Estonia&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Finland&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;France&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Germany&quot;</span><span class="p">,</span>
@@ -422,24 +430,26 @@ namely, to the 37 members of the <a class="reference external" href="https://en.
 <figure class="align-default" id="id3">
 <span id="fig-ssi-oecd-dendrogram"></span><img alt="../_images/ssi-oecd-dendrogram-1.png" src="../_images/ssi-oecd-dendrogram-1.png" />
 <figcaption>
-<p><span class="caption-number">Figure 17 </span><span class="caption-text">Cluster dendrogram for the OECD countries</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
+<p><span class="caption-number">Figure 16 </span><span class="caption-text">Cluster dendrogram for the OECD countries</span><a class="headerlink" href="#id3" title="Link to this image">¶</a></p>
 </figcaption>
 </figure>
-<p>Conclusion:</p>
-<ul class="simple">
-<li><p>If we are only interested in a specific partition,
-calling <code class="docutils literal notranslate"><span class="pre">genie()</span></code> directly will be slightly faster than referring to
-<code class="docutils literal notranslate"><span class="pre">cutree(gclust(...))</span></code>.</p></li>
-<li><p><strong>genieclust</strong> also features partition similarity scores
-(such as the adjusted Rand index) that can be used as
-external cluster validity measures.</p></li>
-</ul>
-<p>For more details, refer to the package’s <a class="reference internal" href="../rapi.html"><span class="doc">documentation</span></a>.
-Also, see the Python examples regarding noise point detection,
-benchmarking, timing, etc.</p>
-<p><em>To learn more about R, check out Marek’s open-access textbook</em>
-<a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a>
-<span id="id1">[<a class="reference internal" href="../z_bibliography.html#id9" title="Gagolewski, M. (2025).  Deep R Programming. Zenodo, Melbourne. ISBN 978-0-6455719-2-9. URL: https://deepr.gagolewski.com/, DOI: 10.5281/zenodo.7490464.">6</a>]</span>.</p>
+</section>
+<section id="outlier-detection-with-deadwood">
+<h2>Outlier Detection with Deadwood<a class="headerlink" href="#outlier-detection-with-deadwood" title="Link to this heading">¶</a></h2>
+<p>The Deadwood outlier detection algorithm can be run on the clustered dataset
+to identify anomalous points in each cluster.
+See the <a class="reference external" href="https://deadwood.gagolewski.com/"><strong>deadwood</strong></a> package
+tutorials for more details.</p>
+</section>
+<section id="remarks">
+<h2>Remarks<a class="headerlink" href="#remarks" title="Link to this heading">¶</a></h2>
+<p><strong>genieclust</strong> also features partition similarity scores
+(such as the adjusted Rand index) and internal cluster validity measures
+(e.g., the Caliński-Harabasz index).</p>
+<p>For more details, refer to the package’s <a class="reference internal" href="../rapi.html"><span class="doc">documentation</span></a>.</p>
+<p>To learn more about R, check out Marek’s open-access textbook
+<a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a> <span id="id1">[<a class="reference internal" href="../z_bibliography.html#id10" title="Gagolewski, M. (2025).  Deep R Programming. Zenodo, Melbourne. ISBN 978-0-6455719-2-9. URL: https://deepr.gagolewski.com/, DOI: 10.5281/zenodo.7490464.">6</a>]</span>.</p>
+</section>
 </section>
 
         </article>
@@ -447,23 +457,23 @@ benchmarking, timing, etc.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../pythonapi.html">
+          <a class="next-page" href="../rapi.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Python Package <cite>genieclust</cite> Reference</div>
+                <div class="title">R Package <em>genieclust</em> Reference</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="noise.html">
+          <a class="prev-page" href="../pythonapi_inequality.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Clustering with Noise Point Detection</div>
+                <div class="title">genieclust.inequality</div>
                 
               </div>
             </a>
@@ -473,11 +483,11 @@ benchmarking, timing, etc.</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -486,13 +496,34 @@ benchmarking, timing, etc.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            In this section
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Basic Usage (R)</a><ul>
+<li><a class="reference internal" href="#dendrograms">Dendrograms</a></li>
+<li><a class="reference internal" href="#outlier-detection-with-deadwood">Outlier Detection with Deadwood</a></li>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="../_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>

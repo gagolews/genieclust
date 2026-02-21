@@ -15,12 +15,11 @@ Authors@R: c(
 Description: Genie is a robust hierarchical clustering algorithm
     (Gagolewski, Bartoszuk, Cena, 2016 <DOI:10.1016/j.ins.2016.05.003>).
     'genieclust' is its faster, more capable implementation
-    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>).
-    It enables clustering with respect to mutual reachability distances,
-    allowing it to act as an alternative to 'HDBSCAN*' that can identify
-    any number of clusters or their entire hierarchy.
-    When combined with the 'deadwood' package,
-    it can act as an outlier detector.  Additional features include
+    (Gagolewski, 2021 <DOI:10.1016/j.softx.2021.100722>).  It enables
+    clustering with respect to mutual reachability distances, allowing it to
+    act as an alternative to 'HDBSCAN*' that can identify any number of clusters
+    or their entire hierarchy.  When combined with the 'deadwood' package,
+    it can act as an outlier detector.  Additional package features include
     the Gini and Bonferroni inequality indices, external cluster validity
     measures (e.g., the normalised clustering accuracy, the adjusted Rand index,
     the Fowlkes-Mallows index, and normalised mutual information), and internal

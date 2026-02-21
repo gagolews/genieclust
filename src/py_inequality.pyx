@@ -131,8 +131,8 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     ----------
 
     .. [1]
-        Gini, C., *Variabilita e Mutabilita*,
-        Tipografia di Paolo Cuppini, Bologna, 1912.
+        C. Gini, *Variabilita e Mutabilita*,
+        Tipografia di Paolo Cuppini, Bologna, 1912
 
 
     Examples
@@ -219,8 +219,8 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     ----------
 
     .. [1]
-        Bonferroni, C., *Elementi di Statistica Generale*, Libreria Seber,
-        Firenze, 1930.
+        C. Bonferroni, *Elementi di Statistica Generale*, Libreria Seber,
+        Firenze, 1930
 
 
     Examples

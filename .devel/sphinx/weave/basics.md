@@ -27,6 +27,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import genieclust
 import deadwood
+
+plot_params = dict(s=25, markers="o", alpha=0.5, asp=1)
 ```
 
 
@@ -40,7 +42,7 @@ with the true corresponding partition (as assigned by an expert).
 
 
 ``` python
-# see https://github.com/gagolews/genieclust/tree/master/devel/sphinx/weave
+# see https://github.com/gagolews/genieclust/tree/master/.devel/sphinx/weave
 dataset = "jain"
 # Load an example 2D dataset:
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
@@ -58,7 +60,7 @@ A scatter plot of the dataset together with the reference labels:
 
 
 ``` python
-deadwood.plot_scatter(X, labels=labels_true, markers="o")
+deadwood.plot_scatter(X, labels=labels_true, **plot_params)
 plt.title("%s (n=%d, true n_clusters=%d)" % (dataset, X.shape[0], n_clusters))
 plt.axis("equal")
 ```
@@ -95,7 +97,7 @@ Let's plot the discovered partition:
 
 
 ``` python
-deadwood.plot_scatter(X, labels=labels_genie, markers="o")
+deadwood.plot_scatter(X, labels=labels_genie, **plot_params)
 plt.title("Genie (gini_threshold=%g)" % g.gini_threshold)
 plt.axis("equal")
 ```
@@ -144,7 +146,7 @@ Let's apply the k-means algorithm on the same dataset for comparison.
 import sklearn.cluster
 km = sklearn.cluster.KMeans(n_clusters=n_clusters)
 labels_kmeans = km.fit_predict(X)
-deadwood.plot_scatter(X, labels=labels_kmeans, markers="o")
+deadwood.plot_scatter(X, labels=labels_kmeans, **plot_params)
 plt.title("k-means")
 plt.axis("equal")
 ```
@@ -204,7 +206,7 @@ for i in range(len(mcs)):
     h = hdbscan.HDBSCAN(min_cluster_size=mcs[i])
     labels_hdbscan = h.fit_predict(X)
     plt.subplot(2, 2, i+1)
-    deadwood.plot_scatter(X, labels=labels_hdbscan, markers="o")
+    deadwood.plot_scatter(X, labels=labels_hdbscan, **plot_params)
     plt.title("HDBSCAN (min_cluster_size=%d)" % h.min_cluster_size)
     plt.axis("equal")
 ```
@@ -218,11 +220,11 @@ plt.show()
 Labels predicted by HDBSCAN\*
 ```
 
-**Side note.**
+::::{note}
 Gray plotting symbols denote noise points/outliers.
-In [another section](outliers), we will show that our package is also
-equipped with an anomaly detector.
-
+In [another section](outliers), we will show that our package is compatible with
+an anomaly detection algorithm [*Deadwood*](https://deadwood.gagolewski.com/).
+::::
 
 
 In HDBSCAN\*, `min_cluster_size` affects the "granularity"
@@ -245,7 +247,7 @@ for i in range(len(mcs)):
     h = hdbscan.HDBSCAN(min_cluster_size=mcs[i])
     labels_hdbscan = h.fit_predict(X)
     plt.subplot(3, 2, i+1)
-    deadwood.plot_scatter(X, labels=labels_hdbscan, markers="o")
+    deadwood.plot_scatter(X, labels=labels_hdbscan, **plot_params)
     plt.title("HDBSCAN (min_cluster_size=%d)"%h.min_cluster_size)
     plt.axis("equal")
 ```
@@ -259,8 +261,8 @@ plt.show()
 Labels predicted by HDBSCAN\*
 ```
 
-Strangely enough, `min_cluster_size` of $11$ generates four clusters,
-whereas $11\pm 1$ yields only three point groups.
+Strangely enough, `min_cluster_size=11` generates four clusters,
+whereas `min_cluster_size=10` and `min_cluster_size=12` yield only three point groups.
 
 On the other hand, the Genie algorithm belongs
 to the group of *hierarchical agglomerative methods*. By definition,
@@ -275,7 +277,7 @@ for i in range(len(ncl)):
     g = genieclust.Genie(n_clusters=ncl[i])
     labels_genie = g.fit_predict(X)
     plt.subplot(3, 2, i+1)
-    deadwood.plot_scatter(X, labels=labels_genie, markers="o")
+    deadwood.plot_scatter(X, labels=labels_genie, **plot_params)
     plt.title("Genie (n_clusters=%d)"%(g.n_clusters,))
     plt.axis("equal")
 ```
@@ -339,8 +341,8 @@ For a list of graphical parameters, refer to this function's manual.
 
 ## Further Reading
 
-For more details, refer to the package's API reference
-manual: [`genieclust.Genie`](genieclust.Genie).
+For more details, refer to the package's API reference manual:
+[`genieclust.Genie`](genieclust.Genie).
 To learn more about Python, check out Marek's open-access textbook
 [*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.

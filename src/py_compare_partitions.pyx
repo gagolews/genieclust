@@ -567,28 +567,28 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     .. [1]
         Hubert, L., Arabie, P., Comparing partitions,
-        *Journal of Classification* 2(1), 1985, 193-218.
+        *Journal of Classification* 2(1), 1985, 193-218
 
     .. [2]
         Gagolewski, M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, *Journal of Classification* 42, 2025, 2-30.
-        https://doi.org/10.1007/s00357-024-09482-2.
+        cluster validity measure, *Journal of Classification* 42, 2025, 2-30,
+        https://doi.org/10.1007/s00357-024-09482-2
 
     .. [3]
         Rezaei, M., Franti, P., Set matching measures for external cluster validity,
         *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016,
-        2173-2186. https://doi.org/10.1109/TKDE.2016.2551240.
+        2173-2186, https://doi.org/10.1109/TKDE.2016.2551240
 
     .. [4]
         Vinh, N.X., Epps, J., Bailey, J.,
         Information theoretic measures for clusterings comparison:
         Variants, properties, normalization and correction for chance,
-        *Journal of Machine Learning Research* 11, 2010, 2837-2854.
+        *Journal of Machine Learning Research* 11, 2010, 2837-2854
 
     .. [5]
         Gagolewski, M., *A Framework for Benchmarking Clustering Algorithms*,
-        *SoftwareX* 20, 2022, 101270.
-        https://clustering-benchmarks.gagolewski.com.
+        *SoftwareX* 20, 2022, 101270,
+        https://clustering-benchmarks.gagolewski.com
 
 
     Examples
@@ -1071,9 +1071,9 @@ cpdef double normalized_clustering_accuracy(x, y=None):
     ----------
 
     .. [1]
-        Gagolewski, M., Normalised clustering accuracy: An asymmetric external
-        cluster validity measure, *Journal of Classification* 42, 2025, 2-30.
-        https://doi.org/10.1007/s00357-024-09482-2.
+        M. Gagolewski, Normalised clustering accuracy: An asymmetric external
+        cluster validity measure, *Journal of Classification* 42, 2025, 2-30,
+        https://doi.org/10.1007/s00357-024-09482-2
 
     """
 
@@ -1139,9 +1139,9 @@ cpdef double pair_sets_index(x, y=None, bint simplified=False, bint clipped=True
     ----------
 
     .. [1]
-        Rezaei, M., Franti, P., Set matching measures for external cluster validity,
+        M. Rezaei, P. Franti, Set matching measures for external cluster validity,
         *IEEE Transactions on Knowledge and Data Mining* 28(8), 2016,
-        2173-2186. https://doi.org/10.1109/TKDE.2016.2551240.
+        2173-2186, https://doi.org/10.1109/TKDE.2016.2551240
 
     """
 

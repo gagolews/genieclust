@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="References" href="z_bibliography.html" /><link rel="prev" title="mst: Minimum Spanning Tree of the Pairwise Distance Graph" href="rapi/mst.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="References" href="z_bibliography.html" /><link rel="prev" title="inequality: Inequality Measures" href="rapi/inequality.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/news.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=c484f746" />
     
     
 
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_root.html">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">Basic Usage (R)</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Changelog</a></li>
@@ -307,40 +306,85 @@
 <section id="to-do">
 <h2>To Do<a class="headerlink" href="#to-do" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Check for NA/NaN/Inf in the input matrices.</p></li>
+<li><p>Check for NA/NaN/Inf in input matrices.</p></li>
+<li><p>Bring back support for non-numeric data (needs updates in <code class="docutils literal notranslate"><span class="pre">deadwood</span></code>).</p></li>
+<li><p>Add support for non-square confusion matrices in
+<code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy</span></code> and <code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy</span></code>.</p></li>
 </ul>
 </section>
 <section id="id1">
-<h2>1.2.0 (2025-07-24)<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
+<h2>1.3.0 (2026-02-21)<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>[Python and R] Using the new implementation of Euclidean and mutual
-reachability minimum spanning trees (quite fast in low dimensional spaces)
-from the <a class="reference external" href="https://quitefastmst.gagolewski.com/"><code class="docutils literal notranslate"><span class="pre">quitefastmst</span></code></a> package.</p></li>
-<li><p>[Python and R] [BACKWARD INCOMPATIBILITY] <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> is not used anymore.</p></li>
-<li><p>[Python] [BACKWARD INCOMPATIBILITY] Seeking approximate near-neighbours
-with <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> is no longer supported directly (the package has not been
-updated for a while).</p></li>
-<li><p>[Python] <code class="docutils literal notranslate"><span class="pre">MSTClusterMixin(BaseEstimator,</span> <span class="pre">ClusterMixin)</span></code>: A base class for
-Genie, GIc, and other MST-based clustering algorithms.</p></li>
-<li><p>[Python] [BACKWARD INCOMPATIBILITY] <code class="docutils literal notranslate"><span class="pre">Genie</span></code> and <code class="docutils literal notranslate"><span class="pre">GIc</span></code>: <code class="docutils literal notranslate"><span class="pre">affinity</span></code> was
-renamed <code class="docutils literal notranslate"><span class="pre">matrix</span></code>.</p></li>
+<li><p>The package was heavily refactored; common MST-related functions and classes
+as well as functions from the <code class="docutils literal notranslate"><span class="pre">tools</span></code> and <code class="docutils literal notranslate"><span class="pre">plots</span></code> modules were moved to
+the new <a class="reference external" href="https://deadwood.gagolewski.com/"><code class="docutils literal notranslate"><span class="pre">deadwood</span></code></a> package, which is
+now required.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
+a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
+distance turned out to be subpar in more detailed experiments,
+especially for smaller smoothing factors.  Note that in the previous
+versions of the package, this feature was deemed merely experimental;
+Hence, <code class="docutils literal notranslate"><span class="pre">detect_noise</span></code> in <code class="docutils literal notranslate"><span class="pre">genie.default</span></code> and <code class="docutils literal notranslate"><span class="pre">skip_leaves</span></code>, <code class="docutils literal notranslate"><span class="pre">preprocess</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">postprocess</span></code> elsewhere are no longer available.  Instead, use the more
+universal <code class="docutils literal notranslate"><span class="pre">deadwood</span></code> package now.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY]  <code class="docutils literal notranslate"><span class="pre">quitefastmst</span></code> version &gt;= 0.9.1 is now required;
+the introduced backward-incompatible changes have been addressed.
+In particular, the definition of mutual reachability distances has changed.
+Unlike in Campello et al.’s 2013 paper, now the core distance is the
+distance to the <em>M</em>-th nearest neighbour, not the <em>(M-1)</em>-th one
+(not including self).</p></li>
+<li><p>[Python] [BACKWARD INCOMPATIBILITY]  <code class="docutils literal notranslate"><span class="pre">internal</span></code> module was renamed <code class="docutils literal notranslate"><span class="pre">core</span></code>.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY]  Deprecated functions such as <code class="docutils literal notranslate"><span class="pre">mst_from_nn</span></code>
+have been removed.</p></li>
+<li><p>[Python] [BACKWARD INCOMPATIBILITY]  <code class="docutils literal notranslate"><span class="pre">compute_full_tree</span></code> is now always True.</p></li>
+<li><p>[BUGFIX]  #92: Passing a non-square confusion matrix to
+<code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy</span></code> and <code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy</span></code>
+yields an error as such objects are yet to be supported.</p></li>
+<li><p>[R]  <code class="docutils literal notranslate"><span class="pre">gclust</span></code> and <code class="docutils literal notranslate"><span class="pre">genie</span></code> now return the computed MST via the <code class="docutils literal notranslate"><span class="pre">mst</span></code>
+object attribute.  <code class="docutils literal notranslate"><span class="pre">genie</span></code> returns an object of the class <code class="docutils literal notranslate"><span class="pre">mstclust</span></code>.
+This makes it operable with <code class="docutils literal notranslate"><span class="pre">deadwood</span></code>.</p></li>
+<li><p>[Python] [BUGFIX]  Modifying <code class="docutils literal notranslate"><span class="pre">quitefastmst_params</span></code> via <code class="docutils literal notranslate"><span class="pre">set_state</span></code>
+now invalidates the cached MST.</p></li>
+<li><p>[Python] [NEW FEATURE]  <code class="docutils literal notranslate"><span class="pre">plots.plot_scatter</span></code> has new arguments:
+<code class="docutils literal notranslate"><span class="pre">asp</span></code>, <code class="docutils literal notranslate"><span class="pre">markers</span></code>, and <code class="docutils literal notranslate"><span class="pre">colours</span></code>.  The module globals <code class="docutils literal notranslate"><span class="pre">mrk</span></code> and <code class="docutils literal notranslate"><span class="pre">col</span></code> were
+renamed accordingly.  However, as mentioned above, <code class="docutils literal notranslate"><span class="pre">plots</span></code> was
+moved to <code class="docutils literal notranslate"><span class="pre">deadwood</span></code>.</p></li>
+<li><p>[Python] [BACKWARD INCOMPATIBILITY]  <code class="docutils literal notranslate"><span class="pre">compute_all_cuts</span></code> in <code class="docutils literal notranslate"><span class="pre">Genie</span></code> was
+renamed <code class="docutils literal notranslate"><span class="pre">coarser</span></code>.  If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">labels_</span></code> is still a vector representing
+the requested <code class="docutils literal notranslate"><span class="pre">n_clusters</span></code>.  The coarser-grained labels are now stored
+in <code class="docutils literal notranslate"><span class="pre">labels_matrix_</span></code> whose <code class="docutils literal notranslate"><span class="pre">i</span></code>-th row represents an <code class="docutils literal notranslate"><span class="pre">(i+1)</span></code>-partition.</p></li>
 </ul>
 </section>
 <section id="id2">
-<h2>1.1.6 (2024-08-22)<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<h2>1.2.0 (2025-07-24)<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>[Python and R] Using the new implementation of Euclidean and mutual
+reachability minimum spanning trees (pretty fast in low dimensional spaces)
+from the <a class="reference external" href="https://quitefastmst.gagolewski.com/"><code class="docutils literal notranslate"><span class="pre">quitefastmst</span></code></a> package.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY] [Python] Seeking approximate near-neighbours
+with <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> is no longer supported directly; unfortunately, the package
+has not been updated for a while.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY] <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> is not used anymore.</p></li>
+<li><p>[Python] <code class="docutils literal notranslate"><span class="pre">MSTClusterMixin</span></code>: A base class for Genie, GIc, and other MST-based
+clustering algorithms.  [later moved to <code class="docutils literal notranslate"><span class="pre">deadwood</span></code>]</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY] [Python] <code class="docutils literal notranslate"><span class="pre">Genie</span></code> and <code class="docutils literal notranslate"><span class="pre">GIc</span></code>: <code class="docutils literal notranslate"><span class="pre">affinity</span></code> was
+renamed <code class="docutils literal notranslate"><span class="pre">metric</span></code>.</p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>1.1.6 (2024-08-22)<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[Python] The package now works with <code class="docutils literal notranslate"><span class="pre">numpy</span></code> 2.0.</p></li>
 </ul>
 </section>
-<section id="id3">
-<h2>1.1.5 (2023-10-18)<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h2>
+<section id="id4">
+<h2>1.1.5 (2023-10-18)<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>[BACKWARD INCOMPATIBILITY] [Python and R] Inequality measures
-are no longer referred to as inequity measures.</p></li>
-<li><p>[BACKWARD INCOMPATIBILITY] [Python and R]
-Some external cluster validity measures were renamed:
-<code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy</span></code>,
-<code class="docutils literal notranslate"><span class="pre">normalized_accuracy</span></code> -&gt; <code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy</span></code>.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY] Inequality measures are no longer referred
+to as inequity measures.</p></li>
+<li><p>[BACKWARD INCOMPATIBILITY] Some external cluster validity measures were
+renamed: <code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy</span></code> → <code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy</span></code>,
+<code class="docutils literal notranslate"><span class="pre">normalized_accuracy</span></code> → <code class="docutils literal notranslate"><span class="pre">normalized_pivoted_accuracy</span></code>.</p></li>
 <li><p>[BACKWARD INCOMPATIBILITY] [Python] <code class="docutils literal notranslate"><span class="pre">compare_partitions2</span></code> has been removed,
 as <code class="docutils literal notranslate"><span class="pre">compare_partitions</span></code> and other partition similarity scores
 now support both pairs of label vectors <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code> and confusion matrices
@@ -355,15 +399,15 @@ in small samples.</p></li>
 now handle NaNs better and are slightly less prone to round-off errors.</p></li>
 </ul>
 </section>
-<section id="id4">
-<h2>1.1.4 (2023-03-31)<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h2>
+<section id="id5">
+<h2>1.1.4 (2023-03-31)<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[Python] The GIc algorithm is no longer marked as experimental;
 its description is provided in <a class="reference external" href="https://doi.org/10.1007/s00357-024-09483-1">https://doi.org/10.1007/s00357-024-09483-1</a>.</p></li>
 </ul>
 </section>
-<section id="id5">
-<h2>1.1.3 (2023-01-17)<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h2>
+<section id="id6">
+<h2>1.1.3 (2023-01-17)<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[R] <code class="docutils literal notranslate"><span class="pre">mst.default</span></code> now throws an error if any element in the input matrix
 is missing/infinite.</p></li>
@@ -371,8 +415,8 @@ is missing/infinite.</p></li>
 with the new version of <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> has been fixed.</p></li>
 </ul>
 </section>
-<section id="id6">
-<h2>1.1.2 (2022-09-17)<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h2>
+<section id="id7">
+<h2>1.1.2 (2022-09-17)<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[Python and R] <code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy</span></code>
 now accepts confusion matrices with fewer columns than rows.
@@ -381,15 +425,15 @@ Such “missing” columns are now treated as if they were filled with 0s.</p></
 the same results for non-symmetric confusion matrices and transposes thereof.</p></li>
 </ul>
 </section>
-<section id="id7">
-<h2>1.1.1 (2022-09-15)<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h2>
+<section id="id8">
+<h2>1.1.1 (2022-09-15)<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[Python] #75: <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> is now optional.</p></li>
-<li><p>[BUILD TIME]: The use of <code class="docutils literal notranslate"><span class="pre">ssize_t</span></code> was not portable.</p></li>
+<li><p>[BUILD TIME] The use of <code class="docutils literal notranslate"><span class="pre">ssize_t</span></code> was not portable.</p></li>
 </ul>
 </section>
-<section id="id8">
-<h2>1.1.0 (2022-09-05)<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h2>
+<section id="id9">
+<h2>1.1.0 (2022-09-05)<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
 <ul>
 <li><p>[Python and R] New function: <code class="docutils literal notranslate"><span class="pre">adjusted_asymmetric_accuracy</span></code>.</p></li>
 <li><p>[Python and R] Implementations of the so-called internal cluster
@@ -421,10 +465,10 @@ the somewhat primitive partial pivoting.</p></li>
 <code class="docutils literal notranslate"><span class="pre">axis</span></code>, <code class="docutils literal notranslate"><span class="pre">title</span></code>, <code class="docutils literal notranslate"><span class="pre">xlabel</span></code>, <code class="docutils literal notranslate"><span class="pre">ylabel</span></code>, <code class="docutils literal notranslate"><span class="pre">xlim</span></code>, <code class="docutils literal notranslate"><span class="pre">ylim</span></code>.</p></li>
 </ul>
 </section>
-<section id="id9">
-<h2>1.0.1 (2022-08-08)<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h2>
+<section id="id10">
+<h2>1.0.1 (2022-08-08)<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>[GENERAL] A paper on the <em>genieclust</em> package is now available:
+<li><p>A paper on the <em>genieclust</em> package is now available:
 M. Gagolewski, genieclust: Fast and robust hierarchical clustering,
 SoftwareX 15, 100722, 2021, DOI:
 <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">10.1016/j.softx.2021.100722</a>.</p></li>
@@ -433,15 +477,15 @@ SoftwareX 15, 100722, 2021, DOI:
 <li><p>[Python and R] New function: <code class="docutils literal notranslate"><span class="pre">devergottini_index</span></code>.</p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>1.0.0 (2021-04-22)<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h2>
+<section id="id11">
+<h2>1.0.0 (2021-04-22)<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[R] Using <code class="docutils literal notranslate"><span class="pre">mlpack</span></code> instead of <code class="docutils literal notranslate"><span class="pre">RcppMLPACK</span></code> (#72).
 This package is merely suggested, not dependent upon.</p></li>
 </ul>
 </section>
-<section id="id11">
-<h2>0.9.8 (2021-01-08)<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h2>
+<section id="id12">
+<h2>0.9.8 (2021-01-08)<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[Python] Require Python &gt;= 3.7 (implied by <code class="docutils literal notranslate"><span class="pre">numpy</span></code>).</p></li>
 <li><p>[Python] Require <code class="docutils literal notranslate"><span class="pre">nmslib</span></code>.</p></li>
@@ -449,38 +493,38 @@ This package is merely suggested, not dependent upon.</p></li>
 <li><p>[R] Use <code class="docutils literal notranslate"><span class="pre">tinytest</span></code> for unit testing instead of <code class="docutils literal notranslate"><span class="pre">testthat</span></code>.</p></li>
 </ul>
 </section>
-<section id="id12">
-<h2>0.9.4 (2020-07-31)<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h2>
+<section id="id13">
+<h2>0.9.4 (2020-07-31)<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[BUGFIX] [R] Fixed build errors on Solaris.</p></li>
 </ul>
 </section>
-<section id="id13">
-<h2>0.9.3 (2020-07-25)<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h2>
+<section id="id14">
+<h2>0.9.3 (2020-07-25)<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[BUGFIX] [Python] Added code coverage CI. Fixed some minor inconsistencies.
 Automated the <code class="docutils literal notranslate"><span class="pre">bdist</span></code> build chain.</p></li>
 <li><p>[R] Updated DESCRIPTION to meet the CRAN policies.</p></li>
 </ul>
 </section>
-<section id="id14">
-<h2>0.9.2 (2020-07-22)<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h2>
+<section id="id15">
+<h2>0.9.2 (2020-07-22)<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>[BUGFIX] [Python] Fix broken build script for OS X with no OpenMP.</p></li>
 </ul>
 </section>
-<section id="id15">
-<h2>0.9.1 (2020-07-18)<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h2>
+<section id="id16">
+<h2>0.9.1 (2020-07-18)<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>[GENERAL] The package has been completely rewritten.
+<li><p>The package has been completely rewritten.
 The core functionality is now implemented in C++ (with OpenMP).</p></li>
-<li><p>[GENERAL] Clustering with respect to HDBSCAN*-like
-mutual reachability distances is now supported.</p></li>
-<li><p>[GENERAL] The parallelised Jarník-Prim algorithm now supports on-the-fly
-distance computations. Euclidean minimum spanning tree can be determined
-with <code class="docutils literal notranslate"><span class="pre">mlpack</span></code>, which is much faster in low-dimensional spaces.</p></li>
 <li><p>[R] R version is now available.</p></li>
-<li><p>[Python] [Experimental] The GIc algorithm proposed by Anna Cena
+<li><p>[EXPERIMENTAL] A preliminary version of clustering with respect to
+DBSCAN*-like mutual reachability distances is now supported.</p></li>
+<li><p>The parallelised Jarník-Prim algorithm now supports on-the-fly
+distance computations.  Euclidean minimum spanning tree can be determined
+with <code class="docutils literal notranslate"><span class="pre">mlpack</span></code>, which is much faster in low-dimensional spaces.</p></li>
+<li><p>[EXPERIMENTAL] [Python] The GIc algorithm proposed by Anna Cena
 in her 2018 PhD thesis wad added.</p></li>
 <li><p>[Python] Approximate version based on nearest neighbour graphs produced
 by <code class="docutils literal notranslate"><span class="pre">nmslib</span></code> was added.</p></li>
@@ -508,14 +552,14 @@ by <code class="docutils literal notranslate"><span class="pre">nmslib</span></c
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="rapi/mst.html">
+          <a class="prev-page" href="rapi/inequality.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">mst: Minimum Spanning Tree of the Pairwise Distance Graph</div>
+                <div class="title">inequality: Inequality Measures</div>
                 
               </div>
             </a>
@@ -525,11 +569,11 @@ by <code class="docutils literal notranslate"><span class="pre">nmslib</span></c
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -552,21 +596,22 @@ by <code class="docutils literal notranslate"><span class="pre">nmslib</span></c
             <ul>
 <li><a class="reference internal" href="#">Changelog</a><ul>
 <li><a class="reference internal" href="#to-do">To Do</a></li>
-<li><a class="reference internal" href="#id1">1.2.0 (2025-07-24)</a></li>
-<li><a class="reference internal" href="#id2">1.1.6 (2024-08-22)</a></li>
-<li><a class="reference internal" href="#id3">1.1.5 (2023-10-18)</a></li>
-<li><a class="reference internal" href="#id4">1.1.4 (2023-03-31)</a></li>
-<li><a class="reference internal" href="#id5">1.1.3 (2023-01-17)</a></li>
-<li><a class="reference internal" href="#id6">1.1.2 (2022-09-17)</a></li>
-<li><a class="reference internal" href="#id7">1.1.1 (2022-09-15)</a></li>
-<li><a class="reference internal" href="#id8">1.1.0 (2022-09-05)</a></li>
-<li><a class="reference internal" href="#id9">1.0.1 (2022-08-08)</a></li>
-<li><a class="reference internal" href="#id10">1.0.0 (2021-04-22)</a></li>
-<li><a class="reference internal" href="#id11">0.9.8 (2021-01-08)</a></li>
-<li><a class="reference internal" href="#id12">0.9.4 (2020-07-31)</a></li>
-<li><a class="reference internal" href="#id13">0.9.3 (2020-07-25)</a></li>
-<li><a class="reference internal" href="#id14">0.9.2 (2020-07-22)</a></li>
-<li><a class="reference internal" href="#id15">0.9.1 (2020-07-18)</a></li>
+<li><a class="reference internal" href="#id1">1.3.0 (2026-02-21)</a></li>
+<li><a class="reference internal" href="#id2">1.2.0 (2025-07-24)</a></li>
+<li><a class="reference internal" href="#id3">1.1.6 (2024-08-22)</a></li>
+<li><a class="reference internal" href="#id4">1.1.5 (2023-10-18)</a></li>
+<li><a class="reference internal" href="#id5">1.1.4 (2023-03-31)</a></li>
+<li><a class="reference internal" href="#id6">1.1.3 (2023-01-17)</a></li>
+<li><a class="reference internal" href="#id7">1.1.2 (2022-09-17)</a></li>
+<li><a class="reference internal" href="#id8">1.1.1 (2022-09-15)</a></li>
+<li><a class="reference internal" href="#id9">1.1.0 (2022-09-05)</a></li>
+<li><a class="reference internal" href="#id10">1.0.1 (2022-08-08)</a></li>
+<li><a class="reference internal" href="#id11">1.0.0 (2021-04-22)</a></li>
+<li><a class="reference internal" href="#id12">0.9.8 (2021-01-08)</a></li>
+<li><a class="reference internal" href="#id13">0.9.4 (2020-07-31)</a></li>
+<li><a class="reference internal" href="#id14">0.9.3 (2020-07-25)</a></li>
+<li><a class="reference internal" href="#id15">0.9.2 (2020-07-22)</a></li>
+<li><a class="reference internal" href="#id16">0.9.1 (2020-07-18)</a></li>
 <li><a class="reference internal" href="#a2-2018-05-23">0.1a2 (2018-05-23)</a></li>
 </ul>
 </li>
@@ -579,7 +624,7 @@ by <code class="docutils literal notranslate"><span class="pre">nmslib</span></c
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

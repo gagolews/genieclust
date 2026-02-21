@@ -181,19 +181,19 @@ class Genie(deadwood.MSTClusterer):
     ----------
 
     .. [1]
-        M. Gagolewski, M. Bartoszuk, A. Cena,
+        M. Gagolewski, M. Bartoszuk, A. Cena,
         Genie: A new, fast, and outlier-resistant hierarchical
-        clustering algorithm, *Information Sciences* 363, 2016, 8-23.
+        clustering algorithm, *Information Sciences* 363, 2016, 8-23,
         https://doi.org/10.1016/j.ins.2016.05.003
 
     .. [2]
-        R.J.G.B. Campello, D. Moulavi, J. Sander,
+        R.J.G.B. Campello, D. Moulavi, J. Sander,
         Density-based clustering based on hierarchical density estimates,
         *Lecture Notes in Computer Science* 7819, 2013, 160-172,
         https://doi.org/10.1007/978-3-642-37456-2_14
 
     .. [3]
-        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
+        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
         https://doi.org/10.1007/s00357-024-09483-1
@@ -445,22 +445,22 @@ class GIc(deadwood.MSTClusterer):
     ----------
 
     .. [1]
-        A. Cena, *Adaptive hierarchical clustering algorithms based on
+        A. Cena, *Adaptive hierarchical clustering algorithms based on
         data aggregation methods*, PhD Thesis, Systems Research Institute,
-        Polish Academy of Sciences 2018
+        Polish Academy of Sciences, 2018
 
     .. [2]
-        A. Mueller, S. Nowozin, C.H. Lampert, Information Theoretic
+        A. Mueller, S. Nowozin, C.H. Lampert, Information Theoretic
         Clustering using Minimum Spanning Trees, *DAGM-OAGM*, 2012
 
     .. [3]
-        M. Gagolewski, M. Bartoszuk, A. Cena,
+        M. Gagolewski, M. Bartoszuk, A. Cena,
         Genie: A new, fast, and outlier-resistant hierarchical clustering
-        algorithm, *Information Sciences* 363, 2016, 8-23.
+        algorithm, *Information Sciences* 363, 2016, 8-23,
         https://doi.org/10.1016/j.ins.2016.05.003
 
     .. [4]
-        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
+        M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
         Clustering with minimum spanning trees: How good can it be?,
         *Journal of Classification* 42, 2025, 90-112,
         https://doi.org/10.1007/s00357-024-09483-1

@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.cluster_validity" href="pythonapi_cluster_validity.html" /><link rel="prev" title="Python Package genieclust Reference" href="pythonapi.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="genieclust.compare_partitions" href="pythonapi_compare_partitions.html" /><link rel="prev" title="Python Package genieclust Reference" href="pythonapi.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/pythonapi_root.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=c484f746" />
     
     
 
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basics</a></li>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="weave/basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="weave/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="weave/r.html">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="weave/outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="weave/r.html">Basic Usage (R)</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="rapi.html">R Package <em>genieclust</em> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="rapi/cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/gclust.html">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rapi/genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rapi/inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="rapi/mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="news.html">Changelog</a></li>
@@ -305,282 +304,80 @@
           <section id="genieclust">
 <h1>genieclust<a class="headerlink" href="#genieclust" title="Link to this heading">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="genieclust.MSTClusterMixin">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">MSTClusterMixin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitefastmst_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.MSTClusterMixin" title="Link to this definition">¶</a></dt>
-<dd><p>A base class for <a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>,
-<a class="reference internal" href="#genieclust.GIc" title="genieclust.GIc"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.GIc</span></code></a>, and other MST-based clustering algorithms <a class="reference internal" href="#r28d823c70776-2" id="id1">[2]</a>.</p>
-<dl class="field-list">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl>
-<dt><strong>n_clusters</strong><span class="classifier">int</span></dt><dd><p>The number of clusters to detect.</p>
-<p>If <em>M &gt; 1</em> and <em>postprocess</em> is not <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, setting
-<em>n_clusters = 1</em> makes the algorithm behave like a noise
-point/outlier detector.</p>
-</dd>
-<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>Smoothing factor for the mutual reachability distance <a class="reference internal" href="#r28d823c70776-1" id="id2">[1]</a>.
-<em>M = 1</em> and <em>M = 2</em> indicate the original distance as given by
-the <em>metric</em> parameter.</p>
-</dd>
-<dt><strong>metric</strong><span class="classifier">str</span></dt><dd><p>The metric used to compute the linkage.</p>
-<p>One of:
-<code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code>; the default),
-<code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>),
-<code class="docutils literal notranslate"><span class="pre">&quot;cosinesimil&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code>), or
-<code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>.</p>
-<p>For <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>, the <em>X</em> argument to the <code class="docutils literal notranslate"><span class="pre">fit</span></code> method
-must be a distance vector or a square-form distance matrix;
-see <code class="docutils literal notranslate"><span class="pre">scipy.spatial.distance.pdist</span></code>.</p>
-<p>Determining minimum spanning trees with respect to the Euclidean
-distance (the default) is much faster than with other metrics
-thanks to the <a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a>
-package.</p>
-</dd>
-<dt><strong>postprocess</strong><span class="classifier">{<code class="docutils literal notranslate"><span class="pre">&quot;boundary&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>}</span></dt><dd><p>Controls the treatment of noise/boundary points after the clusters are
-identified.</p>
-<p>In effect only if <cite>M</cite> &gt; 1. Each leaf in the minimum spanning tree
-is treated as a <em>noise</em> point. We call it a <em>boundary point</em>
-if it is amongst its adjacent vertex’s <cite>M</cite> - 1 nearest neighbours.
-By default, only boundary points are merged with their nearest
-<em>core</em> points.</p>
-<p>To force a classical <em>n_clusters</em>-partition of a data set (with no
-notion of noise), choose <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>. Furthermore, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> leaves
-all leaves marked as noise.</p>
-</dd>
-<dt><strong>quitefastmst_params</strong><span class="classifier">dict</span></dt><dd><p>Additional parameters to be passed to <code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code>
-if <code class="docutils literal notranslate"><span class="pre">metric</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code></p>
-</dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Whether to print diagnostic messages and progress information
-onto <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Attributes<span class="colon">:</span></dt>
-<dd class="field-even"><dl>
-<dt><strong>labels_</strong><span class="classifier">ndarray</span></dt><dd><p>Detected cluster labels.</p>
-<p>Normally an integer vector such that <code class="docutils literal notranslate"><span class="pre">labels_[i]</span></code> gives
-the cluster ID (between 0 and <cite>n_clusters_</cite> - 1) of the <cite>i</cite>-th object.
-If <em>M &gt; 1</em>, noise/boundary points are labelled <code class="docutils literal notranslate"><span class="pre">-1</span></code>
-(unless taken care of at the postprocessing stage).</p>
-</dd>
-<dt><strong>n_clusters_</strong><span class="classifier">int</span></dt><dd><p>The actual number of clusters detected by the algorithm.</p>
-<p>It can be different from the requested one if there are too many
-noise points in the dataset.</p>
-</dd>
-<dt><strong>n_samples_</strong><span class="classifier">int</span></dt><dd><p>The number of points in the dataset.</p>
-</dd>
-<dt><strong>n_features_</strong><span class="classifier">int</span></dt><dd><p>The number of features in the dataset.</p>
-<p>If the information is not available, it will be set to <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<div class="table-wrapper autosummary longtable docutils container">
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#genieclust.MSTClusterMixin.fit_predict" title="genieclust.MSTClusterMixin.fit_predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code></a>(X[, y])</p></td>
-<td><p>Perform cluster analysis of a dataset and return the predicted labels.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metadata_routing</span></code>()</p></td>
-<td><p>Get metadata routing of this object.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_params</span></code>([deep])</p></td>
-<td><p>Get parameters for this estimator.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_params</span></code>(**params)</p></td>
-<td><p>Set the parameters of this estimator.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p class="rubric">Notes</p>
-<p>If the Euclidean distance is selected, then <code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code> is
-used to compute the MST; it is quite fast in low-dimensional spaces.
-Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
-<span class="math notranslate nohighlight">\(O(n^2)\)</span>-time algorithm is called.</p>
-<p>If <em>M &gt; 1</em>, then the minimum spanning tree is computed with respect to the
-mutual reachability distance (based, e.g., on the Euclidean metric).
-Formally, the distance <span class="math notranslate nohighlight">\(d_M(i,j)\)</span> is used instead of the
-chosen “raw” distance, <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds
-<span class="math notranslate nohighlight">\(d_M(i,j)=\max\{d(i,j), c_M(i), c_M(j)\}\)</span>, where the “core”
-distance <span class="math notranslate nohighlight">\(c_M(i)\)</span> is given by <span class="math notranslate nohighlight">\(d(i,k)\)</span> with <span class="math notranslate nohighlight">\(k\)</span> being
-the <span class="math notranslate nohighlight">\((M-1)\)</span>-th nearest neighbour of <span class="math notranslate nohighlight">\(i\)</span>. This makes “noise”
-and “boundary” points being “pulled away” from each other.</p>
-<p>Note that <em>M = 2</em> corresponds to the original distance.</p>
-<p>The underlying clustering algorithm might leave out all MST leaves from
-the clustering process. They may be merged with the nearest clusters at the
-postprocessing stage, or left marked as “noise” observations.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Environment variables<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>OMP_NUM_THREADS</dt><dd><p>Controls the number of threads used for computing the minimum
-spanning tree.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<div role="list" class="citation-list">
-<div class="citation" id="r28d823c70776-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
-<p>Campello, R.J.G.B., Moulavi, D., Sander, J.,
-Density-based clustering based on hierarchical density estimates,
-<em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172,
-doi:10.1007/978-3-642-37456-2_14.</p>
-</div>
-<div class="citation" id="r28d823c70776-2" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">2</a><span class="fn-bracket">]</span></span>
-<p>Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
-Clustering with minimum spanning trees: How good can it be?,
-<em>Journal of Classification</em> 42, 2025, 90-112,
-doi:10.1007/s00357-024-09483-1.</p>
-</div>
-</div>
-<dl class="py method">
-<dt class="sig sig-object py" id="genieclust.MSTClusterMixin.fit_predict">
-<span class="sig-name descname"><span class="pre">fit_predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.MSTClusterMixin.fit_predict" title="Link to this definition">¶</a></dt>
-<dd><p>Perform cluster analysis of a dataset and return the predicted labels.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows and <code class="docutils literal notranslate"><span class="pre">n_features</span></code>
-columns; see below for more details and options.</p>
-</dd>
-<dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>labels_</strong><span class="classifier">ndarray</span></dt><dd><p><cite>self.labels_</cite> attribute.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Acceptable <cite>X</cite> types are as follows.</p>
-<p>For <cite>metric</cite> of <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code>, <cite>X</cite> should either
-be a distance vector of length <code class="docutils literal notranslate"><span class="pre">n_samples*(n_samples-1)/2</span></code>
-(see <code class="docutils literal notranslate"><span class="pre">scipy.spatial.distance.pdist</span></code>) or a square distance matrix
-of shape <code class="docutils literal notranslate"><span class="pre">(n_samples,</span> <span class="pre">n_samples)</span></code>
-(see <code class="docutils literal notranslate"><span class="pre">scipy.spatial.distance.squareform</span></code>).</p>
-<p>Otherwise, <cite>X</cite> should be real-valued matrix
-(dense <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, or an object coercible to)
-with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows and <code class="docutils literal notranslate"><span class="pre">n_features</span></code> columns.</p>
-<p>In the latter case, it might be a good idea to standardise
-or at least somehow preprocess the coordinates of the input data
-points by calling, for instance,
-<code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">=</span> <span class="pre">(X-X.mean(axis=0))/X.std(axis=None,</span> <span class="pre">ddof=1)</span></code>
-so that the dataset is centred at 0 and has total variance of 1.
-This way the method becomes translation and scale invariant.
-What’s more, if data are recorded with small precision (say, up
-to few decimal digits), adding a tiny bit of Gaussian noise will
-ensure the solution is unique (note that this generally applies
-to other distance-based clustering algorithms as well).</p>
-<p>For the clustering result, refer to the <cite>labels_</cite> and <cite>n_clusters_</cite>
-attributes.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="genieclust.Genie">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitefastmst_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Link to this definition">¶</a></dt>
-<dd><p>Genie: Fast and Robust Hierarchical Clustering with Noise Point Detection</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">Genie</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitefastmst_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.Genie" title="Link to this definition">¶</a></dt>
+<dd><p>Genie: Fast and Robust Hierarchical Clustering</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
 <dt><strong>n_clusters</strong><span class="classifier">int</span></dt><dd><p>The number of clusters to detect.</p>
-<p>If <em>M &gt; 1</em> and <em>postprocess</em> is not <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, setting
-<em>n_clusters = 1</em> makes the algorithm behave like a noise
-point/outlier detector.</p>
 </dd>
-<dt><strong>gini_threshold</strong><span class="classifier">float</span></dt><dd><p>The threshold for the Genie correction in [0,1].</p>
+<dt><strong>gini_threshold</strong><span class="classifier">float in [0,1], default=0.3</span></dt><dd><p>The threshold for the Genie correction.</p>
 <p>The Gini index is used to quantify the inequality of the cluster
 size distribution. Low thresholds highly penalise the formation
 of small clusters. Threshold of 1.0 disables the correction:
-in such a case, if <em>M = 1</em>, then the method is equivalent to the single
+in such a case, if <em>M = 0</em>, then the method is equivalent to the single
 linkage algorithm.</p>
-<p>The algorithm tends to be <em>stable</em> with respect to small changes
-to the threshold, as they usually do not affect the output clustering.
-Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth giving a try.</p>
+<p>Empirically, the algorithm tends to be <em>stable</em> with respect to small
+changes to the threshold, as they usually do not affect the output
+clustering.  Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth
+giving a try.</p>
 </dd>
-<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>The smoothing factor for the mutual reachability distance <a class="reference internal" href="#r6050e59d50fb-2" id="id5">[2]</a>.
-<em>M = 1</em> and <em>M = 2</em> indicate the original distance as given by
-the <em>metric</em> parameter; see <a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a>
-for more details.</p>
-<p><em>M = 1</em> gives the original Genie algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id6">[1]</a> (with no noise/boundary
-point detection) with respect to the chosen distance.</p>
+<dt><strong>M</strong><span class="classifier">int, default=0</span></dt><dd><p>The smoothing factor for the mutual reachability distance <a class="reference internal" href="#r6050e59d50fb-2" id="id1">[2]</a>.
+<cite>M = 0</cite> and <cite>M = 1</cite> select the original distance as given by
+the <cite>metric</cite> parameter; see <code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase</span></code> for more details.</p>
 </dd>
-<dt><strong>metric</strong><span class="classifier">str</span></dt><dd><p>The metric used to compute the linkage; see
-<a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a> for more details.
-Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>, i.e., the Euclidean distance.</p>
+<dt><strong>metric</strong><span class="classifier">str, default=’l2’</span></dt><dd><p>The metric used to compute the linkage; see
+<code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase</span></code> for more details.
+Defaults to the Euclidean distance.</p>
 </dd>
-<dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>Whether to determine the entire cluster hierarchy and the linkage matrix.</p>
-<p>Only available if <em>M = 1</em>. Enables plotting dendrograms or cutting
-the cluster hierarchy at an arbitrary level; see the
-<em>children_</em>, <em>distances_</em>, <em>counts_</em> attributes.</p>
-</dd>
-<dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>Whether to compute the requested <em>n_clusters</em>-partition and all
+<dt><strong>coarser</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether to compute the requested <cite>n_clusters</cite>-partition and all
 the coarser-grained ones.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the <em>labels_</em> attribute will be a matrix; see below.</p>
-</dd>
-<dt><strong>postprocess</strong><span class="classifier">{<code class="docutils literal notranslate"><span class="pre">&quot;boundary&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>}</span></dt><dd><p>Controls the treatment of noise/boundary points after the clusters are
-identified; see <a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a> for more details.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the <cite>labels_matrix_</cite> attribute will additionally be
+determined; see below.</p>
 </dd>
 <dt><strong>quitefastmst_params</strong><span class="classifier">dict</span></dt><dd><p>Additional parameters to be passed to <code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code>
 if <code class="docutils literal notranslate"><span class="pre">metric</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code></p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Whether to print diagnostic messages and progress information
+<dt><strong>verbose</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether to print diagnostic messages and progress information
 onto <code class="docutils literal notranslate"><span class="pre">stderr</span></code>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Attributes<span class="colon">:</span></dt>
 <dd class="field-even"><dl>
-<dt><strong>labels_</strong><span class="classifier">ndarray</span></dt><dd><p>Detected cluster labels.</p>
-<p>If <cite>compute_all_cuts</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default),
-it is an integer vector such that <code class="docutils literal notranslate"><span class="pre">labels_[i]</span></code> gives
-the cluster ID (between 0 and <cite>n_clusters_</cite> - 1) of the <cite>i</cite>-th object.
-If <em>M &gt; 1</em>, noise/boundary points are labelled <code class="docutils literal notranslate"><span class="pre">-1</span></code> (unless taken care
-of at the postprocessing stage).</p>
-<p>Otherwise, i.e., if <cite>compute_all_cuts</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>,
-all partitions of cardinality down to <cite>n_clusters</cite>
-are determined; <code class="docutils literal notranslate"><span class="pre">labels_[j,i]</span></code> denotes the cluster ID of the i-th
-point in a j-partition. We assume that both the 0- and 1- partition
-distinguishes only between noise- and non-noise points,
-however, no postprocessing is conducted on the 0-partition
-(there might be points with labels of -1 even if <cite>postprocess</cite>
-is <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>).</p>
+<dt><strong>labels_</strong><span class="classifier">ndarray, shape (n_samples,)</span></dt><dd><p>Detected cluster labels.</p>
+<p>An integer vector such that <code class="docutils literal notranslate"><span class="pre">labels_[i]</span></code> gives
+the cluster ID (between 0 and <cite>n_clusters_</cite> - 1) of the <cite>i</cite>-th object.</p>
 </dd>
-<dt><strong>n_clusters_</strong><span class="classifier">int</span></dt><dd><p>The actual number of clusters detected by the algorithm.
-It can be different from the requested one if there are too many
-noise points in the dataset.</p>
+<dt><strong>labels_matrix_</strong><span class="classifier">None or ndarray, shape (n_clusters, n_samples)</span></dt><dd><p>Available if <cite>coarser</cite> is True.
+<cite>labels_matrix[i,:]</cite> represents an <cite>i+1</cite>-partition.</p>
+</dd>
+<dt><strong>n_clusters_</strong><span class="classifier">int</span></dt><dd><p>The actual number of clusters detected by the algorithm.</p>
 </dd>
 <dt><strong>n_samples_</strong><span class="classifier">int</span></dt><dd><p>The number of points in the dataset.</p>
 </dd>
 <dt><strong>n_features_</strong><span class="classifier">int</span></dt><dd><p>The number of features in the dataset.</p>
 <p>If the information is not available, it will be set to <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
 </dd>
-<dt><strong>children_</strong><span class="classifier">None or ndarray</span></dt><dd><p>If <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is a matrix whose
-i-th row provides the information on the clusters merged in
-the i-th iteration. See the description of <code class="docutils literal notranslate"><span class="pre">Z[:,0]</span></code> and <code class="docutils literal notranslate"><span class="pre">Z[:,1]</span></code>
+<dt><strong>children_</strong><span class="classifier">None or ndarray</span></dt><dd><p>A matrix whose i-th row provides the information on the clusters merged
+in the i-th iteration. See the description of <code class="docutils literal notranslate"><span class="pre">Z[:,0]</span></code> and <code class="docutils literal notranslate"><span class="pre">Z[:,1]</span></code>
 in <code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy.linkage</span></code>. Together with <cite>distances_</cite> and
 <cite>counts_</cite>, this constitutes the linkage matrix that can be used for
 plotting the dendrogram.</p>
 </dd>
-<dt><strong>distances_</strong><span class="classifier">None or ndarray</span></dt><dd><p>If <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is a vector that gives
-the distance between two clusters merged in each iteration,
-see the description of <code class="docutils literal notranslate"><span class="pre">Z[:,2]</span></code> in <code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy.linkage</span></code>.</p>
-<p>As the original Genie algorithm does not guarantee that distances
+<dt><strong>distances_</strong><span class="classifier">None or ndarray</span></dt><dd><p>A vector giving the distances between two clusters merged in each
+iteration, see the description of <code class="docutils literal notranslate"><span class="pre">Z[:,2]</span></code> in
+<code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy.linkage</span></code>.</p>
+<p>The original Genie algorithm does not guarantee that distances
 are ordered increasingly (there are other hierarchical clustering
-linkages that violate the ultrametricity property too), Genie
-automatically applies the following correction:</p>
+linkages that violate the ultrametricity property too).
+Thus, we automatically apply the following correction:</p>
 <p><code class="docutils literal notranslate"><span class="pre">distances_</span> <span class="pre">=</span> <span class="pre">genieclust.tools.cummin(distances_[::-1])[::-1]</span></code>.</p>
 </dd>
-<dt><strong>counts_</strong><span class="classifier">None or ndarray</span></dt><dd><p>If <cite>compute_full_tree</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, this is a vector giving
-the number of elements in a cluster created in each iteration.
-See the description of <code class="docutils literal notranslate"><span class="pre">Z[:,3]</span></code> in <code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy.linkage</span></code>.</p>
+<dt><strong>counts_</strong><span class="classifier">None or ndarray</span></dt><dd><p>A vector giving the number of elements in a cluster created in each
+iteration. See the description of <code class="docutils literal notranslate"><span class="pre">Z[:,3]</span></code> in
+<code class="docutils literal notranslate"><span class="pre">scipy.cluster.hierarchy.linkage</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -593,7 +390,7 @@ See the description of <code class="docutils literal notranslate"><span class="p
 <td><p>Perform cluster analysis of a dataset.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(X[, y])</p></td>
-<td><p>Perform cluster analysis of a dataset and return the predicted labels.</p></td>
+<td><p>Performs cluster or anomaly analysis of a dataset and returns the predicted labels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metadata_routing</span></code>()</p></td>
 <td><p>Get metadata routing of this object.</p></td>
@@ -608,37 +405,33 @@ See the description of <code class="docutils literal notranslate"><span class="p
 </table>
 </div>
 <p class="rubric">Notes</p>
-<p><strong>Genie</strong> is a robust and outlier-resistant hierarchical clustering
-algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id7">[1]</a>, originally published in the R package <code class="docutils literal notranslate"><span class="pre">genie</span></code>. This new
-implementation is, amongst others, much faster and now features optional
-noise point detection (if <em>M &gt; 1</em>).</p>
-<p>Genie is based on the minimum spanning tree (MST) of the
-pairwise distance graph of a given point set (refer to
-<a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a> and <a class="reference internal" href="#r6050e59d50fb-3" id="id8">[3]</a> for more details).
-Just like the single linkage, it consumes the edges
-of the MST in increasing order of weights. However, it prevents
-the formation of clusters of highly imbalanced sizes; once the Gini index
-of the cluster size distribution raises above an assumed threshold,
-a forced merge of a point group of the smallest size is undertaken.
+<p><em>Genie</em> is a robust hierarchical clustering algorithm <a class="reference internal" href="#r6050e59d50fb-1" id="id2">[1]</a>.
+Its original implementation was included in the R package <code class="docutils literal notranslate"><span class="pre">genie</span></code>.
+This is its faster and more capable variant.</p>
+<p>The idea behind <em>Genie</em> is beautifully simple. First, make each individual
+point the only member of its own cluster. Then, keep merging pairs
+of the closest clusters, one after another. However, to prevent
+the formation of clusters of highly imbalanced sizes, a point group of
+the <em>smallest</em> size is sometimes combined with its nearest counterpart.
 Its appealing simplicity goes hand in hand with its usability; Genie often
 outperforms other clustering approaches on benchmark data.</p>
-<p>The Genie algorithm itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
-and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity provided that a minimum spanning
-tree of the pairwise distance graph is given.
-If the Euclidean distance is selected, then
-<code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code> is used to compute the MST;
-it is quite fast in low-dimensional spaces.
+<p>Genie is based on Euclidean minimum spanning trees (MST; refer to
+<code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase</span></code> and <a class="reference internal" href="#r6050e59d50fb-3" id="id3">[3]</a> for more details).  If the Euclidean
+distance is selected, then <code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code> is used to compute
+the MST;  it is quite fast in low-dimensional spaces.
 Otherwise, an implementation of the Jarník (Prim/Dijkstra)-like
-<span class="math notranslate nohighlight">\(O(n^2)\)</span>-time algorithm is called.</p>
-<p>The Genie correction together with the smoothing factor <em>M &gt; 1</em>
-controlling the mutual reachability distance gives a version of the
-HDBSCAN* <a class="reference internal" href="#r6050e59d50fb-2" id="id9">[2]</a> algorithm that, contrary to its predecessor, is able to
-detect a <em>predefined</em> number of clusters. Hence, it is independent of
-<em>DBSCAN</em>’s <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or <em>HDBSCAN</em>’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
-<p>Note that <em>M = 2</em> corresponds to the original distance.
-If <em>M &gt; 1</em>, all MST leaves are left out from the clustering process.
-They may be merged with the nearest clusters at the postprocessing stage,
-or left marked as “noise” observations.</p>
+<span class="math notranslate nohighlight">\(O(n^2)\)</span>-time algorithm is called.
+The Genie algorithm itself has <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time
+and <span class="math notranslate nohighlight">\(O(n)\)</span> memory complexity if an MST is already provided.</p>
+<p>As with all distance-based methods (this includes k-means and DBSCAN as
+well), applying data preprocessing and feature engineering techniques
+(e.g., feature scaling, feature selection, dimensionality reduction)
+might lead to more meaningful results.</p>
+<p><cite>genieclust</cite> also allows clustering with respect to mutual reachability
+distances, enabling it to act as an alternative to <em>HDBSCAN*</em> <a class="reference internal" href="#r6050e59d50fb-2" id="id4">[2]</a>
+that can identify any number of clusters or their entire hierarchy.
+When combined with the <em>deadwood</em> package, it can act as an outlier
+detector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Environment variables<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -651,27 +444,26 @@ spanning tree.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r6050e59d50fb-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id6">1</a>,<a role="doc-backlink" href="#id7">2</a>)</span>
-<p>Gagolewski, M., Bartoszuk, M., Cena, A.,
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">1</a><span class="fn-bracket">]</span></span>
+<p>M. Gagolewski, M. Bartoszuk, A. Cena,
 Genie: A new, fast, and outlier-resistant hierarchical
-clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23.
-doi:10.1016/j.ins.2016.05.003.</p>
+clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23,
+<a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">https://doi.org/10.1016/j.ins.2016.05.003</a></p>
 </div>
 <div class="citation" id="r6050e59d50fb-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id5">1</a>,<a role="doc-backlink" href="#id9">2</a>)</span>
-<p>Campello, R.J.G.B., Moulavi, D., Sander, J.,
+<span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id4">2</a>)</span>
+<p>R.J.G.B. Campello, D. Moulavi, J. Sander,
 Density-based clustering based on hierarchical density estimates,
 <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172,
-doi:10.1007/978-3-642-37456-2_14.</p>
+<a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">https://doi.org/10.1007/978-3-642-37456-2_14</a></p>
 </div>
 <div class="citation" id="r6050e59d50fb-3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">3</a><span class="fn-bracket">]</span></span>
-<p>Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">3</a><span class="fn-bracket">]</span></span>
+<p>M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
 Clustering with minimum spanning trees: How good can it be?,
 <em>Journal of Classification</em> 42, 2025, 90-112,
-doi:10.1007/s00357-024-09483-1.</p>
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09483-1">https://doi.org/10.1007/s00357-024-09483-1</a></p>
 </div>
 </div>
 <dl class="py method">
@@ -681,9 +473,9 @@ doi:10.1007/s00357-024-09483-1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows and <code class="docutils literal notranslate"><span class="pre">n_features</span></code>
-columns; see <a class="reference internal" href="#genieclust.MSTClusterMixin.fit_predict" title="genieclust.MSTClusterMixin.fit_predict"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin.fit_predict</span></code></a> for more
-details.</p>
+<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix or a data frame with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows
+and <code class="docutils literal notranslate"><span class="pre">n_features</span></code> columns;
+see <code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase.fit_predict</span></code> for more details.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
 </dd>
@@ -704,8 +496,9 @@ details.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="genieclust.GIc">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">GIc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.5,</span> <span class="pre">0.7]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_full_tree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compute_all_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocess</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'boundary'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitefastmst_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc" title="Link to this definition">¶</a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">genieclust.</span></span><span class="sig-name descname"><span class="pre">GIc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">gini_thresholds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.1,</span> <span class="pre">0.3,</span> <span class="pre">0.5,</span> <span class="pre">0.7]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'l2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarser</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_features</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quitefastmst_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#genieclust.GIc" title="Link to this definition">¶</a></dt>
 <dd><p>GIc (Genie+Information Criterion) clustering algorithm</p>
+<p>[TESTING]</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl>
@@ -713,37 +506,28 @@ details.</p>
 for more details.</p>
 </dd>
 <dt><strong>gini_thresholds</strong><span class="classifier">array_like</span></dt><dd><p>A list of Gini’s index thresholds between 0 and 1.</p>
-<p>The GIc algorithm optimises the information criterion in an
-agglomerative way, starting from the intersection of the clusterings
-returned by <code class="docutils literal notranslate"><span class="pre">Genie(n_clusters=n_clusters+add_clusters,</span> <span class="pre">gini_threshold=gini_thresholds[i])</span></code>,
+<p>The GIc algorithm optimises the information criterion agglomeratively,
+starting from the intersection of the clusterings returned by
+<code class="docutils literal notranslate"><span class="pre">Genie(n_clusters=n_clusters+add_clusters,</span> <span class="pre">gini_threshold=gini_thresholds[i])</span></code>,
 for all <code class="docutils literal notranslate"><span class="pre">i</span></code> from <code class="docutils literal notranslate"><span class="pre">0</span></code> to <code class="docutils literal notranslate"><span class="pre">len(gini_thresholds)-1</span></code>.</p>
 </dd>
-<dt><strong>M</strong><span class="classifier">int</span></dt><dd><p>The smoothing factor for the mutual reachability distance; see
-<a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a> for more details.</p>
-</dd>
-<dt><strong>metric</strong><span class="classifier">str</span></dt><dd><p>The metric used to compute the linkage; see <a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>
+<dt><strong>metric</strong><span class="classifier">str, default=’l2’</span></dt><dd><p>The metric used to compute the linkage; see <a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>
 for more details.</p>
 </dd>
-<dt><strong>compute_full_tree</strong><span class="classifier">bool</span></dt><dd><p>Whether to determine the entire cluster hierarchy and the linkage
-matrix; see <a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a> for more details.</p>
-</dd>
-<dt><strong>compute_all_cuts</strong><span class="classifier">bool</span></dt><dd><p>Whether to compute the requested <em>n_clusters</em>-partition and all
+<dt><strong>coarser</strong><span class="classifier">bool, default=False</span></dt><dd><p>Whether to compute the requested <cite>n_clusters</cite>-partition and all
 the coarser-grained ones; see <a class="reference internal" href="#genieclust.Genie" title="genieclust.Genie"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.Genie</span></code></a>
 for more details.</p>
-<p>Note that if <em>compute_all_cuts</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the <em>i</em>-th cut
-in the hierarchy behaves as if <em>add_clusters</em> was equal to
-<em>n_clusters-i</em>. In other words, the returned cuts might be different
+<p>Note that if <cite>coarser</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the <cite>i</cite>-th cut
+in the hierarchy behaves as if <cite>add_clusters</cite> was equal to
+<cite>n_clusters-i</cite>. In other words, the returned cuts might be different
 from those obtained by multiple calls to GIc, each time with
-different <em>n_clusters</em> and constant <em>add_clusters</em> requested.</p>
+different <cite>n_clusters</cite> and constant <cite>add_clusters</cite> requested.</p>
 </dd>
 <dt><strong>add_clusters</strong><span class="classifier">int</span></dt><dd><p>Number of additional clusters to work with internally.</p>
 </dd>
 <dt><strong>n_features</strong><span class="classifier">float or None</span></dt><dd><p>The dataset’s (intrinsic) dimensionality.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">None</span></code>, it will be set based on the shape of the input matrix.
 Yet, <em>metric</em> of <code class="docutils literal notranslate"><span class="pre">&quot;precomputed&quot;</span></code> needs this to be set manually.</p>
-</dd>
-<dt><strong>postprocess</strong><span class="classifier">{<code class="docutils literal notranslate"><span class="pre">&quot;boundary&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>}</span></dt><dd><p>Controls the treatment of noise/boundary points after the clusters are
-identified; see <a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a> for more details.</p>
 </dd>
 <dt><strong>quitefastmst_params</strong><span class="classifier">dict</span></dt><dd><p>Additional parameters to be passed to <code class="docutils literal notranslate"><span class="pre">quitefastmst.mst_euclid</span></code>
 if <code class="docutils literal notranslate"><span class="pre">metric</span></code> is <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code></p>
@@ -767,7 +551,7 @@ onto <code class="docutils literal notranslate"><span class="pre">stderr</span><
 <td><p>Perform cluster analysis of a dataset.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_predict</span></code>(X[, y])</p></td>
-<td><p>Perform cluster analysis of a dataset and return the predicted labels.</p></td>
+<td><p>Performs cluster or anomaly analysis of a dataset and returns the predicted labels.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metadata_routing</span></code>()</p></td>
 <td><p>Get metadata routing of this object.</p></td>
@@ -790,13 +574,13 @@ onto <code class="docutils literal notranslate"><span class="pre">stderr</span><
 </div>
 <p class="rubric">Notes</p>
 <p>GIc (Genie+Information Criterion) is an Information-Theoretic
-Clustering Algorithm. It was proposed by Anna Cena in <a class="reference internal" href="#r32c47d027f4e-1" id="id13">[1]</a>. It was inspired
-by Mueller’s (et al.) ITM <a class="reference internal" href="#r32c47d027f4e-2" id="id14">[2]</a> and Genie <a class="reference internal" href="#r32c47d027f4e-3" id="id15">[3]</a>.</p>
-<p>GIc computes an <em>n_clusters</em>-partition based on a pre-computed minimum
+Clustering Algorithm.  It was proposed by Anna Cena in <a class="reference internal" href="#r32c47d027f4e-1" id="id8">[1]</a>.
+GIc was inspired by ITM <a class="reference internal" href="#r32c47d027f4e-2" id="id9">[2]</a> and Genie <a class="reference internal" href="#r32c47d027f4e-3" id="id10">[3]</a>.</p>
+<p>GIc computes an <cite>n_clusters</cite>-partition based on a pre-computed minimum
 spanning tree (MST) of the pairwise distance graph of a given point set
-(refer to <a class="reference internal" href="#genieclust.MSTClusterMixin" title="genieclust.MSTClusterMixin"><code class="xref any py py-class docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin</span></code></a> and <a class="reference internal" href="#r32c47d027f4e-4" id="id16">[4]</a> for more details).
+(refer to <code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase</span></code> and <a class="reference internal" href="#r32c47d027f4e-4" id="id11">[4]</a> for more details).
 Clusters are merged so as to maximise (heuristically)
-the information criterion discussed in <a class="reference internal" href="#r32c47d027f4e-2" id="id17">[2]</a>.</p>
+the information criterion discussed in <a class="reference internal" href="#r32c47d027f4e-2" id="id12">[2]</a>.</p>
 <p>GIc uses a bottom-up, agglomerative approach (as opposed to the ITM,
 which follows a divisive scheme).  It greedily selects for merging
 a pair of clusters that maximises the information criterion.
@@ -805,7 +589,7 @@ the intersection of the partitions found by multiple runs of
 the Genie method with thresholds [0.1, 0.3, 0.5, 0.7], which
 we observe to be a sensible choice for most clustering activities.
 Hence, contrary to the Genie method, we can say that GIc is virtually
-parameter-free. However, when run with different <em>n_clusters</em> parameter,
+parameter-free. However, when run with different <cite>n_clusters</cite> parameter,
 it does not yield a hierarchy of nested partitions (unless some more
 laborious parameter tuning is applied).</p>
 <dl class="field-list simple">
@@ -820,30 +604,30 @@ spanning tree.</p>
 <p class="rubric">References</p>
 <div role="list" class="citation-list">
 <div class="citation" id="r32c47d027f4e-1" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">1</a><span class="fn-bracket">]</span></span>
-<p>Cena, A., <em>Adaptive hierarchical clustering algorithms based on
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">1</a><span class="fn-bracket">]</span></span>
+<p>A. Cena, <em>Adaptive hierarchical clustering algorithms based on
 data aggregation methods</em>, PhD Thesis, Systems Research Institute,
-Polish Academy of Sciences 2018.</p>
+Polish Academy of Sciences, 2018</p>
 </div>
 <div class="citation" id="r32c47d027f4e-2" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id14">1</a>,<a role="doc-backlink" href="#id17">2</a>)</span>
-<p>Mueller, A., Nowozin, S., Lampert, C.H., Information Theoretic
-Clustering using Minimum Spanning Trees, <em>DAGM-OAGM</em>, 2012.</p>
+<span class="backrefs">(<a role="doc-backlink" href="#id9">1</a>,<a role="doc-backlink" href="#id12">2</a>)</span>
+<p>A. Mueller, S. Nowozin, C.H. Lampert, Information Theoretic
+Clustering using Minimum Spanning Trees, <em>DAGM-OAGM</em>, 2012</p>
 </div>
 <div class="citation" id="r32c47d027f4e-3" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">3</a><span class="fn-bracket">]</span></span>
-<p>Gagolewski, M., Bartoszuk, M., Cena, A.,
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">3</a><span class="fn-bracket">]</span></span>
+<p>M. Gagolewski, M. Bartoszuk, A. Cena,
 Genie: A new, fast, and outlier-resistant hierarchical clustering
-algorithm, <em>Information Sciences</em> 363, 2016, 8-23.
-doi:10.1016/j.ins.2016.05.003.ing</p>
+algorithm, <em>Information Sciences</em> 363, 2016, 8-23,
+<a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">https://doi.org/10.1016/j.ins.2016.05.003</a></p>
 </div>
 <div class="citation" id="r32c47d027f4e-4" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">4</a><span class="fn-bracket">]</span></span>
-<p>Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L.,
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">4</a><span class="fn-bracket">]</span></span>
+<p>M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski,
 Clustering with minimum spanning trees: How good can it be?,
 <em>Journal of Classification</em> 42, 2025, 90-112,
-doi:10.1007/s00357-024-09483-1.</p>
+<a class="reference external" href="https://doi.org/10.1007/s00357-024-09483-1">https://doi.org/10.1007/s00357-024-09483-1</a></p>
 </div>
 </div>
 <dl class="py method">
@@ -853,9 +637,9 @@ doi:10.1007/s00357-024-09483-1.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows and <code class="docutils literal notranslate"><span class="pre">n_features</span></code>
-columns; see <a class="reference internal" href="#genieclust.MSTClusterMixin.fit_predict" title="genieclust.MSTClusterMixin.fit_predict"><code class="xref any py py-meth docutils literal notranslate"><span class="pre">genieclust.MSTClusterMixin.fit_predict</span></code></a> for more
-details.</p>
+<dt><strong>X</strong><span class="classifier">object</span></dt><dd><p>Typically a matrix or a data frame with <code class="docutils literal notranslate"><span class="pre">n_samples</span></code> rows
+and <code class="docutils literal notranslate"><span class="pre">n_features</span></code> columns;
+see <code class="xref any docutils literal notranslate"><span class="pre">deadwood.MSTBase.fit_predict</span></code> for more details.</p>
 </dd>
 <dt><strong>y</strong><span class="classifier">None</span></dt><dd><p>Ignored.</p>
 </dd>
@@ -883,12 +667,12 @@ parameter must be set explicitly.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="pythonapi_cluster_validity.html">
+          <a class="next-page" href="pythonapi_compare_partitions.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">genieclust.cluster_validity</div>
+                <div class="title">genieclust.compare_partitions</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -909,11 +693,11 @@ parameter must be set explicitly.</p>
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -935,10 +719,6 @@ parameter must be set explicitly.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">genieclust</a><ul>
-<li><a class="reference internal" href="#genieclust.MSTClusterMixin"><code class="docutils literal notranslate"><span class="pre">MSTClusterMixin</span></code></a><ul>
-<li><a class="reference internal" href="#genieclust.MSTClusterMixin.fit_predict"><code class="docutils literal notranslate"><span class="pre">MSTClusterMixin.fit_predict()</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#genieclust.Genie"><code class="docutils literal notranslate"><span class="pre">Genie</span></code></a><ul>
 <li><a class="reference internal" href="#genieclust.Genie.fit"><code class="docutils literal notranslate"><span class="pre">Genie.fit()</span></code></a></li>
 </ul>
@@ -958,7 +738,7 @@ parameter must be set explicitly.</p>
       
     </aside>
   </div>
-</div><script src="_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=5fa4622c"></script>

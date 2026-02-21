@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)" href="genieclust-package.html" /><link rel="prev" title="compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores" href="compare_partitions.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="genieclust-package: Genie: Fast and Robust Hierarchical Clustering" href="genieclust-package.html" /><link rel="prev" title="compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores" href="compare_partitions.html" />
         <link rel="canonical" href="https://genieclust.gagolewski.com/rapi/gclust.html" />
 
     <link rel="shortcut icon" href="https://www.gagolewski.com/_static/img/genieclust.png"/><!-- Generated with Sphinx 8.2.3 and Furo 2024.08.06 -->
@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
     <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=1981fb80" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=c484f746" />
     
     
 
@@ -209,7 +209,7 @@
 <a class="sidebar-brand" href="../index.html">genieclust</a>
 </span>
 <div class="sidebar-brand">
-1.2.0
+1.3.0
 </div>
 <form class="sidebar-search-container" method="get" action="../search.html" role="search">
   <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
@@ -226,41 +226,40 @@
 <li class="toctree-l1"><a class="reference external" href="https://pypi.org/project/genieclust">PyPI Entry</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://CRAN.R-project.org/package=genieclust">CRAN Entry</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Examples and Tutorials</span></p>
+<p class="caption" role="heading"><span class="caption-text">Python API</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../weave/basics.html">Basic Usage (Python)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/sklearn_toy_example.html">Comparing Algorithms on Toy Datasets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/benchmarks_ar.html">Benchmarks (How Good Is It?)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../weave/timings.html">Timings (How Fast Is It?)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../weave/noise.html">Clustering with Noise Point Detection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../weave/r.html">R Interface Examples</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Reference Manual</span></p>
-<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../weave/outliers.html">Outlier Detection with <em>Deadwood</em></a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pythonapi.html">Python Package <cite>genieclust</cite> Reference</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of Python Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_root.html">genieclust</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_compare_partitions.html">genieclust.compare_partitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_core.html">genieclust.core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pythonapi_cluster_validity.html">genieclust.cluster_validity</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pythonapi_inequality.html">genieclust.inequality</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_internal.html">genieclust.internal</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_plots.html">genieclust.plots</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pythonapi_tools.html">genieclust.tools</a></li>
 </ul>
 </li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">R API</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../weave/r.html">Basic Usage (R)</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../rapi.html">R Package <em>genieclust</em> Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of R Package genieclust Reference</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="cluster_validity.html">cluster_validity: Internal Cluster Validity Measures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="compare_partitions.html">compare_partitions: External Cluster Validity Measures and Pairwise Partition Similarity Scores</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">gclust: Hierarchical Clustering Algorithm Genie</a></li>
-<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="genieclust-package.html">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inequality.html">inequality: Inequality Measures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="mst.html">mst: Minimum Spanning Tree of the Pairwise Distance Graph</a></li>
 </ul>
 </li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Other</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://quitefastmst.gagolewski.com/">quitefastmst</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://deadwood.gagolewski.com/">deadwood</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://lumbermark.gagolewski.com/">lumbermark</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://clustering-benchmarks.gagolewski.com/">Clustering Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://datawranglingpy.gagolewski.com/">Minimalist Data Wrangling in Python</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://deepr.gagolewski.com/">Deep R Programming</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../news.html">Changelog</a></li>
@@ -306,9 +305,8 @@
 <h1>gclust: Hierarchical Clustering Algorithm Genie<a class="headerlink" href="#gclust-hierarchical-clustering-algorithm-genie" title="Link to this heading">¶</a></h1>
 <section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm by Gagolewski, Bartoszuk, and Cena (2016). The Genie algorithm is based on the minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the single linkage, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequality.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, the merging of a point group of the smallest size is enforced.</p>
-<p>The clustering can also be computed with respect to the mutual reachability distances (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN* algorithm (see Campello et al., 2013). If <span class="math notranslate nohighlight">\(M&gt;1\)</span>, then the mutual reachability distance <span class="math notranslate nohighlight">\(m(i,j)\)</span> with a smoothing factor <span class="math notranslate nohighlight">\(M\)</span> is used instead of the chosen “raw” distance <span class="math notranslate nohighlight">\(d(i,j)\)</span>. It holds <span class="math notranslate nohighlight">\(m(i,j)=\max(d(i,j), c(i), c(j))\)</span>, where the core distance <span class="math notranslate nohighlight">\(c(i)\)</span> is the distance to the <span class="math notranslate nohighlight">\(i\)</span>-th point’s (<span class="math notranslate nohighlight">\(M-1\)</span>)-th nearest neighbour. This makes “noise” and “boundary” points being more “pulled away” from each other.</p>
-<p>The Genie correction together with the smoothing factor <span class="math notranslate nohighlight">\(M&gt;1\)</span> (note that <span class="math notranslate nohighlight">\(M=2\)</span> corresponds to the original distance) gives a version of the HDBSCAN* algorithm that is able to detect a predefined number of clusters. Hence it does not dependent on the DBSCAN’s <code class="docutils literal notranslate"><span class="pre">eps</span></code> parameter or the HDBSCAN’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> one.</p>
+<p>A reimplementation of <em>Genie</em> - a robust and outlier resistant clustering algorithm by Gagolewski, Bartoszuk, and Cena (2016). The Genie algorithm is based on the minimum spanning tree (MST) of the pairwise distance graph of a given point set. Just like the Single Linkage method, it consumes the edges of the MST in an increasing order of weights. However, it prevents the formation of clusters of highly imbalanced sizes; once the Gini index (see <a class="reference internal" href="inequality.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">gini_index()</span></code></span></a>) of the cluster size distribution raises above <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>, merging a point group of the smallest size is enforced.</p>
+<p>A clustering can also be computed with respect to the <span class="math notranslate nohighlight">\(M\)</span>-mutual reachability distance (based, e.g., on the Euclidean metric), which is used in the definition of the HDBSCAN* algorithm (see <a class="reference external" href="https://deadwood.gagolewski.com/rapi/mst.html"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></a> for the definition). For the smoothing factor <span class="math notranslate nohighlight">\(M&gt;0\)</span>, outliers are pulled away from their neighbours. This way, the Genie algorithm gives an alternative to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect a predefined number of clusters and indicate outliers (via <span class="pkg">deadwood</span>; see Gagolewski, 2026) without depending on DBSCAN*’s <code class="docutils literal notranslate"><span class="pre">eps</span></code> or HDBSCAN*’s <code class="docutils literal notranslate"><span class="pre">min_cluster_size</span></code> parameters. Also make sure to check out the Lumbermark algorithm (package <span class="pkg">lumbermark</span>) that is also based on MSTs.</p>
 </section>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
@@ -318,13 +316,14 @@
 <span class="nf">gclust</span><span class="p">(</span>
 <span class="w">  </span><span class="n">d</span><span class="p">,</span>
 <span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0L</span><span class="p">,</span>
 <span class="w">  </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;manhattan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cityblock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cosine&quot;</span><span class="p">),</span>
 <span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
 <span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;dist&#39;</span>
-<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
+<span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0L</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;mst&#39;</span>
 <span class="nf">gclust</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
@@ -336,36 +335,17 @@
 <span class="w">  </span><span class="n">d</span><span class="p">,</span>
 <span class="w">  </span><span class="n">k</span><span class="p">,</span>
 <span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0L</span><span class="p">,</span>
 <span class="w">  </span><span class="n">distance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;euclidean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l2&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;manhattan&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cityblock&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;l1&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;cosine&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
-<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
 <span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
 <span class="w">  </span><span class="kc">...</span>
 <span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;dist&#39;</span>
-<span class="nf">genie</span><span class="p">(</span>
-<span class="w">  </span><span class="n">d</span><span class="p">,</span>
-<span class="w">  </span><span class="n">k</span><span class="p">,</span>
-<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
-<span class="w">  </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
-<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">1L</span><span class="p">,</span>
-<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
-<span class="w">  </span><span class="kc">...</span>
-<span class="p">)</span>
+<span class="nf">genie</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0L</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 
 <span class="c1">## S3 method for class &#39;mst&#39;</span>
-<span class="nf">genie</span><span class="p">(</span>
-<span class="w">  </span><span class="n">d</span><span class="p">,</span>
-<span class="w">  </span><span class="n">k</span><span class="p">,</span>
-<span class="w">  </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span>
-<span class="w">  </span><span class="n">postprocess</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s">&quot;boundary&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;all&quot;</span><span class="p">),</span>
-<span class="w">  </span><span class="n">detect_noise</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
-<span class="w">  </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span>
-<span class="w">  </span><span class="kc">...</span>
-<span class="p">)</span>
+<span class="nf">genie</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="p">,</span><span class="w"> </span><span class="n">gini_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0.3</span><span class="p">,</span><span class="w"> </span><span class="n">verbose</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">FALSE</span><span class="p">,</span><span class="w"> </span><span class="kc">...</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
@@ -380,31 +360,25 @@
 </thead>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">d</span></code></p></td>
-<td><p>a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> (see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html"><code class="docutils literal notranslate"><span class="pre">dist</span></code></a>), or an object of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> (<a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst</span></code></span></a>)</p></td>
+<td><p>a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code> (see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html"><code class="docutils literal notranslate"><span class="pre">dist</span></code></a>), or an object of class <code class="docutils literal notranslate"><span class="pre">mst</span></code> (see <a class="reference external" href="https://deadwood.gagolewski.com/rapi/mst.html"><code class="docutils literal notranslate"><span class="pre">mst</span></code></a>)</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">...</span></code></p></td>
-<td><p>further arguments passed to <a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a></p></td>
+<td><p>further arguments passed to <a class="reference external" href="https://deadwood.gagolewski.com/rapi/mst.html"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code></p></td>
 <td><p>threshold for the Genie correction, i.e., the Gini index of the cluster size distribution; threshold of 1.0 leads to the single linkage algorithm; low thresholds highly penalise the formation of small clusters</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
+<td><p>smoothing factor; <span class="math notranslate nohighlight">\(M \leq 1\)</span> gives the selected <code class="docutils literal notranslate"><span class="pre">distance</span></code>; otherwise, the mutual reachability distance is used</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">distance</span></code></p></td>
 <td><p>metric used to compute the linkage, one of: <code class="docutils literal notranslate"><span class="pre">&quot;euclidean&quot;</span></code> (synonym: <code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;manhattan&quot;</span></code> (a.k.a. <code class="docutils literal notranslate"><span class="pre">&quot;l1&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;cityblock&quot;</span></code>), <code class="docutils literal notranslate"><span class="pre">&quot;cosine&quot;</span></code></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
 <td><p>logical; whether to print diagnostic messages and progress information</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">k</span></code></p></td>
-<td><p>the desired number of clusters to detect, <span class="math notranslate nohighlight">\(k=1\)</span> with <span class="math notranslate nohighlight">\(M&gt;1\)</span> acts as a noise point detector</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">M</span></code></p></td>
-<td><p>smoothing factor; <span class="math notranslate nohighlight">\(M \leq 2\)</span> gives the selected <code class="docutils literal notranslate"><span class="pre">distance</span></code>; otherwise, the mutual reachability distance is used</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">postprocess</span></code></p></td>
-<td><p>one of <code class="docutils literal notranslate"><span class="pre">&quot;boundary&quot;</span></code> (default), <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>; in effect only if <span class="math notranslate nohighlight">\(M &gt; 1\)</span>. By default, only “boundary” points are merged with their nearest “core” points (A point is a boundary point if it is a noise point and it is amongst its adjacent vertex’s (<span class="math notranslate nohighlight">\(M-1\)</span>)-th nearest neighbours). To force a classical k-partition of a data set (with no notion of noise), choose <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">detect_noise</span></code></p></td>
-<td><p>whether the minimum spanning tree’s leaves should be marked as noise points, defaults to <code class="docutils literal notranslate"><span class="pre">TRUE</span></code> if <span class="math notranslate nohighlight">\(M&gt;1\)</span> for compatibility with HDBSCAN*</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">k</span></code></p></td>
+<td><p>the desired number of clusters to detect</p></td>
 </tr>
 </tbody>
 </table>
@@ -412,15 +386,16 @@
 </section>
 <section id="details">
 <h2>Details<a class="headerlink" href="#details" title="Link to this heading">¶</a></h2>
-<p>As in the case of all the distance-based methods, the standardisation of the input features is definitely worth giving a try. Oftentimes, more sophisticated feature engineering (e.g., dimensionality reduction) will lead to more meaningful results.</p>
-<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, <a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> will be called to compute an MST, which generally takes at most <span class="math notranslate nohighlight">\(O(n^2)\)</span> time. However, by default, a faster algorithm based on K-d trees is selected automatically for low-dimensional Euclidean spaces; see <a class="reference external" href="https://quitefastmst.gagolewski.com/rapi/mst_euclid.html"><code class="docutils literal notranslate"><span class="pre">mst_euclid</span></code></a> from the <span class="pkg">quitefastmst</span> package.</p>
-<p>Once a minimum spanning tree is determined, the Genie algorithm runs in <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time. If you want to test different <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s or <code class="docutils literal notranslate"><span class="pre">k</span></code>s, it is best to compute the MST first explicitly.</p>
-<p>According to the algorithm’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). <code class="docutils literal notranslate"><span class="pre">gclust()</span></code> automatically corrects departures from ultrametricity by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
+<p>As with all distance-based methods (this includes k-means and DBSCAN as well), applying data preprocessing and feature engineering techniques (e.g., feature scaling, feature selection, dimensionality reduction) might lead to more meaningful results.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">d</span></code> is a numeric matrix or an object of class <code class="docutils literal notranslate"><span class="pre">dist</span></code>, <a class="reference external" href="https://deadwood.gagolewski.com/rapi/mst.html"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></a> will be called to compute an MST, which generally takes at most <span class="math notranslate nohighlight">\(O(n^2)\)</span> time. However, by default, a faster algorithm based on K-d trees is selected automatically for low-dimensional Euclidean spaces; see <a class="reference external" href="https://quitefastmst.gagolewski.com/rapi/mst_euclid.html"><code class="docutils literal notranslate"><span class="pre">mst_euclid</span></code></a> from the <span class="pkg">quitefastmst</span> package.</p>
+<p>Once a minimum spanning tree is determined, the Genie algorithm runs in <span class="math notranslate nohighlight">\(O(n \sqrt{n})\)</span> time. If you want to test different <code class="docutils literal notranslate"><span class="pre">gini_threshold</span></code>s or <span class="math notranslate nohighlight">\(k\)</span>s, it is best to compute the MST explicitly beforehand.</p>
+<p>Due to Genie’s original definition, the resulting partition tree (dendrogram) might violate the ultrametricity property (merges might occur at levels that are not increasing w.r.t. a between-cluster distance). <code class="docutils literal notranslate"><span class="pre">gclust()</span></code> automatically corrects departures from ultrametricity by applying <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">=</span> <span class="pre">rev(cummin(rev(height)))</span></code>.</p>
 </section>
 <section id="value">
 <h2>Value<a class="headerlink" href="#value" title="Link to this heading">¶</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">gclust()</span></code> computes the entire clustering hierarchy; it returns a list of class <code class="docutils literal notranslate"><span class="pre">hclust</span></code>; see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html"><code class="docutils literal notranslate"><span class="pre">hclust</span></code></a>. Use <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/cutree.html"><code class="docutils literal notranslate"><span class="pre">cutree</span></code></a> to obtain an arbitrary <code class="docutils literal notranslate"><span class="pre">k</span></code>-partition.</p>
-<p><code class="docutils literal notranslate"><span class="pre">genie()</span></code> returns a <code class="docutils literal notranslate"><span class="pre">k</span></code>-partition - a vector whose i-th element denotes the i-th input point’s cluster label between 1 and <code class="docutils literal notranslate"><span class="pre">k</span></code> If <code class="docutils literal notranslate"><span class="pre">detect_noise</span></code> is <code class="docutils literal notranslate"><span class="pre">TRUE</span></code>, missing values (<code class="docutils literal notranslate"><span class="pre">NA</span></code>) denote noise points.</p>
+<p><code class="docutils literal notranslate"><span class="pre">gclust()</span></code> computes the entire clustering hierarchy; it returns a list of class <code class="docutils literal notranslate"><span class="pre">hclust</span></code>; see <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/hclust.html"><code class="docutils literal notranslate"><span class="pre">hclust</span></code></a>. Use <a class="reference external" href="https://stat.ethz.ch/R-manual/R-devel/library/stats/help/cutree.html"><code class="docutils literal notranslate"><span class="pre">cutree</span></code></a> to obtain an arbitrary <span class="math notranslate nohighlight">\(k\)</span>-partition.</p>
+<p><code class="docutils literal notranslate"><span class="pre">genie()</span></code> returns an object of class <code class="docutils literal notranslate"><span class="pre">mstclust</span></code>, which defines a <span class="math notranslate nohighlight">\(k\)</span>-partition, i.e., a vector whose <span class="math notranslate nohighlight">\(i\)</span>-th element denotes the <span class="math notranslate nohighlight">\(i\)</span>-th input point’s cluster label between 1 and <span class="math notranslate nohighlight">\(k\)</span>.</p>
+<p>In both cases, the <code class="docutils literal notranslate"><span class="pre">mst</span></code> attribute gives the computed minimum spanning tree which can be reused in further calls to the functions from <span class="pkg">genieclust</span>, <span class="pkg">lumbermark</span>, and <span class="pkg">deadwood</span>. For <code class="docutils literal notranslate"><span class="pre">genie()</span></code>, the <code class="docutils literal notranslate"><span class="pre">cut_edges</span></code> attribute gives the <span class="math notranslate nohighlight">\(k-1\)</span> indexes of the MST edges whose omission leads to the requested <span class="math notranslate nohighlight">\(k\)</span>-partition (connected components of the resulting spanning forest). In <code class="docutils literal notranslate"><span class="pre">gclust()</span></code>, these are exactly the last <span class="math notranslate nohighlight">\(k-1\)</span> indexes in the <code class="docutils literal notranslate"><span class="pre">links</span></code> attribute (but sorted).</p>
 </section>
 <section id="author-s">
 <h2>Author(s)<a class="headerlink" href="#author-s" title="Link to this heading">¶</a></h2>
@@ -428,22 +403,25 @@
 </section>
 <section id="references">
 <h2>References<a class="headerlink" href="#references" title="Link to this heading">¶</a></h2>
-<p>Gagolewski, M., Bartoszuk, M., Cena, A., Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23, <a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">doi:10.1016/j.ins.2016.05.003</a></p>
-<p>Campello, R.J.G.B., Moulavi, D., Sander, J., Density-based clustering based on hierarchical density estimates, <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172, <a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">doi:10.1007/978-3-642-37456-2_14</a></p>
-<p>Gagolewski, M., Cena, A., Bartoszuk, M., Brzozowski, L., Clustering with minimum spanning trees: How good can it be?, <em>Journal of Classification</em> 42, 2025, 90-112, <a class="reference external" href="https://doi.org/10.1007/s00357-024-09483-1">doi:10.1007/s00357-024-09483-1</a></p>
+<p>M. Gagolewski, M. Bartoszuk, A. Cena, Genie: A new, fast, and outlier-resistant hierarchical clustering algorithm, <em>Information Sciences</em> 363, 2016, 8-23, <a class="reference external" href="https://doi.org/10.1016/j.ins.2016.05.003">doi:10.1016/j.ins.2016.05.003</a></p>
+<p>R.J.G.B. Campello, D. Moulavi, J. Sander, Density-based clustering based on hierarchical density estimates, <em>Lecture Notes in Computer Science</em> 7819, 2013, 160-172, <a class="reference external" href="https://doi.org/10.1007/978-3-642-37456-2_14">doi:10.1007/978-3-642-37456-2_14</a></p>
+<p>M. Gagolewski, A. Cena, M. Bartoszuk, Ł. Brzozowski, Clustering with minimum spanning trees: How good can it be?, <em>Journal of Classification</em> 42, 2025, 90-112, <a class="reference external" href="https://doi.org/10.1007/s00357-024-09483-1">doi:10.1007/s00357-024-09483-1</a></p>
+<p>M. Gagolewski, genieclust: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15, 2021, 100722, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a></p>
+<p>M. Gagolewski, deadwood, in preparation, 2026</p>
+<p>M. Gagolewski, quitefastmst, in preparation, 2026</p>
 </section>
 <section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Link to this heading">¶</a></h2>
 <p>The official online manual of <span class="pkg">genieclust</span> at <a class="reference external" href="https://genieclust.gagolewski.com/">https://genieclust.gagolewski.com/</a></p>
 <p>Gagolewski, M., <span class="pkg">genieclust</span>: Fast and robust hierarchical clustering, <em>SoftwareX</em> 15:100722, 2021, <a class="reference external" href="https://doi.org/10.1016/j.softx.2021.100722">doi:10.1016/j.softx.2021.100722</a></p>
-<p><a class="reference internal" href="mst.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></span></a> for the minimum spanning tree routines</p>
+<p><a class="reference external" href="https://deadwood.gagolewski.com/rapi/mst.html"><code class="docutils literal notranslate"><span class="pre">mst()</span></code></a> for the minimum spanning tree routines</p>
 <p><a class="reference internal" href="compare_partitions.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">normalized_clustering_accuracy()</span></code></span></a> (amongst others) for external cluster validity measures</p>
 </section>
 <section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h2>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">library</span><span class="p">(</span><span class="s">&quot;datasets&quot;</span><span class="p">)</span>
 <span class="nf">data</span><span class="p">(</span><span class="s">&quot;iris&quot;</span><span class="p">)</span>
-<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">jitter</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">2</span><span class="o">:</span><span class="m">3</span><span class="p">]))</span>
+<span class="n">X</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">jitter</span><span class="p">(</span><span class="nf">as.matrix</span><span class="p">(</span><span class="n">iris</span><span class="p">[</span><span class="m">3</span><span class="o">:</span><span class="m">4</span><span class="p">]))</span>
 <span class="n">h</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">gclust</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">y_pred</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">cutree</span><span class="p">(</span><span class="n">h</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">)</span>
 <span class="n">y_test</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">as.integer</span><span class="p">(</span><span class="n">iris</span><span class="p">[,</span><span class="m">5</span><span class="p">])</span>
@@ -452,20 +430,18 @@
 </div>
 <p><img alt="plot of chunk gclust" src="../_images/gclust-1.png" /></p>
 <div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">adjusted_rand_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span></span><span class="c1">## [1] 0.6956362</span>
+<span></span><span class="c1">## [1] 0.5993085</span>
 <span></span><span class="nf">normalized_clustering_accuracy</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">y_pred</span><span class="p">)</span>
-<span></span><span class="c1">## [1] 0.81</span>
-<span></span><span class="n">y_pred2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">genie</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">  </span><span class="c1"># clustering wrt 5-mutual reachability distance</span>
-<span class="nf">plot</span><span class="p">(</span><span class="n">X</span><span class="p">[,</span><span class="m">1</span><span class="p">],</span><span class="w"> </span><span class="n">X</span><span class="p">[,</span><span class="m">2</span><span class="p">],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">y_pred2</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="n">y_test</span><span class="p">,</span><span class="w"> </span><span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
-<span class="n">noise</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">is.na</span><span class="p">(</span><span class="n">y_pred2</span><span class="p">)</span><span class="w">  </span><span class="c1"># noise/boundary points</span>
-<span class="nf">points</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="n">noise</span><span class="p">,</span><span class="w"> </span><span class="p">],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="s">&quot;gray&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">10</span><span class="p">)</span>
+<span></span><span class="c1">## [1] 0.7</span>
+<span></span><span class="c1"># detect 3 clusters and find outliers with Deadwood</span>
+<span class="nf">library</span><span class="p">(</span><span class="s">&quot;deadwood&quot;</span><span class="p">)</span>
+<span class="n">y_pred2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">genie</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">k</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="n">M</span><span class="o">=</span><span class="m">5</span><span class="p">)</span><span class="w">  </span><span class="c1"># the 5-mutual reachability distance</span>
+<span class="nf">plot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">y_pred2</span><span class="p">,</span><span class="w"> </span><span class="n">asp</span><span class="o">=</span><span class="m">1</span><span class="p">,</span><span class="w"> </span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span>
+<span class="n">is_outlier</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">deadwood</span><span class="p">(</span><span class="n">y_pred2</span><span class="p">)</span>
+<span class="nf">points</span><span class="p">(</span><span class="n">X</span><span class="p">[</span><span class="o">!</span><span class="n">is_outlier</span><span class="p">,</span><span class="w"> </span><span class="p">],</span><span class="w"> </span><span class="n">col</span><span class="o">=</span><span class="n">y_pred2</span><span class="p">[</span><span class="o">!</span><span class="n">is_outlier</span><span class="p">],</span><span class="w"> </span><span class="n">pch</span><span class="o">=</span><span class="m">16</span><span class="p">)</span>
 </pre></div>
 </div>
 <p><img alt="plot of chunk gclust" src="../_images/gclust-2.png" /></p>
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="nf">normalized_clustering_accuracy</span><span class="p">(</span><span class="n">y_test</span><span class="p">[</span><span class="o">!</span><span class="n">noise</span><span class="p">],</span><span class="w"> </span><span class="n">y_pred2</span><span class="p">[</span><span class="o">!</span><span class="n">noise</span><span class="p">])</span>
-<span></span><span class="c1">## [1] 0.8030303</span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -479,7 +455,7 @@
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">genieclust-package: The Genie Hierarchical Clustering Algorithm (with Extras)</div>
+                <div class="title">genieclust-package: Genie: Fast and Robust Hierarchical Clustering</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -500,11 +476,11 @@
             <div class="copyright">
               
               
-              Copyright &#169; 2018–2025 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
+              Copyright &#169; 2018–2026 by <a href="https://www.gagolewski.com">Marek Gagolewski</a>.
               Some rights reserved. Licensed under <a href='https://creativecommons.org/licenses/by-nc-nd/4.0/'>CC BY-NC-ND 4.0</a>.
               Built with <a href="https://sphinx-doc.org/">Sphinx</a>
               and a customised <a href="https://github.com/pradyunsg/furo">Furo</a> theme.
-              Last updated on 2025-07-24T16:19:16+0200.
+              Last updated on 2026-02-21T15:29:34+0100.
               This site will never display any ads: it is a non-profit project.
               It does not collect any data.
             </div>
@@ -546,7 +522,7 @@
       
     </aside>
   </div>
-</div><script src="../_static/documentation_options.js?v=6efca38a"></script>
+</div><script src="../_static/documentation_options.js?v=1f29e9d3"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
