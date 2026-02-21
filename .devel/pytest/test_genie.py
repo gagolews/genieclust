@@ -162,29 +162,31 @@ def test_genie_precomputed():
             print("")
 
 
-        # test compute_all_cuts
+        # test coarser
         K = 16
         g = 0.1
         res1 = genieclust.Genie(K, gini_threshold=g, metric="euclidean",
-            compute_all_cuts=True, M=2).fit_predict(X)
-        assert res1.shape[1] == X.shape[0]
-        # assert res1.shape[0] == K+1   #  that's not necessarily true!
-        for k in range(1, res1.shape[0]):
+            coarser=True, M=2).fit(X)
+        assert res1.labels_matrix_.shape[1] == X.shape[0]
+        assert res1.labels_.shape[0] == X.shape[0]
+        # assert res1.labels_matrix_.shape[0] == K+1   #  that's not necessarily true!
+        for k in range(1, res1.labels_matrix_.shape[0]):
             res2 = genieclust.Genie(k, gini_threshold=g, metric="euclidean",
                 M=2).fit_predict(X)
-            assert np.all(res2 == res1[k,:])
+            assert np.all(res2 == res1.labels_matrix_[k-1,:])
 
-        # test compute_all_cuts
+        # test coarser
         K = 16
         g = 0.1
         res1 = genieclust.Genie(K, gini_threshold=g, metric="euclidean",
-            compute_all_cuts=True, M=25).fit_predict(X)
-        assert res1.shape[1] == X.shape[0]
-        # assert res1.shape[0] == K+1   #  that's not necessarily true!
-        for k in range(1, res1.shape[0]):
+            coarser=True, M=25).fit(X)
+        assert res1.labels_matrix_.shape[1] == X.shape[0]
+        assert res1.labels_.shape[0] == X.shape[0]
+        # assert res1.labels_matrix_.shape[0] == K+1   #  that's not necessarily true!
+        for k in range(1, res1.labels_matrix_.shape[0]):
             res2 = genieclust.Genie(k, gini_threshold=g, metric="euclidean",
                 M=25).fit_predict(X)
-            assert np.all(res2 == res1[k,:])
+            assert np.all(res2 == res1.labels_matrix_[k-1,:])
 
 
 def test_deadwood():

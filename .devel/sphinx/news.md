@@ -4,7 +4,7 @@
 
 *   Check for NA/NaN/Inf in input matrices.
 
-*   Bring back support for non-numeric data.
+*   Bring back support for non-numeric data (needs updates in `deadwood`).
 
 *   Add support for non-square confusion matrices in
     `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`.
@@ -12,16 +12,19 @@
 
 ## (under development), to-be 1.3.0
 
-*   TODO: ".....`compute_all_cuts` is ``True``......"
+*   The package was heavily refactored; common MST-related functions and classes
+    as well as functions from the `tools` and `plots` modules were moved to
+    the new [`deadwood`](https://deadwood.gagolewski.com/) package, which is
+    now required.
 
 *   [BACKWARD INCOMPATIBILITY]  Outlier detection based solely on whether
     a node is a leaf of a minimum spanning tree w.r.t. some mutual reachability
-    distance turned out to be subpar in more detailed analysis,
+    distance turned out to be subpar in more detailed experiments,
     especially for smaller smoothing factors.  Note that in the previous
-    versions of the package, this feature was deemed experimental;
+    versions of the package, this feature was deemed merely experimental;
     Hence, `detect_noise` in `genie.default` and `skip_leaves`, `preprocess`,
     and `postprocess` elsewhere are no longer available.  Instead, use the more
-    powerful [`deadwood`](https://deadwood.gagolewski.com/) package now.
+    universal `deadwood` package now.
 
 *   [BACKWARD INCOMPATIBILITY]  `quitefastmst` version >= 0.9.1 is now required;
     the introduced backward-incompatible changes have been addressed.
@@ -30,16 +33,12 @@
     distance to the *M*-th nearest neighbour, not the *(M-1)*-th one
     (not including self).
 
-*   The new `deadwood` package is now required.  `genieclust` was heavily
-    refactored; common MST-related functions and classes as well as functions
-    from the `tools` and `plots` modules were moved therein.
-
-*   [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
+*   [Python] [BACKWARD INCOMPATIBILITY]  `internal` module was renamed `core`.
 
 *   [BACKWARD INCOMPATIBILITY]  Deprecated functions such as `mst_from_nn`
     have been removed.
 
-*   [BACKWARD INCOMPATIBILITY]  `compute_full_tree` is now always True.
+*   [Python] [BACKWARD INCOMPATIBILITY]  `compute_full_tree` is now always True.
 
 *   [BUGFIX]  #92: Passing a non-square confusion matrix to
     `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`
@@ -49,18 +48,24 @@
     object attribute.  `genie` returns an object of the class `mstclust`.
     This makes it operable with `deadwood`.
 
-*   [Python] [BUGFIX] Modifying `quitefastmst_params` via `set_state`
+*   [Python] [BUGFIX]  Modifying `quitefastmst_params` via `set_state`
     now invalidates the cached MST.
 
 *   [Python] [NEW FEATURE]  `plots.plot_scatter` has new arguments:
     `asp`, `markers`, and `colours`.  The module globals `mrk` and `col` were
-    renamed accordingly.
+    renamed accordingly.  However, as mentioned above, `plots` was
+    moved to `deadwood`.
+
+*   [Python] [BACKWARD INCOMPATIBILITY]  `compute_all_cuts` in `Genie` was
+    renamed `coarser`.  If `True`, `labels_` is still a vector representing
+    the requested `n_clusters`.  The coarser-grained labels are now stored
+    in `labels_matrix_` whose `i`-th row represents an `(i+1)`-partition.
 
 
 ## 1.2.0 (2025-07-24)
 
 *   [Python and R] Using the new implementation of Euclidean and mutual
-    reachability minimum spanning trees (quite fast in low dimensional spaces)
+    reachability minimum spanning trees (pretty fast in low dimensional spaces)
     from the [`quitefastmst`](https://quitefastmst.gagolewski.com/) package.
 
 *   [BACKWARD INCOMPATIBILITY] [Python] Seeking approximate near-neighbours

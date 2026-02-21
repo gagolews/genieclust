@@ -18,7 +18,6 @@
 # ############################################################################ #
 
 
-
 #' @title Genie: Fast and Robust Hierarchical Clustering
 #'
 #' @description

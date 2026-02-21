@@ -69,11 +69,12 @@ class Genie(deadwood.MSTClusterer):
         :any:`deadwood.MSTBase` for more details.
         Defaults to the Euclidean distance.
 
-    compute_all_cuts : bool
+    coarser : bool, default=False
         Whether to compute the requested `n_clusters`-partition and all
         the coarser-grained ones.
 
-        If ``True``, then the `labels_` attribute will be a matrix; see below.
+        If ``True``, then the `labels_matrix_` attribute will additionally be
+        determined; see below.
 
     quitefastmst_params : dict
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
@@ -87,21 +88,15 @@ class Genie(deadwood.MSTClusterer):
     Attributes
     ----------
 
-    labels_ : ndarray
+    labels_ : ndarray, shape (n_samples_,)
         Detected cluster labels.
 
-        If `compute_all_cuts` is ``False`` (the default),
-        it is an integer vector such that ``labels_[i]`` gives
+        An integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
 
-        TODO Otherwise, i.e., if `compute_all_cuts` is ``True``,
-        all partitions of cardinality down to `n_clusters`
-        are determined; ``labels_[j,i]`` denotes the cluster ID of the i-th
-        point in a j-partition.  We assume that both the 0- and 1- partition
-        distinguishes only between noise- and non-noise points,
-        however, no postprocessing is conducted on the 0-partition
-        (there might be points with labels of -1 even if `postprocess`
-        is ``"all"``).
+    labels_matrix_ : None or ndarray, shape (n_clusters_, n_samples_)
+        Available if `coarser` is True.
+        `labels_matrix[i,:]` represents an `i+1`-partition.
 
     n_clusters_ : int
         The actual number of clusters detected by the algorithm.
@@ -211,7 +206,7 @@ class Genie(deadwood.MSTClusterer):
             gini_threshold=0.3,
             M=0,
             metric="l2",
-            compute_all_cuts=False,
+            coarser=False,
             quitefastmst_params=None,  # TODO ?dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
             verbose=False
         ):
@@ -224,7 +219,7 @@ class Genie(deadwood.MSTClusterer):
             verbose=verbose
         )
 
-        self.compute_all_cuts    = compute_all_cuts
+        self.coarser             = coarser
         self.gini_threshold      = gini_threshold
 
         self.children_           = None
@@ -232,6 +227,7 @@ class Genie(deadwood.MSTClusterer):
         self.counts_             = None
         self._links_             = None
         self._iters_             = None
+        self.labels_matrix_      = None
 
 
     def _check_params(self, cur_state=None):
@@ -241,7 +237,7 @@ class Genie(deadwood.MSTClusterer):
         if not (0.0 <= self.gini_threshold <= 1.0):
             raise ValueError("gini_threshold not in [0,1].")
 
-        self.compute_all_cuts  = bool(self.compute_all_cuts)
+        self.coarser  = bool(self.coarser)
 
 
 
@@ -273,11 +269,11 @@ class Genie(deadwood.MSTClusterer):
         -----
 
         Refer to the `labels_` and `n_clusters_` attributes for the result.
-
         """
-        self.labels_     = None
-        self.n_clusters_ = None
-        self._cut_edges_ = None
+        self.labels_        = None
+        self.n_clusters_    = None
+        self._cut_edges_    = None
+        self.labels_matrix_ = None
 
         self._check_params()  # re-check, they might have changed
         self._get_mst(X)  # sets n_samples_, n_features_, _tree_d, _tree_i, _d_core, etc.
@@ -298,7 +294,7 @@ class Genie(deadwood.MSTClusterer):
             self._tree_i_,
             n_clusters=self.n_clusters,
             gini_threshold=self.gini_threshold,
-            compute_all_cuts=self.compute_all_cuts
+            coarser=self.coarser
         )
 
         ########################################################
@@ -323,13 +319,11 @@ class Genie(deadwood.MSTClusterer):
                             self.n_clusters_,
                             self.n_clusters))
 
-        self.labels_     = res["labels"]
-        if self.labels_ is not None and self.labels_.ndim > 1:
-            # TODO: update
-            # duplicate the 1st row (create the "0"-partition that will
-            # not be postprocessed):
-            self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-            #start_partition = 1  # do not postprocess the "0"-partition
+        if self.coarser:
+            self.labels_matrix_ = res["labels"]
+            self.labels_ = self.labels_matrix_[-1,:]
+        else:
+            self.labels_ = res["labels"]
 
         ########################################################
 
@@ -349,6 +343,8 @@ class Genie(deadwood.MSTClusterer):
 class GIc(deadwood.MSTClusterer):
     """
     GIc (Genie+Information Criterion) clustering algorithm
+
+    [TESTING]
 
 
     Parameters
@@ -370,16 +366,16 @@ class GIc(deadwood.MSTClusterer):
         The metric used to compute the linkage; see :any:`genieclust.Genie`
         for more details.
 
-    compute_all_cuts : bool
-        Whether to compute the requested *n_clusters*-partition and all
+    coarser : bool, default=False
+        Whether to compute the requested `n_clusters`-partition and all
         the coarser-grained ones; see :any:`genieclust.Genie`
         for more details.
 
-        Note that if *compute_all_cuts* is ``True``, then the *i*-th cut
-        in the hierarchy behaves as if *add_clusters* was equal to
-        *n_clusters-i*. In other words, the returned cuts might be different
+        Note that if `coarser` is ``True``, then the `i`-th cut
+        in the hierarchy behaves as if `add_clusters` was equal to
+        `n_clusters-i`. In other words, the returned cuts might be different
         from those obtained by multiple calls to GIc, each time with
-        different *n_clusters* and constant *add_clusters* requested.
+        different `n_clusters` and constant `add_clusters` requested.
 
     add_clusters : int
         Number of additional clusters to work with internally.
@@ -420,7 +416,7 @@ class GIc(deadwood.MSTClusterer):
     Clustering Algorithm.  It was proposed by Anna Cena in [1]_.
     GIc was inspired by ITM [2]_ and Genie [3]_.
 
-    GIc computes an *n_clusters*-partition based on a pre-computed minimum
+    GIc computes an `n_clusters`-partition based on a pre-computed minimum
     spanning tree (MST) of the pairwise distance graph of a given point set
     (refer to :any:`deadwood.MSTBase` and [4]_ for more details).
     Clusters are merged so as to maximise (heuristically)
@@ -434,7 +430,7 @@ class GIc(deadwood.MSTClusterer):
     the Genie method with thresholds [0.1, 0.3, 0.5, 0.7], which
     we observe to be a sensible choice for most clustering activities.
     Hence, contrary to the Genie method, we can say that GIc is virtually
-    parameter-free. However, when run with different *n_clusters* parameter,
+    parameter-free. However, when run with different `n_clusters` parameter,
     it does not yield a hierarchy of nested partitions (unless some more
     laborious parameter tuning is applied).
 
@@ -476,7 +472,7 @@ class GIc(deadwood.MSTClusterer):
             *,
             gini_thresholds=[0.1, 0.3, 0.5, 0.7],
             metric="l2",
-            compute_all_cuts=False,
+            coarser=False,
             add_clusters=0,
             n_features=None,
             quitefastmst_params=None,  # TODO ?dict(mutreach_ties="dcore_min", mutreach_leaves="reconnect_dcore_min"),
@@ -490,7 +486,7 @@ class GIc(deadwood.MSTClusterer):
             verbose=verbose
         )
 
-        self.compute_all_cuts    = compute_all_cuts
+        self.coarser             = coarser
         self.gini_thresholds     = gini_thresholds
         self.n_features          = n_features
         self.add_clusters        = add_clusters
@@ -500,6 +496,7 @@ class GIc(deadwood.MSTClusterer):
         self.counts_             = None
         self._links_             = None
         self._iters_             = None
+        self.labels_matrix_      = None
 
 
     def _check_params(self, cur_state=None):
@@ -514,7 +511,7 @@ class GIc(deadwood.MSTClusterer):
             if not (0.0 <= g <= 1.0):
                 raise ValueError("All gini_thresholds must be in [0,1].")
 
-        self.compute_all_cuts  = bool(self.compute_all_cuts)
+        self.coarser  = bool(self.coarser)
 
 
 
@@ -549,10 +546,10 @@ class GIc(deadwood.MSTClusterer):
 
         Note that for `metric` of ``"precomputed"``, the `n_features`
         parameter must be set explicitly.
-
         """
         self.labels_     = None
         self.n_clusters_ = None
+        self.labels_matrix_ = None
 
         self._check_params()  # re-check, they might have changed
         self._get_mst(X)  # sets n_samples_, n_features_, _tree_d, _tree_i, _d_core, etc.
@@ -576,7 +573,7 @@ class GIc(deadwood.MSTClusterer):
             n_clusters=self.n_clusters,
             add_clusters=self.add_clusters,
             gini_thresholds=self.gini_thresholds,
-            compute_all_cuts=self.compute_all_cuts
+            coarser=self.coarser
         )
 
         ########################################################
@@ -601,13 +598,11 @@ class GIc(deadwood.MSTClusterer):
                             self.n_clusters_,
                             self.n_clusters))
 
-        self.labels_     = res["labels"]
-        if self.labels_ is not None and self.labels_.ndim > 1:
-            # TODO: update
-            # duplicate the 1st row (create the "0"-partition that will
-            # not be postprocessed):
-            self.labels_ = np.vstack((self.labels_[0, :], self.labels_))
-            #start_partition = 1  # do not postprocess the "0"-partition
+        if self.coarser:
+            self.labels_matrix_ = res["labels"]
+            self.labels_ = self.labels_matrix_[-1,:]
+        else:
+            self.labels_ = res["labels"]
 
         ########################################################
 

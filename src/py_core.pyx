@@ -799,9 +799,9 @@ cpdef dict genie_from_mst(
         Py_ssize_t[:,::1] mst_i,
         Py_ssize_t n_clusters=1,
         double gini_threshold=0.3,
-        bint compute_all_cuts=False,
+        bint coarser=False,
     ):
-    """The Genie Clustering Algorithm (with extensions)
+    """The Genie Clustering Algorithm (extended)
 
     Determines a dataset's partition based on a precomputed MST.
 
@@ -832,7 +832,7 @@ cpdef dict genie_from_mst(
     gini_threshold : float
         The threshold for the Genie correction
 
-    compute_all_cuts : bool
+    coarser : bool
         Determine n_clusters and all the more coarse-grained ones?
 
 
@@ -843,12 +843,12 @@ cpdef dict genie_from_mst(
         labels : ndarray, shape (n,) or (n_clusters, n) or None
             Is None if n_clusters==0.
 
-            If compute_all_cuts==False, we get the predicted labels,
+            If coarser==False, we get the predicted labels,
             representing an n_clusters-partition of X.
             labels[i] gives the cluster ID of the i-th input point.
             Label -1 denotes a skipped point.
 
-            If compute_all_cuts==True, then
+            If coarser==True, then
             labels[i,:] gives the (i+1)-partition, i=0,...,n_clusters-1.
 
         links : ndarray, shape (n-1,)
@@ -911,7 +911,7 @@ cpdef dict genie_from_mst(
     if n_clusters >= 1:
         n_clusters_ = min(g.get_max_n_clusters(), n_clusters)
 
-        if compute_all_cuts:
+        if coarser:
             tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)
             g.get_labels_matrix(n_clusters_, &tmp_labels_2[0,0])
             labels_ = tmp_labels_2
@@ -955,7 +955,7 @@ cpdef dict gic_from_mst(
         Py_ssize_t n_clusters=1,
         Py_ssize_t add_clusters=0,
         double[::1] gini_thresholds=None,
-        bint compute_all_cuts=False
+        bint coarser=False
     ):
     """GIc (Genie+Information Criterion) Information-Theoretic
     Hierarchical Clustering Algorithm
@@ -1022,7 +1022,7 @@ cpdef dict gic_from_mst(
         If gini_thresholds is of length 1 and add_clusters==0,
         then the procedure is equivalent to the classical Genie algorithm.
 
-    compute_all_cuts : bool
+    coarser : bool
         Determine n_clusters and all the more coarse-grained ones?
 
 
@@ -1082,7 +1082,7 @@ cpdef dict gic_from_mst(
     if n_clusters >= 1:
         n_clusters_ = min(g.get_max_n_clusters(), n_clusters)
 
-        if compute_all_cuts:
+        if coarser:
             tmp_labels_2 = np.empty((n_clusters_, n), dtype=np.intp)
             g.get_labels_matrix(n_clusters_, &tmp_labels_2[0,0])
             labels_ = tmp_labels_2

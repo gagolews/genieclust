@@ -123,21 +123,21 @@ def test_gic_precomputed():
             print("")
 
 
-        # test compute_all_cuts
+        # test coarser
         K = 20
         g = np.arange(1, 8)/10
         res1 = genieclust.GIc(K, gini_thresholds=g, metric="precomputed",
-            compute_all_cuts=True, verbose=True)
+            coarser=True, verbose=True)
         res1.n_features = X.shape[1]
-        res1 = res1.fit_predict(D)
-        assert res1.shape[1] == X.shape[0]
+        res1.fit(D)
+        assert res1.labels_matrix_.shape[1] == X.shape[0]
+        assert res1.labels_.shape[0] == X.shape[0]
         # assert res1.shape[0] == K+1   #  that's not necessarily true!
-        for k in range(1, res1.shape[0]):
+        for k in range(1, res1.labels_matrix_.shape[0]):
             res2 = genieclust.GIc(k, gini_thresholds=g, add_clusters=K-k,
                 metric="precomputed", n_features=X.shape[1])
             res2 = res2.fit_predict(D)
-            assert np.all(res2 == res1[k,:])
-
+            assert np.all(res2 == res1.labels_matrix_[k-1,:])
 
 
 if __name__ == "__main__":
