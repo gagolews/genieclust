@@ -45,7 +45,7 @@ class Genie(deadwood.MSTClusterer):
     n_clusters : int
         The number of clusters to detect.
 
-    gini_threshold : float in [0,1]
+    gini_threshold : float in [0,1], default=0.3
         The threshold for the Genie correction.
 
         The Gini index is used to quantify the inequality of the cluster
@@ -59,10 +59,10 @@ class Genie(deadwood.MSTClusterer):
         clustering.  Usually, thresholds of 0.1, 0.3, 0.5, and 0.7 are worth
         giving a try.
 
-    M : int
+    M : int, default=0
         The smoothing factor for the mutual reachability distance [2]_.
         `M = 0` and `M = 1` select the original distance as given by
-        the `metric` parameter; see :any:`deadwood.MSTBase`
+        the `metric` parameter; see :any:`deadwood.MSTBase` for more details.
 
     metric : str, default='l2'
         The metric used to compute the linkage; see
@@ -80,7 +80,7 @@ class Genie(deadwood.MSTClusterer):
         Additional parameters to be passed to ``quitefastmst.mst_euclid``
         if ``metric`` is ``"l2"``
 
-    verbose : bool
+    verbose : bool, default=False
         Whether to print diagnostic messages and progress information
         onto ``stderr``.
 
@@ -88,13 +88,13 @@ class Genie(deadwood.MSTClusterer):
     Attributes
     ----------
 
-    labels_ : ndarray, shape (n_samples_,)
+    labels_ : ndarray, shape (n_samples,)
         Detected cluster labels.
 
         An integer vector such that ``labels_[i]`` gives
         the cluster ID (between 0 and `n_clusters_` - 1) of the `i`-th object.
 
-    labels_matrix_ : None or ndarray, shape (n_clusters_, n_samples_)
+    labels_matrix_ : None or ndarray, shape (n_clusters, n_samples)
         Available if `coarser` is True.
         `labels_matrix[i,:]` represents an `i+1`-partition.
 

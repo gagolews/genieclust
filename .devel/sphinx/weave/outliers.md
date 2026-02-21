@@ -2,15 +2,21 @@
 
 
 
-# TODO: Outlier Detection 🚧
+# TODO: Outlier Detection with *Deadwood* 🚧
 
-::::{important}
+
+::::{note}
 🚧🚧 This chapter is under construction.  Please come back later.
-The outlier detection feature will be introduced in version 1.3.0 of the package.
-The previously-experimental noise point detector will not be available anymore
-as it has now been greatly improved.
-🚧🚧
 ::::
+
+The [*Deadwood*](https://deadwood.gagolewski.com/) outlier detection
+algorithm[^deadwood130] can be run on the clustered dataset to identify
+anomalous points in each cluster.  This may be beneficial where the
+clusters are of heterogeneous densities.
+
+[^deadwood130]: This new outlier detection feature was introduced in version
+    1.3.0 of the **genieclust** package.  The previously-experimental simple
+    noise point detector (relying on MST leaves) is not available anymore.
 
 
 
@@ -19,6 +25,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import genieclust
+import deadwood
 ```
 
 
@@ -31,7 +38,7 @@ at the [**hdbscan**](https://hdbscan.readthedocs.io)
 
 
 ``` python
-dataset = "hdbscan"
+dataset = "chameleon_t4_8k"
 X = np.loadtxt("%s.data.gz" % dataset, ndmin=2)
 labels_true = np.loadtxt("%s.labels0.gz" % dataset, dtype=np.intp) - 1
 n_clusters = len(np.unique(labels_true[labels_true>=0]))
@@ -90,11 +97,11 @@ Here are the effects of playing with the $M$ parameter
 
 
 ``` python
-Ms = [10, 25, 50, 100]
+Ms = [5, 50]
 for i in range(len(Ms)):
     g = genieclust.Genie(n_clusters=n_clusters, M=Ms[i])
     labels_genie = g.fit_predict(X)
-    plt.subplot(2, 2, i+1)
+    plt.subplot(1, 2, i+1)
     deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
     plt.title("(gini_threshold=%g, M=%d)"%(g.gini_threshold, g.M))
     plt.axis("equal")
@@ -118,9 +125,9 @@ granularity.  As *Genie* is a hierarchical algorithm, the partitions are properl
 
 
 ``` python
-ncs = [4, 5, 6, 7]
+ncs = [3, 6, 8, 10]
 for i in range(len(ncs)):
-    g = genieclust.Genie(n_clusters=ncs[i], M=100)
+    g = genieclust.Genie(n_clusters=ncs[i], M=50)
     labels_genie = g.fit_predict(X)
     plt.subplot(2, 2, i+1)
     deadwood.plot_scatter(X, labels=labels_genie, alpha=0.5, markers="o")
@@ -181,8 +188,8 @@ to the reference one:
 
 
 ``` python
-mcss = [5, 10, 25]
-mss = [5, 10]
+mcss = [5, 10, 50]
+mss = [5, 50]
 for i in range(len(mcss)):
     for j in range(len(mss)):
         h = hdbscan.HDBSCAN(min_cluster_size=mcss[i], min_samples=mss[j])
@@ -202,3 +209,5 @@ plt.show()
 ```{figure} outliers-figures/noise-HDBSCAN2-9.*
 Labels predicted by HDBSCAN\* – different settings
 ```
+
+

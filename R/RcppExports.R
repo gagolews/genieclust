@@ -191,7 +191,7 @@ wcnn_index <- function(X, y, M = 25L) {
 #' under the assumption that \eqn{0/0=0}.
 #'
 #' \code{normalized_pivoted_accuracy()} is defined as
-#' \eqn{(\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}},
+#' \eqn{\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}},
 #' where \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,K\}},
 #' and \eqn{n} is the sum of all elements in \eqn{C}.
 #'

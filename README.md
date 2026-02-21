@@ -74,7 +74,6 @@ The package also features an implementation of:
     Davies-Bouldin, Ball-Hall, Silhouette, or generalised Dunn indices).
 
 
-
 ## Author and Contributors
 
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
@@ -87,25 +86,20 @@ Maciej Bartoszuk, Anna Cena (R packages
 ([`rectangular_lsap`](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)).
 
 
-
-
 ## Examples, Tutorials, and Documentation
 
-The R interface is compatible with `stats::hclust()`,
-but there is more:
+The R interface is compatible with `stats::hclust()`:
 
 ```r
 X <- ...  # some data
-h <- gclust(X)
+h <- gclust(X)  # dist(X) also works, but is slower
 plot(h)  # plot cluster dendrogram
 cutree(h, k=2)
-# or simply:  genie(X, k=2)
+# or simply:  genie(X, k=2)  (faster)
 ```
-
 
 *To learn more about R, check out Marek's open-access textbook*
 [Deep R Programming](https://deepr.gagolewski.com/).
-
 
 
 The Python language version of **genieclust** has a **scikit-learn**-like API:
@@ -146,15 +140,11 @@ and
 
 ### R Version
 
-
 To install from [CRAN](https://CRAN.R-project.org/package=genieclust), call:
 
 ```r
 install.packages("genieclust")
 ```
-
-
-
 
 
 ### Other
@@ -163,8 +153,6 @@ The core functionality is implemented in the form of a header-only
 C++ library. It can thus be easily adapted for use in other projects.
 
 New contributions are welcome, e.g., Julia, Matlab/GNU Octave wrappers.
-
-
 
 
 ## License

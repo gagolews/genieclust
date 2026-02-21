@@ -51,7 +51,7 @@ normalizing_permutation(x, y = NULL)
 
 `normalized_clustering_accuracy()` is an asymmetric external cluster validity measure proposed by Gagolewski (2025). It assumes that the label vector `x` (or rows in the confusion matrix) represents the reference (ground truth) partition. It is the average proportion of correctly classified points in each cluster above the worst case scenario representing the uniform membership assignment, with the cluster ID matching based on the solution to the maximal linear sum assignment problem; see [`normalized_confusion_matrix`](compare_partitions.md)). The index is given by: $\max_\sigma \frac{1}{K} \sum_{j=1}^K \frac{c_{\sigma(j), j}-c_{\sigma(j),\cdot}/K}{c_{\sigma(j),\cdot}-c_{\sigma(j),\cdot}/K}$, where $C$ is a confusion matrix with $K$ rows and columns, $\sigma$ is a permutation of the set $\{1,\dots,K\}$, and $c_{i, \cdot}=c_{i, 1}+...+c_{i, K}$ is the i-th row sum, under the assumption that $0/0=0$.
 
-`normalized_pivoted_accuracy()` is defined as $(\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}$, where $\sigma$ is a permutation of the set $\{1,\dots,K\}$, and $n$ is the sum of all elements in $C$.
+`normalized_pivoted_accuracy()` is defined as $\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}$, where $\sigma$ is a permutation of the set $\{1,\dots,K\}$, and $n$ is the sum of all elements in $C$.
 
 `pair_sets_index()` (PSI) was introduced by Rezaei and Franti (2016). The simplified PSI assumes E=1 in the definition of the index, i.e., uses Eq. (20) in the said paper instead of Eq. (18). For non-square matrices, missing rows/columns are assumed to be filled with 0s.
 

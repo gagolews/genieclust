@@ -6,7 +6,7 @@
 
 The latest stable release of the R package **genieclust** is available from the
 [CRAN](https://CRAN.R-project.org/package=genieclust) repository.
-We can install it by calling:
+Install it by calling:
 
 
 ``` r
@@ -20,7 +20,6 @@ Below are a few basic examples of interacting with the package.
 ``` r
 library("genieclust")
 ```
-
 
 
 Let's take the [Sustainable Society Indices](http://www.ssfindex.com/)
@@ -99,6 +98,14 @@ sample(y_pred, 25)  # preview
 ```
 
 This gives the cluster IDs allocated to each country.
+
+
+::::{note}
+If we are only interested in the partition of a specific cardinality,
+calling `genie()` directly will be slightly faster than referring to
+`cutree(gclust(...))`.
+::::
+
 Let's depict the obtained partition using the **rworldmap** package:
 
 
@@ -163,21 +170,12 @@ Cluster dendrogram for the OECD countries
 ```
 
 
-
 ## Outlier Detection with Deadwood
 
-TODO.....
-
-
-If we are only interested in the partition of a specific cardinality,
-calling `genie()` directly will be slightly faster than referring to
-`cutree(gclust(...))`.
-
-
-
-
-
-
+The Deadwood outlier detection algorithm can be run on the clustered dataset
+to identify anomalous points in each cluster.
+See the [**deadwood**](https://deadwood.gagolewski.com/) package
+tutorials for more details.
 
 
 ## Remarks
@@ -187,6 +185,6 @@ calling `genie()` directly will be slightly faster than referring to
 (e.g., the Caliński-Harabasz index).
 
 For more details, refer to the package's {any}`documentation <../rapi>`.
+
 To learn more about R, check out Marek's open-access textbook
-[Deep R Programming](https://deepr.gagolewski.com/)
-{cite}`deepr`.
+[Deep R Programming](https://deepr.gagolewski.com/) {cite}`deepr`.

@@ -11,7 +11,7 @@
 **Genie finds meaningful clusters. It does so quickly, even in large datasets.**
 ::::
 
-The *genieclust* package {cite}`genieclust` for Python and R implements
+The **genieclust** package {cite}`genieclust` for Python and R implements
 a robust hierarchical clustering algorithm called *Genie* {cite}`genieins`.
 
 The idea behind *Genie* is beautifully simple. First, make each individual
@@ -51,7 +51,6 @@ When combined with the [**deadwood**](https://deadwood.gagolewski.com)
 package, it can act as an outlier detector.
 
 
-
 ## Python Version
 
 The **Python version** of **genieclust** is available via
@@ -83,7 +82,6 @@ labels = g.fit_predict(X)
 ::::
 
 
-
 ## R Version
 
 The **R version** of **genieclust** can be downloaded from
@@ -93,12 +91,11 @@ The **R version** of **genieclust** can be downloaded from
 install.packages("genieclust")
 ```
 
-Its interface is compatible with the classic `stats::hclust()`,
-but there is more:
+Its interface is compatible with the classic `stats::hclust()`:
 
 ```r
 X <- ...  # some data
-h <- gclust(X)
+h <- gclust(X)   # gclust(dist(X)) would be slower
 plot(h)  # plot cluster dendrogram
 cutree(h, k=2)
 # or simply:  genie(X, k=2)
@@ -126,35 +123,27 @@ The package also features an implementation of:
 
 -   internal cluster validity measures {cite}`cvi`:
     the Caliński–Harabasz, Silhouette, Ball–Hall, Davies–Bouldin,
-    generalised Dunn indices;
-
--   *(Python only)* union-find (disjoint sets) data structures (with
-    extensions);
-
--   *(Python only)* some R-like plotting functions.
-
+    generalised Dunn indices.
 
 
 ## Contributing
 
-*genieclust* is distributed under the open source GNU AGPL v3 license
+**genieclust** is distributed under the open source GNU AGPL v3 license
 and can be downloaded from [GitHub](https://github.com/gagolews/genieclust).
 The core functionality is implemented in the form of a header-only C++
 library. It can thus be easily adapted for use in other projects.
 New contributions are welcome, e.g., Julia, Matlab/GNU Octave wrappers.
 
 
-
 **Author and Maintainer**: [Marek Gagolewski](https://www.gagolewski.com/)
 
-Contributors: Maciej Bartoszuk and Anna Cena (*genieclust*'s predecessor
+Contributors: Maciej Bartoszuk and Anna Cena (**genieclust**'s predecessor
 R package [**genie**](https://CRAN.R-project.org/package=genie) {cite}`genieins`
 and some internal cluster validity measures [*CVI*](https://github.com/gagolews/optim_cvi) {cite}`cvi`);
 [Peter M. Larsen](https://github.com/pmla/)
 (an [implementation](https://github.com/scipy/scipy/blob/main/scipy/optimize/rectangular_lsap/rectangular_lsap.cpp)
 of the shortest augmenting path algorithm for the rectangular assignment problem
 which we use for computing some of the external cluster validity measures {cite}`nca`).
-
 
 
 ::::{toctree}

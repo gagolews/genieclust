@@ -75,8 +75,7 @@ Use \code{\link[stats]{cutree}} to obtain an arbitrary \eqn{k}-partition.
 
 \code{genie()} returns an object of class \code{mstclust}, which defines
 a \eqn{k}-partition, i.e., a vector whose \eqn{i}-th element denotes
-the \eqn{i}-th input point's cluster label
-between 1 and \eqn{k}.
+the \eqn{i}-th input point's cluster label between 1 and \eqn{k}.
 
 In both cases, the \code{mst} attribute gives the computed minimum
 spanning tree which can be reused in further calls to the functions
@@ -106,10 +105,10 @@ which is used in the definition of the HDBSCAN* algorithm
 For the smoothing factor \eqn{M>0}, outliers are pulled away from
 their neighbours.  This way, the Genie algorithm gives an alternative
 to the HDBSCAN* algorithm (Campello et al., 2013) that is able to detect
-a predefined number of clusters and indicate outliers (Gagolewski, 2026)
-without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s
+a predefined number of clusters and indicate outliers (via \pkg{deadwood}; see
+Gagolewski, 2026) without depending on DBSCAN*'s \code{eps} or HDBSCAN*'s
 \code{min_cluster_size} parameters.  Also make sure to check out
-the Lumbermark method that is also based on MSTs.
+the Lumbermark algorithm (package \pkg{lumbermark}) that is also based on MSTs.
 }
 \details{
 As with all distance-based methods (this includes k-means and DBSCAN as well),
