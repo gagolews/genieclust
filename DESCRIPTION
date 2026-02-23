@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: Genie: Fast and Robust Hierarchical Clustering
 Version: 1.3.0
-Date: 2026-02-21
+Date: 2026-02-23
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),

@@ -33,7 +33,6 @@ from . import core
 ###############################################################################
 
 
-
 class Genie(deadwood.MSTClusterer):
     """
     Genie: Fast and Robust Hierarchical Clustering

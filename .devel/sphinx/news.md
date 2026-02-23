@@ -10,7 +10,7 @@
     `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`.
 
 
-## 1.3.0 (2026-02-21)
+## 1.3.0 (2026-02-23)
 
 *   The package was heavily refactored; common MST-related functions and classes
     as well as functions from the `tools` and `plots` modules were moved to
