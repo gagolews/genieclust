@@ -59,7 +59,7 @@ std::vector<Py_ssize_t> translateLabels_fromR(const Rcpp::NumericVector& x, Py_s
     K = 0;
     for (size_t i=0; i<n; ++i) {
         int xi = (int)x[i];
-        if (xi < 1) Rf_error("All elements in a label vector must be >= 1.");
+        if (xi < 1) Rcpp::stop("All elements in a label vector must be >= 1.");
         ret[i] = (Py_ssize_t)(xi-1); // 1-based -> 0-based
 
         if (K < xi) K = xi;  // determine the max(x)
@@ -171,7 +171,7 @@ double calinski_harabasz_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     CalinskiHarabaszIndex ind(_X, (Py_ssize_t)K);
     ind.set_labels(_y);
@@ -191,16 +191,16 @@ double dunnowa_index(NumericMatrix X, NumericVector y, int M=25,
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     if (M <= 0)    // M = min(n-1, M) in the constructor
-        Rf_error("M must be positive.");
+        Rcpp::stop("M must be positive.");
 
     int _owa_numerator = DuNNOWA_get_OWA(std::string(owa_numerator));
     int _owa_denominator = DuNNOWA_get_OWA(std::string(owa_denominator));
 
     if (_owa_numerator == OWA_ERROR || _owa_denominator == OWA_ERROR) {
-        Rf_error("invalid OWA operator specifier");
+        Rcpp::stop("invalid OWA operator specifier");
     }
 
     DuNNOWAIndex ind(_X, (Py_ssize_t)K, false, M, _owa_numerator, _owa_denominator);
@@ -221,7 +221,7 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y,
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     LowercaseDeltaFactory* lowercase_deltaFactory;
     UppercaseDeltaFactory* uppercase_deltaFactory;
@@ -245,7 +245,7 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y,
         lowercase_deltaFactory = new LowercaseDelta6Factory();
     }
     else {
-        Rf_error("invalid lowercase_d");
+        Rcpp::stop("invalid lowercase_d");
     }
 
     if (uppercase_d == 1) {
@@ -258,7 +258,7 @@ double generalised_dunn_index(NumericMatrix X, NumericVector y,
         uppercase_deltaFactory = new UppercaseDelta3Factory();
     }
     else {
-        Rf_error("invalid uppercase_d");
+        Rcpp::stop("invalid uppercase_d");
     }
 
     bool areCentroidsNeeded = (
@@ -300,7 +300,7 @@ double negated_ball_hall_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     WCSSIndex ind(_X, (Py_ssize_t)K, false, true/*weighted*/);
     ind.set_labels(_y);
@@ -318,7 +318,7 @@ double negated_davies_bouldin_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     DaviesBouldinIndex ind(_X, (Py_ssize_t)K);
     ind.set_labels(_y);
@@ -336,7 +336,7 @@ double negated_wcss_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     WCSSIndex ind(_X, (Py_ssize_t)K, false, false/*not weighted*/);
     ind.set_labels(_y);
@@ -354,7 +354,7 @@ double silhouette_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     SilhouetteIndex ind(_X, (Py_ssize_t)K, false, false);
     ind.set_labels(_y);
@@ -372,7 +372,7 @@ double silhouette_w_index(NumericMatrix X, NumericVector y)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     SilhouetteIndex ind(_X, (Py_ssize_t)K, false, true);
     ind.set_labels(_y);
@@ -390,10 +390,10 @@ double wcnn_index(NumericMatrix X, NumericVector y, int M=25)
     std::vector<Py_ssize_t> _y = translateLabels_fromR(y, /*out*/K);
     CMatrix<FLOAT_T> _X(REAL(SEXP(X)), X.nrow(), X.ncol(), false);
     if (_X.nrow() < 1 || _X.nrow() != _y.size())
-        Rf_error("Incompatible X and y");
+        Rcpp::stop("Incompatible X and y");
 
     if (M <= 0)    // M = min(n-1, M) in the constructor
-        Rf_error("M must be positive.");
+        Rcpp::stop("M must be positive.");
 
     WCNNIndex ind(_X, (Py_ssize_t)K, false, M);
     ind.set_labels(_y);
