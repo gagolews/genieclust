@@ -15,7 +15,7 @@ at <https://genieclust.gagolewski.com/>.
 
 When using **genieclust** in research publications, please
 cite (Gagolewski, 2021) and (Gagolewski, Bartoszuk, Cena, 2016)
-as specified below. Thank you.
+as specified below.
 
 
 ## About

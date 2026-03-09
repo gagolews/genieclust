@@ -6,3 +6,4 @@
 
 See [*Clustering with minimum spanning trees: How good can it be?*](https://link.springer.com/content/pdf/10.1007/s00357-024-09483-1.pdf)
 {cite}`cvimst`, in particular, Figure 3 and Table 4.
+

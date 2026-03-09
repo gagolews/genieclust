@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import genieclust
 import deadwood
 
-plot_params = dict(s=25, markers="o", alpha=0.5, asp=1)
+plot_params = dict(s=10, markers="o", alpha=0.75, asp=1)
 ```
 
 
@@ -346,3 +346,6 @@ For more details, refer to the package's API reference manual:
 To learn more about Python, check out Marek's open-access textbook
 [*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.
+
+Also check out Marek's new [*Lumbermark*](https://lumbermark.gagolewski.com/)
+clustering algorithm.

@@ -3,12 +3,16 @@
 ## How to Cite
 
 When using **genieclust** in research publications, please cite
-{cite}`genieclust` and {cite}`genieins` as specified below.  Thank you.
+{cite}`genieclust` and {cite}`genieins` as specified below.
 
 
 ## See Also
 
-* **quitefastmst**: <https://quitefastmst.gagolewski.com>
+* **quitefastmst**: <https://quitefastmst.gagolewski.com/>
+
+* **deadwood**: <https://deadwood.gagolewski.com/>
+
+* **lumbermark**: <https://lumbermark.gagolewski.com/>
 
 * **scikit-learn**: <https://scikit-learn.org/stable/modules/clustering.html>
 
@@ -19,7 +23,6 @@ When using **genieclust** in research publications, please cite
 * **fastcluster**: <http://www.danifold.net/fastcluster.html>
 
 * **ITM**: <https://github.com/amueller/information-theoretic-mst>
-
 
 
 ## Bibliography

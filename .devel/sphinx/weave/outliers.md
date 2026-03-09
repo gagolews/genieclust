@@ -7,7 +7,7 @@
 
 
 The [*Deadwood*](https://deadwood.gagolewski.com/) outlier detection
-algorithm[^deadwood130] can be run on the clustered dataset to identify
+algorithm[^deadwood130] can be run on a clustered dataset to identify
 anomalous points in each cluster.  This may be beneficial where the
 clusters are of heterogeneous densities.
 
@@ -25,7 +25,7 @@ import genieclust
 import deadwood
 
 def plot_scatter(X, labels=None):
-    deadwood.plot_scatter(X, labels=labels, asp=1, alpha=0.5, markers='o', s=10)
+    deadwood.plot_scatter(X, labels=labels, asp=1, alpha=0.75, markers='o', s=10)
 ```
 
 
@@ -87,7 +87,7 @@ on a specific threshold $\varepsilon$ that is applied onto the points'
 core distances.
 
 In our case, we can perform anomaly detection on subsets of
-mutual reachability minium spanning trees using the
+mutual reachability minimum spanning trees using the
 [*Deadwood*](https://deadwood.gagolewski.com/) algorithm, separately
 in each cluster identified by *Genie*.
 

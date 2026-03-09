@@ -24,7 +24,7 @@ import genieclust
 import deadwood
 
 def plot_scatter(X, labels=None):
-    deadwood.plot_scatter(X, labels=labels, asp=1, alpha=0.5, markers='o', s=10)
+    deadwood.plot_scatter(X, labels=labels, asp=1, alpha=0.75, markers='o', s=10)
 ```
 
 ```{python settings,results="hide",echo=FALSE}

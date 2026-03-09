@@ -23,7 +23,7 @@ import matplotlib.pyplot as plt
 import genieclust
 import deadwood
 
-plot_params = dict(s=25, markers="o", alpha=0.5, asp=1)
+plot_params = dict(s=10, markers="o", alpha=0.75, asp=1)
 ```
 
 

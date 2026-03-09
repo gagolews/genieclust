@@ -188,3 +188,6 @@ For more details, refer to the package's {any}`documentation <../rapi>`.
 
 To learn more about R, check out Marek's open-access textbook
 [Deep R Programming](https://deepr.gagolewski.com/) {cite}`deepr`.
+
+Also check out Marek's new [*Lumbermark*](https://lumbermark.gagolewski.com/)
+clustering algorithm.
