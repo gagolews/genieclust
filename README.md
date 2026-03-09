@@ -56,8 +56,9 @@ enabling it to act as an alternative to *HDBSCAN\** (Campello et al., 2013)
 that can identify any number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult to set `eps` parameter.
 
-When combined with the [**deadwood**](https://deadwood.gagolewski.com)
-package, it can act as an outlier detector.
+When combined with [*Deadwood*](https://deadwood.gagolewski.com), it can act as
+an outlier detector. Also, check out Marek's new
+[*Lumbermark*](https://lumbermark.gagolewski.com/) clustering algorithm.
 
 
 ## Other Package Features

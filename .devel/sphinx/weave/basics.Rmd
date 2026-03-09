@@ -258,3 +258,6 @@ For more details, refer to the package's API reference manual:
 To learn more about Python, check out Marek's open-access textbook
 [*Minimalist Data Wrangling in Python*](https://datawranglingpy.gagolewski.com/)
 {cite}`datawranglingpy`.
+
+Also check out Marek's new [*Lumbermark*](https://lumbermark.gagolewski.com/)
+clustering algorithm.
