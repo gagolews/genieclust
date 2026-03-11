@@ -120,8 +120,6 @@ IntegerVector dot_genie(
 
     CMatrix<Py_ssize_t> mst_i(n-1, 2);
     std::vector<double> mst_d(n-1);
-
-
     for (Py_ssize_t i=0; i<n-1; ++i) {
         mst_i(i, 0) = (Py_ssize_t)mst(i, 0) - 1;  // 1-based to 0-based indexes
         mst_i(i, 1) = (Py_ssize_t)mst(i, 1) - 1;  // 1-based to 0-based indexes
@@ -172,7 +170,6 @@ IntegerVector dot_genie(
     //         stop("invalid `postprocess`");
     // }
 
-    // k_detected TODO cut_edges....
     IntegerVector res(n);
     for (Py_ssize_t i=0; i<n; ++i) {
         GENIECLUST_ASSERT(xres[i] >= 0);

@@ -89,8 +89,8 @@ protected:
         for (Py_ssize_t i=0; i<this->n-1; ++i) {
             Py_ssize_t i1 = this->mst_i[i*2+0];
             Py_ssize_t i2 = this->mst_i[i*2+1];
-            GENIECLUST_ASSERT(i1 < this->n)
-            GENIECLUST_ASSERT(i2 < this->n)
+            GENIECLUST_ASSERT(i1 < this->n);
+            GENIECLUST_ASSERT(i2 < this->n);
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
@@ -148,7 +148,7 @@ public:
                 continue;
             }
             else {
-                GENIECLUST_ASSERT(i == 0 || mst_d[i-1] <= mst_d[i])
+                GENIECLUST_ASSERT(i == 0 || mst_d[i-1] <= mst_d[i]);
             }
         }
 
@@ -185,8 +185,8 @@ public:
         for (Py_ssize_t i=0; i<this->n-1; ++i) {
             Py_ssize_t i1 = this->mst_i[i*2+0];
             Py_ssize_t i2 = this->mst_i[i*2+1];
-            GENIECLUST_ASSERT(i1 < this->n)
-            GENIECLUST_ASSERT(i2 < this->n)
+            GENIECLUST_ASSERT(i1 < this->n);
+            GENIECLUST_ASSERT(i2 < this->n);
             if (i1 < 0 || i2 < 0) {
                 continue; // a no-edge -> ignore
             }
@@ -231,8 +231,8 @@ public:
                 if (j < 0) break;  // remaining are no-edges
                 Py_ssize_t i1 = this->mst_i[2*j+0];
                 Py_ssize_t i2 = this->mst_i[2*j+1];
-                GENIECLUST_ASSERT(i1 >= 0)
-                GENIECLUST_ASSERT(i2 >= 0)
+                GENIECLUST_ASSERT(i1 >= 0);
+                GENIECLUST_ASSERT(i2 >= 0);
                 ds.merge(this->unskip_index_rev[i1], this->unskip_index_rev[i2]);
             }
             return this->get_labels(&ds, res);
@@ -267,7 +267,7 @@ public:
         Py_ssize_t cur_cluster = n_clusters;
         if (this->get_max_n_clusters() == n_clusters) {
             cur_cluster--;
-            GENIECLUST_ASSERT(cur_cluster >= 0)
+            GENIECLUST_ASSERT(cur_cluster >= 0);
             this->get_labels(&ds, &res[cur_cluster * this->n]);
         }
         for (Py_ssize_t it=0; it<this->get_max_n_clusters() - 1; ++it) {
@@ -275,16 +275,16 @@ public:
             if (j >= 0) {  // might not be true if forest_components.get_k() > 1
                 Py_ssize_t i1 = this->mst_i[2*j+0];
                 Py_ssize_t i2 = this->mst_i[2*j+1];
-                GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
+                GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
                 ds.merge(this->unskip_index_rev[i1], this->unskip_index_rev[i2]);
             }
             if (it >= this->get_max_n_clusters() - n_clusters - 1) {
                 cur_cluster--;
-                GENIECLUST_ASSERT(cur_cluster >= 0)
+                GENIECLUST_ASSERT(cur_cluster >= 0);
                 this->get_labels(&ds, &res[cur_cluster * this->n]);
             }
         }
-        GENIECLUST_ASSERT(cur_cluster == 0)
+        GENIECLUST_ASSERT(cur_cluster == 0);
     }
 
 
@@ -406,7 +406,7 @@ protected:
                 // else reuse lastidx
 
 
-                GENIECLUST_ASSERT(lastidx < this->n - 1)
+                GENIECLUST_ASSERT(lastidx < this->n - 1);
                 GENIECLUST_ASSERT(lastidx >= 0 && lastidx < this->n - 1);
                 GENIECLUST_ASSERT(this->mst_i[2*lastidx+0] >= 0 && this->mst_i[2*lastidx+1] >= 0);
 
@@ -438,7 +438,7 @@ protected:
                 (*links)[it] = curidx;
             }
 
-            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0)
+            GENIECLUST_ASSERT(i1 >= 0 && i2 >= 0);
             Py_ssize_t i1r = this->unskip_index_rev[i1];
             Py_ssize_t i2r = this->unskip_index_rev[i2];
             bool forget = this->forest_components.get_k() > 1 &&

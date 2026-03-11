@@ -50,13 +50,13 @@ or an object of class \code{mst} (see \code{\link[deadwood]{mst}})}
 
 \item{...}{further arguments passed to \code{\link[deadwood]{mst}()}}
 
-\item{gini_threshold}{threshold for the Genie correction, i.e.,
-the Gini index of the cluster size distribution;
+\item{gini_threshold}{numeric value in (0,1]; threshold for the Genie
+correction, i.e., the Gini index of the cluster size distribution;
 threshold of 1.0 leads to the single linkage algorithm;
 low thresholds highly penalise the formation of small clusters}
 
-\item{M}{smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
-otherwise, the mutual reachability distance is used}
+\item{M}{integer; smoothing factor; \eqn{M \leq 1} gives the selected
+\code{distance}; otherwise, the mutual reachability distance is used}
 
 \item{distance}{metric used to compute the linkage, one of:
 \code{"euclidean"} (synonym: \code{"l2"}),
@@ -66,7 +66,7 @@ otherwise, the mutual reachability distance is used}
 \item{verbose}{logical; whether to print diagnostic messages
 and progress information}
 
-\item{k}{the desired number of clusters to detect}
+\item{k}{integer; the desired number of clusters to detect}
 }
 \value{
 \code{gclust()} computes the entire clustering hierarchy; it

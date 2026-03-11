@@ -38,10 +38,9 @@
 #ifndef GENIECLUST_ASSERT
 #define __GENIECLUST_STR(x) #x
 #define GENIECLUST_STR(x) __GENIECLUST_STR(x)
-
-#define GENIECLUST_ASSERT(EXPR) { if (!(EXPR)) \
+#define GENIECLUST_ASSERT(EXPR) do if (!(EXPR)) \
     throw std::runtime_error( "genieclust: Assertion " #EXPR " failed in "\
-        __FILE__ ":" GENIECLUST_STR(__LINE__) ); }
+        __FILE__ ":" GENIECLUST_STR(__LINE__) ); while(0)
 #endif
 
 

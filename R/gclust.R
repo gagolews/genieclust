@@ -86,8 +86,8 @@
 #'     object of class \code{dist} (see \code{\link[stats]{dist}}),
 #'     or an object of class \code{mst} (see \code{\link[deadwood]{mst}})
 #'
-#' @param gini_threshold threshold for the Genie correction, i.e.,
-#'     the Gini index of the cluster size distribution;
+#' @param gini_threshold numeric value in (0,1]; threshold for the Genie
+#'     correction, i.e., the Gini index of the cluster size distribution;
 #'     threshold of 1.0 leads to the single linkage algorithm;
 #'     low thresholds highly penalise the formation of small clusters
 #'
@@ -99,10 +99,10 @@
 #' @param verbose logical; whether to print diagnostic messages
 #'     and progress information
 #'
-#' @param k the desired number of clusters to detect
+#' @param k integer; the desired number of clusters to detect
 #'
-#' @param M smoothing factor; \eqn{M \leq 1} gives the selected \code{distance};
-#'     otherwise, the mutual reachability distance is used
+#' @param M integer; smoothing factor; \eqn{M \leq 1} gives the selected
+#'     \code{distance}; otherwise, the mutual reachability distance is used
 #'
 #' @param ... further arguments passed to \code{\link[deadwood]{mst}()}
 #'
@@ -194,9 +194,8 @@ gclust.default <- function(
     ...
 ) {
     distance <- match.arg(distance)
-    tree <- mst(d, M=M, distance=distance, verbose=verbose, ...)
     gclust.mst(
-        tree,
+        mst(d, M=M, distance=distance, verbose=verbose, ...),
         gini_threshold=gini_threshold,
         verbose=verbose
     )

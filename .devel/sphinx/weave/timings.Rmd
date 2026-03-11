@@ -9,15 +9,14 @@ This section needs to be extended.
 
 
 Thanks to [**quitefastmst**](https://quitefastmst.gagolewski.com/),
-the time to perform cluster analysis is pretty low in spaces
+the time to perform a cluster analysis is pretty low in spaces
 of low intrinsic dimensionality.
 
-Let's perform a test on a dataset consisting of 1M points in $\mathbb{R}^2$:
+Let's conduct a test on a dataset consisting of 1M points in $\mathbb{R}^2$:
 
 ```{python}
 import time
 import numpy as np
-import genieclust
 np.random.seed(123)
 n = 1_000_000
 d = 2
@@ -27,6 +26,7 @@ X = np.random.randn(n, d)
 Genie:
 
 ```{python}
+import genieclust
 t0 = time.time()
 g = genieclust.Genie(n_clusters=2)
 g.fit(X)
@@ -36,7 +36,8 @@ print("Elapsed time: %.2f secs." % (time.time()-t0))
 Due to the curse of dimensionality, processing
 datasets with high intrinsic dimensionality is slower.
 
-A comparison against k-means:
+A comparison against k-means (usually the fastest algorithm
+for small *k*):
 
 ```{python}
 import sklearn.cluster
@@ -47,7 +48,7 @@ print("Elapsed time: %.2f secs." % (time.time()-t0))
 ```
 
 
-A comparison against **HDBSCAN**:
+A comparison against [**HDBSCAN**](https://hdbscan.readthedocs.io):
 
 ```{python}
 import hdbscan

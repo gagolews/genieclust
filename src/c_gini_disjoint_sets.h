@@ -158,7 +158,7 @@ protected:
     {
         gini = 0.0;
         if (number_of_size.size() > 1) { // otherwise all clusters are of identical sizes
-            GENIECLUST_ASSERT(k-forgotten-1 > 0)
+            GENIECLUST_ASSERT(k-forgotten-1 > 0);
             Py_ssize_t v = number_of_size.get_key_min();
             Py_ssize_t i = 0;
             while (v != number_of_size.get_key_max()) {
@@ -383,7 +383,7 @@ public:
      */
     void get_counts(Py_ssize_t* res)
     {
-        GENIECLUST_ASSERT(forgotten == 0)
+        GENIECLUST_ASSERT(forgotten == 0);
         Py_ssize_t i = 0;
         for (CIntDict<Py_ssize_t>::iterator it = number_of_size.begin();
              it != number_of_size.end(); ++it)
