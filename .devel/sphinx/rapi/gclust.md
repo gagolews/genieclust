@@ -53,11 +53,11 @@ genie(d, k, gini_threshold = 0.3, verbose = FALSE, ...)
 |----|----|
 | `d` | a numeric matrix (or an object coercible to one, e.g., a data frame with numeric-like columns) or an object of class `dist` (see [`dist`](https://stat.ethz.ch/R-manual/R-devel/library/stats/help/dist.html)), or an object of class `mst` (see [`mst`](https://deadwood.gagolewski.com/rapi/mst.html)) |
 | `...` | further arguments passed to [`mst()`](https://deadwood.gagolewski.com/rapi/mst.html) |
-| `gini_threshold` | threshold for the Genie correction, i.e., the Gini index of the cluster size distribution; threshold of 1.0 leads to the single linkage algorithm; low thresholds highly penalise the formation of small clusters |
-| `M` | smoothing factor; $M \leq 1$ gives the selected `distance`; otherwise, the mutual reachability distance is used |
+| `gini_threshold` | numeric value in (0,1\]; threshold for the Genie correction, i.e., the Gini index of the cluster size distribution; threshold of 1.0 leads to the single linkage algorithm; low thresholds highly penalise the formation of small clusters |
+| `M` | integer; smoothing factor; $M \leq 1$ gives the selected `distance`; otherwise, the mutual reachability distance is used |
 | `distance` | metric used to compute the linkage, one of: `"euclidean"` (synonym: `"l2"`), `"manhattan"` (a.k.a. `"l1"` and `"cityblock"`), `"cosine"` |
 | `verbose` | logical; whether to print diagnostic messages and progress information |
-| `k` | the desired number of clusters to detect |
+| `k` | integer; the desired number of clusters to detect |
 
 ## Details
 
