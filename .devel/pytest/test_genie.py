@@ -7,21 +7,6 @@ import deadwood
 import scipy.spatial.distance
 import numpy as np
 
-try:
-    import rpy2
-    from rpy2.robjects.packages import importr
-    from rpy2.robjects import numpy2ri
-    from rpy2.robjects import default_converter
-    #rpy2.robjects.numpy2ri.activate()
-    stats = importr("stats")
-    genie = importr("genie")
-except:
-    rpy2 = None
-    stats = None
-    genie = None
-
-
-
 import os
 if os.path.exists(".devel/benchmark_data"):
     path = ".devel/benchmark_data"
@@ -31,6 +16,17 @@ else:
     path = "../benchmark_data"
 
 def __test_genie(metric='euclidean'):
+    try:
+        import rpy2
+        from rpy2.robjects.packages import importr
+        from rpy2.robjects import numpy2ri
+        from rpy2.robjects import default_converter
+        #rpy2.robjects.numpy2ri.activate()
+        stats = importr("stats")
+        genie = importr("genie")
+    except:
+        return
+
     np_cv_rules = default_converter + numpy2ri.converter
     with np_cv_rules.context():
         for dataset in ["s1", "Aggregation", "unbalance", "h2mg_64_50", "bigger"]:#, "h2mg_1024_50", "t4_8k", "bigger"]:
