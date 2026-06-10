@@ -150,9 +150,9 @@ protected:
     Py_ssize_t forgotten;
 
 
-    /*! Re-compute the normalized Gini index
+    /*! Recompute the normalized Gini index
      *
-     *  based on a formula given in [TODO:derive the formula nicely]
+     *  [TODO:derive the formula nicely]
      */
     void recompute_gini()
     {
@@ -162,7 +162,7 @@ protected:
             Py_ssize_t v = number_of_size.get_key_min();
             Py_ssize_t i = 0;
             while (v != number_of_size.get_key_max()) {
-                Py_ssize_t w = v;                       // previous v
+                Py_ssize_t w = v;                    // previous v
                 v = number_of_size.get_key_next(v);  // next v
                 i += number_of_size[w];              // cumulative counts
                 gini += ((double)v-w)*i*((double)k-forgotten-i);

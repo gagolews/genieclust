@@ -71,7 +71,6 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
     mapTitle="")
 ```
 
-
 We can compute, for instance, the average indicators in each identified group:
 
 ```{r ssi-colmeans}

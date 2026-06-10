@@ -64,7 +64,7 @@ h <- gclust(X)  # default: gini_threshold=0.3, distance="euclidean"
 print(h)
 ## 
 ## Call:
-## gclust.mst(d = tree, gini_threshold = gini_threshold, verbose = verbose)
+## gclust.mst(d = mst(d, M = M, distance = distance, verbose = verbose,     ...), gini_threshold = gini_threshold, verbose = verbose)
 ## 
 ## Cluster method   : Genie(0.3) 
 ## Distance         : euclidean 
@@ -122,7 +122,6 @@ mapCountryData(mapdata, nameColumnToPlot="Cluster", catMethod="categorical",
 ```{figure} r-figures/ssi-map-1.*
 Countries grouped with respect to the SSI categories
 ```
-
 
 We can compute, for instance, the average indicators in each identified group:
 

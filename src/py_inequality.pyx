@@ -117,7 +117,7 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     the indices yield values of 0. Vectors with all elements but one equal to 0
     (perfect inequality), are assigned scores of 1.
     They follow the Pigou-Dalton principle (are Schur-convex):
-    setting :math:`x_i = x_i - h` and :math:`x_j = x_j + h` with :math:`h > 0`
+    setting :math:`x_i := x_i - h` and :math:`x_j := x_j + h` with :math:`h > 0`
     and :math:`x_i - h \\geq  x_j + h` (taking from the "rich" and giving away
     to the "poor") decreases the inequality.
 

@@ -74,7 +74,7 @@ write_if_different <- function (path, contents, command=NULL, check=TRUE)
         return(FALSE)
 
 
-    if (!str_detect(name, "^[a-zA-Z][a-zA-Z0-9_.-]*$")) {
+    if (!stringi::stri_detect_regex(name, "^[a-zA-Z][a-zA-Z0-9_.-]*$")) {
         cli::cli_inform(c(x = "Skipping {.path {name}}", i = "Invalid file name"))
         FALSE
     }

@@ -31,7 +31,7 @@ For constant vectors (perfect equity), the indices yield values of 0.
 Vectors with all elements but one equal to 0 (perfect inequality),
 are assigned scores of 1.
 They follow the Pigou-Dalton principle (are Schur-convex):
-setting \eqn{x_i = x_i - h} and \eqn{x_j = x_j + h} with \eqn{h > 0}
+setting \eqn{x_i := x_i - h} and \eqn{x_j := x_j + h} with \eqn{h > 0}
 and \eqn{x_i - h \geq  x_j + h} (taking from the "rich" and
 giving to the "poor") decreases the inequality.
 

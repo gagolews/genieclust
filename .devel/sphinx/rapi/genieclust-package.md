@@ -8,6 +8,10 @@ See [`genie()`](gclust.md) for more details.
 
 **Maintainer**: Marek Gagolewski <marek@gagolewski.com> ([ORCID](https://orcid.org/0000-0003-0637-6028)) \[copyright holder\]
 
+Authors:
+
+- Marek Gagolewski <marek@gagolewski.com> ([ORCID](https://orcid.org/0000-0003-0637-6028)) \[copyright holder\]
+
 Other contributors:
 
 - Maciej Bartoszuk \[contributor\]
