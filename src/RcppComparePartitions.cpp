@@ -127,6 +127,9 @@ std::vector<double> get_contingency_matrix(
 //' \eqn{\sigma} is a permutation of the set \eqn{\{1,\dots,K\}}, and
 //' \eqn{c_{i, \cdot}=c_{i, 1}+...+c_{i, K}} is the i-th row sum,
 //' under the assumption that \eqn{0/0=0}.
+//' If \eqn{C} has fewer columns than rows (the predicted partition has
+//' fewer clusters than the reference one), the missing columns are assumed
+//' to be filled with 0s.
 //'
 //' \code{normalized_pivoted_accuracy()} is defined as
 //' \eqn{\max_\sigma \sum_{j=1}^{K} \frac{c_{\sigma(j),j}/n-1/K}{1-1/K}},

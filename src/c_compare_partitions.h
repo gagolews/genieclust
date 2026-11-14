@@ -499,7 +499,7 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 template<class T>
 double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
 {
-    GENIECLUST_ASSERT(xc == yc);  // TODO
+    GENIECLUST_ASSERT(xc >= yc);  // TODO: xc < yc
 
     std::vector<double> sum_x(xc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {

@@ -93,5 +93,21 @@ def test_compare_partitions():
             # TODO: more tests...
 
 
+def test_nca_fewer_predicted_clusters():
+    # y may have fewer clusters than x; the missing columns are filled with 0s
+    x = np.r_[1, 1, 2, 2, 3, 3]
+    for y in [np.r_[1, 1, 2, 2, 2, 2], np.r_[2, 2, 3, 3, 3, 3], np.r_[1, 1, 3, 3, 3, 3]]:
+        assert abs(normalized_clustering_accuracy(x, y)-0.5)<1e-9
+
+    for n in [15, 100]:
+        for k in range(2, 11):
+            x = np.random.permutation(np.r_[np.arange(k), np.random.choice(np.arange(k), n-k)])
+            y = np.random.choice(np.arange(k-1), n)
+            C = np.zeros((k, k))
+            np.add.at(C, (x, y), 1)
+            assert abs(normalized_clustering_accuracy(x, y)-normalized_clustering_accuracy(C))<1e-9
+
+
 if __name__ == "__main__":
     test_compare_partitions()
+    test_nca_fewer_predicted_clusters()

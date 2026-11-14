@@ -10,6 +10,15 @@
     `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`.
 
 
+## 1.3.0.9001 (under development)
+
+*   [BUGFIX]  `normalized_clustering_accuracy` accepts confusion matrices
+    with fewer columns than rows again, i.e., predicted partitions with
+    fewer clusters than the reference one.  As in version 1.2.0,
+    the missing columns are treated as if they were filled with 0s.
+    Confusion matrices with more columns than rows still yield an error (#92).
+
+
 ## 1.3.0 (2026-02-23)
 
 *   The package was heavily refactored; common MST-related functions and classes

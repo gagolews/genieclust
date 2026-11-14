@@ -47,3 +47,9 @@ for (score in scores) {
         }
     }
 }
+
+
+# the predicted partition may have fewer clusters than the reference one
+x <- c(1, 1, 2, 2, 3, 3)
+for (y in list(c(1, 1, 2, 2, 2, 2), c(2, 2, 3, 3, 3, 3), c(1, 1, 3, 3, 3, 3)))
+    expect_equal(normalized_clustering_accuracy(x, y), 0.5)

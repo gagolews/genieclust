@@ -533,6 +533,9 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     :math:`\\sigma` is a permutation of the set :math:`\\{1,\\dots,K\\}`, and
     and :math:`c_{i, \\cdot}=c_{i, 1}+...+c_{i, K}` is the `i`-th row sum,
     under the assumption that :math:`0/0=0`.
+    If `C` has fewer columns than rows (the predicted partition has fewer
+    clusters than the reference one), the missing columns are assumed
+    to be filled with 0s.
 
     `normalized_pivoted_accuracy` is defined as
     :math:`(\\max_\\sigma \\sum_{j=1}^{K} \\frac{c_{\\sigma(j),j}/n-1/K}{1-1/K}`,
