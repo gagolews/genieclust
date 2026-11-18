@@ -221,9 +221,9 @@ wcnn_index <- function(X, y, M = 25L) {
 #'
 #' \code{normalized_confusion_matrix()} computes the confusion matrix
 #' and permutes its rows and columns so that the sum of the elements
-#' of the main diagonal is the largest possible (by solving
-#' the maximal assignment problem).
-#' The function only accepts \eqn{K \leq L}.
+#' on the main diagonal is the largest possible (by solving
+#' the maximal linear sum assignment problem).
+#' The function only accepts \eqn{K = L}.
 #' The reordering of the columns of a confusion matrix can be determined
 #' by calling \code{normalizing_permutation()}.
 #'
@@ -283,7 +283,9 @@ wcnn_index <- function(X, y, M = 25L) {
 #'
 #' \code{normalized_confusion_matrix()} returns a numeric matrix.
 #'
-#' \code{normalizing_permutation()} returns a vector of indexes.
+#' \code{normalizing_permutation()} returns a list of two index vectors,
+#' each of the size \code{min(NROW(C), NCOL(C))}, giving the permutations
+#' of rows and columns.
 #'
 #'
 #' @examples

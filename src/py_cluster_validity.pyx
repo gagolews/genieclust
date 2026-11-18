@@ -188,7 +188,7 @@ cpdef double calinski_harabasz_index(X, y):
         https://doi.org/10.1080/03610927408827101
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -284,7 +284,7 @@ cpdef double negated_ball_hall_index(X, y):
         *ISODATA: A novel method of data analysis and pattern classification*,
         Technical report No. AD699616, Stanford Research Institute, 1965
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -381,7 +381,7 @@ cpdef double negated_davies_bouldin_index(X, y):
         PAMI-1 (2), 1979, 224-227, https://doi.org/10.1109/TPAMI.1979.4766909
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -474,7 +474,7 @@ cpdef double negated_wcss_index(X, y):
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -572,7 +572,7 @@ cpdef double silhouette_index(X, y):
         20, 1987, 53-65, https://doi.org/10.1016/0377-0427(87)90125-7
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -670,7 +670,7 @@ cpdef double silhouette_w_index(X, y):
         20, 1987, 53-65, https://doi.org/10.1016/0377-0427(87)90125-7
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -764,7 +764,7 @@ cpdef double wcnn_index(X, y, int M=25):
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_.=
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -871,7 +871,7 @@ cpdef double dunnowa_index(
         `(preprint) <https://raw.githubusercontent.com/gagolews/bibliography/master/preprints/2021cvi.pdf>`_
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]
@@ -990,7 +990,7 @@ cpdef double generalised_dunn_index(X, y, int lowercase_d=1, int uppercase_d=2):
         1998, 301-315, https://doi.org/10.1109/3477.678624/
 
     """
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order="C")
 
     cdef np.ndarray[double, ndim=2] _X = np.array(X, dtype=np.double, ndmin=2, order="C")
     cdef size_t n = _X.shape[0]

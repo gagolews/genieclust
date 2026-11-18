@@ -12,9 +12,9 @@ X <- t(cbind(
 ))
 y_true <- rep(1:2, c(n1, n2))
 
-y <- deadwood(X, M=10)
+y <- deadwood(X, M=10, max_k=1)
 # plot(X, col=y+1, asp=1)
-expect_equal(mean(y[y_true==2]), 1)
+expect_equal(max(mean(y[y_true==1]), mean(y[y_true==2])), 1)
 
 cl <- genie(X, 2, M=10, gini=0.5)
 stopifnot(all(cl==y_true) || all(3-cl==y_true))

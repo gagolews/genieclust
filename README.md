@@ -56,8 +56,8 @@ enabling it to act as an alternative to *HDBSCAN\** (Campello et al., 2013)
 that can identify any number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult to set `eps` parameter.
 
-When combined with [*Deadwood*](https://deadwood.gagolewski.com), it can act as
-an outlier detector. Also, check out Marek's new
+When combined with [*Deadwood*](https://deadwood.gagolewski.com/), it can act as
+an outlier detector. For a divisive version of *Genie*, check out the
 [*Lumbermark*](https://lumbermark.gagolewski.com/) clustering algorithm.
 
 
@@ -71,7 +71,7 @@ The package also features an implementation of:
     and partition similarity indices such as the adjusted Rand, Fowlkes-Mallows,
     or mutual information scores),
 
-* internal cluster validity indices (e.g., the Calinski-Harabasz,
+* internal cluster validity indices (e.g., the Caliński-Harabasz,
     Davies-Bouldin, Ball-Hall, Silhouette, or generalised Dunn indices).
 
 
@@ -131,12 +131,19 @@ pip3 install genieclust  # python3 -m pip install genieclust
 ```
 
 The package requires Python 3.9+ with
-**cython**,
-**numpy**,
-**scikit-learn**,
-[**quitefastmst**](https://quitefastmst.gagolewski.com/).
-and
+**cython**, **numpy**, **scikit-learn**,
+[**quitefastmst**](https://quitefastmst.gagolewski.com/), and
 [**deadwood**](https://deadwood.gagolewski.com/).
+
+
+For best performance, advanced users will benefit from compiling the package
+from sources:
+
+```bash
+CPPFLAGS="-O3 -march=native" pip3 install quitefastmst deadwood lumbermark --force --no-binary="quitefastmst,deadwood,genieclust"
+```
+
+🚧 TO DO (help needed): How to enable OpenMP support on macOS in **quitefastmst**?
 
 
 ### R Version
@@ -145,6 +152,21 @@ To install from [CRAN](https://CRAN.R-project.org/package=genieclust), call:
 
 ```r
 install.packages("genieclust")
+```
+
+For best performance, advanced users will benefit from compiling the package
+from sources:
+
+```r
+Sys.setenv(CXX_DEFS="-O3 -march=native")  # for gcc and clang
+install.packages(c("quitefastmst", "deadwood", "genieclust"), type="source")
+```
+
+To enable OpenMP on macOS, execute `brew install libomp`, and then call in R:
+
+```r
+Sys.setenv(CXX_DEFS="-O3 -march=native -Xpreprocessor -fopenmp")
+install.packages(c("quitefastmst", "deadwood", "genieclust"), type="source")
 ```
 
 

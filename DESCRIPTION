@@ -2,7 +2,7 @@ Package: genieclust
 Type: Package
 Title: Genie: Fast and Robust Hierarchical Clustering
 Version: 1.3.0.9001
-Date: 2026-04-05
+Date: 2026-11-18
 Authors@R: c(
     person("Marek", "Gagolewski",
         role = c("aut", "cre", "cph"),
@@ -19,13 +19,14 @@ Description: Genie is a robust hierarchical clustering algorithm
     clustering with respect to mutual reachability distances, allowing it to
     act as an alternative to 'HDBSCAN*' that can identify any number of clusters
     or their entire hierarchy.  When combined with the 'deadwood' package,
-    it can act as an outlier detector.  Additional package features include
+    it can act as an outlier detector.  The package also includes
     the Gini and Bonferroni inequality indices, external cluster validity
     measures (e.g., the normalised clustering accuracy, the adjusted Rand index,
     the Fowlkes-Mallows index, and normalised mutual information), and internal
     cluster validity indices (e.g., the Calinski-Harabasz, Davies-Bouldin,
     Ball-Hall, Silhouette, and generalised Dunn indices).
     The 'Python' version of 'genieclust' is available via 'PyPI'.
+    For a divisive version of Genie', check out the 'lumbermark' package.
 BugReports: https://github.com/gagolews/genieclust/issues
 URL:
     https://genieclust.gagolewski.com/,
@@ -42,4 +43,4 @@ Suggests:
 LinkingTo: Rcpp
 Encoding: UTF-8
 SystemRequirements: OpenMP
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.1

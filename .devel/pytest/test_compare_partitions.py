@@ -93,5 +93,18 @@ def test_compare_partitions():
             # TODO: more tests...
 
 
+def test_nonsquare():
+    C = np.array([[50, 0],[50,0],[0,100]])
+    assert adjusted_rand_score(C) == adjusted_rand_score(C.T)
+    assert pair_sets_index(C) == pair_sets_index(C.T)
+
+    C = np.array([[0, 0, 1, 0], [1, 0, 0, 0], [0, 0, 0, 1]])
+    assert np.all(normalizing_permutation(C)[0] == np.r_[0, 1, 2])
+    assert np.all(normalizing_permutation(C)[1] == np.r_[2, 0, 3])
+    assert np.all(normalizing_permutation(C.T)[0] == np.r_[0, 2, 3])
+    assert np.all(normalizing_permutation(C.T)[1] == np.r_[1, 0, 2])
+
+
 if __name__ == "__main__":
     test_compare_partitions()
+    test_nonsquare()

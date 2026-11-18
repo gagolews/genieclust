@@ -10,6 +10,23 @@
     `normalized_pivoted_accuracy` and `normalized_clustering_accuracy`.
 
 
+## 1.3.0.9xxx (under development)
+
+*   TODO: [NEW FEATURE] `normalized_clustering_accuracy` and
+    `normalized_pivoted_accuracy` have [EXPERIMENTAL, LIKELY TO CHANGE]
+    support for non-square confusion matrices.
+
+*   [BACKWARD INCOMPATIBILITY] `normalizing_permutation` now returns two index
+    vectors and accepts matrices of arbitrary shapes.
+    `normalized_confusion_matrix` accepts only square matrices.
+
+*   [BUGFIX] [PYTHON] Partition similarity measures did not handle
+    transposed confusion matrices (and other Fortran-style arrays) correctly.
+
+*   The code for finding the solution to the linear sum assignment problem
+    by P.M. Larsen was updated to the most recent version.
+
+
 ## 1.3.0 (2026-02-23)
 
 *   The package was heavily refactored; common MST-related functions and classes

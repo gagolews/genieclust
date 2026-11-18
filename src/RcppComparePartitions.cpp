@@ -159,9 +159,9 @@ std::vector<double> get_contingency_matrix(
 //'
 //' \code{normalized_confusion_matrix()} computes the confusion matrix
 //' and permutes its rows and columns so that the sum of the elements
-//' of the main diagonal is the largest possible (by solving
-//' the maximal assignment problem).
-//' The function only accepts \eqn{K \leq L}.
+//' on the main diagonal is the largest possible (by solving
+//' the maximal linear sum assignment problem).
+//' The function only accepts \eqn{K = L}.
 //' The reordering of the columns of a confusion matrix can be determined
 //' by calling \code{normalizing_permutation()}.
 //'
@@ -221,7 +221,9 @@ std::vector<double> get_contingency_matrix(
 //'
 //' \code{normalized_confusion_matrix()} returns a numeric matrix.
 //'
-//' \code{normalizing_permutation()} returns a vector of indexes.
+//' \code{normalizing_permutation()} returns a list of two index vectors,
+//' each of the size \code{min(NROW(C), NCOL(C))}, giving the permutations
+//' of rows and columns.
 //'
 //'
 //' @examples
@@ -417,6 +419,9 @@ NumericMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
+    if (xc != yc)
+        stop("the confusion matrix must be square");
+
     std::vector<double> C_out_Corder(xc*yc);
     Capply_pivoting(C.data(), xc, yc, C_out_Corder.data());
 
@@ -429,23 +434,28 @@ NumericMatrix normalized_confusion_matrix(RObject x, RObject y=R_NilValue)
 }
 
 
-
 //' @rdname compare_partitions
 //' @export
 //[[Rcpp::export]]
-IntegerVector normalizing_permutation(RObject x, RObject y=R_NilValue)
+List normalizing_permutation(RObject x, RObject y=R_NilValue)
 {
     Py_ssize_t xc, yc;
     std::vector<double> C(
         get_contingency_matrix(x, y, &xc, &yc)
     );
 
-    IntegerVector Iout(yc);
+    Py_ssize_t min_xyc = std::min(xc, yc);
+    IntegerVector perm_row(min_xyc);
+    IntegerVector perm_col(min_xyc);
 
-    Cnormalizing_permutation(C.data(), xc, yc, INTEGER(SEXP(Iout)));
+    Cnormalizing_permutation(
+        C.data(), xc, yc, INTEGER(SEXP(perm_row)), INTEGER(SEXP(perm_col))
+    );
 
-    for (Py_ssize_t j=0; j<yc; ++j)
-        Iout[j]++; // 0-based -> 1-based
+    for (Py_ssize_t j=0; j<min_xyc; ++j) {
+        perm_row[j]++; // 0-based -> 1-based
+        perm_col[j]++; // 0-based -> 1-based
+    }
 
-    return Iout;
+    return List::create(_["rows"]=perm_row, _["cols"]=perm_col);
 }

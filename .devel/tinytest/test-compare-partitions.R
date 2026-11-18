@@ -40,10 +40,20 @@ for (score in scores) {
                 sum(C), sum(normalized_confusion_matrix(x, y))
             )
 
-            expect_equivalent(
+            if (NROW(C) == NCOL(C)) expect_equivalent(
                 normalized_confusion_matrix(x, y),
-                unclass(C[, normalizing_permutation(C)])
+                unclass(C[normalizing_permutation(C)[[1]], normalizing_permutation(C)[[2]]])
             )
         }
     }
 }
+
+C <- matrix(c(0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1), nrow=3)
+expect_equivalent(
+    normalizing_permutation(C),
+    list(c(1, 2, 3), c(3, 1, 4))
+)
+expect_equivalent(
+    normalizing_permutation(t(C)),
+    list(c(1, 3, 4), c(2, 1, 3))
+)

@@ -12,8 +12,7 @@ External cluster validity measures and partition similarity scores
 These indices can be used for comparing the outputs of clustering algorithms
 with reference (ground truth) labels.
 
-For more details, see the
-`Framework for Benchmarking Clustering Algorithms
+For more details, see the `Framework for Benchmarking Clustering Algorithms
 <https://clustering-benchmarks.gagolewski.com>`_.
 """
 
@@ -64,7 +63,7 @@ cdef extern from "../src/c_compare_partitions.h":
         Py_ssize_t* x, Py_ssize_t* y, Py_ssize_t n) except+
 
     void Cnormalizing_permutation[T](const T* C, Py_ssize_t xc, Py_ssize_t yc,
-        Py_ssize_t* Iout) except+
+        Py_ssize_t* perm_row, Py_ssize_t* perm_col) except+
 
     void Capply_pivoting[T](const T* C, Py_ssize_t xc, Py_ssize_t yc, T* Cout) except+
 
@@ -107,40 +106,40 @@ cdef np.ndarray _get_confusion_matrix(x, y=None, bint force_double=False):
     """
     cdef np.ndarray _C
     if y is None:
-        _C = np.array(x)
-        if _C.ndim != 2 or _C.shape[0] < 2 or _C.shape[1] < 2:
+        _C = np.array(x, order='C', copy=None)
+        if _C.ndim != 2 or _C.shape[0] < 1 or _C.shape[1] < 1:
             raise ValueError("if `y` is None, `x` should be a confusion matrix")
         if (not force_double) and np.can_cast(_C, np.intp):
-            return np.array(_C, dtype=np.intp)
+            return np.array(_C, dtype=np.intp, order='C', copy=None)
         else:
-            return np.array(_C, dtype=np.double)
+            return np.array(_C, dtype=np.double, order='C', copy=None)
     else:
         return confusion_matrix(x, y, force_double=force_double)
 
 
-cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
+cpdef tuple normalizing_permutation(C):
     """
     genieclust.compare_partitions.normalizing_permutation(C)
 
-    Determines the permutation of columns of a confusion matrix
+    Determines the permutation of rows and columns of a confusion matrix
     so that the sum of the elements on the main diagonal is the largest
-    possible (by solving the maximal assignment problem).
+    possible (by solving the maximal linear sum assignment problem).
 
 
     Parameters
     ----------
 
     C : ndarray
-        A confusion matrix (contingency table),
-        whose row count is not greater than the column count;
-        can be a matrix of elements of the double type
+        A confusion matrix (contingency table);
+        can be a matrix of elements of the type double
 
 
     Returns
     -------
 
-    ndarray
-        A vector of indexes
+    tuple
+        A pair of index vectors `(perm_row, perm_col)`,
+        both of length `min(C.shape[0], C.shape[1])`.
 
 
     See also
@@ -151,8 +150,8 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
 
     genieclust.compare_partitions.normalized_confusion_matrix :
         Determines the confusion matrix and permutes the rows and columns
-        so that the sum of the elements of the main diagonal is the largest
-        possible
+        so that the sum of the elements on the main diagonal is as large
+        as possible
 
 
     Notes
@@ -167,31 +166,33 @@ cpdef np.ndarray[Py_ssize_t,ndim=1] normalizing_permutation(C):
     --------
 
     >>> x = np.r_[1, 2, 1, 2, 2, 2, 3, 1, 2, 1, 2, 1, 2, 2]
-    >>> y = np.r_[3, 3, 3, 3, 2, 2, 3, 1, 2, 3, 2, 3, 2, 2]
+    >>> y = np.r_[3, 3, 3, 3, 2, 2, 1, 1, 2, 3, 2, 3, 2, 2]
     >>> C = genieclust.compare_partitions.confusion_matrix(x, y)
     >>> C
     array([[1, 0, 4],
            [0, 6, 2],
-           [0, 0, 1]])
+           [1, 0, 0]])
     >>> I = genieclust.compare_partitions.normalizing_permutation(C)
-    >>> I
+    >>> I[0]
+    array([0, 1, 2])
+    >>> I[1]
     array([2, 1, 0])
-    >>> C[:, I]
+    >>> C[np.ix_(I[0], I[1])]
     array([[4, 0, 1],
            [2, 6, 0],
-           [1, 0, 0]])
+           [0, 0, 1]])
     """
 
     cdef np.ndarray[double, ndim=2] _C = _get_confusion_matrix(C, None, force_double=True)
     cdef Py_ssize_t xc = _C.shape[0]
     cdef Py_ssize_t yc = _C.shape[1]
-    cdef np.ndarray[Py_ssize_t,ndim=1] perm = np.empty(yc, dtype=np.intp)
-    if xc > yc:
-        raise ValueError("the number of rows cannot be greater than the number of columns")
+    cdef Py_ssize_t min_xyc = xc if xc <= yc else yc
+    cdef np.ndarray[Py_ssize_t,ndim=1] perm_row = np.empty(min_xyc, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t,ndim=1] perm_col = np.empty(min_xyc, dtype=np.intp)
 
-    Cnormalizing_permutation(&_C[0,0], xc, yc, &perm[0])
+    Cnormalizing_permutation(&_C[0,0], xc, yc, &perm_row[0], &perm_col[0])
 
-    return perm
+    return perm_row, perm_col
 
 
 cpdef np.ndarray normalize_confusion_matrix(C):
@@ -200,15 +201,14 @@ cpdef np.ndarray normalize_confusion_matrix(C):
 
     Permutes the rows and columns of a confusion matrix so that the sum
     of the elements on the main diagonal is the largest possible
-    (by solving the maximal assignment problem).
+    (by solving the maximal linear sum assignment problem).
 
 
     Parameters
     ----------
 
     C : ndarray
-        A confusion matrix (contingency table),
-        whose row count is not greater than the column count
+        A square confusion matrix (contingency table)
 
 
 
@@ -247,34 +247,34 @@ cpdef np.ndarray normalize_confusion_matrix(C):
     --------
 
     >>> x = np.r_[1, 2, 1, 2, 2, 2, 3, 1, 2, 1, 2, 1, 2, 2]
-    >>> y = np.r_[3, 3, 3, 3, 2, 2, 3, 1, 2, 3, 2, 3, 2, 2]
+    >>> y = np.r_[3, 3, 3, 3, 2, 2, 1, 1, 2, 3, 2, 3, 2, 2]
     >>> C = genieclust.compare_partitions.confusion_matrix(x, y)
     >>> C
     array([[1, 0, 4],
            [0, 6, 2],
-           [0, 0, 1]])
+           [1, 0, 0]])
     >>> genieclust.compare_partitions.normalize_confusion_matrix(C)
     array([[4, 0, 1],
            [2, 6, 0],
-           [1, 0, 0]])
+           [0, 0, 1]])
     """
     cdef np.ndarray _C_intp_or_double = _get_confusion_matrix(C, None, force_double=False)
     cdef Py_ssize_t xc = _C_intp_or_double.shape[0]
     cdef Py_ssize_t yc = _C_intp_or_double.shape[1]
-    if xc > yc:
-        raise ValueError("the number of rows cannot be greater than the number of columns")
+    if xc != yc:
+        raise ValueError("the number of rows must be equal to the number of columns")
 
     cdef np.ndarray[Py_ssize_t,ndim=2] _Ci
     cdef np.ndarray[Py_ssize_t,ndim=2] _Di
     cdef np.ndarray[double,ndim=2] _Cd
     cdef np.ndarray[double,ndim=2] _Dd
     if np.can_cast(_C_intp_or_double, np.intp):
-        _Ci = np.array(_C_intp_or_double, dtype=np.intp)
+        _Ci = np.array(_C_intp_or_double, dtype=np.intp, order='C', copy=None)
         _Di = np.zeros_like(_Ci)
         Capply_pivoting(&_Ci[0,0], xc, yc, &_Di[0,0])
         return _Di
     else:
-        _Cd = np.array(_C_intp_or_double, dtype=np.double)
+        _Cd = np.array(_C_intp_or_double, dtype=np.double, order='C', copy=None)
         _Dd = np.zeros_like(_Cd)
         Capply_pivoting(&_Cd[0,0], xc, yc, &_Dd[0,0])
         return _Dd
@@ -318,21 +318,21 @@ cpdef np.ndarray confusion_matrix(x, y, bint force_double=False):
     --------
 
     >>> x = np.r_[1, 2, 1, 2, 2, 2, 3, 1, 2, 1, 2, 1, 2, 2]
-    >>> y = np.r_[3, 3, 3, 3, 2, 2, 3, 1, 2, 3, 2, 3, 2, 2]
+    >>> y = np.r_[3, 3, 3, 3, 2, 2, 1, 1, 2, 3, 2, 3, 2, 2]
     >>> C = genieclust.compare_partitions.confusion_matrix(x, y)
     >>> C
     array([[1, 0, 4],
            [0, 6, 2],
-           [0, 0, 1]])
+           [1, 0, 0]])
 
     """
-    cdef np.ndarray[Py_ssize_t] _x = np.array(x, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _x = np.array(x, dtype=np.intp, order='C', copy=None)
     cdef Py_ssize_t n = _x.shape[0]
     cdef Py_ssize_t xmin, xmax
     Cminmax(<Py_ssize_t*>(&_x[0]), n, <Py_ssize_t*>(&xmin), <Py_ssize_t*>(&xmax))
     cdef Py_ssize_t xc = (xmax-xmin+1)
 
-    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp)
+    cdef np.ndarray[Py_ssize_t] _y = np.array(y, dtype=np.intp, order='C', copy=None)
     if n != _y.shape[0]: raise ValueError("incompatible lengths")
     cdef Py_ssize_t ymin, ymax
     Cminmax(<Py_ssize_t*>(&_y[0]), n, <Py_ssize_t*>(&ymin), <Py_ssize_t*>(&ymax))
@@ -402,11 +402,11 @@ cpdef np.ndarray normalized_confusion_matrix(x, y, bint force_double=False):
     --------
 
     >>> x = np.r_[1, 2, 1, 2, 2, 2, 3, 1, 2, 1, 2, 1, 2, 2]
-    >>> y = np.r_[3, 3, 3, 3, 2, 2, 3, 1, 2, 3, 2, 3, 2, 2]
+    >>> y = np.r_[3, 3, 3, 3, 2, 2, 1, 1, 2, 3, 2, 3, 2, 2]
     >>> genieclust.compare_partitions.normalized_confusion_matrix(x, y)
     array([[4, 0, 1],
            [2, 6, 0],
-           [1, 0, 0]])
+           [0, 0, 1]])
 
     """
     return normalize_confusion_matrix(confusion_matrix(x, y, force_double=force_double))
@@ -1027,7 +1027,7 @@ cpdef double normalized_clustering_accuracy(x, y=None):
 
     Normalised clustering accuracy (NCA) [1]_.
 
-    This measure is asymmetric – it is assumed that `x`
+    This measure is asymmetric; it is assumed that `x`
     represents the ground truth labels, whilst `y` give predicted cluster IDs.
 
 

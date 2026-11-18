@@ -11,7 +11,7 @@
 **Genie finds meaningful clusters. It does so quickly, even in large datasets.**
 ::::
 
-The **genieclust** package {cite}`genieclust` for Python and R implements
+Python and R package **genieclust** {cite}`genieclust` implements
 a robust hierarchical clustering algorithm called *Genie* {cite}`genieins`.
 
 The idea behind *Genie* is beautifully simple. First, make each individual
@@ -46,9 +46,9 @@ enabling it to act as an alternative to *HDBSCAN\**  {cite}`hdbscan` that can
 identify any number of clusters or their entire hierarchy.  Notably, it
 doesn't depend on *DBSCAN*'s somewhat difficult-to-set `eps` parameter.
 
-
-When combined with the [**deadwood**](https://deadwood.gagolewski.com)
-package, it can act as an outlier detector.
+When combined with [*Deadwood*](https://deadwood.gagolewski.com/), *Genie*
+can act as an outlier detector.  For a divisive version of *Genie*, check out
+the [*Lumbermark*](https://lumbermark.gagolewski.com/) clustering algorithm.
 
 
 ## Python Version

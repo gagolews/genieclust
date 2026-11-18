@@ -262,7 +262,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // normalizing_permutation
-IntegerVector normalizing_permutation(RObject x, RObject y);
+List normalizing_permutation(RObject x, RObject y);
 RcppExport SEXP _genieclust_normalizing_permutation(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

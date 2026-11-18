@@ -16,6 +16,19 @@ of the **genieclust** {cite}`genieclust` package,
 which we can install from [PyPI](https://pypi.org/project/genieclust/), e.g.,
 via a call to `pip3 install genieclust` from the command line.
 
+
+::::{note}
+For best performance, advanced users will benefit from compiling the package
+from sources:
+
+```bash
+CPPFLAGS="-O3 -march=native" pip3 install quitefastmst deadwood lumbermark --force --no-binary="quitefastmst,deadwood,genieclust"
+```
+
+🚧 TO DO (help needed): How to enable OpenMP support on macOS in **quitefastmst**?
+::::
+
+
 ```{python imports,results="hide"}
 import numpy as np
 import pandas as pd

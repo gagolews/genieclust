@@ -3,8 +3,8 @@ name: wheels
 on: workflow_dispatch
 
 env:
-    CIBW_SKIP: cp36-* cp37-* cp38-* cp39-* *-win32 *_ppc64le *_s390x *_i686 *_universal2 *_riscv64 *_armv7l
-    CIBW_ARCHS: all
+    CIBW_SKIP: cp36-* cp37-* cp38-* cp39-* *-win32 *_ppc64le *_s390x *_i686 *_universal2 *_riscv64 *_armv7l cp310-win_arm64 cp311-win_arm64
+    #CIBW_ARCHS: all
     PYTHONUTF8: 1
     #*-win32 *-musllinux* *-macosx_*_universal2* *win_arm64* *-manylinux_arm64 *-manylinux_i686 *-manylinux_ppc64le *-manylinux_s390x *-manylinux_aarch64
     # TODO: manylinux aarch64
@@ -18,18 +18,19 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-15]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-15-intel, macos-latest]
+        #os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, windows-11-arm, macos-13, macos-14]
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
 
-      - name: Set up QEMU
-        if: runner.os == 'Linux' && runner.arch == 'X64'
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
+      # - name: Set up QEMU
+      #   if: runner.os == 'Linux' && runner.arch == 'X64'
+      #   uses: docker/setup-qemu-action@v4
+      #   with:
+      #     platforms: all
 
       - name: Install requirements and build wheels
         run: |
@@ -39,7 +40,7 @@ jobs:
             python -m pip install --upgrade cibuildwheel
             python -m cibuildwheel --output-dir wheelhouse
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
           path: ./wheelhouse/*.whl

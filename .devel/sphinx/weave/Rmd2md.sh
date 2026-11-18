@@ -63,7 +63,8 @@ then
         if [ "$f" -nt "${f/.pdf/.png}" ]
         then
             echo "Converting ${f} to png...."
-            magick -density 96 "$f" -background white -alpha remove "${f/.pdf/.png}"
+            #magick -density 96 "$f" -background white -alpha remove "${f/.pdf/.png}"
+            pdftocairo -png -r 96 -singlefile "$f" "${f/.pdf/}" # -transp
         fi
     done
 fi

@@ -160,7 +160,7 @@ cpdef double gini_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order='C', copy=None)  # ensure c_contiguity
 
     return Cgini_sorted(&x[0], x.shape[0])
 
@@ -248,7 +248,7 @@ cpdef double bonferroni_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order='C', copy=None)  # ensure c_contiguity
 
     return Cbonferroni_sorted(&x[0], x.shape[0])
 
@@ -329,6 +329,6 @@ cpdef double devergottini_index(np.ndarray[T] x, bint is_sorted=False):
     """
 
     if not is_sorted: x = np.sort(x)
-    else: x = np.asarray(x, dtype=x.dtype, order="C")  # ensure c_contiguity
+    else: x = np.asarray(x, dtype=x.dtype, order='C', copy=None)  # ensure c_contiguity
 
     return Cdevergottini_sorted(&x[0], x.shape[0])

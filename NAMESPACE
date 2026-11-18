@@ -34,9 +34,13 @@ export(silhouette_w_index)
 export(wcnn_index)
 importFrom(Rcpp,evalCpp)
 importFrom(deadwood,mst)
-importFrom(stats,cutree)
-importFrom(stats,dist)
-importFrom(stats,hclust)
-importFrom(utils,capture.output)
-importFrom(utils,tail)
+importFrom(stats,
+  cutree,
+  dist,
+  hclust
+)
+importFrom(utils,
+  capture.output,
+  tail
+)
 useDynLib(genieclust, .registration=TRUE)
