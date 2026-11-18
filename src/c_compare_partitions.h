@@ -459,20 +459,27 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
         }
     }
 
-    Py_ssize_t min_xyc = std::min(xc, yc);
     Py_ssize_t max_xyc = std::max(xc, yc);
+    Py_ssize_t min_xyc = std::min(xc, yc);
+    //double mean_xyc = (xc+yc)*0.5;
+    double mean_xyc = std::sqrt(xc*yc);
+    double nk = (double)n/mean_xyc;
+    double nk2 = nk/mean_xyc;
     std::vector<double> S(xc*yc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
-            if (C[i*yc+j] > 0) S[i*yc+j] = (double)C[i*yc+j];
+            S[i*yc+j] = (double)C[i*yc+j];
+            // S[i*yc+j] = ((double)C[i*yc+j]-nk2)/(nk-nk2);
         }
     }
 
     double t = lsap_ext_get_maxsum(S.data(), xc, yc);
 
-    double a = (double)t/(double)n;
-    return (a*xc-1.0)/(xc-1.0);  // TODO
+    //double a = (double)t/(double)n;
+    //return (a*xc-1.0)/(xc-1.0);  // TODO
 
+    return (t-max_xyc*nk2)/(nk-nk2)/mean_xyc;
+    // return t/mean_xyc;
 }
 
 
@@ -517,16 +524,19 @@ double Ccompare_partitions_nca(const T* C, Py_ssize_t xc, Py_ssize_t yc)
     // Assuming 0/0 == 0
     std::vector<double> S(xc*yc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
-        for (Py_ssize_t j=0; j<yc; ++j) {
-            if (C[i*yc+j] > 0) {
-                S[i*yc+j] = (double)C[i*yc+j]/(double)sum_x[i];
+        if (sum_x[i] > 0) {
+            double mn = sum_x[i]/(double)yc;
+            for (Py_ssize_t j=0; j<yc; ++j) {
+                //S[i*yc+j] = (double)C[i*yc+j]/(double)sum_x[i];
+                S[i*yc+j] = ((double)C[i*yc+j]-mn)/(sum_x[i]-mn);
             }
         }
     }
 
     double t = lsap_ext_get_maxsum(S.data(), xc, yc);
 
-    return (t-1.0)/(xc-1.0);  // TODO
+    // return (t-1.0)/(xc-1.0);  // TODO
+    return t/(double)xc;
 }
 
 

@@ -57,3 +57,8 @@ expect_equivalent(
     normalizing_permutation(t(C)),
     list(c(1, 3, 4), c(2, 1, 3))
 )
+
+
+C <- matrix(rep(1, 9), nrow=3)
+expect_equal(normalized_clustering_accuracy(C), 0)
+expect_equal(normalized_pivoted_accuracy(C), 0)
