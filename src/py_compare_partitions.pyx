@@ -503,11 +503,9 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     corresponding to `x` and `y`; see also
     :func:`confusion_matrix`.
 
-    This function implements a few scores that aim to quantify
-    the similarity between `x` and `y`.
-    They can be used as external cluster
-    validity measures, where we assume that `x` is
-    the reference (ground-truth) partition
+    This function implements a few scores that aim to quantify the similarity
+    between `x` and `y`.  They can be used as external cluster validity
+    measures, where we assume that `x` is the reference (ground-truth) partition
     whilst `y` is the vector of predicted cluster memberships; compare [5]_.
 
     All indices except `normalized_clustering_accuracy`
@@ -621,6 +619,8 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
 
     cdef double npa = Ccompare_partitions_npa(&C[0,0], xc, yc)
 
+    cdef double nca = Ccompare_partitions_nca(&C[0,0], xc, yc)
+
     cdef dict res3 = Ccompare_partitions_psi(&C[0,0], xc, yc)
     cdef dict res3_clipped = {
         "psi": res3["psi_unclipped"],
@@ -630,10 +630,6 @@ cpdef dict compare_partitions(x, y=None, bint psi_clipped=True):
     if psi_clipped:
         if res3_clipped["psi"]  < 0.0: res3_clipped["psi"]  = 0.0
         if res3_clipped["spsi"] < 0.0: res3_clipped["spsi"] = 0.0
-
-    cdef double nca = np.nan
-    if xc == yc:
-        nca = Ccompare_partitions_nca(&C[0,0], xc, yc)
 
     return {
         **res1,
