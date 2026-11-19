@@ -459,12 +459,6 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
         }
     }
 
-    Py_ssize_t max_xyc = std::max(xc, yc);
-    Py_ssize_t min_xyc = std::min(xc, yc);
-    //double mean_xyc = (xc+yc)*0.5;
-    double mean_xyc = std::sqrt(xc*yc);
-    double nk = (double)n/mean_xyc;
-    double nk2 = nk/mean_xyc;
     std::vector<double> S(xc*yc, 0.0);
     for (Py_ssize_t i=0; i<xc; ++i) {
         for (Py_ssize_t j=0; j<yc; ++j) {
@@ -478,7 +472,15 @@ double Ccompare_partitions_npa(const T* C, Py_ssize_t xc, Py_ssize_t yc)
     //double a = (double)t/(double)n;
     //return (a*xc-1.0)/(xc-1.0);  // TODO
 
-    return (t-max_xyc*nk2)/(nk-nk2)/mean_xyc;
+    Py_ssize_t max_xyc = std::max(xc, yc);
+    // Py_ssize_t min_xyc = std::min(xc, yc);
+    //double mean_xyc = (xc+yc)*0.5;
+    double gmean_xyc = (xc==yc)?xc:std::sqrt(xc*yc);
+    //double nk = (double)n/gmean_xyc;
+    //double nk2 = nk/gmean_xyc;
+    //return (t-max_xyc*nk2)/(nk-nk2)/gmean_xyc;
+    return (t/n*gmean_xyc/(1.0-1.0/gmean_xyc)-max_xyc/(gmean_xyc-1.0))/gmean_xyc;  // TODO: divide by amean?
+
     // return t/mean_xyc;
 }
 
